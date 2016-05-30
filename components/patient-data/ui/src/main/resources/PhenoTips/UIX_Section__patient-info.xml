@@ -120,7 +120,8 @@
       <parameters>title=$services.localization.render('phenotips.UIXSection.patientInfo')
 enabled=true
 required=
-order=1</parameters>
+order=1
+expanded_by_default=true</parameters>
     </property>
     <property>
       <scope>wiki</scope>

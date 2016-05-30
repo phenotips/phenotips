@@ -85,6 +85,12 @@ public class DefaultRecordSection implements RecordSection
     }
 
     @Override
+    public boolean isExpandedByDefault()
+    {
+        return StringUtils.equals("true", extension.getParameters().get("expanded_by_default"));
+    }
+
+    @Override
     public List<RecordElement> getAllElements()
     {
         List<RecordElement> result = new LinkedList<RecordElement>();

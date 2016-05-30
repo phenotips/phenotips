@@ -128,7 +128,11 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
     #set ($sectionContent = $sectionContent.concat($itemContent))
   #end
   #if ($sectionContent.trim() != '')
-    (% class="clear clinical-info $stringtool.substringAfterLast($section.extension.id, '.') chapter" %)(((
+    #set ($chapterExtraClasses = "")
+    #if ($xcontext.action == 'edit' &amp;&amp; !$section.isExpandedByDefault())
+      #set ($chapterExtraClasses = "collapsed")
+    #end
+    (% class="clear clinical-info $stringtool.substringAfterLast($section.extension.id, '.') chapter $chapterExtraClasses" %)(((
       == $section.name ==
 
       {{html clean="false" wiki="false"}}$sectionContent.trim(){{/html}}

@@ -53,6 +53,13 @@ public interface RecordSection
     boolean isEnabled();
 
     /**
+     * Whether this section should be expanded and fully visible in edit mode by default.
+     *
+     * @return {@code true} if this section must be expanded, {@code false} otherwis
+     */
+    boolean isExpandedByDefault();
+
+    /**
      * The list of elements configured in this section, whether they are enabled or not.
      *
      * @return an unmodifiable ordered list of {@link RecordElement elements}, empty if this section doesn't have any
