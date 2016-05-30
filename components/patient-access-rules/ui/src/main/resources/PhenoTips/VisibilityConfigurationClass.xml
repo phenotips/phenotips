@@ -63,7 +63,7 @@
   &lt;/li&gt;
 #end
 &lt;/ul&gt;
-&lt;input type='hidden' name="${prefix}${name}" value='' checked='checked'/&gt;
+&lt;input type='hidden' name="${prefix}${name}" value=''/&gt;
 {{/html}}{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <displayType>select</displayType>
