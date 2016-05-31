@@ -139,7 +139,7 @@ public class PhenoTipsPatientConsentManagerTest
 
         static final String id2 = "id2";
         static final String label2 = "non <div>clean</div> <p>label</p>";
-        static final String label2expected = "non clean label";
+        static final String label2expected = "non <div>clean</div> label";
         static final String description2 = "";
         final List<String> formFields2 = null;
         Integer affects2 = 0;
