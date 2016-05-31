@@ -154,13 +154,13 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
         try {
             String id = xwikiConsent.getStringValue("id");
             String label = cleanDescription(
-                    configDoc.display("label", RENDERING_MODE, xwikiConsent, contextProvider.get()));
+                    configDoc.display("label", RENDERING_MODE, xwikiConsent, contextProvider.get()), true);
             if (label == null || label.length() == 0) {
                 label = id + " "
                         + this.translationManager.translate("PhenoTips.PatientConsentManager_emptyLabelPostfix");
             }
             String description = cleanDescription(
-                    configDoc.display("description", RENDERING_MODE, xwikiConsent, contextProvider.get()));
+                    configDoc.display("description", RENDERING_MODE, xwikiConsent, contextProvider.get()), false);
             boolean required = intToBool(xwikiConsent.getIntValue("required"));
             boolean affectsFields = intToBool(xwikiConsent.getIntValue("affectsFields"));
             List<String> formFields = null;
@@ -174,12 +174,14 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
         return null;
     }
 
-    private static String cleanDescription(String toClean)
+    private static String cleanDescription(String toClean, boolean stripParagraphTags)
     {
         String clean = toClean;
         if (clean != null) {
-            clean = clean.replace("<div>", "").replace("</div>", "");
-            clean = clean.replace("<p>", "").replace("</p>", "");
+            if (stripParagraphTags) {
+                clean = clean.replace("<div>", "").replace("</div>", "");
+                clean = clean.replace("<p>", "").replace("</p>", "");
+            }
             clean = clean.replaceAll("[{]{2}(/{0,1})html(.*?)[}]{2}", "");
         }
         return clean;
