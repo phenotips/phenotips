@@ -179,6 +179,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
         String clean = toClean;
         if (clean != null) {
             if (stripParagraphTags) {
+                clean = clean.replace("<div>", "").replace("</div>", "");
                 clean = clean.replace("<p>", "").replace("</p>", "");
             }
             clean = clean.replaceAll("[{]{2}(/{0,1})html(.*?)[}]{2}", "");
