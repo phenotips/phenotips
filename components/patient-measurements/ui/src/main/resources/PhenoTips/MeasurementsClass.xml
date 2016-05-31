@@ -394,10 +394,10 @@
 #set ($dValue = $object.getProperty('hand').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '' || "$!{age}" == '' )
+#set ($pValue = $services.measurements.hand.valueToPercentile($male, $age, $dValue))
+#if ("$!dValue" == '' || "$!{age}" == '' || "$!pValue" == '-1')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.hand.valueToPercentile($male, $age, $dValue))
   #set ($sdValue = $mathtool.roundTo(2, $services.measurements.hand.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue&lt;=20 &amp;&amp; $pValue&gt;=4)^^th^^#elseif($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
@@ -436,10 +436,10 @@
 #set ($dValue = $object.getProperty('hand_right').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '' || "$!{age}" == '' )
+#set ($pValue = $services.measurements.hand.valueToPercentile($male, $age, $dValue))
+#if ("$!dValue" == '' || "$!{age}" == '' || "$!pValue" == '-1')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.hand.valueToPercentile($male, $age, $dValue))
   #set ($sdValue = $mathtool.roundTo(2, $services.measurements.hand.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue&lt;=20 &amp;&amp; $pValue&gt;=4)^^th^^#elseif($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
