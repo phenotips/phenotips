@@ -22,16 +22,26 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
+    <artifactId>studies</artifactId>
     <version>1.3-SNAPSHOT</version>
   </parent>
-  <artifactId>studies</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Studies</name>
+  <artifactId>phenotips-studies-migrations</artifactId>
+  <name>PhenoTips - Studies - Migrations</name>
 
-  <modules>
-    <module>api</module>
-    <module>migrations</module>
-    <module>ui</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-component-api</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-oldcore</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+  </dependencies>
 </project>
