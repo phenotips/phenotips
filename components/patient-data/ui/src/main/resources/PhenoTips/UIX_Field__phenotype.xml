@@ -485,7 +485,7 @@
   padding-right: .75%;
 }
 .non-moving {
-  margin-top: 75px;
+  margin-top: 5.2em;
 }
 
 .current-phenotype-selection {
