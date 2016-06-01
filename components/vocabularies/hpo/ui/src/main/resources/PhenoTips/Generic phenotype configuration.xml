@@ -165,7 +165,7 @@
   {
     "type"       : "section",
     "title"      : "Musculoskeletal",
-    "categories" : ["HP:0000924", "HP:0003011"],
+    "categories" : ["HP:0000924", "HP:0003011", "HP:0040064"],
     "data"       : [
         {"id" : "HP:0002652"},
         {"id" : "HP:0002659"},
