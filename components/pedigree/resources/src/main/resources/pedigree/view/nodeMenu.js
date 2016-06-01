@@ -706,7 +706,7 @@ define([
 
                     _this.reposition();
                 });
-                patientNewLinkContainer.insert(patientPicker).insert("&nbsp;&nbsp;or&nbsp;&nbsp;").insert(newPatientButton);
+                patientNewLinkContainer.insert(patientPicker).insert("&nbsp;&nbsp;&nbsp;or").insert(newPatientButton);
                 result.insert(patientNewLinkContainer);
 
                 var patientLinkContainer = new Element('div', { 'class': 'patient-link-container'});
