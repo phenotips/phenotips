@@ -113,15 +113,15 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
         JSONObject phenotipsPatient = new JSONObject();
 
         try {
-            phenotipsPatient = exchangeIds(externalPatient, phenotipsPatient);
+            phenotipsPatient = exchangeIds(externalPatient, phenotipsPatient, this.logger);
             phenotipsPatient = exchangeBasicPatientData(externalPatient, phenotipsPatient);
-            phenotipsPatient = exchangeDates(externalPatient, phenotipsPatient, useDateFormat);
+            phenotipsPatient = exchangeDates(externalPatient, phenotipsPatient, useDateFormat, this.logger);
             phenotipsPatient = exchangePhenotypes(externalPatient, phenotipsPatient, this.hpoService, this.logger);
             phenotipsPatient = exchangeDisorders(externalPatient, phenotipsPatient, this.omimService, this.logger);
             phenotipsPatient = exchangeFamilyHistory(externalPatient, phenotipsPatient);
             phenotipsPatient = exchangeGenes(externalPatient, phenotipsPatient);
         } catch (Exception ex) {
-            this.logger.error("Could not convert patient. {}", ex.getMessage());
+            this.logger.error("Could not convert patient: {}", ex.getMessage());
         }
 
         return phenotipsPatient;
@@ -139,10 +139,20 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
         return phenotipsPatientJSON;
     }
 
-    private static JSONObject exchangeIds(JSONObject pedigreePatient, JSONObject phenotipsPatientJSON)
+    private static JSONObject exchangeIds(JSONObject pedigreePatient, JSONObject phenotipsPatientJSON, Logger logger)
     {
-        phenotipsPatientJSON.put("id", pedigreePatient.opt("phenotipsId"));
-        phenotipsPatientJSON.put("external_id", pedigreePatient.opt("externalID"));
+        String patientID = "phenotipsId";
+        String externalID = "externalID";
+        try {
+            if (pedigreePatient.has(patientID)) {
+                phenotipsPatientJSON.put("id", pedigreePatient.getString(patientID));
+            }
+            if (pedigreePatient.has(externalID)) {
+                phenotipsPatientJSON.put("external_id", pedigreePatient.getString(externalID));
+            }
+        } catch (Exception ex) {
+            logger.error("Could not convert patient IDs: {}", ex.getMessage());
+        }
         return phenotipsPatientJSON;
     }
 
@@ -158,19 +168,29 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
     }
 
     private static JSONObject exchangeDates(JSONObject pedigreePatient,
-        JSONObject phenotipsPatientJSON, DateFormat format)
+        JSONObject phenotipsPatientJSON, DateFormat format, Logger logger)
     {
         String dob = "dob";
         String dod = "dod";
         if (pedigreePatient.has(dob)) {
-            phenotipsPatientJSON.put("date_of_birth", format.format(
-                PedigreeProcessorImpl.pedigreeDateToDate(pedigreePatient.getJSONObject(dob))
-                ));
+            try {
+                phenotipsPatientJSON.put("date_of_birth", format.format(
+                    PedigreeProcessorImpl.pedigreeDateToDate(pedigreePatient.getJSONObject(dob))
+                    ));
+            } catch (Exception ex) {
+                // may happen if date JSON is incorrectly formatted - more likely to happen
+                // than othe rparts of JSON since we are debating how dates should be stored
+                logger.error("Could not convert date of birth: {}", ex.getMessage());
+            }
         }
         if (pedigreePatient.has(dod)) {
-            phenotipsPatientJSON.put("date_of_death", format.format(
-                PedigreeProcessorImpl.pedigreeDateToDate(pedigreePatient.getJSONObject(dod))
-                ));
+            try {
+                phenotipsPatientJSON.put("date_of_death", format.format(
+                    PedigreeProcessorImpl.pedigreeDateToDate(pedigreePatient.getJSONObject(dod))
+                    ));
+            } catch (Exception ex) {
+                logger.error("Could not convert date of death: {}", ex.getMessage());
+            }
         }
         return phenotipsPatientJSON;
     }
