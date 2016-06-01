@@ -236,11 +236,9 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
         String dayString = "day";
         DateTime jodaDate;
         if (pedigreeDate.has(yearString)) {
-            Integer year = Integer.parseInt(pedigreeDate.getString(yearString));
-            Integer month = pedigreeDate.has(monthString)
-                ? Integer.parseInt(pedigreeDate.getString(monthString)) : 1;
-            Integer day = pedigreeDate.has(dayString)
-                ? Integer.parseInt(pedigreeDate.getString(dayString)) : 1;
+            Integer year = pedigreeDate.getInt(yearString);
+            Integer month = pedigreeDate.has(monthString) ? pedigreeDate.getInt(monthString) : 1;
+            Integer day = pedigreeDate.has(dayString) ? pedigreeDate.getInt(dayString) : 1;
             jodaDate = new DateTime(year, month, day, 0, 0);
         } else {
             String decade = pedigreeDate.getString("decade").substring(0, 4);
