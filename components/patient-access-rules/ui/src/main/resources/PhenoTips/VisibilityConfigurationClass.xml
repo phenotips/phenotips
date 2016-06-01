@@ -275,6 +275,7 @@
     </property>
     <property>
       <codeToExecute>$xwiki.ssx.use('PhenoTips.VisibilityConfigurationClass')##
+$xwiki.jsx.use('XWiki.ConfigurableClass')##
 $xwiki.jsx.use('PhenoTips.VisibilityConfigurationClass')##
 #set ($mainConfigurationClassname = 'PhenoTips.VisibilityConfigurationClass')
 #set ($targetObj = $preferencesDoc.getObject($mainConfigurationClassname, true))
