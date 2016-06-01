@@ -184,6 +184,13 @@
 
       // attach button action
       var onUpdateButtonPress = function(event) {
+        this.screen = new Element('div', {'class': 'msdialog-screen consent-grayout'});
+        consentsBlock[0].insert(this.screen);
+
+        var removeConsentGrayout = function(){
+          delete this.screen;
+        }
+
         var errorMessage = consentsBlock.children(".error_updating_consents");
         errorMessage.addClass("hidden");
 
@@ -200,6 +207,7 @@
           $.ajax(assignConsentsUrl, {data: consentIdsJSON, dataType: "text", method: "PUT", contentType: "application/json;charset=UTF-8"})
             .fail(errorUpdatingConsents)
             .success(afterConsentsUpdated);
+            .complete(removeConsentGrayout);
         }
 
         // save patient data
@@ -668,6 +676,11 @@
 .error_updating_consents {
   margin-top: 1em;
   margin-left: 2em;
+}
+.consent-grayout {
+  opacity: 0.25;
+  backgroundColor: #000;
+  z-index: 100000;
 }</code>
     </property>
     <property>
