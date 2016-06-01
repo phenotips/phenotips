@@ -460,6 +460,12 @@ document.observe('xwiki:dom:loaded', function() {
         }
         element.__validation.add(Validate.Acceptance, {failureMessage: "$services.localization.render('phenotips.PatientSheetCode.failureTickCheck')"});
       });
+      element.select(".measurement-row .val input:not([type=hidden], readonly)").each(function(element) {
+        if (!element.__validation) {
+          element.__validation = new LiveValidation(element, {validMessage: '', wait : 500});
+        }
+        element.__validation.add(Validate.Numericality, {notANumberMessage: "$services.localization.render('phenotips.patientSheet.measurements.notANumberMessage')"});
+      });
     });
     return true;
   };
