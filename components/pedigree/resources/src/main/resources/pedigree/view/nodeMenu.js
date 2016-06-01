@@ -718,7 +718,7 @@ define([
                     Event.fire(patientPicker, 'custom:selection:changed', { "useValue": "" });
                     _this.reposition();
                 });
-                removeLink.insert("unlink patient record");
+                removeLink.insert("Unlink patient record");
                 patientLinkContainer.insert(patientLink).insert(removeLink);
                 result.insert(patientLinkContainer);
                 var _this = this;
