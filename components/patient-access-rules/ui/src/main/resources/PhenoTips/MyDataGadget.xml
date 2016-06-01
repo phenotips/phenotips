@@ -177,7 +177,7 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
       <name>org.phenotips.homepage.dashboard.myData</name>
     </property>
     <property>
-      <parameters>title={{translation key="phenotips.homepage.myData.title"/}}#if($hasCreatePage) {{html clean=false}} &lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;$services.localization.render('phenotips.homepage.myData.createPatient')&lt;/label&gt; {{/html}}#end
+      <parameters>title={{translation key="phenotips.homepage.myData.title"/}}#if($hasCreatePage) {{html clean=false wiki=true}}&lt;label for="create-patient-record"&gt;{{icon name="plus-circle"/}}{{translation key="phenotips.homepage.myData.createPatient"/}}&lt;/label&gt;{{/html}}#end
 column=2
 priority=10
 enabled=true</parameters>
