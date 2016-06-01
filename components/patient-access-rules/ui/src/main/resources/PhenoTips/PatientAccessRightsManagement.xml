@@ -346,8 +346,7 @@
   #set ($currentValue = "$!visibilityObject.getProperty('visibility').value")
 #else
   #set ($visibilityObject = $targetDoc.newObject($className))
-  $!visibilityObject.set('visibility', 'private')
-  $!doc.save('Added default visibility', true)
+  $!visibilityObject.set('visibility', 'private')##
 #end
 #set ($prefix = "${className}_${visibilityObject.number}_")
 #if ($currentValue == '')
@@ -370,6 +369,7 @@
 &lt;/dl&gt;
 &lt;input type="hidden" id="${targetDocName}_redirect" name="xredirect" value="$escapetool.xml($doc.getURL($xcontext.action, $request.queryString))" /&gt;
 &lt;input type="hidden" name="form_token" value="$!{escapetool.xml($services.csrf.token)}" /&gt;
+&lt;input type="hidden" name="objectPolicy" value="updateOrCreate"/&gt;
 &lt;/fieldset&gt;
 &lt;div class="bottombuttons"&gt;&lt;p class="admin-buttons"&gt;
 &lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="action_saveandcontinue" value="$services.localization.render('phenotips.patientAccessRightsManagement.defaultVisibilitySave')" /&gt;&lt;/span&gt;
