@@ -80,15 +80,23 @@
   padding: 1.5em 0;
   position: relative;
 }
+.measurement-set th {
+  border: none;
+  background-color: #E4E2E2;
+}
 .measurement-set th.date {
   border-right: 0;
 }
 .measurement-set th.age {
-  border-left: 0;
-  text-align: right;
+  width: 235px;
 }
-.measurement-set td.age {
-  text-align: right;
+.measurement-set th span.error {
+  color: #c33;
+  display: block;
+  font-weight: normal;
+  font-size: 85%;
+  line-height: 18px;
+  text-align: center;
 }
 #measurements .measurement-set thead td {
   border-bottom: 1px dotted #aaa;
@@ -109,7 +117,7 @@
   padding-bottom: 0;
 }
 .measurement-row td.type {
-  width: 180px;
+  width: 155px;
 }
 .measurement-row .side-label {
   font-size: 80%;
@@ -177,4 +185,30 @@
 }
 .computed-values .measurement-row input {
   border: 1px solid white;
+}
+input.pt-duration.measurement-age:read-only {
+  opacity: .5;
+}
+.bmi .metric input{
+  opacity: .7;
+  width: 64px !important;
+}
+table.measurement-set {
+  border: 2px solid #E8E8E8;
+}
+input.xwiki-date.measurement-date {
+  width: 110px !important;
+  margin-left: 4px;
+}
+input.pt-duration.measurement-age {
+  width: 100px;
+}
+.expand-buttons button {
+  float: right;
+}
+.measurement-set th.age-label {
+  padding-right: 0;
+}
+.measurement-set input.xwiki-date {
+  background-position: 90px 4px;
 }
