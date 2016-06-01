@@ -857,8 +857,7 @@ var PhenoTips = (function(PhenoTips) {
       this._getDependentMeasurementField = this._getDependentMeasurementField.bind(this);
 
       if (XWiki.contextaction == 'edit') {
-        this._displayEl = this.el.down('span.val');
-
+        
         // Init field
         this._valueEl.readOnly = true;
 
@@ -898,16 +897,12 @@ var PhenoTips = (function(PhenoTips) {
           requestHeaders: {Accept : "application/json"},
           onSuccess: (function(resp) {
             this._valueEl.value = resp.responseJSON.value.toFixed(2);
-            this._displayEl.removeClassName('empty');
-            this._displayEl.innerHTML = resp.responseJSON.value.toFixed(2);
             this.fetchAndRenderPercentileSd();
           }).bind(this),
           onFailure: function (response) {}
         });
       } else {
         this._valueEl.value = '';
-        this._displayEl.innerHTML = '-';
-        this._displayEl.addClassName('empty');
         this.fetchAndRenderPercentileSd();
       }
     },
