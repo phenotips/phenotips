@@ -59,7 +59,7 @@
       <number>2</number>
       <picker>0</picker>
       <prettyName>fields</prettyName>
-      <relationalStorage>0</relationalStorage>
+      <relationalStorage>1</relationalStorage>
       <separator> </separator>
       <separators/>
       <size>1</size>
@@ -107,7 +107,7 @@
       <number>1</number>
       <picker>0</picker>
       <prettyName>sections</prettyName>
-      <relationalStorage>0</relationalStorage>
+      <relationalStorage>1</relationalStorage>
       <separator> </separator>
       <separators/>
       <size>1</size>
