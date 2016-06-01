@@ -188,6 +188,7 @@
         consentsBlock[0].insert(this.screen);
 
         var removeConsentGrayout = function(){
+          this.screen.remove();
           delete this.screen;
         }
 
