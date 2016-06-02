@@ -211,3 +211,11 @@ input.pt-duration.measurement-age {
 .measurement-set input.xwiki-date {
   background-position: 90px 4px;
 }
+.measurement-set td {
+  padding: 5px 4px;
+}
+.measurement-set .LV_validation_message {
+  font-size: .7em;
+  line-height: 1.3em;
+  z-index: 1;
+}
