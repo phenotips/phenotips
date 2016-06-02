@@ -1,9 +1,11 @@
 define([
       "pedigree/pedigreeDate",
+      "pedigree/hpoTerm",
       "pedigree/model/baseGraph",
       "pedigree/model/helpers"
     ], function(
       PedigreeDate,
+      HPOTerm,
       BaseGraph,
       Helpers
     ){
@@ -678,6 +680,8 @@ define([
      *   - "comments": string (default: none)
      *   - "externalId": string (default: none)
      *   - "sex": one of "male" or "m", "female" or "f", "other" or "o", "unknown" or "u" (default: "unknown")
+     *   - "features": array of objects, each representing one standard (documented in an ontology and with a proper ID) phenotype in PhenoTips JSON format
+     *   - "nonstandard_features": array of objects, each representing one custom (user-defined free text) phenotype in PhenoTips JSON format
      *   - "genes": array of objects, each representing information about one gene in PhenoTips JSON format
      *   - "twinGroup": integer. All children of the sam eparents with the same twin group are considered twins. (fefault: none)
      *   - "monozygotic": boolean. (only applicable for twins)
@@ -1376,7 +1380,8 @@ define([
             "gestationage":    "gestationAge",
             "lifestatus":      "lifeStatus",
             "disorders":       "disorders",
-            "hpoterms":        "hpoTerms",
+            "features":        "features",
+            "nonstandard_features": "nonstandard_features",
             "genes":           "genes",
             "ethnicities":     "ethnicities",
             "carrierstatus":   "carrierStatus",
@@ -1396,6 +1401,33 @@ define([
      */
     PedigreeImport.convertProperty = function(externalPropertyName, value) {
         try {
+            // suport old JSON format: "hpoTerms" instead of "features" and
+            // "candidateGenes" instead of "genes"
+
+            if (externalPropertyName.toLowerCase() == "hpoterms") {
+                // old "hpoTerms" was an array of observed feature IDs
+                var features = [];
+                var nonstandard_features = [];
+                for (var i = 0; i < value.length; i++) {
+                    var id = value[i];
+                    if (HPOTerm.isValidID(id)) {
+                        var feature = { "id": value[i], "observed":"yes", "type":"phenotype" };
+                        features.push(feature);
+                    } else {
+                        var nonstandard_feature = { "label": value[i], "observed":"yes", "type":"phenotype" };
+                        nonstandard_features.push(nonstandard_feature);
+                    }
+                }
+                var result = [];
+                if (features.length > 0) {
+                    result.push( {"propertyName": "features", "value": features } );
+                }
+                if (nonstandard_features.length > 0) {
+                    result.push( {"propertyName": "nonstandard_features", "value": nonstandard_features } );
+                }
+                return result;
+            }
+
             if (externalPropertyName.toLowerCase() == "candidategenes") {
                 // old "candidateGenes" was an array of candidate gene IDs
                 var genes = [];
