@@ -463,6 +463,11 @@ var PhenoTips = (function(PhenoTips) {
       }
 
       var removeElement = (function() {
+        this.el.select(".measurement-row .val input:not([type=hidden], readonly)").each(function(element) {
+          if (element.__validation) {
+            element.__validation.destroy();
+          }
+        });
         this.destroy();
         this.el.remove();
         this.parent._sets.splice(this.parent._sets.indexOf(this), 1);
@@ -663,6 +668,9 @@ var PhenoTips = (function(PhenoTips) {
     },
 
     fetchAndRenderPercentileSd: function(e) {
+      if (this._valueEl.__validation && !this._valueEl.__validation.validate()) {
+        return;
+      }
       var pctlEl = this.el.select('.feedback')[0];
       var fetchParams = {
         'measurement': this.el.select('[name$=type]')[0].value,
@@ -885,6 +893,9 @@ var PhenoTips = (function(PhenoTips) {
     },
 
     fetchAndRenderComputedValue: function(e) {
+      if (e && e.element() && e.element().__validation && !e.element().__validation.validate()) {
+        return;
+      }
       var canCalc = true;
       var fetchParams = {
         measurement: this.el.select('[name$=type]')[0].value,
