@@ -49,7 +49,8 @@ public interface PermissionsManager
      * @param patients a collection of patients
      * @param requiredVisibility minimum level of visibility required for patients
      * @return a collection containing only those with {@code visibility >= requiredVisibility}; may be empty; preserves
-     *         the order of the input collection
+     *         the order of the input collection; if the threshold visibility is {@code null}, the input collection is
+     *         returned unaltered
      * @since 1.3M2
      */
     Collection<Patient> filterByVisibility(Collection<Patient> patients, Visibility requiredVisibility);

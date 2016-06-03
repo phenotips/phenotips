@@ -120,6 +120,9 @@ public class DefaultPermissionsManager implements PermissionsManager
     @Override
     public Collection<Patient> filterByVisibility(Collection<Patient> patients, Visibility requiredVisibility)
     {
+        if (requiredVisibility == null) {
+            return patients;
+        }
         Collection<Patient> patientsWithVisibility = new LinkedList<>();
         if (patients == null || patients.isEmpty()) {
             return patientsWithVisibility;
