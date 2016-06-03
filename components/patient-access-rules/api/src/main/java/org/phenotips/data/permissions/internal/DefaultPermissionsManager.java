@@ -59,7 +59,7 @@ public class DefaultPermissionsManager implements PermissionsManager
     public Collection<Visibility> listVisibilityOptions()
     {
         try {
-            Collection<Visibility> result = new TreeSet<Visibility>();
+            Collection<Visibility> result = new TreeSet<>();
             result.addAll(this.componentManager.get().<Visibility>getInstanceList(Visibility.class));
             return result;
         } catch (ComponentLookupException ex) {
@@ -84,7 +84,7 @@ public class DefaultPermissionsManager implements PermissionsManager
     public Collection<AccessLevel> listAccessLevels()
     {
         try {
-            Collection<AccessLevel> result = new TreeSet<AccessLevel>();
+            Collection<AccessLevel> result = new TreeSet<>();
             result.addAll(this.componentManager.get().<AccessLevel>getInstanceList(AccessLevel.class));
             Iterator<AccessLevel> it = result.iterator();
             while (it.hasNext()) {
@@ -120,7 +120,7 @@ public class DefaultPermissionsManager implements PermissionsManager
     @Override
     public Collection<Patient> filterByVisibility(Collection<Patient> patients, Visibility requiredVisibility)
     {
-        Collection<Patient> patientsWithVisibility = new LinkedList<Patient>();
+        Collection<Patient> patientsWithVisibility = new LinkedList<>();
         for (Patient patient : patients) {
             if (patient != null) {
                 Visibility patientVisibility = this.getPatientAccess(patient).getVisibility();

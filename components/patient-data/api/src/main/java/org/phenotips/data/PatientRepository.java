@@ -72,13 +72,13 @@ public interface PatientRepository
      * Create and return a new empty patient record (owned by the given entity).
      *
      * @param creator a reference to the document representing an entity (a user or a group) which will be set as the
-     *            owner for the created {@link Patient patient}.
+     *            owner for the created {@link Patient patient}
      * @return the created patient record
      */
     Patient createNewPatient(DocumentReference creator);
 
     /**
-     * @return an iterator for traversing a collection of patients.
+     * @return an iterator for traversing all patients
      * @since 1.3M2
      */
     Iterator<Patient> getAllPatientsIterator();

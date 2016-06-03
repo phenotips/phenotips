@@ -116,7 +116,8 @@ public class SecurePatientRepository implements PatientRepository
         return new SecurePatientIterator(patientsIterator);
     }
 
-    private Patient checkAccess(Patient patient, DocumentReference user) {
+    private Patient checkAccess(Patient patient, DocumentReference user)
+    {
         if (patient != null && this.access.hasAccess(Right.VIEW, user, patient.getDocument())) {
             return patient;
         } else if (patient != null) {

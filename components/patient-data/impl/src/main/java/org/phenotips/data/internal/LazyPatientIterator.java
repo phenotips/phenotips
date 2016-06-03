@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
  * An iterator on a lazy, immutable patients collection.
  *
  * @version $Id$
+ * @since 1.3M2
  */
 public class LazyPatientIterator implements Iterator<Patient>
 {
@@ -52,6 +53,7 @@ public class LazyPatientIterator implements Iterator<Patient>
         }
         PATIENT_REPOSITORY = patientRepository;
     }
+
     /**
      * Default constructor.
      *

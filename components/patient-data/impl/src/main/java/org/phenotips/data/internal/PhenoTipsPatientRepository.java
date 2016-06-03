@@ -197,7 +197,8 @@ public class PhenoTipsPatientRepository implements PatientRepository
         Query q =
             this.qm.createQuery(
                 "select patient.identifier from Document doc, doc.object(PhenoTips.PatientClass) as patient"
-                    + " where patient.identifier is not null order by patient.identifier desc", Query.XWQL)
+                    + " where patient.identifier is not null order by patient.identifier desc",
+                Query.XWQL)
                 .setLimit(1);
         List<Long> crtMaxIDList = q.execute();
         if (!crtMaxIDList.isEmpty() && crtMaxIDList.get(0) != null) {
@@ -212,15 +213,15 @@ public class PhenoTipsPatientRepository implements PatientRepository
     {
         List<String> patientIds = null;
         try {
-            Query q = this.qm.createQuery(
-                "select doc.name "
+            Query q = this.qm.createQuery("select doc.name "
                 + "from Document doc, "
                 + "doc.object(PhenoTips.PatientClass) as patient "
                 + "where patient.identifier >= 0 "
-                + "order by doc.name ", Query.XWQL);
+                + "order by doc.name",
+                Query.XWQL);
             patientIds = q.execute();
         } catch (QueryException e) {
-            this.logger.error("Failed to read query all patients: {}", e);
+            this.logger.error("Failed to query all patients: {}", e);
             patientIds = new LinkedList<>();
         }
 

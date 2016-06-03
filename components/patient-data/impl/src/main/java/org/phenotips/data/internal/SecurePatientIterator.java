@@ -33,9 +33,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An iterator on an immutable, secure patients collection. The function next() guarantees not to return null.
+ * An iterator on an immutable, patients collection, which only returns patients that the current user has access to.
  *
  * @version $Id$
+ * @since 1.3M2
  */
 public class SecurePatientIterator implements Iterator<Patient>
 {
@@ -90,7 +91,7 @@ public class SecurePatientIterator implements Iterator<Patient>
             throw new NoSuchElementException();
         }
 
-        Patient toReturn = nextPatient;
+        Patient toReturn = this.nextPatient;
         this.findNextPatient();
 
         return toReturn;
@@ -106,10 +107,10 @@ public class SecurePatientIterator implements Iterator<Patient>
     {
         this.nextPatient = null;
 
-        while (patientIterator.hasNext() && this.nextPatient == null) {
+        while (this.patientIterator.hasNext() && this.nextPatient == null) {
             Patient potentialNextPatient = this.patientIterator.next();
             if (SecurePatientIterator.ACCESS.hasAccess(
-                    Right.VIEW, this.currentUser, potentialNextPatient.getDocument())) {
+                Right.VIEW, this.currentUser, potentialNextPatient.getDocument())) {
                 this.nextPatient = potentialNextPatient;
             }
         }

@@ -101,6 +101,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
         new EntityReference("Consents", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     private Date lastSystemConsentLoadTime;
+
     private Set<Consent> cachedSystemConsents = Collections.unmodifiableSet(new LinkedHashSet<Consent>());
 
     @Override
@@ -151,9 +152,9 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
         try {
             String id = xwikiConsent.getStringValue("id");
             String label = cleanDescription(
-                    configDoc.display("label", RENDERING_MODE, xwikiConsent, contextProvider.get()));
+                configDoc.display("label", RENDERING_MODE, xwikiConsent, contextProvider.get()));
             String description = cleanDescription(
-                    configDoc.display("description", RENDERING_MODE, xwikiConsent, contextProvider.get()));
+                configDoc.display("description", RENDERING_MODE, xwikiConsent, contextProvider.get()));
             boolean required = intToBool(xwikiConsent.getIntValue("required"));
             boolean affectsFields = intToBool(xwikiConsent.getIntValue("affectsFields"));
             List<String> formFields = null;
@@ -354,7 +355,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
             return true;
         } catch (Exception ex) {
             this.logger.error("Could not update consent {} in patient record {}. {}",
-                    consentId, patient.getId(), ex.getMessage());
+                consentId, patient.getId(), ex.getMessage());
             return false;
         }
     }

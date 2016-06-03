@@ -85,7 +85,7 @@ public class DefaultConsent implements Consent
             this.formFields = null;
         } else {
             this.formFields = new LinkedList<String>();
-            for (Object field: fields) {
+            for (Object field : fields) {
                 this.formFields.add((String) field);
             }
         }
@@ -196,7 +196,7 @@ public class DefaultConsent implements Consent
     public Consent copy(ConsentStatus status)
     {
         Consent copy = new DefaultConsent(
-                this.getId(), this.getLabel(), this.getDescription(), this.isRequired(), this.getFields());
+            this.getId(), this.getLabel(), this.getDescription(), this.isRequired(), this.getFields());
         copy.setStatus(status);
         return copy;
     }
