@@ -121,6 +121,9 @@ public class DefaultPermissionsManager implements PermissionsManager
     public Collection<Patient> filterByVisibility(Collection<Patient> patients, Visibility requiredVisibility)
     {
         Collection<Patient> patientsWithVisibility = new LinkedList<>();
+        if (patients == null || patients.isEmpty()) {
+            return patientsWithVisibility;
+        }
         for (Patient patient : patients) {
             if (patient != null) {
                 Visibility patientVisibility = this.getPatientAccess(patient).getVisibility();
