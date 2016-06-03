@@ -210,6 +210,17 @@ document.observe('xwiki:dom:loaded', function(){
   $$('.hpo-branch&gt;ul').forEach(function(list){
     var listElements = list.select('li');
     listElements.forEach(function(listElement){
+      listElement.observe('click', function(e) {
+        var element = e.target.up().getElementsByTagName('input')[0];
+        Event.fire(document, 'phenotype:selected', {
+          key : element.value,
+          text: element.title,
+          enable: element.checked,
+          element : element,
+          type : "yes",
+          binary : true
+        });
+      });
       var sublist = listElement.down('ul');
       if (!sublist) {return;}
       //attach click handlers
