@@ -207,7 +207,26 @@ document.observe('xwiki:dom:loaded', function(){
       return !input.checked;
     });
   }
+  var notifyMetaSelected = function (data) {
+    var isEvent = !!data.findElement;
+    var inputElt = isEvent &amp;&amp; data.findElement() || data;
+    if (inputElt.type == 'radio' &amp;&amp; isEvent) {
+      $$('input[name="' + inputElt.name + '"]').each(notifyMetaSelected);
+    } else {
+      Event.fire(document, inputElt.name.startsWith('PhenoTips.PhenotypeMetaClass_') ? 'phenotype-meta:selected' : 'global-phenotype-meta:selected', {
+        key : inputElt.value,
+        text : inputElt.title,
+        enable : inputElt.checked,
+        element : inputElt
+      });
+    }
+  };
   $$('.hpo-branch&gt;ul').forEach(function(list){
+    // Fire an event when the selection changes
+    list.select('input:checked').each(notifyMetaSelected);
+    list.select('input').invoke('observe', 'change', notifyMetaSelected);
+
+    // Expand/collapse list elements
     var listElements = list.select('li');
     listElements.forEach(function(listElement){
       var sublist = listElement.down('ul');
