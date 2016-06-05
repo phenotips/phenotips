@@ -115,7 +115,7 @@
       </use>
     </class>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>var PhenoTips = (function (PhenoTips) {
@@ -1437,7 +1437,7 @@ function _printObjectInternal(o, level) {
       </use>
     </class>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>#template("colorThemeInit.vm")
