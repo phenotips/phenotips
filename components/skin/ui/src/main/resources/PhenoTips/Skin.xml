@@ -665,7 +665,8 @@ h1:target, h2:target, h3:target {
       </path>
     </class>
     <property>
-      <content>###
+      <content>$xcontext.dropPermissions()##
+###
 ### Display document contents in "view" mode.
 ###
 ## -------------------------------
@@ -828,7 +829,8 @@ $xcontext.dropPermissions()
       </path>
     </class>
     <property>
-      <content>## Insert JS and CSS needed for the fullscreen edit feature
+      <content>$xcontext.dropPermissions()##
+## Insert JS and CSS needed for the fullscreen edit feature
 $xwiki.jsfx.use('uicomponents/widgets/fullScreen.js', {'forceSkinAction': true, 'language': ${xcontext.language}})##
 $xwiki.ssfx.use('uicomponents/widgets/fullScreen.css', true)##
 #set($formname = "inline")
@@ -1090,7 +1092,8 @@ $renderedContent
       <baseskin>colibri</baseskin>
     </property>
     <property>
-      <edit.vm>###
+      <edit.vm>$xcontext.dropPermissions()##
+###
 ### Main "edit" template
 ###
 ### General wrapper for edit actions
@@ -1244,7 +1247,8 @@ $renderedContent
       <footer.vm/>
     </property>
     <property>
-      <header.vm>###
+      <header.vm>$xcontext.dropPermissions()##
+###
 ### Global header
 ###
 ### The uppermost area of each page
@@ -1309,7 +1313,8 @@ $renderedContent
       <style.css/>
     </property>
     <property>
-      <view.vm>###
+      <view.vm>$xcontext.dropPermissions()##
+###
 ### Main "view" template
 ###
 ### General wrapper for view actions
