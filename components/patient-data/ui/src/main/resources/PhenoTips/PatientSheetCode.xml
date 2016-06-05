@@ -2677,6 +2677,29 @@ document.observe('xwiki:dom:loaded', function()
     updateDefaultSearchTerms();
   });
 
+  // Add global mode of inheritance and global age of onset to the search
+  document.observe('global-phenotype-meta:selected', function(event) {
+    if (!event.memo || !event.memo.key || !event.memo.element) {return;}
+    var key = event.memo.key;
+    var text = event.memo.text || event.memo.key;
+    var obj = cache.all[key];
+    if (event.memo.enable) {
+      if (!obj) {
+        obj = {'key' : key, 'text' : text, 'type' : 'symptom'};
+        cache.all[key] = obj;
+      } else {
+        obj.hidden = false;
+      }
+      cache.displayed[key] = true;
+    } else {
+      if (obj) {
+        obj.hidden = true;
+        delete cache.displayed[key];
+      }
+    }
+    updateDefaultSearchTerms();
+  });
+
   document.observe('xwiki:dom:loaded', function() {
     $$(".yes-no-picker").each(function(element) {
       var yesInput = element.down('.yes input');
