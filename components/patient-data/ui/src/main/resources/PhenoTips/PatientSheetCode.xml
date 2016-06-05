@@ -2653,12 +2653,32 @@ document.observe('xwiki:dom:loaded', function()
   }
 
   document.observe('phenotype:selected', function(event) {
-    if (!event.memo || !event.memo.key || !event.memo.element) {return;}
+    if (event.memo.element.type == "radio") {
+      // Go through each phenotype in the radio group
+      var radios = $$('input').findAll(function (o) { return o.name==event.memo.element.name; });
+      radios.forEach(function(radio) {
+        if (cache.all[radio.value]) {
+          cache.all[radio.value].hidden = true;
+        }
+        delete cache.displayed[radio.value];
+      });
+    }
+    if (!event.memo || !event.memo.key || !event.memo.element) {
+      updateDefaultSearchTerms();
+      return;
+    }
     var key = event.memo.key;
     var text = event.memo.text || event.memo.key;
     var obj = cache.all[key];
-    var yesSelected = event.memo.element.up('.yes-no-picker').down('.yes input').checked;
-    var noSelected = event.memo.element.up('.yes-no-picker').down('.no input').checked;
+    var yesSelected;
+    var noSelected;
+    if (event.memo.binary) {
+      yesSelected = event.memo.enable;
+      noSelected = false;
+    } else {
+      yesSelected = event.memo.element.up('.yes-no-picker').down('.yes input').checked;
+      noSelected = event.memo.element.up('.yes-no-picker').down('.no input').checked;
+    }
     if (yesSelected || noSelected) {
       if (!obj) {
         obj = {'key' : key, 'text' : text};
@@ -2728,6 +2748,23 @@ document.observe('xwiki:dom:loaded', function()
           obj.hidden = true;
           delete cache.displayed[key];
         }
+      }
+    });
+    // Global mode of inheritance and global age of onset
+    $$('input[name$=global_mode_of_inheritance], input[name$=global_age_of_onset]').forEach(function(element) {
+      if (element.checked &amp;&amp; element.value) {
+        var key = element.value;
+        var text = element.title;
+        var obj = cache.all[key];
+        var enable = true;
+        if (!obj) {
+          obj = {'key' : key, 'text' : text};
+          cache.all[key] = obj;
+        } else {
+          obj.hidden = false;
+        }
+        obj.type = 'symptom';
+        cache.displayed[key] = true;
       }
     });
     updateDefaultSearchTerms();
