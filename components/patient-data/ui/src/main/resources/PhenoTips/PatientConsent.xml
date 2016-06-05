@@ -184,6 +184,14 @@
 
       // attach button action
       var onUpdateButtonPress = function(event) {
+        this.screen = new Element('div', {'class': 'msdialog-screen consent-grayout'});
+        consentsBlock[0].insert(this.screen);
+
+        var removeConsentGrayout = function(){
+          this.screen.remove();
+          delete this.screen;
+        }
+
         var errorMessage = consentsBlock.children(".error_updating_consents");
         errorMessage.addClass("hidden");
 
@@ -195,14 +203,19 @@
         }
         var grantedConsents = consentsModule.listGrantedConsentIDs();
         var consentIdsJSON = JSON.stringify(grantedConsents);
-        $.ajax(assignConsentsUrl, {data: consentIdsJSON, dataType: "text", method: "PUT", contentType: "application/json;charset=UTF-8"})
-          .fail(errorUpdatingConsents)
-          .success(afterConsentsUpdated);
+
+        var updateConsents = function() {
+          $.ajax(assignConsentsUrl, {data: consentIdsJSON, dataType: "text", method: "PUT", contentType: "application/json;charset=UTF-8"})
+            .fail(errorUpdatingConsents)
+            .success(afterConsentsUpdated);
+            .complete(removeConsentGrayout);
+        }
+
+        // save patient data
+        document.observe("xwiki:document:saved", updateConsents);
+        document.fire("xwiki:actions:save", {"continue" : true, "form" : $("#inline")[0]});
       }
-      var button = $('#patient-consent-update')[0];
-      if (button) {
-        button.observe('click', onUpdateButtonPress);
-      }
+      $('.consent-checkbox').change(onUpdateButtonPress);
     }
   });
 });</code>
@@ -344,9 +357,9 @@
             if (this.classVariables.consentChangeCallback) {
               this.attachStateChangeCallbacks(this.classVariables.consentChangeCallback);
             }
-            this.clearError(".error_no_consent_data", true);
+            this.clearError(".error_no_consent_data");
           } else {
-            this.displayError(".error_no_consent_data", true);
+            this.displayError(".error_no_consent_data");
           }
           this.classVariables.consentsBlock.show();
         },
@@ -496,30 +509,20 @@
           }
         },
 
-        displayError: function (errorClassString, disableUpdateButton)
+        displayError: function (errorClassString)
         {
           if (!this.classVariables.errorBlock) {
             return;
-          }
-
-          if (disableUpdateButton) {
-           var updateButton = this.classVariables.errorBlock.children('#patient-consent-update');
-           updateButton &amp;&amp; updateButton.addClass("hidden");
           }
 
           var errorBlock = this.classVariables.errorBlock.children(errorClassString);
           errorBlock.removeClass("hidden");
         },
 
-        clearError: function (errorClassString, enableUpdateButton)
+        clearError: function (errorClassString)
         {
           if (!this.classVariables.errorBlock) {
             return;
-          }
-
-          if (enableUpdateButton) {
-           var updateButton = this.classVariables.errorBlock.children('#patient-consent-update');
-           updateButton &amp;&amp; updateButton.removeClass("hidden");
           }
 
           var errorBlock = this.classVariables.errorBlock.children(errorClassString);
@@ -667,10 +670,6 @@
 {
   margin-left: 2em;
 }
-.consent-update-button
-{
-  margin: 1em 0 1em 2em;
-}
 #HConsentsgranted
 {
   margin-bottom: 0.75em;
@@ -678,6 +677,11 @@
 .error_updating_consents {
   margin-top: 1em;
   margin-left: 2em;
+}
+.consent-grayout {
+  opacity: 0.25;
+  backgroundColor: #000;
+  z-index: 100000;
 }</code>
     </property>
     <property>
@@ -783,13 +787,6 @@
       (% class='consents' %)(((
 
       )))
-      #if ($xcontext.action == 'edit')
-      {{html clean='false' wiki='false'}}##
-      &lt;span class="buttonwrapper consent-update-button hidden" id="patient-consent-update"&gt;##
-        &lt;a class="button" href="#"&gt;$services.localization.render('PhenoTips.PatientConsent_change_consents_btn')&lt;/a&gt;##
-        &lt;/span&gt;##
-      {{/html}}##
-      #end
       (% class='error error_updating_consents hidden' %)(((
         {{error}}$services.localization.render('PhenoTips.PatientConsent_error_updating_consents'){{/error}}
       )))
