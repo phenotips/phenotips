@@ -352,6 +352,7 @@ var PhenoTips = (function(PhenoTips) {
       this._dateEl = this.el.select('input.measurement-date')[0];
       this._ageEl = this.el.select('input.measurement-age')[0];
       this._globalDobEl = $(document.documentElement).down('input[name$=date_of_birth]');
+      this._globalDodEl = $(document.documentElement).down('input[name$=date_of_death]');
       this._moreContainer = this.el.select('.expanded-measurements')[0];
 
       // Bind methods
@@ -414,7 +415,12 @@ var PhenoTips = (function(PhenoTips) {
           });
         });
 
-        this._globalDobEl.observe('xwiki:date:changed', this._globalDobChangeHandler);
+        if (this._globalDobEl && this._globalDobEl != null) {
+          this._globalDobEl.observe('xwiki:date:changed', this._globalDobChangeHandler);
+        }
+        if (this._globalDodEl && this._globalDodEl != null) {
+          this._globalDodEl.observe('xwiki:date:changed', this._setDateValidationState);
+        }
         this.el.select('.expand-buttons .buttonwrapper').each((function(el) {
           el.observe('click', this._moreToggleButtonHandler);
         }).bind(this));
@@ -446,6 +452,7 @@ var PhenoTips = (function(PhenoTips) {
     _globalDobChangeHandler: function() {
       if (this._dateEl.alt.length) {
         this._setAgeUsingDateAndDob();
+        this._setDateValidationState();
       }
     },
 
@@ -536,6 +543,7 @@ var PhenoTips = (function(PhenoTips) {
       });
 
       this._globalDobEl.stopObserving('xwiki:date:changed', this._globalDobChangeHandler);
+      this._globalDodEl.stopObserving('xwiki:date:changed', this._setDateValidationState);
     },
 
     getObject: function() {
@@ -564,12 +572,18 @@ var PhenoTips = (function(PhenoTips) {
       errorEl.update('');
       this._dateEl.removeClassName('error');
 
-      if (this._globalDobEl.alt && this._dateEl.alt) {
-        var bday = new Date(this._globalDobEl.alt).toUTC();
+      if (this._dateEl.alt) {
+        var bday = (this._globalDobEl && this._globalDobEl.alt) ? new Date(this._globalDobEl.alt).toUTC() : null;
+        var dday = (this._globalDodEl && this._globalDodEl.alt) ? new Date(this._globalDodEl.alt).toUTC() : null;
         var thisDate = new Date(this._dateEl.alt);
 
-        if (thisDate < bday) {
+        if (bday != null && thisDate < bday) {
           errorEl.update("$services.localization.render('phenotips.patientSheet.measurements.chosenDateIsBeforeBirthdate')");
+          this._dateEl.addClassName('error');
+        }
+
+        if (dday != null && thisDate > dday) {
+          errorEl.update("$services.localization.render('phenotips.patientSheet.measurements.chosenDateIsAfterDeathdate')");
           this._dateEl.addClassName('error');
         }
       }
