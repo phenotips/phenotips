@@ -353,7 +353,7 @@ a:hover {
     &lt;text x="$mathtool.mul($mathtool.sub($xlines, 0.85), $xstep)" y="$mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $chartConfiguration.lowerValueLimit), $yscale))" class="chart-deviation chart-label" dy="0.5ex"&gt;#if ($d &gt;= 0)+#end${d}SD&lt;/text&gt;
   #end
   #foreach ($m in $measurements)
-    #if ($m.a &gt;= $chartConfiguration.lowerAgeLimit)
+    #if ($m.a &gt;= $chartConfiguration.lowerAgeLimit &amp;&amp; $m.x)
       #getValuePercentile($m.a $m.x)
       #getValueSD($m.a $m.x)
       #set ($d = $mathtool.roundTo(2, $d))
