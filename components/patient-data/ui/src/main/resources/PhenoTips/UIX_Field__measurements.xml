@@ -190,7 +190,7 @@ $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
     &lt;div class="metric"&gt;
       #if ($xcontext.action == 'edit')
         #if ($handler.isComputed())
-          &lt;input type="text" name="PhenoTips.MeasurementClass_${id}_value" readonly value="$!{val}"$disabled&gt;
+          &lt;input type="text" size="5" name="PhenoTips.MeasurementClass_${id}_value" readonly value="$!{val}"$disabled&gt;
         #else
           &lt;input type="text" size="5" name="PhenoTips.MeasurementClass_${id}_value" value="$!{val}"$disabled&gt;
         #end
@@ -249,10 +249,10 @@ $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
         &lt;span&gt;#if ("$!dateFormatted" == "")-#else$!dateFormatted#end&lt;/span&gt;
       #end
     &lt;/th&gt;
-    &lt;th class="age-label" colspan="1"&gt;
-      &lt;label&gt;$services.localization.render('phenotips.patientSheet.measurements.age'):&lt;/label&gt;
+    &lt;th colspan="1"&gt;
     &lt;/th&gt;
     &lt;th class="age" colspan="2"&gt;
+      &lt;label&gt;$services.localization.render('phenotips.patientSheet.measurements.age'):&lt;/label&gt;
       #if ($xcontext.action == 'edit')
         &lt;span class="buttonwrapper actions"&gt;&lt;a class="action delete button secondary" href="#" title="$services.localization.render('phenotips.patientSheet.measurements.deleteMeasurementSet.title')"&gt;✖&lt;/a&gt;&lt;/span&gt;
         &lt;input class="pt-duration measurement-age" type="text" placeholder="$services.localization.render('phenotips.patientSheet.measurements.age.placeholder')" value="$!age"&gt;
