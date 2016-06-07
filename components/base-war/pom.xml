@@ -226,7 +226,7 @@
                 <xwikiCfgVirtual>0</xwikiCfgVirtual>
                 <xwikiCfgVirtualUsepath>0</xwikiCfgVirtualUsepath>
                 <xwikiCfgEditCommentMandatory>0</xwikiCfgEditCommentMandatory>
-                <xwikiCfgDefaultSkin>colibri</xwikiCfgDefaultSkin>
+                <xwikiCfgDefaultSkin>phenotips</xwikiCfgDefaultSkin>
                 <xwikiCfgDefaultBaseSkin>colibri</xwikiCfgDefaultBaseSkin>
                 <xwikiCfgEncoding>UTF-8</xwikiCfgEncoding>
                 <xwikiCfgAdditionalProperties>
