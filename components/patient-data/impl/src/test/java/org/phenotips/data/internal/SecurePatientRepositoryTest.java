@@ -31,6 +31,11 @@ import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,6 +46,7 @@ import org.mockito.MockitoAnnotations;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -64,21 +70,23 @@ public class SecurePatientRepositoryTest
 
     private AuthorizationManager access;
 
+    private PatientRepository internalRepo;
+
     @Before
     public void setup() throws ComponentLookupException
     {
         MockitoAnnotations.initMocks(this);
         this.access = this.mocker.getInstance(AuthorizationManager.class);
-        PatientRepository internalRepo = this.mocker.getInstance(PatientRepository.class);
+        this.internalRepo = this.mocker.getInstance(PatientRepository.class);
 
         DocumentAccessBridge bridge = this.mocker.getInstance(DocumentAccessBridge.class);
         when(bridge.getCurrentUserReference()).thenReturn(this.currentUser);
         when(this.patient.getDocument()).thenReturn(this.patientReference);
 
-        when(internalRepo.getPatientById("P0123456")).thenReturn(this.patient);
-        when(internalRepo.getPatientByExternalId("Neuro123")).thenReturn(this.patient);
-        when(internalRepo.createNewPatient()).thenReturn(this.patient);
-        when(internalRepo.loadPatientFromDocument(any(DocumentModelBridge.class))).thenReturn(this.patient);
+        when(this.internalRepo.getPatientById("P0123456")).thenReturn(this.patient);
+        when(this.internalRepo.getPatientByExternalId("Neuro123")).thenReturn(this.patient);
+        when(this.internalRepo.createNewPatient()).thenReturn(this.patient);
+        when(this.internalRepo.loadPatientFromDocument(any(DocumentModelBridge.class))).thenReturn(this.patient);
 
         EntityReferenceResolver<EntityReference> currentResolver =
             this.mocker.getInstance(EntityReferenceResolver.TYPE_REFERENCE, "current");
@@ -145,5 +153,54 @@ public class SecurePatientRepositoryTest
     {
         XWikiDocument doc = new XWikiDocument(this.patientReference);
         Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().loadPatientFromDocument(doc));
+    }
+
+    @Test
+    public void getAllPatientsIteratorFiltersInaccessiblePatients() throws ComponentLookupException
+    {
+        List<Patient> rawInput = new LinkedList<>();
+        Patient p1 = mock(Patient.class);
+        DocumentReference p1ref = mock(DocumentReference.class);
+        when(p1.getDocument()).thenReturn(p1ref);
+        when(this.access.hasAccess(Right.VIEW, this.currentUser, p1ref)).thenReturn(false);
+        rawInput.add(p1);
+        Patient p2 = mock(Patient.class);
+        DocumentReference p2ref = mock(DocumentReference.class);
+        when(p2.getDocument()).thenReturn(p2ref);
+        when(this.access.hasAccess(Right.VIEW, this.currentUser, p2ref)).thenReturn(true);
+        rawInput.add(p2);
+
+        when(this.internalRepo.getAllPatientsIterator()).thenReturn(rawInput.iterator());
+        Iterator<Patient> result = this.mocker.getComponentUnderTest().getAllPatientsIterator();
+
+        Assert.assertNotNull(result);
+        Assert.assertEquals(p2, result.next());
+        Assert.assertFalse(result.hasNext());
+    }
+
+    @Test
+    public void getAllPatientsIteratorReturnsEmptyIteratorForInaccessiblePatients() throws ComponentLookupException
+    {
+        List<Patient> rawInput = new LinkedList<>();
+        Patient p1 = mock(Patient.class);
+        rawInput.add(p1);
+        Patient p2 = mock(Patient.class);
+        rawInput.add(p2);
+
+        when(this.internalRepo.getAllPatientsIterator()).thenReturn(rawInput.iterator());
+        Iterator<Patient> result = this.mocker.getComponentUnderTest().getAllPatientsIterator();
+
+        Assert.assertNotNull(result);
+        Assert.assertFalse(result.hasNext());
+    }
+
+    @Test
+    public void getAllPatientsIteratorReturnsEmptyIteratorForEmptyRepository() throws ComponentLookupException
+    {
+        when(this.internalRepo.getAllPatientsIterator()).thenReturn(Collections.<Patient>emptyIterator());
+        Iterator<Patient> result = this.mocker.getComponentUnderTest().getAllPatientsIterator();
+
+        Assert.assertNotNull(result);
+        Assert.assertFalse(result.hasNext());
     }
 }
