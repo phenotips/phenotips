@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Period;
 
 /**
@@ -75,7 +76,8 @@ public final class MeasurementUtils
     public static Double convertAgeStrToNumMonths(String age) throws IllegalArgumentException
     {
         Period agePeriod;
-        agePeriod = Period.parse("P" + age);
+        String pAge = "P" + age;
+        agePeriod = Period.parse(StringUtils.isNumeric(age) ? pAge + "Y" : pAge);
 
         Double ageMonths = 0.0;
         ageMonths += agePeriod.getYears() * 12;
