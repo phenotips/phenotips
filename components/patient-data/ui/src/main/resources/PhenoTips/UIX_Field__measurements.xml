@@ -196,7 +196,7 @@ $xwiki.jsfx.use('uicomponents/phenotips/durationValidator.js', true)##
           &lt;input type="text" size="5" name="PhenoTips.MeasurementClass_${id}_value" value="$!{val}"$disabled&gt;
         #end
       #else
-        &lt;span class="val"&gt;$!{val}&lt;/span&gt;
+        &lt;span class="val"&gt;$!mathtool.roundTo(2, $val)&lt;/span&gt;
       #end
       &lt;span class="unit"&gt;#if ("$!unit" != "")$services.localization.render("phenotips.UIXField.measurements.units.${unit}")#end&lt;/span&gt;
     &lt;/div&gt;
