@@ -1,0 +1,51 @@
+###
+### Global header
+###
+### The uppermost area of each page
+### Contains the company logo, links to global actions and the search facility
+###
+#if($isInServletMode) ## Visible only in a page
+<div id="headerglobal" class="layoutsection">
+#foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.header.top'))
+  $services.rendering.render($uix.execute(), 'xhtml/1.0')
+#end
+#if($xcontext.action == "view")
+<div class="minwidthb"></div>
+#else
+<div class="minwidthd"></div>
+#end
+  <div id="company">
+  <div id="companylogo">
+    <a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))" title="Home" rel="home">
+#if("$!{themeDocFullName}" == '')
+  #set($themeDocFullName = "$!xwiki.getUserPreference('colorTheme')")
+#end
+#if($themeDocFullName == '')
+  #set($themeDocFullName = 'ColorThemes.DefaultColorTheme')
+#end
+#set($themeDoc = $xwiki.getDocument($themeDocFullName))
+#set($themeObj = $themeDoc.getObject('ColorThemes.ColorThemeClass'))
+#set($logoname = $themeObj.getProperty('logoImage').value)
+#if("$!{logoname}" != '')
+  #set($logourl = $themeDoc.getAttachmentURL($logoname))
+#else
+  #set($logoname = $xwiki.getSkinPreference('logo', 'logo.png'))
+  #set($logo = $!prefdoc.getAttachment($logoname))
+  #if(!$logo)
+    #set($logourl = $xwiki.getSkinFile($logoname))
+  #else
+    #set($logourl = $prefdoc.getAttachmentURL($logo.filename))
+  #end
+#end
+    <img src="$!logourl" alt="Logo"/>
+    </a>
+  </div> ## companylogo
+  </div> ## company
+  <div class="clearfloats"></div>
+#foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.header.bottom'))
+  $services.rendering.render($uix.execute(), 'xhtml/1.0')
+#end
+</div> ## headerglobal
+#end
+##
+### TODO: Format the header for pdf output
