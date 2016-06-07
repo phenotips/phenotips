@@ -1529,8 +1529,7 @@ define([
                 }
                 if(info.hasOwnProperty("twinGroup")) {
                     if (this._twinGroup != info.twinGroup) {
-                    	var twinGroup = Helpers.cloneObject(info.twinGroup);
-                        this.setTwinGroup(twinGroup);
+                        this.setTwinGroup(info.twinGroup);
                     }
                 } else {
                     this.setTwinGroup(null);

@@ -511,8 +511,14 @@ define([
                             if (node.getBirthDate()) {
                                 twinProperty["dob"] = node.getBirthDate().getSimpleObject();
                             }
-                            if (node.getBirthDate()) {
-                                twinProperty["lName"] = node.getLastName();
+                            if (node.getGender() != 'F' && (!node.getLastNameAtBirth() || node.getLastNameAtBirth() == node.getLastName())) {
+                                if (node.getLastName()) {
+                                    twinProperty["lName"] = node.getLastName();
+                                }
+                            } else {
+                                if (node.getLastNameAtBirth()) {
+                                    twinProperty["lNameAtB"] = node.getLastNameAtBirth();
+                                }
                             }
                             var changeSet = editor.getGraph().addTwin( nodeID, twinProperty );
                             editor.getView().applyChanges(changeSet, true);
@@ -793,7 +799,7 @@ define([
                     lastName = editor.getGraph().getLastName(personID);
                 }
                 if (lastName && lastName != "") {
-                    if (childParams.hasOwnProperty("gender") && childParams.gender == 'M') {
+                    if (childParams.hasOwnProperty("gender") && childParams.gender != 'F') {
                         childParams["lName"] = lastName;
                     } else {
                         childParams["lNameAtB"] = lastName;
