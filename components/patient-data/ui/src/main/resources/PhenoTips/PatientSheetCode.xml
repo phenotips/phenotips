@@ -1488,7 +1488,7 @@ document.observe('xwiki:dom:loaded', function()
         selectionSummary._givePhenotypeQualifiersCollapseButtons(selectionSummary);
     }
 
-    Event.fire(document, 'xwiki:dom:updated', {'elements' : $$('.chapter.phenotype-info .xHelpButton', '.chapter.prenatal-info .xHelpButton')});
+    Event.fire(document, 'xwiki:dom:updated', {'elements' : $$('div[class$="phenotype-group"] .xHelpButton')});
   };
   (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
   return XWiki;
