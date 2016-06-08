@@ -76,7 +76,7 @@
         #if ($foreach.count &gt; 1)
           ,
         #end
-        { "index": "$foreach.count", "ethnicity": "$escapetool.xml($result)" }
+        { "index": "$foreach.count", "ethnicity": "$escapetool.json($result)" }
       #end
       ]
     }
