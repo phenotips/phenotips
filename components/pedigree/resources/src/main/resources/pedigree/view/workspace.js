@@ -70,6 +70,7 @@ var Workspace = Class.create({
         };
         me.background.drag(move, start, end);
 
+        me.recentMouseWheel = false;
         if (document.addEventListener) {
             // adapted from from raphaelZPD
             me.handleMouseWheel = function(evt) {
@@ -82,6 +83,13 @@ var Workspace = Class.create({
                 if (editor.isAnyMenuVisible()) {
                     return;
                 }
+
+                // ignore very fast mouse wheel events from trackpad
+                if (me.recentMouseWheel) {
+                    return;
+                }
+                me.recentMouseWheel = true;
+                setTimeout(function(){ me.recentMouseWheel = false; }, 60);
 
                 var delta;
                 if (evt.wheelDelta)
