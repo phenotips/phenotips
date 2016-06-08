@@ -1298,7 +1298,7 @@ document.observe('xwiki:dom:loaded', function()
       // ------------------------------------------------------------------------
       // Add dropdowns to all predefined elements
       // ------------------------------------------------------------------------
-      $$('.phenotype-group, .prenatal_phenotype-group').each(function(group) {
+      $$('div[class$="phenotype-group"]').each(function(group) {
         var sugestedInput = group.down('.suggested.multi');
         if (sugestedInput) {
           group.select('.predefined-entries label.term-entry &gt; input[type=checkbox], .predefined-entries .term-entry .yes-no-picker .yes input[type=checkbox]').each(function(item) {
