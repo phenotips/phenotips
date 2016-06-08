@@ -224,7 +224,7 @@ public class R71490PhenoTips1280DataMigration extends AbstractHibernateDataMigra
                 }
                 geneList.add(geneName);
             } else if (geneComments != null) {
-                String commentAppend = "\nAutomatic migration: gene was duplicated in the " + status + " gene section.";
+                String commentAppend = "Automatic migration: \ngene was duplicated in the " + status + " gene section.";
                 commentAppend += "\nOriginal comment: \n" + geneComments;
                 updateComment(geneName, doc, commentAppend, geneClassReference);
             }
