@@ -136,6 +136,9 @@
           this._pushManyPatients = true;
       }
 
+      // this version of push supports pushing (and displaying preview of) only some fields
+      this._supportedFields = ["external_id", "gender", "omim_id",  "negative_phenotype", "phenotype"];
+
       this._serviceURL = new XWiki.Document('PushPatientService', 'PhenoTips').getURL('get', 'outputSyntax=plain');
       this._patientId  = XWiki.currentDocument.page;
       //if (!this._pushManyPatients)
@@ -513,7 +516,11 @@
             console.log("--&gt; login successful!");
             this._lastApprovedUser = username;
             this._updateUserList();  // update current user list with an indication that this user has successfully logged in
-            this._populateGroupsAndData(this._lastLoginResponse.groups, this._lastLoginResponse.serverfields, this._lastLoginResponse.updatesEnabled);
+
+            var fieldListToUse = this._lastLoginResponse.serverfields.filter(function(field) {
+                      return this._supportedFields.indexOf(field) != -1;
+            }.bind(this));
+            this._populateGroupsAndData(this._lastLoginResponse.groups, fieldListToUse, this._lastLoginResponse.updatesEnabled);
           }
           else {
             console.log("--&gt; login failed!");
