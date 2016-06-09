@@ -2400,7 +2400,7 @@ return PhenoTips;
           this.setContent(this.buildTree(this._getDataFromResponse(response)));
           this.__crtRoot = id;
           if (this.container.content) {
-            Event.fire(document, 'xwiki:dom:updated', {'elements' : [this.container.contentContainer]});
+            Event.fire(document, 'xwiki:dom:updated', {'elements' : [this.container.contentContainer || this.container.content]});
           }
         }.bind(this),
         onFailure: function (response) {
