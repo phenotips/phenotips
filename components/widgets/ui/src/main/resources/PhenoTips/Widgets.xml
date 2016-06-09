@@ -2404,7 +2404,7 @@ return PhenoTips;
           }
         }.bind(this),
         onFailure: function (response) {
-          this.setContent("Failed to retrieve data : " + respose.statusText);
+          this.setContent("Failed to retrieve data : " + response.statusText);
           this.__crtRoot = '';
         }.bind(this)
       });
@@ -2488,7 +2488,7 @@ return PhenoTips;
           Event.fire(document, "ms:popup:content-updated", {popup: this.container});
         }.bind(this),
         onFailure: function (response) {
-          Event.fire(element, 'obrowser:expand:failed', {data: new Element('div', {'class' : 'error'}).update("Failed to retrieve data : " + respose.statusText), count: -1});
+          Event.fire(element, 'obrowser:expand:failed', {data: new Element('div', {'class' : 'error'}).update("Failed to retrieve data : " + response.statusText), count: -1});
         },
         onComplete: function() {this._unlockExpandTool(element)}.bind(this)
       });
@@ -2830,7 +2830,7 @@ return PhenoTips;
     if (id) {
       this.container.show();
       if (this.__crtRoot != id) {
-        this.load (id);
+        this.load(id);
       } else {
         Event.fire(this.container.contentContainer || document, 'obrowser:expand:finished');
       }
@@ -3906,7 +3906,7 @@ document.observe("xwiki:dom:loaded", function() {
   // Start augmentation
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
 
-  widgets.HelpButton =  Class.create({
+  widgets.HelpButton = Class.create({
 
     infoServices : {
       'xHelpButton' : {
