@@ -355,7 +355,7 @@ public class PhenoTipsPatient implements Patient
             result.put(JSON_KEY_NON_STANDARD_FEATURES, nonStandardFeaturesToJSON(selectedFields));
         }
 
-        if (!this.disorders.isEmpty() && isFieldIncluded(selectedFields, DISORDER_PROPERTIES)) {
+        if (isFieldIncluded(selectedFields, DISORDER_PROPERTIES)) {
             result.put(JSON_KEY_DISORDERS, diseasesToJSON());
         }
 
@@ -507,6 +507,7 @@ public class PhenoTipsPatient implements Patient
                 // as in constructor: make unmofidiable
                 this.disorders = Collections.unmodifiableSet(this.disorders);
 
+                data.set(DISORDER_PROPERTIES_OMIMID, null, context);
                 // update the values in the document (overwriting the old list, if any)
                 data.set(DISORDER_PROPERTIES_OMIMID, disorderValues, context);
                 context.getWiki().saveDocument(doc, "Updated disorders from JSON", true, context);
