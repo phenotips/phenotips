@@ -45,7 +45,6 @@ import javax.inject.Inject;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.core.CoreContainer;
-import org.apache.solr.core.CoreDescriptor;
 import org.apache.solr.core.SolrCore;
 
 /**
@@ -110,15 +109,11 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
                     }
                     Files.copy(in, dest.toPath().resolve(vocabularyName + file), StandardCopyOption.REPLACE_EXISTING);
                 }
-
-                CoreDescriptor dcore =
-                    new CoreDescriptor(container, vocabularyName, solrHome.toPath().resolve(vocabularyName).toString());
-                solrCore = container.create(dcore);
+                container.reload(vocabularyName);
             }
 
             this.core = new EmbeddedSolrServer(container, vocabularyName);
             this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
-
         } catch (final CacheException ex) {
             throw new InitializationException("Cannot create cache: " + ex.getMessage());
         } catch (IOException ex) {
