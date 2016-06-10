@@ -92,7 +92,7 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
             (solrCore != null) ? solrCore.getCoreDescriptor().getCoreProperty("phenotips.version", "") : "";
 
         try {
-            String phenotipsVersion = distribution.getDistributionExtension().getId().getVersion().toString();
+            String phenotipsVersion = this.distribution.getDistributionExtension().getId().getVersion().toString();
 
             // Check if the core version differs from phenotips version
             if (!phenotipsVersion.equals(phenotipsCoreVersion)) {
