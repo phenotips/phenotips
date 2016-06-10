@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 
@@ -107,7 +108,7 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
                     if (in == null) {
                         continue;
                     }
-                    Files.copy(in, dest.toPath().resolve(vocabularyName + file));
+                    Files.copy(in, dest.toPath().resolve(vocabularyName + file), StandardCopyOption.REPLACE_EXISTING);
                 }
 
                 CoreDescriptor dcore =
