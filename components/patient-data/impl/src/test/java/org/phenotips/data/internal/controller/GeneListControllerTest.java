@@ -411,7 +411,9 @@ public class GeneListControllerTest
     {
         JSONObject json = new JSONObject();
         json.put(CONTROLLER_NAME, "No");
-        Assert.assertNull(this.mocker.getComponentUnderTest().readJSON(json));
+        PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().readJSON(json);
+        Assert.assertNotNull(result);
+        Assert.assertEquals(0, result.size());
     }
 
     @Test
@@ -419,7 +421,9 @@ public class GeneListControllerTest
     {
         JSONObject json = new JSONObject();
         json.put(CONTROLLER_NAME, new JSONArray());
-        Assert.assertNull(this.mocker.getComponentUnderTest().readJSON(json));
+        PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().readJSON(json);
+        Assert.assertNotNull(result);
+        Assert.assertEquals(0, result.size());
     }
 
     @Test
