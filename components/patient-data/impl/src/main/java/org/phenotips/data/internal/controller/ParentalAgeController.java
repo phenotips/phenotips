@@ -96,9 +96,7 @@ public class ParentalAgeController implements PatientDataController<Integer>
             Map<String, Integer> result = new LinkedHashMap<>();
             for (String property : getProperties()) {
                 int age = data.getIntValue(property);
-                if (age != 0) {
-                    result.put(property, age);
-                }
+                result.put(property, age);
             }
             if (!result.isEmpty()) {
                 return new DictionaryPatientData<Integer>(getName(), result);
@@ -181,7 +179,11 @@ public class ParentalAgeController implements PatientDataController<Integer>
         for (String property : getProperties()) {
             if (data.has(property)) {
                 int age = data.getInt(property);
-                result.put(property, age);
+                if (age == 0) {
+                    result.put(property, null);
+                } else {
+                    result.put(property, age);
+                }
             }
         }
         return new DictionaryPatientData<>(getName(), result);
