@@ -272,11 +272,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             parseRejectedGenes(rejectedGenes, geneSymbols, accumulatedGenes);
             parseSolvedGene(solvedGene, geneSymbols, accumulatedGenes);
 
-            if (accumulatedGenes.isEmpty()) {
-                return null;
-            } else {
-                return new IndexedPatientData<Map<String, String>>(getName(), accumulatedGenes);
-            }
+            return new IndexedPatientData<Map<String, String>>(getName(), accumulatedGenes);
         } catch (Exception e) {
             this.logger.error("Could not load genes from JSON", e.getMessage());
         }
