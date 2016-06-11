@@ -83,10 +83,17 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
 
     private static final String NEGATIVE_PHENOTYPE_PREFIX = "negative_";
 
+    private static final String PRENATAL_PHENOTYPE_PREFIX = "prenatal_";
+
+    private static final String PRENATAL_PHENOTYPE_PROPERTY = PRENATAL_PHENOTYPE_PREFIX + PHENOTYPE_POSITIVE_PROPERTY;
+
     private static final String PHENOTYPE_NEGATIVE_PROPERTY = NEGATIVE_PHENOTYPE_PREFIX + PHENOTYPE_POSITIVE_PROPERTY;
 
-    private static final String[] PHENOTYPE_PROPERTIES =
-        new String[] { PHENOTYPE_POSITIVE_PROPERTY, PHENOTYPE_NEGATIVE_PROPERTY };
+    private static final String NEGATIVE_PRENATAL_PHENOTYPE_PROPERTY = NEGATIVE_PHENOTYPE_PREFIX
+        + PRENATAL_PHENOTYPE_PROPERTY;
+
+    private static final String[] PHENOTYPE_PROPERTIES = new String[] { PHENOTYPE_POSITIVE_PROPERTY,
+        PHENOTYPE_NEGATIVE_PROPERTY, PRENATAL_PHENOTYPE_PROPERTY, NEGATIVE_PRENATAL_PHENOTYPE_PROPERTY };
 
     private static final String DISORDER_PROPERTIES_OMIMID = "omim_id";
 
