@@ -293,9 +293,6 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             XWikiContext context = this.contextProvider.get();
             for (String propertyName : getProperties()) {
                 Object propertyValue = data.get(propertyName);
-                if (propertyValue == null) {
-                    continue;
-                }
                 if (this.getCodeFields().contains(propertyName) && this.isCodeFieldsOnly()) {
                     @SuppressWarnings("unchecked")
                     List<VocabularyProperty> terms = (List<VocabularyProperty>) propertyValue;
@@ -326,9 +323,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             for (String propertyName : getProperties()) {
                 @SuppressWarnings("unchecked")
                 T value = (T) this.inverseFormat(propertyName, container.opt(propertyName));
-                if (value != null) {
-                    result.put(propertyName, value);
-                }
+                result.put(propertyName, value);
             }
         }
         return new DictionaryPatientData<>(getName(), result);
