@@ -36,7 +36,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
@@ -133,9 +132,7 @@ public class IdentifiersController implements PatientDataController<String>
 
             while (values.hasNext()) {
                 Entry<String, String> datum = values.next();
-                if (StringUtils.isNotBlank(datum.getValue())) {
-                    json.put(datum.getKey(), datum.getValue());
-                }
+                json.put(datum.getKey(), datum.getValue());
             }
         }
     }
