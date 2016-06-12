@@ -1298,7 +1298,7 @@ document.observe('xwiki:dom:loaded', function()
       // ------------------------------------------------------------------------
       // Add dropdowns to all predefined elements
       // ------------------------------------------------------------------------
-      $$('div[class$="phenotype-group"]').each(function(group) {
+      $$('div[class*="phenotype-group"]').each(function(group) {
         var sugestedInput = group.down('.suggested.multi');
         if (sugestedInput) {
           group.select('.predefined-entries label.term-entry &gt; input[type=checkbox], .predefined-entries .term-entry .yes-no-picker .yes input[type=checkbox]').each(function(item) {
@@ -1488,7 +1488,7 @@ document.observe('xwiki:dom:loaded', function()
         selectionSummary._givePhenotypeQualifiersCollapseButtons(selectionSummary);
     }
 
-    Event.fire(document, 'xwiki:dom:updated', {'elements' : $$('div[class$="phenotype-group"] .xHelpButton')});
+    Event.fire(document, 'xwiki:dom:updated', {'elements' : $$('div[class*="phenotype-group"] .xHelpButton')});
   };
   (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
   return XWiki;
