@@ -51,9 +51,19 @@ import com.xpn.xwiki.objects.BaseProperty;
 @Singleton
 public class ClinicalStatusController implements PatientDataController<String>
 {
-    private static final String UNAFFECTED = "unaffected";
+    private static final String CLINICAL_STATUS = "clinicalStatus";
 
-    private static final String AFFECTED = "affected";
+    private static final String UNAFFECTED_STRING = "unaffected";
+
+    private static final String PATIENT_DOCUMENT_FIELDNAME = UNAFFECTED_STRING;
+
+    private static final String CONTROLLING_FIELDNAME = UNAFFECTED_STRING;
+
+    private static final String JSON_FIELDNAME = CLINICAL_STATUS;
+
+    private static final String VALUE_UNAFFECTED = UNAFFECTED_STRING;
+
+    private static final String VALUE_AFFECTED = "affected";
 
     /** Logging helper object. */
     @Inject
@@ -66,7 +76,7 @@ public class ClinicalStatusController implements PatientDataController<String>
     @Override
     public String getName()
     {
-        return "clinicalStatus";
+        return CLINICAL_STATUS;
     }
 
     @Override
@@ -78,11 +88,11 @@ public class ClinicalStatusController implements PatientDataController<String>
             if (data == null) {
                 return null;
             }
-            int isNormal = data.getIntValue(UNAFFECTED);
+            int isNormal = data.getIntValue(PATIENT_DOCUMENT_FIELDNAME);
             if (isNormal == 0) {
-                return new SimpleValuePatientData<String>(getName(), AFFECTED);
+                return new SimpleValuePatientData<String>(getName(), VALUE_AFFECTED);
             } else if (isNormal == 1) {
-                return new SimpleValuePatientData<String>(getName(), UNAFFECTED);
+                return new SimpleValuePatientData<String>(getName(), VALUE_UNAFFECTED);
             }
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen"
@@ -94,21 +104,15 @@ public class ClinicalStatusController implements PatientDataController<String>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null && !selectedFieldNames.contains(getName())) {
+        if (selectedFieldNames != null && !selectedFieldNames.contains(CONTROLLING_FIELDNAME)) {
             return;
         }
         PatientData<String> data = patient.getData(getName());
         if (data == null) {
             return;
         }
-        JSONObject container = json.optJSONObject(getName());
 
-        if (container == null) {
-            // put() is placed here because we want to create the property iff at least one field is set/enabled
-            json.put(getName(), new JSONObject());
-            container = json.optJSONObject(getName());
-        }
-        container.put(data.getName(), data.getValue());
+        json.put(JSON_FIELDNAME, data.getValue());
     }
 
     @Override
@@ -124,14 +128,15 @@ public class ClinicalStatusController implements PatientDataController<String>
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseProperty<ObjectPropertyReference> isNormal =
-                (BaseProperty<ObjectPropertyReference>) doc.getXObject(Patient.CLASS_REFERENCE).getField(UNAFFECTED);
+                (BaseProperty<ObjectPropertyReference>) doc.getXObject(Patient.CLASS_REFERENCE).getField(
+                    PATIENT_DOCUMENT_FIELDNAME);
             PatientData<String> data = patient.getData(this.getName());
             if (isNormal == null || data == null) {
                 return;
             }
-            if (StringUtils.equals(data.getValue(), AFFECTED)) {
+            if (StringUtils.equals(data.getValue(), VALUE_AFFECTED)) {
                 isNormal.setValue(0);
-            } else if (StringUtils.equals(data.getValue(), UNAFFECTED)) {
+            } else if (StringUtils.equals(data.getValue(), VALUE_UNAFFECTED)) {
                 isNormal.setValue(1);
             }
         } catch (Exception e) {
@@ -142,15 +147,11 @@ public class ClinicalStatusController implements PatientDataController<String>
     @Override
     public PatientData<String> readJSON(JSONObject json)
     {
-        JSONObject data = json.optJSONObject(this.getName());
-        if (data == null) {
-            return null;
-        }
-        String status = data.optString(this.getName());
-        if (StringUtils.equals(status, AFFECTED)) {
-            return new SimpleValuePatientData<String>(this.getName(), AFFECTED);
-        } else if (StringUtils.equals(status, UNAFFECTED)) {
-            return new SimpleValuePatientData<String>(this.getName(), UNAFFECTED);
+        String status = json.optString(JSON_FIELDNAME, null);
+        if (StringUtils.equals(status, VALUE_AFFECTED)) {
+            return new SimpleValuePatientData<String>(this.getName(), VALUE_AFFECTED);
+        } else if (StringUtils.equals(status, VALUE_UNAFFECTED)) {
+            return new SimpleValuePatientData<String>(this.getName(), VALUE_UNAFFECTED);
         }
         return null;
     }
