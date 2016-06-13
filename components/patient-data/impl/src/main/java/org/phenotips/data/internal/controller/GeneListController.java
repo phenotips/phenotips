@@ -83,6 +83,12 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
     private static final String INTERNAL_COMMENTS_KEY = "comments";
 
+    private static final String INTERNAL_CANDIDATE_KEY = "candidate";
+
+    private static final String INTERNAL_REJECTED_KEY = "rejected";
+
+    private static final String INTERNAL_SOLVED_KEY = "solved";
+
     private static final String JSON_GENE_KEY = INTERNAL_GENE_KEY;
 
     private static final String JSON_STATUS_KEY = INTERNAL_STATUS_KEY;
@@ -91,7 +97,12 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
     private static final String JSON_COMMENTS_KEY = INTERNAL_COMMENTS_KEY;
 
-    private static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "solved");
+    private static final String JSON_SOLVED_KEY = INTERNAL_SOLVED_KEY;
+
+    private static final String JSON_REJECTEDGENES_KEY = "rejectedGenes";
+
+    private static final List<String> STATUS_VALUES = Arrays.asList(INTERNAL_CANDIDATE_KEY, INTERNAL_REJECTED_KEY,
+        INTERNAL_SOLVED_KEY);
 
     private static final List<String> STRATEGY_VALUES = Arrays.asList("sequencing", "deletion", "familial_mutation",
         "common_mutations");
@@ -236,7 +247,8 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     @Override
     public PatientData<Map<String, String>> readJSON(JSONObject json)
     {
-        if (json == null || !json.has(getJsonPropertyName())) {
+        if (json == null
+            || !(json.has(getJsonPropertyName()) || json.has(JSON_SOLVED_KEY) || json.has(JSON_REJECTEDGENES_KEY))) {
             return null;
         }
 
@@ -245,30 +257,25 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         enumValues.put(INTERNAL_STRATEGY_KEY, STRATEGY_VALUES);
 
         try {
-            JSONArray genesJson = json.getJSONArray(this.getJsonPropertyName());
-            List<Map<String, String>> allGenes = new LinkedList<Map<String, String>>();
+            JSONArray genesJson = json.optJSONArray(this.getJsonPropertyName());
+
+            // 1.2.* json compatibility
+            JSONArray rejectedGenes = json.optJSONArray(JSON_REJECTEDGENES_KEY);
+            JSONObject solvedGene = json.optJSONObject(JSON_SOLVED_KEY);
+
+            List<Map<String, String>> accumulatedGenes = new LinkedList<Map<String, String>>();
             List<String> geneSymbols = new ArrayList<String>();
-            for (int i = 0; i < genesJson.length(); ++i) {
-                JSONObject geneJson = genesJson.getJSONObject(i);
 
-                // discard it if gene symbol is not present in the geneJson, or is whitespace, empty or duplicate
-                if (!geneJson.has(INTERNAL_GENE_KEY) || StringUtils.isBlank(geneJson.getString(INTERNAL_GENE_KEY))
-                    || geneSymbols.contains(geneJson.getString(INTERNAL_GENE_KEY))) {
-                    continue;
-                }
+            parseGenesJson(genesJson, geneSymbols, accumulatedGenes, enumValues);
 
-                Map<String, String> singleGene = parseGeneJson(geneJson, enumValues);
-                if (singleGene.isEmpty()) {
-                    continue;
-                }
-                allGenes.add(singleGene);
-                geneSymbols.add(geneJson.getString(INTERNAL_GENE_KEY));
-            }
+            // 1.2.* json compatibility
+            parseRejectedGenes(rejectedGenes, geneSymbols, accumulatedGenes);
+            parseSolvedGene(solvedGene, geneSymbols, accumulatedGenes);
 
-            if (allGenes.isEmpty()) {
+            if (accumulatedGenes.isEmpty()) {
                 return null;
             } else {
-                return new IndexedPatientData<Map<String, String>>(getName(), allGenes);
+                return new IndexedPatientData<Map<String, String>>(getName(), accumulatedGenes);
             }
         } catch (Exception e) {
             this.logger.error("Could not load genes from JSON", e.getMessage());
@@ -276,15 +283,73 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         return null;
     }
 
-    private Map<String, String> parseGeneJson(JSONObject geneJson, Map<String, List<String>> enumValues)
+    private void parseGenesJson(JSONArray genesJson, List<String> geneSymbols, List<Map<String, String>> allGenes,
+        Map<String, List<String>> enumValues)
     {
-        Map<String, String> singleGene = new LinkedHashMap<String, String>();
-        for (String property : this.getProperties()) {
-            if (geneJson.has(property)) {
-                parseGeneProperty(property, geneJson, enumValues, singleGene);
+        if (genesJson != null) {
+            for (int i = 0; i < genesJson.length(); ++i) {
+                JSONObject geneJson = genesJson.getJSONObject(i);
+
+                // discard it if gene symbol is not present in the geneJson, or is whitespace, empty or duplicate
+                if (!geneJson.has(JSON_GENE_KEY) || StringUtils.isBlank(geneJson.getString(JSON_GENE_KEY))
+                    || geneSymbols.contains(geneJson.getString(JSON_GENE_KEY))) {
+                    continue;
+                }
+
+                Map<String, String> singleGene = new LinkedHashMap<String, String>();
+                for (String property : this.getProperties()) {
+                    if (geneJson.has(property)) {
+                        parseGeneProperty(property, geneJson, enumValues, singleGene);
+                    }
+                }
+                if (!singleGene.containsKey(INTERNAL_STATUS_KEY)) {
+                    singleGene.put(INTERNAL_STATUS_KEY, INTERNAL_CANDIDATE_KEY);
+                }
+
+                allGenes.add(singleGene);
+                geneSymbols.add(geneJson.getString(JSON_GENE_KEY));
             }
         }
-        return singleGene;
+    }
+
+    private void parseRejectedGenes(JSONArray rejectedGenes, List<String> geneSymbols,
+        List<Map<String, String>> allGenes)
+    {
+        if (rejectedGenes != null && rejectedGenes.length() > 0) {
+            for (int i = 0; i < rejectedGenes.length(); ++i) {
+                JSONObject rejectedGeneJson = rejectedGenes.getJSONObject(i);
+
+                // discard it if gene symbol is not present in the geneJson, or is whitespace, empty or duplicate
+                if (!rejectedGeneJson.has(JSON_GENE_KEY)
+                    || StringUtils.isBlank(rejectedGeneJson.getString(JSON_GENE_KEY))
+                    || geneSymbols.contains(rejectedGeneJson.getString(JSON_GENE_KEY))) {
+                    continue;
+                }
+                Map<String, String> singleGene = new LinkedHashMap<String, String>();
+                singleGene.put(INTERNAL_GENE_KEY, rejectedGeneJson.getString(JSON_GENE_KEY));
+                singleGene.put(INTERNAL_STATUS_KEY, INTERNAL_REJECTED_KEY);
+
+                if (rejectedGeneJson.has(JSON_COMMENTS_KEY)
+                    && !StringUtils.isBlank(rejectedGeneJson.getString(JSON_COMMENTS_KEY))) {
+                    singleGene.put(INTERNAL_COMMENTS_KEY, rejectedGeneJson.getString(JSON_COMMENTS_KEY));
+                }
+
+                allGenes.add(singleGene);
+                geneSymbols.add(rejectedGeneJson.getString(JSON_GENE_KEY));
+            }
+        }
+    }
+
+    private void parseSolvedGene(JSONObject solvedGene, List<String> geneSymbols, List<Map<String, String>> allGenes)
+    {
+        if (solvedGene != null && solvedGene.has(JSON_GENE_KEY)
+            && !StringUtils.isBlank(solvedGene.getString(JSON_GENE_KEY))
+            && !geneSymbols.contains(solvedGene.getString(JSON_GENE_KEY))) {
+            Map<String, String> singleGene = new LinkedHashMap<String, String>();
+            singleGene.put(INTERNAL_GENE_KEY, solvedGene.getString(JSON_GENE_KEY));
+            singleGene.put(INTERNAL_STATUS_KEY, INTERNAL_SOLVED_KEY);
+            allGenes.add(singleGene);
+        }
     }
 
     private void parseGeneProperty(String property, JSONObject geneJson, Map<String, List<String>> enumValues,
