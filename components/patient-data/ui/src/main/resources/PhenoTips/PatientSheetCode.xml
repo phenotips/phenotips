@@ -484,7 +484,7 @@ var isDateAfter = function(birth_date, death_date) {
 
    var birth = birth_date;
    var death = death_date;
-   var used_decade = false;	 
+   var used_decade = false;
 
    if (birth.decade) {
      birth.year = birth.decade.substring(0, birth.decade.length-1);
@@ -494,7 +494,7 @@ var isDateAfter = function(birth_date, death_date) {
      death.year = Number(death.decade.substring(0, death.decade.length-1)) + 9;
      used_decade = true;
    }
-  
+
    // compare years
    if (typeof birth.year == "undefined" || typeof death.year == "undefined") {
       // dates cannot be compared

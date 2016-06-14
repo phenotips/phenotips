@@ -169,23 +169,23 @@
 
           var createLauncher = function(serverID) {
             return function(event) {
-	            event.stop();
-	            event.findElement().blur();
+              event.stop();
+              event.findElement().blur();
 
-	            _this._selectedServer = serverID;
-	            //console.log("Initializing push to " + serverID);
+              _this._selectedServer = serverID;
+              //console.log("Initializing push to " + serverID);
 
-	            if (event.findElement('.editbody')) {
-	              // we're in edit mode
-	              document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
-	              document.observe('xwiki:document:saved', _this._observeSave);
-  	            } else {
-	              _this._launchUI();
-	            }
-	          }
+              if (event.findElement('.editbody')) {
+                // we're in edit mode
+                document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
+                document.observe('xwiki:document:saved', _this._observeSave);
+              } else {
+                _this._launchUI();
+              }
+            }
           }
-	      pushLauncher.observe('click', createLauncher(serverName));
-	  }
+          pushLauncher.observe('click', createLauncher(serverName));
+      }
       // ---------------------------------------------------------------------
       // Initialization done
       // ---------------------------------------------------------------------
@@ -948,7 +948,7 @@
     _selectPushNewPatient: function() {
         var radioSelectUpdate = document.getElementById('choice-update-patient');
         var radioSelectNew    = document.getElementById('choice-new-patient');
-	if (radioSelectUpdate &amp;&amp; radioSelectNew) {
+        if (radioSelectUpdate &amp;&amp; radioSelectNew) {
             radioSelectUpdate.checked = false;
             radioSelectNew.checked    = true;
         }
