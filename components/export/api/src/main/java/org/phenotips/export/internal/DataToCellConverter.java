@@ -513,6 +513,12 @@ public class DataToCellConverter
         if (enabledFields.remove("external_id")) {
             present.add("external_id");
         }
+        if (enabledFields.remove("family_id")) {
+            present.add("family_id");
+        }
+        if (enabledFields.remove("birth_number")) {
+            present.add("birth_number");
+        }
         if (present.isEmpty()) {
             return null;
         }
@@ -531,6 +537,17 @@ public class DataToCellConverter
         if (present.contains("external_id")) {
             DataCell externalIdCell = new DataCell("Patient Identifier", hX, 1, StyleOption.HEADER);
             section.addCell(externalIdCell);
+            hX++;
+        }
+        if (present.contains("family_id")) {
+            DataCell familyIdCell = new DataCell("Family Identifier", hX, 1, StyleOption.HEADER);
+            section.addCell(familyIdCell);
+            hX++;
+        }
+        if (present.contains("birth_number")) {
+            DataCell birthNumberCell = new DataCell("Birth Number", hX, 1, StyleOption.HEADER);
+            section.addCell(birthNumberCell);
+            hX++;
         }
         // section.finalizeToMatrix();
         return section;
@@ -554,6 +571,17 @@ public class DataToCellConverter
         if (present.contains("external_id")) {
             DataCell cell = new DataCell(patient.getExternalId(), x, 0);
             section.addCell(cell);
+            x++;
+        }
+        if (present.contains("family_id")) {
+            DataCell cell = new DataCell(patient.<String>getData("identifiers").get("family_id"), x, 0);
+            section.addCell(cell);
+            x++;
+        }
+        if (present.contains("birth_number")) {
+            DataCell cell = new DataCell(patient.<String>getData("identifiers").get("birth_number"), x, 0);
+            section.addCell(cell);
+            x++;
         }
         // section.finalizeToMatrix();
         return section;
