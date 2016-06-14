@@ -192,32 +192,6 @@
 
 ## =====================================================================
 ##
-## "Tabelar" data associated with the patient report
-##
-##
-#macro (__measurements_displayCompact)
-  #set($dataClass = $xwiki.getDocument('PhenoTips.MeasurementsClass').xWikiClass)
-  #if ($dataClass)
-    #set($dataObjects = $doc.getObjects('PhenoTips.MeasurementsClass'))
-    #if ($dataObjects.size() == 0)
-      (% class="hint" %)None specified
-    #else
-      (% class="extradata-list" %)
-      #foreach ($o in $dataObjects)
-        #foreach($prop in $dataClass.properties)
-           #if ($prop.name == 'date' || $prop.name == 'age')
-             |= ${prop.translatedPrettyName}: |=(% colspan="2" %) $doc.display($prop.getName(), $o)
-           #elseif (!$prop.name.endsWith('_evaluation') &amp;&amp; "$!o.getProperty($prop.getName()).value" != '')
-             |= ${prop.translatedPrettyName}: | $doc.display($prop.getName(), $o) | $!doc.display("${prop.getName()}_evaluation", $o)
-          #end
-        #end
-      #end## foreach object
-    #end## if $dataObjects.size()
-  #end## if dataclass
-#end
-
-## =====================================================================
-##
 ## PHENOTYPE METADATA
 ##
 ##

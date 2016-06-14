@@ -4,7 +4,8 @@ require(['jquery'], function ($)
     {
         var _mandatoryFields = $(".mandatory input:not([type='hidden'])");
         var externalId = $("#PhenoTips\\.PatientClass_0_external_id");
-        var mandatoryFields = _mandatoryFields.add(externalId);
+        var measurements = $(".measurement-row .val input:not([type=hidden], readonly)");
+        var mandatoryFields = _mandatoryFields.add(externalId).add(measurements);
         var saveButtons = $("input[name='action_save']");
 
         //This will happen if the page is not in edit mode
@@ -73,10 +74,27 @@ require(['jquery'], function ($)
                 }
             });
             if (numberMissing > 0) {
-                var dialog = new PhenoTips.widgets.ModalPopup("There are " + numberMissing + " missing fields",
-                    false, {'title': 'Missing fields', 'verticalPosition': 'top', 'removeOnClose': true});
+                var dialog = new PhenoTips.widgets.ModalPopup("There are missing or incorrectly filled inputs.",
+                    false, {'title': 'Patient form validation', 'verticalPosition': 'top', 'removeOnClose': true});
                 dialog.showDialog();
             }
         });
+
+        document.observe('xwiki:dom:updated', function (event) {
+            ((event && event.memo.elements) || [$('body')]).each(function(element) {
+                element.select(".measurement-row .val input:not([type=hidden], readonly)").each(function(field) {
+                    var jField = $(field);
+                    var position = jField.offset().top;
+                    var parent = $(jField.parents('.chapter')[0]);
+                    //Position could be 0, so in that case take the position of the parent section
+                    if (position == 0) {
+                        position = parent.offset().top;
+                    }
+                    var positionObject = {'field': jField, 'position': position, 'parent': parent};
+                    fieldsByPosition.push(positionObject);
+               });
+            });
+        });
+
     });
 });

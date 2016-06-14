@@ -1,0 +1,222 @@
+#charts-new {
+  box-sizing: border-box;
+  float: right;
+  height: 100%;
+  padding: 15px;
+  padding-left: 190px;
+  position: relative;
+  width: 48%;
+}
+#charts-new .chart-thumbs {
+  background-color: #FFFFFF;
+  border: 1px solid #FFFFFF;
+  border-radius: 4px;
+  box-shadow: 0 1px 8px #DDDDDD inset;
+  box-sizing: border-box;
+  height: 100%;
+  left: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  padding: 20px;
+  position: absolute;
+  top: 0;
+  width: 180px;
+}
+#charts-new .chart-thumbs > div.selected {
+  border-color: #666;
+  border-width: 2px;
+  padding: 9px;
+}
+#charts-new .chart-thumbs > div.selected > span {
+  color: black;
+}
+#charts-new .chart-thumbs > div {
+  background-color: white;
+  border: 1px solid #aaa;
+  cursor: pointer;
+  margin-bottom: 20px;
+  padding: 10px;
+}
+#charts-new .chart-thumbs > div > span {
+  display: block;
+  padding-bottom: 5px;
+  text-align: center;
+}
+#charts-new .chart-thumbs img {
+  display: block;
+  height: 129px;
+  margin: 0 auto;
+  width: 100px;
+}
+#charts-new img.main {
+  max-height: 100%;
+  max-width: 100%;
+  padding: 0;
+}
+#measurements-container {
+  clear: both;
+  position: relative;
+}
+#measurements {
+  float: left;
+  width: 460px;
+}
+#measurements .list-actions {
+  clear: both;
+  width: auto;
+}
+#measurements td {
+  border: 0;
+}
+.measurement-set.proto {
+  display: none;
+}
+.measurement-set {
+  clear: both;
+  float: left;
+  margin: 5px;
+  overflow: auto;
+  padding: 1.5em 0;
+  position: relative;
+}
+.measurement-set th {
+  border: none;
+  background-color: #E4E2E2;
+}
+.measurement-set th.date {
+  border-right: 0;
+}
+.measurement-set th.age {
+  width: 235px;
+}
+.measurement-set th span.error {
+  color: #c33;
+  display: block;
+  font-weight: normal;
+  font-size: 85%;
+  line-height: 18px;
+  text-align: center;
+}
+.measurement-set th.age span.error {
+  display: inline;
+}
+#measurements .measurement-set thead td {
+  border-bottom: 1px dotted #aaa;
+  margin-bottom: 5px;
+  padding-bottom: 8px;
+}
+.measurement-set input[type=text] {
+  width: auto;
+}
+.measurement-set .delete {
+  float: right;
+  margin-left: 15px;
+}
+.measurement-row.side-r td {
+  padding-top: 0;
+}
+.measurement-row.side-l td {
+  padding-bottom: 0;
+}
+.measurement-row td.type {
+  width: 155px;
+}
+.measurement-row .side-label {
+  font-size: 80%;
+  font-weight: bold;
+  text-align: right;
+  width: 15px;
+}
+.measurement-row td.val span.val.empty {
+  text-align: center;
+}
+.measurement-row .feedback {
+  font-size: 80%;
+  width: 120px;
+  text-align: center;
+}
+.measurement-row td.val input {
+  text-align: right;
+}
+.measurement-row td.val span.val {
+  margin: 0 4px;
+  text-align: right;
+  display: inline-block;
+}
+.measurement-row input {
+  margin: 0 3px;
+  width: auto;
+}
+.viewbody .clinical-info .measurement-set label {
+  width: auto;
+}
+.viewbody .clinical-info .measurement-set th {
+  font-weight: normal;
+}
+.viewbody .clinical-info .measurement-set th.age span {
+  display: inline-block;
+  width: 125px;
+}
+.editbody .measurement-row > label,
+.viewbody .clinical-info .measurement-row td {
+  text-align: left;
+}
+.viewbody .clinical-info .measurement-row td.side-label {
+  text-align: right;
+}
+.viewbody .clinical-info .measurement-row td.feedback {
+  text-align: center;
+}
+.normal {
+  color: green;
+}
+.below-normal,
+.above-normal {
+  color: orange;
+}
+.extreme-below-normal,
+.extreme-above-normal {
+  color: red;
+}
+.measurement-select {
+  width: 190px;
+}
+.computed-values {
+  margin-top: 20px;
+}
+.computed-values .measurement-row input {
+  border: 1px solid white;
+}
+input.pt-duration.measurement-age:read-only {
+  opacity: .5;
+}
+.bmi .metric input{
+  opacity: .7;
+}
+table.measurement-set {
+  border: 2px solid #E8E8E8;
+}
+input.xwiki-date.measurement-date {
+  width: 110px !important;
+  margin-left: 4px;
+}
+input.pt-duration.measurement-age {
+  width: 100px;
+}
+.expand-buttons button {
+  float: right;
+}
+.measurement-set th.age label {
+  padding-left: 5px;
+}
+.measurement-set input.xwiki-date {
+  background-position: 90px 4px;
+}
+.measurement-set td {
+  padding: 5px 4px;
+}
+.measurement-set .LV_validation_message {
+  font-size: .7em;
+  line-height: 1.3em;
+  z-index: 1;
+}

@@ -39,4 +39,10 @@ public class HeightMeasurementHandler extends AbstractMeasurementHandler
     {
         return "height";
     }
+
+    @Override
+    public String getUnit()
+    {
+        return "cm";
+    }
 }

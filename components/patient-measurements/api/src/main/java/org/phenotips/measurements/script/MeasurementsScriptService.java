@@ -18,7 +18,8 @@
 package org.phenotips.measurements.script;
 
 import org.phenotips.measurements.MeasurementHandler;
-import org.phenotips.measurements.internal.AbstractMeasurementHandler;
+import org.phenotips.measurements.MeasurementHandlersSorter;
+import org.phenotips.measurements.internal.MeasurementUtils;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -37,8 +38,9 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
+
+import com.xpn.xwiki.api.Object;
 
 /**
  * Bridge offering access to specific {@link MeasurementHandler measurement handlers} to scripts.
@@ -51,21 +53,6 @@ import org.slf4j.Logger;
 @Singleton
 public class MeasurementsScriptService implements ScriptService
 {
-    /** Fuzzy value representing a measurement value considered extremely below normal. */
-    private static final String VALUE_EXTREME_BELOW_NORMAL = "extreme-below-normal";
-
-    /** Fuzzy value representing a measurement value considered below normal, but not extremely. */
-    private static final String VALUE_BELOW_NORMAL = "below-normal";
-
-    /** Fuzzy value representing a measurement value considered normal. */
-    private static final String VALUE_NORMAL = "normal";
-
-    /** Fuzzy value representing a measurement value considered above normal, but not extremely. */
-    private static final String VALUE_ABOVE_NORMAL = "above-normal";
-
-    /** Fuzzy value representing a measurement value considered extremely above normal. */
-    private static final String VALUE_EXTREME_ABOVE_NORMAL = "extreme-above-normal";
-
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -74,6 +61,10 @@ public class MeasurementsScriptService implements ScriptService
     @Inject
     @Named("context")
     private Provider<ComponentManager> componentManager;
+
+    /** Provides sorting for measurement handlers using configured ordering. */
+    @Inject
+    private MeasurementHandlersSorter measurementHandlersSorter;
 
     /**
      * Get the handler for a specific kind of measurements.
@@ -104,7 +95,7 @@ public class MeasurementsScriptService implements ScriptService
             if (result == null) {
                 result = Collections.emptyList();
             }
-            Collections.sort(result, MeasurementSorter.instance);
+            Collections.sort(result, measurementHandlersSorter.getMeasurementHandlerComparator());
             return result;
         } catch (ComponentLookupException ex) {
             this.logger.warn("Failed to list available measurements", ex);
@@ -124,7 +115,7 @@ public class MeasurementsScriptService implements ScriptService
             Map<String, MeasurementHandler> handlers =
                 this.componentManager.get().getInstanceMap(MeasurementHandler.class);
             if (handlers != null) {
-                Set<String> result = new TreeSet<String>(MeasurementNameSorter.instance);
+                Set<String> result = new TreeSet<String>(measurementHandlersSorter.getMeasurementNameComparator());
                 result.addAll(handlers.keySet());
                 return result;
             }
@@ -142,17 +133,7 @@ public class MeasurementsScriptService implements ScriptService
      */
     public String getFuzzyValue(int percentile)
     {
-        String returnValue = VALUE_NORMAL;
-        if (percentile <= 1) {
-            returnValue = VALUE_EXTREME_BELOW_NORMAL;
-        } else if (percentile <= 3) {
-            returnValue = VALUE_BELOW_NORMAL;
-        } else if (percentile >= 99) {
-            returnValue = VALUE_EXTREME_ABOVE_NORMAL;
-        } else if (percentile >= 97) {
-            returnValue = VALUE_ABOVE_NORMAL;
-        }
-        return returnValue;
+        return MeasurementUtils.getFuzzyValue(percentile);
     }
 
     /**
@@ -163,74 +144,58 @@ public class MeasurementsScriptService implements ScriptService
      */
     public String getFuzzyValue(double deviation)
     {
-        String returnValue = VALUE_NORMAL;
-        if (deviation <= -3.0) {
-            returnValue = VALUE_EXTREME_BELOW_NORMAL;
-        } else if (deviation <= -2.0) {
-            returnValue = VALUE_BELOW_NORMAL;
-        } else if (deviation >= 3.0) {
-            returnValue = VALUE_EXTREME_ABOVE_NORMAL;
-        } else if (deviation >= 2.0) {
-            returnValue = VALUE_ABOVE_NORMAL;
-        }
-        return returnValue;
+        return MeasurementUtils.getFuzzyValue(deviation);
     }
 
     /**
-     * Temporary mechanism for sorting measurements, uses a hardcoded list of measurements in the desired order.
+     * Get the number of months corresponding to a period string.
      *
-     * @version $Id$
+     * @param age the ISO-8601 period string, without leading 'P'
+     * @throws IllegalArgumentException if the age cannot be parsed
+     * @return number of months
      */
-    private static final class MeasurementSorter implements Comparator<MeasurementHandler>
+    public Double convertAgeStrToNumMonths(String age) throws IllegalArgumentException
     {
-        /** Hardcoded list of measurements and their order. */
-        private static final String[] TARGET_ORDER = new String[] {"weight", "height", "bmi", "armspan", "sitting",
-            "hc", "philtrum", "ear", "ocd", "icd", "pfl", "ipd", "hand", "palm", "foot"};
+        return MeasurementUtils.convertAgeStrToNumMonths(age);
+    }
 
+    /**
+     * Mechanism for sorting measurement objects according to age string, in ascending order according to the parsed
+     * value of the age string, in months.
+     *
+     * @version $Id $
+     */
+    private static final class MeasurementObjectAgeComparator implements Comparator<Object>
+    {
         /** Singleton instance. */
-        private static MeasurementSorter instance = new MeasurementSorter();
+        private static MeasurementObjectAgeComparator instance = new MeasurementObjectAgeComparator();
+
+        /** Key for accessing age property. */
+        private static final String AGE_KEY = "age";
 
         @Override
-        public int compare(MeasurementHandler o1, MeasurementHandler o2)
+        public int compare(Object o1, Object o2)
         {
-            String n1 = ((AbstractMeasurementHandler) o1).getName();
-            String n2 = ((AbstractMeasurementHandler) o2).getName();
-            int p1 = ArrayUtils.indexOf(TARGET_ORDER, n1);
-            int p2 = ArrayUtils.indexOf(TARGET_ORDER, n2);
-            if (p1 == -1 && p2 == -1) {
-                return n1.compareTo(n2);
-            } else if (p1 == -1) {
+            double age1 = MeasurementUtils.convertAgeStrToNumMonths((String) o1.getProperty(AGE_KEY).getValue());
+            double age2 = MeasurementUtils.convertAgeStrToNumMonths((String) o2.getProperty(AGE_KEY).getValue());
+
+            if (age1 > age2) {
                 return 1;
-            } else if (p2 == -1) {
+            } else if (age1 < age2) {
                 return -1;
+            } else {
+                return 0;
             }
-            return p1 - p2;
         }
     }
 
     /**
-     * Temporary mechanism for sorting measurements, uses a hardcoded list of measurements in the desired order.
+     * Sort a list of measurement objects.
      *
-     * @version $Id$
+     * @param objects the list of XWiki objects to sort
      */
-    private static final class MeasurementNameSorter implements Comparator<String>
+    public void sortMeasurementObjectsByAge(List<Object> objects)
     {
-        /** Singleton instance. */
-        private static MeasurementNameSorter instance = new MeasurementNameSorter();
-
-        @Override
-        public int compare(String n1, String n2)
-        {
-            int p1 = ArrayUtils.indexOf(MeasurementSorter.TARGET_ORDER, n1);
-            int p2 = ArrayUtils.indexOf(MeasurementSorter.TARGET_ORDER, n2);
-            if (p1 == -1 && p2 == -1) {
-                return n1.compareTo(n2);
-            } else if (p1 == -1) {
-                return 1;
-            } else if (p2 == -1) {
-                return -1;
-            }
-            return p1 - p2;
-        }
+        Collections.sort(objects, MeasurementObjectAgeComparator.instance);
     }
 }

@@ -1,0 +1,3 @@
+org.phenotips.data.rest.internal.DefaultMeasurementPercentileResourceImpl
+org.phenotips.data.rest.internal.DefaultComputedMeasurementResourceImpl
+org.phenotips.data.rest.internal.DefaultMeasurementChartResourcesResourceImpl

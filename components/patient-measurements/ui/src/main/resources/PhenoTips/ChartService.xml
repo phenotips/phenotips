@@ -29,8 +29,8 @@
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822197000</date>
-  <contentUpdateDate>1401822197000</contentUpdateDate>
+  <date>1442007558000</date>
+  <contentUpdateDate>1442007558000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -41,7 +41,7 @@
 
 {{velocity}}
 #set ($format = "$!{request.f}")
-#if ($format != 'raster')
+#if ($format != 'raster' &amp;&amp; $format != 'svg')
   #set ($format = 'vector')
 #end
 #set ($standalone = ($format != '' &amp;&amp; "$!{request.standalone}" != '' &amp;&amp; "$!{request.standalone}" != '0' &amp;&amp; "$!{request.standalone}" != 'false'))

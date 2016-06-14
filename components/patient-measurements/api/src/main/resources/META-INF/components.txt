@@ -1,5 +1,6 @@
 org.phenotips.measurements.script.MeasurementsScriptService
 org.phenotips.measurements.internal.DefaultMeasurementsChartConfigurationsFactory
+org.phenotips.measurements.internal.ArmspanMeasurementHandler
 org.phenotips.measurements.internal.BMIMeasurementHandler
 org.phenotips.measurements.internal.EarLengthMeasurementHandler
 org.phenotips.measurements.internal.FootLengthMeasurementHandler
@@ -14,4 +15,6 @@ org.phenotips.measurements.internal.PalpebralFissureLengthMeasurementHandler
 org.phenotips.measurements.internal.PhiltrumLengthMeasurementHandler
 org.phenotips.measurements.internal.SittingHeightMeasurementHandler
 org.phenotips.measurements.internal.WeightMeasurementHandler
-org.phenotips.measurements.internal.MeasurementAgeUpdater
+org.phenotips.measurements.internal.PatientMeasurementEmptyObjectsRemover
+org.phenotips.measurements.internal.DefaultMeasurementHandlersSorter
+org.phenotips.measurements.internal.controller.MeasurementsController

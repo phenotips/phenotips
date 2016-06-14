@@ -638,6 +638,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>patient-measurements-rest</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>patient-measurements-migrations</artifactId>
       <version>${project.version}</version>
     </dependency>

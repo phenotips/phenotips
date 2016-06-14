@@ -17,9 +17,12 @@
  */
 package org.phenotips.measurements;
 
+import org.phenotips.vocabulary.VocabularyTerm;
+
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -34,6 +37,21 @@ import java.util.List;
 @Role
 public interface MeasurementHandler
 {
+    /**
+     * Get the name of this specific kind of measurements.
+     *
+     * @return a simple name, all lowercase keyword
+     */
+    String getName();
+
+    /**
+     * Get the unit, for display purposes only, of this specific kind of measurement.
+     *
+     * @return the abbreviated unit, e.g. cm, kg
+     *         for unitless measurements, null
+     */
+    String getUnit();
+
     /**
      * Get the percentile for the given measured value and age.
      *
@@ -83,6 +101,21 @@ public interface MeasurementHandler
      * @return {@code true} if measurements on both sides should be recorded
      */
     boolean isDoubleSided();
+
+    /**
+     * Indicate whether this measurement is computed based on other values.
+     *
+     * @return {@code true} if this measurement is computed based on other values
+     */
+    boolean isComputed();
+
+    /**
+     * Get associated terms for this measurement with the given standard deviation value.
+     *
+     * @param standardDeviation the measurement's standard deviation value or {@code null} for all associated terms
+     * @return a list of terms
+     */
+    Collection<VocabularyTerm> getAssociatedTerms(Double standardDeviation);
 
     /**
      * Get the list of charts configured for this type of measurement.
