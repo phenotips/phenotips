@@ -8,11 +8,13 @@
  */
 define([
         "pedigree/extensionManager",
+        "pedigree/externalEndpoints",
         "pedigree/undoRedoManager",
         "pedigree/controller",
         "pedigree/pedigreeEditorParameters",
         "pedigree/preferencesManager",
-        "pedigree/probandDataLoader",
+        "pedigree/familyData",
+        "pedigree/patientDataLoader",
         "pedigree/saveLoadEngine",
         "pedigree/versionUpdater",
         "pedigree/view",
@@ -22,8 +24,10 @@ define([
         "pedigree/view/workspace",
         "pedigree/view/disorderLegend",
         "pedigree/view/exportSelector",
-        "pedigree/view/geneLegend",
+        "pedigree/view/candidateGeneLegend",
+        "pedigree/view/casualGeneLegend",
         "pedigree/view/hpoLegend",
+        "pedigree/view/patientDropLegend",
         "pedigree/view/importSelector",
         "pedigree/view/cancersLegend",
         "pedigree/view/nodeMenu",
@@ -31,15 +35,19 @@ define([
         "pedigree/view/okCancelDialogue",
         "pedigree/view/saveLoadIndicator",
         "pedigree/view/templateSelector",
-        "pedigree/view/printDialog"
+        "pedigree/view/tabbedSelector",
+        "pedigree/view/printDialog",
+        "pedigree/view/familySelector",
     ],
     function(
         PedigreeExtensionManager,
+        ExternalEndpointsManager,
         UndoRedoManager,
         Controller,
         PedigreeEditorParameters,
         PreferencesManager,
-        ProbandDataLoader,
+        FamilyData,
+        PatientDataLoader,
         SaveLoadEngine,
         VersionUpdater,
         View,
@@ -49,8 +57,10 @@ define([
         Workspace,
         DisorderLegend,
         ExportSelector,
-        GeneLegend,
+        CandidateGeneLegend,
+        CasualGeneLegend,
         HPOLegend,
+        PatientDropLegend,
         ImportSelector,
         CancerLegend,
         NodeMenu,
@@ -58,15 +68,20 @@ define([
         OkCancelDialogue,
         SaveLoadIndicator,
         TemplateSelector,
-        PrintDialog
+        TabbedSelector,
+        PrintDialog,
+        FamilySelector
 ){
 
     var PedigreeEditor = Class.create({
         initialize: function() {
+            this.INTERNALJSON_VERSION = "1.0";
+
             //this.DEBUG_MODE = true;
             window.editor = this;
 
             this._extensionManager = new PedigreeExtensionManager();
+            this._externalEndpointManager = new ExternalEndpointsManager();
 
             // Available options:
             //
@@ -101,9 +116,11 @@ define([
             //initialize the elements of the app
             this._workspace = new Workspace();
             this._disorderLegend = new DisorderLegend();
-            this._geneLegend = new GeneLegend();
+            this._candidateGeneLegend = new CandidateGeneLegend();
+            this._casualGeneLegend = new CasualGeneLegend();
             this._hpoLegend = new HPOLegend();
             this._cancerLegend = new CancerLegend();
+            this._patientLegend = new PatientDropLegend();
             this._nodetypeSelectionBubble = new NodetypeSelectionBubble(false);
             this._siblingSelectionBubble  = new NodetypeSelectionBubble(true);
             this._okCancelDialogue = new OkCancelDialogue();
@@ -111,12 +128,16 @@ define([
             this._view = new View();
 
             this._actionStack = new UndoRedoManager();
-            this._templateSelector = new TemplateSelector();
             this._saveLoadIndicator = new SaveLoadIndicator();
             this._versionUpdater = new VersionUpdater();
             this._saveLoadEngine = new SaveLoadEngine();
-            this._probandData = new ProbandDataLoader();
+            this._familyData = new FamilyData();
+            this._familySelector = new FamilySelector();
+            this._patientDataLoader = new PatientDataLoader();
 
+            // load global pedigree preferences before a specific pedigree is loaded, since
+            // preferences may affect the way it is rendered. Once preferences are loaded the
+            // provided function will get execute and will load/render the rest of the pedigree.
             this._preferencesManager.load( function() {
                     Helpers.copyProperties(PedigreeEditorParameters.styles.blackAndWhite, PedigreeEditorParameters.attributes);
                     // set up constants which depend on preferences
@@ -128,16 +149,21 @@ define([
                         Helpers.copyProperties(PedigreeEditorParameters.lineStyles.regularLines, PedigreeEditorParameters.attributes);
                     }
 
-                    // load proband data and load the graph after proband data is available
-                    this._probandData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
+                    var _importSelector = new ImportSelector();
+                    var _templateSelector = new TemplateSelector();
+                    this._templateImportSelector = new TabbedSelector("Select a pedigree template or import a pedigree",
+                                                                      [_templateSelector, _importSelector]);
 
                     // generate various dialogues after preferences have been loaded
                     this._nodeMenu = this.generateNodeMenu();
                     this._nodeGroupMenu = this.generateNodeGroupMenu();
                     this._partnershipMenu = this.generatePartnershipMenu();
-                    this._importSelector = new ImportSelector();
                     this._exportSelector = new ExportSelector();
                     this._printDialog = new PrintDialog();
+
+                    // finally, load the pedigree
+                    var documentId = editor.getGraph().getCurrentPatientId();
+                    this._saveLoadEngine.load(documentId);
                 }.bind(this) );
 
             this._controller = new Controller();
@@ -161,18 +187,14 @@ define([
                 document.fire("pedigree:graph:clear");
             });
 
-            var saveButton = $('action-save');
-            saveButton && saveButton.on("click", function(event) {
-                editor.getSaveLoadEngine().save();
-            });
-
+            var replacePedigreeWarning = "Existing pedigree will be replaced by the selected one";
             var templatesButton = $('action-templates');
             templatesButton && templatesButton.on("click", function(event) {
-                editor.getTemplateSelector().show();
+                editor.getTemplateImportSelector().show(0 /* tab 0 - templates */, true /* allow cancel */, replacePedigreeWarning, "box warningmessage");
             });
             var importButton = $('action-import');
             importButton && importButton.on("click", function(event) {
-                editor.getImportSelector().show();
+                editor.getTemplateImportSelector().show(1 /* tab1 - import */, true /* allow cancel */, replacePedigreeWarning, "box warningmessage");
             });
             var exportButton = $('action-export');
             exportButton && exportButton.on("click", function(event) {
@@ -183,6 +205,11 @@ define([
                 editor.getPrintDialog().show();
             });
 
+            var saveButton = $('action-save');
+            saveButton && saveButton.on("click", function(event) {
+                editor.getSaveLoadEngine().save();
+            });
+
             var onLeavePageFunc = function() {
                 if (!editor.isReadOnlyMode() && editor.getUndoRedoManager().hasUnsavedChanges()) {
                     return "All changes will be lost when navigating away from this page.";
@@ -191,8 +218,11 @@ define([
             window.onbeforeunload = onLeavePageFunc;
 
             var onCloseButtonClickFunc = function(event) {
+                var redirectOnQuit  = function() { window.location = XWiki.currentDocument.getURL('cancel', 'xredirect=' +
+                                                                     encodeURIComponent(editor.getExternalEndpoint().getParentDocument().returnURL));
+                                                 };
                 var dontQuitFunc    = function() { window.onbeforeunload = onLeavePageFunc; };
-                var quitFunc        = function() { window.location=XWiki.currentDocument.getURL(XWiki.contextaction); };
+                var quitFunc        = function() { redirectOnQuit(); };
                 var saveAndQuitFunc = function() { editor._afterSaveFunc = quitFunc;
                                                    editor.getSaveLoadEngine().save(); }
 
@@ -241,11 +271,45 @@ define([
         },
 
         /**
+         * Returns the version of the internal JSON represenations which will be saved to PhenpoTips patient record
+         */
+        getInternalJSONVersion: function() {
+            return this.INTERNALJSON_VERSION;
+        },
+
+        /**
+         * Returns a class managing external connections for pedigree editor, e.g. load/save URLs etc.
+         *
+         * @method getPreferencesManager
+         * @return {ExternalEndpointsManager}
+         */
+        getExternalEndpoint: function() {
+            return this._externalEndpointManager;
+        },
+
+        /**
          * @method getPreferencesManager
          * @return {PreferencesManager}
          */
         getPreferencesManager: function() {
             return this._preferencesManager;
+        },
+
+        /**
+         * @method getPatientDataLoader
+         * @return {PatientDataLoader}
+         */
+        getPatientDataLoader: function() {
+            return this._patientDataLoader;
+        },
+
+        /**
+         * Returns false if pedigree is not defined
+         *
+         * @method pedigreeExists
+         */
+        pedigreeExists: function() {
+            return this.getGraph().getMaxNodeId() >= 0;
         },
 
         /**
@@ -356,10 +420,48 @@ define([
 
         /**
          * @method getGeneLegend
+         * @return {Legend} Responsible for managing and displaying the genes having this status.
+         *                  May be null for statuses with no legend.
+         */
+        getGeneLegend: function(geneStatus) {
+            if (geneStatus == "candidate") {
+                return this.getCandidateGeneLegend();
+            } else if (geneStatus == "solved") {
+                return this.getCasualGeneLegend();
+            }
+            return null;
+        },
+
+        /**
+         * @method getCasualGeneLegend
+         * @return {Legend} Responsible for managing and displaying the casual genes legend
+         */
+        getCasualGeneLegend: function() {
+            return this._casualGeneLegend;
+        },
+
+        /**
+         * @method getCandidateGeneLegend
          * @return {Legend} Responsible for managing and displaying the candidate genes legend
          */
-        getGeneLegend: function() {
-            return this._geneLegend;
+        getCandidateGeneLegend: function() {
+            return this._candidateGeneLegend;
+        },
+
+        /**
+         * Returns the color of the gene for a given person.
+         * If a gene doe snot belong to any legend "undefined" is returned.
+         */
+        getGeneColor: function(geneId, nodeID) {
+            var availableLegends = ["solved", "candidate"];
+            for (var i = 0; i < availableLegends.length; i++) {
+                var colorInLegendForNode = this.getGeneLegend(availableLegends[i]).getGeneColor(geneId, nodeID);
+                if (colorInLegendForNode) {
+                    return colorInLegendForNode;
+                }
+            }
+            // none of the legends have it - return undefined;
+            return undefined;
         },
 
         /**
@@ -376,6 +478,14 @@ define([
          */
         getPaper: function() {
             return this.getWorkspace().getPaper();
+        },
+
+        /**
+         * @method getPatientLegend
+         * @return {Legend} Responsible for managing and displaying legend for patients that are unassigned to a family
+         */
+        getPatientLegend: function() {
+            return this._patientLegend;
         },
 
         /**
@@ -426,27 +536,66 @@ define([
         },
 
         /**
-         * @method getProbandDataFromPhenotips
-         * @return {firstName: "...", lastName: "..."}
+         * @method getFamilySelector
+         * @return {FamilySelector}
          */
-        getProbandDataFromPhenotips: function() {
-            return this._probandData.probandData;
+        getFamilySelector: function() {
+            return this._familySelector;
         },
 
         /**
-         * @method getTemplateSelector
+         * @return {FamilyData} containign information about the current family, as of last load.
+         */
+        getFamilyData: function() {
+            return this._familyData;
+        },
+
+        /**
+         * True iff current pedigree belongs toa family page, not a patient
+         * @method isFamilyPage
+         * @return {boolean}
+         */
+        isFamilyPage: function() {
+            return this.getFamilyData().isFamilyPage();
+        },
+
+        /**
+         * Returns the list of {id: "...", name: "...", identifier: "..."} of all the patients which
+         * were part of this patient's family at the time pedigree was last (re-)loaded
+         * @method getFamilyMembersBeforeChanges
+         * @return {Object}
+         */
+        getFamilyMembersBeforeChanges: function() {
+            return this.getFamilyData().getAllFamilyMembersList();
+        },
+
+        /**
+         * Returns iff the given patient is a member of the current family
+         */
+        isFamilyMember: function(patientID) {
+            return this.getFamilyData().isFamilyMember(patientID);
+        },
+
+        /**
+         * Returns permission object which as "hasEdit" and "hasView" fields.
+         * @method getPatientAccessPermissions
+         * @return {Object}
+         */
+        getPatientAccessPermissions: function(patientID) {
+            var permissions = (this.getFamilyData().isFamilyMember(patientID))
+                              ? this.getFamilyData().getPatientAccessPermissions(patientID) : null;
+            if (permissions == null) {
+                permissions = { "hasEdit": true, "hasView": true };
+            }
+            return permissions;
+        },
+
+        /**
+         * @method getTemplateImportSelector
          * @return {TemplateSelector}
          */
-        getTemplateSelector: function() {
-            return this._templateSelector
-        },
-
-        /**
-         * @method getImportSelector
-         * @return {ImportSelector}
-         */
-        getImportSelector: function() {
-            return this._importSelector
+        getTemplateImportSelector: function() {
+            return this._templateImportSelector;
         },
 
         /**
@@ -454,7 +603,7 @@ define([
          * @return {ExportSelector}
          */
         getExportSelector: function() {
-            return this._exportSelector
+            return this._exportSelector;
         },
 
         /**
@@ -472,9 +621,13 @@ define([
          * @method isAnyMenuVisible
          */
         isAnyMenuVisible: function() {
-            if (this.getNodeMenu().isVisible() || this.getNodeGroupMenu().isVisible() || this.getPartnershipMenu().isVisible()) {
-                return;
+            if (this.isReadOnlyMode()) {
+                return false;
             }
+            if (this.getNodeMenu().isVisible() || this.getNodeGroupMenu().isVisible() || this.getPartnershipMenu().isVisible()) {
+                return true;
+            }
+            return false;
         },
 
         /**
@@ -486,6 +639,7 @@ define([
         generateNodeMenu: function() {
             if (this.isReadOnlyMode()) return null;
             var disabledFields = this.getPreferencesManager().getConfigurationOption("disabledFields");
+
             var personMenuFields = NodeMenuFields.getPersonNodeMenuFields(disabledFields);
             return new NodeMenu(personMenuFields, "person-node-menu");
         },

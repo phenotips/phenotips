@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>FamilySheet</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1426694935000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1426721207000</date>
+  <contentUpdateDate>1426721207000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+{{velocity}}
+  $xwiki.ssx.use('PhenoTips.PatientSheetCode')##
+  $xwiki.ssx.use('PhenoTips.FamilySheet')##
+  $xwiki.jsx.use('PhenoTips.FamilySheet')##
+  #set($obj = $doc.getObject('PhenoTips.FamilyClass'))
+  #set($class = $obj.xWikiClass)
+  #set($discard = $doc.use($obj))
+  ## TODO: refactor, remove javascript and JSON passing
+  #set($familyInfo = $services.pedigrees.getFamilyAndPedigree($doc.getName()).toJSON())
+  ##
+  ## This is where all information about a family is inserted.
+  {{html clean='false'}}&lt;input id="family-info-json" type="hidden" value='$escapetool.xml($familyInfo.family)'&gt;{{/html}}
+
+  #__hasDataToDisplay('external_id', $showExternalId)
+  #if($showExternalId)
+    (% class='chapter clinical-info' %)(((
+      == $services.localization.render('phenotips.familysheet.section.identifier') ==
+      #__displayFormatted('2-col' 'external_id' '' '' '')
+    )))
+  #end
+  {{html clean='false' wiki='true'}}
+  #__hasDataToDisplay('members', $showMembers)
+  #if($showMembers)
+    &lt;div id='members' class='chapter clinical-info'&gt;
+      == $services.localization.render('phenotips.familysheet.section.list_of_members') ==
+      &lt;div class='fieldset'&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  #end
+  ##
+  #__hasDataToDisplay('reports', $showReports)
+  &lt;div id='reports' class='chapter clinical-info #if(!${showReports})hidden#end'&gt;
+    == $services.localization.render('phenotips.familysheet.section.reports') ==
+    &lt;div class='fieldset'&gt;
+    #if($showReports)$doc.display('reports', $obj)#end
+      (% id="member-medical-reports" %)((()))
+    &lt;/div&gt;
+  &lt;/div&gt;
+  ##
+  {{/html}}##
+  #foreach ($e in $services.uix.getExtensions('org.phenotips.patientSheet.section.family-info'))
+    #if ($e.getId() == 'org.phenotips.patientSheet.field.pedigree')
+      #set ($pedigreeHtml = $services.rendering.render($e.execute(), 'xhtml/1.0'))
+    #end
+  #end
+  #if ("$!{pedigreeHtml}" != '')
+    (% id='pedigree' class='chapter clinical-info pedigree-family-section' %)(((
+      {{html wiki=false clean=false}}$pedigreeHtml{{/html}}
+    )))
+  #end
+  ##
+  #__hasBooleanDataToDisplay('warning' $showWarning)
+  #__hasDataToDisplay('warning_message', $showWarningMessage)
+  #if ($showWarningMessage || $showWarning)
+  (% id='warning' class='chapter clinical-info' %)(((
+    == $services.localization.render('phenotips.familysheet.section.sensitive') ==
+  (% class="controlled-group complete-hide exclude" %)(((
+      #if ($showWarningMessage)
+        (% class="controller" %) (((
+        #__displayFormatted('2-col' 'warning' '' '' '')
+        )))
+      #end
+      #if ($showWarning)
+        (% class="controlled" %)(((
+        #__displayFormatted('2-col' 'warning_message' '' '' '')
+        )))
+      #end
+      )))
+    )))
+  #end
+{{/velocity}}</content>
+  <object>
+    <name>PhenoTips.FamilySheet</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>4fa03eb7-25cd-4aaf-9135-ed5c97ab31f2</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe('xwiki:dom:loaded', function ()
+{
+  /*
+  This is a hack. It shall be replaced when the family page becomes modular.
+   */
+  var pedigreeClass = 'pedigree-family-section';
+  var pedigreeSection = $$('.' + pedigreeClass);
+  if (pedigreeSection.length &gt; 0) {
+    var originalHeader = $(pedigreeSection[0]).down('.wikigeneratedheader');
+    var classes = originalHeader.readAttribute("class");
+    var id = originalHeader.readAttribute("id");
+    var replacement = new Element('h2', {'id': id, 'class': classes});
+    originalHeader.childElements().each(function (elem)
+    {
+      replacement.insert({bottom: elem});
+    });
+    originalHeader.insert({
+      before: replacement
+    });
+    originalHeader.remove();
+  }
+});</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.FamilySheet</name>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>c18dec19-82ce-4380-8a35-96eb1b5154fe</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>require(['jquery'], function ($)
+{
+  $(document).ready(function ()
+  {
+    var patientListHolder = $("#members").find(".fieldset");
+    var reportsHolder = $('#member-medical-reports');
+    var reportsSection = reportsHolder.parents("#reports");
+    var familyJson = $.parseJSON($('#family-info-json').val());
+    var patientJson = familyJson.familyMembers;
+
+    var patientListDisplay = "";
+    var reportsDisplay = "";
+    for (var i = 0; patientJson.length &gt; i; i++) {
+      var reports = patientJson[i].reports;
+      patientListDisplay += displayPatientLink(patientJson[i]);
+      if (!$.isEmptyObject(reports)) {
+        reportsDisplay += displayPatientTitle(patientJson[i]);
+        reportsDisplay += displayMedicalReports(reports);
+      }
+    }
+
+    patientListHolder.html(patientListDisplay);
+    reportsHolder.html(reportsDisplay);
+    if (reportsDisplay) {
+      reportsSection.show();
+    }
+
+    /** Displays patient information as a link. */
+    function displayPatientLink(patientJson)
+    {
+      return "&lt;p&gt;&lt;a href='" + patientJson.url + "' target='_blank'&gt;" + displayPatient(patientJson) + "&lt;/a&gt;&lt;/p&gt;";
+    }
+
+    /** Shows formatted patient's id, external id and name as a heading */
+    function displayPatientTitle(patientJson)
+    {
+      return "&lt;h3&gt;" + displayPatient(patientJson) + "&lt;/h3&gt;";
+    }
+
+    function displayPatient(patientJson) {
+      var display = patientJson.id;
+
+      var closeBracket = false;
+      if (patientJson.identifier || patientJson.name) {
+        display += " (";
+        closeBracket = true;
+      }
+      if (patientJson.identifier) {
+        display += patientJson.identifier;
+        if (patientJson.name) {
+          display += " - ";
+        }
+      }
+      if (patientJson.name) {
+        display += patientJson.name
+      }
+      if (closeBracket) {
+        display += ")"
+      }
+
+      return display;
+    }
+
+    function displayMedicalReports(reportsJson)
+    {
+      var displayString = "";
+      $.each(reportsJson, function (title, link)
+      {
+        displayString += displayMedicalReport(title, link);
+      });
+      return displayString;
+    }
+
+    function displayMedicalReport(title, link)
+    {
+      return "&lt;div&gt;&lt;a href='" + link + "' target='_blank'&gt;" + title + "&lt;/a&gt;&lt;/div&gt;"
+    }
+  });
+});</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+</xwikidoc>

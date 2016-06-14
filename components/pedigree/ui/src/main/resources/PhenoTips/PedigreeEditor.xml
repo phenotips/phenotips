@@ -38,6 +38,9 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity output=false}}
+#if ($xcontext.action != 'edit')
+  $response.sendRedirect($doc.getURL('edit',$request.queryString))
+#end
 $xwiki.jsfx.use('js/scriptaculous/slider.js')##
 $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/raphael.js')##
@@ -47,6 +50,8 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.ssx.use('PhenoTips.Widgets')##
 $xwiki.ssfx.use('uicomponents/pedigree/editor.css', true)##
 $xwiki.jsfx.use('uicomponents/pedigree/requireConfigs/runtimeConfig.js', true)##
+$xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
+$xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 #if ($request.getParameter('minify') == 'false')
   $xwiki.jsfx.use('uicomponents/pedigree/pedigreeApp.js', true)##
 #else

@@ -27,13 +27,13 @@ define([
                 'type'  : 'hidden',
                 'tab': 'Personal'
             },
-            /*{
+            {
                 'name' : 'phenotipsid',
-                'label' : 'Phenotips Patient Link',
-                'type' : 'text', //phenotipsid-picker',
+                'label' : 'Patient Record',
+                'type' : 'phenotipsid-picker',
                 'tab' : 'Personal',
-                'function' : 'setPhenotipsPatientId'
-            },*/
+                'function' : 'trySetPhenotipsPatientId'
+            },
             {
                 'name' : 'gender',
                 'label' : 'Gender',
@@ -72,7 +72,7 @@ define([
             },
             {
                 'name' : 'external_id',
-                'label': 'External ID',
+                'label': 'Identifier',
                 'type' : 'text',
                 'tab': 'Personal',
                 'function' : 'setExternalID',
@@ -119,10 +119,24 @@ define([
             },
             {
                 'name' : 'candidate_genes',
-                'label' : 'Genotype information: candidate genes',
+                'label' : 'Genotype: candidate genes',
                 'type' : 'gene-picker',
                 'tab': 'Clinical',
-                'function' : 'setGenes'
+                'function' : 'setCandidateGenes'
+            },
+            {
+                'name' : 'casual_genes',
+                'label' : 'Genotype: confirmed casual genes',
+                'type' : 'gene-picker',
+                'tab': 'Clinical',
+                'function' : 'setCasualGenes'
+            },
+            {
+                'name' : 'rejected_genes',
+                'label' : 'Genotype: rejected genes',
+                'type' : 'gene-picker',
+                'tab': 'Clinical',
+                'function' : 'setRejectedGenes' // not needed: read only for now
             },
             {
                 'name' : 'date_of_birth',
@@ -260,6 +274,14 @@ define([
                 'tab': 'Cancers',
                 'rows' : 2,
                 'function' : 'setComments'
+            },
+            {
+                'name' : 'setproband',
+                'label' : 'Set this person to be the proband node',
+                'type' : 'button',
+                'tab' : 'Clinical',
+                'buttoncss' : 'unintrusive-button menu-fullWidthbutton',
+                'function' : 'assignProband'
             }
         ];
 

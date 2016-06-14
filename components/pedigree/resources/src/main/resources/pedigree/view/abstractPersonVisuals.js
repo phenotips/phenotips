@@ -122,21 +122,25 @@ define([
         },
 
         /**
-         * Expands the partnership circle
+         * Highlight green to mark as a valid drag target
          *
          * @method grow
          */
         grow: function($super) {
             $super();
-            if (this._callback)
-                throw "Assertion failed: grow() during animation";
+            if (this._callback) {
+                //throw "Assertion failed: grow() during animation";
+                return;
+            }
             if (this.glow) return;
             this.glow = this._genderShape.glow({width: 11, fill: true, opacity: 0.4, color: "green"});
-            if (this.marked) this.marked.hide();
+            if (this.marked) {
+                this.marked.hide();  // to avoid interference between green and yelow marks
+            }
         },
 
         /**
-         * Shrinks node graphics to the original size
+         * Unhighlight
          *
          * @method shrink
          */
@@ -148,14 +152,14 @@ define([
         },
 
         /**
-         * Marks the node in  away different from glow
+         * Marks the node in a way different from glow
          *
-         * @method grow
+         * @method markPermanently
          */
         markPermanently: function() {
             //console.log("marking " + this.getNode().getID());
             if (this._callback && !this._toMark) {
-                // trying to mark during animation - need ot wait until animation finishes to mark @ the final location
+                // trying to mark during animation - need to wait until animation finishes to mark @ the final location
                 this._toMark = true;
                 return;
             }
@@ -166,7 +170,7 @@ define([
         /**
          * Unmarks the node
          *
-         * @method shrink
+         * @method unmark
          */
         unmark: function() {
             this.marked && this.marked.remove();

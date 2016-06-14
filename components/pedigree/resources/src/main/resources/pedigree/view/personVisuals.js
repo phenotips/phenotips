@@ -32,6 +32,8 @@ define([
         initialize: function($super, node, x, y) {
             //var timer = new Helpers.Timer();
             $super(node, x, y);
+            this._linkLabel = null;
+            this._linkArea = null;
             this._nameLabel = null;
             this._stillBirthLabel = null;
             this._ageLabel = null;
@@ -64,10 +66,18 @@ define([
          * @method setGenderGraphics
          */
         setGenderGraphics: function($super) {
+            // this method may be slow yet is called after some property updates
+            // skip it while initial properties are set and execute once after all labels have been generated
+            if (this.getNode()._speedup_NOREDRAW) {
+                this.getNode()._speedup_NEEDTOCALL["setGenderGraphics"] = true;
+                return;
+            }
+
+            this.unmark();
+            this._genderGraphics && this._genderGraphics.remove();
+
             //console.log("set gender graphics");
             if(this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
-                this._genderGraphics && this._genderGraphics.remove();
-
                 var radius = PedigreeEditorParameters.attributes.radius;
                 if (this.getNode().isPersonGroup())
                     radius *= PedigreeEditorParameters.attributes.groupNodesScale;
@@ -87,11 +97,6 @@ define([
                     shape = editor.getPaper().set(shape);
                 }
 
-                if(this.getNode().isProband()) {
-                    shape.transform(["...s", 1.07]);
-                    shape.attr("stroke-width", 5);
-                }
-
                 var gender = this.getNode().getGender();
                 if(gender == 'U' || gender == 'O') {
                     this._genderGraphics = shape;
@@ -108,12 +113,24 @@ define([
                 $super();
             }
 
+            this._genderShape.node.setAttribute("class", "node-shape-" + this.getNode().getID());
+
             if(this.getNode().isProband()) {
+                // add arrow to proband
                 this._genderGraphics.push(this.generateProbandArrow());
-                this.getGenderShape().transform(["...s", 1.08]);
-                this.getGenderShape().attr("stroke-width", 5.5);
+                this.getGenderShape().node.setAttribute("isProband", "true");
             }
-            if(!editor.isUnsupportedBrowser() && this.getHoverBox()) {
+            if (this.getNode().getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
+                // highlight current node
+                this.getGenderShape().transform(["...s", 1.06]);
+                this.getGenderShape().attr("stroke-width", 5.5);
+                this.getGenderShape().node.setAttribute("currentPatient", "true");
+            } else if(this.getNode().isProband()) {
+                // slightly highlight proband when it is NOT the current node
+                this.getGenderShape().transform(["...s", 1.04]);
+                this.getGenderShape().attr("stroke-width", 2.2);
+            }
+            if(!editor.isReadOnlyMode() && this.getHoverBox()) {
                 this._genderGraphics.flatten().insertBefore(this.getFrontElements().flatten());
             }
             this.updateDisorderShapes();
@@ -126,11 +143,27 @@ define([
 
         generateProbandArrow: function() {
             var icon = editor.getPaper().path(editor.getView().__probandArrowPath).attr({fill: "#595959", stroke: "none", opacity: 1});
-            var x = this.getX()-this._shapeRadius-26;
-            var y = this.getY()+this._shapeRadius-12;
-            if (this.getNode().getGender() == 'F') {
-                x += 5;
-                y -= 5;
+            icon.node.setAttribute("class", "proband-arrow-shape");
+            if (this.getNode().getAdopted() != "") {
+                var x = this.getX()-78;
+                var y = this.getY()+34;
+            } else {
+                var x = this.getX()-this._shapeRadius-28;
+                var y = this.getY()+this._shapeRadius-14;
+                if(this.getNode().getLifeStatus() == 'deceased' || this.getNode().getLifeStatus() == 'stillborn') {
+                    x -= 6;
+                    y -= 10;
+                }
+                if(this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
+                    x -= 12;
+                    y -= 30;
+                } else if (this.getNode().getGender() == 'F') {
+                    x += 6;
+                    y -= 6;
+                } else if (this.getNode().getGender() == 'U') {
+                    x += 2;
+                    y -= 2;
+                }
             }
             icon.transform(["t" , x, y])
             return icon;
@@ -319,9 +352,10 @@ define([
          * @method drawDeadShape
          */
         drawDeadShape: function() {
+            this._deadShape && this._deadShape.remove();
             var strokeWidth = editor.getWorkspace().getSizeNormalizedToDefaultZoom(2.5);
             var x, y;
-            if(this.getNode().getLifeStatus() == 'aborted') {
+            if (this.getNode().getLifeStatus() == 'aborted') {
                 var side   = PedigreeEditorParameters.attributes.radius * Math.sqrt(3.5);
                 var height = side/Math.sqrt(2);
                 if (this.getNode().isPersonGroup())
@@ -624,8 +658,43 @@ define([
             this.getSBLabel() && this.getSBLabel().remove();
             if (this.getNode().getLifeStatus() == 'stillborn') {
                 this._stillBirthLabel = editor.getPaper().text(this.getX(), this.getY(), "SB").attr(PedigreeEditorParameters.attributes.label);
+                this._stillBirthLabel.addLargeGapAfter = true;
+                this._stillBirthLabel.shiftUp = 15;
             } else {
                 this._stillBirthLabel = null;
+            }
+            this.drawLabels();
+        },
+
+        /**
+         * Returns this Person's PhenoTips profile link label
+         *
+         * @method getLinkLabel
+         * @return {Raphael.el}
+         */
+        getLinkLabel: function() {
+            return this._linkLabel;
+        },
+
+        /**
+         * Updates the PhenoTips profile link label
+         *
+         * @method updateLinkLabel
+         */
+        updateLinkLabel: function() {
+            this._linkArea && this._linkArea.remove();
+            this._linkArea = null;
+            this._linkLabel && this._linkLabel.remove();
+            if (this.getNode().getPhenotipsPatientId() == "") {
+                this._linkLabel = null;
+            } else {
+                this._linkLabel = editor.getPaper().text(this.getX(), this.getY(), this.getNode().getPhenotipsPatientId()).attr(PedigreeEditorParameters.attributes.label); 
+                this._linkLabel.node.setAttribute("class","pedigree-nodePatientTextLink");
+                this._linkLabel.addGapAfter = true;
+                var patientURL = this.getNode().getPhenotipsPatientURL();
+                //this._linkLabel.click(function () { window.open(patientURL); })
+                this._linkLabel.attr({ "href": patientURL, "target": "blank"});  // note: "blank" not "_blank" as Raphael processes this in its own way
+                this._linkLabel.attr("fill", "#00498A");
             }
             this.drawLabels();
         },
@@ -778,6 +847,7 @@ define([
             for(var i = 0; i<labels.length; i++) {
                 labels[i].stop().animate({"y": labels[i].oy + shift}, 200,">");
             }
+            this._linkArea && this._linkArea.stop().animate({"y": this._linkArea.oy + shift}, 200,">");
         },
 
         /**
@@ -787,10 +857,10 @@ define([
          */
         unshiftLabels: function() {
             var labels = this.getLabels();
-            var firstLabel = this._childlessStatusLabel ? 1 : 0;
             for(var i = 0; i<labels.length; i++) {
                 labels[i].stop().animate({"y": labels[i].oy}, 200,">");
             }
+            this._linkArea && this._linkArea.stop().animate({"y": this._linkArea.oy}, 200,">");
         },
 
         /**
@@ -802,7 +872,11 @@ define([
         getLabels: function() {
             var labels = editor.getPaper().set();
             this.getSBLabel() && labels.push(this.getSBLabel());
-            if (!this._anonimized.hasOwnProperty("removePII") || !this._anonimized.removePII) {
+            if (!this._anonymized.hasOwnProperty("removePII") || !this._anonymized.removePII) {
+                if (this.getLinkLabel()) {
+                    this.getLinkLabel().show();
+                    labels.push(this.getLinkLabel());
+                }
                 if (this.getNameLabel()) {
                     this.getNameLabel().show();
                     labels.push(this.getNameLabel());
@@ -816,11 +890,12 @@ define([
                     labels.push(this.getExternalIDLabel());
                 }
             } else {
+                this.getLinkLabel() && this.getLinkLabel().hide();
                 this.getNameLabel() && this.getNameLabel().hide();
                 this.getAgeLabel() && this.getAgeLabel().hide();
                 this.getExternalIDLabel() && this.getExternalIDLabel().hide();
             }
-            if (!this._anonimized.hasOwnProperty("removeComments") || !this._anonimized.removeComments) {
+            if (!this._anonymized.hasOwnProperty("removeComments") || !this._anonymized.removeComments) {
                 if (this.getCommentsLabel()) {
                     this.getCommentsLabel().show();
                     labels.push(this.getCommentsLabel());
@@ -840,7 +915,7 @@ define([
         /**
          * Removes all PII labels
          */
-        setAnonimizedStatus: function($super, status) {
+        setAnonymizedStatus: function($super, status) {
             $super(status);
             this.drawLabels();
         },
@@ -851,6 +926,12 @@ define([
          * @method drawLabels
          */
         drawLabels: function() {
+            // this method may be slow yet is called after each label is generated;
+            // skip it while initial properties are set and execute once after all labels have been generated.
+            if (this.getNode()._speedup_NOREDRAW) {
+                this.getNode()._speedup_NEEDTOCALL["drawLabels"] = true;
+                return;
+            }
             var labels = this.getLabels();
             var selectionOffset = this._labelSelectionOffset();
             var childlessOffset = this.getChildlessStatusLabel() ? PedigreeEditorParameters.attributes.label['font-size'] : 0;
@@ -858,19 +939,45 @@ define([
 
             var lowerBound = PedigreeEditorParameters.attributes.radius * (this.getNode().isPersonGroup() ? PedigreeEditorParameters.attributes.groupNodesScale : 1.0);
 
-            var startY = this.getY() + lowerBound * 1.8 + selectionOffset + childlessOffset;
+            var startY = this.getY() + lowerBound * 1.8 + selectionOffset + childlessOffset + 15;
             for (var i = 0; i < labels.length; i++) {
                 var shift = (labels[i].addGap && i != 0) ? 4 : 8;   // make a small gap between comments and other fields
                 var offset = (labels[i].alignTop) ? (GraphicHelpers.getElementHalfHeight(labels[i]) - shift) : 0;
+                if (i == 0 && labels[i].shiftUp) {
+                    offset -= labels[i].shiftUp;
+                }
                 labels[i].transform(""); // clear all transofrms, using new real x
                 labels[i].attr("x", this.getX());
                 labels[i].attr("y", startY + offset);
                 labels[i].oy = (labels[i].attr("y") - selectionOffset);
                 labels[i].toBack();
-                if (i != labels.length - 1) {   // dont do getBBox() computation if dont need to, it is slow in IE9
+                if (i != labels.length - 1) {   // don't do getBBox() computation if don't need to, it is slow in IE9
                     startY = labels[i].getBBox().y2 + 11;
+                    if (labels[i].addGapAfter) {
+                        startY += 4;
+                    }
+                    if (labels[i].addLargeGapAfter) {
+                        startY += 8;
+                    }
                 }
             }
+
+            // a hack for node links which should be clickable without hoverbox obscuring them and making them move
+            if (this._linkLabel) {
+                this._linkArea && this._linkArea.remove();
+                var boundingBox = this._linkLabel.getBBox();
+                var patientURL = this.getNode().getPhenotipsPatientURL();
+                this._linkArea = editor.getPaper().rect(boundingBox.x-50, boundingBox.y-3, boundingBox.width+100, boundingBox.height+6).attr({
+                    fill: "#F00",
+                    opacity: 0
+                  });
+                this._linkArea.oy = (this._linkArea.attr("y") - selectionOffset);
+                this._linkArea.toFront();
+                this.getLinkLabel().toFront();
+            }
+
+            this.onSetID(); // set IDs of SVG <text> and <a> elements
+
             //if(!editor.isUnsupportedBrowser())
             //    labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());
         },
@@ -884,6 +991,19 @@ define([
             if (this.getChildlessStatusLabel())
                 selectionOffset = selectionOffset/2;
             return selectionOffset;
+        },
+
+        /**
+         * Updates node's <text> and <a> id's when node ID changes
+         * @method onSetID
+         */
+        onSetID: function($super, id) {
+            $super(id);
+            var labels = this.getLabels();
+            for (var i = 0; i < labels.length; i++) {
+                labels[i].node.setAttribute("pedigreeNodeID", this.getNode().getID());
+            }
+            this._linkLabel && (this._linkLabel.node.setAttribute("pedigreeLinkedPatient", this.getNode().getPhenotipsPatientId()));
         },
 
         /**
@@ -909,7 +1029,7 @@ define([
          */
         getAllGraphics: function($super) {
             //console.log("Node " + this.getNode().getID() + " getAllGraphics");
-            return $super().push(this.getHoverBox().getBackElements(), this.getLabels(), this.getCarrierGraphics(), this.getEvaluationGraphics(), this.getHoverBox().getFrontElements());
+            return $super().push(this.getHoverBox().getBackElements(), this.getLabels(), this._linkArea, this.getCarrierGraphics(), this.getEvaluationGraphics(), this.getHoverBox().getFrontElements());
         },
 
         /**

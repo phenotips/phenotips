@@ -80,6 +80,11 @@ define([
                  }
              }
          }
+
+         if (editor.getGraph().getProbandId() == i) {
+             person["proband"] = true;
+         }
+
          exportObj.push(person);
      }
 
@@ -248,7 +253,7 @@ define([
 
          var name = pedigree.GG.properties[i].hasOwnProperty("fName") ? pedigree.GG.properties[i]["fName"].substring(0,8).replace(/[^A-Za-z0-9]/g, '') : id;
 
-         var proband = (i == 0) ? "1" : "0";
+         var proband = (i == editor.getGraph().getProbandId()) ? "1" : "0";
 
          output += familyID + "\t" + name + "\t" + proband + "\t" + id + "\t";
 
@@ -368,20 +373,41 @@ define([
          output += "0\t"; // TODO: Genetic test status
 
          // BRCA1/BRCA2 mutations
-         if (pedigree.GG.properties[i].hasOwnProperty("candidateGenes")) {
-             var genes = pedigree.GG.properties[i].candidateGenes;
+         // 0 = untested, N = no mutation, 1 = BRCA1 positive, 2 = BRCA2 positive, 3 = BRCA1 and BRCA2 positive
+         if (pedigree.GG.properties[i].hasOwnProperty("genes")) {
+
+             var genes = pedigree.GG.properties[i].genes;
+
+             var hasGeneWithOneOfStatuses = function(geneName, statusList) {
+                 var statusSet = Helpers.toObjectWithTrue(statusList);
+                 for (var i = 0; i < genes.length; i++) {
+                     var geneObject = genes[i];
+                     if (geneObject.gene == geneName && statusSet.hasOwnProperty(geneObject.status)) {
+                         return true;
+                     }
+                 }
+                 return false;
+             };
+
              var status = "0";
-             if (Helpers.arrayIndexOf(genes, "BRCA1") >= 0) {
+             if (hasGeneWithOneOfStatuses("BRCA1", ["candidate","solved"])) {
                  status = "1";
              }
-             if (Helpers.arrayIndexOf(genes, "BRCA2") >= 0) {
+             if (hasGeneWithOneOfStatuses("BRCA2", ["candidate","solved"])) {
                  if (status == "1") {
                      status = "3";
                  } else {
                      status = "2";
                  }
              }
-             // TODO: if BRCA1 and/or BRCA2 are among rejected genes set status to "N"
+             if (status == "0") {
+                 // if BRCA1 and BRCA2 are among rejected genes set status to "N"
+                 // TODO: what if only one is rejected and another untested?
+                 if (hasGeneWithOneOfStatuses("BRCA1", ["rejected"]) &&
+                     hasGeneWithOneOfStatuses("BRCA2", ["rejected"])) {
+                     status = "N";
+                 }
+             }
              output += status + "\t";
          } else {
              output += "0\t";
@@ -451,8 +477,9 @@ define([
           "externalID":    "externalId",
           "gender":        "sex",
           "numPersons":    "numPersons",
-          "hpoTerms":      "hpoTerms",
-          "candidateGenes":"candidateGenes",
+          "features":      "features",
+          "nonstandard_features": "nonstandard_features",
+          "genes":         "genes",
           "lostContact":   "lostContact",
           "nodeNumber":    "nodeNumber",
           "cancers":       "cancers",

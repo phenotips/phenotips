@@ -48,7 +48,8 @@ define([
         getSettings: function() {
             // TODO: filter out items which are currently not being displayed on the pedigree
             return {"colors": {"disorders": editor.getDisorderLegend().getAllColors(),
-                               "genes": editor.getGeneLegend().getAllColors(),
+                               "candidateGenes": editor.getCandidateGeneLegend().getAllColors(),
+                               "casualGenes": editor.getCasualGeneLegend().getAllColors(),
                                "cancers": editor.getCancerLegend().getAllColors() },
                     "names": {"disorders": editor.getDisorderLegend().getAllNames() } };
         },
@@ -61,8 +62,11 @@ define([
                 if (settingsObject.colors.hasOwnProperty("disorders")) {
                     editor.getDisorderLegend().setAllPreferredColors(settingsObject.colors.disorders);
                 }
-                if (settingsObject.colors.hasOwnProperty("genes")) {
-                    editor.getGeneLegend().setAllPreferredColors(settingsObject.colors.genes);
+                if (settingsObject.colors.hasOwnProperty("candidateGenes")) {
+                    editor.getCandidateGeneLegend().setAllPreferredColors(settingsObject.colors.candidateGenes);
+                }
+                if (settingsObject.colors.hasOwnProperty("casualGenes")) {
+                    editor.getCasualGeneLegend().setAllPreferredColors(settingsObject.colors.casualGenes);
                 }
             }
         },
@@ -81,24 +85,15 @@ define([
             //   console.log("scaled path: " + Raphael.transformPath(path, ["s", iconScale, iconScale, 0, 0]));
             //
 
-            // 1) menu button
-            // nonScaledPath = "M2.021,9.748L2.021,9.748V9.746V9.748zM2.022,9.746l5.771,5.773l-5.772,5.771l2.122,2.123l7.894-7.895L4.143,7.623L2.022,9.746zM12.248,23.269h14.419V20.27H12.248V23.269zM16.583,17.019h10.084V14.02H16.583V17.019zM12.248,7.769v3.001h14.419V7.769H12.248z";
-            this.__menuButton_svgPath = "M1.213,5.849C1.213,5.849,1.213,5.849,1.213,5.849C1.213,5.849,1.213,5.848,1.213,5.848C1.213,5.848,1.213,5.849,1.213,5.849C1.213,5.849,1.213,5.849,1.213,5.849M1.213,5.848C1.213,5.848,4.676,9.3114,4.676,9.3114C4.676,9.3114,1.2126,12.774,1.2126,12.774C1.2126,12.774,2.486,14.048,2.486,14.048C2.486,14.048,7.222,9.311,7.222,9.311C7.222,9.311,2.486,4.574,2.486,4.574C2.486,4.574,1.213,5.848,1.213,5.8476C1.2131999999999998,5.8476,1.2131999999999998,5.8476,1.2131999999999998,5.8476M7.348799999999999,13.9614C7.348799999999999,13.9614,16.0002,13.9614,16.0002,13.9614C16.0002,13.9614,16.0002,12.161999999999999,16.0002,12.161999999999999C16.0002,12.161999999999999,7.348799999999999,12.161999999999999,7.348799999999999,12.161999999999999C7.348799999999999,12.161999999999999,7.348799999999999,13.9614,7.348799999999999,13.9614C7.348799999999999,13.9614,7.348799999999999,13.9614,7.348799999999999,13.9614M9.949799999999998,10.2114C9.949799999999998,10.2114,16.0002,10.2114,16.0002,10.2114C16.0002,10.2114,16.0002,8.411999999999999,16.0002,8.411999999999999C16.0002,8.411999999999999,9.949799999999998,8.411999999999999,9.949799999999998,8.411999999999999C9.949799999999998,8.411999999999999,9.949799999999998,10.2114,9.949799999999998,10.2114C9.949799999999998,10.2114,9.949799999999998,10.2114,9.949799999999998,10.2114M7.348799999999999,4.6613999999999995C7.348799999999999,4.6613999999999995,7.348799999999999,6.462,7.348799999999999,6.462C7.348799999999999,6.462,16.0002,6.462,16.0002,6.462C16.0002,6.462,16.0002,4.661,16.0,4.6614C16.0,4.6614,7.349,4.6614,7.349,4.6614C7.349,4.6614,7.349,4.6614,7.349,4.6614";
-            this.__menuButton_BBox    = Raphael.pathBBox(this.__menuButton_svgPath);
-
-            // 2) delete button
+            // 1) delete button
             // nonScaledPath = var path = "M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z";
             this.__deleteButton_svgPath = "M14.867,12.851C14.867,12.851,11.566,9.55,11.566,9.55C11.566,9.55,14.866,6.249,14.866,6.249C14.866,6.249,13.169,4.551,13.169,4.551C13.169,4.551,9.868,7.852,9.868,7.852C9.868,7.852,6.567,4.551,6.567,4.551C6.567,4.551,4.87,6.249,4.87,6.249C4.87,6.249,8.171,9.55,8.171,9.55C8.171,9.55,4.87,12.851,4.870,12.851C4.870,12.851,6.568,14.549,6.568,14.549C6.568,14.549,9.868,11.248,9.868,11.248C9.868,11.248,13.169,14.549,13.169,14.549C13.169,14.549,14.867,12.851,14.867,12.851";
             this.__deleteButton_BBox    = Raphael.pathBBox(this.__deleteButton_svgPath);
 
-            // 3) twins button
-            //this.__twinsButton_svgPath = "M0,15L8,0L16,15";
-            //this.__twinsButton_BBox    = Raphael.pathBBox(this.__twinsButton_svgPath);
-
-            // 4) proband arrow
+            // 2) proband arrow
             //this.__arrow_svgPath = "M7.589,20.935l-6.87,6.869l2.476,2.476l6.869-6.869l1.858,1.857l2.258-8.428l-8.428,2.258L7.589,20.935z";
             this.__arrow_svgPath = "M8.348,23.029C8.348,23.029,0.791,30.584,0.791,30.584C0.791,30.584,3.515,33.308,3.515,33.308C3.515,33.308,11.07,25.752,11.0704,25.752C11.07,25.752,13.114,27.795,13.114,27.795C13.114,27.795,15.598,18.524,15.598,18.524C15.598,18.524,6.327,21.008,6.327,21.008C6.327,21.008,8.348,23.029,8.348,23.0285C8.348,23.029,8.348,23.029,8.348,23.029";
-            this.__probandArrowPath = Raphael.transformPath(this.__arrow_svgPath, ["s", 1.1, 1.1, 0, 0]);
+            this.__probandArrowPath = Raphael.transformPath(this.__arrow_svgPath, ["s", 1.3, 1.3, 0, 0]);
         },
 
         /**
@@ -150,18 +145,18 @@ define([
         },
 
         /**
-         * Redraws the pedigree image in anoimized/non-anonimized way
-         * @param {Object} anonimizeSettings a set of anonimization properties, currently "removePII" and "removeComments"
-         * When false anonimizatio nstatus is reset to "do not anonimize"
+         * Redraws the pedigree image in anonymized/non-anonymized way
+         * @param {Object} anonymizeSettings a set of anonymization properties, currently "removePII" and "removeComments"
+         *                                   When false anonymization status is reset to "do not anonymize"
          */
-        setAnonimizeStatus: function(anonimizeSettings) {
-            if (typeof anonimizeSettings !== 'object') {
-                anonimizeSettings = {};
+        setAnonymizeStatus: function(anonymizeSettings) {
+            if (typeof anonymizeSettings !== 'object') {
+                anonymizeSettings = {};
             }
             for (var nodeID in this._nodeMap) {
                 if (this._nodeMap.hasOwnProperty(nodeID)) {
                     var node = this.getNode(nodeID);
-                    node.getGraphics().setAnonimizedStatus(anonimizeSettings);
+                    node.getGraphics().setAnonymizedStatus(anonymizeSettings);
                 }
             }
         },
@@ -464,7 +459,8 @@ define([
             this._lineSet.replaceIDs(changedIdsSet);
 
             editor.getCancerLegend().replaceIDs(changedIdsSet);
-            editor.getGeneLegend().replaceIDs(changedIdsSet);
+            editor.getCandidateGeneLegend().replaceIDs(changedIdsSet);
+            editor.getCasualGeneLegend().replaceIDs(changedIdsSet);
             editor.getHPOLegend().replaceIDs(changedIdsSet);
             editor.getDisorderLegend().replaceIDs(changedIdsSet);
         },
@@ -535,6 +531,11 @@ define([
                 node.getGraphics().unmark();
             }
             this._currentMarkedNew = [];
+        },
+
+        markNode: function(nodeID) {
+            this.getNode(nodeID).getGraphics().markPermanently();
+            this._currentMarkedNew.push(nodeID);
         },
 
         getValidDragTargets: function(sourceNodeID, hoverType) {
@@ -695,8 +696,7 @@ define([
             for (var i = 0; i < newPersons.length; i++) {
                 var newPerson = this.addNode(newPersons[i]);
                 if (markNew) {
-                    newPerson.getGraphics().markPermanently();
-                    this._currentMarkedNew.push(newPersons[i]);
+                    this.markNode(newPerson.getID());
                 }
             }
 

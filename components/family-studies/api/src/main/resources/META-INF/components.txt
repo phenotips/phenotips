@@ -1,0 +1,12 @@
+org.phenotips.studies.family.script.FamilyScriptService
+org.phenotips.studies.family.script.PedigreeScriptService
+org.phenotips.studies.family.internal.PedigreeUtils
+org.phenotips.studies.family.internal.PedigreeProcessorImpl
+org.phenotips.studies.family.listener.PermissionsChangeListener
+org.phenotips.studies.family.internal.PhenotipsFamilyRepository
+org.phenotips.studies.family.internal.PhenotipsFamilyPermissions
+org.phenotips.studies.family.internal.FamilyLockModule
+org.phenotips.studies.family.internal.FamilyMembersLockModule
+org.phenotips.studies.family.internal.PatientFamilyLockModule
+org.phenotips.studies.family.internal.export.PhenotipsFamilyExport
+org.phenotips.studies.family.listener.FamilyDeletingListener

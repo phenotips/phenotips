@@ -1,9 +1,11 @@
 define([
       "pedigree/pedigreeDate",
+      "pedigree/hpoTerm",
       "pedigree/model/baseGraph",
       "pedigree/model/helpers"
     ], function(
       PedigreeDate,
+      HPOTerm,
       BaseGraph,
       Helpers
     ){
@@ -372,7 +374,7 @@ define([
 
         PedigreeImport.validateBaseGraph(newG);
 
-        return newG;
+        return {"baseGraph": newG, "probandNodeID": 0};
     }
 
 
@@ -538,15 +540,18 @@ define([
             // Mutn: 0 = untested, N = no mutation, 1 = BRCA1 positive, 2 = BRCA2 positive, 3 = BRCA1 and BRCA2 positive
             var mutations = parts[17];
             if (mutations == "1" || mutations == "2" || mutations == "3") {
-                properties["candidateGenes"] = [];
+                properties["genes"] = [];
                 if (mutations == 1 || mutations == 3) {
-                    properties["candidateGenes"].push("BRCA1");
+                    properties["genes"].push({"gene": "BRCA1", "status": "solved", "comment": "BOADICEA import"});
                 }
                 if (mutations == 2 || mutations == 3) {
-                    properties["candidateGenes"].push("BRCA2");
+                    properties["genes"].push({"gene": "BRCA2", "status": "solved", "comment": "BOADICEA import"});
                 }
             } else if (mutations == "N") {
-                addCommentToProperties(properties, "BRCA tested: no mutations");
+                properties["genes"].push({"gene": "BRCA1", "status": "rejected", "comment": "BOADICEA import"});
+                properties["genes"].push({"gene": "BRCA2", "status": "rejected", "comment": "BOADICEA import"});
+                // TODO: add comments?
+                //addCommentToProperties(properties, "BRCA tested: no mutations");
             }
 
             var ashkenazi = parts[18];
@@ -618,7 +623,7 @@ define([
 
         PedigreeImport.validateBaseGraph(newG);
 
-        return newG;
+        return {"baseGraph": newG, "probandNodeID": 0};
     }
 
     /* ===============================================================================================
@@ -675,6 +680,9 @@ define([
      *   - "comments": string (default: none)
      *   - "externalId": string (default: none)
      *   - "sex": one of "male" or "m", "female" or "f", "other" or "o", "unknown" or "u" (default: "unknown")
+     *   - "features": array of objects, each representing one standard (documented in an ontology and with a proper ID) phenotype in PhenoTips JSON format
+     *   - "nonstandard_features": array of objects, each representing one custom (user-defined free text) phenotype in PhenoTips JSON format
+     *   - "genes": array of objects, each representing information about one gene in PhenoTips JSON format
      *   - "twinGroup": integer. All children of the sam eparents with the same twin group are considered twins. (fefault: none)
      *   - "monozygotic": boolean. (only applicable for twins)
      *   - "adoptedIn": boolean (default: false)
@@ -730,6 +738,8 @@ define([
        if (inputArray.length == 0) {
            throw "Unable to import pedigree: input is empty";
        }
+
+       var probandID = null;
 
        var newG = new BaseGraph();
 
@@ -791,6 +801,9 @@ define([
                    if (property == "mother" || property == "father")  // those are processed on the second pass
                        continue;
 
+                   if (property == "proband" && probandID === null) {
+                       probandID = pedigreeID;
+                   }
                    if (property == "sex") {
                        var genderString = value.toLowerCase();
                        if( genderString == "female" || genderString == "f")
@@ -825,9 +838,10 @@ define([
                        }
                    } else {
                        var processed = PedigreeImport.convertProperty(property, value);
-                       if (processed !== null) {
-                           // supported property
-                           properties[processed.propertyName] = processed.value;
+                       // supported property or properties one external may result in many internal
+                       // if the property is not supported an empty array is returned, and no data gets transferred
+                       for (var p = 0; p < processed.length; p++) {
+                           properties[processed[p].propertyName] = processed[p].value;
                        }
                    }
                }
@@ -962,7 +976,11 @@ define([
 
        PedigreeImport.validateBaseGraph(newG);
 
-       return newG;
+       if (probandID === null) {
+           probandID = 0; // default to 0 if not defined explicitly
+       }
+
+       return {"baseGraph": newG, "probandNodeID": probandID};
     }
 
 
@@ -1340,7 +1358,7 @@ define([
 
        PedigreeImport.validateBaseGraph(newG);
 
-       return newG;
+       return {"baseGraph": newG, "probandNodeID": 0};
     }
 
 
@@ -1362,8 +1380,9 @@ define([
             "gestationage":    "gestationAge",
             "lifestatus":      "lifeStatus",
             "disorders":       "disorders",
-            "hpoterms":        "hpoTerms",
-            "candidategenes":  "candidateGenes",
+            "features":        "features",
+            "nonstandard_features": "nonstandard_features",
+            "genes":           "genes",
             "ethnicities":     "ethnicities",
             "carrierstatus":   "carrierStatus",
             "externalid":      "externalID",
@@ -1381,13 +1400,54 @@ define([
      * support aliases for some terms and weed out unsupported terms.
      */
     PedigreeImport.convertProperty = function(externalPropertyName, value) {
+        try {
+            // suport old JSON format: "hpoTerms" instead of "features" and
+            // "candidateGenes" instead of "genes"
+            if (externalPropertyName.toLowerCase() == "hpoterms") {
+                // old "hpoTerms" was an array of observed feature IDs
+                var features = [];
+                var nonstandard_features = [];
+                for (var i = 0; i < value.length; i++) {
+                    var id = value[i];
+                    if (HPOTerm.isValidID(id)) {
+                        var feature = { "id": value[i], "observed":"yes", "type":"phenotype" };
+                        features.push(feature);
+                    } else {
+                        var nonstandard_feature = { "label": value[i], "observed":"yes", "type":"phenotype" };
+                        nonstandard_features.push(nonstandard_feature);
+                    }
+                }
+                var result = [];
+                if (features.length > 0) {
+                    result.push( {"propertyName": "features", "value": features } );
+                }
+                if (nonstandard_features.length > 0) {
+                    result.push( {"propertyName": "nonstandard_features", "value": nonstandard_features } );
+                }
+                return result;
+            }
 
-        if (!PedigreeImport.JSONToInternalPropertyMapping.hasOwnProperty(externalPropertyName))
-            return null;
+            if (externalPropertyName.toLowerCase() == "candidategenes") {
+                // old "candidateGenes" was an array of candidate gene IDs
+                var genes = [];
+                for (var i = 0; i < value.length; i++) {
+                    var gene = { "gene": value[i], "status": "candidate" };
+                    genes.push(gene);
+                }
+                return [ {"propertyName": "genes", "value": genes} ];
+            }
 
-        var internalPropertyName = PedigreeImport.JSONToInternalPropertyMapping[externalPropertyName];
+            if (!PedigreeImport.JSONToInternalPropertyMapping.hasOwnProperty(externalPropertyName)) {
+                return [];
+            }
 
-        return {"propertyName": internalPropertyName, "value": value };
+            var internalPropertyName = PedigreeImport.JSONToInternalPropertyMapping[externalPropertyName];
+
+            return [ {"propertyName": internalPropertyName, "value": value } ];
+        } catch (err) {
+            console.log("Error importing property [" + externalPropertyName + "]");
+            return [];
+        }
     }
 
     PedigreeImport.JSONToInternalRelationshipPropertyMapping = {
@@ -1398,18 +1458,23 @@ define([
         };
 
     PedigreeImport.convertRelationshipProperty = function(externalPropertyName, value) {
-
-        if (!PedigreeImport.JSONToInternalRelationshipPropertyMapping.hasOwnProperty(externalPropertyName))
-            return null;
-
-        var internalPropertyName = PedigreeImport.JSONToInternalRelationshipPropertyMapping[externalPropertyName];
-
-        if (externalPropertyName == "consanguinity") {
-            if (value != "Y" && value != "N") {
+        try {
+            if (!PedigreeImport.JSONToInternalRelationshipPropertyMapping.hasOwnProperty(externalPropertyName)) {
                 return null;
             }
+
+            var internalPropertyName = PedigreeImport.JSONToInternalRelationshipPropertyMapping[externalPropertyName];
+
+            if (externalPropertyName == "consanguinity") {
+                if (value != "Y" && value != "N") {
+                    return null;
+                }
+            }
+            return {"propertyName": internalPropertyName, "value": value };
+        } catch (err) {
+            console.log("Error importing relationship property [" + externalPropertyName + "]");
+            return null;
         }
-        return {"propertyName": internalPropertyName, "value": value };
     }
     //===============================================================================================
 

@@ -18,7 +18,7 @@ define(["pedigree/model/helpers"], function(Helpers) {
             this._absoluteY  = y;
             this._hoverBox   = null;
             this._isGrown    = false;
-            this._anonimized = {};
+            this._anonymized = {};
             //console.log("abstract node visuals end");
         },
 
@@ -53,9 +53,9 @@ define(["pedigree/model/helpers"], function(Helpers) {
         /**
          * Controls how a node should be displayed (with or without certain fields, like PII or comments)
          */
-        setAnonimizedStatus: function(anonimizeSettings) {
-            this._anonimized = Helpers.cloneObject(anonimizeSettings);
-            // implementations should redraw itself according to the new settings
+        setAnonymizedStatus: function(anonymizeSettings) {
+            this._anonymized = Helpers.cloneObject(anonymizeSettings);
+            // implementations should redraw themselves according to the new settings
         },
 
         /**

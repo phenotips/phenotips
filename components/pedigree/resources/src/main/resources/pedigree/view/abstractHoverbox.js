@@ -329,17 +329,9 @@ define([
          * @return {Raphael.st} The generated button
          */
         generateMenuBtn: function() {
-            var me = this;
-            var action = function() {
-                me.toggleMenu(!me.isMenuToggled());
-            };
-            var attributes = PedigreeEditorParameters.attributes.menuBtnIcon;
-            var x = this.getX() + this.getWidth() - 20 - this.getWidth()/40;
-            var y = this.getY() + this.getHeight()/40;
-            this.createButton(x, y, editor.getView().__menuButton_svgPath, editor.getView().__menuButton_BBox,
-                              attributes, action, "menu-trigger", "node properties");
-            
+            throw "Not implemented";
         },
+
         /**
          * Creates and returns a delete button (big red X).
          *
@@ -388,7 +380,7 @@ define([
         setHovered: function(isHovered) { 
             this._isHovered = isHovered;
         },
-        
+
         /**
          * Enbales or disables the highlighting of the node
          * @method setHighlighted

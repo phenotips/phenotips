@@ -69,6 +69,9 @@ define ([], function(){
     // Creates a shallow copy of the given object
     // Specific implementation is picked based on http://jsperf.com/cloning-an-object/4
     Helpers.cloneObject = function(obj) {
+        if (typeof obj !== 'object' || Object.prototype.toString.call(obj) === '[object Array]') {
+            throw "cloneObject() aplied to a non-object or an array";
+        }
         var target = {};
         for (var i in obj) {
             if (obj.hasOwnProperty(i))

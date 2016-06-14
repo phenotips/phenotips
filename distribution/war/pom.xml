@@ -766,6 +766,16 @@
       <artifactId>pingback-client-api</artifactId>
       <version>1.0</version>
     </dependency>
+    <dependency>
+	  <groupId>${project.groupId}</groupId>
+      <artifactId>family-studies-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>family-studies-migrations</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- Add dependencies on the XAR distributions so that we transitively include all JAR dependencies in the generated WAR -->
     <dependency>

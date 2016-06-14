@@ -46,21 +46,35 @@
 #end
 #if ("$!request.id" != '')
   #set ($patient = $services.patients.getPatientById($request.id))
+  #set ($docReference = $patient.document)
+  #set ($isPatient = true)
 #elseif ("$!request.eid" != '')
   #set ($patient = $services.patients.getPatientByExternalId($request.eid))
+  #set ($docReference = $patient.document)
+  #set ($isPatient = true)
+#elseif ("$!request.fid" != '')
+  #set ($family = $services.families.getFamilyById($request.fid))
+  #set ($docReference = $family.getDocumentReference())
+  #set ($isPatient = false)
 #end
 #if ("$!{request.outputSyntax}" == 'plain')
   {{content syntax="plain/1.0"}}
 #else
   {{html wiki="false" clean="false"}}
 #end
-#if (!$patient)
+#if (!$patient &amp;&amp; $isPatient || !$family &amp;&amp; !$isPatient)
   $response.setStatus(404)##
   $response.setContentType('application/json')##
-  {"error" : "$services.localization.render('phenotips.PedigreeImageService.noPatient')"}
+  {"error" : "$services.localization.render('phenotips.PedigreeImageService.noDocument')"}
   #break
 #end
-#set ($pedigree = $!xwiki.getDocument($patient.getDocument()).getObject('PhenoTips.PedigreeClass'))
+#if ($isPatient)
+  #set ($objId = $patient.getId())
+  #set ($pedigree = $services.families.getPedigreeForPatient($objId))
+#else
+  #set ($objId = $family.getId())
+  #set ($pedigree = $services.families.getPedigreeForFamily($objId))
+#end
 #if (!$pedigree)
   $response.setStatus(404)##
   $response.setContentType('application/json')##
@@ -68,14 +82,14 @@
   #break
 #end
 #if ($request.legend)
-  #set ($pedigree = $pedigree.getProperty('data').value)
+  #set ($pedigree = $pedigree.getData())
   $response.setContentType('text/html')##
 
   #pedigreeLegend($pedigree, $request.header)
 
   #break
 #else
-  #set ($pedigree = $pedigree.getProperty('image').value)
+  #set ($pedigree = $pedigree.getImage($objId))
   #if (!$pedigree)
     $response.setStatus(404)##
     $response.setContentType('application/json')##
@@ -90,13 +104,14 @@
     #if (!$pedigree.endsWith('&lt;/svg&gt;'))
       #set ($pedigree = $pedigree.concat('&lt;/svg&gt;'))
     #end
-    #set ($pedigreeRasterUrl = $services.svg.rasterizeToTemporaryResource($pedigree, $patient.document))
+    #set ($pedigreeRasterUrl = $services.svg.rasterizeToTemporaryResource($pedigree, $docReference))
     #if ("$!request.getParameter('force-download')" == '1')
       #set ($discard = $pedigreeRasterUrl.getParameters().put('force-download', '1'))
     #end
     $response.sendRedirect($pedigreeRasterUrl.serialize())
   #else
     $response.setContentType('image/svg+xml')##
+    #set ($pedigree = $pedigree.replaceAll("&lt;a[^&gt;]*&gt;(.*?)&lt;/a&gt;", "$1"))
     $pedigree
   #end
 #end

@@ -39,6 +39,7 @@
     <module>skin</module>
     <module>navigation</module>
     <module>export</module>
+    <module>family-studies</module>
     <module>obo2solr</module>
     <module>solr-access-service</module>
     <module>vocabularies</module>
@@ -63,5 +64,6 @@
     <module>record-locking</module>
     <module>xwiki-translation-manager</module>
     <module>xwiki-platform-svg</module>
+    <module>xwiki-locks</module>
   </modules>
 </project>

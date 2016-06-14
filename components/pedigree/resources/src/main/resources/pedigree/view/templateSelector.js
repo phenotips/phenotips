@@ -6,33 +6,31 @@
  * @param {Boolean} isStartupTemplateSelector Set to True if no pedigree has been loaded yet
  */
 define([
-        "pedigree/model/helpers"
+        "pedigree/model/helpers",
+        "pedigree/view/tabbedSelectorTab"
     ], function(
-        Helpers
+        Helpers,
+        TabbedSelectorTab
     ){
-    var TemplateSelector = Class.create( {
+    var TemplateSelector = Class.create(TabbedSelectorTab, {
 
-        initialize: function(isStartupTemplateSelector) {
-            this._isStartupTemplateSelector = isStartupTemplateSelector;
-            this.mainDiv = new Element('div', {'class': 'template-picture-container'});
-            this.mainDiv.update("Loading list of templates...");
-            var closeShortcut = isStartupTemplateSelector ? [] : ['Esc'];
-            this.dialog = new PhenoTips.widgets.ModalPopup(this.mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-template-chooser", title: "Please select a pedigree template", displayCloseButton: !isStartupTemplateSelector, verticalPosition: "top"});
-            isStartupTemplateSelector && this.show();
-            new Ajax.Request(new XWiki.Document('WebHome').getRestURL('objects/PhenoTips.PedigreeClass/'), {
+        initialize: function() {
+            this.internalDiv = new Element('div', {'class': 'template-picture-container'});
+            this.mainDiv = new Element('div', {'class': 'template-outer-container'});
+            this.mainDiv.update(this.internalDiv);
+            this.internalDiv.update("Loading list of templates...");
+            new Ajax.Request(editor.getExternalEndpoint().getPedigreeTemplatesURL(), {
                 method: 'GET',
                 onSuccess: this._onTemplateListAvailable.bind(this)
             });
         },
 
-        /**
-         * Returns True if this template selector is the one displayed on startup
-         *
-         * @method isStartupTemplateSelector
-         * @return {Boolean}
-         */
-        isStartupTemplateSelector: function() {
-            return this._isStartupTemplateSelector;
+        getContentDiv: function() {
+            return this.mainDiv;
+        },
+
+        getTitle: function() {
+            return "Templates";
         },
 
         /**
@@ -42,12 +40,13 @@ define([
          * @private
          */
         _onTemplateListAvailable: function(response) {
-            this.mainDiv.update();
+            this.internalDiv.update();
+            Event.observe(window, 'resize', this._adjustWindowHeight.bind(this));
             var objects = response.responseXML.documentElement.getElementsByTagName('objectSummary');
             for (var i = 0; i < objects.length; ++i) {
                 var pictureBox = new Element('div', {'class': 'picture-box'});
                 pictureBox.update("Loading...");
-                this.mainDiv.insert(pictureBox);
+                this.internalDiv.insert(pictureBox);
                 var href = getSelectorFromXML(objects[i], "link", "rel", "http://www.xwiki.org/rel/properties").getAttribute("href");
                 // Use only the path, since the REST module returns the wrong host behind a reverse proxy
                 var path = href.substring(href.indexOf("/", href.indexOf("//") + 2));
@@ -93,32 +92,37 @@ define([
          */
         _onTemplateSelected: function(event, pictureBox) {
             //console.log("observe onTemplateSelected");
-            this.dialog.close();
+            this.close();
             if (pictureBox.type == 'internal') {
-                editor.getSaveLoadEngine().createGraphFromSerializedData(pictureBox.pedigreeData, false /* add to undo stack */, true /*center around 0*/);
+                var updatedJSONData = editor.getVersionUpdater().updateToCurrentVersion(pictureBox.pedigreeData);
+                editor.getSaveLoadEngine().createGraphFromSerializedData(updatedJSONData, false /* add to undo stack */, true /*center around 0*/);
             } else if (pictureBox.type == 'simpleJSON') {
                 editor.getSaveLoadEngine().createGraphFromImportData(pictureBox.pedigreeData, 'simpleJSON', {}, false /* add to undo stack */, true /*center around 0*/);
             }
         },
 
-        /**
-         * Displays the template selector
-         *
-         * @method show
-         */
-        show: function() {
-            var availableHeight = document.viewport.getHeight() - 80;
-            this.mainDiv.setStyle({'max-height': availableHeight + 'px', 'overflow-y': 'auto'});
-            this.dialog.show();
+        onShow: function() {
+            this._adjustWindowHeight();
         },
 
-        /**
-         * Removes the the template selector
-         *
-         * @method hide
-         */
-        hide: function() {
-            this.dialog.closeDialog();
+        onHide: function() {
+        },
+
+        onActivatedTab: function() {
+            this._adjustWindowHeight();
+        },
+
+        _adjustWindowHeight: function() {
+            var parentDiv = this.getParentDiv();
+            // if window is resized before templates are first initialized, there will be no parent div
+            if (parentDiv) {
+                // make sure templates fit on the screen, but take as much space as possible
+                var parentDivTotalheight = parentDiv.clientHeight;
+                var templateSectionHeight = this.internalDiv.clientHeight;
+                var dialogueSize = parentDivTotalheight - templateSectionHeight;
+                var availableHeight = document.viewport.getHeight() - dialogueSize - 10;
+                this.internalDiv.setStyle({'max-height': availableHeight + 'px'});
+            }
         }
     });
 

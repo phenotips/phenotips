@@ -1,4 +1,4 @@
-/* 
+/*
  * VersionUpdater is responsible for updating pedigree JSON represenatation to the current version.
  */
 define([], function(){
@@ -12,7 +12,14 @@ define([], function(){
                                         "func":       "updateAdoptedStatus"},
                                       { "comment":    "id desanitation",
                                         "introduced": "Mar2015",
-                                        "func":       "updateId"}];
+                                        "func":       "updateId"},
+                                      { "comment":    "proband link",
+                                        "introduced": "Nov2015",
+                                        "func":       "updateNode0ProbandLink"},
+                                      { "comment":    "version info",
+                                        "introduced": "Nov2015",
+                                        "func":       "updateJSONVersionInfo"}
+                                    ];
         },
 
         updateToCurrentVersion: function(pedigreeJSON) {
@@ -34,8 +41,13 @@ define([], function(){
          * - returns null if there were no changes; returns new JSON if there was a change
          */
         updateGroupNodeComments: function(pedigreeJSON) {
-            var change = false;
+
             var data = JSON.parse(pedigreeJSON);
+            if (data.hasOwnProperty("JSON_version")) {
+                // any pedigree which has a JSON_version is known to have the updated data
+                return null;
+            }
+            var change = false;
             for (var i = 0; i < data.GG.length; i++) {
                 var node = data.GG[i];
 
@@ -59,8 +71,12 @@ define([], function(){
          * - returns null if there were no changes; returns new JSON if there was a change
          */
         updateAdoptedStatus: function(pedigreeJSON) {
-            var change = false;
             var data = JSON.parse(pedigreeJSON);
+            if (data.hasOwnProperty("JSON_version")) {
+                // any pedigree which has a JSON_version is known to have the updated data
+                return null;
+            }
+            var change = false;
             for (var i = 0; i < data.GG.length; i++) {
                 var node = data.GG[i];
 
@@ -85,8 +101,12 @@ define([], function(){
          * - returns null if there were no changes; returns new JSON if there was a change
          */
         updateId: function(pedigreeJSON) {
-            var change = false;
             var data = JSON.parse(pedigreeJSON);
+            if (data.hasOwnProperty("JSON_version")) {
+                // any pedigree which has a JSON_version is known to have the updated data
+                return null;
+            }
+            var change = false;
             for (var i = 0; i < data.GG.length; i++) {
                 var node = data.GG[i];
 
@@ -124,6 +144,92 @@ define([], function(){
               temp = temp.replace(/_L_/g, "(");
               return temp.replace(/_J_/g, ")");
             }
+        },
+
+        /* - assumes input is in the pre-Nov-2015 format
+         * - returns null if there were no changes; returns new JSON if there was a change
+         */
+        updateNode0ProbandLink: function(pedigreeJSON) {
+            // check if at least one node is linked to the current patient.
+            // Iff none are, assumenode 0 is the proband and link it to the patient
+
+            var data = JSON.parse(pedigreeJSON);
+            if (data.hasOwnProperty("JSON_version")) {
+                // any pedigree which has a JSON_version is known to have the updated data
+                return null;
+            }
+
+            if (editor.isFamilyPage()) {
+                if (data.hasOwnProperty("probandNodeID")) {
+                    return null;
+                }
+                data["probandNodeID"] = 0;
+                return JSON.stringify(data);
+            }
+
+            var currentPatient = XWiki.currentDocument.page;
+
+            /*
+            //look through all person nodes for a node linked to the current patient
+            for (var i = 0; i < data.GG.length; i++) {
+                var node = data.GG[i];
+
+                if (node.hasOwnProperty("prop")) {
+                    if (node.prop.hasOwnProperty("phenotipsId") ) {
+                        if (node.prop.phenotipsId == currentPatient) {
+
+                            // if there is no proband make this node the proband
+                            // if there is proband, we are done
+                            if (!data.hasOwnProperty("probandNodeID")) {
+                                data["probandNodeID"] = i;
+                                return JSON.stringify(data);
+                            }
+                            else {
+                                return null;
+                            }
+                        }
+                    }
+                }
+            }*/
+
+            // no nodes are linked to the current patient. Either link the proband node or node 0 if no
+            // proband is defined
+            if (!data.hasOwnProperty("probandNodeID")) {
+                var probandID = 0;
+                data["probandNodeID"] = 0;
+            } else {
+                var probandID = data["probandNodeID"];
+            }
+            /*
+            // assign node with id = 0 to be the proband
+            for (var i = 0; i < data.GG.length; i++) {
+                var node = data.GG[i];
+
+                if (node.id == probandID) {
+                    if (!node.hasOwnProperty("prop")) {
+                        node.prop = {};
+                    }
+                    if (node.prop.hasOwnProperty("phenotipsId")) {
+                        alert("Loaded pedigree is inconsistent - assumed proband node is linked to a different patient");
+                        return null;
+                    } else {
+                        node.prop.phenotipsId = currentPatient;
+                        break;
+                    }
+                }
+            }*/
+            return JSON.stringify(data);
+        },
+
+        updateJSONVersionInfo: function(pedigreeJSON) {
+            var data = JSON.parse(pedigreeJSON);
+            if (data.hasOwnProperty("JSON_version")) {
+                return null;
+            }
+            // all updates ran before this point should bring JSON to version "1.0", which
+            // will be recorded here
+            data["JSON_version"] = "1.0";
+            return JSON.stringify(data);
         }
     });
     return VersionUpdater;
