@@ -315,7 +315,10 @@ public class MeasurementsController implements PatientDataController<Measurement
             for (int i = 0; i < entries.length(); ++i) {
                 try {
                     JSONObject entry = entries.optJSONObject(i);
-                    measurements.add(jsonToEntry(entry));
+                    MeasurementEntry measurement = jsonToEntry(entry);
+                    if (measurement != null && !isDuplicate(measurement, measurements)) {
+                        measurements.add(jsonToEntry(entry));
+                    }
                 } catch (Exception er) {
                     this.logger.error("Could not read a particular JSON block", er.getMessage());
                 }
@@ -337,10 +340,27 @@ public class MeasurementsController implements PatientDataController<Measurement
         // not efficient to create a new one for every entry
         SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
         final Date date =
-            j.optString(DATE) != null ? formatter.parse(j.optString(DATE)) : null;
+            j.optString(DATE, null) != null ? formatter.parse(j.optString(DATE)) : null;
+        String type = j.optString(TYPE, null);
+        Double value = j.optDouble(VALUE);
+        if (date != null && type != null && !value.isNaN()) {
+            return new MeasurementEntry(
+                date, j.optString(AGE), type, j.optString(SIDE), value, j.optString(UNIT));
+        }
+        return null;
+    }
 
-        return new MeasurementEntry(
-            date, j.optString(AGE), j.optString(TYPE), j.optString(SIDE), j.optDouble(VALUE), j.optString(UNIT));
+    private boolean isDuplicate(MeasurementEntry measurement, List<MeasurementEntry> measurements)
+    {
+        if (measurements.size() > 0) {
+            for (MeasurementEntry item : measurements) {
+                if (item.getDate().equals(measurement.getDate()) && item.getType().equals(measurement.getType())
+                    && item.getSide().equals(measurement.getSide())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
