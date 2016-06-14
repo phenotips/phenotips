@@ -163,7 +163,7 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>clinical-text-analysis-extension-ui</artifactId>
-      <version>${project.version}</version>
+      <version>1.0-SNAPSHOT</version>
       <type>xar</type>
     </dependency>
     <dependency>
