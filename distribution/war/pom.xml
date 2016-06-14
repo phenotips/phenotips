@@ -802,7 +802,7 @@
       <version>1.0</version>
     </dependency>
     <dependency>
-	  <groupId>${project.groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>family-studies-api</artifactId>
       <version>${project.version}</version>
     </dependency>
