@@ -1,0 +1,2 @@
+org.phenotips.security.encryption.internal.EncryptedMetaClass
+org.phenotips.security.encryption.internal.ORMRegistrationHandler
