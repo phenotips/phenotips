@@ -33,5 +33,6 @@
   <modules>
     <module>authorization</module>
     <module>bridge</module>
+    <module>crypto-api</module>
   </modules>
 </project>

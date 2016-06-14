@@ -613,6 +613,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-crypto-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>patient-access-rules-api</artifactId>
       <version>${project.version}</version>
     </dependency>

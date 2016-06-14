@@ -1,0 +1,3 @@
+org.phenotips.security.encryption.internal.DefaultCryptoUtils
+org.phenotips.security.encryption.internal.DefaultSystemPasswordConfiguration
+org.phenotips.security.encryption.internal.XWikiPropertiesSystemPasswordConfigurationModule
