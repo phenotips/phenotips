@@ -61,5 +61,13 @@
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
+    <dependencySet>
+      <includes>
+        <include>${project.groupId}:scigraph-war</include>
+      </includes>
+      <outputDirectory>webapps/scigraph</outputDirectory>
+      <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
   </dependencySets>
 </assembly>
