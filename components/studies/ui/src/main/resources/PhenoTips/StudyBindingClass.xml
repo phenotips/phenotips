@@ -94,7 +94,8 @@
 &lt;p class="xHint"&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption.hint')&lt;/p&gt;
 &lt;/div&gt;
 #foreach ($sName in $studies)
-    #set ($s = $xwiki.getDocument($sName))
+  #set ($s = $xwiki.getDocument($sName))
+  #if (!$s.isNew())
     #set ($config = $s.getObject('PhenoTips.StudyClass'))
     #set ($configTitle = '')
     #if ("$!{s.plainTitle}" != '')
@@ -106,6 +107,7 @@
     &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value="${s.documentReference}" #if ("$!{value}" == "${s.documentReference}") checked="checked" #end/&gt;$configTitle&lt;/label&gt;
     &lt;p class="xHint"&gt;$!{s.content}&lt;/p&gt;
     &lt;/div&gt;
+  #end
 #end
 #else
   #if ("$!value" == '')
