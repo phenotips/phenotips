@@ -55,6 +55,8 @@ public class ClinicalStatusControllerTest
 
     private static final String DATA_NAME = "clinicalStatus";
 
+    private static final String CONTROLLING_FIELDNAME = UNAFFECTED;
+
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
         new MockitoComponentMockingRule<PatientDataController<String>>(ClinicalStatusController.class);
@@ -140,7 +142,7 @@ public class ClinicalStatusControllerTest
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
-        selectedFields.add(DATA_NAME);
+        selectedFields.add(CONTROLLING_FIELDNAME);
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
@@ -156,8 +158,8 @@ public class ClinicalStatusControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
-        Assert.assertNotNull(json.getJSONObject(DATA_NAME));
-        Assert.assertEquals(AFFECTED, json.getJSONObject(DATA_NAME).get(DATA_NAME));
+        Assert.assertNotNull(json.opt(DATA_NAME));
+        Assert.assertEquals(AFFECTED, json.getString(DATA_NAME));
     }
 
     @Test
@@ -168,12 +170,12 @@ public class ClinicalStatusControllerTest
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
-        selectedFields.add(DATA_NAME);
+        selectedFields.add(CONTROLLING_FIELDNAME);
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertNotNull(json.getJSONObject(DATA_NAME));
-        Assert.assertEquals(AFFECTED, json.getJSONObject(DATA_NAME).get(DATA_NAME));
+        Assert.assertNotNull(json.optString(DATA_NAME, null));
+        Assert.assertEquals(AFFECTED, json.getString(DATA_NAME));
     }
 
     @Test
@@ -185,8 +187,8 @@ public class ClinicalStatusControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
-        Assert.assertNotNull(json.getJSONObject(DATA_NAME));
-        Assert.assertEquals(UNAFFECTED, json.getJSONObject(DATA_NAME).get(DATA_NAME));
+        Assert.assertNotNull(json.optString(DATA_NAME, null));
+        Assert.assertEquals(UNAFFECTED, json.getString(DATA_NAME));
     }
 
     @Test
@@ -196,12 +198,12 @@ public class ClinicalStatusControllerTest
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
-        selectedFields.add(DATA_NAME);
+        selectedFields.add(CONTROLLING_FIELDNAME);
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertNotNull(json.getJSONObject(DATA_NAME));
-        Assert.assertEquals(UNAFFECTED, json.getJSONObject(DATA_NAME).get(DATA_NAME));
+        Assert.assertNotNull(json.optString(DATA_NAME, null));
+        Assert.assertEquals(UNAFFECTED, json.getString(DATA_NAME));
     }
 
     @Test
