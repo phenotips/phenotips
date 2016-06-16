@@ -456,7 +456,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             Group group = this.groupManager.getGroup(groupName);
 
             if (group != null && !group.isUserInGroup(user)) {
-                this.logger.warn("Incorrect group");
+                this.logger.warn("Incorrect group name provided by {}", request.getRemoteAddr());
                 return generateFailedActionResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_INCORRECTGROUP);
             }
 
@@ -496,7 +496,6 @@ public class DefaultReceivePatientData implements ReceivePatientData
             // if GUID is present in the request attempt to update an existing patient
             // (or fail if GUID is invalid or the patient is not created/authored by the user)
             String guid = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_GUID);
-            User user = this.userManager.getUser(userName);
             context.setUserReference(user.getProfileDocument());
 
             if (guid != null) {
@@ -570,7 +569,6 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
     /**
      * Exctacts the list of granted consents from a request
-     *
      * @param rawPatientState patient state JSON string directly from the {@link Request} object
      */
     private Set<String> extractConsents(String rawPatientState)

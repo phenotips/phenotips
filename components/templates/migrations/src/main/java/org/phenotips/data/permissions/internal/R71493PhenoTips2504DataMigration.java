@@ -39,9 +39,8 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 import com.xpn.xwiki.store.migration.hibernate.HibernateDataMigration;
 
 /**
- * Migration for PhenoTips issue PT-2504: After upgrade from 1.2 to 1.3, some templates have form configuration set
- * with gene variants hidden. Update all templates to reference the new "gene-variants" field instead of the old
- * "genes" one.
+ * Migration for PhenoTips issue PT-2504: After upgrade from 1.2 to 1.3, some templates have form configuration set with
+ * gene variants hidden. Update all templates to reference the new "gene-variants" field instead of the old "genes" one.
  *
  * @version $Id$
  * @since 1.3M2
