@@ -180,7 +180,7 @@ xwiki.store.attachment.recyclebin.hint=file
           </dependency>
           <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>phenotips-studies-migrations</artifactId>
+            <artifactId>phenotips-templates-migrations</artifactId>
             <version>${project.version}</version>
           </dependency>
           <dependency>
