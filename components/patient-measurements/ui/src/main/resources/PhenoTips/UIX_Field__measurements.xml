@@ -117,7 +117,6 @@ $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssfx.use('uicomponents/phenotips/measurements.css')##
 $xwiki.jsfx.use('uicomponents/phenotips/measurements.js', true)##
 $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
-$xwiki.jsfx.use('uicomponents/phenotips/durationValidator.js', true)##
 #set ($measurementClassId = $doc.getObjectNumbers('PhenoTips.MeasurementClass'))##
 #set ($objs = $services.query.xwql('from doc.object(PhenoTips.MeasurementsConfigurationClass) as obj').setLimit(1).execute())##
 #set ($itemDoc = $xwiki.getDocument($objs.get(0)))##
@@ -256,8 +255,7 @@ $xwiki.jsfx.use('uicomponents/phenotips/durationValidator.js', true)##
       &lt;label &gt;$services.localization.render('phenotips.patientSheet.measurements.age'):&lt;/label&gt;
       #if ($xcontext.action == 'edit')
         &lt;span class="buttonwrapper actions"&gt;&lt;a class="action delete button secondary" href="#" title="$services.localization.render('phenotips.patientSheet.measurements.deleteMeasurementSet.title')"&gt;✖&lt;/a&gt;&lt;/span&gt;
-        &lt;input class="pt-duration measurement-age" type="text" placeholder="$services.localization.render('phenotips.patientSheet.measurements.age.placeholder')" value="$!age"&gt;
-        &lt;span class="error"&gt;&lt;/span&gt;
+        &lt;input class="pt-duration measurement-age" type="text" placeholder="$services.localization.render('phenotips.widgets.durationField.placeholder')" value="$!age"&gt;
       #else
         &lt;span&gt;$!age&lt;/span&gt;
       #end
