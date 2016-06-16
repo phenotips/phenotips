@@ -18,8 +18,6 @@
 package org.phenotips.projects.internal;
 
 import org.phenotips.components.ComponentManagerRegistry;
-import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.projects.data.Project;
@@ -36,7 +34,6 @@ import org.xwiki.users.UserManager;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -51,6 +48,8 @@ import com.xpn.xwiki.objects.BaseObject;
 public class DefaultProject implements Project
 {
     private static final String OPEN_FOR_CONTRIBUTION_KEY = "openProjectForContribution";
+
+    private static final String OPEN_FOR_VIEWING_KEY = "openProjectForViewing";
 
     private String projectId;
 
@@ -154,6 +153,13 @@ public class DefaultProject implements Project
     }
 
     @Override
+    public boolean isProjectOpenForViewing() {
+        BaseObject xObject = this.projectObject.getXObject(Project.CLASS_REFERENCE);
+        int openIntValue = xObject.getIntValue(DefaultProject.OPEN_FOR_VIEWING_KEY);
+        return openIntValue == 1;
+    }
+
+    @Override
     public boolean isProjectOpenForContribution() {
         BaseObject xObject = this.projectObject.getXObject(Project.CLASS_REFERENCE);
         int openIntValue = xObject.getIntValue(DefaultProject.OPEN_FOR_CONTRIBUTION_KEY);
@@ -176,37 +182,7 @@ public class DefaultProject implements Project
     }
 
     @Override
-    public Collection<Patient> getAllPatients() {
-        PatientRepository patientRepository = this.getPatientRepository();
-        List<Patient> patients = new LinkedList<Patient>();
-        Collection<String> patientIds = getAllPatientIds();
-        for (String id : patientIds) {
-            Patient patient = patientRepository.getPatientById(id);
-            if (patient != null) {
-                patients.add(patient);
-            }
-        }
-        return patients;
-    }
-
-    @Override
     public int getNumberOfPatients() {
-        Collection<String> patientIds = getAllPatientIds();
-        return patientIds == null ? 0 : patientIds.size();
-    }
-
-    @Override
-    public String toString()
-    {
-        return getFullName();
-    }
-
-    @Override
-    public int compareTo(Project other) {
-        return this.getId().compareTo(other.getId());
-    }
-
-    private Collection<String> getAllPatientIds() {
         StringBuilder querySb = new StringBuilder();
         querySb.append(", BaseObject accessObj, StringProperty accessProp, BaseObject patientObj, LongProperty iid ");
         querySb.append("where patientObj.name = doc.fullName ");
@@ -215,7 +191,7 @@ public class DefaultProject implements Project
         querySb.append("and iid.id.id = patientObj.id and iid.id.name = 'identifier' and iid.value >= 0 ");
         querySb.append("and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id ");
 
-        List<Project> projects = new LinkedList<Project>();
+        Set<Project> projects = new HashSet<Project>();
         projects.add(this);
         querySb.append(" and ");
         querySb.append(this.getProjectsRepository().getProjectCondition("accessObj", "accessProp", projects));
@@ -229,7 +205,13 @@ public class DefaultProject implements Project
             this.getLogger().error("Error while performing projects query: [{}] ", e.getMessage());
         }
 
-        return queryResults;
+        return queryResults.size();
+    }
+
+    @Override
+    public String toString()
+    {
+        return getFullName();
     }
 
     private Logger getLogger()
@@ -286,14 +268,4 @@ public class DefaultProject implements Project
         }
         return null;
     }
-
-    private PatientRepository getPatientRepository() {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager().getInstance(PatientRepository.class);
-        } catch (ComponentLookupException e) {
-            // Should not happen
-        }
-        return null;
-    }
-
 }
