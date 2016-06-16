@@ -124,7 +124,7 @@
     #end
   )))
   #end
-  #if ($showDod)
+  #if ($showDod &amp;&amp; (!$showDodUnknown || $xcontext.action == 'edit'))
     (% class="controlled" %) (((
     #__displayFormatted('2-col' 'date_of_death' '' 'date' '')
     )))
