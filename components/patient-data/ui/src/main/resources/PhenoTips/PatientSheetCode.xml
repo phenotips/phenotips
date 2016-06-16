@@ -363,71 +363,6 @@ document.observe('xwiki:dom:loaded', function() {
   return XWiki;
 }(XWiki || {}));
 
-// Returns true if birth_date is before death_date, false if birth_date is after death_date and undefined if they cannot be compared
-// A date range is understood as the first possible day of the range for a birth date, and the last possible day of the range
-// for a death date (so only the years are compared)
-var isDateAfter = function(birth_date, death_date) {
-
-   var birth = birth_date;
-   var death = death_date;
-
-   // compare years
-   if (typeof birth.year == "undefined" || typeof death.year == "undefined") {
-      // dates cannot be compared
-      return;
-   }
-
-   var deathDateRange = death.hasOwnProperty("range") ? death.range.years : 1;
-   var maxDeathYear = death.year + deathDateRange - 1;
-
-   if (birth.year &lt; maxDeathYear) {
-      return true;
-   }
-   if (birth.year &gt; maxDeathYear) {
-      return false;
-   }
-
-   // if at least one of the dates is a fuzzy date (range.years  &gt; 1) this is as good as we can do -
-   // at this point first possible birth year == last possible death year, but we don't know any better.
-   // Since dates may be valid, we assume they are
-   if ((birth.hasOwnProperty("range") &amp;&amp; birth.range.years &gt; 1) ||
-       (death.hasOwnProperty("range") &amp;&amp; death.range.years &gt; 1)) {
-     return true;
-   }
-
-   // years are the same, compare months
-   if (typeof birth.month == "undefined" || typeof death.month == "undefined") {
-      // dates cannot be compared
-      return;
-   }
-   if (birth.month &lt; death.month) {
-      return true;
-   }
-   if (birth.month &gt; death.month) {
-      return false;
-   }
-
-   // months are the same, check days
-   if (typeof birth.day == "undefined" || typeof death.day == "undefined") {
-      // dates cannot be compared
-      return;
-   }
-   if (birth.day &lt; death.day || birth.day == death.day) {
-      return true;
-   } else {
-      return false;
-   }
-}
-
-var is_death_date_after_birth_date = function () {
-   var birth_date = $$("[id$='date_of_birth_entered']")[0].value.evalJSON();
-   var death_date = $$("[id$='date_of_death_entered']")[0].value.evalJSON();
-   if (isDateAfter(birth_date,death_date) == false) {
-      Validate.fail("$escapetool.javascript($services.localization.render('phenotips.PatientSheetCode.birthDate.afterDeathDate'))");
-   } else {
-      return true;
-   }
-}
 
 // registers LiveValidation and birth/death dates observers
 document.observe('xwiki:dom:loaded', function()
@@ -449,7 +384,15 @@ document.observe('xwiki:dom:loaded', function()
   if (!date_of_death.__validation) {
     date_of_death.__validation = new LiveValidation(date_of_death, {validMessage: ''});
   }
-  date_of_death.__validation.add(is_death_date_after_birth_date);
+  date_of_death.__validation.add(function () {
+    var birth_date = $$("[id$='date_of_birth_entered']")[0].value.evalJSON();
+    var death_date = $$("[id$='date_of_death_entered']")[0].value.evalJSON();
+    if (PhenoTips.widgets.FuzzyDatePicker.isDateAfter(birth_date,death_date) == false) {
+      Validate.fail("$escapetool.javascript($services.localization.render('phenotips.PatientSheetCode.birthDate.afterDeathDate'))");
+    } else {
+      return true;
+    }
+  });
 
   // when date of death years are given as a decade, the value of that field is empty.
   // LiveValidation does not show error message on this case
@@ -733,6 +676,30 @@ document.observe('xwiki:dom:loaded', function()
              }
         }.bind(selectionSummary);
 
+        selectionSummary._getAgeOfOnsetSummary = function(qualifierElt) {
+          if (!qualifierElt) {
+            return undefined;
+          }
+
+          qualifierPreviewText = qualifierElt.title;
+
+          var ageOfOnsetDetails = qualifierElt.up('dd');
+          // If "Add details" was clicked, the date picker is not initialized yet
+          if (ageOfOnsetDetails.down('.fuzzy-date').__datePicker) {
+            var ageOfOnsetDate = ageOfOnsetDetails.down('.fuzzy-date').__datePicker.getFormattedValue();
+            var ageOfOnsetAge = ageOfOnsetDetails.down('.pt-age-of-onset').value;
+            if (ageOfOnsetDate || ageOfOnsetAge) {
+              qualifierPreviewText += ' (';
+              ageOfOnsetDate &amp;&amp; (qualifierPreviewText += ageOfOnsetDate);
+              ageOfOnsetAge &amp;&amp; ageOfOnsetDate &amp;&amp; (qualifierPreviewText += ' / ');
+              ageOfOnsetAge &amp;&amp; (qualifierPreviewText += 'age ' + ageOfOnsetAge);
+              qualifierPreviewText += ')';
+            }
+          }
+
+          return qualifierPreviewText;
+        }.bind(selectionSummary);
+
         selectionSummary._preparePreview = function(pdItem) {
           var details ='';
           var commentPreview = pdItem.down('.comments-preview');
@@ -770,7 +737,13 @@ document.observe('xwiki:dom:loaded', function()
                  qualifierPreview = new Element('dd', {'class' : qualifier + '-preview preview' });
                  qualifierElt.up('dd').insert({after: qualifierPreview});
                }
-               qualifierPreview.update(qualifierElt.title);
+               var qualifierPreviewText;
+               if (qualifier == 'age_of_onset') {
+                 qualifierPreviewText = selectionSummary._getAgeOfOnsetSummary(qualifierElt);
+               } else {
+                 qualifierPreviewText = qualifierElt.title
+               }
+               qualifierPreview.update(qualifierPreviewText);
                details += qualifierElt.title;
              } else {
                if (qualifierPreview) {qualifierPreview .update('');}
@@ -1013,8 +986,14 @@ document.observe('xwiki:dom:loaded', function()
                 var header = e.up();
                 var dataContainer = header.next();
                 var selectedOption = dataContainer.down("input[type='radio']:checked");
+                var summary;
+                if (dataContainer.hasClassName('age_of_onset')) {
+                  summary = selectionSummary._getAgeOfOnsetSummary(selectedOption);
+                } else {
+                  summary = selectedOption &amp;&amp; selectedOption.readAttribute('title');
+                }
                 var selectedName = new Element('span', {'class' : (selectedOption &amp;&amp; selectedOption.value &amp;&amp; 'selected' || 'none')}).update(
-                    selectedOption &amp;&amp; selectedOption.readAttribute('title') || ''
+                    summary || ''
                 );
                 header.insert({bottom: selectedName});
                 var cClassName = "collapsed";
@@ -1031,19 +1010,35 @@ document.observe('xwiki:dom:loaded', function()
                     }
                 });
                 dataContainer.select("input[type='radio']").each(function(radio) {
-                    radio.observe('click', function(){
+                    radio.observe('click', function() {
                         dataContainer.addClassName(cClassName);
-                        selectedName.update(radio.readAttribute('title'));
-                        if (radio.value) {
-                          selectedName.addClassName('selected');
-                          selectedName.removeClassName('none');
-                        } else {
-                          selectedName.removeClassName('selected');
-                          selectedName.addClassName('none');
-                        }
                         e.update(PhenoTips.widgets.OntologyBrowser.prototype._getExpandCollapseSymbol(true));
                     });
                 });
+                ['change', 'duration:format', 'xwiki:date:changed', 'value:change'].each(function(ev) {
+                  dataContainer.observe(ev, function(){
+                      var radio = dataContainer.down("input[type='radio']:checked");
+                      var summary;
+                      if (dataContainer.hasClassName('age_of_onset')) {
+                        summary = selectionSummary._getAgeOfOnsetSummary(radio);
+                      } else {
+                        summary = radio.title;
+                      }
+                      selectedName.update(summary);
+                      if (radio.value) {
+                        selectedName.addClassName('selected');
+                        selectedName.removeClassName('none');
+                      } else {
+                        selectedName.removeClassName('selected');
+                        selectedName.addClassName('none');
+                      }
+                  });
+                });
+                // Listens for exact age of onset change due to patient DOB change
+                dataContainer.observe('duration:change', function() {
+                  var detailsEl = this.up('.phenotype-details.collapsed');
+                  detailsEl &amp;&amp; selectionSummary._preparePreview(detailsEl);
+                }.bind(dataContainer));
             });
         }.bind(selectionSummary);
 
@@ -4399,16 +4394,6 @@ h1, h2, h3, h4 {
   white-space: nowrap;
   max-height: 1.2em;
 }
-
-.phenotype-details input[type="text"] {
-  padding: 0;
-  width: 50%;
-  color: $theme.textSecondaryColor;
-  font-size: 87.5%;
-  box-shadow: none !important;
-  background: transparent !important;
-  border-color: transparent !important;
-}
 .phenotype-details .action-done {
   cursor: pointer;
   font-size: 2em;
@@ -4453,7 +4438,40 @@ h1, h2, h3, h4 {
   background: #FFF !important;
   border-color: #FFF !important;
 }
-
+.phenotype-details .age_of_onset .top {
+  padding: 0 1.2em 0.6em 1.2em;
+  overflow: hidden;
+}
+#current-phenotype-selection .phenotype-details .age_of_onset .date label,
+#current-phenotype-selection .phenotype-details .age_of_onset .age label {
+  float: left;
+  line-height: 1.5em;
+  margin-right: 0.3em;
+  width: 2.7em;
+}
+.phenotype-details .age_of_onset .date,
+.phenotype-details .age_of_onset .age {
+  margin-top: 0.6em;
+  float: left;
+}
+.phenotype-details .age_of_onset .date {
+  margin-right: 2em;
+}
+.phenotype-details .age_of_onset .date,
+.phenotype-details .age_of_onset .date .fuzzy-date-picker {
+  float: left;
+}
+.phenotype-details .age_of_onset .age input[type=text] {
+  float: left;
+  padding: 2px;
+  width: auto;
+}
+.phenotype-details .age_of_onset .age input[type=text][readonly] {
+  font-style: italic;
+}
+.phenotype-details .LV_validation_message {
+  position: static;
+}
 .phenotype-details .attachment-list .attachment-item,
 .phenotype-details .attachment-list .attachment-item input {
   display: none;

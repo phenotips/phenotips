@@ -417,7 +417,7 @@ public class PropertyDisplayer
             StringBuilder value = new StringBuilder();
             for (String propname : o.getxWikiClass().getEnabledPropertyNames()) {
                 Property property = o.getProperty(propname);
-                if (property == null || property.getValue() == null) {
+                if (property == null || property.getValue() == null || propname.charAt(0) == '_') {
                     continue;
                 }
                 Object propvalue = property.getValue();

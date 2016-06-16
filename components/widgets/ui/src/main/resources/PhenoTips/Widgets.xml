@@ -4988,6 +4988,8 @@ document.observe("xwiki:dom:updated", init);
       //       upon programmatic update if a substitute is found can remove these hackish events
       this.container.observe("datepicker:date:changed", this.onProgrammaticUpdate.bind(this));
       this.onProgrammaticUpdate();
+      this.__input.__datePicker = this;
+      this.__input.fire('datepicker:init');
     },
 
     onProgrammaticUpdate : function() {
@@ -5147,6 +5149,8 @@ document.observe("xwiki:dom:updated", init);
             }
         }
 
+        this.dateParts = dateObject;
+
         return {"dateObject" : dateObject, "dateStr" : (y &amp;&amp; !y.match(/\d\d\d\ds$/)) ? (y + "-" + this.getZeroPaddedValue(m) + "-" + this.getZeroPaddedValue(d)) : ""};
     },
 
@@ -5170,6 +5174,91 @@ document.observe("xwiki:dom:updated", init);
             this.__input.fire("xwiki:date:changed");
           }
         }
+    },
+
+    getFormattedValue: function() {
+      var dateObject = this.getCurrentDateValues().dateObject;
+      if (!dateObject) {
+        return undefined;
+      }
+      var format = "$!services.recordConfiguration.activeConfiguration.dateOfBirthFormat" || "yyyy-MM-dd";
+      if (dateObject.range &amp;&amp; dateObject.range.years &amp;&amp; dateObject.range.years &gt; 1) {
+        return dateObject.year + 's';
+      } else {
+        var displayedVal = format;
+        if (dateObject.year) {
+          displayedVal = displayedVal.replace(/y+/g, dateObject.year);
+          if (dateObject.month) {
+            var displayedMonth = dateObject.month &gt; 9 ? dateObject.month : '0' + dateObject.month;
+            displayedVal = displayedVal.replace(/M+/g, displayedMonth);
+            if (dateObject.day) {
+              var displayedDay = dateObject.day &gt; 9 ? dateObject.day : '0' + dateObject.day;
+              displayedVal = displayedVal.replace(/d+/g, displayedDay);
+            }
+          }
+        }
+
+        displayedVal = displayedVal.replace(/[a-zA-Z]+(\W|$)/g, '').replace(/^\W+|\W+$/g, '');
+
+        return displayedVal;
+      }
+    },
+  });
+
+  Object.extend(widgets.FuzzyDatePicker, {
+    // Returns true if d1 is before d2, false if d1 is after d2 and undefined if they cannot be compared
+    // A decade value is understood as the first day of the decade for d1, and the last day of the decade for d2
+    // (so only the years are compared)
+    isDateAfter: function(birth_date, death_date) {
+       var birth = birth_date;
+       var death = death_date;
+
+       // compare years
+       if (typeof birth.year == "undefined" || typeof death.year == "undefined") {
+          // dates cannot be compared
+          return;
+       }
+
+       var deathDateRange = death.hasOwnProperty("range") ? death.range.years : 1;
+       var maxDeathYear = death.year + deathDateRange - 1;
+
+       if (birth.year &lt; maxDeathYear) {
+          return true;
+       }
+       if (birth.year &gt; maxDeathYear) {
+          return false;
+       }
+
+       // if at least one of the dates is a fuzzy date (range.years  &gt; 1) this is as good as we can do -
+       // at this point first possible birth year == last possible death year, but we don't know any better.
+       // Since dates may be valid, we assume they are
+       if ((birth.hasOwnProperty("range") &amp;&amp; birth.range.years &gt; 1) ||
+           (death.hasOwnProperty("range") &amp;&amp; death.range.years &gt; 1)) {
+         return true;
+       }
+
+       // years are the same, compare months
+       if (typeof birth.month == "undefined" || typeof death.month == "undefined") {
+          // dates cannot be compared
+          return;
+       }
+       if (birth.month &lt; death.month) {
+          return true;
+       }
+       if (birth.month &gt; death.month) {
+          return false;
+       }
+
+       // months are the same, check days
+       if (typeof birth.day == "undefined" || typeof death.day == "undefined") {
+          // dates cannot be compared
+          return;
+       }
+       if (birth.day &lt; death.day || birth.day == death.day) {
+          return true;
+       } else {
+          return false;
+       }
     }
   });
 
@@ -5196,7 +5285,7 @@ document.observe("xwiki:dom:updated", init);
       <name>Fuzzy datepicker</name>
     </property>
     <property>
-      <parse/>
+      <parse>1</parse>
     </property>
     <property>
       <use>currentPage</use>

@@ -302,8 +302,10 @@
     {{html wiki="false" clean="false"}}&lt;dl id="$targetId"&gt;{{/html}}##
       #foreach($prop in $dataClass.properties)##
         #if ($enabledProperties.contains($prop.name))#set($displayMode='')#else#set($displayMode=' hidden')#end##
-        &lt;dt class="${prop.name}${displayMode}"&gt; #if ($collapsibleProperties.contains($prop.name)) &lt;span class="collapse-button"&gt;&lt;/span&gt; #end &lt;label for=""&gt;${prop.translatedPrettyName}:&lt;/label&gt;&lt;/dt&gt;##
-        &lt;dd class="${prop.name}${displayMode}"&gt;$doc.display($prop.getName(), $targetObj)&lt;/dd&gt;##
+        #if ($prop.name.charAt(0) != '_') ## properties starting with '_' are hidden
+          &lt;dt class="${prop.name}${displayMode}"&gt; #if ($collapsibleProperties.contains($prop.name)) &lt;span class="collapse-button"&gt;&lt;/span&gt; #end &lt;label for=""&gt;${prop.translatedPrettyName}:&lt;/label&gt;&lt;/dt&gt;##
+          &lt;dd class="${prop.name}${displayMode}"&gt; $doc.display($prop.getName(), $targetObj)&lt;/dd&gt;##
+        #end
       #end##
     &lt;/dl&gt;##
     &lt;input type="hidden" name="delete-action" value="$doc.getURL('objectremove', "classname=${targetObj.xWikiClass.name}&amp;amp;classid=${targetObj.number}&amp;amp;form_token=$!{services.csrf.getToken()}&amp;amp;ajax=1")"/&gt;##
