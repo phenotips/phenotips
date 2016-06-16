@@ -27,20 +27,21 @@ import javax.inject.Singleton;
  * @version $Id$
  */
 @Component
-@Named("contributor")
+@Named("leader")
 @Singleton
-public class ContributorAccessLevel extends AbstractProjectAccessLevel
+public class LeaderAccessLevel extends AbstractProjectAccessLevel
 {
     /**
-     * Create a new ContributorAccessLevel.
+     * Create a new LeaderAccessLevel.
      */
-    public ContributorAccessLevel() {
-        super(1, true);
+    public LeaderAccessLevel()
+    {
+        super(2, true);
     }
 
     @Override
     public String getName()
     {
-        return "contributor";
+        return "leader";
     }
 }
