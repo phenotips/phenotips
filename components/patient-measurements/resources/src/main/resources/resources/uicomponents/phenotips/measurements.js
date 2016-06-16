@@ -105,7 +105,7 @@ var PhenoTips = (function(PhenoTips) {
 
       // On an age change, check for duplicates
       this.el.on('duration:format', 'input.measurement-age', (function(ev, el) {
-        this._sets.invoke('setAgeValidationState');
+        this._sets.invoke('triggerValidateAge');
       }).bind(this));
 
       this._charts = new PhenoTips.widgets.MeasurementsCharts($('charts-new'), this);
@@ -362,7 +362,8 @@ var PhenoTips = (function(PhenoTips) {
       this._moreToggleButtonHandler = this._moreToggleButtonHandler.bind(this);
       this._deleteHandler = this._deleteHandler.bind(this);
       this._setDateValidationState = this._setDateValidationState.bind(this);
-      this.setAgeValidationState = this.setAgeValidationState.bind(this);
+      this.triggerValidateAge = this.triggerValidateAge.bind(this);
+      this._thisAgeIsUnique = this._thisAgeIsUnique.bind(this);
       this.getObject = this.getObject.bind(this);
       this.destroy = this.destroy.bind(this);
 
@@ -410,7 +411,7 @@ var PhenoTips = (function(PhenoTips) {
 
         ['duration:format'].each(function(ev) {
           _this._ageEl.observe(ev, function(e) {
-            _this.setAgeValidationState();
+            _this._ageEl.__validation.validate();
             _this._updateHiddenFields('age', e.target.value);
           });
         });
@@ -439,6 +440,10 @@ var PhenoTips = (function(PhenoTips) {
           this._moreContainer.hide();
           this.el.select('.expand-buttons .buttonwrapper.hide')[0].hide();
         }
+
+        // Init age validation
+        this._ageEl.__validation = this._ageEl.__validation || new LiveValidation(this._ageEl, {validMessage: '', wait: 500});
+        this._ageEl.__validation.add(this._thisAgeIsUnique);
 
         // Init age/date readonly state
         if (this._dateEl.value.length > 0) {
@@ -551,7 +556,7 @@ var PhenoTips = (function(PhenoTips) {
         age: XWiki.contextaction == 'view' ? this.el.down('div.age > span').innerHTML : this._ageEl.value,
         measurements: {}
       };
-      if (this._ageEl.hasClassName('error')) {
+      if (this._ageEl.hasClassName('LV_invalid_field')) {
         obj.age = '';
       }
 
@@ -589,28 +594,27 @@ var PhenoTips = (function(PhenoTips) {
       }
     },
 
-    setAgeValidationState: function() {
-      var errorEl = this._ageEl.up().down('span.error');
+    triggerValidateAge: function() {
+      this._ageEl.__validation.validate();
+    },
 
-      // reset
-      errorEl.update('');
-      this._ageEl.removeClassName('error');
+    _thisAgeIsUnique: function() {
       this._ageEl.removeClassName('duplicate');
 
-      if (this._ageEl.title == "-1") {
-        errorEl.update("$services.localization.render('phenotips.patientSheet.measurements.ageIsInvalid')");
-        this._ageEl.addClassName('error');
-      } else if (this._ageEl.title > 0) {
-        var thisAgeEl = this._ageEl;
-        var otherAgeEls = this.parent.el.select('input.measurement-age');
-        var dupAgeEls = otherAgeEls.filter(function(el) {
-          return el.title == thisAgeEl.title && el != thisAgeEl;
-        });
-        if (dupAgeEls.length) {
-          errorEl.update("$services.localization.render('phenotips.patientSheet.measurements.measurementSetAgeExists')");
-          this._ageEl.addClassName('error');
-          this._ageEl.addClassName('duplicate');
-        }
+      if (!this._ageEl.title || this._ageEl.title == "0") {
+        return true;
+      }
+
+      var thisAgeEl = this._ageEl;
+      var otherAgeEls = this.parent.el.select('input.measurement-age');
+      var dupAgeEls = otherAgeEls.filter(function(el) {
+        return el.title == thisAgeEl.title && el != thisAgeEl;
+      });
+      if (dupAgeEls.length) {
+        Validate.fail("$services.localization.render('phenotips.patientSheet.measurements.measurementSetAgeExists')");
+        this._ageEl.addClassName('duplicate');
+      } else {
+        return true;
       }
     },
   });
