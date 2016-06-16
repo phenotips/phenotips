@@ -60,7 +60,7 @@ public class R71492PhenoTips2592DataMigration extends AbstractHibernateDataMigra
     @Override
     public String getDescription()
     {
-        return "Update all templates to use DBStringListProperty instead of StringListProperty";
+        return "Update all Templates to use DBStringListProperty instead of StringListProperty";
     }
 
     @Override

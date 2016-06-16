@@ -519,7 +519,6 @@ document.observe("xwiki:dom:loaded", function() {
   float: left;
 }
 .tp-assignment-config a.button {
-  cursor: text;
   font-size: 1em;
   font-weight: normal;
   text-transform: none;
