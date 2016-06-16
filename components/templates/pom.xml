@@ -30,8 +30,8 @@
   <name>PhenoTips - Templates</name>
   <modules>
     <module>api</module>
+    <module>default-impl</module>
     <module>migrations</module>
     <module>ui</module>
-    <module>default-impl</module>
   </modules>
 </project>
