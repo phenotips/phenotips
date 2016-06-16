@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.objects.DBStringListProperty;
+import com.xpn.xwiki.objects.StringListProperty;
 import com.xpn.xwiki.store.XWikiHibernateBaseStore.HibernateCallback;
 import com.xpn.xwiki.store.migration.DataMigrationException;
 import com.xpn.xwiki.store.migration.XWikiDBVersion;
@@ -39,16 +40,17 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 import com.xpn.xwiki.store.migration.hibernate.HibernateDataMigration;
 
 /**
- * Migration for PhenoTips issue PT-2504: After upgrade from 1.2 to 1.3, some studies have form configuration set with
- * gene variants hidden. Update all studies to reference the new "gene-variants" field instead of the old "genes" one.
+ * Migration for PhenoTips issue PT-2592: Cannot easily query all templates using a specific field. Update all templates
+ * to use DBStringListProperty instead of the simple StringListProperty for storing the list of enabled fields and
+ * sections.
  *
  * @version $Id$
  * @since 1.3M2
  */
 @Component(roles = { HibernateDataMigration.class })
-@Named("R71493-PT-2504")
+@Named("R71492-PT-2592")
 @Singleton
-public class R71493PhenoTips2504DataMigration extends AbstractHibernateDataMigration
+public class R71492PhenoTips2592DataMigration extends AbstractHibernateDataMigration
     implements HibernateCallback<Object>
 {
     /** Logging helper object. */
@@ -58,13 +60,13 @@ public class R71493PhenoTips2504DataMigration extends AbstractHibernateDataMigra
     @Override
     public String getDescription()
     {
-        return "Update all studies to reference to use DBStringListProperty instead of StringListProperty";
+        return "Update all templates to use DBStringListProperty instead of StringListProperty";
     }
 
     @Override
     public XWikiDBVersion getVersion()
     {
-        return new XWikiDBVersion(71493);
+        return new XWikiDBVersion(71492);
     }
 
     @Override
@@ -77,18 +79,18 @@ public class R71493PhenoTips2504DataMigration extends AbstractHibernateDataMigra
     public Object doInHibernate(Session session) throws HibernateException, XWikiException
     {
         Query q =
-            session.createQuery("select p from " + DBStringListProperty.class.getName() + " as p, BaseObject as o"
-                + " where o.className='PhenoTips.StudyClass' and p.id.id=o.id"
-                + " and 'org.phenotips.patientSheet.field.genes' in elements(p.list)");
+            session.createQuery("select p from " + StringListProperty.class.getName() + " as p, BaseObject as o"
+                + " where o.className='PhenoTips.StudyClass' and p.id=o.id");
         @SuppressWarnings("unchecked")
-        List<DBStringListProperty> properties = q.list();
-        this.logger.debug("Found {} studies using the old 'genes' field", properties.size());
-        for (DBStringListProperty property : properties) {
-            List<String> values = property.getList();
-            values.set(values.indexOf("org.phenotips.patientSheet.field.genes"),
-                "org.phenotips.patientSheet.field.gene-variants");
-            values.remove("org.phenotips.patientSheet.field.rejected_genes");
-            session.update(property);
+        List<StringListProperty> wrongProperties = q.list();
+        this.logger.debug("Found {} template properties of type StringListProperty", wrongProperties.size());
+        for (StringListProperty oldValue : wrongProperties) {
+            DBStringListProperty newValue = new DBStringListProperty();
+            newValue.setId(oldValue.getId());
+            newValue.setName(oldValue.getName());
+            newValue.setValue(oldValue.getList());
+            session.delete(oldValue);
+            session.save(newValue);
         }
 
         return null;
