@@ -264,8 +264,10 @@ $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
   &lt;tbody class="measurements"&gt;
     #measurements(true true $set $proto)
     #if ($xcontext.action == 'edit')
+      #set ($moreMeasurements = "#measurements(false true $set $proto)")
+      #if ($moreMeasurements.trim() != '')
       &lt;tbody class="expanded-measurements"&gt;
-        #measurements(false true $set $proto)
+        $moreMeasurements
       &lt;/tbody&gt;
       &lt;tr&gt;
         &lt;td colspan="4" class="expand-buttons"&gt;
@@ -283,6 +285,7 @@ $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
           &lt;/span&gt;
         &lt;/td&gt;
       &lt;/tr&gt;
+      #end
 
     #else
       #measurements(false true $set $proto)
