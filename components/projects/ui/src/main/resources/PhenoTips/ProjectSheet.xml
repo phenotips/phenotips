@@ -40,11 +40,13 @@
   <content>{{velocity output="false"}}
 $xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)
 $xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)
-$xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)
-$xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)
 $xwiki.ssx.use('PhenoTips.ProjectSheet')
 $xwiki.jsx.use('PhenoTips.ProjectSheet')
 $xwiki.jsx.use('PhenoTips.Widgets')
+$xwiki.ssx.use('PhenoTips.Widgets')
+$xwiki.jsx.use('PhenoTips.ImageDisplayer')
+$xwiki.ssx.use('PhenoTips.ImageDisplayer')
+$xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 {{/velocity}}
 {{velocity}}
 ##
@@ -56,6 +58,9 @@ $xwiki.jsx.use('PhenoTips.Widgets')
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.projectName')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.projectName.hint')
 : {{html}}&lt;input type="text" name="title" value="$!doc.title"/&gt;{{/html}}
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.groups.image')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.groups.imageHint')
+: $doc.display('image')
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.projectDescription')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.projectDescription.hint')
 : {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="2" cols="80"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
@@ -109,10 +114,8 @@ $xwiki.jsx.use('PhenoTips.Widgets')
 {{/html}}
 )))
 #else ##not 'edit' mode
-; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.projectName')&lt;/label&gt;{{/html}}
-: $!doc.title
+(% class="group-logo" %)(((#if ("$!{doc.getObject('Phenotips.ProjectClass').getProperty('image').value}" != '')$doc.display('image')#{else}$xwiki.getDocument('PhenoTips.ProjectTemplate').display('image')#{end})))
 #if ($doc.content != '')
-; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.projectDescription')&lt;/label&gt;{{/html}}
 : $!escapetool.html($doc.content)
 #end
 
@@ -140,16 +143,6 @@ $xwiki.jsx.use('PhenoTips.Widgets')
 &lt;/table&gt;
 {{/html}}
 
-##
-## Templates section
-##
-; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.templates')&lt;/label&gt;{{/html}}
-: {{html clean="false"}}
-&lt;table id="templatesTable"&gt;
-   &lt;tbody id="templatesList"/&gt;
-&lt;/table&gt;
-{{/html}}
-#end
 ##
 ## Patients (read only in edit or view mode)
 ##
