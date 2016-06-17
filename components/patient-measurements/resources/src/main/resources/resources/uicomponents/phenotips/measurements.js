@@ -428,17 +428,19 @@ var PhenoTips = (function(PhenoTips) {
         this.el.select('.delete')[0].observe('click', this._deleteHandler);
 
         // Hide (or show)
-        var hasExpandedValue = false;
-        this.el.select('.expanded-measurements input[name$=_value]').each(function(el) {
-          if (el.value.trim().length > 0) {
-            hasExpandedValue = true;
+        if (this._moreContainer) {
+          var hasExpandedValue = false;
+          this.el.select('.expanded-measurements input[name$=_value]').each(function(el) {
+            if (el.value.trim().length > 0) {
+              hasExpandedValue = true;
+            }
+          });
+          if (hasExpandedValue) {
+            this.el.select('.expand-buttons .buttonwrapper.show')[0].hide();
+          } else {
+            this._moreContainer.hide();
+            this.el.select('.expand-buttons .buttonwrapper.hide')[0].hide();
           }
-        });
-        if (hasExpandedValue) {
-          this.el.select('.expand-buttons .buttonwrapper.show')[0].hide();
-        } else {
-          this._moreContainer.hide();
-          this.el.select('.expand-buttons .buttonwrapper.hide')[0].hide();
         }
 
         // Init age validation
