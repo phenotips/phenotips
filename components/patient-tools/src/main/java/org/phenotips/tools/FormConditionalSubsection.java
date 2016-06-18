@@ -27,21 +27,25 @@ public class FormConditionalSubsection extends FormGroup
 
     private FormElement titleYesNoPicker;
 
-    private boolean selected;
+    private boolean yesSelected;
 
-    FormConditionalSubsection(String title, String type, FormElement titleYesNoPicker, boolean selected)
+    private boolean noSelected;
+
+    FormConditionalSubsection(String title, String type, FormElement titleYesNoPicker, boolean yesSelected,
+        boolean noSelected)
     {
         super(title);
         this.type = type;
         this.titleYesNoPicker = titleYesNoPicker;
-        this.selected = selected;
+        this.yesSelected = yesSelected;
+        this.noSelected = noSelected;
     }
 
     @Override
     public String display(DisplayMode mode, String[] fieldNames)
     {
         String displayedElements = super.display(mode, fieldNames);
-        if (StringUtils.isBlank(displayedElements) && !this.selected) {
+        if (StringUtils.isBlank(displayedElements) && !this.yesSelected && !this.noSelected) {
             return "";
         }
         if (DisplayMode.Edit.equals(mode)) {
@@ -50,9 +54,10 @@ public class FormConditionalSubsection extends FormGroup
                 + "<div class='dropdown invisible " + this.type + "'><div>"
                 + displayedElements + "</div></div></div>";
         } else {
-            return "<label class='section'>"
-                + XMLUtils.escapeElementContent(this.title)
-                + "</label><div class='subsection " + this.type + "'>"
+            String title = this.titleYesNoPicker.display(mode, fieldNames);
+            return "<div class='section" + (StringUtils.isEmpty(title) ? " value-checked" : "") + "'>"
+                + StringUtils.defaultIfEmpty(title, XMLUtils.escapeElementContent(this.title))
+                + "</div><div class='subsection " + this.type + "'>"
                 + displayedElements + "</div>";
         }
     }

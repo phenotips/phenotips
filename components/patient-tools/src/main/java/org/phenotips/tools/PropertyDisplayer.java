@@ -281,7 +281,7 @@ public class PropertyDisplayer
             boolean yesSelected = customYesSelected.remove(id);
             boolean noSelected = customNoSelected.remove(id);
             FormElement titleYesNoPicker = generateField(id, title, true, yesSelected, noSelected);
-            subsection = new FormConditionalSubsection(title, type, titleYesNoPicker, yesSelected);
+            subsection = new FormConditionalSubsection(title, type, titleYesNoPicker, yesSelected, noSelected);
         } else {
             subsection = new FormSubsection(title, type);
         }
