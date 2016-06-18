@@ -78,7 +78,11 @@
 
 #macro (__display $propName)
 (% class="displayed-value"%)(((
-#if($xcontext.action == 'edit' || ($doc.display($propName) != ''))${doc.display($propName).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}#{else}-#{end}
+#if ("$!class.get($propName).getValue('contenttype')" == 'PureText' &amp;&amp; $xcontext.action != 'edit')
+  #if($xcontext.action == 'edit' || ($doc.display($propName) != ''))${doc.display($propName).replaceAll('^\{\{html clean="false" wiki="false"}}', '{{content syntax="plain/1.0"}}').replaceAll('\{\{/html}}$', '{{/content}}')}#{else}-#{end}
+#else
+  #if($xcontext.action == 'edit' || ($doc.display($propName) != ''))${doc.display($propName).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}#{else}-#{end}
+#end
 
 )))##
 #end
