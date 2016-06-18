@@ -72,7 +72,7 @@ public class PropertyDisplayer
 
     private Map<String, Map<String, String>> metadata;
 
-    private List<FormSection> sections = new LinkedList<FormSection>();
+    private List<FormSection> sections = new LinkedList<>();
 
     PropertyDisplayer(Collection<Map<String, ?>> template, FormData data, Vocabulary ontologyService)
     {
@@ -83,11 +83,11 @@ public class PropertyDisplayer
         this.fieldNames[1] = data.getNegativeFieldName();
         this.propertyName = data.getPositivePropertyName();
         this.prepareMetaData();
-        List<String> customYesSelected = new LinkedList<String>();
+        List<String> customYesSelected = new LinkedList<>();
         if (data.getSelectedValues() != null) {
             customYesSelected.addAll(data.getSelectedValues());
         }
-        List<String> customNoSelected = new LinkedList<String>();
+        List<String> customNoSelected = new LinkedList<>();
         if (data.getNegativeFieldName() != null && data.getSelectedNegativeValues() != null) {
             customNoSelected.addAll(data.getSelectedNegativeValues());
         }
@@ -98,10 +98,10 @@ public class PropertyDisplayer
                 this.sections.add(generateSection(sectionTemplate, customYesSelected, customNoSelected));
             }
         }
-        Map<String, List<String>> yCustomCategories = new HashMap<String, List<String>>();
-        Map<String, List<String>> nCustomCategories = new HashMap<String, List<String>>();
+        Map<String, List<String>> yCustomCategories = new HashMap<>();
+        Map<String, List<String>> nCustomCategories = new HashMap<>();
         for (String value : customYesSelected) {
-            List<String> categories = new LinkedList<String>();
+            List<String> categories = new LinkedList<>();
             categories.addAll(this.getCategoriesFromOntology(value));
             categories.addAll(this.getCategoriesFromCustomMapping(value, data.getCustomCategories()));
             if (categories.isEmpty()) {
@@ -110,7 +110,7 @@ public class PropertyDisplayer
             yCustomCategories.put(value, categories);
         }
         for (String value : customNoSelected) {
-            List<String> categories = new LinkedList<String>();
+            List<String> categories = new LinkedList<>();
             categories.addAll(this.getCategoriesFromOntology(value));
             categories.addAll(this.getCategoriesFromCustomMapping(value, data.getCustomNegativeCategories()));
             if (categories.isEmpty()) {
@@ -157,13 +157,13 @@ public class PropertyDisplayer
     protected Collection<Map<String, ?>> replaceOtherWithTopSections(Collection<Map<String, ?>> originalTemplate)
     {
         // Need to work with a copy to prevent concurrency problems.
-        List<Map<String, ?>> template = new LinkedList<Map<String, ?>>();
+        List<Map<String, ?>> template = new LinkedList<>();
         template.addAll(originalTemplate);
 
-        Map<String, String> m = new HashMap<String, String>();
+        Map<String, String> m = new HashMap<>();
         m.put("is_a", "HP:0000118");
         List<VocabularyTerm> topSections = this.ontologyService.search(m);
-        Set<String> topSectionsId = new LinkedHashSet<String>();
+        Set<String> topSectionsId = new LinkedHashSet<>();
         for (VocabularyTerm section : topSections) {
             topSectionsId.add(section.getId());
         }
@@ -206,7 +206,7 @@ public class PropertyDisplayer
             if (term == null) {
                 continue;
             }
-            Map<String, Object> templateSection = new HashMap<String, Object>();
+            Map<String, Object> templateSection = new HashMap<>();
 
             String title = term.getName();
             title = title.replace("Abnormality of the ", "").replace("Abnormality of ", "");
@@ -338,7 +338,7 @@ public class PropertyDisplayer
 
     private List<String> assignCustomFields(FormSection section, Map<String, List<String>> customCategories)
     {
-        List<String> assigned = new LinkedList<String>();
+        List<String> assigned = new LinkedList<>();
         if (section.getCategories().size() == 0) {
             assigned.addAll(customCategories.keySet());
         } else {
@@ -372,7 +372,7 @@ public class PropertyDisplayer
         if (!id.startsWith("HP:")) {
             return false;
         }
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put(INDEXED_PARENT_KEY, id);
         return (this.ontologyService.count(params) > 0);
     }
@@ -388,7 +388,7 @@ public class PropertyDisplayer
             && List.class.isAssignableFrom(termObj.get(INDEXED_CATEGORY_KEY).getClass())) {
             return (List<String>) termObj.get(INDEXED_CATEGORY_KEY);
         }
-        return new LinkedList<String>();
+        return new LinkedList<>();
     }
 
     private List<String> getCategoriesFromCustomMapping(String value, Map<String, List<String>> customCategories)
@@ -398,12 +398,12 @@ public class PropertyDisplayer
                 return category.getValue();
             }
         }
-        return new LinkedList<String>();
+        return new LinkedList<>();
     }
 
     private void prepareMetaData()
     {
-        this.metadata = new HashMap<String, Map<String, String>>();
+        this.metadata = new HashMap<>();
         for (com.xpn.xwiki.api.Object o : this.data.getDocument().getObjects("PhenoTips.PhenotypeMetaClass")) {
             String name = "";
             String category = "";
@@ -426,7 +426,7 @@ public class PropertyDisplayer
             if (StringUtils.isNotBlank(name) && value.length() > 0) {
                 Map<String, String> subvalues = this.metadata.get(name);
                 if (subvalues == null) {
-                    subvalues = new HashMap<String, String>();
+                    subvalues = new HashMap<>();
                     this.metadata.put(name, subvalues);
                 }
                 subvalues.put(category, "<div class='phenotype-details'><dl>" + value.toString() + "</dl></div>");
