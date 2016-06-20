@@ -365,6 +365,7 @@
 
 #phenotips-globalTools label {
   margin-left: 2em;
+  white-space: nowrap;
 }
 
 #create-patient-record {
