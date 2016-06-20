@@ -705,7 +705,7 @@ document.observe('xwiki:dom:loaded', function()
                commentPreview = new Element('dd', {'class' : 'comments-preview preview' });
                comment.up().insert({after: commentPreview});
              }
-             commentPreview.update(comment.value);
+             commentPreview.update(comment.value.escapeHTML());
              commentPreview.title = comment.value;
              details += comment.value;
           } else {

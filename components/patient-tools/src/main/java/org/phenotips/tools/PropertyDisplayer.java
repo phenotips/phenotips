@@ -20,6 +20,8 @@ package org.phenotips.tools;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
+import org.xwiki.xml.XMLUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -419,8 +421,15 @@ public class PropertyDisplayer
                 } else if (StringUtils.equals("target_property_value", propname)) {
                     name = propvalue.toString();
                 } else {
-                    value.append(o.get(propname).toString().replaceAll("\\{\\{/?html[^}]*+}}", "")
-                        .replaceAll("<(/?)p>", "<$1dd>"));
+                    String str = o.get(propname).toString();
+                    str = str.replaceAll("\\{\\{/?html[^}]*+}}", "");
+                    if (StringUtils.isBlank(str)) {
+                        continue;
+                    }
+                    str = str.replaceAll("^(<p>)?", "<dd>").replaceAll("(</p>)?$", "</dd>");
+                    str = XMLUtils.escapeElementContent(str);
+                    str = str.replaceAll("&#60;(/?)dd&#62;", "<$1dd>");
+                    value.append(str);
                 }
             }
             if (StringUtils.isNotBlank(name) && value.length() > 0) {
