@@ -1255,6 +1255,9 @@ define([
             // validate: by now the graph should satisfy all assumptions
             this.DG.GG.validate();
 
+            // update ancestors
+            this.updateAncestors();
+
             // fix common layout mistakes (e.g. relationship not right above the only child)
             this._heuristics.improvePositioning(ranksBefore, rankYBefore);
 
