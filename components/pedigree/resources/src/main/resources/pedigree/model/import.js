@@ -815,6 +815,45 @@ PedigreeImport.initFromSimpleJSON = function(inputText)
            }
        }
 
+       // once everything else is imported, check and import genes and features in the 1.3.x format
+       // E.g.:
+       //
+       //  "features":[{"id":"HP:0011904","observed":"yes","label":"Persistence of hemoglobin F","type":"phenotype"}],
+       //
+       //  "nonstandard_features":[{"observed":"yes","type":"phenotype","label":"sdf"}]
+       //
+       //  "genes":[{"gene":"RNU1-4","status":"candidate","strategy":["common_mutations"]},{"gene":"BCL3","status":"solved"}]
+       //
+       for (var property in nextPerson) {
+           if (nextPerson.hasOwnProperty(property)) {
+               var value    = nextPerson[property];
+               var property = property.toLowerCase();
+               if (property == "genes") {
+                   for (var g = 0; g < value.length; g++) {
+                       if (value[g].status == "candidate" || value[g].status == "solved") {
+                           if (!properties.hasOwnProperty("candidateGenes")) {
+                               properties["candidateGenes"] = [];
+                           }
+                           properties["candidateGenes"].push(value[g].gene);
+                       }
+                   }
+               } else if (property == "features" || property == "nonstandard_features") {
+                   for (var f = 0; f < value.length; f++) {
+                       if (value[f].type == "phenotype" && value[f].observed == "yes") {
+                           if (!properties.hasOwnProperty("hpoTerms")) {
+                               properties["hpoTerms"] = [];
+                           }
+                           if (property == "features") {
+                               properties["hpoTerms"].push(value[f].id);     // features have "id"
+                           } else {
+                               properties["hpoTerms"].push(value[f].label);  // nonstandard_features have "label"
+                           }
+                       }
+                   }
+               }
+           }
+       }
+
        // only use externalID if id is not present
        if (nextPerson.hasOwnProperty("externalId") && !hasID.hasOwnProperty(pedigreeID)) {
            externalIDToID[nextPerson.externalId] = pedigreeID;
