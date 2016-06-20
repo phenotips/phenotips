@@ -309,7 +309,7 @@
   {
     "type"       : "section",
     "title"      : "Prenatal development",
-    "categories" : ["HP:0001197"],
+    "categories" : ["HP:0001197", "HP:0001511"],
     "data"       : [
       {"id"      : "HP:0001511"},
       {"id"      : "HP:0001562"},
