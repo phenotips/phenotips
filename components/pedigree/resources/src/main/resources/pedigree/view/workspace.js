@@ -174,6 +174,11 @@ var Workspace = Class.create({
         svgText = svgText.replace(/<radialGradient.*?<\/radialGradient>/g, "");
         // remove "created by raphael", some older browsers may be confused
         svgText = svgText.replace(/<desc>[^<>]+<\/desc>/g, "");
+        // For the two fixes below see http://stackoverflow.com/questions/30273775/namespace-prefix-ns1-for-href-on-tagelement-is-not-defined-setattributens
+        // Firefox, Safari root NS issue fix
+        svgText = svgText.replace(' xlink=', ' xmlns:xlink=');
+        // Safari xlink NS issue fix
+        svgText = svgText.replace(/NS\d+:href/g, 'xlink:href');
 
         background.style.display = "";
 
