@@ -4070,7 +4070,7 @@ h1, h2, h3, h4 {
 .chart-wrapper {
   box-shadow: 0 0 6px $theme.borderColor;
   display:inline-block;
-  width:32%;
+  width:24%;
   margin-left:1%;
 }
 .chart-wrapper:hover {
