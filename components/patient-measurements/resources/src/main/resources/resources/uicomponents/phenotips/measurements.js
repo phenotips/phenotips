@@ -659,6 +659,9 @@ var PhenoTips = (function(PhenoTips) {
     initialize: function($super, el, parent) {
       $super(el, parent);
 
+      // Track requests to the measurement evaluation service
+      this.lastRequestID = 0;
+
       // Bind methods
       this.fetchAndRenderPercentileSd = this.fetchAndRenderPercentileSd.bind(this);
       this._genderChangeHandler = this._genderChangeHandler.bind(this);
@@ -705,11 +708,13 @@ var PhenoTips = (function(PhenoTips) {
 
       if (this._valueEl.value.length && fetchParams.sex.length && fetchParams.age.length && fetchParams.sex.length) {
         var eventType = e ? e.type : '';
+        var requestID = ++this.lastRequestID;
         var ajx = new Ajax.Request(XWiki.contextPath+"/rest/measurements/percentile", {
           method: 'get',
           parameters: fetchParams,
           requestHeaders: {Accept : "application/json"},
           onSuccess: (function(resp) {
+            if (requestID < this.lastRequestID) {return;}
             this._renderPercentileSd(pctlEl, resp.responseJSON);
             if (eventType != 'input' && eventType != 'phenotips:measurement-updated') {
               this._selectAssocPhenotypes(resp.responseJSON['associated-terms']);
@@ -888,6 +893,9 @@ var PhenoTips = (function(PhenoTips) {
     initialize: function($super, el, parent) {
       $super(el, parent);
 
+      // Track requests to the measurement evaluation service
+      this.lastRequestID = 0;
+
       this.fetchAndRenderComputedValue = this.fetchAndRenderComputedValue.bind(this);
       this._getDependentMeasurementField = this._getDependentMeasurementField.bind(this);
 
@@ -930,11 +938,13 @@ var PhenoTips = (function(PhenoTips) {
 
       if (canCalc) {
         var event = e;
+        var requestID = ++this.lastRequestID;
         var ajx = new Ajax.Request(XWiki.contextPath+"/rest/measurements/computed", {
           method: 'get',
           parameters: fetchParams,
           requestHeaders: {Accept : "application/json"},
           onSuccess: (function(resp) {
+            if (requestID < this.lastRequestID) {return;}
             this._valueEl.value = resp.responseJSON.value.toFixed(2);
             this.fetchAndRenderPercentileSd(event);
           }).bind(this),
