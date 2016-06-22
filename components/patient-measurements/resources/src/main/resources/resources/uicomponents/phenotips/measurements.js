@@ -675,7 +675,7 @@ var PhenoTips = (function(PhenoTips) {
         this.fetchAndRenderPercentileSd();
 
         // Attach handlers
-        ['input', 'phenotips:measurement-updated'].each((function(ev) {
+        ['input', 'blur', 'phenotips:measurement-updated'].each((function(ev) {
           this._valueEl.observe(ev, this.fetchAndRenderPercentileSd);
         }).bind(this));
         ['duration:change', 'duration:format'].each((function(ev) {
@@ -704,13 +704,16 @@ var PhenoTips = (function(PhenoTips) {
       }
 
       if (this._valueEl.value.length && fetchParams.sex.length && fetchParams.age.length && fetchParams.sex.length) {
+        var eventType = e ? e.type : '';
         var ajx = new Ajax.Request(XWiki.contextPath+"/rest/measurements/percentile", {
           method: 'get',
           parameters: fetchParams,
           requestHeaders: {Accept : "application/json"},
           onSuccess: (function(resp) {
             this._renderPercentileSd(pctlEl, resp.responseJSON);
-            this._selectAssocPhenotypes(resp.responseJSON['associated-terms']);
+            if (eventType != 'input' && eventType != 'phenotips:measurement-updated') {
+              this._selectAssocPhenotypes(resp.responseJSON['associated-terms']);
+            }
           }).bind(this),
           onFailure: function (response) {
             if (response.status == 500) {
@@ -725,7 +728,7 @@ var PhenoTips = (function(PhenoTips) {
     },
 
     _genderChangeHandler: function(e) {
-      this.fetchAndRenderPercentileSd();
+      this.fetchAndRenderPercentileSd(e);
     },
 
     _renderPercentileSd: function(el, values) {
@@ -926,19 +929,20 @@ var PhenoTips = (function(PhenoTips) {
       }
 
       if (canCalc) {
+        var event = e;
         var ajx = new Ajax.Request(XWiki.contextPath+"/rest/measurements/computed", {
           method: 'get',
           parameters: fetchParams,
           requestHeaders: {Accept : "application/json"},
           onSuccess: (function(resp) {
             this._valueEl.value = resp.responseJSON.value.toFixed(2);
-            this.fetchAndRenderPercentileSd();
+            this.fetchAndRenderPercentileSd(event);
           }).bind(this),
           onFailure: function (response) {}
         });
       } else {
         this._valueEl.value = '';
-        this.fetchAndRenderPercentileSd();
+        this.fetchAndRenderPercentileSd(e);
       }
     },
 
