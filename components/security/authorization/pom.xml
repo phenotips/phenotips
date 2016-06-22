@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-security</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2.5</version>
   </parent>
   <artifactId>phenotips-authorization</artifactId>
   <name>PhenoTips - Security - Authorization APIs</name>
