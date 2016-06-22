@@ -57,11 +57,14 @@ public class TemplatesRepository
     /**
      * @return all templates
      */
-    public List<Template> getAllTemplates() {
+    public List<Template> getAllTemplates()
+    {
         List<Template> templates = this.queryTemplates(null, -1);
-        Collections.sort(templates, new Comparator<Template>() {
+        Collections.sort(templates, new Comparator<Template>()
+        {
             @Override
-            public int compare(Template o1, Template o2) {
+            public int compare(Template o1, Template o2)
+            {
                 return o1.getName().compareTo(o2.getName());
             }
         });
@@ -69,8 +72,8 @@ public class TemplatesRepository
     }
 
     /**
-     * Returns a JSON object with a list of templates, all with ids that fit a
-     * search criterion. If the search criterion is null, it is ignored.
+     * Returns a JSON object with a list of templates, all with ids that fit a search criterion. If the search criterion
+     * is null, it is ignored.
      *
      * @param input the beginning of the template id
      * @param resultsLimit maximal length of list

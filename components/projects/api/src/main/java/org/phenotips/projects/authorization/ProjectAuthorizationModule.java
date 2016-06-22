@@ -61,12 +61,14 @@ public class ProjectAuthorizationModule implements AuthorizationModule
     private AccessLevel leaderAccessLevel;
 
     @Override
-    public int getPriority() {
+    public int getPriority()
+    {
         return 105;
     }
 
     @Override
-    public Boolean hasAccess(User user, Right access, DocumentReference document) {
+    public Boolean hasAccess(User user, Right access, DocumentReference document)
+    {
         String documentName = document.getName();
 
         Patient patient = this.patientRepository.getPatientById(documentName);
@@ -82,7 +84,8 @@ public class ProjectAuthorizationModule implements AuthorizationModule
         return null;
     }
 
-    private Boolean hasAccess(User user, Right access, Patient patient) {
+    private Boolean hasAccess(User user, Right access, Patient patient)
+    {
         Collection<Project> projects = this.ptBinder.getProjectsForPatient(patient);
         for (Project project : projects) {
 
@@ -97,7 +100,8 @@ public class ProjectAuthorizationModule implements AuthorizationModule
         return null;
     }
 
-    private Boolean hasAccess(User user, Right access, Project project) {
+    private Boolean hasAccess(User user, Right access, Project project)
+    {
 
         if (project.isProjectOpenForContribution() && access.isReadOnly()) {
             return true;
