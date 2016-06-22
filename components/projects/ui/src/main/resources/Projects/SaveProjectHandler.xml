@@ -44,6 +44,7 @@
 #set ($project = $_service.getProjectById($request.projectId))
 #if ("$!{request.xaction}" == 'get')
   #set ($data = {})
+  #set ($observers = [])
   #set ($contributors = [])
   #set ($leaders = [])
   #set ($templates = [])
@@ -63,6 +64,8 @@
       #end
       #if ($c.accessLevel.name == "leader")
         #set ($discard = $leaders.add($collaborator))
+      #elseif ($c.accessLevel.name == "observer")
+        #set ($discard = $observers.add($collaborator))
       #else
         #set ($discard = $contributors.add($collaborator))
       #end
@@ -76,16 +79,22 @@
       #set ($discard = $templates.add($template))
     #end
   #end
+  #set ($discard = $data.put('observers', $observers))
   #set ($discard = $data.put('contributors', $contributors))
   #set ($discard = $data.put('leaders', $leaders))
   #set ($discard = $data.put('templates', $templates))
   ##
   $jsontool.serialize($data)
 #elseif ("$!{request.xaction}" == 'update')
+  #set ($observersStrings = $request.getParameterValues('observers'))
   #set ($contributorsStrings = $request.getParameterValues('contributors'))
   #set ($leadersString = $request.getParameterValues('leaders'))
   #set ($templatesString = $request.getParameterValues('templates'))
   ##
+  #set ($observers = [])
+  #foreach ($observer in $observersStrings)
+    #set ($discard = $observers.add($services.model.resolveDocument($observer)))
+  #end
   #set ($contributors = [])
   #foreach ($contributor in $contributorsStrings)
     #set ($discard = $contributors.add($services.model.resolveDocument($contributor)))
@@ -94,7 +103,7 @@
   #foreach ($leader in $leadersString)
     #set ($discard = $leaders.add($services.model.resolveDocument($leader)))
   #end
-  #set ($discard = $project.setCollaborators($contributors, $leaders))
+  #set ($discard = $project.setCollaborators($observers, $contributors, $leaders))
   ##
   #set ($templates = [])
   #foreach ($template in $templatesString)

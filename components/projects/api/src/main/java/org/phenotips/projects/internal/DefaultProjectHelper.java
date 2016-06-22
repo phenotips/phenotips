@@ -66,6 +66,10 @@ public class DefaultProjectHelper
     private static final String TEMPLATE_FIELD_NAME = "templates";
 
     @Inject
+    @Named("observer")
+    private ProjectAccessLevel observerAccessLevel;
+
+    @Inject
     @Named("leader")
     private ProjectAccessLevel leaderAccessLevel;
 
@@ -95,15 +99,22 @@ public class DefaultProjectHelper
      * Sets the list of project collaborators.
      *
      * @param projectObject xwiki object of project
+     * @param observers collection of observers
      * @param contributors collection of contributors
-     * @param leaders collection of contributors
+     * @param leaders collection of project leaders
      * @return true if successful
      */
-    public boolean setCollaborators(XWikiDocument projectObject, Collection<EntityReference> contributors,
+    public boolean setCollaborators(XWikiDocument projectObject, Collection<EntityReference> observers,
+        Collection<EntityReference> contributors,
         Collection<EntityReference> leaders)
     {
         // Convert EntityReference lists to Collaborators
         Collection<Collaborator> collaborators = new ArrayList<Collaborator>();
+        if (observers != null) {
+            for (EntityReference observerRef : observers) {
+                collaborators.add(new DefaultCollaborator(observerRef, this.observerAccessLevel));
+            }
+        }
         if (contributors != null) {
             for (EntityReference contributorRef : contributors) {
                 collaborators.add(new DefaultCollaborator(contributorRef, this.contributorAccessLevel));
