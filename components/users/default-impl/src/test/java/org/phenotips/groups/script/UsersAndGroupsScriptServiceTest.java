@@ -36,7 +36,7 @@ public class UsersAndGroupsScriptServiceTest
 {
     @Rule
     public final MockitoComponentMockingRule<UsersAndGroupsScriptService> mocker =
-    new MockitoComponentMockingRule<UsersAndGroupsScriptService>(UsersAndGroupsScriptService.class);
+        new MockitoComponentMockingRule<UsersAndGroupsScriptService>(UsersAndGroupsScriptService.class);
 
     @Test
     public void UsersAndGroupsScriptServiceTest1() throws ComponentLookupException, QueryException

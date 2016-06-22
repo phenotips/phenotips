@@ -63,7 +63,8 @@ public class DefaultProject implements Project
      *
      * @param projectObject xwiki object of project
      */
-    public DefaultProject(XWikiDocument projectObject) {
+    public DefaultProject(XWikiDocument projectObject)
+    {
         this.projectObject = projectObject;
         this.projectReference = this.projectObject.getDocumentReference();
         this.projectId = this.projectReference.getName();
@@ -76,22 +77,26 @@ public class DefaultProject implements Project
     }
 
     @Override
-    public String getId() {
+    public String getId()
+    {
         return this.projectId;
     }
 
     @Override
-    public String getName() {
+    public String getName()
+    {
         return this.projectReference.getName();
     }
 
     @Override
-    public String getFullName() {
+    public String getFullName()
+    {
         return projectReference.toString();
     }
 
     @Override
-    public String getDescription() {
+    public String getDescription()
+    {
         // TODO
         return "";
     }
@@ -154,14 +159,16 @@ public class DefaultProject implements Project
     }
 
     @Override
-    public boolean isProjectOpenForContribution() {
+    public boolean isProjectOpenForContribution()
+    {
         BaseObject xObject = this.projectObject.getXObject(Project.CLASS_REFERENCE);
         int openIntValue = xObject.getIntValue(DefaultProject.OPEN_FOR_CONTRIBUTION_KEY);
         return openIntValue == 1;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (!(obj instanceof DefaultProject)) {
             return false;
         }
@@ -171,12 +178,14 @@ public class DefaultProject implements Project
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return this.projectId.hashCode();
     }
 
     @Override
-    public Collection<Patient> getAllPatients() {
+    public Collection<Patient> getAllPatients()
+    {
         PatientRepository patientRepository = this.getPatientRepository();
         List<Patient> patients = new LinkedList<Patient>();
         Collection<String> patientIds = getAllPatientIds();
@@ -190,7 +199,8 @@ public class DefaultProject implements Project
     }
 
     @Override
-    public int getNumberOfPatients() {
+    public int getNumberOfPatients()
+    {
         Collection<String> patientIds = getAllPatientIds();
         return patientIds == null ? 0 : patientIds.size();
     }
@@ -202,11 +212,13 @@ public class DefaultProject implements Project
     }
 
     @Override
-    public int compareTo(Project other) {
+    public int compareTo(Project other)
+    {
         return this.getId().compareTo(other.getId());
     }
 
-    private Collection<String> getAllPatientIds() {
+    private Collection<String> getAllPatientIds()
+    {
         StringBuilder querySb = new StringBuilder();
         querySb.append(", BaseObject accessObj, StringProperty accessProp, BaseObject patientObj, LongProperty iid ");
         querySb.append("where patientObj.name = doc.fullName ");
@@ -287,7 +299,8 @@ public class DefaultProject implements Project
         return null;
     }
 
-    private PatientRepository getPatientRepository() {
+    private PatientRepository getPatientRepository()
+    {
         try {
             return ComponentManagerRegistry.getContextComponentManager().getInstance(PatientRepository.class);
         } catch (ComponentLookupException e) {
