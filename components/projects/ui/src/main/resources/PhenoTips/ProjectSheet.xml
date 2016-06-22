@@ -627,11 +627,9 @@ document.observe("xwiki:dom:loaded", function () {
     </property>
     <property>
       <code>#template("colorThemeInit.vm")
-
 .accepted-suggestions {
-display: none;
+  display: none;
 }
-
 #templatesTable tbody td, #leadersTable tbody td, #contributorsTable tbody td, #observersTable tbody td {
   border-bottom: 1px solid $theme.borderColor;
   border-left-width : 0px;
@@ -649,23 +647,19 @@ display: none;
   background-color: $theme.highlightColor !important;
   color: $theme.notificationErrorColor;
 }
-
 #templatesTable .new, #leadersTable .new, #contributorsTable .new, #observersTable .new {
   background-color: $theme.highlightColor;
 }
-
 #templatesTable, #leadersTable, #contributorsTable, #observersTable {
-   width: 200px;
-   font-size: 14px;
+  width: 200px;
+  font-size: 14px;
 }
-
 .mainTd {
-   width: 100%;
+  width: 100%;
 }
-
 .project-tools {
-float: right;
-    margin-top: -3em;
+  float: right;
+  margin-top: -3em;
 }</code>
     </property>
     <property>
