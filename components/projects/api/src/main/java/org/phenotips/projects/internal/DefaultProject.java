@@ -135,9 +135,10 @@ public class DefaultProject implements Project
     }
 
     @Override
-    public boolean setCollaborators(Collection<EntityReference> contributors, Collection<EntityReference> leaders)
+    public boolean setCollaborators(Collection<EntityReference> observers, Collection<EntityReference> contributors,
+        Collection<EntityReference> leaders)
     {
-        return this.getDefaultProjectHelper().setCollaborators(projectObject, contributors, leaders);
+        return this.getDefaultProjectHelper().setCollaborators(projectObject, observers, contributors, leaders);
     }
 
     @Override

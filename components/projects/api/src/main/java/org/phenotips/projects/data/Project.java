@@ -101,8 +101,7 @@ public interface Project extends Comparable<Project>
     int getNumberOfPatients();
 
     /**
-     * Returns a collection project collaborators, both leaders and
-     * contributors.
+     * Returns a collection of project collaborators: leaders, contributors and observers together.
      *
      * @return a collection of collaborators
      */
@@ -111,11 +110,13 @@ public interface Project extends Comparable<Project>
     /**
      * Sets the list of project collaborators.
      *
+     * @param observers collection of observers
      * @param contributors collection of contributors
-     * @param leaders collection of contributors
+     * @param leaders collection of project leaders
      * @return true if successful
      */
-    boolean setCollaborators(Collection<EntityReference> contributors, Collection<EntityReference> leaders);
+    boolean setCollaborators(Collection<EntityReference> observers, Collection<EntityReference> contributors,
+        Collection<EntityReference> leaders);
 
     /**
      * Sets the list of project collaborators.
