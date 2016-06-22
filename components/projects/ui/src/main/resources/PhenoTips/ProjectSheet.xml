@@ -52,6 +52,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 ##
 ## General project attributes
 ##
+#set ($project = $services.projects.getProjectById($doc))
 #if ($xcontext.action == 'edit')
 {{html}}&lt;input type="hidden" id="editmode" value="true"/&gt;{{/html}}
 (% class="xform" %)(((
@@ -65,6 +66,21 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.projectDescription.hint')
 : {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="2" cols="80"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
 
+##
+## Leaders section
+##
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.leaders')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.projectSheet.leadersHint')
+: {{html clean="false"}}
+&lt;table id="leadersTable"&gt;
+   &lt;tfoot&gt;
+      &lt;td colspan="3"&gt;
+      &lt;input type="text" id="suggestleaders" placeholder="$services.localization.render('phenotips.projectSheet.newLeader')"/&gt;
+      &lt;/td&gt;
+   &lt;/tfoot&gt;
+   &lt;tbody id="leaderslist"/&gt;
+&lt;/table&gt;
+{{/html}}
 ##
 ## Contributors section
 ##
@@ -82,18 +98,18 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 &lt;/table&gt;
 {{/html}}
 ##
-## Leaders section
+## Observers section
 ##
-; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.leaders')&lt;/label&gt;{{/html}}
-: (% class="xHint" %)$services.localization.render('phenotips.projectSheet.leadersHint')
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.observers')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.projectSheet.observersHint')
 : {{html clean="false"}}
-&lt;table id="leadersTable"&gt;
+&lt;table id="observersTable"&gt;
    &lt;tfoot&gt;
       &lt;td colspan="3"&gt;
-      &lt;input type="text" id="suggestleaders" placeholder="$services.localization.render('phenotips.projectSheet.newLeader')"/&gt;
+      &lt;input type="text" id="suggestobservers" placeholder="$services.localization.render('phenotips.projectSheet.newObserver')"/&gt;
       &lt;/td&gt;
    &lt;/tfoot&gt;
-   &lt;tbody id="leaderslist"/&gt;
+   &lt;tbody id="observerslist"/&gt;
 &lt;/table&gt;
 {{/html}}
 
@@ -115,9 +131,27 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 )))
 #else ##not 'edit' mode
 (% class="group-logo" %)(((#if ("$!{doc.getObject('Phenotips.ProjectClass').getProperty('image').value}" != '')$doc.display('image')#{else}$xwiki.getDocument('PhenoTips.ProjectTemplate').display('image')#{end})))
+#set ($projectLeader = ($project.getCurrentUserAccessLevel().getName() == 'leader'))
+#set ($fullName = $project.getFullName())
+(% class="project-tools" %)#if (($hasAdmin || $projectLeader))|##
+    (% class="tools" %) (((##
+    [[{{icon name="pencil" title="$services.localization.render('phenotips.templateClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($fullName, 'edit')||class="tool edit"]]##
+    [[{{icon name="times" title="$services.localization.render('phenotips.templateClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($fullName, 'delete')||class="tool delete"]]##
+  )))
+#end
 #if ($doc.content != '')
 : $!escapetool.html($doc.content)
 #end
+
+##
+## Leaders section
+##
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.leaders')&lt;/label&gt;{{/html}}
+: {{html clean="false"}}
+&lt;table id="leadersTable"&gt;
+   &lt;tbody id="leaderslist"/&gt;
+&lt;/table&gt;
+{{/html}}
 
 ##
 ## Contributors section
@@ -134,12 +168,12 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 #end
 
 ##
-## Leaders section
+## Observers section
 ##
-; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.leaders')&lt;/label&gt;{{/html}}
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.observers')&lt;/label&gt;{{/html}}
 : {{html clean="false"}}
-&lt;table id="leadersTable"&gt;
-   &lt;tbody id="leaderslist"/&gt;
+&lt;table id="observersTable"&gt;
+   &lt;tbody id="observerslist"/&gt;
 &lt;/table&gt;
 {{/html}}
 
@@ -147,7 +181,6 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 ## Patients (read only in edit or view mode)
 ##
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.patientList')&lt;/label&gt;{{/html}}
-#set ($project = $services.projects.getProjectById($doc))
 #set ($patientList = $project.getAllPatients())
 #foreach ($patient in $patientList)
 :   {{html}}&lt;label&gt;$patient.getId()&lt;/label&gt;{{/html}}
@@ -267,6 +300,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 
       _this._initializeCollaborators('leaders', true, false);
       _this._initializeCollaborators('contributors', true, true);
+      _this._initializeCollaborators('observers', true, true);
       _this._initializeSuggestTemplates();
 
       var url = window.location.href.toLowerCase();
@@ -283,6 +317,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
         var leaders = formData.leaders || [];
         var templates = formData.templates || [];
         var contributors = formData.contributors || [];
+        var observers = formData.observers || [];
         if (_this.openForContribution) {
            contributors = [];
         }
@@ -290,6 +325,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
         new Ajax.Request(_this.ajaxService, {
           parameters : {'projectId'    : _this.projectId,
                         'xaction'      : 'update',
+                        'observers'    : observers,
                         'contributors' : contributors,
                         'leaders'      : leaders,
                         'templates'    : templates},
@@ -321,7 +357,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
       });
 
       var collaboratorsList = $(type+'list');
-      var collabortaorType = type;
+      var collaboratorType = type;
       suggestInput.observe("ms:suggest:selected", function(event) {
          if (event.memo) {
            var name = event.memo.value;
@@ -336,7 +372,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
            } else {
              var values = event.memo.id.split(";");
              var newCollaborator = {'id' : values[0] , 'name' : name , 'type' : values[1]};
-             _this._addCollaborator(newCollaborator, true, collabortaorType);
+             _this._addCollaborator(newCollaborator, true, collaboratorType);
              event.findElement().value = '';
            }
          }
@@ -434,10 +470,14 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
       list.insert(row);
     },
     
-    _loadCollaboratorsAndTemplates : function(contributors, leaders, templates) {
+    _loadCollaboratorsAndTemplates : function(observers, contributors, leaders, templates) {
+      $('observerslist').update('');
       $('contributorslist').update('');
       $('leaderslist').update('');
 
+      for (var i = 0; i &lt; observers.length ; i++) {
+        this._addCollaborator(observers[i], false, 'observers');
+      }
       for (var i = 0; i &lt; contributors.length ; i++) {
         this._addCollaborator(contributors[i], false, 'contributors');
       }
@@ -457,10 +497,11 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
                       'projectId' : _this.projectId},
         onSuccess : function(response) {
            if (!("error" in response.responseJSON)) {
+              var observers = response.responseJSON.observers;
               var contributors = response.responseJSON.contributors;
               var leaders = response.responseJSON.leaders;
               var templates = response.responseJSON.templates;
-              _this._loadCollaboratorsAndTemplates(contributors, leaders, templates);
+              _this._loadCollaboratorsAndTemplates(observers, contributors, leaders, templates);
            }
         }
       });
@@ -591,29 +632,29 @@ document.observe("xwiki:dom:loaded", function () {
 display: none;
 }
 
-#templatesTable tbody td, #leadersTable tbody td, #contributorsTable tbody td {
+#templatesTable tbody td, #leadersTable tbody td, #contributorsTable tbody td, #observersTable tbody td {
   border-bottom: 1px solid $theme.borderColor;
   border-left-width : 0px;
   border-right-width: 0px;
 }
-#templatesTable tfoot td, #templatesTable tfoot td, #contributorsTable tfoot td {
+#templatesTable tfoot td, #templatesTable tfoot td, #contributorsTable tfoot td, #observersTable tfoot td {
   border-top: 3px solid $theme.borderColor;
 }
-#templatesTable .tool.delete, #leadersTable .tool.delete, #contributorsTable .tool.delete {
+#templatesTable .tool.delete, #leadersTable .tool.delete, #contributorsTable .tool.delete, #observersTable .tool.delete {
   color: $theme.notificationErrorColor;
   cursor: pointer;
   width: 32px;
 }
-#templatesTable .highlight, #leadersTable .highlight, #contributorsTable .highlight {
+#templatesTable .highlight, #leadersTable .highlight, #contributorsTable .highlight, #observersTable .highlight {
   background-color: $theme.highlightColor !important;
   color: $theme.notificationErrorColor;
 }
 
-#templatesTable .new, #leadersTable .new, #contributorsTable .new {
+#templatesTable .new, #leadersTable .new, #contributorsTable .new, #observersTable .new {
   background-color: $theme.highlightColor;
 }
 
-#templatesTable, #leadersTable , #contributorsTable {
+#templatesTable, #leadersTable, #contributorsTable, #observersTable {
    width: 200px;
    font-size: 14px;
 }
@@ -622,7 +663,10 @@ display: none;
    width: 100%;
 }
 
-</code>
+.project-tools {
+float: right;
+    margin-top: -3em;
+}</code>
     </property>
     <property>
       <contentType>CSS</contentType>
