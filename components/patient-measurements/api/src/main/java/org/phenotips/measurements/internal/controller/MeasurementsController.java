@@ -269,12 +269,12 @@ public class MeasurementsController implements PatientDataController<Measurement
             // has to be either male or female, otherwise how can we compute SD?
             // finding the handler
             MeasurementHandler handler = getHandler(entry.getType(), handlers);
-            Boolean isMale = StringUtils.equals(maleConst, sex);
-            Double sd = handler.valueToStandardDeviation(isMale, ageInMonths.floatValue(), entry.getValue());
+            boolean isMale = StringUtils.equals(maleConst, sex);
+            double sd = handler.valueToStandardDeviation(isMale, ageInMonths.floatValue(), entry.getValue());
             Integer percentile = handler.valueToPercentile(isMale, ageInMonths.floatValue(), entry.getValue());
 
             Map<String, Object> result = new HashMap<>();
-            result.put(SD, sd.isNaN() ? "" : sd);
+            result.put(SD, (Double.isInfinite(sd) || Double.isNaN(sd)) ? "" : sd);
             result.put(PERCENTILE, percentile);
             return result;
         }
