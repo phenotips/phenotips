@@ -75,7 +75,7 @@ public class DefaultMeasurementPercentileResourceImpl extends AbstractMeasuremen
         if (percentile >= 0) {
             resp.accumulate("percentile", handler.valueToPercentile(isMale, ageMonths.floatValue(), value));
             double stddev = handler.valueToStandardDeviation(isMale, ageMonths.floatValue(), value);
-            resp.accumulate("stddev", stddev);
+            resp.accumulate("stddev", (Double.isInfinite(stddev) || Double.isNaN(stddev)) ? "" : stddev);
             resp.accumulate("fuzzy-value", MeasurementUtils.getFuzzyValue(stddev));
             Collection<VocabularyTerm> terms = handler.getAssociatedTerms(Double.valueOf(stddev));
             JSONArray termsJson = new JSONArray();
