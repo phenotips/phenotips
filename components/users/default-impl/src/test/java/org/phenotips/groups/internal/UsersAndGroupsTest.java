@@ -63,7 +63,7 @@ public class UsersAndGroupsTest
 
     @Rule
     public final MockitoComponentMockingRule<UsersAndGroups> mocker =
-    new MockitoComponentMockingRule<UsersAndGroups>(UsersAndGroups.class);
+        new MockitoComponentMockingRule<UsersAndGroups>(UsersAndGroups.class);
 
     private static String groupsQueryString;
 
