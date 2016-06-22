@@ -108,8 +108,10 @@ public class APGARController implements PatientDataController<Integer>
                 Integer value = data.get(propertyName);
                 BaseProperty<ObjectPropertyReference> field =
                     (BaseProperty<ObjectPropertyReference>) dataHolder.getField(propertyName);
-                if (field != null && value != null) {
+                if (value != null) {
                     field.setValue(value.toString());
+                } else {
+                    field.setValue("unknown");
                 }
             }
         } catch (Exception ex) {
@@ -134,15 +136,15 @@ public class APGARController implements PatientDataController<Integer>
             return;
         }
 
-        Iterator<Entry<String, Integer>> iterator = data.dictionaryIterator();
-        if (!iterator.hasNext()) {
-            return;
-        }
-
         JSONObject container = json.optJSONObject(DATA_NAME);
         if (container == null) {
             json.put(DATA_NAME, new JSONObject());
             container = json.optJSONObject(DATA_NAME);
+        }
+
+        Iterator<Entry<String, Integer>> iterator = data.dictionaryIterator();
+        if (!iterator.hasNext()) {
+            return;
         }
         while (iterator.hasNext()) {
             Entry<String, Integer> item = iterator.next();
@@ -179,6 +181,9 @@ public class APGARController implements PatientDataController<Integer>
                     String value = container.optString(propertyName);
                     if (NumberUtils.isDigits(value)) {
                         parsed.put(propertyName, Integer.valueOf(value));
+                    }
+                    if (StringUtils.isEmpty(value)) {
+                        parsed.put(propertyName, null);
                     }
                 } catch (Exception ex) {
                     // should never happen
