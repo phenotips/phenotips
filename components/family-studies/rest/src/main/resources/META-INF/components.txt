@@ -1,0 +1,3 @@
+org.phenotips.studies.family.rest.internal.DefaultPatientFamilyResourceImpl
+org.phenotips.studies.family.rest.internal.DefaultFamilyResourceImpl
+org.phenotips.studies.family.rest.internal.DefaultFamiliesResourceImpl

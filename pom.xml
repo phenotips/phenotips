@@ -492,7 +492,7 @@
               <differenceType>7004</differenceType>
               <method>org.phenotips.data.push.PushServerSendPatientResponse sendPatient(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)</method>
               <justification>Needed for synchronizing consents</justification>
-			</difference>
+            </difference>
             <difference>
               <className>org/phenotips/data/PatientRepository</className>
               <differenceType>7012</differenceType>
