@@ -27,4 +27,6 @@
   <suppress checks="ClassFanOutComplexityCheck" files="AbstractComplexController.java"/>
   <suppress checks="ClassFanOutComplexityCheck" files="PhenoTipsPatientConsentManager.java"/>
   <suppress checks="ClassFanOutComplexityCheck" files="PhenoTipsPatient.java"/>
+  <suppress checks="CyclomaticComplexity" files="SolvedController.java"/>
+  <suppress checks="CyclomaticComplexity" files="ParentalAgeController.java"/>
 </suppressions>

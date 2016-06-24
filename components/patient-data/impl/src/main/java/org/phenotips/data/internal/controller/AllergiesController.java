@@ -152,18 +152,19 @@ public class AllergiesController implements PatientDataController<String>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null && (!selectedFieldNames.contains(DATA_NAME)
-            /* otherwise push doesn't work; checking for field names present */
-            || !(selectedFieldNames.contains(NKDA) || selectedFieldNames.contains(DATA_NAME)))) {
+        if (selectedFieldNames != null && !selectedFieldNames.contains(DATA_NAME)) {
             return;
         }
 
         PatientData<String> allergiesData = patient.getData(DATA_NAME);
+        JSONArray allergiesJsonArray = new JSONArray();
         if (allergiesData == null || !allergiesData.isIndexed() || allergiesData.size() == 0) {
+            if (selectedFieldNames != null && selectedFieldNames.contains(DATA_NAME)) {
+                json.put(DATA_NAME, allergiesJsonArray);
+            }
             return;
         }
 
-        JSONArray allergiesJsonArray = new JSONArray();
         for (String allergy : allergiesData) {
             allergiesJsonArray.put(allergy);
         }

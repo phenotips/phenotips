@@ -134,9 +134,14 @@ public class SexController implements PatientDataController<String>
         }
 
         PatientData<String> patientData = patient.getData(DATA_NAME);
-        if (patientData != null && patientData.getValue() != null) {
-            json.put(DATA_NAME, patientData.getValue());
+        if (patientData == null || patientData.getValue() == null) {
+            if (selectedFieldNames != null && selectedFieldNames.contains(DATA_NAME)) {
+                json.put(DATA_NAME, SEX_UNKNOWN);
+            }
+            return;
         }
+
+        json.put(DATA_NAME, patientData.getValue());
     }
 
     @Override

@@ -146,6 +146,9 @@ public class SolvedController extends AbstractSimpleController implements Initia
     {
         PatientData<String> data = patient.getData(getName());
         if (data == null || !data.isNamed()) {
+            if (selectedFieldNames != null && selectedFieldNames.contains(DATA_NAME)) {
+                json.put(getJsonPropertyName(), new JSONObject());
+            }
             return;
         }
 

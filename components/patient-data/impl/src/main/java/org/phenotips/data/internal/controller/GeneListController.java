@@ -207,14 +207,14 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         }
 
         PatientData<Map<String, String>> data = patient.getData(getName());
-        if (data == null) {
-            return;
-        }
-        Iterator<Map<String, String>> iterator = data.iterator();
-        if (!iterator.hasNext()) {
+        if (data == null || !data.isIndexed() || data.size() == 0) {
+            if (selectedFieldNames != null && selectedFieldNames.contains(GENES_ENABLING_FIELD_NAME)) {
+                json.put(getJsonPropertyName(), new JSONArray());
+            }
             return;
         }
 
+        Iterator<Map<String, String>> iterator = data.iterator();
         // put() is placed here because we want to create the property iff at least one field is set/enabled
         // (by this point we know there is some data since iterator.hasNext() == true)
         json.put(getJsonPropertyName(), new JSONArray());
@@ -229,19 +229,25 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         while (iterator.hasNext()) {
             Map<String, String> item = iterator.next();
             if (!StringUtils.isBlank(item.get(INTERNAL_GENE_KEY))) {
-                JSONObject nextGene = new JSONObject();
-                for (String key : internalToJSONkeys.keySet()) {
-                    if (!StringUtils.isBlank(item.get(key))) {
-                        if (INTERNAL_STRATEGY_KEY.equals(key)) {
-                            nextGene.put(key, new JSONArray(item.get(internalToJSONkeys.get(key)).split("\\|")));
-                        } else {
-                            nextGene.put(key, item.get(internalToJSONkeys.get(key)));
-                        }
-                    }
-                }
+                JSONObject nextGene = assebleGene(internalToJSONkeys, item);
                 container.put(nextGene);
             }
         }
+    }
+
+    private JSONObject assebleGene(Map<String, String> internalToJSONkeys, Map<String, String> data)
+    {
+        JSONObject newGene = new JSONObject();
+        for (String key : internalToJSONkeys.keySet()) {
+            if (!StringUtils.isBlank(data.get(key))) {
+                if (INTERNAL_STRATEGY_KEY.equals(key)) {
+                    newGene.put(key, new JSONArray(data.get(internalToJSONkeys.get(key)).split("\\|")));
+                } else {
+                    newGene.put(key, data.get(internalToJSONkeys.get(key)));
+                }
+            }
+        }
+        return newGene;
     }
 
     @Override

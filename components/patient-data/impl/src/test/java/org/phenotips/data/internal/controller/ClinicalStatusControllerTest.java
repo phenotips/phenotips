@@ -137,7 +137,7 @@ public class ClinicalStatusControllerTest
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNull() throws ComponentLookupException
+    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNotNull() throws ComponentLookupException
     {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -146,7 +146,7 @@ public class ClinicalStatusControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertFalse(json.has(DATA_NAME));
+        Assert.assertTrue(json.has(DATA_NAME));
     }
 
     @Test
