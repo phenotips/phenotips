@@ -114,12 +114,14 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
         PatientData<T> data = patient.getData(getName());
+        String jsonPropertyName = getJsonPropertyName();
+
         if (data == null || data.size() == 0) {
             return;
         }
-        Iterator<Map.Entry<String, T>> iterator = data.dictionaryIterator();
 
-        JSONObject container = json.optJSONObject(getJsonPropertyName());
+        Iterator<Map.Entry<String, T>> iterator = data.dictionaryIterator();
+        JSONObject container = json.optJSONObject(jsonPropertyName);
 
         while (iterator.hasNext()) {
             Map.Entry<String, T> item = iterator.next();
@@ -128,8 +130,8 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             if (selectedFieldNames == null || selectedFieldNames.contains(getControllingFieldName(item.getKey()))) {
                 if (container == null) {
                     // put() is placed here because we want to create the property iff at least one field is set/enabled
-                    json.put(getJsonPropertyName(), new JSONObject());
-                    container = json.optJSONObject(getJsonPropertyName());
+                    json.put(jsonPropertyName, new JSONObject());
+                    container = json.optJSONObject(jsonPropertyName);
                 }
                 container.put(itemKey, formattedValue);
             }

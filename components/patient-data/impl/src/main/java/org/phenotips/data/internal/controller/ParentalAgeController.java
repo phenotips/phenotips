@@ -65,6 +65,8 @@ public class ParentalAgeController implements PatientDataController<Integer>
 
     private static final String PATERNAL_AGE = "paternal_age";
 
+    private static final String ENABLING_FIELD_NAME = "prenatal_phenotype";
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -139,12 +141,15 @@ public class ParentalAgeController implements PatientDataController<Integer>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null && !selectedFieldNames.contains("prenatal_phenotype")) {
+        if (selectedFieldNames != null && !selectedFieldNames.contains(ENABLING_FIELD_NAME)) {
             return;
         }
 
         PatientData<Integer> data = patient.getData(getName());
         if (data == null || !data.isNamed() || data.size() == 0) {
+            if (selectedFieldNames != null && selectedFieldNames.contains(ENABLING_FIELD_NAME)) {
+                json.put(getJsonPropertyName(), new JSONObject());
+            }
             return;
         }
 

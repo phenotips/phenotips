@@ -29,6 +29,7 @@
   <name>PhenoTips - Patient data - Default implementation for the Java APIs</name>
 
   <properties>
+    <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
     <coverage.instructionRatio>0.47</coverage.instructionRatio>
   </properties>
 

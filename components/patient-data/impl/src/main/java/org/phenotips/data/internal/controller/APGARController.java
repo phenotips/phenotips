@@ -133,6 +133,9 @@ public class APGARController implements PatientDataController<Integer>
         }
         PatientData<Integer> data = patient.getData(getName());
         if (data == null || !data.isNamed()) {
+            if (selectedFieldNames != null && hasAnySelected(selectedFieldNames)) {
+                json.put(DATA_NAME, new JSONObject());
+            }
             return;
         }
 
