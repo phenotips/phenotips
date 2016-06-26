@@ -115,6 +115,7 @@
                 <xwikiDbDialect>org.hibernate.dialect.HSQLDialect</xwikiDbDialect>
                 <xwikiDbHbmXwiki>xwiki.hbm.xml</xwikiDbHbmXwiki>
                 <xwikiDbHbmFeeds>feeds.hbm.xml</xwikiDbHbmFeeds>
+                <xwikiDbHbmCommonExtraMappings>instance.hbm.xml,mailsender.hbm.xml</xwikiDbHbmCommonExtraMappings>
                 <xwikiCfgPlugins>\
   com.xpn.xwiki.monitor.api.MonitorPlugin,\
   com.xpn.xwiki.plugin.skinx.JsSkinExtensionPlugin,\
@@ -137,7 +138,7 @@
                 <xwikiCfgVirtual>0</xwikiCfgVirtual>
                 <xwikiCfgVirtualUsepath>0</xwikiCfgVirtualUsepath>
                 <xwikiCfgEditCommentMandatory>0</xwikiCfgEditCommentMandatory>
-                <xwikiCfgDefaultSkin>colibri</xwikiCfgDefaultSkin>
+                <xwikiCfgDefaultSkin>phenotips</xwikiCfgDefaultSkin>
                 <xwikiCfgDefaultBaseSkin>colibri</xwikiCfgDefaultBaseSkin>
                 <xwikiCfgEncoding>UTF-8</xwikiCfgEncoding>
                 <xwikiCfgAdditionalProperties>
@@ -162,6 +163,8 @@ extension.repositories=maven-central:maven:https://nexus.phenotips.org/nexus/con
 extension.repositories=maven-phenotips:maven:https://nexus.phenotips.org/nexus/content/repositories/releases/
 extension.repositories=phenotips.org:xwiki:https://phenotips.org/rest/
 rendering.transformations=macro
+activeinstalls.pingURL=https://stats.phenotips.org
+activeinstalls.ipFetchURL=https://phenotips.org/get/Stats/Id
                 </xwikiPropertiesAdditionalProperties>
               </properties>
             </configuration>
