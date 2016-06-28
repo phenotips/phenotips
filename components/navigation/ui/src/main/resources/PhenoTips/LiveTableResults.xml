@@ -547,8 +547,16 @@
       #end
     #else
       #set($fromSql = "${fromSql}, StringProperty ${safe_tableAlias}")
-      #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and upper(${safe_tableAlias}.value) like upper(?) ESCAPE '!'")
-      #set($discard = $whereParams.addAll(["${colname}", "%${filterValueList[0].replaceAll('[\[_%!]', '!$0')}%"]))
+      #if ($request.getParameter("${colname}/match") == 'exact')
+        #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and ${safe_tableAlias}.value = ?")
+        #set($discard = $whereParams.addAll(["${colname}", "${filterValueList[0]}"]))
+      #elseif ($request.getParameter("${colname}/match") == 'ci')
+        #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and upper(${safe_tableAlias}.value) = ?")
+        #set($discard = $whereParams.addAll(["${colname}", "${filterValueList[0].toUpperCase()}"]))
+      #else
+        #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and upper(${safe_tableAlias}.value) like upper(?) ESCAPE '!'")
+        #set($discard = $whereParams.addAll(["${colname}", "%${filterValueList[0].replaceAll('[\[_%!]', '!$0')}%"]))
+      #end
     #end
   #end
  #end
