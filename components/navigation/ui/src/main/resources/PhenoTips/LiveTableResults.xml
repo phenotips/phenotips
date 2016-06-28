@@ -391,6 +391,9 @@
   ##
   #set($propType = '')
   #set($propertyHasFilterValue = "$!stringtool.join($filterValueList, '')" != '' || "$!filterValueLowLimit" != '' || "$!filterValueHighLimit" != '')
+  #if ("$!request.getParameter($colname.concat('/dependsOn'))" != '' &amp;&amp; "$!stringtool.join($request.getParameterValues($!request.getParameter($colname.concat('/dependsOn'))), '')" == '')
+    #set($propertyHasFilterValue = false)
+  #end
   #set($propClassName = "$!request.get(${colname.concat('/class')})")
   #set ($targetedObject = 'obj')
   #if($propClassName != '')
@@ -545,7 +548,7 @@
     #else
       #set($fromSql = "${fromSql}, StringProperty ${safe_tableAlias}")
       #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and upper(${safe_tableAlias}.value) like upper(?) ESCAPE '!'")
-      #set($discard = $whereParams.addAll(["${colname}", "%${filterValue.replaceAll('[\[_%!]', '!$0')}%"]))
+      #set($discard = $whereParams.addAll(["${colname}", "%${filterValueList[0].replaceAll('[\[_%!]', '!$0')}%"]))
     #end
   #end
  #end

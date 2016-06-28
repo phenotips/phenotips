@@ -32,6 +32,22 @@ document.observe('xwiki:dom:loading', function() {
             enableHierarchy: false,
             fadeOnClear : false,
             timeout : 30000
+        },
+        "genes" : {
+            script: new XWiki.Document('GeneNameService', 'PhenoTips').getURL('get', 'outputSyntax=plain') + "&",
+            varname: "q",
+            noresults: "No matching gene names",
+            json: true,
+            resultsParameter : "docs",
+            resultId : 'symbol',
+            resultValue : 'symbol',
+            resultAltName : "alias_symbol",
+            enableHierarchy: false,
+            tooltip : 'gene-info',
+            resultInfo : {},
+            fadeOnClear : false,
+            timeout : 30000,
+            parentContainer : null
         }
   };
   // =================================================================================
