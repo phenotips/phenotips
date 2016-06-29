@@ -22,10 +22,10 @@ import org.phenotips.data.Patient;
 import org.xwiki.component.annotation.Role;
 
 /**
- * Utility methods for manipulating families.
+ * Utility methods for manipulating families. No access right checks are performed.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.4
  */
 @Role
 public interface FamilyRepository
