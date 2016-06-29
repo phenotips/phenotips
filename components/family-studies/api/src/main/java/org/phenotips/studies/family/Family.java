@@ -31,6 +31,7 @@ import org.json.JSONObject;
 
 /**
  * @version $Id$
+ * @since 1.4
  */
 public interface Family
 {
