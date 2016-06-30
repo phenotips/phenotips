@@ -5,7 +5,6 @@
  * @constructor
  */
 
-// TODO: undo/redo in all handlers
 define([
         "pedigree/model/helpers",
         "pedigree/saveLoadEngine",
