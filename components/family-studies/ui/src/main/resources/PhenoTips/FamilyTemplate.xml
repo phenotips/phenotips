@@ -52,6 +52,19 @@
       <defaultWeb/>
       <nameField/>
       <validationScript/>
+      <external_id>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>external_id</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Identifier</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </external_id>
       <identifier>
         <customDisplay/>
         <disabled>0</disabled>
@@ -74,7 +87,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>members</name>
-        <number>2</number>
+        <number>3</number>
         <picker>0</picker>
         <prettyName>members</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -98,13 +111,13 @@
 #end
 {{/velocity}}
 
-{{include document="PhenoTips.ImageDisplayer" /}}</customDisplay>
+{{include reference="PhenoTips.ImageDisplayer" /}}</customDisplay>
         <disabled>0</disabled>
         <displayType>checkbox</displayType>
         <idField/>
         <multiSelect>1</multiSelect>
         <name>reports</name>
-        <number>3</number>
+        <number>4</number>
         <picker>0</picker>
         <prettyName>reports</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -119,9 +132,38 @@
         <valueField/>
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
       </reports>
+      <warning>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>warning</name>
+        <number>5</number>
+        <prettyName>warning</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </warning>
+      <warning_message>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>warning_message</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>warning_message</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </warning_message>
     </class>
     <property>
-      <external_id></external_id>
+      <external_id/>
     </property>
     <property>
       <identifier/>
@@ -131,6 +173,12 @@
     </property>
     <property>
       <reports/>
+    </property>
+    <property>
+      <warning/>
+    </property>
+    <property>
+      <warning_message/>
     </property>
   </object>
   <object>
