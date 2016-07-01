@@ -46,21 +46,21 @@ public interface Patient
     EntityReference DEFAULT_DATA_SPACE = new EntityReference("data", EntityType.SPACE);
 
     /**
-     * Returns the ID of the patient document.
+     * Returns the internal PhenoTips identifier of the patient record.
      *
-     * @return string ID
+     * @return a short identifier
      */
     String getId();
 
     /**
-     * Returns the external ID of the patient document.
+     * Returns the external identifier of the patient record.
      *
      * @return string ID
      */
     String getExternalId();
 
     /**
-     * Returns a reference to the document where the patient data is stored.
+     * Returns a reference to the document where the patient record is stored.
      *
      * @return a valid document reference
      */
