@@ -103,16 +103,16 @@ public class PhenoTipsPatient implements Patient
     private DocumentReference reporter;
 
     /** @see #getFeatures() */
-    private Set<Feature> features = new TreeSet<Feature>();
+    private Set<Feature> features = new TreeSet<>();
 
     /** @see #getDisorders() */
-    private Set<Disorder> disorders = new TreeSet<Disorder>();
+    private Set<Disorder> disorders = new TreeSet<>();
 
     /** The list of all the initialized data holders (PatientDataSerializer). */
-    private Map<String, PatientDataController<?>> serializers = new TreeMap<String, PatientDataController<?>>();
+    private Map<String, PatientDataController<?>> serializers = new TreeMap<>();
 
     /** Extra data that can be plugged into the patient record. */
-    private Map<String, PatientData<?>> extraData = new TreeMap<String, PatientData<?>>();
+    private Map<String, PatientData<?>> extraData = new TreeMap<>();
 
     /**
      * Constructor that copies the data from an XDocument.
@@ -374,7 +374,7 @@ public class PhenoTipsPatient implements Patient
                 joinArrays(json.optJSONArray(JSON_KEY_FEATURES), json.optJSONArray(JSON_KEY_NON_STANDARD_FEATURES));
 
             // keep this instance of PhenotipsPatient in sync with the document: reset features
-            this.features = new TreeSet<Feature>();
+            this.features = new TreeSet<>();
 
             // new feature lists (for setting values in the Wiki document)
             Map<String, List<String>> featuresMap = new TreeMap<>();
@@ -395,7 +395,7 @@ public class PhenoTipsPatient implements Patient
                 if (featuresMap.keySet().contains(featureType)) {
                     featuresMap.get(featureType).add(phenotipsFeature.getValue());
                 } else {
-                    List<String> newFeatureType = new LinkedList<String>();
+                    List<String> newFeatureType = new LinkedList<>();
                     newFeatureType.add(phenotipsFeature.getValue());
                     featuresMap.put(featureType, newFeatureType);
                 }
@@ -487,10 +487,10 @@ public class PhenoTipsPatient implements Patient
             JSONArray inputDisorders = json.optJSONArray(JSON_KEY_DISORDERS);
             if (inputDisorders != null) {
                 // keep this instance of PhenotipsPatient in sync with the document: reset disorders
-                this.disorders = new TreeSet<Disorder>();
+                this.disorders = new TreeSet<>();
 
                 // new disorders list (for setting values in the Wiki document)
-                List<String> disorderValues = new LinkedList<String>();
+                List<String> disorderValues = new LinkedList<>();
 
                 for (int i = 0; i < inputDisorders.length(); i++) {
                     JSONObject disorderJSON = inputDisorders.optJSONObject(i);
