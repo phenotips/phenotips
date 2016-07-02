@@ -27,10 +27,10 @@
   </parent>
   <artifactId>phenotips-entities</artifactId>
   <packaging>pom</packaging>
-  <name>PhenoTips - Entities</name>
+  <name>PhenoTips - Generic Entities APIs</name>
 
   <modules>
-    <module>ui</module>
     <module>api</module>
+    <module>ui</module>
   </modules>
 </project>

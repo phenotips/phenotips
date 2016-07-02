@@ -40,6 +40,7 @@
     <module>navigation</module>
     <module>export</module>
     <module>obo2solr</module>
+    <module>entities</module>
     <module>solr-access-service</module>
     <module>vocabularies</module>
     <module>patient-data</module>
