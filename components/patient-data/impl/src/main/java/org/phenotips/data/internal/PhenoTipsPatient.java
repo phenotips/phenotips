@@ -28,7 +28,6 @@ import org.phenotips.data.PatientDataController;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -41,6 +40,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import javax.inject.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -527,8 +528,9 @@ public class PhenoTipsPatient implements Patient
             // TODO: Check versions and throw if versions mismatch if necessary
             // TODO: Separate updateFromJSON and saveToDB? Move to PatientRepository?
 
-            Execution execution = ComponentManagerRegistry.getContextComponentManager().getInstance(Execution.class);
-            XWikiContext context = (XWikiContext) execution.getContext().getProperty("xwikicontext");
+            Provider<XWikiContext> xcontextProvider =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiContext.TYPE_PROVIDER);
+            XWikiContext context = xcontextProvider.get();
 
             DocumentAccessBridge documentAccessBridge =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
