@@ -22,17 +22,46 @@ import org.xwiki.stability.Unstable;
 
 import java.util.Collection;
 
+/**
+ * A group of {@link Entity entities}, which in turn is another type of entity. For example, a Project is also a
+ * collection of patient records, and a workgroup is a collection of users.
+ *
+ * @param <E> the type of entities belonging to this group; if more than one type of entities can be part of the group,
+ *            then a generic {@code Entity} should be used instead
+ * @version $Id$
+ * @since 1.3M2
+ */
 @Unstable
-public interface EntityGroup<T extends Entity> extends Entity
+public interface EntityGroup<E extends Entity> extends Entity
 {
     /**
-     * @return a reference to an XClass that is supposed to be used by all members of this group, or {@code null} if any type of entities are allowed for this group.
+     * @return a reference to an XClass that is supposed to be used by all members of this group, or {@code null} if any
+     *         type of entities are allowed for this group.
      */
     EntityReference getMemberType();
-    Collection<T> getMembers();
-    boolean addMember(T member);
-    boolean removeMember(T member);
 
-    String getName();
-    String getDesciption();
+    /**
+     * List all the members (entities) that are part of this group.
+     *
+     * @return a collection of Entities, may be empty
+     */
+    Collection<E> getMembers();
+
+    /**
+     * Add a new member to the group.
+     *
+     * @param member the member to add to the group
+     * @return {@code true} if the member was successfully added, or was already a member, {@code false} if the
+     *         operation failed
+     */
+    boolean addMember(E member);
+
+    /**
+     * Remove a member from the group.
+     *
+     * @param member the member to remove from the group
+     * @return {@code true} if the member was successfully removed, or if it wasn't a member, {@code false} if the
+     *         operation failed
+     */
+    boolean removeMember(E member);
 }

@@ -34,6 +34,10 @@
       <artifactId>xwiki-platform-model</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
