@@ -17,11 +17,14 @@
  */
 package org.phenotips.groups.internal;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -35,17 +38,22 @@ import org.xwiki.users.UserManager;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.inject.Provider;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import com.xpn.xwiki.web.Utils;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -55,6 +63,15 @@ import static org.mockito.Mockito.when;
  */
 public class UsersAndGroupsTest
 {
+    @Mock
+    private Provider<XWikiContext> xcontextProvider;
+
+    @Mock
+    private Provider<ComponentManager> mockProvider;
+
+    @Mock
+    private ComponentManager cm;
+
     private static final EntityReference USER_CLASS = new EntityReference("XWikiUsers", EntityType.DOCUMENT,
         new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
 
@@ -68,6 +85,24 @@ public class UsersAndGroupsTest
     private static String groupsQueryString;
 
     private static String usersQueryString;
+
+    @Mock
+    private XWikiContext context;
+
+    @Mock
+    private XWiki xwiki;
+
+    @Before
+    public void setup() throws ComponentLookupException
+    {
+        MockitoAnnotations.initMocks(this);
+        Utils.setComponentManager(this.cm);
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
+        when(this.mockProvider.get()).thenReturn(this.cm);
+        when(this.cm.getInstance(XWikiContext.TYPE_PROVIDER)).thenReturn(this.xcontextProvider);
+        when(xcontextProvider.get()).thenReturn(this.context);
+        when(this.context.getWiki()).thenReturn(this.xwiki);
+    }
 
     static {
         StringBuilder groupsQuerySb = new StringBuilder();
@@ -100,7 +135,7 @@ public class UsersAndGroupsTest
         JSONObject resultItem = new JSONObject();
         resultItem.put("id", userFullName + ";user");
         resultItem.put("value", userName);
-        resultsArray.add(resultItem);
+        resultsArray.put(resultItem);
 
         Query q = mock(Query.class);
         when(q.bindValue("input", "%%" + input + "%%")).thenReturn(q);
@@ -122,8 +157,8 @@ public class UsersAndGroupsTest
         JSONObject expectedResult = new JSONObject();
         expectedResult.put("matched", resultsArray);
 
-        JSON searchResult = this.mocker.getComponentUnderTest().search(input, true, false);
-        Assert.assertEquals(expectedResult, searchResult);
+        JSONObject searchResult = this.mocker.getComponentUnderTest().search(input, true, false);
+        Assert.assertEquals(expectedResult.toString(), searchResult.toString());
     }
 
     @Test
@@ -156,13 +191,13 @@ public class UsersAndGroupsTest
         JSONObject resultItem = new JSONObject();
         resultItem.put("id", groupFullName + ";group");
         resultItem.put("value", groupName);
-        resultsArray.add(resultItem);
+        resultsArray.put(resultItem);
 
         JSONObject expectedResult = new JSONObject();
         expectedResult.put("matched", resultsArray);
 
-        JSON searchResult = this.mocker.getComponentUnderTest().search(input, false, true);
-        Assert.assertEquals(expectedResult, searchResult);
+        JSONObject searchResult = this.mocker.getComponentUnderTest().search(input, false, true);
+        Assert.assertEquals(expectedResult.toString(), searchResult.toString());
     }
 
     @Test
@@ -179,7 +214,7 @@ public class UsersAndGroupsTest
         JSONObject resultItem = new JSONObject();
         resultItem.put("id", userFullName + ";user");
         resultItem.put("value", userName);
-        resultsArray.add(resultItem);
+        resultsArray.put(resultItem);
 
         Query q = mock(Query.class);
         when(q.bindValue("input", "%%" + input + "%%")).thenReturn(q);
@@ -217,15 +252,16 @@ public class UsersAndGroupsTest
         GroupManager gm = this.mocker.getInstance(GroupManager.class);
         when(gm.getGroup(groupFullName)).thenReturn(g);
 
-        resultItem.put("id", groupFullName + ";group");
-        resultItem.put("value", groupName);
-        resultsArray.add(resultItem);
+        JSONObject resultGroupItem = new JSONObject();
+        resultGroupItem.put("id", groupFullName + ";group");
+        resultGroupItem.put("value", groupName);
+        resultsArray.put(resultGroupItem);
 
         JSONObject expectedResult = new JSONObject();
         expectedResult.put("matched", resultsArray);
 
-        JSON searchResult = this.mocker.getComponentUnderTest().search(input, true, true);
-        Assert.assertEquals(expectedResult, searchResult);
+        JSONObject searchResult = this.mocker.getComponentUnderTest().search(input, true, true);
+        Assert.assertEquals(expectedResult.toString(), searchResult.toString());
     }
 
     @Test
@@ -237,8 +273,8 @@ public class UsersAndGroupsTest
         JSONObject expectedResult = new JSONObject();
         expectedResult.put("matched", resultsArray);
 
-        JSON searchResult = this.mocker.getComponentUnderTest().search(input, false, false);
-        Assert.assertEquals(expectedResult, searchResult);
+        JSONObject searchResult = this.mocker.getComponentUnderTest().search(input, false, false);
+        Assert.assertEquals(expectedResult.toString(), searchResult.toString());
     }
 
     @Test
@@ -265,9 +301,12 @@ public class UsersAndGroupsTest
         JSONObject expectedResult = new JSONObject();
         expectedResult.put("matched", resultsArray);
 
-        Assert.assertEquals(expectedResult, this.mocker.getComponentUnderTest().search(input, true, true));
-        Assert.assertEquals(expectedResult, this.mocker.getComponentUnderTest().search(input, true, false));
-        Assert.assertEquals(expectedResult, this.mocker.getComponentUnderTest().search(input, false, true));
+        Assert.assertEquals(expectedResult.toString(), this.mocker.getComponentUnderTest().search(input, true, true)
+            .toString());
+        Assert.assertEquals(expectedResult.toString(), this.mocker.getComponentUnderTest().search(input, true, false)
+            .toString());
+        Assert.assertEquals(expectedResult.toString(), this.mocker.getComponentUnderTest().search(input, false, true)
+            .toString());
     }
 
     @Test
@@ -286,8 +325,10 @@ public class UsersAndGroupsTest
         JSONObject expectedResult = new JSONObject();
         expectedResult.put("matched", resultsArray);
 
-        Assert.assertEquals(expectedResult, this.mocker.getComponentUnderTest().search(input, true, false));
-        Assert.assertEquals(expectedResult, this.mocker.getComponentUnderTest().search(input, false, false));
+        Assert.assertEquals(expectedResult.toString(), this.mocker.getComponentUnderTest().search(input, true, false)
+            .toString());
+        Assert.assertEquals(expectedResult.toString(), this.mocker.getComponentUnderTest().search(input, false, false)
+            .toString());
     }
 
     @Test
