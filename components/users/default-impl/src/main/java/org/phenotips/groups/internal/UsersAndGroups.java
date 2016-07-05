@@ -37,15 +37,13 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.omg.CORBA.UNKNOWN;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.doc.XWikiDocument;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * @version $Id$
@@ -142,7 +140,7 @@ public class UsersAndGroups
      * @param searchGroups if true, includes groups in result
      * @return a json object containing all results found
      */
-    public JSON search(String input, boolean searchUsers, boolean searchGroups)
+    public JSONObject search(String input, boolean searchUsers, boolean searchGroups)
     {
         String formattedInput = input.toLowerCase();
         formattedInput = String.format(UsersAndGroups.INPUT_FORMAT, input);

@@ -23,11 +23,10 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.query.QueryException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * @version $Id$
@@ -45,7 +44,7 @@ public class UsersAndGroupsScriptServiceTest
         JSONObject result = new JSONObject();
         result.put("id", "Xwiki.Admin");
         result.put("value", "Admin;user");
-        array.add(result);
+        array.put(result);
         JSONObject resultJson = new JSONObject();
         resultJson.put("matched", array);
 

@@ -32,10 +32,9 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * @version $Id$
@@ -89,7 +88,7 @@ public class TemplatesRepository
                 JSONObject templateJson = new JSONObject();
                 templateJson.put("id", template.getId());
                 templateJson.put("textSummary", template.getName());
-                templatesArray.add(templateJson);
+                templatesArray.put(templateJson);
             }
         }
 

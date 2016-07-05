@@ -26,7 +26,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import net.sf.json.JSON;
+import org.json.JSONObject;
 
 /**
  * @version $Id$
@@ -47,7 +47,7 @@ public class UsersAndGroupsScriptService implements ScriptService
      * @param searchGroups if true, includes groups in result
      * @return a json object containing all results found
      */
-    public JSON searchUsersAndGroups(String input, boolean searchUsers, boolean searchGroups)
+    public JSONObject searchUsersAndGroups(String input, boolean searchUsers, boolean searchGroups)
     {
         return usersAndGroups.search(input, searchUsers, searchGroups);
     }
