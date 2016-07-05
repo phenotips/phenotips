@@ -148,7 +148,7 @@ public class UsersAndGroupsTest
         when(d.toString()).thenReturn("XWiki:XWiki.Admin");
 
         User u = mock(User.class);
-        when(u.getUsername()).thenReturn(userName);
+        when(u.getName()).thenReturn(userName);
         when(u.getProfileDocument()).thenReturn(d);
 
         UserManager um = this.mocker.getInstance(UserManager.class);
@@ -227,7 +227,7 @@ public class UsersAndGroupsTest
         when(d.toString()).thenReturn("XWiki:XWiki.Admin");
 
         User u = mock(User.class);
-        when(u.getUsername()).thenReturn(userName);
+        when(u.getName()).thenReturn(userName);
         when(u.getProfileDocument()).thenReturn(d);
 
         UserManager um = this.mocker.getInstance(UserManager.class);

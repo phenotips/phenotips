@@ -27,6 +27,9 @@
   </parent>
   <artifactId>users-default-impl</artifactId>
   <name>PhenoTips - Users and Groups - Default implementation</name>
+    <properties>
+    <coverage.instructionRatio>0.97</coverage.instructionRatio>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>

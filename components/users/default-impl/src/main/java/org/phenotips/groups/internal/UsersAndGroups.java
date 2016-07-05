@@ -17,12 +17,14 @@
  */
 package org.phenotips.groups.internal;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.AttachmentReference;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
@@ -35,14 +37,17 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.omg.CORBA.UNKNOWN;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
@@ -74,6 +79,8 @@ public class UsersAndGroups
     private static final String ID_KEY = "id";
 
     private static final String VALUE_KEY = "value";
+
+    private static final String ICON_KEY = "icon";
 
     private static String usersQueryString;
 
@@ -146,12 +153,16 @@ public class UsersAndGroups
         formattedInput = String.format(UsersAndGroups.INPUT_FORMAT, input);
 
         JSONArray resultArray = new JSONArray();
-        if (searchUsers) {
-            runUsersQuery(resultArray, formattedInput);
-        }
+        try {
+            if (searchUsers) {
+                runUsersQuery(resultArray, formattedInput);
+            }
 
-        if (searchGroups) {
-            runGroupsQuery(resultArray, formattedInput);
+            if (searchGroups) {
+                runGroupsQuery(resultArray, formattedInput);
+            }
+        } catch (Exception ex) {
+            this.logger.error("Error in search ({})", input, ex.getMessage());
         }
 
         JSONObject result = new JSONObject();
@@ -159,25 +170,52 @@ public class UsersAndGroups
         return result;
     }
 
-    private void runUsersQuery(JSONArray resultArray, String formattedInput)
+    private void runUsersQuery(JSONArray resultArray, String formattedInput) throws Exception
     {
         List<String> queryResult = runQuery(UsersAndGroups.usersQueryString, formattedInput, 10);
         for (String userName : queryResult)
         {
             User user = this.userManager.getUser(userName);
-            JSONObject o = createObject(user.getProfileDocument().toString(), user.getUsername(), USER);
-            resultArray.add(o);
+            List<AttachmentReference> attachmentRefs =
+                this.bridge.getAttachmentReferences((DocumentReference) user.getProfileDocument());
+            String avatarURL = "";
+            if (attachmentRefs.size() > 0) {
+                avatarURL = this.bridge.getAttachmentURL(attachmentRefs.get(0), true);
+            } else {
+                Provider<XWikiContext> xcontextProvider =
+                    ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiContext.TYPE_PROVIDER);
+                XWikiContext xcontext = xcontextProvider.get();
+                XWiki xwiki = xcontext.getWiki();
+                avatarURL = xwiki.getSkinFile("icons/xwiki/noavatar.png", xcontext);
+            }
+            String name = user.getName();
+            if (StringUtils.isBlank(name)) {
+                name = user.getUsername();
+            }
+            JSONObject o = createObject(user.getProfileDocument().toString(), name, avatarURL, USER);
+            resultArray.put(o);
         }
     }
 
-    private void runGroupsQuery(JSONArray resultArray, String formattedInput)
+    private void runGroupsQuery(JSONArray resultArray, String formattedInput) throws Exception
     {
         List<String> queryResult = runQuery(UsersAndGroups.groupsQueryString, formattedInput, 10);
         for (String groupName : queryResult)
         {
             Group group = this.groupManager.getGroup(groupName);
-            JSONObject o = createObject(groupName, group.getReference().getName(), GROUP);
-            resultArray.add(o);
+            List<AttachmentReference> attachmentRefs = this.bridge.getAttachmentReferences(group.getReference());
+            String avatarURL = "";
+            if (attachmentRefs.size() > 0) {
+                avatarURL = this.bridge.getAttachmentURL(attachmentRefs.get(0), true);
+            } else {
+                Provider<XWikiContext> xcontextProvider =
+                    ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiContext.TYPE_PROVIDER);
+                XWikiContext xcontext = xcontextProvider.get();
+                XWiki xwiki = xcontext.getWiki();
+                avatarURL = xwiki.getSkinFile("icons/xwiki/noavatargroup.png", xcontext);
+            }
+            JSONObject o = createObject(groupName, group.getReference().getName(), avatarURL, GROUP);
+            resultArray.put(o);
         }
     }
 
@@ -198,15 +236,15 @@ public class UsersAndGroups
         return queryResults;
     }
 
-    private JSONObject createObject(String id, String value, String type)
+    private JSONObject createObject(String id, String value, String avatar, String type)
     {
         JSONObject o = new JSONObject();
 
         StringBuilder idWithType = new StringBuilder();
         idWithType.append(id).append(";").append(type);
         o.put(UsersAndGroups.ID_KEY, idWithType.toString());
-
         o.put(UsersAndGroups.VALUE_KEY, value);
+        o.put(UsersAndGroups.ICON_KEY, avatar);
 
         return o;
     }
