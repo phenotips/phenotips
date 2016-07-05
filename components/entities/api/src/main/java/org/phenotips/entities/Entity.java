@@ -33,6 +33,7 @@ import org.json.JSONObject;
 @Unstable
 public interface Entity
 {
+    /** The key used in the JSON serialization for the {@link #getId() identifier}. */
     String JSON_KEY_ID = "id";
 
     /**

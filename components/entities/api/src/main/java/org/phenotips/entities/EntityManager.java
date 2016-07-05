@@ -73,7 +73,7 @@ public interface EntityManager<E extends Entity>
     /**
      * Retrieve an {@link Entity entity} by it's {@link Entity#getName() name}.
      *
-     * @param externalId the entity's {@link Entity#getName() user-friendly name}
+     * @param name the entity's {@link Entity#getName() user-friendly name}
      * @return the requested entity, or {@code null} if the requested entity does not exist, is not really a type of the
      *         entity requested or multiple entities with the same name exists
      */
