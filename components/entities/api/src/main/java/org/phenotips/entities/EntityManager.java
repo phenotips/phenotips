@@ -17,17 +17,91 @@
  */
 package org.phenotips.entities;
 
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.stability.Unstable;
 
 import java.util.Collection;
 
+/**
+ * API that provides access for a specific type of entity, with support for simple CRUD operations. No access rights are
+ * checked here.
+ *
+ * @param <E> the type of entities handled by this manager
+ * @version $Id$
+ * @since 1.3M2
+ */
 @Unstable
-public interface EntityManager<T extends Entity>
+public interface EntityManager<E extends Entity>
 {
-    T create();
-    T get(String id);
-    T get(DocumentReference reference);
-    Collection<T> getAll();
-    boolean remove(T entity);
+    /**
+     * Create and return a new empty entity (owned by the currently logged in user).
+     *
+     * @return the created entity
+     */
+    E create();
+
+    /**
+     * Create and return a new empty entity (owned by the given principal).
+     *
+     * @param creator a reference to the document representing a principal (a user or a group) which will be set as the
+     *            creator/owner for the created entity
+     * @return the created entity
+     */
+    @Unstable("The type of the parameter will be replaced by Principal, once the principals module is implemented")
+    E create(DocumentReference creator);
+
+    /**
+     * Retrieve an {@link Entity entity} by it's {@link Entity#getId() internal PhenoTips identifier}.
+     *
+     * @param id the {@link Entity#getId() entity identifier}, i.e. the serialized document reference
+     * @return the requested entity
+     * @throws IllegalArgumentException if the requested entity does not exist or is not really a type of the entity
+     *             requested
+     */
+    E get(String id);
+
+    /**
+     * Retrieve an {@link Entity entity} from the specified document.
+     *
+     * @param reference reference of the {@link Entity#getDocument() document where the entity is stored}
+     * @return the requested entity
+     * @throws IllegalArgumentException if the document doesn't contain a proper entity
+     */
+    E get(DocumentReference reference);
+
+    /**
+     * Retrieve an {@link Entity entity} by it's {@link Entity#getName() name}.
+     *
+     * @param externalId the entity's {@link Entity#getName() user-friendly name}
+     * @return the requested entity, or {@code null} if the requested entity does not exist, is not really a type of the
+     *         entity requested or multiple entities with the same name exists
+     */
+    E getByName(String name);
+
+    /**
+     * Retrieve all entities of the managed type, in a random order.
+     *
+     * @return a collection of entities, may be empty if no entities exist
+     */
+    Collection<E> getAll();
+
+    /**
+     * Delete an entity.
+     *
+     * @param entity the entity to delete
+     * @return {@code true} if the entity was successfully deleted, {@code false} in case of error
+     */
+    boolean delete(E entity);
+
+    /**
+     * Load and return an entity from the specified document. This method will be removed once the new XWiki model is
+     * implemented and the intermediary model bridge is no longer needed. Do not use.
+     *
+     * @param document the document where the entity is stored
+     * @return the loaded entity
+     * @throws IllegalArgumentException if the provided document doesn't contain a proper entity
+     */
+    @Unstable("The type of the parameter will be replaced by Document, once the new model module is implemented")
+    E load(DocumentModelBridge document) throws IllegalArgumentException;
 }
