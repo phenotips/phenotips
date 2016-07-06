@@ -191,6 +191,27 @@ var SaveLoadEngine = Class.create( {
             onSuccess: function() { editor.getActionStack().addSaveEvent();
                                     savingNotification.replace(new XWiki.widgets.Notification("Successfully saved"));
                                   },
+            // 0 is returned for network failures, except on IE which converts it to a strange large number (12031)
+            on0 : function(response) {
+              response.request.options.onFailure(response);
+            },
+            onFailure : function(response) {
+              var errorMessage = '';
+              if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
+                errorMessage = 'Server not responding';
+              } else if (response.getHeader('Content-Type').match(/^\s*text\/plain/)) {
+                // Regard the body of plain text responses as custom status messages.
+                errorMessage = response.responseText;
+              } else {
+                errorMessage = response.statusText;
+              }
+              savingNotification.replace(new XWiki.widgets.Notification("Saving failed: " + errorMessage));
+              var content = new Element('div', {'class' : 'box errormessage'});
+              content.insert(new Element('p').update(new Element('strong').update("SAVING FAILED: " + errorMessage)));
+              content.insert(new Element('p').update("YOUR PEDIGREE IS NOT SAVED. To avoid losing your work, we recommend taking a screenshot of the pedigree and exporting the pedigree data as simple JSON using the 'Export' option in the menu at the top of the pedigree editor. Please notify your PhenoTips administrator of this error."));
+              var d = new PhenoTips.widgets.ModalPopup(content, '', {'titleColor' : '#000'});
+              d.show();
+            },
             parameters: {"property#data": jsonData, "property#image": svgText}
         });
     },
