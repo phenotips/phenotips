@@ -22,6 +22,11 @@ import org.phenotips.entities.EntityGroup;
 
 import org.xwiki.stability.Unstable;
 
+/**
+ * Document me.
+ * @param <T> entity class
+ * @version $Id$
+ */
 @Unstable
 public abstract class AbstractEntityGroup<T extends Entity> implements EntityGroup<T>
 {
