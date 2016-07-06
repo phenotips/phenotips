@@ -18,6 +18,7 @@
 package org.phenotips.entities;
 
 import org.xwiki.bridge.DocumentModelBridge;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.stability.Unstable;
 
@@ -34,6 +35,7 @@ import java.util.Collection;
  * @since 1.3M2
  */
 @Unstable
+@Role
 public interface EntityGroupManager<G extends EntityGroup<E>, E extends Entity> extends EntityManager<G>
 {
     /**
