@@ -1,0 +1,35 @@
+#template("colorThemeInit.vm")
+.accepted-suggestions {
+  display: none;
+}
+#templatesTable tbody td, #leadersTable tbody td, #contributorsTable tbody td, #observersTable tbody td {
+  border-bottom: 1px solid $theme.borderColor;
+  border-left-width : 0px;
+  border-right-width: 0px;
+}
+#templatesTable tfoot td, #templatesTable tfoot td, #contributorsTable tfoot td, #observersTable tfoot td {
+  border-top: 3px solid $theme.borderColor;
+}
+#templatesTable .tool.delete, #leadersTable .tool.delete, #contributorsTable .tool.delete, #observersTable .tool.delete {
+  color: $theme.notificationErrorColor;
+  cursor: pointer;
+  width: 32px;
+}
+#templatesTable .highlight, #leadersTable .highlight, #contributorsTable .highlight, #observersTable .highlight {
+  background-color: $theme.highlightColor !important;
+  color: $theme.notificationErrorColor;
+}
+#templatesTable .new, #leadersTable .new, #contributorsTable .new, #observersTable .new {
+  background-color: $theme.highlightColor;
+}
+#templatesTable, #leadersTable, #contributorsTable, #observersTable {
+  width: 200px;
+  font-size: 14px;
+}
+.mainTd {
+  width: 100%;
+}
+.project-tools {
+  float: right;
+  margin-top: -3em;
+}

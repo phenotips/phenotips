@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
 <!--
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,19 +16,22 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
+    <artifactId>projects</artifactId>
     <version>1.3-SNAPSHOT</version>
   </parent>
-  <artifactId>projects</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Projects</name>
-  <modules>
-    <module>ui</module>
-    <module>api</module>
-    <module>resources</module>
-  </modules>
+  <artifactId>projects-resources</artifactId>
+  <name>Projects - JS and CSS Resources</name>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.github.bringking</groupId>
+        <artifactId>requirejs-maven-plugin</artifactId>
+        <version>2.0.4</version>
+      </plugin>
+    </plugins>
+  </build>
 </project>
