@@ -221,6 +221,13 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+    <!-- Include the projects resources -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>projects-resources</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
     <!-- Database connectors for MySQL and HSQLDB, the most commonly used ones. -->
     <dependency>
       <groupId>org.hsqldb</groupId>
@@ -371,6 +378,12 @@ activeinstalls.ipFetchURL=https://phenotips.org/get/Stats/Id
               <artifactId>phenotips-widgets-resources</artifactId>
               <type>jar</type>
               <targetPath>/</targetPath>
+            </overlay>
+            <overlay>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>projects-resources</artifactId>
+              <type>jar</type>
+              <targetPath></targetPath>
             </overlay>
             <overlay>
               <groupId>org.xwiki.platform</groupId>
