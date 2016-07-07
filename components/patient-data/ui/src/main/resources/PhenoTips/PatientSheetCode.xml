@@ -477,37 +477,35 @@ document.observe('xwiki:dom:loaded', function() {
   return XWiki;
 }(XWiki || {}));
 
-// Returns true if birth_date is before than death_date, false if birth_date is after death_date and undefined if they cannot be compared
-// A decade value is understood as the first day of the decade for a birth date, and the last day of the decade for a death date 
-// (so only the years are compared)
+// Returns true if birth_date is before death_date, false if birth_date is after death_date and undefined if they cannot be compared
+// A date range is understood as the first possible day of the range for a birth date, and the last possible day of the range
+// for a death date (so only the years are compared)
 var isDateAfter = function(birth_date, death_date) {
 
    var birth = birth_date;
    var death = death_date;
-   var used_decade = false;
-
-   if (birth.decade) {
-     birth.year = birth.decade.substring(0, birth.decade.length-1);
-     used_decade = true;
-   }
-   if (death.decade) {
-     death.year = Number(death.decade.substring(0, death.decade.length-1)) + 9;
-     used_decade = true;
-   }
 
    // compare years
    if (typeof birth.year == "undefined" || typeof death.year == "undefined") {
       // dates cannot be compared
       return;
    }
-   if (birth.year &lt; death.year) {
+
+   var deathDateRange = death.hasOwnProperty("range") ? death.range.years : 1;
+   var maxDeathYear = death.year + deathDateRange - 1;
+
+   if (birth.year &lt; maxDeathYear) {
       return true;
    }
-   if (birth.year &gt; death.year) {
+   if (birth.year &gt; maxDeathYear) {
       return false;
    }
-   if (used_decade) {
-     // here birth.year == death.year
+
+   // if at least one of the dates is a fuzzy date (range.years  > 1) this is as good as we can do -
+   // at this point first possible birth year == last possible death year, but we don't know any better.
+   // Since dates may be valid, we assume they are
+   if ((birth.hasOwnProperty("range") &amp;&amp; birth.range.years > 1) ||
+       (death.hasOwnProperty("range") &amp;&amp; death.range.years > 1)) {
      return true;
    }
 
@@ -546,7 +544,7 @@ var is_death_date_after_birth_date = function () {
 }
 
 // registers LiveValidation and birth/death dates observers
-document.observe('xwiki:dom:loaded', function() 
+document.observe('xwiki:dom:loaded', function()
 {
   var date_of_birth = $$("[id$='date_of_birth']")[0];
   var date_of_death = $$("[id$='date_of_death']")[0];
@@ -564,7 +562,7 @@ document.observe('xwiki:dom:loaded', function()
 
   date_of_death.__validation = new LiveValidation(date_of_death, {validMessage: ''});
   date_of_death.__validation.add(is_death_date_after_birth_date);
-  
+
   // when date of death years are given as a decade, the value of that field is empty.
   // LiveValidation does not show error message on this case
   date_of_death.__validation.displayMessageWhenEmpty = true;
@@ -4530,7 +4528,7 @@ h1, h2, h3, h4 {
 }
 
 #diffDiagnosis-search-results {
-  display: table; 
+  display: table;
   width: 100%;
 }
 
