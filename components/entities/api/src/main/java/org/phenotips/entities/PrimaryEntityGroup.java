@@ -23,16 +23,16 @@ import org.xwiki.stability.Unstable;
 import java.util.Collection;
 
 /**
- * A group of {@link Entity entities}, which in turn is another type of entity. For example, a Project is also a
+ * A group of {@link PrimaryEntity entities}, which in turn is another type of entity. For example, a Project is also a
  * collection of patient records, and a workgroup is a collection of users.
  *
  * @param <E> the type of entities belonging to this group; if more than one type of entities can be part of the group,
- *            then a generic {@code Entity} should be used instead
+ *            then a generic {@code PrimaryEntity} should be used instead
  * @version $Id$
  * @since 1.3M2
  */
 @Unstable
-public interface EntityGroup<E extends Entity> extends Entity
+public interface PrimaryEntityGroup<E extends PrimaryEntity> extends PrimaryEntity
 {
     /**
      * @return a reference to an XClass that is supposed to be used by all members of this group, or {@code null} if any

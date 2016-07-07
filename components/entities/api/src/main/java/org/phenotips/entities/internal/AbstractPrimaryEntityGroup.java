@@ -17,13 +17,14 @@
  */
 package org.phenotips.entities.internal;
 
-import org.phenotips.entities.Entity;
-import org.phenotips.entities.EntityGroup;
+import org.phenotips.entities.PrimaryEntity;
+import org.phenotips.entities.PrimaryEntityGroup;
 
 import org.xwiki.stability.Unstable;
 
 @Unstable
-public abstract class AbstractEntityGroup<T extends Entity> implements EntityGroup<T>
+public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
+    extends AbstractPrimaryEntity implements PrimaryEntityGroup<E>
 {
 
 }

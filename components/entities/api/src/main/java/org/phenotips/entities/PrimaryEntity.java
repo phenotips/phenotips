@@ -31,7 +31,7 @@ import org.json.JSONObject;
  * @since 1.3M2
  */
 @Unstable
-public interface Entity
+public interface PrimaryEntity
 {
     /** The key used in the JSON serialization for the {@link #getId() identifier}. */
     String JSON_KEY_ID = "id";
