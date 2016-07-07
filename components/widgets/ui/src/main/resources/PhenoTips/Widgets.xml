@@ -4421,6 +4421,10 @@ document.observe("xwiki:dom:updated", init);
        return (this.dropdown.selectedIndex &gt;= 0) ? this.dropdown.options[this.dropdown.selectedIndex].value : '';
     },
 
+    getSelectedClass : function() {
+       return (this.dropdown.selectedIndex &gt;= 0) ? this.dropdown.options[this.dropdown.selectedIndex].className : '';
+    },
+
     getSelectedOption : function () {
        return (this.dropdown.selectedIndex &gt;= 0) ? this.dropdown.options[this.dropdown.selectedIndex].innerHTML : '';
     }
@@ -4445,7 +4449,7 @@ document.observe("xwiki:dom:updated", init);
       }
 
       this.container = new Element('div', {'class' : 'fuzzy-date-picker'});
-      
+
       //Insertion is done before, so that validation errors can appear after it
       this.__input.insert({before : this.container});
       var format = (this.__input.title || 'yyyy-MM-dd').split(/\W+/);
@@ -4474,7 +4478,7 @@ document.observe("xwiki:dom:updated", init);
         this.monthSelected();
         this.updateDate();
     },
-    
+
     createYearDropdown : function() {
       this.yearSelector = new widgets.FuzzyDatePickerDropdown({name: "year"});
 
@@ -4482,16 +4486,37 @@ document.observe("xwiki:dom:updated", init);
       var crtYear = today.getYear() + 1900;
       var startYear = 1900;
 
+      var range = (this.__date.hasOwnProperty("range") &amp;&amp; this.__date.range.hasOwnProperty("years")) ? this.__date.range.years : 1;
+      var year = this.__date.hasOwnProperty("year") ? this.__date.year : null;
       var values = [];
+      if (year > crtYear) {
+          values.push({"value" : year, "selected" : true });
+      }
       for (var y = crtYear; y &gt;= startYear; --y) {
-        values.push({"value" : y, "selected" : this.__date.year == y});
+        values.push({"value" : y, "selected" : ((year == y) &amp;&amp; (range &lt;= 1)) });
         if (y % 10 == 0) {
-            values.push({"value" : (y + "s"), "cssClass" : "decade", "text" : (y + 's'), "selected" : this.__date.decade == y + "s"});
+            values.push({ "value" : (y + "s"),
+                          "cssClass" : "decade",
+                          "text" : (y + 's'),
+                          "selected" : ((year == y) &amp;&amp; (range &gt; 1))});
         }
       }
-      values.push({"value": "1800s", "cssClass" : "decade", "selected" : this.__date.decade == "1800s"});
-      values.push({"value": "1700s", "cssClass" : "decade", "selected" : this.__date.decade == "1700s"});
-      values.push({"value": "1600s", "cssClass" : "decade", "selected" : this.__date.decade == "1600s"});
+
+      var insertCentury = function(centuryStart) {
+          var centuryEnd = centuryStart + 100;
+          if (year != null &amp;&amp; year &gt;= centuryStart &amp;&amp; year &lt; centuryEnd &amp;&amp; range == 1) {
+              values.push({"value" : year, "selected" : true });
+          }
+          var yearInCentury = (year != null) &amp;&amp; (year &gt;= centuryStart) &amp;&amp; (year &lt; centuryEnd) &amp;&amp; (range &gt; 1);
+          values.push({"value": centuryStart + "s", "cssClass" : "century", "selected" : yearInCentury});
+      }
+      insertCentury(1800);
+      insertCentury(1700);
+      insertCentury(1600);
+      insertCentury(1500);
+      if (year != null &amp;&amp; year &lt; 1500) {
+          values.push({"value" : year, "selected" : true });
+      }
 
       this.yearSelector.populate(values);
       this.yearSelector.onSelect(this.yearSelected.bind(this));
@@ -4582,22 +4607,25 @@ document.observe("xwiki:dom:updated", init);
         var dateObject = {};
 
         var y = this.yearSelector.getSelectedValue();
-        if (y.match(/\d\d\d\ds$/)) {
-            dateObject["decade"] = y;
+        var rangeMatch = y.match(/(\d\d\d\d)s$/);
+        if (rangeMatch) {
+            var range = (this.yearSelector.getSelectedClass() == "century") ? 100 : 10;
+            dateObject["range"] = { "years": range };
+            dateObject["year"] = parseInt(rangeMatch[1]);
         } else {
             if (y != "") {
-                dateObject["year"] = y;
+                dateObject["year"] = parseInt(y);
             }
         }
 
         if (y &gt; 0) {
             var m = this.monthSelector &amp;&amp; this.monthSelector.getSelectedValue();
             if (m &gt; 0) {
-                dateObject["month"] = this.monthSelector.getSelectedOption();
+                dateObject["month"] = parseInt(this.monthSelector.getSelectedOption());
 
                 var d = this.daySelector &amp;&amp; this.daySelector.getSelectedValue();
                 if (d &gt; 0) {
-                    dateObject["day"] = this.daySelector.getSelectedOption();
+                    dateObject["day"] = parseInt(this.daySelector.getSelectedOption());
                 }
             }
         }
