@@ -30,13 +30,13 @@ import java.util.Collection;
  *
  * @param <G> the type of groups handled by this manager
  * @param <E> the type of entities belonging to the groups handled by this manager; if more than one type of entities
- *            can be part of the groups, then a generic {@code Entity} should be used instead
+ *            can be part of the groups, then a generic {@code PrimaryEntity} should be used instead
  * @version $Id$
  * @since 1.3M2
  */
 @Unstable
 @Role
-public interface EntityGroupManager<G extends EntityGroup<E>, E extends Entity> extends EntityManager<G>
+public interface PrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E extends PrimaryEntity> extends PrimaryEntityManager<G>
 {
     /**
      * Create and return a new empty group (owned by the currently logged in user).
@@ -58,9 +58,9 @@ public interface EntityGroupManager<G extends EntityGroup<E>, E extends Entity> 
     G create(DocumentReference creator);
 
     /**
-     * Retrieve a {@link EntityGroup group} by it's {@link Entity#getId() internal PhenoTips identifier}.
+     * Retrieve a {@link PrimaryEntityGroup group} by it's {@link PrimaryEntity#getId() internal PhenoTips identifier}.
      *
-     * @param id the {@link Entity#getId() group identifier}, i.e. the serialized document reference
+     * @param id the {@link PrimaryEntity#getId() group identifier}, i.e. the serialized document reference
      * @return the requested group
      * @throws IllegalArgumentException if the requested group does not exist or is not really a type of the group
      *             requested
@@ -69,9 +69,9 @@ public interface EntityGroupManager<G extends EntityGroup<E>, E extends Entity> 
     G get(String id);
 
     /**
-     * Retrieve a {@link EntityGroup group} from the specified document.
+     * Retrieve a {@link PrimaryEntityGroup group} from the specified document.
      *
-     * @param reference reference of the {@link Entity#getDocument() document where the entity is stored}
+     * @param reference reference of the {@link PrimaryEntity#getDocument() document where the entity is stored}
      * @return the requested group
      * @throws IllegalArgumentException if the document doesn't contain a proper group
      */
@@ -79,9 +79,9 @@ public interface EntityGroupManager<G extends EntityGroup<E>, E extends Entity> 
     G get(DocumentReference reference);
 
     /**
-     * Retrieve a {@link EntityGroup group} by it's {@link Entity#getName() name}.
+     * Retrieve a {@link PrimaryEntityGroup group} by it's {@link PrimaryEntity#getName() name}.
      *
-     * @param externalId the group's {@link Entity#getName() user-friendly name}
+     * @param externalId the group's {@link PrimaryEntity#getName() user-friendly name}
      * @return the requested group, or {@code null} if the requested group does not exist, is not really a type of the
      *         group requested or multiple groups with the same name exists
      */
@@ -94,7 +94,7 @@ public interface EntityGroupManager<G extends EntityGroup<E>, E extends Entity> 
      * @param entity the entity that must be a member of the returned groups
      * @return a collection of groups, may be empty
      */
-    Collection<G> getGroupsForEntity(Entity entity);
+    Collection<G> getGroupsForEntity(PrimaryEntity entity);
 
     /**
      * Retrieve all groups of the managed type, in a random order.

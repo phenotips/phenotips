@@ -34,7 +34,7 @@ import java.util.Collection;
  */
 @Unstable
 @Role
-public interface EntityManager<E extends Entity>
+public interface PrimaryEntityManager<E extends PrimaryEntity>
 {
     /**
      * Create and return a new empty entity (owned by the currently logged in user).
@@ -54,9 +54,9 @@ public interface EntityManager<E extends Entity>
     E create(DocumentReference creator);
 
     /**
-     * Retrieve an {@link Entity entity} by it's {@link Entity#getId() internal PhenoTips identifier}.
+     * Retrieve an {@link PrimaryEntity entity} by it's {@link PrimaryEntity#getId() internal PhenoTips identifier}.
      *
-     * @param id the {@link Entity#getId() entity identifier}, i.e. the serialized document reference
+     * @param id the {@link PrimaryEntity#getId() entity identifier}, i.e. the serialized document reference
      * @return the requested entity
      * @throws IllegalArgumentException if the requested entity does not exist or is not really a type of the entity
      *             requested
@@ -64,18 +64,18 @@ public interface EntityManager<E extends Entity>
     E get(String id);
 
     /**
-     * Retrieve an {@link Entity entity} from the specified document.
+     * Retrieve an {@link PrimaryEntity entity} from the specified document.
      *
-     * @param reference reference of the {@link Entity#getDocument() document where the entity is stored}
+     * @param reference reference of the {@link PrimaryEntity#getDocument() document where the entity is stored}
      * @return the requested entity
      * @throws IllegalArgumentException if the document doesn't contain a proper entity
      */
     E get(DocumentReference reference);
 
     /**
-     * Retrieve an {@link Entity entity} by it's {@link Entity#getName() name}.
+     * Retrieve an {@link PrimaryEntity entity} by it's {@link PrimaryEntity#getName() name}.
      *
-     * @param name the entity's {@link Entity#getName() user-friendly name}
+     * @param name the entity's {@link PrimaryEntity#getName() user-friendly name}
      * @return the requested entity, or {@code null} if the requested entity does not exist, is not really a type of the
      *         entity requested or multiple entities with the same name exists
      */
