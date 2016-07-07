@@ -22,6 +22,11 @@ import org.phenotips.entities.PrimaryEntityGroup;
 
 import org.xwiki.stability.Unstable;
 
+/**
+ * Document me.
+ * @param <T> entity class
+ * @version $Id$
+ */
 @Unstable
 public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
     extends AbstractPrimaryEntity implements PrimaryEntityGroup<E>
