@@ -38,7 +38,7 @@ import java.util.Collection;
 public interface PrimaryEntityGroup<E extends PrimaryEntity> extends PrimaryEntity
 {
     /** The XClass used for storing membership information. */
-    EntityReference GROUP_MEMBERSHIP_CLASS = new EntityReference("GroupMembershipClass", EntityType.DOCUMENT,
+    EntityReference GROUP_MEMBERSHIP_CLASS = new EntityReference("EntityBindingClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
     /** The XProperty from {@link #GROUP_MEMBERSHIP_CLASS} used for referencing the group document. */

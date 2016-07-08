@@ -47,7 +47,7 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
-    <class>
+    <reference>
       <cache>0</cache>
       <classname/>
       <customDisplay/>
@@ -55,31 +55,7 @@
       <displayType>input</displayType>
       <idField/>
       <multiSelect>0</multiSelect>
-      <name>class</name>
-      <number>2</number>
-      <picker>1</picker>
-      <prettyName>Target entity class</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators/>
-      <size>1</size>
-      <sort>none</sort>
-      <sql/>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <valueField/>
-      <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
-    </class>
-    <target>
-      <cache>0</cache>
-      <classname/>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <displayType>input</displayType>
-      <idField/>
-      <multiSelect>0</multiSelect>
-      <name>target</name>
+      <name>reference</name>
       <number>1</number>
       <picker>1</picker>
       <prettyName>Target entity</prettyName>
@@ -94,6 +70,30 @@
       <validationRegExp/>
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
-    </target>
+    </reference>
+    <type>
+      <cache>0</cache>
+      <classname/>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>input</displayType>
+      <idField/>
+      <multiSelect>0</multiSelect>
+      <name>type</name>
+      <number>2</number>
+      <picker>1</picker>
+      <prettyName>Target entity class</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>1</size>
+      <sort>none</sort>
+      <sql/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
+    </type>
   </class>
 </xwikidoc>
