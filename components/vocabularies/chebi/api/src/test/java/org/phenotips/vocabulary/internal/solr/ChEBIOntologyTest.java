@@ -17,9 +17,9 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
+import org.phenotips.vocabulary.SolrVocabularyResourceManager;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
-import org.phenotips.vocabulary.SolrVocabularyResourceManager;
 
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
