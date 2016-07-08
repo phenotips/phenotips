@@ -37,14 +37,6 @@ import javax.inject.Singleton;
 @Singleton
 public class ChEBIOntology extends AbstractOBOSolrVocabulary
 {
-    /**
-     * TODO. Determine if this is still relevant. The name of the Alternative ID field, used for older aliases of
-     * updated HPO terms.
-     */
-    protected static final String ALTERNATIVE_ID_FIELD_NAME = "alt_id";
-
-    protected static final String VERSION_FIELD_NAME = "version";
-
     /** The number of documents to be added and committed to Solr at a time. */
     @Override
     protected int getSolrDocsPerBatch()
