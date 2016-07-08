@@ -1,0 +1,71 @@
+format-version: 1.2
+data-version: 109
+date: 01:11:2013 17:18
+saved-by: chebi
+default-namespace: chebi_ontology
+remark: ChEBI subsumes and replaces the Chemical Ontology first
+synonymtypedef: IUPAC_NAME "IUPAC NAME"
+synonymtypedef: FORMULA "FORMULA"
+synonymtypedef: SMILES "SMILES"
+synonymtypedef: InChI "InChI"
+synonymtypedef: InChIKey "InChIKey"
+synonymtypedef: BRAND_NAME "BRAND NAME"
+synonymtypedef: INN "INN"
+remark: developed by Michael Ashburner & Pankaj Jaiswal.
+remark: Author: ChEBI curation team 
+remark: ChEBI Release version 109
+remark: For any queries contact chebi-help@ebi.ac.uk 
+ontology: chebi
+
+[Term]
+id: CHEBI:24431
+name: chemical entity
+def: "A chemical entity is a physical entity of interest in chemistry including molecular entities, parts thereof, and chemical substances." []
+
+[Term]
+id: CHEBI:23367
+name: molecular entity
+def: "Any constitutionally or isotopically distinct atom, molecule, ion, ion pair, radical, radical ion, complex, conformer etc., identifiable as a separately distinguishable entity." []
+synonym: "entidades moleculares" RELATED [IUPAC:]
+synonym: "molekulare Entitaet" RELATED [ChEBI:]
+synonym: "entite moleculaire" RELATED [IUPAC:]
+synonym: "entidad molecular" RELATED [IUPAC:]
+synonym: "molecular entity" EXACT IUPAC_NAME [IUPAC:]
+synonym: "molecular entities" RELATED [IUPAC:]
+is_a: CHEBI:24431
+
+[Term]
+id: CHEBI:24870
+name: ion
+def: "A molecular entity having a net electric charge." []
+synonym: "ion" EXACT IUPAC_NAME [IUPAC:]
+synonym: "iones" RELATED [ChEBI:]
+synonym: "ions" RELATED [ChEBI:]
+synonym: "Ion" EXACT [ChEBI:]
+synonym: "ion" EXACT [ChEBI:]
+synonym: "Ionen" RELATED [ChEBI:]
+is_a: CHEBI:23367
+
+[Term]
+id: CHEBI:33259
+name: elemental molecular entity
+def: "A molecular entity all atoms of which have the same atomic number." []
+synonym: "homoatomic entity" RELATED [ChEBI:]
+synonym: "homoatomic molecular entities" RELATED [ChEBI:]
+synonym: "homoatomic molecular entity" RELATED [ChEBI:]
+is_a: CHEBI:23367
+
+[Term]
+id: CHEBI:33238
+name: monoatomic entity
+def: "A monoatomic entity is a molecular entity consisting of a single atom." []
+synonym: "monoatomic entities" RELATED [ChEBI:]
+synonym: "atomic entity" RELATED [ChEBI:]
+is_a: CHEBI:33259
+
+[Term]
+id: CHEBI:24867
+name: monoatomic ion
+synonym: "monoatomic ions" RELATED [ChEBI:]
+is_a: CHEBI:24870
+is_a: CHEBI:33238
