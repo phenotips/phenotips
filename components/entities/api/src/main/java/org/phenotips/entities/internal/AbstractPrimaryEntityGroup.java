@@ -17,14 +17,147 @@
  */
 package org.phenotips.entities.internal;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.entities.PrimaryEntity;
 import org.phenotips.entities.PrimaryEntityGroup;
+import org.phenotips.entities.PrimaryEntityManager;
 
+import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.model.reference.EntityReference;
+import org.xwiki.query.Query;
+import org.xwiki.query.QueryException;
+import org.xwiki.query.QueryManager;
 import org.xwiki.stability.Unstable;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+
+/**
+ * Base class for implementing specific entity groups, where members declare the groups that they belong to.
+ *
+ * @param <E> the type of entities belonging to this group; if more than one type of entities can be part of the group,
+ *            then a generic {@code PrimaryEntity} should be used instead
+ * @version $Id$
+ * @since 1.3M2
+ */
 @Unstable("New class and interface added in 1.3")
 public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
     extends AbstractPrimaryEntity implements PrimaryEntityGroup<E>
 {
+    protected final PrimaryEntityManager<E> membersManager;
 
+    protected AbstractPrimaryEntityGroup(XWikiDocument document)
+    {
+        super(document);
+
+        PrimaryEntityManager<E> manager = null;
+        ComponentManager cm = ComponentManagerRegistry.getContextComponentManager();
+        try {
+            String role = getLocalSerializer().serialize(getMemberType());
+            manager = cm.getInstance(PrimaryEntityManager.class, role);
+        } catch (ComponentLookupException ex) {
+            try {
+                manager = cm.getInstance(PrimaryEntityManager.class);
+            } catch (ComponentLookupException e) {
+            }
+        }
+        this.membersManager = manager;
+    }
+
+    @Override
+    public Collection<E> getMembers()
+    {
+        return getMembersOfType(getMemberType());
+    }
+
+    @Override
+    public Collection<E> getMembersOfType(EntityReference type)
+    {
+        Collection<E> result = new LinkedList<>();
+        try {
+            StringBuilder hql = new StringBuilder();
+            hql.append("select distinct binding.name from BaseObject binding, StringProperty groupReference");
+            if (type != null) {
+                hql.append(", BaseObject entity");
+            }
+            hql.append(" where binding.className = :memberClass")
+                .append(" and groupReference.id.id = binding.id and groupReference.id.name = 'reference'")
+                .append(" and groupReference.value = :selfReference");
+            if (type != null) {
+                hql.append(" and entity.name = binding.name and entity.className = :entityType");
+            }
+
+            Query q = getQueryManager().createQuery(hql.toString(), Query.HQL);
+
+            q.bindValue("memberClass", getLocalSerializer().serialize(GROUP_MEMBERSHIP_CLASS));
+            q.bindValue("selfReference", getFullSerializer().serialize(getDocument()));
+            q.bindValue("entityType", getLocalSerializer().serialize(type));
+            List<String> memberIds = q.execute();
+            for (String memberId : memberIds) {
+                result.add(this.membersManager.get(memberId));
+            }
+        } catch (QueryException ex) {
+            this.logger.warn("Failed to query members: {}", ex.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public boolean addMember(E member)
+    {
+        try {
+            DocumentAccessBridge dab =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
+            XWikiDocument doc = (XWikiDocument) dab.getDocument(member.getDocument());
+            BaseObject obj = doc.getXObject(GROUP_MEMBERSHIP_CLASS, REFERENCE_XPROPERTY,
+                getFullSerializer().serialize(getDocument()), false);
+            if (obj != null) {
+                return true;
+            }
+            obj = doc.newXObject(GROUP_MEMBERSHIP_CLASS, getXContext());
+            obj.setStringValue(REFERENCE_XPROPERTY, getFullSerializer().serialize(getDocument()));
+            getXContext().getWiki().saveDocument(doc, "Added to group " + getDocument(), true, getXContext());
+            return true;
+        } catch (Exception ex) {
+            this.logger.warn("Failed to add member to group: {}", ex.getMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean removeMember(E member)
+    {
+        try {
+            DocumentAccessBridge dab =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
+            XWikiDocument doc = (XWikiDocument) dab.getDocument(member.getDocument());
+            BaseObject obj = doc.getXObject(GROUP_MEMBERSHIP_CLASS, REFERENCE_XPROPERTY,
+                getFullSerializer().serialize(getDocument()), false);
+            if (obj == null) {
+                return true;
+            }
+            doc.removeXObject(obj);
+            getXContext().getWiki().saveDocument(doc, "Removed from group " + getDocument(), true, getXContext());
+            return true;
+        } catch (Exception ex) {
+            this.logger.warn("Failed to remove member from group: {}", ex.getMessage());
+        }
+        return false;
+    }
+
+    protected QueryManager getQueryManager()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(QueryManager.class);
+        } catch (ComponentLookupException ex) {
+            this.logger.error("Failed to access the query manager: {}", ex.getMessage(), ex);
+        }
+        return null;
+    }
 }
