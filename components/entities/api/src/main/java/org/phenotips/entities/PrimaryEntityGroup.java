@@ -58,6 +58,15 @@ public interface PrimaryEntityGroup<E extends PrimaryEntity> extends PrimaryEnti
     Collection<E> getMembers();
 
     /**
+     * List all the members (entities) of a given type that are part of this group.
+     *
+     * @param type a reference to an XClass to filter members by; if {@code null}, all members are returned, regardless
+     *            of type
+     * @return a collection of Entities, may be empty
+     */
+    Collection<E> getMembersOfType(EntityReference type);
+
+    /**
      * Add a new member to the group.
      *
      * @param member the member to add to the group
