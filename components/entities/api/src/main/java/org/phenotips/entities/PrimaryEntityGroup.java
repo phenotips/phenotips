@@ -26,8 +26,8 @@ import org.xwiki.stability.Unstable;
 import java.util.Collection;
 
 /**
- * A group of {@link PrimaryEntity entities}, which in turn is another type of entity. For example, a Project is also a
- * collection of patient records, and a workgroup is a collection of users.
+ * A group of {@link PrimaryEntity primary entities}, which in turn is another type of entity. For example, a Project is
+ * also a collection of patient records, and a Workgroup is a collection of both users and patient records.
  *
  * @param <E> the type of entities belonging to this group; if more than one type of entities can be part of the group,
  *            then a generic {@code PrimaryEntity} should be used instead

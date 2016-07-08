@@ -24,8 +24,8 @@ import org.xwiki.stability.Unstable;
 import org.json.JSONObject;
 
 /**
- * An XDocument containing a first-class XObject, which gives it a special meaning, such as a User, a Patient Record, or
- * a Project.
+ * An XDocument containing a primary XObject, which gives it a special meaning, such as a User, a Patient Record, or a
+ * Project.
  *
  * @version $Id$
  * @since 1.3M2
