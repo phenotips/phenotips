@@ -74,12 +74,12 @@ var PhenoTips = (function (PhenoTips) {
       suggestInput._suggest = new PhenoTips.widgets.Suggest(suggestInput, {
         script: "$xwiki.getURL('PhenoTips.SearchUsersAndGroups', 'get', 'outputSyntax=plain')" + params,
         varname: "input",
-        noresults: "No matching terms",
+        noresults: "$services.localization.render('phenotips.projectSheet.noUsersResults')",
         resultsParameter: "matched",
         json: true,
         resultIcon: "icon",
         enableHierarchy: false,
-        fadeOnClear: false,
+        fadeOnClear: true,
         timeout: 30000,
         parentContainer: $('body')
       });
@@ -103,7 +103,7 @@ var PhenoTips = (function (PhenoTips) {
              }, 5);
            } else {
              var values = event.memo.id.split(";");
-             var newCollaborator = {'id' : values[0] , 'name' : name , 'type' : values[1]};
+             var newCollaborator = {'id' : values[0] , 'name' : name , 'type' : values[1], 'icon' : event.memo.icon};
              _this._addCollaborator(newCollaborator, true, collaboratorType);
              event.findElement().value = '';
            }
@@ -116,13 +116,13 @@ var PhenoTips = (function (PhenoTips) {
       suggestTemplates._suggest = new PhenoTips.widgets.Suggest(suggestTemplates, {
         script: "$xwiki.getURL('Studies.StudiesSearch', 'get', 'outputSyntax=plain')" + "&",
         varname: "input",
-        noresults: "No matching terms",
+        noresults: "$services.localization.render('phenotips.projectSheet.noTemplateResults')",
         resultsParameter: "matchedTemplates",
         json: true,
         resultId: "id",
         resultValue: "textSummary",
         enableHierarchy: false,
-        fadeOnClear: false,
+        fadeOnClear: true,
         timeout: 30000,
         parentContainer: $('body')
       });
@@ -178,48 +178,78 @@ var PhenoTips = (function (PhenoTips) {
     },
 
     _addCollaborator : function (c, highlight, collaboratorType) {
-      var list = $(collaboratorType + 'list');
-      if (_this._isItemInList(c.id, list)) {
-         return;
-      }
- 
-      var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
-      row.insert(new Element('td').insert(new Element('span', {'class' : 'fa fa-' + c.type}).update(' ')));
-      row.insert(new Element('td', {'class' : 'mainTd'})
-              .insert(c.name)
-              .insert(new Element('input', {'type': 'hidden', 'name' : collaboratorType, 'value' : c.id}))
-      )
-      if (_this.editmode) {
-         var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times'});
-         row.insert(deleteTool.wrap('td'));
-         deleteTool.observe('click', function(event) {
-            if (_this.openForContribution &amp;&amp; collaboratorType == 'contributors') { //contributors-div is disabled
-               return;
+        var list = $(collaboratorType + 'list');
+		var leadersList = $('leaderslist');
+		if (_this._isItemInList(c.id, leadersList) || _this._isItemInList(c.id, list)) {
+          return;
+        }
+
+        if (_this.editmode || collaboratorType != 'leaders') {
+            var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
+			var image = new Element('img', { 'src' : c.icon, 'height': '25px', 'class' : 'icon project-contributor-avatar' }).update(' ');
+            row.insert(new Element('td').insert(new Element('div', { 'class' : 'user-avatar-wrapper' }).insert(image)));
+            row.insert(new Element('td', {'class' : 'mainTd'})
+                .insert(new Element('div', {'class': 'user-name'}).update(c.name))
+                .insert(new Element('input', {'type': 'hidden', 'name' : collaboratorType, 'value' : c.id}))
+            )
+
+           if (_this.editmode) {
+               var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times'});
+               row.insert(deleteTool.wrap('td'));
+               deleteTool.observe('click', function(event) {
+                  if (_this.openForContribution && collaboratorType == 'contributors') { //contributors-div is disabled
+                      return;
+                  }
+                  event.findElement('tr').remove();
+               });
+           }
+        } else {
+            var row = new Element('tr', { 'class' : (highlight === true ? 'new' : '') });
+            var image = new Element('a', { 'href' : c.link }).insert(new Element('img', { 'src' : c.icon, 'width' : '80px', 'class' : 'project-leader-avatar' }).update(' '));
+            var name = new Element('span', { 'class' : 'project-leader-name' }).insert(new Element('a', { 'href' : c.link }).insert(new Element('h4', { 'style' : 'margin: 0;' }).update(c.name)));
+            var email = new Element('span', { 'class' : 'project-leader-email' }).insert(new Element('a', { 'href' : 'mailto:'+c.email }).update(c.email));
+            var bio = new Element('span', { 'class' : 'project-leader-bio' }).update(c.comment);
+            var td = new Element('td', {'class' : 'project-leader-info mainTd'}).insert(image).insert(name);
+            if (c.email != "") {
+                td.insert(email).insert(new Element('br'));
             }
-            event.findElement('tr').remove();
-         });
-      }
-      list.insert(row);
+            td.insert(new Element('br')).insert(bio).insert(new Element('input', {'type': 'hidden', 'name' : collaboratorType, 'value' : c.id}));
+            row.insert(td);
+        }
+        list.insert(row);
     },
-    
+
     _loadCollaboratorsAndTemplates : function(observers, contributors, leaders, templates) {
-      $('observerslist').update('');
-      $('contributorslist').update('');
-      $('leaderslist').update('');
-
-      for (var i = 0; i < observers.length ; i++) {
-        this._addCollaborator(observers[i], false, 'observers');
-      }
-      for (var i = 0; i < contributors.length ; i++) {
-        this._addCollaborator(contributors[i], false, 'contributors');
-      }
-      for (var i = 0; i < leaders.length ; i++) {
-        this._addCollaborator(leaders[i], false, 'leaders');
+      if (observers.length > 0 && _this.editmode) {
+		$('observerslist').update('');
+        for (var i = 0; i < observers.length ; i++) {
+          this._addCollaborator(observers[i], false, 'observers');
+        }
       }
 
-      $('templatesList').update('');
-      for (var i = 0; i < templates.length ; i++) {
-        this._addTemplate(templates[i], false);
+      if (contributors.length == 0 && !_this.editmode) {
+        $('contributorslist').up('.project-contributors-block').hide();
+      } else {
+		$('contributorslist').update('');
+        for (var i = 0; i < contributors.length ; i++) {
+          this._addCollaborator(contributors[i], false, 'contributors');
+        }
+      }
+
+      if (leaders.length == 0 && !_this.editmode) {
+        $('leaderslist').up('.project-leaders-block').hide();
+      } else {
+		$('leaderslist').update('');
+        for (var i = 0; i < leaders.length ; i++) {
+          this._addCollaborator(leaders[i], false, 'leaders');
+        }
+      }
+
+      if (_this.editmode) {
+        $('templatesList').update('');
+        for (var i = 0; i < templates.length ; i++) {
+          this._addTemplate(templates[i], false);
+        }
       }
     },
 
@@ -241,7 +271,7 @@ var PhenoTips = (function (PhenoTips) {
 
     _addCurrentUserAsLeader : function() {
        var currentUser = PhenoTips.currentUser;
-       this._addCollaborator({type: "user", name: currentUser.name, id: currentUser.id}, true, 'leaders');
+       this._addCollaborator({type: "user", name: currentUser.name, id: "$xcontext.mainWikiName"+":"+currentUser.id, icon : "$xwiki.getSkinFile('icons/xwiki/noavatar.png')"}, true, 'leaders');
     }
 
   });
@@ -250,4 +280,15 @@ var PhenoTips = (function (PhenoTips) {
 
 document.observe("xwiki:dom:loaded", function () {
    new PhenoTips.widgets.ProjectSheet(document.documentElement.down('meta[name="page"]').content);
+});
+
+document.observe("xwiki:livetable:displayComplete", function () {
+   var patientsTable = $('content-project-contributors');
+      if (patientsTable) {
+         patientsTable = $('content-project-contributors').remove();
+         var tableBlock = $('project-patients-block');
+         if (tableBlock) {
+            tableBlock.down('dd').insert(patientsTable);
+         }
+      }
 });

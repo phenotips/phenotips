@@ -38,24 +38,21 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity output="false"}}
-$xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)
-$xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)
-$xwiki.ssfx.use('uicomponents/phenotips/projectData.css')
-$xwiki.jsfx.use('uicomponents/phenotips/projectData.js', true)
-$xwiki.ssx.use('PhenoTips.ProjectSheet')
-$xwiki.jsx.use('PhenoTips.ProjectSheet')
-$xwiki.jsx.use('PhenoTips.Widgets')
-$xwiki.ssx.use('PhenoTips.Widgets')
-$xwiki.jsx.use('PhenoTips.ImageDisplayer')
-$xwiki.ssx.use('PhenoTips.ImageDisplayer')
-$xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
-{{/velocity}}
-{{velocity}}
+$xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
+$xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
+$xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)##
+$xwiki.ssfx.use('uicomponents/phenotips/projectData.css', true)##
+$xwiki.jsfx.use('uicomponents/phenotips/projectData.js', true)##
+$xwiki.jsx.use('PhenoTips.Widgets')##
+$xwiki.ssx.use('PhenoTips.Widgets')##
+$xwiki.jsx.use('PhenoTips.ImageDisplayer')##
+$xwiki.ssx.use('PhenoTips.ImageDisplayer')##
+{{/velocity}}{{velocity}}
 ##
 ## General project attributes
 ##
 #set ($project = $services.projects.getProjectById($doc))
-#if ($xcontext.action == 'edit')
+#if ($xcontext.action == 'edit')##
 {{html}}&lt;input type="hidden" id="editmode" value="true"/&gt;{{/html}}
 (% class="xform" %)(((
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.projectName')&lt;/label&gt;{{/html}}
@@ -66,18 +63,18 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 : $doc.display('image')
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.projectDescription')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.projectDescription.hint')
-: {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="2" cols="80"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
-
+: {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="10" cols="40"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
+== $services.localization.render('phenotips.projectSheet.manageCollaborators') ==
 ##
 ## Leaders section
 ##
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.leaders')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.leadersHint')
 : {{html clean="false"}}
-&lt;table id="leadersTable"&gt;
+&lt;table id="leadersTable" class="project-table"&gt;
    &lt;tfoot&gt;
       &lt;td colspan="3"&gt;
-      &lt;input type="text" id="suggestleaders" placeholder="$services.localization.render('phenotips.projectSheet.newLeader')"/&gt;
+      &lt;input type="text" id="suggestleaders" class="suggestUsers" placeholder="$services.localization.render('phenotips.projectSheet.newLeader')"/&gt;
       &lt;/td&gt;
    &lt;/tfoot&gt;
    &lt;tbody id="leaderslist"/&gt;
@@ -90,10 +87,10 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.contributorsHint')
 : $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForContribution')&lt;/label&gt;{{/html}}
 : {{html clean="false"}}
-&lt;table id="contributorsTable"&gt;
+&lt;table id="contributorsTable" class="project-table"&gt;
    &lt;tfoot&gt;
       &lt;td colspan="3"&gt;
-      &lt;input type="text" id="suggestcontributors" placeholder="$services.localization.render('phenotips.projectSheet.newContributors')"/&gt;
+      &lt;input type="text" id="suggestcontributors" class="suggestGroups" placeholder="$services.localization.render('phenotips.projectSheet.newContributors')"/&gt;
       &lt;/td&gt;
    &lt;/tfoot&gt;
    &lt;tbody id="contributorslist"/&gt;
@@ -105,10 +102,10 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.observers')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.observersHint')
 : {{html clean="false"}}
-&lt;table id="observersTable"&gt;
+&lt;table id="observersTable" class="project-table"&gt;
    &lt;tfoot&gt;
       &lt;td colspan="3"&gt;
-      &lt;input type="text" id="suggestobservers" placeholder="$services.localization.render('phenotips.projectSheet.newObserver')"/&gt;
+      &lt;input type="text" id="suggestobservers" class="suggestGroups" placeholder="$services.localization.render('phenotips.projectSheet.newObserver')"/&gt;
       &lt;/td&gt;
    &lt;/tfoot&gt;
    &lt;tbody id="observerslist"/&gt;
@@ -121,7 +118,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.templates')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.templatesHint')
 {{html clean="false"}}
-&lt;table id="templatesTable"&gt;
+&lt;table id="templatesTable" class="project-table"&gt;
    &lt;tfoot&gt;
       &lt;td colspan="2"&gt;
       &lt;input type="text" id="suggestTemplates" placeholder="$services.localization.render('phenotips.projectSheet.templatesPlaceHolder')"/&gt;
@@ -131,16 +128,10 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 &lt;/table&gt;
 {{/html}}
 )))
-#else ##not 'edit' mode
-(% class="group-logo" %)(((#if ("$!{doc.getObject('Phenotips.ProjectClass').getProperty('image').value}" != '')$doc.display('image')#{else}$xwiki.getDocument('PhenoTips.ProjectTemplate').display('image')#{end})))
+#else##not 'edit' mode
+(% class="group-logo" %)(((#if ($doc.getAttachmentList().size() > 0)$doc.display('image')#{else}$xwiki.getDocument('PhenoTips.ProjectTemplate').display('image')#{end})))
 #set ($projectLeader = ($project.getCurrentUserAccessLevel().getName() == 'leader'))
 #set ($fullName = $project.getFullName())
-(% class="project-tools" %)#if (($hasAdmin || $projectLeader))|##
-    (% class="tools" %) (((##
-    [[{{icon name="pencil" title="$services.localization.render('phenotips.templateClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($fullName, 'edit')||class="tool edit"]]##
-    [[{{icon name="times" title="$services.localization.render('phenotips.templateClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($fullName, 'delete')||class="tool delete"]]##
-  )))
-#end
 #if ($doc.content != '')
 : $!escapetool.html($doc.content)
 #end
@@ -148,9 +139,11 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 ##
 ## Leaders section
 ##
+#if ($doc.openProjectForContribution != 'Yes')
+(% class="project-leaders-block" %)
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.leaders')&lt;/label&gt;{{/html}}
 : {{html clean="false"}}
-&lt;table id="leadersTable"&gt;
+&lt;table id="leadersTable" class="project-table"&gt;
    &lt;tbody id="leaderslist"/&gt;
 &lt;/table&gt;
 {{/html}}
@@ -158,34 +151,121 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 ##
 ## Contributors section
 ##
+(% class="project-contributors-block" %)
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.contributors')&lt;/label&gt;{{/html}}
 #if ($doc.openProjectForContribution == 'Yes')
 : {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForContribution')&lt;/label&gt;{{/html}}
 #else
 : {{html clean="false"}}
-&lt;table id="contributorsTable"&gt;
+&lt;table id="contributorsTable" class="project-table"&gt;
    &lt;tbody id="contributorslist"/&gt;
 &lt;/table&gt;
 {{/html}}
 #end
+#end ##end if not not open for contributions
+#end ##end if not 'edit' mode
 
-##
-## Observers section
-##
-; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.observers')&lt;/label&gt;{{/html}}
-: {{html clean="false"}}
-&lt;table id="observersTable"&gt;
-   &lt;tbody id="observerslist"/&gt;
-&lt;/table&gt;
-{{/html}}
 
 ##
 ## Patients (read only in edit or view mode)
 ##
-; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.patientList')&lt;/label&gt;{{/html}}
 #set ($patientList = $project.getAllPatients())
-#foreach ($patient in $patientList)
-:   {{html}}&lt;label&gt;$patient.getId()&lt;/label&gt;{{/html}}
+#set ($currentUserAccessLevel = $project.getCurrentUserAccessLevel())
+#if ($patientList &amp;&amp; $patientList.size() > 0 &amp;&amp; $xcontext.action == 'view' &amp;&amp; $currentUserAccessLevel != 'collaborator')
+(% class="project-patients-block"  id="project-patients-block"%)
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.patientList')&lt;/label&gt;{{/html}}
+: (% class="project-contributors" id="content-project-contributors" %)((({{include reference="PhenoTips.ProjectContributions"/}})))
 #end
 {{/velocity}}</content>
+<object>
+    <name>PhenoTips.ProjectSheet</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>f501f9c0-0ee3-4ec1-8a7e-cb81db0ab52b</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content>{{velocity}}
+$xwiki.ssfx.use('uicomponents/phenotips/projectData.css')##
+#if (($hasAdmin || $projectLeader) &amp;&amp; $xcontext.action == 'view' &amp;&amp; $hasEdit &amp;&amp; $doc.getObject('PhenoTips.ProjectClass') &amp;&amp; $doc.space == 'Projects')
+  (% class="doc-tools buttonwrapper" %)
+    ((([[ {{icon name="pencil"/}}&gt;&gt;path:$doc.getURL('edit') || title="$services.localization.render('phenotips.projectSheet.edit')" class="doc-tool edit button"]] [[ {{icon name="times"/}}&gt;&gt;path:$doc.getURL('delete') || title="$services.localization.render('phenotips.projectSheet.delete')" class="doc-tool delete button"]])))
+#end
+{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.xwiki.platform.content.top</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.groupSheet.tools</name>
+    </property>
+    <property>
+      <parameters/>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
 </xwikidoc>

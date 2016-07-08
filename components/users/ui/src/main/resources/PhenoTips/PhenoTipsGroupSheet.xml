@@ -337,7 +337,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 }
 .group-logo {
   float: left;
-  margin: 0 10px 10px 0;
+  margin: 0 20px 10px 0;
   max-width: 30%;
 }
 .vertical-menu a {

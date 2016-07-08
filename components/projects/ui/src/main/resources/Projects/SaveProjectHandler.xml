@@ -63,16 +63,17 @@
       #else
         #set ($discard = $collaborator.put('name', "$!{userDoc.plainTitle}"))
       #end
+      #set ($icon = "$!{userDoc.getObject('XWiki.XWikiUsers').getProperty('avatar').value}")
+      #if ($icon != "" &amp;&amp; !$icon.toLowerCase().contains('@noavatargroup.png') &amp;&amp; !$icon.toLowerCase().contains('@noavatar.png'))
+        #set ($discard = $collaborator.put('icon', "$!{userDoc.getAttachmentURL($icon, 'download', 'width=80&amp;height=80&amp;keepAspectRatio=true')}"))
+      #else
+        #set ($discard = $collaborator.put('icon', "$!{xwiki.getSkinFile('icons/xwiki/noavatar.png', true)}"))
+      #end
       #if ($c.accessLevel.name == "leader")
         #set ($discard = $collaborator.put('email', "$!{userDoc.getObject('XWiki.XWikiUsers').getProperty('email').value}"))
         #set ($discard = $collaborator.put('comment', "$!{userDoc.getObject('XWiki.XWikiUsers').getProperty('comment').value}"))
         #set ($discard = $collaborator.put('link', $xwiki.getURL($userDoc)))
-        #set ($icon = "$!{userDoc.getObject('XWiki.XWikiUsers').getProperty('avatar').value}")
-        #if ($icon != "" &amp;&amp; !$icon.toLowerCase().contains('@noavatargroup.png') &amp;&amp; !$icon.toLowerCase().contains('@noavatar.png'))
-          #set ($discard = $collaborator.put('image', "$!{userDoc.getAttachmentURL($icon, 'download', 'width=80&amp;height=80&amp;keepAspectRatio=true')}"))
-        #else
-          #set ($discard = $collaborator.put('image', "$!{xwiki.getSkinFile('icons/xwiki/noavatar.png', true)}"))
-        #end
+
         #set ($discard = $leaders.add($collaborator))
       #elseif ($c.accessLevel.name == "observer")
         #set ($discard = $observers.add($collaborator))

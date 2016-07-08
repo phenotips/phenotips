@@ -2,29 +2,32 @@
 .accepted-suggestions {
   display: none;
 }
-#templatesTable tbody td, #leadersTable tbody td, #contributorsTable tbody td, #observersTable tbody td {
+.project-table tbody td {
   border-bottom: 1px solid $theme.borderColor;
   border-left-width : 0px;
   border-right-width: 0px;
 }
-#templatesTable tfoot td, #templatesTable tfoot td, #contributorsTable tfoot td, #observersTable tfoot td {
+.project-table tfoot td {
   border-top: 3px solid $theme.borderColor;
 }
-#templatesTable .tool.delete, #leadersTable .tool.delete, #contributorsTable .tool.delete, #observersTable .tool.delete {
+.project-table .tool.delete {
   color: $theme.notificationErrorColor;
   cursor: pointer;
   width: 32px;
 }
-#templatesTable .highlight, #leadersTable .highlight, #contributorsTable .highlight, #observersTable .highlight {
+.project-table .highlight {
   background-color: $theme.highlightColor !important;
   color: $theme.notificationErrorColor;
 }
-#templatesTable .new, #leadersTable .new, #contributorsTable .new, #observersTable .new {
+.project-table .new {
   background-color: $theme.highlightColor;
 }
-#templatesTable, #leadersTable, #contributorsTable, #observersTable {
-  width: 200px;
+.project-table {
+  width: 320px;
   font-size: 14px;
+}
+.project-table tfoot td{
+  border: 0;
 }
 .mainTd {
   width: 100%;
@@ -32,4 +35,47 @@
 .project-tools {
   float: right;
   margin-top: -3em;
+}
+.project-leader-info {
+  text-align: justify;
+  padding-bottom: 20px !important;
+}
+.project-leader-avatar {
+  float: left;
+  margin: 0 10px 10px 0;
+}
+.project-leaders-block {
+  width: 30%;
+  min-width: 340px;
+  float: left;
+  margin-top: 10px;
+}
+.project-contributors-block, .project-observers-block {
+  width: 30%;
+  float: left;
+  margin-right: 1em;
+  margin-top: 10px;
+}
+.project-patients-block {
+  width: 100%;
+  float: left;
+}
+.doc-tools a.doc-tool.delete {
+  margin: -1.2em -0.3em 0 0!important;
+  padding: .1em 0 0 .3em!important;
+}
+input.suggestProjectUsers {
+    background-image: url("/resources/icons/datamodel/users.png");
+}
+input.suggestProjectGroups {
+    background-image: url("/resources/icons/datamodel/groups.png");
+}
+input.suggestProjectUsers, input.suggestProjectGroups {
+    background-position: .3em center;
+    background-repeat: no-repeat;
+    padding-left: 2em;
+}
+.suggestList img {
+  height: 20px;
+  margin-right: 7px;
 }
