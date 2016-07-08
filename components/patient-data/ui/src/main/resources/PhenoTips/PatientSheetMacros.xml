@@ -41,7 +41,10 @@
 #macro (__label $propName $cssClass $text)
    #set($displayedText = "$!{text}")
    #if ($displayedText == '' &amp;&amp; "$!{propName}" != '')
-     #set($displayedText = "$!{class.get($propName).translatedPrettyName}:")
+     #set($displayedText = "$!{class.get($propName).translatedPrettyName}")
+   #end
+   #if ($displayedText.matches('.*\w'))
+     #set ($displayedText = $displayedText.concat(':'))
    #end
    #if ($xcontext.action != 'edit')
      (% class="label $!{cssClass}" %)${displayedText}(%%)##
