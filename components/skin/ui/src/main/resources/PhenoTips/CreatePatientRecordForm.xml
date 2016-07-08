@@ -47,13 +47,12 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
       &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
       &lt;input type="hidden" name="doCreate" value="1" /&gt;
       ##
-      $xwiki.ssx.use('PhenoTips.ProjectBindingClass')##
-      $xwiki.jsx.use('PhenoTips.ProjectBindingClass')##
+      $xwiki.jsfx.use('uicomponents/phenotips/projectBinding.js', true)##
       &lt;input type="hidden" id="numberOfProjects" value="$services.projects.getProjectsCurrentUserCanContributeTo().size()" /&gt;
       ##
-      #if ($xwiki.exists('PhenoTips.StudyBindingClass'))
-         $xwiki.jsx.use('PhenoTips.StudyBindingClass')##
-         $xwiki.ssx.use('PhenoTips.StudyBindingClass')##
+      #if ($xwiki.exists('PhenoTips.CreatePatientRecordForm'))
+         $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
+         $xwiki.ssx.use('PhenoTips.CreatePatientRecordForm')##
          &lt;input type="hidden" id="numberOfTemplates" value="$services.templates.getAllTemplates().size()" /&gt;
       #end
       ##
