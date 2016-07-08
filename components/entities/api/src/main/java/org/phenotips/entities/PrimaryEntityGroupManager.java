@@ -34,9 +34,10 @@ import java.util.Collection;
  * @version $Id$
  * @since 1.3M2
  */
-@Unstable
+@Unstable("New API introduced in 1.3")
 @Role
-public interface PrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E extends PrimaryEntity> extends PrimaryEntityManager<G>
+public interface PrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E extends PrimaryEntity>
+    extends PrimaryEntityManager<G>
 {
     /**
      * Create and return a new empty group (owned by the currently logged in user).

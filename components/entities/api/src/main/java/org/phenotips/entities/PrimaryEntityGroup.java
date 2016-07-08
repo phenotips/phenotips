@@ -17,6 +17,9 @@
  */
 package org.phenotips.entities;
 
+import org.phenotips.Constants;
+
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
@@ -31,9 +34,16 @@ import java.util.Collection;
  * @version $Id$
  * @since 1.3M2
  */
-@Unstable
+@Unstable("New API introduced in 1.3")
 public interface PrimaryEntityGroup<E extends PrimaryEntity> extends PrimaryEntity
 {
+    /** The XClass used for storing membership information. */
+    EntityReference GROUP_MEMBERSHIP_CLASS = new EntityReference("GroupMembershipClass", EntityType.DOCUMENT,
+        Constants.CODE_SPACE_REFERENCE);
+
+    /** The XProperty from {@link #GROUP_MEMBERSHIP_CLASS} used for referencing the group document. */
+    String REFERENCE_XPROPERTY = "reference";
+
     /**
      * @return a reference to an XClass that is supposed to be used by all members of this group, or {@code null} if any
      *         type of entities are allowed for this group.

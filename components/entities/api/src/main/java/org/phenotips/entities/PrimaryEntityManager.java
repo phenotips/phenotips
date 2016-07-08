@@ -32,7 +32,7 @@ import java.util.Collection;
  * @version $Id$
  * @since 1.3M2
  */
-@Unstable
+@Unstable("New API introduced in 1.3")
 @Role
 public interface PrimaryEntityManager<E extends PrimaryEntity>
 {

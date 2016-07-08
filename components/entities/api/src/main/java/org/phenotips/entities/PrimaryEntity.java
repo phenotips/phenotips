@@ -30,15 +30,22 @@ import org.json.JSONObject;
  * @version $Id$
  * @since 1.3M2
  */
-@Unstable
+@Unstable("New API introduced in 1.3")
 public interface PrimaryEntity
 {
     /** The key used in the JSON serialization for the {@link #getId() identifier}. */
     String JSON_KEY_ID = "id";
 
+    /** The key used in the JSON serialization for the {@link #getName() name}. */
+    String JSON_KEY_NAME = "name";
+
+    /** The key used in the JSON serialization for the {@link #getDescription() description}. */
+    String JSON_KEY_DESCRIPTION = "description";
+
     /**
      * @return a reference to the main XClass associated with this entity
      */
+    @Unstable("A ClassReference should be used instead of EntityReference")
     EntityReference getType();
 
     /**

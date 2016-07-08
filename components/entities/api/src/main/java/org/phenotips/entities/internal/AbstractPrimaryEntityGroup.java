@@ -22,7 +22,7 @@ import org.phenotips.entities.PrimaryEntityGroup;
 
 import org.xwiki.stability.Unstable;
 
-@Unstable
+@Unstable("New class and interface added in 1.3")
 public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
     extends AbstractPrimaryEntity implements PrimaryEntityGroup<E>
 {
