@@ -59,7 +59,7 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E ex
     G create(DocumentReference creator);
 
     /**
-     * Retrieve a {@link PrimaryEntityGroup group} by it's {@link PrimaryEntity#getId() internal PhenoTips identifier}.
+     * Retrieve a {@link PrimaryEntityGroup group} by its {@link PrimaryEntity#getId() internal PhenoTips identifier}.
      *
      * @param id the {@link PrimaryEntity#getId() group identifier}, i.e. the serialized document reference
      * @return the requested group
@@ -80,7 +80,7 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E ex
     G get(DocumentReference reference);
 
     /**
-     * Retrieve a {@link PrimaryEntityGroup group} by it's {@link PrimaryEntity#getName() name}.
+     * Retrieve a {@link PrimaryEntityGroup group} by its {@link PrimaryEntity#getName() name}.
      *
      * @param externalId the group's {@link PrimaryEntity#getName() user-friendly name}
      * @return the requested group, or {@code null} if the requested group does not exist, is not really a type of the

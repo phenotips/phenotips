@@ -54,7 +54,7 @@ public interface PrimaryEntityManager<E extends PrimaryEntity>
     E create(DocumentReference creator);
 
     /**
-     * Retrieve an {@link PrimaryEntity entity} by it's {@link PrimaryEntity#getId() internal PhenoTips identifier}.
+     * Retrieve an {@link PrimaryEntity entity} by its {@link PrimaryEntity#getId() internal PhenoTips identifier}.
      *
      * @param id the {@link PrimaryEntity#getId() entity identifier}, i.e. the serialized document reference
      * @return the requested entity
@@ -73,7 +73,7 @@ public interface PrimaryEntityManager<E extends PrimaryEntity>
     E get(DocumentReference reference);
 
     /**
-     * Retrieve an {@link PrimaryEntity entity} by it's {@link PrimaryEntity#getName() name}.
+     * Retrieve an {@link PrimaryEntity entity} by its {@link PrimaryEntity#getName() name}.
      *
      * @param name the entity's {@link PrimaryEntity#getName() user-friendly name}
      * @return the requested entity, or {@code null} if the requested entity does not exist, is not really a type of the
