@@ -87,6 +87,28 @@ define("PhenotypeSelectionUtils", [], function() {
     },
 
     /**
+     * Gets an array of phenotypes that are currently selected.
+     * @return {array} phenotypes the selected phenotypes. see object spec above.
+     */
+    getSelectedPhenotypes: function() {
+      return $$('div.phenotype .yes-no-picker').map(function(e) {
+        var yes = e.down('.yes input');
+        var no = e.down('.no input');
+        /* Not a phenotype */
+        if (yes.name === no.name) {
+          return null;
+        }
+        var id = yes.value;
+        var set = yes.checked || no.checked;
+        if(set) {
+          return {id: id, isObserved: yes.checked};
+        } else {
+          return null;
+        }
+      }).filter(function(e) { return e; });
+    },
+
+    /**
      * Updates a selected phenotype. If the phenotype is not selected, do nothing.
      */
     /*updateSelectedPhenotype: function(phenotype) {
