@@ -647,8 +647,8 @@
     ## get SVG image resized to the desired size
     #set ($image = $pedigreeObj.getImage($doc.getName(), $size, $size))
   #end## pedigree obj exists
-
-  #if ($xcontext.action == 'edit' || "$!image" != '' || $canEditP)
+##
+  #if ($xcontext.action == 'edit' || "$!image" != '')
     $xwiki.ssx.use('PhenoTips.UIX_Field__pedigree')##
     $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
     $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
@@ -659,7 +659,7 @@
     #else
       #set ($docIdRequest = 'id=')
     #end
-  
+##  
     #if ("$!image" != '')
       #set ($familyInfo = $services.families.getFamilyInfo($doc.getName()))
       #set ($pDelete = "$services.localization.render('phenotips.patientRecord.pedigree.delete')")
@@ -680,7 +680,7 @@
       #set ($pContent = $pAction)
     #end
     (% class="pedigree-wrapper" %)((({{html clean="false"}}&lt;div style="display:inline-block;" id="pedigree-thumbnail" class="pedigree-box ${pClass} #if($canEditP) pedigree-edit-trigger #end" title="${pAction}" &gt;${pContent}&lt;/div&gt;
- 
+ ##
     #if ("$!image" != '')
       &lt;div class="pedigree-buttons" id="pedigree-buttons"&gt;
       #if($canEditP)
@@ -708,7 +708,7 @@
     #end
     {{/html}})))
   #end
-#end  
+#end
 {{/velocity}}</content>
     </property>
     <property>
