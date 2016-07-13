@@ -627,6 +627,7 @@
       aSuggestions.push({
         'id': _getResultFieldValue(results[i], source.resultId || this.options.resultId),
         'value': _getResultFieldValue(results[i], source.resultValue || this.options.resultValue),
+        'icon': _getResultFieldValue(results[i], source.resultIcon || this.options.resultIcon),
         'altName': bestNameMatch,
         'info'    : info,
         'category': category
