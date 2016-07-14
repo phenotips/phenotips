@@ -17,7 +17,6 @@
  */
 package org.phenotips.groups.internal;
 
-import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
@@ -101,6 +100,9 @@ public class UsersAndGroups
     @Inject
     private DocumentAccessBridge bridge;
 
+    @Inject
+    private Provider<XWikiContext> xcontextProvider;
+
     static {
         StringBuilder usersQuerySb = new StringBuilder();
         usersQuerySb.append("from doc.object(XWiki.XWikiUsers) as user ");
@@ -182,9 +184,7 @@ public class UsersAndGroups
             if (attachmentRefs.size() > 0) {
                 avatarURL = this.bridge.getAttachmentURL(attachmentRefs.get(0), true);
             } else {
-                Provider<XWikiContext> xcontextProvider =
-                    ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiContext.TYPE_PROVIDER);
-                XWikiContext xcontext = xcontextProvider.get();
+                XWikiContext xcontext = this.xcontextProvider.get();
                 XWiki xwiki = xcontext.getWiki();
                 avatarURL = xwiki.getSkinFile("icons/xwiki/noavatar.png", xcontext);
             }
@@ -208,9 +208,7 @@ public class UsersAndGroups
             if (attachmentRefs.size() > 0) {
                 avatarURL = this.bridge.getAttachmentURL(attachmentRefs.get(0), true);
             } else {
-                Provider<XWikiContext> xcontextProvider =
-                    ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiContext.TYPE_PROVIDER);
-                XWikiContext xcontext = xcontextProvider.get();
+                XWikiContext xcontext = this.xcontextProvider.get();
                 XWiki xwiki = xcontext.getWiki();
                 avatarURL = xwiki.getSkinFile("icons/xwiki/noavatargroup.png", xcontext);
             }
