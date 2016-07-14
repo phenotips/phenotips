@@ -17,14 +17,13 @@
  */
 package org.phenotips.groups.internal;
 
-import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -35,6 +34,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,13 +47,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.web.Utils;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -92,16 +92,17 @@ public class UsersAndGroupsTest
     @Mock
     private XWiki xwiki;
 
+    private Provider<XWikiContext> contextProvider;
+
     @Before
     public void setup() throws ComponentLookupException
     {
         MockitoAnnotations.initMocks(this);
-        Utils.setComponentManager(this.cm);
-        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
-        when(this.mockProvider.get()).thenReturn(this.cm);
-        when(this.cm.getInstance(XWikiContext.TYPE_PROVIDER)).thenReturn(this.xcontextProvider);
-        when(xcontextProvider.get()).thenReturn(this.context);
-        when(this.context.getWiki()).thenReturn(this.xwiki);
+        ParameterizedType cpType = new DefaultParameterizedType(null, Provider.class, XWikiContext.class);
+        this.contextProvider = this.mocker.getInstance(cpType);
+
+        Mockito.doReturn(this.context).when(this.contextProvider).get();
+        Mockito.doReturn(this.xwiki).when(this.context).getWiki();
     }
 
     static {
