@@ -2028,7 +2028,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
       #end
     &lt;/div&gt;
     &lt;div class="topmenuentry all"&gt;&lt;label for="browse-all-patients"&gt;&lt;span class="fa fa-folder-open"&gt; &lt;/span&gt;&lt;a id="browse-all-patients" href="$xwiki.getURL('data.AllData')"&gt;$services.localization.render('phenotips.globalHeader.allData')&lt;/a&gt;&lt;/label&gt;&lt;/div&gt;
-    #if ($hasCreatePage)
+    #if ($xwiki.hasAccessLevel('edit', "data.$!{reservedDocumentName}"))
       &lt;div class="topmenuentry add"&gt;
 {{/html}}
 

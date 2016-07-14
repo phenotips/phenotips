@@ -40,7 +40,7 @@
   <content>{{velocity}}{{html clean=false}}
 $xwiki.ssx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('PhenoTips.Widgets')##
-#if($hasCreatePage)
+#if ($xwiki.hasAccessLevel('edit', "data.$!{reservedDocumentName}"))
   &lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
     &lt;input type="hidden" name="doCreate" value="1" /&gt;
