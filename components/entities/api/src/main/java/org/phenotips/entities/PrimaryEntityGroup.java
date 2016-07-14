@@ -37,7 +37,7 @@ import java.util.Collection;
 @Unstable("New API introduced in 1.3")
 public interface PrimaryEntityGroup<E extends PrimaryEntity> extends PrimaryEntity
 {
-    /** The XClass used for storing membership information. */
+    /** The XClass used for storing membership information by default. */
     EntityReference GROUP_MEMBERSHIP_CLASS = new EntityReference("EntityBindingClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
@@ -51,14 +51,14 @@ public interface PrimaryEntityGroup<E extends PrimaryEntity> extends PrimaryEnti
     EntityReference getMemberType();
 
     /**
-     * List all the members (entities) that are part of this group.
+     * Lists all the members (entities) that are part of this group.
      *
      * @return a collection of Entities, may be empty
      */
     Collection<E> getMembers();
 
     /**
-     * List all the members (entities) of a given type that are part of this group.
+     * Lists all the members (entities) of a given type that are part of this group.
      *
      * @param type a reference to an XClass to filter members by; if {@code null}, all members are returned, regardless
      *            of type
@@ -67,7 +67,7 @@ public interface PrimaryEntityGroup<E extends PrimaryEntity> extends PrimaryEnti
     Collection<E> getMembersOfType(EntityReference type);
 
     /**
-     * Add a new member to the group.
+     * Adds a new member to the group.
      *
      * @param member the member to add to the group
      * @return {@code true} if the member was successfully added, or was already a member, {@code false} if the
@@ -76,7 +76,7 @@ public interface PrimaryEntityGroup<E extends PrimaryEntity> extends PrimaryEnti
     boolean addMember(E member);
 
     /**
-     * Remove a member from the group.
+     * Removes a member from the group.
      *
      * @param member the member to remove from the group
      * @return {@code true} if the member was successfully removed, or if it wasn't a member, {@code false} if the

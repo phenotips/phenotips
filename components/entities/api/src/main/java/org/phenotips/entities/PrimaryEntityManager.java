@@ -37,24 +37,24 @@ import java.util.Collection;
 public interface PrimaryEntityManager<E extends PrimaryEntity>
 {
     /**
-     * Create and return a new empty entity (owned by the currently logged in user).
+     * Creates and returns a new empty entity, setting the currently logged in user as the creator.
      *
-     * @return the created entity
+     * @return the created entity, or {@code null} in case of errors
      */
     E create();
 
     /**
-     * Create and return a new empty entity (owned by the given principal).
+     * Creates and returns a new empty entity, setting the given principal as the creator.
      *
      * @param creator a reference to the document representing a principal (a user or a group) which will be set as the
-     *            creator/owner for the created entity
-     * @return the created entity
+     *            creator for the created entity
+     * @return the created entity, or {@code null} in case of errors
      */
     @Unstable("The type of the parameter will be replaced by Principal, once the principals module is implemented")
     E create(DocumentReference creator);
 
     /**
-     * Retrieve an {@link PrimaryEntity entity} by its {@link PrimaryEntity#getId() internal PhenoTips identifier}.
+     * Retrieves an {@link PrimaryEntity entity} by its {@link PrimaryEntity#getId() internal PhenoTips identifier}.
      *
      * @param id the {@link PrimaryEntity#getId() entity identifier}, i.e. the serialized document reference
      * @return the requested entity
@@ -64,7 +64,7 @@ public interface PrimaryEntityManager<E extends PrimaryEntity>
     E get(String id);
 
     /**
-     * Retrieve an {@link PrimaryEntity entity} from the specified document.
+     * Retrieves an {@link PrimaryEntity entity} from the specified document.
      *
      * @param reference reference of the {@link PrimaryEntity#getDocument() document where the entity is stored}
      * @return the requested entity
@@ -73,7 +73,7 @@ public interface PrimaryEntityManager<E extends PrimaryEntity>
     E get(DocumentReference reference);
 
     /**
-     * Retrieve an {@link PrimaryEntity entity} by its {@link PrimaryEntity#getName() name}.
+     * Retrieves an {@link PrimaryEntity entity} by its {@link PrimaryEntity#getName() name}.
      *
      * @param name the entity's {@link PrimaryEntity#getName() user-friendly name}
      * @return the requested entity, or {@code null} if the requested entity does not exist, is not really a type of the
@@ -82,14 +82,14 @@ public interface PrimaryEntityManager<E extends PrimaryEntity>
     E getByName(String name);
 
     /**
-     * Retrieve all entities of the managed type, in a random order.
+     * Retrieves all entities of the managed type, in a random order.
      *
      * @return a collection of entities, may be empty if no entities exist
      */
     Collection<E> getAll();
 
     /**
-     * Delete an entity.
+     * Deletes an entity.
      *
      * @param entity the entity to delete
      * @return {@code true} if the entity was successfully deleted, {@code false} in case of error
@@ -97,7 +97,7 @@ public interface PrimaryEntityManager<E extends PrimaryEntity>
     boolean delete(E entity);
 
     /**
-     * Load and return an entity from the specified document. This method will be removed once the new XWiki model is
+     * Loads and returns an entity from the specified document. This method will be removed once the new XWiki model is
      * implemented and the intermediary model bridge is no longer needed. Do not use.
      *
      * @param document the document where the entity is stored

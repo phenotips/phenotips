@@ -40,7 +40,7 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E ex
     extends PrimaryEntityManager<G>
 {
     /**
-     * Create and return a new empty group (owned by the currently logged in user).
+     * Creates and returns a new empty group, setting the currently logged in user as the creator.
      *
      * @return the created group
      */
@@ -48,10 +48,10 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E ex
     G create();
 
     /**
-     * Create and return a new empty group (owned by the given principal).
+     * Creates and returns a new empty group, setting the given principal as the creator.
      *
      * @param creator a reference to the document representing a principal (a user or a group) which will be set as the
-     *            creator/owner for the created group
+     *            creator for the created group
      * @return the created group
      */
     @Override
@@ -59,7 +59,7 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E ex
     G create(DocumentReference creator);
 
     /**
-     * Retrieve a {@link PrimaryEntityGroup group} by its {@link PrimaryEntity#getId() internal PhenoTips identifier}.
+     * Retrieves a {@link PrimaryEntityGroup group} by its {@link PrimaryEntity#getId() internal PhenoTips identifier}.
      *
      * @param id the {@link PrimaryEntity#getId() group identifier}, i.e. the serialized document reference
      * @return the requested group
@@ -70,7 +70,7 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E ex
     G get(String id);
 
     /**
-     * Retrieve a {@link PrimaryEntityGroup group} from the specified document.
+     * Retrieves a {@link PrimaryEntityGroup group} from the specified document.
      *
      * @param reference reference of the {@link PrimaryEntity#getDocument() document where the entity is stored}
      * @return the requested group
@@ -80,7 +80,7 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E ex
     G get(DocumentReference reference);
 
     /**
-     * Retrieve a {@link PrimaryEntityGroup group} by its {@link PrimaryEntity#getName() name}.
+     * Retrieves a {@link PrimaryEntityGroup group} by its {@link PrimaryEntity#getName() name}.
      *
      * @param externalId the group's {@link PrimaryEntity#getName() user-friendly name}
      * @return the requested group, or {@code null} if the requested group does not exist, is not really a type of the
@@ -90,7 +90,7 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E ex
     G getByName(String name);
 
     /**
-     * Retrieve groups that have the specified entity as their member, in a random order.
+     * Retrieves groups that have the specified entity as their member, in a random order.
      *
      * @param entity the entity that must be a member of the returned groups
      * @return a collection of groups, may be empty
@@ -98,7 +98,7 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E ex
     Collection<G> getGroupsForEntity(PrimaryEntity entity);
 
     /**
-     * Retrieve all groups of the managed type, in a random order.
+     * Retrieves all groups of the managed type, in a random order.
      *
      * @return a collection of groups, may be empty if no groups exist
      */
@@ -106,7 +106,7 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E ex
     Collection<G> getAll();
 
     /**
-     * Delete a group.
+     * Deletes a group.
      *
      * @param group the group to delete
      * @return {@code true} if the group was successfully deleted, {@code false} in case of error
@@ -115,7 +115,7 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E ex
     boolean delete(G group);
 
     /**
-     * Load and return a group from the specified document. This method will be removed once the new XWiki model is
+     * Loads and returns a group from the specified document. This method will be removed once the new XWiki model is
      * implemented and the intermediary model bridge is no longer needed. Do not use.
      *
      * @param document the document where the group is stored
