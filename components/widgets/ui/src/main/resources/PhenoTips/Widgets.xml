@@ -3524,7 +3524,11 @@ document.observe("xwiki:dom:loaded", function() {
         this.visibleStyle = {"visibility" : "visible"};
       }
       this.controlVisibility();
-      this.controller.observe(eventName, this.controlVisibility.bindAsEventListener(this));
+      if (this.element.hasClassName("confirm")) {
+        this.controller.observe(eventName, this.confirm.bindAsEventListener(this));
+      } else {
+        this.controller.observe(eventName, this.controlVisibility.bindAsEventListener(this));
+      }
     },
     controlVisibility : function() {
       if (this.controller.checked ^ this.reverse) {
@@ -3534,6 +3538,26 @@ document.observe("xwiki:dom:loaded", function() {
          this.controlled.invoke("setStyle", this.visibleStyle);
          this.element.select(".controlled input").invoke("enable");
       }
+    },
+    confirm : function(event) {
+      if (this.element.hasClassName('confirm-yes') &amp;&amp; !this.controller.checked || this.element.hasClassName('confirm-no') &amp;&amp; this.controller.checked) {
+        this.controlVisibility();
+        return;
+      }
+      new XWiki.widgets.ConfirmationBox(
+        {
+          onYes: function(){
+            this.controlVisibility();
+          }.bind(this),
+          onNo: function(){
+            this.controller.checked = !this.controller.checked;
+          }.bind(this),
+        },
+        {
+          confirmationText: "This will remove all table data entered below. Are you sure you want to proceed?",
+          showCancelButton: false
+        }
+      );
     }
   });
 
