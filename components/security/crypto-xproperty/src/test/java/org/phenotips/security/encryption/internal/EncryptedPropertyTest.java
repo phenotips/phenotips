@@ -17,43 +17,42 @@
  */
 package org.phenotips.security.encryption.internal;
 
+import static org.junit.Assert.*;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.phenotips.security.encryption.SystemPasswordConfiguration;
+import org.phenotips.security.encryption.CryptoUtils;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import static org.mockito.Mockito.when;
+import com.xpn.xwiki.objects.BaseStringProperty;
 
-public class XWikiPropertiesSystemPasswordConfigurationModuleTest {
-
+public class EncryptedPropertyTest {
 	@Rule
-	public MockitoComponentMockingRule<SystemPasswordConfiguration.ConfigurationModule> mocker = 
-		new MockitoComponentMockingRule<SystemPasswordConfiguration.ConfigurationModule>
-		(XWikiPropertiesSystemPasswordConfigurationModule.class);
+	public MockitoComponentMockingRule<BaseStringProperty> mocker = new 
+		MockitoComponentMockingRule<BaseStringProperty>(EncryptedProperty.class);
 	
-	@Mock
-	private ConfigurationSource config;
-	
-	@Mock
-	private SystemPasswordConfiguration pW;
-	
-	
-	private static final String PROPERTY = "crypto.encryption.systemPassword";
-	
-	@Before
-	public void initMocks(){
-		MockitoAnnotations.initMocks(this);
-	}
-	@Test
-	public void getsCorrectSystemPassword() throws ComponentLookupException{	
-		when(this.config.getProperty(PROPERTY)).thenReturn(this.pW);
-		Assert.assertEquals("xwikiproperties", this.mocker.getComponentUnderTest().getSystemPassword());
-	}
+	private static final long serialVersionUID = 8082063682046892242L;
 
+	private static final String ENCRYPTED_IDENTIFIER = "e:";
+	
+	@Test
+	public void getsNullValueTest() throws ComponentLookupException
+	{
+		String val = null;
+		
+		Assert.assertNotNull(this.mocker.getComponentUnderTest().getValue());
+	}	
+	
+	@Test
+	public void setsNullValueTest() throws ComponentLookupException
+	{
+		//Object value = null;
+		this.mocker.getComponentUnderTest().setValue(null);
+		//Assert.assertNull(value);
+	}
+	
 }

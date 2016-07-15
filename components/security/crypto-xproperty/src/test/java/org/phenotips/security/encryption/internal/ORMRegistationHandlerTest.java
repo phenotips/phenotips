@@ -46,7 +46,7 @@ public class ORMRegistationHandlerTest {
     }
 	
 	@Test
-    public void listensForApplicationUpdatedEvents() throws ComponentLookupException
+    public void listensForApplicationStartedEvents() throws ComponentLookupException
     {
         List<Event> events = this.mocker.getComponentUnderTest().getEvents();
         Assert.assertFalse(events.isEmpty());

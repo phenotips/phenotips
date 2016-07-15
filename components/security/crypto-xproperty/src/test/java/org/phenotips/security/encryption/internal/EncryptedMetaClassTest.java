@@ -21,8 +21,11 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class DefaultSystemPasswordConfigurationTest {
+public class EncryptedMetaClassTest {
 
-
+	@Test
+	public void test() {
+		fail("Not yet implemented");
+	}
 
 }
