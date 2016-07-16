@@ -79,14 +79,20 @@ public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
 
         PrimaryEntityManager<E> manager = null;
         ComponentManager cm = ComponentManagerRegistry.getContextComponentManager();
-        try {
-            String role = getLocalSerializer().serialize(getMemberType());
-            manager = cm.getInstance(PrimaryEntityManager.class, role);
-        } catch (ComponentLookupException ex) {
+        String[] possibleRoles = new String[3];
+        possibleRoles[0] = getLocalSerializer().serialize(getMemberType());
+        possibleRoles[1] = getMemberType().getName();
+        possibleRoles[2] = StringUtils.removeEnd(getMemberType().getName(), "Class");
+        for (String role : possibleRoles) {
             try {
-                manager = cm.getInstance(PrimaryEntityManager.class);
-            } catch (ComponentLookupException e) {
+                manager = cm.getInstance(PrimaryEntityManager.class, role);
+            } catch (ComponentLookupException ex) {
+                // TODO Use a generic manager that can work with any type of group
             }
+        }
+        if (manager == null) {
+            this.logger.error("No suitable primary entity manager found for entities of type [{}] available;"
+                + " certain group operations will fail", getMemberType());
         }
         this.membersManager = manager;
     }
