@@ -114,7 +114,7 @@ public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
                 hql.append(", BaseObject entity");
             }
             hql.append(" where binding.className = :memberClass")
-                .append(" and groupReference.id.id = binding.id and groupReference.id.name = 'reference'")
+                .append(" and groupReference.id.id = binding.id and groupReference.id.name = :referenceProperty")
                 .append(" and groupReference.value = :selfReference");
             if (type != null) {
                 hql.append(" and entity.name = binding.name and entity.className = :entityType");
@@ -122,7 +122,8 @@ public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
 
             Query q = getQueryManager().createQuery(hql.toString(), Query.HQL);
 
-            q.bindValue("memberClass", getLocalSerializer().serialize(GROUP_MEMBERSHIP_CLASS));
+            q.bindValue("memberClass", getLocalSerializer().serialize(getMembershipClass()));
+            q.bindValue("referenceProperty", getMembershipProperty());
             q.bindValue("selfReference", getFullSerializer().serialize(getDocument()));
             q.bindValue("entityType", getLocalSerializer().serialize(type));
             List<String> memberIds = q.execute();
@@ -142,13 +143,13 @@ public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
             DocumentAccessBridge dab =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
             XWikiDocument doc = (XWikiDocument) dab.getDocument(member.getDocument());
-            BaseObject obj = doc.getXObject(GROUP_MEMBERSHIP_CLASS, REFERENCE_XPROPERTY,
+            BaseObject obj = doc.getXObject(getMembershipClass(), getMembershipProperty(),
                 getFullSerializer().serialize(getDocument()), false);
             if (obj != null) {
                 return true;
             }
-            obj = doc.newXObject(GROUP_MEMBERSHIP_CLASS, getXContext());
-            obj.setStringValue(REFERENCE_XPROPERTY, getFullSerializer().serialize(getDocument()));
+            obj = doc.newXObject(getMembershipClass(), getXContext());
+            obj.setStringValue(getMembershipProperty(), getFullSerializer().serialize(getDocument()));
             getXContext().getWiki().saveDocument(doc, "Added to group " + getDocument(), true, getXContext());
             return true;
         } catch (Exception ex) {
@@ -164,7 +165,7 @@ public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
             DocumentAccessBridge dab =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
             XWikiDocument doc = (XWikiDocument) dab.getDocument(member.getDocument());
-            BaseObject obj = doc.getXObject(GROUP_MEMBERSHIP_CLASS, REFERENCE_XPROPERTY,
+            BaseObject obj = doc.getXObject(getMembershipClass(), getMembershipProperty(),
                 getFullSerializer().serialize(getDocument()), false);
             if (obj == null) {
                 return true;
@@ -186,5 +187,15 @@ public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
             this.logger.error("Failed to access the query manager: {}", ex.getMessage(), ex);
         }
         return null;
+    }
+
+    protected EntityReference getMembershipClass()
+    {
+        return GROUP_MEMBERSHIP_CLASS;
+    }
+
+    protected String getMembershipProperty()
+    {
+        return REFERENCE_XPROPERTY;
     }
 }
