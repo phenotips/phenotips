@@ -20,6 +20,7 @@ package org.phenotips.entities;
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
 import java.util.Collection;
@@ -36,6 +37,13 @@ import java.util.Collection;
 @Role
 public interface PrimaryEntityManager<E extends PrimaryEntity>
 {
+    /**
+     * Gets the space where entities of this type are stored in.
+     *
+     * @return a local space reference, without the wiki name
+     */
+    EntityReference getDataSpace();
+
     /**
      * Creates and returns a new empty entity, setting the currently logged in user as the creator.
      *
