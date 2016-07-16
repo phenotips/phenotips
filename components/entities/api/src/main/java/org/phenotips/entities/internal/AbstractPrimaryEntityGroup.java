@@ -35,11 +35,32 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
  * Base class for implementing specific entity groups, where members declare the groups that they belong to.
+ * <p>
+ * By default, this uses the document name as the identifier, the document title as the name, and either a
+ * {@code description} property in the main XObject, or the document content, as the description. If two objects use the
+ * same document for storage, they are assumed to be equal, and no actual data equality is checked.
+ * </p>
+ * <p>
+ * Members declare their group membership by attaching an XObject of type {@link #GROUP_MEMBERSHIP_CLASS} pointing to
+ * the group document.
+ * </p>
+ * <p>
+ * In order to function properly, a {@link PrimaryEntityManager} component with the hint ({@code @Named}) set to the
+ * name of {@link #getMemberType() the XClass used for members} must exist. Shorter versions of the XClass name are also
+ * accepted. For example, for members of type {@code PhenoTips.PatientClass}, the following names are supported:
+ * <ol>
+ * <li>PhenoTips.PatientClass</li>
+ * <li>PatientClass</li>
+ * <li>Patient</li>
+ * </ol>
+ * </p>
  *
  * @param <E> the type of entities belonging to this group; if more than one type of entities can be part of the group,
  *            then a generic {@code PrimaryEntity} should be used instead

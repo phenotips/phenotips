@@ -38,7 +38,10 @@ import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.classes.BaseClass;
 
 /**
- * Base class for implementing specific entities.
+ * Base class for implementing specific entities. By default, this uses the document name as the identifier, the
+ * document title as the name, and either a {@code description} property in the main XObject, or the document content,
+ * as the description. If two objects use the same document for storage, they are assumed to be equal, and no actual
+ * data equality is checked.
  *
  * @version $Id$
  * @since 1.3M2
