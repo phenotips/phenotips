@@ -53,6 +53,6 @@ public class XWikiACLAuthorizationModule implements AuthorizationModule
     @Override
     public Boolean hasAccess(User user, Right access, DocumentReference document)
     {
-        return this.authorizationManager.hasAccess(access, user.getProfileDocument(), document);
+        return this.authorizationManager.hasAccess(access, user == null ? null : user.getProfileDocument(), document);
     }
 }
