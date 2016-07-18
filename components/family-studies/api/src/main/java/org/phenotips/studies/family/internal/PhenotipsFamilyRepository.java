@@ -245,12 +245,12 @@ public class PhenotipsFamilyRepository implements FamilyRepository
         // Adding additional values to family
         User currentUser = PhenotipsFamilyRepository.userManager.getCurrentUser();
         BaseObject ownerObject = newFamilyDoc.newXObject(Owner.CLASS_REFERENCE, context);
-        ownerObject.set("owner", currentUser.getId(), context);
+        ownerObject.set("owner", currentUser == null ? "" : currentUser.getId(), context);
 
         BaseObject familyObject = newFamilyDoc.getXObject(Family.CLASS_REFERENCE);
         familyObject.set("identifier", nextId, context);
 
-        newFamilyDoc.setCreatorReference(currentUser.getProfileDocument());
+        newFamilyDoc.setCreatorReference(currentUser == null ? null : currentUser.getProfileDocument());
 
         PhenotipsFamilyRepository.familyPermissions.setFamilyPermissionsToCurrentUser(newFamilyDoc);
 
