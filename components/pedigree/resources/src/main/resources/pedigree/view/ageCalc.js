@@ -7,7 +7,7 @@ define([],function(){
      */
     function getLastDateAlive(deathDate)
     {
-        return (deathDate == null) ? new Date() : deathDate.toJSDate();
+        return (deathDate == null || !deathDate.isComplete()) ? new Date() : deathDate.toJSDate();
     }
 
     /**
@@ -43,6 +43,9 @@ define([],function(){
      */
     function getAgeForCancersDropdown(birthDate, deathDate)
     {
+        if (!birthDate.isComplete()) {
+            return 0;
+        }
         if (birthDate.onlyDecadeAvailable() || (deathDate && deathDate.onlyDecadeAvailable())) {
             var age = AgeCalc.getAgeInFullYears(birthDate, deathDate);
             var decadeOld = Math.ceil(age/10)*10;
@@ -64,7 +67,8 @@ define([],function(){
      */
     function getAgeString(birthDate, deathDate, dateDisplayFormat)
     {
-        if (birthDate.onlyDecadeAvailable() || (deathDate && deathDate.onlyDecadeAvailable())) {
+        if (!birthDate || !birthDate.isComplete() || birthDate.onlyDecadeAvailable() ||
+            (deathDate && (!deathDate.isComplete() || deathDate.onlyDecadeAvailable()))) {
             return "";
         }
 

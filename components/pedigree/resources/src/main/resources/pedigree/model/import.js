@@ -480,7 +480,7 @@ define([
 
             var yob = parts[10];
             if (yob != "0" && Helpers.isInt(yob)) {
-              properties["dob"] = {"decade": yob + "s", "year": parseInt(yob)};
+              properties["dob"] = {"year": parseInt(yob)};
             }
 
             var addCommentToProperties = function(properties, line) {
@@ -1382,10 +1382,17 @@ define([
      */
     PedigreeImport.convertProperty = function(externalPropertyName, value) {
 
-        if (!PedigreeImport.JSONToInternalPropertyMapping.hasOwnProperty(externalPropertyName))
+        if (!PedigreeImport.JSONToInternalPropertyMapping.hasOwnProperty(externalPropertyName)) {
             return null;
+        }
 
         var internalPropertyName = PedigreeImport.JSONToInternalPropertyMapping[externalPropertyName];
+
+        if (externalPropertyName == "birthdate" || externalPropertyName == "deathdate") {
+            // handle deprecated date formats by using PedigreeDate constructors which can handle those
+            var pedigreeDate = new PedigreeDate(value);
+            value = pedigreeDate.getSimpleObject();
+        }
 
         return {"propertyName": internalPropertyName, "value": value };
     }
