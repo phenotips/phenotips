@@ -93,10 +93,14 @@
   ## There are many possible sources of error. Assume error until you actually get success :)
   ##
   #set ($data = {'status':'error'})
-  #if (!$response || $response.isIncorrectProtocolVersion())
+  #if (!$response || $response.isServerDoesNotAcceptClientProtocolVersion())
     #set ($data.serverconnectproblem = 'true')
     #set ($data.cantconnect = 'true')
-    #set ($data.incompatibleprotocol = 'true')
+    #set ($data.unsupportedClientProtocol = 'true')
+  #elseif ($response.isClientDoesNotAcceptServerProtocolVersion())
+    #set ($data.serverconnectproblem = 'true')
+    #set ($data.cantconnect = 'true')
+    #set ($data.unsupportedServerProtocol = 'true')
   #elseif ($response.isSuccessful())
     ## yay!
     #set ($data = {'status':'success', 'groups':$response.getRemoteUserGroups(), 'serverfields': $response.getRemoteAcceptedPatientFields(), 'updatesEnabled': $response.remoteUpdatesEnabled(), 'consents': $response.getConsents()})
@@ -130,10 +134,14 @@
   ##$jsontool.serialize($response)
 
   #set ($data = {'status':'error'})
-  #if (!$response || $response.isIncorrectProtocolVersion())
+  #if (!$response || $response.isServerDoesNotAcceptClientProtocolVersion())
     #set ($data.serverconnectproblem = 'true')
     #set ($data.cantconnect = 'true')
-    #set ($data.incompatibleprotocol = 'true')
+    #set ($data.unsupportedClientProtocol = 'true')
+  #elseif ($response.isClientDoesNotAcceptServerProtocolVersion())
+    #set ($data.serverconnectproblem = 'true')
+    #set ($data.cantconnect = 'true')
+    #set ($data.unsupportedServerProtocol = 'true')
   #elseif ($response.isSuccessful())
     ## DONE!
     #set ($data = {'status':'success', 'patientid':$response.getRemotePatientID(), 'patientguid':$response.getRemotePatientGUID(), 'patienturl':$response.getRemotePatientURL()})        ## TODO
