@@ -42,7 +42,8 @@ public interface PushServerResponse
      *         </ol>
      *         <p>
      *         {@code false} in all other cases, in which case one and only one of {@code isLoginFailed()},
-     *         {@code isActionFailed()} or {@code isIncorrectProtocolVersion()} will return {@code true}.
+     *         {@code isActionFailed()} or {@code isServerDoesNotAcceptClientProtocolVersion()} or
+     *         {@code isClientDoesNotAcceptServerProtocolVersion} will return {@code true}.
      */
     boolean isSuccessful();
 
@@ -62,8 +63,17 @@ public interface PushServerResponse
 
     /**
      * @return {@code true} if the version of the POST protocol used is not supported by the server
+     *         (the assumption is that client protocol version is outdated, since by default any
+     *         client version newer than the server is supported)
      */
-    boolean isIncorrectProtocolVersion();
+    boolean isServerDoesNotAcceptClientProtocolVersion();
+
+    /**
+     * @return {@code true} if the version of the POST protocol used by the server is not supported by the client
+     *         (the assumption is that server protocol version is outdated, since by default any
+     *         server version newer than the client is supported)
+     */
+    boolean isClientDoesNotAcceptServerProtocolVersion();
 
     // ==============================================================================
     // all of the methods in this section return false if isLoginFailed() is false

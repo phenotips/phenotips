@@ -574,8 +574,12 @@
           this._userManager.update(this._generateCantConnectToServerMessage("$services.localization.render('phenotips.PushPatient.serverConnectProblem')", user_when_failed, password_when_failed));
           return;
         }
-        if (this._lastLoginResponse.incompatibleprotocol) {
-          this._userManager.update(this._generateCantConnectToServerMessage("$services.localization.render('phenotips.PushPatient.incompatibleServerProtocol')", user_when_failed, password_when_failed));
+        if (this._lastLoginResponse.serverdoesnotsupportclientprotocol) {
+          this._userManager.update(this._generateCantConnectToServerMessage("$services.localization.render('phenotips.PushPatient.unsupportedClientProtocol')", user_when_failed, password_when_failed));
+          return;
+        }
+        if (this._lastLoginResponse.clientdoesnotsupportserverprotocol) {
+          this._userManager.update(this._generateCantConnectToServerMessage("$services.localization.render('phenotips.PushPatient.unsupportedServerProtocol')", user_when_failed, password_when_failed));
           return;
         }
       }

@@ -488,9 +488,33 @@
               <justification>Needed for synchronizing consents</justification>
             </difference>
             <difference>
+              <className>org/phenotips/data/push/PushServerResponse</className>
+              <differenceType>7012</differenceType>
+              <method>boolean isClientDoesNotAcceptServerProtocolVersion()</method>
+              <justification>Better push protocol versioning mechanism</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/push/PushServerResponse</className>
+              <differenceType>7012</differenceType>
+              <method>boolean isServerDoesNotAcceptClientProtocolVersion()</method>
+              <justification>Better push protocol versioning mechanism</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/push/PushServerResponse</className>
+              <differenceType>7002</differenceType>
+              <method>boolean isIncorrectProtocolVersion()</method>
+              <justification>Better push protocol versioning mechanism</justification>
+            </difference>
+            <difference>
               <className>org/phenotips/data/shareprotocol/ShareProtocol</className>
               <differenceType>6011</differenceType>
               <field>POST_PROTOCOL_VERSION</field>
+              <justification>Renamed to better reflect its meaning</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/shareprotocol/ShareProtocol</className>
+              <differenceType>6011</differenceType>
+              <field>JSON_RESPONSE_PROTOCOL_VERSION</field>
               <justification>Renamed to better reflect its meaning</justification>
             </difference>
             <difference>
