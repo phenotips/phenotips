@@ -715,7 +715,7 @@ $xwiki.ssx.use($className)##
       <name>org.phenotips.patientSheet.study</name>
     </property>
     <property>
-      <parameters/>
+      <parameters>order=20</parameters>
     </property>
     <property>
       <scope>wiki</scope>

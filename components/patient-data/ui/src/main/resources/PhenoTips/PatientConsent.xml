@@ -814,7 +814,7 @@
       <name>org.phenotips.patientSheet.consent</name>
     </property>
     <property>
-      <parameters/>
+      <parameters>order=30</parameters>
     </property>
     <property>
       <scope>wiki</scope>
