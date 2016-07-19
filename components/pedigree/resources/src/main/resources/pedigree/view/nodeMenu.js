@@ -904,7 +904,7 @@ define([
                         cancersUIElements[i].enableNotes();
                         cancersUIElements[i].age.enable();
                         var birthDate = _this.targetNode.getBirthDate();
-                        if (birthDate) {
+                        if (birthDate && birthDate.isComplete()) {
                             var age = AgeCalc.getAgeForCancersDropdown(birthDate, _this.targetNode.getDeathDate());
                             cancersUIElements[i].age.value = age;
                         }
@@ -1087,28 +1087,24 @@ define([
             },
             'date-picker' : function (container, value) {
                 if (!value) {
-                    value = {"decade": "", "year": "", "month": "", "day": ""};
+                    value = {};
                 }
 
-                var year  = "";
+                var range = value.hasOwnProperty("range") && value.range.hasOwnProperty("years") ? value.range.years : 1;
+                var year  = value.hasOwnProperty("year") ? value.year.toString() : "";
+                if (range > 1 && year != "") {
+                    year = year + "s";
+                }
                 var month = "";
                 var day   = "";
-                // there is no separate "decade" selector, need to handle the case of decade only separately
-                if (value.decade && !value.year) {
-                    year = value.decade;
-                } else {
-                    if (value.year) {
-                        year = value.year.toString();
-                    }
-                }
 
                 var dateEditFormat = editor.getPreferencesManager().getConfigurationOption("dateEditFormat");
                 var dmyInputMode = (dateEditFormat == "DMY" || dateEditFormat == "MY");
                 if ((dmyInputMode || value.year) && value.month) {
-                    month = value.month.toString();
+                    month = value.hasOwnProperty("month") ? value.month.toString() : "";
                 }
                 if ((dmyInputMode || (value.year && value.month)) && value.day) {
-                    day = value.day.toString();
+                    day = value.hasOwnProperty("day") ? value.day.toString() : "";
                 }
 
                 var updated = false;
