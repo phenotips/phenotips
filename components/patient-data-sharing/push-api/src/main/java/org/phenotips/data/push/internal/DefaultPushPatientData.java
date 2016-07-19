@@ -25,14 +25,17 @@ import org.phenotips.data.push.PushServerConfigurationResponse;
 import org.phenotips.data.push.PushServerGetPatientIDResponse;
 import org.phenotips.data.push.PushServerSendPatientResponse;
 import org.phenotips.data.shareprotocol.ShareProtocol;
+import org.phenotips.data.shareprotocol.ShareProtocol.Incompatibility;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -97,6 +100,9 @@ public class DefaultPushPatientData implements PushPatientData
 
     /** HTTP client used for communicating with the remote server. */
     private final CloseableHttpClient client = HttpClients.createSystem();
+
+    /** A cache of known protocol versions for various server */
+    private Map<String,String> protocolVersionsCache = new HashMap<String,String>();
 
     /**
      * Helper method for obtaining a valid xcontext from the execution context.
@@ -215,6 +221,19 @@ public class DefaultPushPatientData implements PushPatientData
 
                 try {
                     JSONObject responseJSON = new JSONObject(response);
+
+                    // compatibility check: if selected server is using a no longer supported push protocol version
+                    // a corresponding error should be returned
+                    String protocolVersion = responseJSON.optString(
+                            ShareProtocol.SERVER_JSON_KEY_NAME_PROTOCOLVER, "unknown");
+                    if (ShareProtocol.OLD_INCOPMATIBLE_VERSIONS.contains(protocolVersion)) {
+                        return new UnsupportedOldServerProtocolResponse();
+                    }
+
+                    // store the last known version of push protocol for the server, so that without client code
+                    // worrying about that a proper serializer is used when pushing data to that server
+                    protocolVersionsCache.put(remoteServerIdentifier, protocolVersion);
+
                     return new DefaultPushServerConfigurationResponse(responseJSON);
                 } catch (Exception ex) {
                     this.logger.error("Received invalid JSON reply from remote server: {}...",
@@ -238,7 +257,7 @@ public class DefaultPushPatientData implements PushPatientData
         String groupName, String remoteGUID, String remoteServerIdentifier, String userName, String password,
         String userToken)
     {
-        this.logger.debug("===> Sending to server: [{}]", remoteServerIdentifier);
+        this.logger.info("Pushing data to server: [{}]", remoteServerIdentifier);
 
         HttpPost method = null;
 
@@ -248,6 +267,28 @@ public class DefaultPushPatientData implements PushPatientData
             if (exportFields != null) {
                 // Version information is required in the JSON; when exportFields is null everything is included anyway
                 exportFields.add(VersionsController.getEnablingFieldName());
+            }
+
+            // for compatibility with servers running older versions of PhenoTips:
+            //
+            // if the target server is known to support only old versions of push protocol, replace
+            // those fields which are not compatible with compatible alternatives (to trigger old serializers)
+            if (protocolVersionsCache.containsKey(remoteServerIdentifier)) {
+                String serverProtocolVersion = protocolVersionsCache.get(remoteServerIdentifier);
+                if (ShareProtocol.INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS.containsKey(serverProtocolVersion)) {
+                    this.logger.warn("Using old serializers for protocol version [{}] to push data to server [{}]",
+                            serverProtocolVersion, remoteServerIdentifier);
+                    List<ShareProtocol.Incompatibility> incompatibilitiesList =
+                            ShareProtocol.INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS.get(serverProtocolVersion);
+                    for (Incompatibility incompat : incompatibilitiesList) {
+                        if (exportFields.contains(incompat.getCurrentFieldName())) {
+                            exportFields.remove(incompat.getCurrentFieldName());
+                            if (!StringUtils.isEmpty(incompat.getDeprecatedFieldName())) {
+                                exportFields.add(incompat.getDeprecatedFieldName());
+                            }
+                        }
+                    }
+                }
             }
 
             String patientJSON = patient.toJSON(exportFields).toString();

@@ -70,10 +70,16 @@ public class DefaultPushServerResponse implements PushServerResponse
     }
 
     @Override
-    public boolean isIncorrectProtocolVersion()
+    public boolean isServerDoesNotAcceptClientProtocolVersion()
     {
         return hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_PROTOCOLFAILED) ||
             !this.response.has(ShareProtocol.SERVER_JSON_KEY_NAME_PROTOCOLVER);
+    }
+
+    @Override
+    public boolean isClientDoesNotAcceptServerProtocolVersion()
+    {
+        return false;
     }
 
     @Override
