@@ -38,7 +38,7 @@ public class ShareProtocol
     public static final String VERSION_1   = "1";
     /** version 1.1: added consents */
     public static final String VERSION_1_1 = "1.1";
-    /** version 1.2: new genes + new prenatal features format */   // TODO: check what is the difference between 1.1 and 1.2
+    /** version 1.2: new date format in patient JSON + new genes + new prenatal features format */   // TODO: check what is the difference between 1.1 and 1.2
     public static final String VERSION_1_2 = "1.2";
 
     public static final String CURRENT_PUSH_PROTOCOL_VERSION = VERSION_1_2;
@@ -53,12 +53,19 @@ public class ShareProtocol
     // list of known incompatibilities, a.k.a. enabling field names which are seriallized differently
     // in old versions of push protocol/patient JSON, together with a "compatibility" field (or null
     // if data can not be serialized in an old way for some reason)
-    //
-    // <TO BE FILLED ONCE INCOMPATIBILITIES ARE INTRODUCED>
+    public static final Incompatibility BIRTH_DATE_INCOMPAT = new Incompatibility("date_of_birth", "date_of_birth_v1");
+    public static final Incompatibility DEATH_DATE_INCOMPAT = new Incompatibility("date_of_death", "date_of_death_v1");
+    public static final Incompatibility EXAM_DATE_INCOMPAT  = new Incompatibility("exam_date", "exam_date_v1");
 
     // a list of known (fixable) incompatibilities in the supported past versions of push protocol
     public static final Map<String, List<Incompatibility> > INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS =
             new HashMap<String, List<Incompatibility> >();
+    static {
+        INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS.put(VERSION_1,
+                Arrays.asList( BIRTH_DATE_INCOMPAT, DEATH_DATE_INCOMPAT, EXAM_DATE_INCOMPAT ));
+        INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS.put(VERSION_1_1,
+                Arrays.asList( BIRTH_DATE_INCOMPAT, DEATH_DATE_INCOMPAT, EXAM_DATE_INCOMPAT ));
+    }
 
     // list of old push protocol versions which are explicitly not supported. The idea is that clients are
     // allowed to push to servers running unknown versions of push protocol (e.g. future not-yet-known versions).
