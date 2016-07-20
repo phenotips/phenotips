@@ -185,7 +185,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     private Object format(String key, Object value)
     {
         if (value == null || "Unknown".equals(value)) {
-            return null;
+            return JSONObject.NULL;
         }
         if (getBooleanFields().contains(key)) {
             return booleanConvert(value.toString());
@@ -199,7 +199,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     /** For converting JSON into internal representation. */
     private Object inverseFormat(String key, Object value)
     {
-        if (value != null) {
+        if (value != null && !value.equals(null)) {
             try {
                 if (this.getBooleanFields().contains(key)) {
                     return value;
@@ -274,6 +274,22 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
         return labeledList;
     }
 
+    /**
+     * Check whether the property is present in the patient data to be updated.
+     *
+     * @return true if present, false otherwise.
+     */
+    private Boolean isInKeySet(PatientData<T> data, String property)
+    {
+        Iterator<String> keys = data.keyIterator();
+        while (keys.hasNext()) {
+            if (keys.next().equals(property)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void writeJSON(Patient patient, JSONObject json)
     {
@@ -287,23 +303,25 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject dataHolder = doc.getXObject(getXClassReference());
             PatientData<T> data = patient.getData(this.getName());
-            if (dataHolder == null && data != null) {
+            if (dataHolder == null || data == null) {
                 return;
             }
             XWikiContext context = this.contextProvider.get();
             for (String propertyName : getProperties()) {
                 Object propertyValue = data.get(propertyName);
-                if (this.getCodeFields().contains(propertyName) && this.isCodeFieldsOnly()) {
-                    @SuppressWarnings("unchecked")
-                    List<VocabularyProperty> terms = (List<VocabularyProperty>) propertyValue;
-                    List<String> listToStore = new LinkedList<>();
-                    for (VocabularyProperty term : terms) {
-                        String name = StringUtils.isNotBlank(term.getId()) ? term.getId() : term.getName();
-                        listToStore.add(name);
+                if (isInKeySet(data, propertyName)) {
+                    if (this.getCodeFields().contains(propertyName) && this.isCodeFieldsOnly()) {
+                        @SuppressWarnings("unchecked")
+                        List<VocabularyProperty> terms = (List<VocabularyProperty>) propertyValue;
+                        List<String> listToStore = new LinkedList<>();
+                        for (VocabularyProperty term : terms) {
+                            String name = StringUtils.isNotBlank(term.getId()) ? term.getId() : term.getName();
+                            listToStore.add(name);
+                        }
+                        dataHolder.set(propertyName, listToStore, context);
+                    } else {
+                        dataHolder.set(propertyName, this.saveFormat(propertyValue), context);
                     }
-                    dataHolder.set(propertyName, listToStore, context);
-                } else {
-                    dataHolder.set(propertyName, this.saveFormat(propertyValue), context);
                 }
             }
 
@@ -319,10 +337,13 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     {
         Map<String, T> result = new LinkedHashMap<>();
         JSONObject container = json.optJSONObject(getJsonPropertyName());
-        if (container != null) {
-            for (String propertyName : getProperties()) {
+        if (container == null) {
+            return null;
+        }
+        for (String propertyName : getProperties()) {
+            if (container.has(propertyName)) {
                 @SuppressWarnings("unchecked")
-                T value = (T) this.inverseFormat(propertyName, container.opt(propertyName));
+                T value = (T) this.inverseFormat(propertyName, container.get(propertyName));
                 result.put(propertyName, value);
             }
         }
