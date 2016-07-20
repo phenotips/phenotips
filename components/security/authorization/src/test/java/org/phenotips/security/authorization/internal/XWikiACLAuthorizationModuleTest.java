@@ -80,6 +80,14 @@ public class XWikiACLAuthorizationModuleTest
         when(am.hasAccess(this.right, this.userProfile, this.doc)).thenThrow(new NullPointerException());
         this.mocker.getComponentUnderTest().hasAccess(this.user, this.right, this.doc);
     }
+    
+    @Test
+    public void userIsNull() throws ComponentLookupException
+    {
+        AuthorizationManager am = this.mocker.getInstance(AuthorizationManager.class);
+        when(am.hasAccess(this.right, null, this.doc)).thenReturn(true);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(null, this.right, this.doc));
+    }
 
     @Test
     public void expectedPriority() throws ComponentLookupException
