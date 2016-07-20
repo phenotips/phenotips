@@ -95,9 +95,11 @@ define([
             this.close();
             if (pictureBox.type == 'internal') {
                 var updatedJSONData = editor.getVersionUpdater().updateToCurrentVersion(pictureBox.pedigreeData);
-                editor.getSaveLoadEngine().createGraphFromSerializedData(updatedJSONData, false /* add to undo stack */, true /*center around 0*/);
+                editor.getSaveLoadEngine().createGraphFromSerializedData(updatedJSONData, false /* add to undo stack */,
+                                                                         true /* center around proband */, null /* no callback */, "template" /* data source */);
             } else if (pictureBox.type == 'simpleJSON') {
-                editor.getSaveLoadEngine().createGraphFromImportData(pictureBox.pedigreeData, 'simpleJSON', {}, false /* add to undo stack */, true /*center around 0*/);
+                editor.getSaveLoadEngine().createGraphFromImportData(pictureBox.pedigreeData, 'simpleJSON', {}, false /* add to undo stack */,
+                                                                     true /* center around proband */, "template" /* data source */);
             }
         },
 

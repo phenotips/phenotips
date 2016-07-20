@@ -29,7 +29,7 @@ define([
             return JSON.stringify(jsonObject);
         },
 
-        createGraphFromSerializedData: function(JSONString, noUndo, centerAroundProband, callbackWhenDataLoaded) {
+        createGraphFromSerializedData: function(JSONString, noUndo, centerAroundProband, callbackWhenDataLoaded, dataSource) {
             console.log("---- load: parsing data ----");
             document.fire("pedigree:load:start");
 
@@ -57,10 +57,10 @@ define([
                 return;
             }
 
-            this._finalizeCreateGraph("pedigreeLoaded", changeSet, noUndo, centerAroundProband, callbackWhenDataLoaded);
+            this._finalizeCreateGraph("pedigreeLoaded", changeSet, noUndo, centerAroundProband, callbackWhenDataLoaded, dataSource);
         },
 
-        createGraphFromImportData: function(importString, importType, importOptions, noUndo, centerAroundProband) {
+        createGraphFromImportData: function(importString, importType, importOptions, noUndo, centerAroundProband, dataSource) {
             console.log("---- import: parsing data ----");
             document.fire("pedigree:load:start");
 
@@ -83,11 +83,11 @@ define([
                 return;
             }
 
-            this._finalizeCreateGraph("pedigreeImported", changeSet, noUndo, centerAroundProband);
+            this._finalizeCreateGraph("pedigreeImported", changeSet, noUndo, centerAroundProband, null /* no callback */, dataSource);
         },
 
         // common code for pedigree creation called after the actual pedigree has been initialized using whatever input data
-        _finalizeCreateGraph: function(eventName, changeSet, noUndo, centerAroundProband, callbackWhenDataLoaded) {
+        _finalizeCreateGraph: function(eventName, changeSet, noUndo, centerAroundProband, callbackWhenDataLoaded, dataSource) {
 
             var _this = this;
 
@@ -95,6 +95,17 @@ define([
                 if (loadedPatientData !== null) {
 
                     var allLinkedNodes = editor.getGraph().getAllPatientLinks();
+
+                    if (dataSource && dataSource == "template") {
+                        var familyMemberIds = Object.keys(loadedPatientData);
+                        if (familyMemberIds.length == 1 && allLinkedNodes.linkedPatients.length == 0) {
+                            var probandNodeID = editor.getGraph().getProbandId();
+                            var probandProperties = editor.getGraph().getProperties(probandNodeID);
+                            probandProperties["phenotipsId"] = familyMemberIds[0];
+                            editor.getGraph().setProperties(probandNodeID, probandProperties);
+                            allLinkedNodes = editor.getGraph().getAllPatientLinks();
+                        }
+                    }
 
                     for (var patient in loadedPatientData) {
                         if (loadedPatientData.hasOwnProperty(patient)) {
@@ -356,7 +367,7 @@ define([
                         editor.getUndoRedoManager().addSaveEvent();
                     }
 
-                    this.createGraphFromSerializedData(updatedJSONData, false, true, addSaveEventOnceLoaded);
+                    this.createGraphFromSerializedData(updatedJSONData, false, true, addSaveEventOnceLoaded, "familyPedigree");
                 } catch (error) {
                     console.log("[LOAD] error parsing pedigree JSON");
                     this.initializeNewPedigree();

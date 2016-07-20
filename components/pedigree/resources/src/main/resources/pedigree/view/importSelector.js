@@ -213,7 +213,7 @@ define([
             var importOptions = { "markEvaluated": importMark, "externalIdMark": externalIdMark, "acceptUnknownPhenotypes": acceptUnknownPhenotypes };
 
             editor.getSaveLoadEngine().createGraphFromImportData(importValue, importType, importOptions,
-                                                                 false /* add to undo stack */, true /*center around 0*/);
+                                                                 false /* add to undo stack */, true /* center around proband */, "import" /* data source */);
         },
 
         onShow: function(allowCancel) {

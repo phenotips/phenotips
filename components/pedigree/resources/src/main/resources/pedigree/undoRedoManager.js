@@ -61,7 +61,8 @@ define([
                 memo["noUndoRedo"] = true;  // so that this event is not added to the undo/redo stack again
                 document.fire( nextState.eventToGetToThisState.eventName, memo );
             } else {
-                editor.getSaveLoadEngine().createGraphFromSerializedData( nextState.serializedState, true /* do not re-add to undo/redo stack */ );
+                editor.getSaveLoadEngine().createGraphFromSerializedData( nextState.serializedState, true /* do not re-add to undo/redo stack */,
+                                                                          false /* do not center around proband */, null /* no callback */, "redo" );
             }
             document.fire("pedigree:historychange", null);
         },
@@ -86,7 +87,8 @@ define([
                 document.fire( currentState.eventToUndo.eventName, memo );
             } else {
                 // no easy way - have to recreate the graph from serialization
-                editor.getSaveLoadEngine().createGraphFromSerializedData( prevState.serializedState, true /* do not re-add to undo/redo stack */);
+                editor.getSaveLoadEngine().createGraphFromSerializedData( prevState.serializedState, true /* do not re-add to undo/redo stack */,
+                                                                          false /* do not center around proband */, null /* no callback */, "undo");
             }
             document.fire("pedigree:historychange", null);
         },
