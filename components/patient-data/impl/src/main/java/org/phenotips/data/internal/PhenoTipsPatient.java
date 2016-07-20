@@ -377,6 +377,9 @@ public class PhenoTipsPatient implements Patient
         JSONObject json)
     {
         try {
+            if (!json.has(JSON_KEY_FEATURES) && !json.has(JSON_KEY_NON_STANDARD_FEATURES)) {
+                return;
+            }
             JSONArray jsonFeatures =
                 joinArrays(json.optJSONArray(JSON_KEY_FEATURES), json.optJSONArray(JSON_KEY_NON_STANDARD_FEATURES));
 
@@ -491,6 +494,9 @@ public class PhenoTipsPatient implements Patient
     private void updateDisordersFromJSON(XWikiDocument doc, BaseObject data, XWikiContext context, JSONObject json)
     {
         try {
+            if (!json.has(JSON_KEY_DISORDERS)) {
+                return;
+            }
             JSONArray inputDisorders = json.optJSONArray(JSON_KEY_DISORDERS);
             if (inputDisorders != null) {
                 // keep this instance of PhenotipsPatient in sync with the document: reset disorders
