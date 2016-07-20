@@ -174,16 +174,16 @@ public class AllergiesController implements PatientDataController<String>
     @Override
     public PatientData<String> readJSON(JSONObject json)
     {
+        if (!json.has(DATA_NAME)) {
+            return null;
+        }
         List<String> result = new ArrayList<>();
 
-        if (json.has(DATA_NAME)) {
-            Object allergiesValue = json.get(DATA_NAME);
-
-            if (allergiesValue instanceof JSONArray) {
-                JSONArray allergiesJsonArray = (JSONArray) allergiesValue;
-                for (Object allergy : allergiesJsonArray) {
-                    result.add(String.valueOf(allergy));
-                }
+        Object allergiesValue = json.get(DATA_NAME);
+        if (allergiesValue instanceof JSONArray) {
+            JSONArray allergiesJsonArray = (JSONArray) allergiesValue;
+            for (Object allergy : allergiesJsonArray) {
+                result.add(String.valueOf(allergy));
             }
         }
 

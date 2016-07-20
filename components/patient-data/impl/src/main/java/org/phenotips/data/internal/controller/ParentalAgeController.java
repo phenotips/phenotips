@@ -183,7 +183,7 @@ public class ParentalAgeController implements PatientDataController<Integer>
 
         for (String property : getProperties()) {
             if (data.has(property)) {
-                int age = data.getInt(property);
+                int age = data.optInt(property);
                 if (age == 0) {
                     result.put(property, null);
                 } else {
