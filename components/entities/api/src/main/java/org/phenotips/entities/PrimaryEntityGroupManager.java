@@ -82,7 +82,7 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E ex
     /**
      * Retrieves a {@link PrimaryEntityGroup group} by its {@link PrimaryEntity#getName() name}.
      *
-     * @param externalId the group's {@link PrimaryEntity#getName() user-friendly name}
+     * @param name the group's {@link PrimaryEntity#getName() user-friendly name}
      * @return the requested group, or {@code null} if the requested group does not exist, is not really a type of the
      *         group requested or multiple groups with the same name exists
      */
