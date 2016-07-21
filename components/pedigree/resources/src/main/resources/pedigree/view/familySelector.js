@@ -180,15 +180,15 @@ define(["pedigree/view/familySelector"], function(Legend){
 
                 editor.getPatientLegend().addCase(this.probandID, 'new');
 
+                editor.__justCreateNewFamily = true;
                 editor.getSaveLoadEngine().initializeNewPedigree();
 
             } else if (this.selected == 'assign' && this.familyID != null && this.familyID != '') {
 
                 this.hide();
 
-                editor.getPatientLegend().addCase(this.probandID, 'new');
-
-                editor.getSaveLoadEngine().load(this.familyID);
+                var pedigreeEditorURL = editor.getExternalEndpoint().getPedigreeEditorURL(this.familyID, true);
+                editor.getExternalEndpoint().redirectToURL(pedigreeEditorURL + '&new_patient_id=' + editor.getExternalEndpoint().getParentDocument().id);
           }
         }
     });

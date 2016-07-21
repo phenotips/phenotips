@@ -142,6 +142,15 @@ define([
                     // FIXME: load will set callbackWhenDataLoaded() to be actionStack.addSaveEvent(), effectively
                     //        a) duplicating undo states and b) doing it for read-only pedigrees
 
+                    if (editor.__justCreateNewFamily) {
+                        document.observe("pedigree:save:finish", function(event) {
+                            var newFamilyId = editor.getFamilyData().getFamilyId();
+                            var pedigreeEditorURL = editor.getExternalEndpoint().getPedigreeEditorURL(newFamilyId, true);
+                            editor.getExternalEndpoint().redirectToURL(pedigreeEditorURL + '&new_patient_id=' + editor.getExternalEndpoint().getParentDocument().id);
+                        });
+                        editor.getSaveLoadEngine().save(true); // ignore warnings
+                        return;
+                    }
                     callbackWhenDataLoaded && callbackWhenDataLoaded();
                 }
 
@@ -304,6 +313,7 @@ define([
                             editor.getUndoRedoManager().addSaveEvent();
                             editor.getFamilyData().updateFromJSON(response.responseJSON.family);
                             savingNotification.replace(new XWiki.widgets.Notification("Successfully saved"));
+                            document.fire("pedigree:save:finish");
                         }
                     } else  {
                         savingNotification.replace(new XWiki.widgets.Notification("Save attempt failed: server reply is incorrect"));

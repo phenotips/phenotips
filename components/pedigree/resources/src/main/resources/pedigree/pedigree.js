@@ -135,6 +135,11 @@ define([
             this._familySelector = new FamilySelector();
             this._patientDataLoader = new PatientDataLoader();
 
+            var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
+            if (newPatientId && newPatientId != ""){
+                this.getPatientLegend().addCase(newPatientId, 'new');
+            }
+
             // load global pedigree preferences before a specific pedigree is loaded, since
             // preferences may affect the way it is rendered. Once preferences are loaded the
             // provided function will get execute and will load/render the rest of the pedigree.
@@ -218,9 +223,7 @@ define([
             window.onbeforeunload = onLeavePageFunc;
 
             var onCloseButtonClickFunc = function(event) {
-                var redirectOnQuit  = function() { window.location = XWiki.currentDocument.getURL('cancel', 'xredirect=' +
-                                                                     encodeURIComponent(editor.getExternalEndpoint().getParentDocument().returnURL));
-                                                 };
+                var redirectOnQuit  = function() { editor.getExternalEndpoint().redirectToURL(editor.getExternalEndpoint().getParentDocument().returnURL); };
                 var dontQuitFunc    = function() { window.onbeforeunload = onLeavePageFunc; };
                 var quitFunc        = function() { redirectOnQuit(); };
                 var saveAndQuitFunc = function() { editor._afterSaveFunc = quitFunc;

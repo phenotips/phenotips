@@ -12,10 +12,14 @@ define([
     var ExternalEndpointsManager = Class.create({
         initialize: function() {
             // parent document is passed to the pedigree editor via URL parameters
-            this._parentDocumentID = window.self.location.href.toQueryParams().patient_id || XWiki.currentDocument.page;
+            // - patient_id - when an existing pedigree is opened from the patient page
+            // - new_patient_id - when a new patient is added to an existing pedigree
+            var patientId = window.self.location.href.toQueryParams().patient_id || window.self.location.href.toQueryParams().new_patient_id;
+            this._parentDocumentID = patientId || XWiki.currentDocument.page;
+
             // normally pedigree editor runs in Family space, however when a pedigree is created for a patient with no family, it
             // initially opens in patient space ("data") and patient_id is not passed in the URL as it is redundant in that case
-            this._parentDocumentType = (window.self.location.href.toQueryParams().patient_id || XWiki.currentSpace == "data") ? "Patient" : "Family";
+            this._parentDocumentType = (patientId || XWiki.currentSpace == "data") ? "Patient" : "Family";
             this._parentDocumentAction = window.self.location.href.toQueryParams().action || (XWiki.contextaction ? XWiki.contextaction : "view");
 
             this.exportMultiplePatients = new XWiki.Document('ExportMultiplePatients', 'PhenoTips');
@@ -104,6 +108,20 @@ define([
             return new XWiki.Document(patientId, 'data').getURL(contextaction);
         },
 
+        // contextaction is optional parameter
+        getPhenotipsFamilyURL: function(familyId, contextaction) {
+            return new XWiki.Document(familyId, 'Families').getURL(contextaction);
+        },
+
+        getPedigreeEditorURL: function(familyId, useCurrentReturnAction) {
+             var familyHref = this.getPhenotipsFamilyURL(familyId);
+             familyHref += '?sheet=PhenoTips.PedigreeEditor';
+             if (useCurrentReturnAction) {
+                 familyHref += "&action=" + this._parentDocumentAction;
+             }
+             return familyHref;
+        },
+
         getPedigreeTemplatesURL: function() {
             return new XWiki.Document('WebHome', 'data').getRestURL('objects/PhenoTips.PedigreeClass/');
         },
@@ -119,6 +137,10 @@ define([
         getPedigreePreferencesURL: function() {
             return this.pedigreeInterface.getURL('get', 'action=getPreferences');
         },
+
+        redirectToURL: function(targetURL){
+            window.self.location = XWiki.currentDocument.getURL('cancel', 'xredirect=' + encodeURIComponent(targetURL));
+        }
     });
     return ExternalEndpointsManager;
 });
