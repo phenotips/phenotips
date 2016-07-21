@@ -84,7 +84,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             if (data == null) {
                 return null;
             }
-            Map<String, T> result = new LinkedHashMap<String, T>();
+            Map<String, T> result = new LinkedHashMap<>();
             for (String propertyName : getProperties()) {
                 BaseProperty<ObjectPropertyReference> field =
                     (BaseProperty<ObjectPropertyReference>) data.getField(propertyName);
@@ -114,13 +114,11 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
         PatientData<T> data = patient.getData(getName());
-        if (data == null) {
+        if (data == null || data.size() == 0) {
             return;
         }
         Iterator<Map.Entry<String, T>> iterator = data.dictionaryIterator();
-        if (iterator == null || !iterator.hasNext()) {
-            return;
-        }
+
         JSONObject container = json.optJSONObject(getJsonPropertyName());
 
         while (iterator.hasNext()) {
@@ -320,7 +318,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     @Override
     public PatientData<T> readJSON(JSONObject json)
     {
-        Map<String, T> result = new LinkedHashMap<String, T>();
+        Map<String, T> result = new LinkedHashMap<>();
         JSONObject container = json.optJSONObject(getJsonPropertyName());
         if (container != null) {
             for (String propertyName : getProperties()) {

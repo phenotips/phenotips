@@ -191,12 +191,12 @@ public class VariantListController extends AbstractComplexController<Map<String,
                 return null;
             }
 
-            List<Map<String, String>> allVariants = new LinkedList<Map<String, String>>();
+            List<Map<String, String>> allVariants = new LinkedList<>();
             for (BaseObject variantObject : variantXWikiObjects) {
                 if (variantObject == null || variantObject.getFieldList().isEmpty()) {
                     continue;
                 }
-                Map<String, String> singleVariant = new LinkedHashMap<String, String>();
+                Map<String, String> singleVariant = new LinkedHashMap<>();
                 for (String property : getProperties()) {
                     String value = getFieldValue(variantObject, property);
                     if (value == null) {
@@ -209,7 +209,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
             if (allVariants.isEmpty()) {
                 return null;
             } else {
-                return new IndexedPatientData<Map<String, String>>(getName(), allVariants);
+                return new IndexedPatientData<>(getName(), allVariants);
             }
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen "
@@ -244,20 +244,17 @@ public class VariantListController extends AbstractComplexController<Map<String,
         }
 
         PatientData<Map<String, String>> data = patient.getData(getName());
-        if (data == null) {
+        if (data == null || data.size() == 0) {
             return;
         }
         Iterator<Map<String, String>> iterator = data.iterator();
-        if (!iterator.hasNext()) {
-            return;
-        }
 
         // put() is placed here because we want to create the property iff at least one field is set/enabled
         // (by this point we know there is some data since iterator.hasNext() == true)
         json.put(getJsonPropertyName(), new JSONArray());
         JSONArray container = json.getJSONArray(getJsonPropertyName());
 
-        Map<String, String> internalToJSONkeys = new HashMap<String, String>();
+        Map<String, String> internalToJSONkeys = new HashMap<>();
         internalToJSONkeys.put(JSON_VARIANT_KEY, INTERNAL_VARIANT_KEY);
         internalToJSONkeys.put(JSON_GENESYMBOL_KEY, INTERNAL_GENESYMBOL_KEY);
         internalToJSONkeys.put(JSON_PROTEIN_KEY, INTERNAL_PROTEIN_KEY);
@@ -302,7 +299,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
                 INTERNAL_INHERITANCE_KEY, INTERNAL_SEGREGATION_KEY,
                 INTERNAL_SANGER_KEY);
 
-        Map<String, List<String>> enumValues = new LinkedHashMap<String, List<String>>();
+        Map<String, List<String>> enumValues = new LinkedHashMap<>();
         enumValues.put(INTERNAL_ZYGOSITY_KEY, ZYGOSITY_VALUES);
         enumValues.put(INTERNAL_EFFECT_KEY, EFFECT_VALUES);
         enumValues.put(INTERNAL_INTERPRETATION_KEY, INTERPRETATION_VALUES);
@@ -313,8 +310,8 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
         try {
             JSONArray variantsJson = json.getJSONArray(this.getJsonPropertyName());
-            List<Map<String, String>> allVariants = new LinkedList<Map<String, String>>();
-            List<String> variantSymbols = new ArrayList<String>();
+            List<Map<String, String>> allVariants = new LinkedList<>();
+            List<String> variantSymbols = new ArrayList<>();
             for (int i = 0; i < variantsJson.length(); ++i) {
                 JSONObject variantJson = variantsJson.getJSONObject(i);
 
@@ -337,7 +334,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
             if (allVariants.isEmpty()) {
                 return null;
             } else {
-                return new IndexedPatientData<Map<String, String>>(getName(), allVariants);
+                return new IndexedPatientData<>(getName(), allVariants);
             }
         } catch (Exception e) {
             this.logger.error("Could not load variants from JSON", e.getMessage());
@@ -348,7 +345,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
     private Map<String, String> parseVariantJson(JSONObject variantJson, Map<String, List<String>> enumValues,
         List<String> enumValueKeys)
     {
-        Map<String, String> singleVariant = new LinkedHashMap<String, String>();
+        Map<String, String> singleVariant = new LinkedHashMap<>();
         for (String property : this.getProperties()) {
             if (variantJson.has(property)) {
                 parseVariantProperty(property, variantJson, enumValues, singleVariant, enumValueKeys);

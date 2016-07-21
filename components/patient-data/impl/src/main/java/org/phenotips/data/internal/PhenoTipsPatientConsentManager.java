@@ -26,7 +26,6 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.translation.TranslationManager;
 
 import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -104,6 +103,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
         new EntityReference("Consents", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     private Date lastSystemConsentLoadTime;
+
     private Set<Consent> cachedSystemConsents = Collections.unmodifiableSet(new LinkedHashSet<Consent>());
 
     @Override
@@ -115,14 +115,13 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
     public Set<Consent> getSystemConsents()
     {
         try {
-            DocumentReference configDocRef = referenceResolver.resolve(this.configurationPageReference);
-            DocumentModelBridge configDocBridge = bridge.getDocument(configDocRef);
-            XWikiDocument configDoc = (XWikiDocument) configDocBridge;
+            DocumentReference configDocRef = this.referenceResolver.resolve(this.configurationPageReference);
+            XWikiDocument configDoc = (XWikiDocument) this.bridge.getDocument(configDocRef);
             if (this.lastSystemConsentLoadTime == null || configDoc.getDate().after(this.lastSystemConsentLoadTime)) {
                 updateSystemConsentCache(configDoc);
             }
         } catch (Exception ex) {
-            logger.error("Could not load preferences document: {}", ex.getMessage());
+            this.logger.error("Could not load preferences document: {}", ex.getMessage());
         }
         return this.cachedSystemConsents;
     }
@@ -130,8 +129,8 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
     private synchronized void updateSystemConsentCache(XWikiDocument configDoc)
     {
         try {
-            Set<Consent> consents = new LinkedHashSet<Consent>();
-            List<BaseObject> consentObjects = configDoc.getXObjects(consentReference);
+            Set<Consent> consents = new LinkedHashSet<>();
+            List<BaseObject> consentObjects = configDoc.getXObjects(this.consentReference);
             if (consentObjects != null) {
                 for (BaseObject consentObject : consentObjects) {
                     Consent nextConsent = fromXWikiConsentConfiguration(consentObject, configDoc);
@@ -143,7 +142,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
             this.cachedSystemConsents = Collections.unmodifiableSet(consents);
             this.lastSystemConsentLoadTime = configDoc.getDate();
         } catch (Exception ex) {
-            logger.error("Could not load system consents from preferences document: {}", ex.getMessage());
+            this.logger.error("Could not load system consents from preferences document: {}", ex.getMessage());
         }
     }
 
@@ -154,13 +153,13 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
         try {
             String id = xwikiConsent.getStringValue("id");
             String label = cleanDescription(
-                    configDoc.display("label", RENDERING_MODE, xwikiConsent, contextProvider.get()), true);
+                configDoc.display("label", RENDERING_MODE, xwikiConsent, this.contextProvider.get()), true);
             if (label == null || label.length() == 0) {
                 label = id + " "
-                        + this.translationManager.translate("PhenoTips.PatientConsentManager_emptyLabelPostfix");
+                    + this.translationManager.translate("PhenoTips.PatientConsentManager_emptyLabelPostfix");
             }
             String description = cleanDescription(
-                    configDoc.display("description", RENDERING_MODE, xwikiConsent, contextProvider.get()), false);
+                configDoc.display("description", RENDERING_MODE, xwikiConsent, this.contextProvider.get()), false);
             boolean required = intToBool(xwikiConsent.getIntValue("required"));
             boolean affectsFields = intToBool(xwikiConsent.getIntValue("affectsFields"));
             List<String> formFields = null;
@@ -202,7 +201,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
     @Override
     public Set<Consent> getMissingConsentsForPatient(String patientId)
     {
-        return this.getMissingConsentsForPatient(repository.getPatientById(patientId));
+        return this.getMissingConsentsForPatient(this.repository.getPatientById(patientId));
     }
 
     @Override
@@ -214,7 +213,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
     @Override
     public Set<Consent> getAllConsentsForPatient(String patientId)
     {
-        return this.getAllConsentsForPatient(repository.getPatientById(patientId));
+        return this.getAllConsentsForPatient(this.repository.getPatientById(patientId));
     }
 
     @Override
@@ -255,11 +254,10 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
     @SuppressWarnings("unchecked")
     private Set<String> readConsentIdsFromPatientDoc(Patient patient)
     {
-        Set<String> ids = new LinkedHashSet<String>();
+        Set<String> ids = new LinkedHashSet<>();
         try {
-            DocumentModelBridge patientDocBridge = bridge.getDocument(patient.getDocument());
-            XWikiDocument patientDoc = (XWikiDocument) patientDocBridge;
-            BaseObject idsHolder = patientDoc.getXObject(consentIdsHolderReference);
+            XWikiDocument patientDoc = (XWikiDocument) this.bridge.getDocument(patient.getDocument());
+            BaseObject idsHolder = patientDoc.getXObject(this.consentIdsHolderReference);
             if (idsHolder != null) {
                 List<String> patientConsentIds = idsHolder.getListValue(GRANTED);
                 if (patientConsentIds != null) {
@@ -290,7 +288,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
     @Override
     public boolean hasConsent(String patientId, String consentId)
     {
-        return this.hasConsent(repository.getPatientById(patientId), consentId);
+        return this.hasConsent(this.repository.getPatientById(patientId), consentId);
     }
 
     @Override
@@ -363,15 +361,14 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
             return true;
         } catch (Exception ex) {
             this.logger.error("Could not update consent {} in patient record {}. {}",
-                    consentId, patient.getId(), ex.getMessage());
+                consentId, patient.getId(), ex.getMessage());
             return false;
         }
     }
 
     private SaveablePatientConsentHolder getPatientConsentHolder(Patient patient) throws Exception
     {
-        DocumentModelBridge patientDocBridge = this.bridge.getDocument(patient.getDocument());
-        XWikiDocument patientDoc = (XWikiDocument) patientDocBridge;
+        XWikiDocument patientDoc = (XWikiDocument) this.bridge.getDocument(patient.getDocument());
         return new SaveablePatientConsentHolder(getXWikiConsentHolder(patientDoc), patientDoc,
             this.contextProvider.get());
     }
@@ -381,7 +378,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
     {
         BaseObject holder = doc.getXObject(this.consentIdsHolderReference);
         if (holder == null) {
-            holder = doc.newXObject(this.consentIdsHolderReference, contextProvider.get());
+            holder = doc.newXObject(this.consentIdsHolderReference, this.contextProvider.get());
         }
         return holder;
     }
@@ -427,12 +424,12 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
 
         public void setConsents(List<String> consents)
         {
-            this.consentHolder.set(GRANTED, consents, context);
+            this.consentHolder.set(GRANTED, consents, this.context);
         }
 
         public void save() throws XWikiException
         {
-            this.context.getWiki().saveDocument(this.patientDoc, "Changed patient consents", true, context);
+            this.context.getWiki().saveDocument(this.patientDoc, "Changed patient consents", true, this.context);
         }
     }
 
@@ -456,7 +453,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
         if (consentsJSON == null) {
             return null;
         }
-        Set<Consent> result = new LinkedHashSet<Consent>();
+        Set<Consent> result = new LinkedHashSet<>();
         for (int i = 0; i < consentsJSON.length(); i++) {
             JSONObject consentJSON = consentsJSON.optJSONObject(i);
             if (consentJSON != null) {

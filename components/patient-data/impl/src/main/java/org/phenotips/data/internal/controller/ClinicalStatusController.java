@@ -90,9 +90,9 @@ public class ClinicalStatusController implements PatientDataController<String>
             }
             int isNormal = data.getIntValue(PATIENT_DOCUMENT_FIELDNAME);
             if (isNormal == 0) {
-                return new SimpleValuePatientData<String>(getName(), VALUE_AFFECTED);
+                return new SimpleValuePatientData<>(getName(), VALUE_AFFECTED);
             } else if (isNormal == 1) {
-                return new SimpleValuePatientData<String>(getName(), VALUE_UNAFFECTED);
+                return new SimpleValuePatientData<>(getName(), VALUE_UNAFFECTED);
             }
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen"
@@ -149,9 +149,9 @@ public class ClinicalStatusController implements PatientDataController<String>
     {
         String status = json.optString(JSON_FIELDNAME, null);
         if (StringUtils.equals(status, VALUE_AFFECTED)) {
-            return new SimpleValuePatientData<String>(this.getName(), VALUE_AFFECTED);
+            return new SimpleValuePatientData<>(this.getName(), VALUE_AFFECTED);
         } else if (StringUtils.equals(status, VALUE_UNAFFECTED)) {
-            return new SimpleValuePatientData<String>(this.getName(), VALUE_UNAFFECTED);
+            return new SimpleValuePatientData<>(this.getName(), VALUE_UNAFFECTED);
         }
         return null;
     }

@@ -25,7 +25,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -38,16 +37,25 @@ import org.json.JSONObject;
 public class DefaultConsent implements Consent
 {
     private static final String JSON_KEY_ID = "id";
+
     private static final String JSON_KEY_LABEL = "label";
+
     private static final String JSON_KEY_DESCRIPTION = "description";
+
     private static final String JSON_KEY_ISREQUIRED = "isRequired";
+
     private static final String JSON_KEY_STATUS = "status";
+
     private static final String JSON_KEY_FIELDS = "formFields";
 
     private final String id;
+
     private final String label;
+
     private final String description;
+
     private final List<String> formFields;
+
     private boolean required;
 
     private ConsentStatus status = ConsentStatus.NOT_SET;
@@ -71,6 +79,7 @@ public class DefaultConsent implements Consent
 
     /**
      * A constructor from JSON representation.
+     *
      * @param consentJSON JSON in the format produced by toJSON()
      */
     public DefaultConsent(JSONObject consentJSON)
@@ -84,8 +93,8 @@ public class DefaultConsent implements Consent
         if (fields == null) {
             this.formFields = null;
         } else {
-            this.formFields = new LinkedList<String>();
-            for (Object field: fields) {
+            this.formFields = new LinkedList<>();
+            for (Object field : fields) {
                 this.formFields.add((String) field);
             }
         }
@@ -189,14 +198,15 @@ public class DefaultConsent implements Consent
 
     /**
      * Copies an instance of {@link Consent} to a new instance.
-     * @param from the consent whose state is to be copied
+     *
+     * @param status the consent whose state is to be copied
      * @return an instance which is identical to the `from` instance
      */
     @Override
     public Consent copy(ConsentStatus status)
     {
         Consent copy = new DefaultConsent(
-                this.getId(), this.getLabel(), this.getDescription(), this.isRequired(), this.getFields());
+            this.getId(), this.getLabel(), this.getDescription(), this.isRequired(), this.getFields());
         copy.setStatus(status);
         return copy;
     }
