@@ -125,7 +125,7 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
             for (String propertyName : getProperties()) {
                 List<VocabularyTerm> terms = data.get(propertyName);
                 if (terms == null) {
-                    terms = new LinkedList<>();
+                    continue;
                 }
                 BaseProperty<ObjectPropertyReference> field =
                     (BaseProperty<ObjectPropertyReference>) dataHolder.getField(propertyName);
@@ -169,6 +169,9 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
             if (selectedFieldNames == null || selectedFieldNames.contains(datum.getKey())) {
                 List<VocabularyTerm> terms = datum.getValue();
                 if (terms == null || terms.isEmpty()) {
+                    if (selectedFieldNames != null && selectedFieldNames.contains(datum.getKey())) {
+                        json.put(datum.getKey(), new JSONArray());
+                    }
                     continue;
                 }
                 JSONArray elements = new JSONArray();
@@ -202,6 +205,8 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
                         }
                     }
                     result.put(property, propertyTerms);
+                } else {
+                    result.put(property, null);
                 }
             }
             return new DictionaryPatientData<>(DATA_NAME, result);

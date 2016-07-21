@@ -244,13 +244,14 @@ public class VariantListController extends AbstractComplexController<Map<String,
         }
 
         PatientData<Map<String, String>> data = patient.getData(getName());
-        if (data == null) {
+        if (data == null || data.size() == 0) {
+            if (selectedFieldNames != null && selectedFieldNames.contains(VARIANTS_ENABLING_FIELD_NAME)) {
+                json.put(getJsonPropertyName(), new JSONArray());
+            }
             return;
         }
+
         Iterator<Map<String, String>> iterator = data.iterator();
-        if (!iterator.hasNext()) {
-            return;
-        }
 
         // put() is placed here because we want to create the property iff at least one field is set/enabled
         // (by this point we know there is some data since iterator.hasNext() == true)

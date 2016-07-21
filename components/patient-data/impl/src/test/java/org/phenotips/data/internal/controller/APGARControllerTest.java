@@ -142,7 +142,7 @@ public class APGARControllerTest
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNull() throws ComponentLookupException
+    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNotNull() throws ComponentLookupException
     {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -152,11 +152,11 @@ public class APGARControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertFalse(json.has(DATA_NAME));
+        Assert.assertTrue(json.has(DATA_NAME));
     }
 
     @Test
-    public void writeJSONReturnsWhenDataIsEmpty() throws ComponentLookupException
+    public void writeJSONReturnsWhenSelectedFieldsEmpty() throws ComponentLookupException
     {
         Map<String, Integer> map = new LinkedHashMap<>();
         PatientData<Integer> data = new DictionaryPatientData<>(DATA_NAME, map);
@@ -165,7 +165,8 @@ public class APGARControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
-        Assert.assertFalse(json.has(DATA_NAME));
+        Assert.assertNotNull(json.getJSONObject(DATA_NAME));
+        Assert.assertEquals(0, json.getJSONObject(DATA_NAME).length());
     }
 
     @Test
@@ -181,7 +182,8 @@ public class APGARControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertFalse(json.has(DATA_NAME));
+        Assert.assertNotNull(json.getJSONObject(DATA_NAME));
+        Assert.assertEquals(0, json.getJSONObject(DATA_NAME).length());
     }
 
     @Test

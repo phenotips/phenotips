@@ -155,7 +155,7 @@ public class AbstractSimpleControllerTest
     }
 
     @Test
-    public void loadIgnoresBlankFields() throws ComponentLookupException
+    public void loadNotIgnoresBlankFields() throws ComponentLookupException
     {
         String datum = "datum";
         doReturn(" ").when(this.data).getStringValue(PROPERTY_1);
@@ -165,7 +165,7 @@ public class AbstractSimpleControllerTest
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertEquals(datum, result.get(PROPERTY_3));
-        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(3, result.size());
     }
 
     // -----------------------------------save() tests-----------------------------------

@@ -248,7 +248,7 @@ public class GeneListControllerTest
     // --------------------writeJSON() is Overridden from AbstractSimpleController--------------------
 
     @Test
-    public void writeJSONReturnsWhenGetDataReturnsNull() throws ComponentLookupException
+    public void writeJSONReturnsWhenGetDataReturnsNotNull() throws ComponentLookupException
     {
         doReturn(null).when(this.patient).getData(CONTROLLER_NAME);
         JSONObject json = new JSONObject();
@@ -257,7 +257,7 @@ public class GeneListControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertFalse(json.has(CONTROLLER_NAME));
+        Assert.assertTrue(json.has(CONTROLLER_NAME));
         verify(this.patient).getData(CONTROLLER_NAME);
     }
 
@@ -273,7 +273,7 @@ public class GeneListControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertFalse(json.has(CONTROLLER_NAME));
+        Assert.assertTrue(json.has(CONTROLLER_NAME));
         verify(this.patient).getData(CONTROLLER_NAME);
     }
 
@@ -411,7 +411,9 @@ public class GeneListControllerTest
     {
         JSONObject json = new JSONObject();
         json.put(CONTROLLER_NAME, "No");
-        Assert.assertNull(this.mocker.getComponentUnderTest().readJSON(json));
+        PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().readJSON(json);
+        Assert.assertNotNull(result);
+        Assert.assertEquals(0, result.size());
     }
 
     @Test
@@ -419,7 +421,9 @@ public class GeneListControllerTest
     {
         JSONObject json = new JSONObject();
         json.put(CONTROLLER_NAME, new JSONArray());
-        Assert.assertNull(this.mocker.getComponentUnderTest().readJSON(json));
+        PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().readJSON(json);
+        Assert.assertNotNull(result);
+        Assert.assertEquals(0, result.size());
     }
 
     @Test

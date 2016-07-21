@@ -109,6 +109,9 @@ public class ClinicalStatusController implements PatientDataController<String>
         }
         PatientData<String> data = patient.getData(getName());
         if (data == null) {
+            if (selectedFieldNames != null && selectedFieldNames.contains(CONTROLLING_FIELDNAME)) {
+                json.put(getName(), VALUE_AFFECTED);
+            }
             return;
         }
 

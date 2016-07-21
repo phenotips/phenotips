@@ -236,7 +236,7 @@ public class VariantListControllerTest
     public void checkLoadParsingOfInterpretationKey() throws ComponentLookupException
     {
         addVariantFields(INTERPRETATION_KEY, new String[] {
-            "pathogenic", "likely_pathogenic", "likely_benign", "benign", "variant_u_s", "investigation_n" });
+        "pathogenic", "likely_pathogenic", "likely_benign", "benign", "variant_u_s", "investigation_n" });
 
         PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
 
@@ -370,7 +370,7 @@ public class VariantListControllerTest
     // --------------------writeJSON() is Overridden from AbstractSimpleController--------------------
 
     @Test
-    public void writeJSONReturnsWhenGetDataReturnsNull() throws ComponentLookupException
+    public void writeJSONReturnsWhenGetDataReturnsNotNull() throws ComponentLookupException
     {
         doReturn(null).when(this.patient).getData(CONTROLLER_NAME);
         JSONObject json = new JSONObject();
@@ -379,12 +379,12 @@ public class VariantListControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertFalse(json.has(CONTROLLER_NAME));
+        Assert.assertTrue(json.has(CONTROLLER_NAME));
         verify(this.patient).getData(CONTROLLER_NAME);
     }
 
     @Test
-    public void writeJSONReturnsWhenDataIsEmpty() throws ComponentLookupException
+    public void writeJSONReturnsWhenDataIsNotEmpty() throws ComponentLookupException
     {
         List<Map<String, String>> internalList = new LinkedList<>();
         PatientData<Map<String, String>> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
@@ -395,7 +395,7 @@ public class VariantListControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertFalse(json.has(CONTROLLER_NAME));
+        Assert.assertTrue(json.has(CONTROLLER_NAME));
         verify(this.patient).getData(CONTROLLER_NAME);
     }
 

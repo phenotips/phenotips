@@ -85,10 +85,17 @@ public class PhenoTipsPatient implements Patient
 
     private static final String NEGATIVE_PHENOTYPE_PREFIX = "negative_";
 
+    private static final String PRENATAL_PHENOTYPE_PREFIX = "prenatal_";
+
+    private static final String PRENATAL_PHENOTYPE_PROPERTY = PRENATAL_PHENOTYPE_PREFIX + PHENOTYPE_POSITIVE_PROPERTY;
+
     private static final String PHENOTYPE_NEGATIVE_PROPERTY = NEGATIVE_PHENOTYPE_PREFIX + PHENOTYPE_POSITIVE_PROPERTY;
 
-    private static final String[] PHENOTYPE_PROPERTIES =
-        new String[] { PHENOTYPE_POSITIVE_PROPERTY, PHENOTYPE_NEGATIVE_PROPERTY };
+    private static final String NEGATIVE_PRENATAL_PHENOTYPE_PROPERTY = NEGATIVE_PHENOTYPE_PREFIX
+        + PRENATAL_PHENOTYPE_PROPERTY;
+
+    private static final String[] PHENOTYPE_PROPERTIES = new String[] { PHENOTYPE_POSITIVE_PROPERTY,
+        PHENOTYPE_NEGATIVE_PROPERTY, PRENATAL_PHENOTYPE_PROPERTY, NEGATIVE_PRENATAL_PHENOTYPE_PROPERTY };
 
     private static final String DISORDER_PROPERTIES_OMIMID = "omim_id";
 
@@ -356,7 +363,7 @@ public class PhenoTipsPatient implements Patient
             result.put(JSON_KEY_NON_STANDARD_FEATURES, nonStandardFeaturesToJSON(selectedFields));
         }
 
-        if (!this.disorders.isEmpty() && isFieldIncluded(selectedFields, DISORDER_PROPERTIES)) {
+        if (isFieldIncluded(selectedFields, DISORDER_PROPERTIES)) {
             result.put(JSON_KEY_DISORDERS, diseasesToJSON());
         }
 
@@ -371,6 +378,9 @@ public class PhenoTipsPatient implements Patient
         JSONObject json)
     {
         try {
+            if (!json.has(JSON_KEY_FEATURES) && !json.has(JSON_KEY_NON_STANDARD_FEATURES)) {
+                return;
+            }
             JSONArray jsonFeatures =
                 joinArrays(json.optJSONArray(JSON_KEY_FEATURES), json.optJSONArray(JSON_KEY_NON_STANDARD_FEATURES));
 
@@ -485,6 +495,9 @@ public class PhenoTipsPatient implements Patient
     private void updateDisordersFromJSON(XWikiDocument doc, BaseObject data, XWikiContext context, JSONObject json)
     {
         try {
+            if (!json.has(JSON_KEY_DISORDERS)) {
+                return;
+            }
             JSONArray inputDisorders = json.optJSONArray(JSON_KEY_DISORDERS);
             if (inputDisorders != null) {
                 // keep this instance of PhenotipsPatient in sync with the document: reset disorders
@@ -508,6 +521,7 @@ public class PhenoTipsPatient implements Patient
                 // as in constructor: make unmofidiable
                 this.disorders = Collections.unmodifiableSet(this.disorders);
 
+                data.set(DISORDER_PROPERTIES_OMIMID, null, context);
                 // update the values in the document (overwriting the old list, if any)
                 data.set(DISORDER_PROPERTIES_OMIMID, disorderValues, context);
                 context.getWiki().saveDocument(doc, "Updated disorders from JSON", true, context);

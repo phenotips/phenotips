@@ -155,6 +155,9 @@ public class LifeStatusController implements PatientDataController<String>
         }
         PatientData<String> lifeStatusData = patient.getData(DATA_NAME);
         if (lifeStatusData == null) {
+            if (selectedFieldNames != null && selectedFieldNames.contains(DATA_NAME)) {
+                json.put(DATA_NAME, ALIVE);
+            }
             return;
         }
         json.put(DATA_NAME, lifeStatusData.getValue());

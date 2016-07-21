@@ -65,6 +65,8 @@ public class ParentalAgeController implements PatientDataController<Integer>
 
     private static final String PATERNAL_AGE = "paternal_age";
 
+    private static final String ENABLING_FIELD_NAME = "prenatal_phenotype";
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -96,9 +98,7 @@ public class ParentalAgeController implements PatientDataController<Integer>
             Map<String, Integer> result = new LinkedHashMap<>();
             for (String property : getProperties()) {
                 int age = data.getIntValue(property);
-                if (age != 0) {
-                    result.put(property, age);
-                }
+                result.put(property, age);
             }
             if (!result.isEmpty()) {
                 return new DictionaryPatientData<Integer>(getName(), result);
@@ -141,12 +141,15 @@ public class ParentalAgeController implements PatientDataController<Integer>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null && !selectedFieldNames.contains("prenatal_phenotype")) {
+        if (selectedFieldNames != null && !selectedFieldNames.contains(ENABLING_FIELD_NAME)) {
             return;
         }
 
         PatientData<Integer> data = patient.getData(getName());
         if (data == null || !data.isNamed() || data.size() == 0) {
+            if (selectedFieldNames != null && selectedFieldNames.contains(ENABLING_FIELD_NAME)) {
+                json.put(getJsonPropertyName(), new JSONObject());
+            }
             return;
         }
 
@@ -181,7 +184,11 @@ public class ParentalAgeController implements PatientDataController<Integer>
         for (String property : getProperties()) {
             if (data.has(property)) {
                 int age = data.getInt(property);
-                result.put(property, age);
+                if (age == 0) {
+                    result.put(property, null);
+                } else {
+                    result.put(property, age);
+                }
             }
         }
         return new DictionaryPatientData<>(getName(), result);

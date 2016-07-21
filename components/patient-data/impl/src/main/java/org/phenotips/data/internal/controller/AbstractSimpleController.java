@@ -34,7 +34,6 @@ import java.util.Map.Entry;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
@@ -74,9 +73,7 @@ public abstract class AbstractSimpleController implements PatientDataController<
             Map<String, String> result = new LinkedHashMap<>();
             for (String propertyName : getProperties()) {
                 String value = data.getStringValue(propertyName);
-                if (StringUtils.isNotBlank(value)) {
-                    result.put(propertyName, value);
-                }
+                result.put(propertyName, value);
             }
             return new DictionaryPatientData<>(getName(), result);
         } catch (Exception e) {
