@@ -113,10 +113,10 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
     protected EntityReferenceSerializer<String> localSerializer;
 
     /** The concrete {@link PrimaryEntity} instance class being managed. */
-    private Class<E> eclass;
+    private Class<? extends E> eclass;
 
     /** The constructor for concrete {@link PrimaryEntity} instance class being managed. */
-    private Constructor<E> econstructor;
+    private Constructor<? extends E> econstructor;
 
     @Override
     public E create()
@@ -349,7 +349,7 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
      * @throws AbstractMethodError if the manager class doesn't properly define the generic parameter
      */
     @SuppressWarnings("unchecked")
-    protected Class<E> getEntityClass()
+    protected Class<? extends E> getEntityClass()
     {
         if (this.eclass == null) {
             Type cls = this.getClass().getGenericSuperclass();
@@ -377,7 +377,7 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
      * @return a constructor that requires an XWikiDocument as its only parameter
      * @throws AbstractMethodError if no such constructor can be found
      */
-    protected Constructor<E> getEntityConstructor() throws AbstractMethodError
+    protected Constructor<? extends E> getEntityConstructor() throws AbstractMethodError
     {
         if (this.econstructor == null) {
             try {
