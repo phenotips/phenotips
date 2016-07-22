@@ -2343,6 +2343,9 @@ CalendarDateSelect = Class.create({
     initialize : function(options) {
       this.options = Object.extend(Object.clone(this.options), options || {});
       this.attachPickers();
+      document.observe('xwiki:dom:updated', function(event) {
+        this.attachPickers(event.memo.elements);
+      }.bindAsEventListener(this));
     },
     attachPickers : function (container) {
       var dateInputs = container &amp;&amp; container.select(this.selector) || $$(this.selector);
