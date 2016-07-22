@@ -100,6 +100,15 @@ public interface PatientData<T> extends Iterable<T>
     boolean isNamed();
 
     /**
+     * For dictionary data only, checks if the given key is present in the dictionary data.
+     *
+     * @param key the key to be checked for
+     * @return {@code true} if the key-value based data structure has the specified key
+     * @since 1.3M2
+     */
+    boolean containsKey(String key);
+
+    /**
      * For dictionary data only, return an iterator over the dictionary keys.
      *
      * @return iterator containing all the keys, or an empty iterator if there are no keys or this is not a dictionary
