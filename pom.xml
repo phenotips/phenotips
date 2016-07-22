@@ -511,6 +511,12 @@
               <method>boolean isExpandedByDefault()</method>
               <justification>New methods for configuring which sections should be collapsed and expanded in edit mode by default</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/data/PatientData</className>
+              <differenceType>7012</differenceType>
+              <method>boolean containsKey(java.lang.String)</method>
+              <justification>Will be used in new controllers</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

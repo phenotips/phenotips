@@ -107,6 +107,12 @@ public class IndexedPatientData<T> implements PatientData<T>
     }
 
     @Override
+    public boolean containsKey(String key)
+    {
+        return false;
+    }
+
+    @Override
     public Iterator<String> keyIterator()
     {
         return Collections.emptyIterator();
