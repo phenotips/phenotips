@@ -278,14 +278,11 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
     },
 
     _updatePopupByMode : function() {
-       var submitText;
        var submitFunction;
        if (__this._currentMode == __this._MODES.CREATE) {
-          submitText =  "$services.localization.render('phenotips.chooseProjectTemplate.createButton')";
           submitFunction = __this._submitCreateForm;
        }
        else if (__this._currentMode == __this._MODES.UPDATE) {
-          submitText =  "$services.localization.render('phenotips.chooseProjectTemplate.saveButton')";
           submitFunction = __this._updateProjectTemplateSelection;
 
           // Simulate project checkboxes clicking
@@ -296,7 +293,7 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
        }
 
        var submitButton = $('submitButton');
-       submitButton.value = submitText;
+       submitButton.value = "$services.localization.render('phenotips.chooseProjectTemplate.okButton')";
        submitButton.stopObserving('click');
        submitButton.observe('click', submitFunction);
     },
