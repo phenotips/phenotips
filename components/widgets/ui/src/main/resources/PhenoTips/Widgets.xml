@@ -3094,7 +3094,7 @@ return PhenoTips;
         Event.observe(window, 'scroll', this.resetPosition);
         Event.observe(window, 'resize', this.resetPosition);
         if (typeof(this.options.makeDefault) == 'function') {
-          thid.makeDefault = this.options.makeDefault.bind(this);
+          this.makeDefault = this.options.makeDefault.bind(this);
         }
         this.resetPosition();
       }
