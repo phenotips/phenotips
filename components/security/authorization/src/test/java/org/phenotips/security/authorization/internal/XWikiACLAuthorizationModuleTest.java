@@ -82,6 +82,14 @@ public class XWikiACLAuthorizationModuleTest
     }
 
     @Test
+    public void nullUserIsAccepted() throws ComponentLookupException
+    {
+        AuthorizationManager am = this.mocker.getInstance(AuthorizationManager.class);
+        when(am.hasAccess(this.right, null, this.doc)).thenReturn(true);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(null, this.right, this.doc));
+    }
+
+    @Test
     public void expectedPriority() throws ComponentLookupException
     {
         Assert.assertEquals(100, this.mocker.getComponentUnderTest().getPriority());
