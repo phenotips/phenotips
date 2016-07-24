@@ -418,11 +418,15 @@
   ## Filter values
   #if($propertyHasFilterValue)
     #set($discard = $tablelist.add($tableAlias))
+    ##
+    ## Document dates
     #if($colname.startsWith('doc.') &amp;&amp; ($colname.endsWith('Date') || $colname.endsWith('date')))
       #if ($filterValue != '')
+        ## Exact filter, substring matching
         #set($whereSql = "${whereSql} and upper(str(${safe_tableAlias})) like upper(?) ESCAPE '!'")
         #set($discard = $whereParams.add("%${filterValue.replaceAll('[\[_%!]', '!$0')}%"))
       #else
+        ## Before & After filters
         #if ($filterValueLowLimit != '')
           #set($whereSql = "${whereSql} and ${safe_tableAlias} &gt;= ?")
           #set($discard = $whereParams.add($services.jodatime.getDateTimeFormatterForPattern('MM/dd/yyyy').parseMutableDateTime($filterValueLowLimit).toDate()))
@@ -434,6 +438,8 @@
           #set($discard = $whereParams.add($filterValueHighLimit.toDate()))
         #end
       #end
+    ##
+    ## Document authors, exact match if the filter value contains a wiki or a space name, substring matches otherwise
     #elseif($colname == 'doc.creator' || $colname == 'doc.author')
       #foreach ($filterValue in $request.getParameterValues($colname))
         #if ($foreach.index == 0)
@@ -455,22 +461,32 @@
           #set ($whereSql = "${whereSql})")
         #end
       #end
+    ##
+    ## Other document fields, substring matching
     #elseif($colname.startsWith('doc.'))
       #set($whereSql = "${whereSql} and upper(str(${safe_colname.replace('_','.')})) like upper(?) ESCAPE '!'")
       #set($discard = $whereParams.add("%${filterValue.replaceAll('[\[_%!]', '!$0')}%"))
+    ##
+    ## Object properties from now on
+    ##
+    ## Numbers, exact match
     #elseif($propType == 'NumberClass' || $propType == 'BooleanClass')
       #livetable_getTableName($colname)
       #set($fromSql = "${fromSql}, ${tableName} ${safe_tableAlias}")
       #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and ${safe_tableAlias}.value = ?")
       #set($discard = $whereParams.addAll(["${colname}", $mathtool.toInteger(${filterValue})]))
+    ##
+    ## Dates, either substring or before/after filters
     #elseif($propType == 'DateClass')
       #set($fromSql = "${fromSql}, DateProperty ${safe_tableAlias}")
       #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ?")
       #set($discard = $whereParams.add("${colname}"))
       #if ($filterValue != '')
+        ## Exact filter, substring matching
         #set($whereSql = "${whereSql} and upper(str(${safe_tableAlias}.value)) like upper(?) ESCAPE '!'")
         #set($discard = $whereParams.add("%${filterValue.replaceAll('[\[_%!]', '!$0')}%"))
       #else
+        ## Before & After filters
         #if ($filterValueLowLimit != '')
           #set($whereSql = "${whereSql} and ${safe_tableAlias}.value &gt;= ?")
           #set($discard = $whereParams.add($services.jodatime.getDateTimeFormatterForPattern('MM/dd/yyyy').parseDateTime($filterValueLowLimit).toDate()))
@@ -482,15 +498,23 @@
           #set($discard = $whereParams.add($filterValueHighLimit.toDate()))
         #end
       #end
+    ##
+    ## Large text properties, substring match
     #elseif($propType == 'TextAreaClass' || $propType == 'UsersClass' || $propType == 'GroupsClass')
       #set($fromSql = "${fromSql}, LargeStringProperty ${safe_tableAlias}")
       #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and upper(${safe_tableAlias}.value) like upper(?) ESCAPE '!'")
       #set($discard = $whereParams.addAll(["${colname}", "%${filterValue.replaceAll('[\[_%!]', '!$0')}%"]))
+    ##
+    ## Lists, these can be stored in several ways
     #elseif($propType == 'StaticListClass' || $propType == 'DBListClass' || $propType == 'DBTreeListClass')
       #set($multiSelect = $propClass.get($colname).getProperty('multiSelect').getValue())
       #set($relationalStorage = $propClass.get($colname).getProperty('relationalStorage').getValue())
       #if($multiSelect == 1)
         #if($relationalStorage == 1)
+          ##
+          ## Multiselect and relational storage, multiple list items can be stored and filtered
+          ## Exact match for every filter value
+          ## Multiple values are combined with a configurable operator, by default AND
           #set ($joinOperator = "$!{request.get(""${colname}/join_mode"").toUpperCase()}")
           #if ($joinOperator != 'AND' &amp;&amp; $joinOperator != 'OR')
             #set ($joinOperator = 'AND')
@@ -514,10 +538,17 @@
             #end
           #end
         #else
+          ##
+          ## Multiselect, but not relational storage, multiple values are stored in a large text
+          ## Assumes that | is used as the value delimiter
+          ## Exact match
           #set($fromSql = "${fromSql}, StringListProperty ${safe_tableAlias}")
           #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and concat('|', concat(upper(${safe_tableAlias}.textValue), '|')) like upper(?) ESCAPE '!'")
           #set($discard = $whereParams.addAll(["${colname}", "%|${filterValue.replaceAll('[\[_%!]', '!$0')}|%"]))
         #end
+      ##
+      ## No multiselect, just one value is stored
+      ## Exact match
       #else
         #set ($joinOperator = "$!{request.get(""${colname}/join_mode"").toUpperCase()}")
         #if ($joinOperator != 'AND' &amp;&amp; $joinOperator != 'OR')
@@ -538,6 +569,8 @@
           #end
         #end
       #end
+    ##
+    ## Simple string and multiple filter values, exact match on any of the filter values
     #elseif ($filterValueList.size() &gt; 1)
       #set($fromSql = "${fromSql}, StringProperty ${safe_tableAlias}")
       #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and ${safe_tableAlias}.value in (${stringtool.repeat('?', ', ', $filterValueList.size())})")
@@ -545,6 +578,7 @@
       #foreach ($value in $filterValueList)
         #set($discard = $whereParams.add($value))
       #end
+    ## Simple string and a single filter value, configurable type of match: exact (case sensitive), case insensitive, or case insensitive substring
     #else
       #set($fromSql = "${fromSql}, StringProperty ${safe_tableAlias}")
       #if ($request.getParameter("${colname}/match") == 'exact')
