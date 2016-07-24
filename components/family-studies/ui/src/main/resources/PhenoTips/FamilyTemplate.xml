@@ -71,7 +71,7 @@
         <name>identifier</name>
         <number>1</number>
         <numberType>long</numberType>
-        <prettyName>identifier</prettyName>
+        <prettyName>Internal identifier</prettyName>
         <size>30</size>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
@@ -89,7 +89,7 @@
         <name>members</name>
         <number>3</number>
         <picker>0</picker>
-        <prettyName>members</prettyName>
+        <prettyName>Family members</prettyName>
         <relationalStorage>1</relationalStorage>
         <separator> </separator>
         <separators/>
@@ -119,7 +119,7 @@
         <name>reports</name>
         <number>4</number>
         <picker>0</picker>
-        <prettyName>reports</prettyName>
+        <prettyName>Reports</prettyName>
         <relationalStorage>1</relationalStorage>
         <separator> </separator>
         <separators/>
@@ -140,20 +140,21 @@
         <displayType/>
         <name>warning</name>
         <number>5</number>
-        <prettyName>warning</prettyName>
+        <prettyName>Display sensitive information warning</prettyName>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </warning>
       <warning_message>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
-        <editor>---</editor>
+        <editor>PureText</editor>
         <name>warning_message</name>
         <number>6</number>
         <picker>0</picker>
-        <prettyName>warning_message</prettyName>
+        <prettyName>Sensitive information warning text</prettyName>
         <rows>5</rows>
         <size>40</size>
         <unmodifiable>0</unmodifiable>
@@ -196,6 +197,7 @@
       <nameField/>
       <validationScript/>
       <data>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
@@ -211,9 +213,10 @@
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </data>
       <description>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
-        <editor>---</editor>
+        <editor>PureText</editor>
         <name>description</name>
         <number>3</number>
         <picker>0</picker>
@@ -226,6 +229,7 @@
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </description>
       <image>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
