@@ -142,9 +142,10 @@
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </warning>
     <warning_message>
+      <contenttype>PureText</contenttype>
       <customDisplay/>
       <disabled>0</disabled>
-      <editor>---</editor>
+      <editor>PureText</editor>
       <name>warning_message</name>
       <number>6</number>
       <picker>0</picker>
