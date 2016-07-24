@@ -117,7 +117,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
 
 #set ($familyLabel = "$family.getId()#if (""$family.getExternalId()"" != '') ($family.getExternalId())#end")
 (% class="clear family-study" %)(((##
-  (% class="family-id-div" %)((([[$familyLabel>>path:$xwiki.getURL($family.getDocumentReference(), 'edit')||id="familyId"]])))
+  (% class="family-id-div" %)((([[$familyLabel&gt;&gt;path:$xwiki.getURL($family.getDocumentReference(), 'edit')||id="familyId"]])))
 )))##
 #end
 {{/velocity}}
