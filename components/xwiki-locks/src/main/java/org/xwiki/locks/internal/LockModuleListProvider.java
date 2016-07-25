@@ -72,7 +72,7 @@ public class LockModuleListProvider implements Provider<List<LockModule>>
         public int compare(LockModule o1, LockModule o2)
         {
             int result = o2.getPriority() - o1.getPriority();
-            // If the happen to have the same priority, to avoid randomness, order them alphabetically by their name
+            // If they happen to have the same priority, to avoid randomness, order them alphabetically by their name
             if (result == 0) {
                 result = o1.getClass().getSimpleName().compareTo(o2.getClass().getSimpleName());
             }
