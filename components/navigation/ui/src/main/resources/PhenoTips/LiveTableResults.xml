@@ -426,7 +426,7 @@
         #set($whereSql = "${whereSql} and upper(str(${safe_tableAlias})) like upper(?) ESCAPE '!'")
         #set($discard = $whereParams.add("%${filterValue.replaceAll('[\[_%!]', '!$0')}%"))
       #else
-        ## Before & After filters
+        ## Before and After filters
         #if ($filterValueLowLimit != '')
           #set($whereSql = "${whereSql} and ${safe_tableAlias} &gt;= ?")
           #set($discard = $whereParams.add($services.jodatime.getDateTimeFormatterForPattern('MM/dd/yyyy').parseMutableDateTime($filterValueLowLimit).toDate()))
@@ -486,7 +486,7 @@
         #set($whereSql = "${whereSql} and upper(str(${safe_tableAlias}.value)) like upper(?) ESCAPE '!'")
         #set($discard = $whereParams.add("%${filterValue.replaceAll('[\[_%!]', '!$0')}%"))
       #else
-        ## Before & After filters
+        ## Before and After filters
         #if ($filterValueLowLimit != '')
           #set($whereSql = "${whereSql} and ${safe_tableAlias}.value &gt;= ?")
           #set($discard = $whereParams.add($services.jodatime.getDateTimeFormatterForPattern('MM/dd/yyyy').parseDateTime($filterValueLowLimit).toDate()))
