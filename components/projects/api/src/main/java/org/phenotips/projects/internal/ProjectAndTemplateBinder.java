@@ -64,7 +64,7 @@ public class ProjectAndTemplateBinder
         Constants.CODE_SPACE_REFERENCE);
 
     /** The XClass used to store collaborators in the patient record. */
-    private EntityReference templateBindingReference = new EntityReference("TemplateBindingClass", EntityType.DOCUMENT,
+    private EntityReference templateBindingReference = new EntityReference("StudyBindingClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
     @Inject

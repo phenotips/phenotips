@@ -52,7 +52,7 @@
 #end
 {{html clean="false" wiki="true"}}
 #set ($patientDoc = $xwiki.getDocument($request.patientSpace,$request.patientId))
-#set ($boundTemplate = $patientDoc.getObject('PhenoTips.TemplateBindingClass'))
+#set ($boundTemplate = $patientDoc.getObject('PhenoTips.StudyBindingClass'))
 #set ($boundTemplate = $boundTemplate.getProperty('templateReference').value)
 #if ($mode == 'edit')
    #if ("$!request.input" == '')
