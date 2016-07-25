@@ -57,6 +57,7 @@ public class ProjectsScriptService implements ScriptService
 
     /**
      * Returns a project by an id.
+     *
      * @param projectId id of the project to return
      * @return a project object
      */
@@ -121,7 +122,9 @@ public class ProjectsScriptService implements ScriptService
             return null;
         }
         List<Project> projects = this.ptBinder.getProjectsForPatient(patient);
-        Collections.sort(projects);
+        if (projects != null && projects.size() > 1) {
+            Collections.sort(projects);
+        }
         return projects;
     }
 
