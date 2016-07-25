@@ -2344,7 +2344,7 @@ CalendarDateSelect = Class.create({
       this.options = Object.extend(Object.clone(this.options), options || {});
       this.attachPickers();
       document.observe('xwiki:dom:updated', function(event) {
-        this.attachPickers(event.memo.element);
+        this.attachPickers(event.memo.elements);
       }.bindAsEventListener(this));
     },
     attachPickers : function (container) {
