@@ -19,14 +19,14 @@
 -->
 
 <xwikidoc version="1.1">
-  <web>Family</web>
-  <name>CreateFamily</name>
+  <web>Families</web>
+  <name>Create</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
   <creationDate>1427304686000</creationDate>
-  <parent>Family.WebHome</parent>
+  <parent>Families.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <date>1427644952000</date>

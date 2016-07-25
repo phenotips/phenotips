@@ -19,7 +19,7 @@
 -->
 
 <xwikidoc version="1.1">
-  <web>Family</web>
+  <web>Families</web>
   <name>WebHome</name>
   <language/>
   <defaultLanguage/>
@@ -39,7 +39,7 @@
   <hidden>false</hidden>
   <content/>
   <object>
-    <name>Family.WebHome</name>
+    <name>Families.WebHome</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>e0686a4d-61ec-4d99-9941-fb0041842158</guid>
@@ -158,7 +158,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 {{/html}}{{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.header.top:Family</extensionPointId>
+      <extensionPointId>org.phenotips.header.top:Families</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.header.top.globalMenu</name>
@@ -171,7 +171,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
     </property>
   </object>
   <object>
-    <name>Family.WebHome</name>
+    <name>Families.WebHome</name>
     <number>1</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>cd626b88-1ebf-4bbb-9e2e-46a4c7348b26</guid>
@@ -273,7 +273,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 {{/html}}{{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.header.bottom:Family</extensionPointId>
+      <extensionPointId>org.phenotips.header.bottom:Families</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.header.bottom.globalTools</name>
@@ -286,7 +286,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
     </property>
   </object>
   <object>
-    <name>Family.WebHome</name>
+    <name>Families.WebHome</name>
     <number>2</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>8b50c371-7c60-45e8-a888-8d8832f6747f</guid>
@@ -358,7 +358,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
       <content/>
     </property>
     <property>
-      <extensionPointId>org.phenotips.main.top:Family</extensionPointId>
+      <extensionPointId>org.phenotips.main.top:Families</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.main.top.empty</name>
@@ -371,7 +371,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
     </property>
   </object>
   <object>
-    <name>Family.WebHome</name>
+    <name>Families.WebHome</name>
     <number>3</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>23d56ddc-602f-46cb-8ef8-7cd485584ab3</guid>
@@ -443,7 +443,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
       <content/>
     </property>
     <property>
-      <extensionPointId>org.phenotips.content.top:Family</extensionPointId>
+      <extensionPointId>org.phenotips.content.top:Families</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.content.top.empty</name>
