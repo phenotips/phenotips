@@ -646,7 +646,8 @@ Template: ##
 (%%)
 (%%)
 #end
-##</content>
+##
+{{/velocity}}</content>
     </property>
     <property>
       <extensionPointId>org.phenotips.patientSheet.before</extensionPointId>
