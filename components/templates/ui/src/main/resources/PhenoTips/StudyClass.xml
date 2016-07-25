@@ -833,11 +833,11 @@
 #set ($templateDocs = $xwiki.wrapDocs($query.execute()))
 #set ($templateData = [])
 
+#set ($filterby = "$!{xcontext.macro.params.filterby}")
+#set ($filterval = "$!{xcontext.macro.params.filterval.replaceAll('&apos;', '''')}")
 #foreach ($templateDoc in $templateDocs)
   #set ($templateObj = $templateDoc.getObject($templateClassName))
-  #set ($filterby = "$!{xcontext.macro.params.filterby}")
   #set ($filterbyprop = $templateObj.getProperty($filterby))
-  #set ($filterval = "$!{xcontext.macro.params.filterval}")
   #set ($isFilterActive = ($filterby != '' &amp;&amp; ("$!filterbyprop" != '' || $filterby == 'group')))
   #if ($filterby == '' || "$!filterbyprop" != '' &amp;&amp; ($filterbyprop.value == $filterval || $filterbyprop.value.contains($filterval)) || $filterby == 'group' &amp;&amp; $!xwiki.getDocument($filterval).getObject('PhenoTips.PhenoTipsGroupClass').getProperty('studies').value.contains($services.model.serialize($templateDoc.documentReference, 'local')))
     #set ($discard = $templateData.add({
