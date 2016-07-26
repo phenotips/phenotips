@@ -84,6 +84,15 @@ public class DictionaryPatientData<T> implements PatientData<T>
     }
 
     @Override
+    public boolean containsKey(String key)
+    {
+        if (this.internalMap != null) {
+            return this.internalMap.containsKey(key);
+        }
+        return false;
+    }
+
+    @Override
     public Iterator<String> keyIterator()
     {
         if (this.internalMap != null) {
