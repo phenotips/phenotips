@@ -3284,12 +3284,17 @@ return PhenoTips;
   widgets.FreeMultiselect = Class.create({
     counter : 1,
     options : {
-      returnKeyNavigation : false
+      returnKeyNavigation : false,
+      extraClasses : ""
     },
     initialize: function(element, options) {
       this.options = Object.extend(Object.clone(this.options), options || { });
       var _this = this;
 
+      var extraClassesSource = element.previous('input[name="xwiki-free-multiselect-suggest-extraclasses"][type="hidden"]');
+      if (extraClassesSource) {
+        this.options.extraClasses = extraClassesSource.value;
+      }
       // Suggest?
       var suggestInfoSource = element.previous('input[name="xwiki-free-multiselect-suggest-script"][type="hidden"]');
       if (suggestInfoSource &amp;&amp; suggestInfoSource.value &amp;&amp; typeof(XWiki.widgets.Suggest) != "undefined") {
@@ -3374,7 +3379,7 @@ return PhenoTips;
     },
 
     generateInput : function(template) {
-      var newInput = new Element('input', {'name' : template.name, id : this.generateId(template), type: template.type, size: template.size, 'class' : 'xwiki-free-multiselect-value'});
+      var newInput = new Element('input', {'name' : template.name, id : this.generateId(template), type: template.type, size: template.size, 'class' : 'xwiki-free-multiselect-value ' + this.options.extraClasses});
       var newWrapper = new Element('li');
       newWrapper.insert(newInput);
       template.up('.xwiki-free-multiselect-line').insert({after: newWrapper});
@@ -3398,11 +3403,16 @@ return PhenoTips;
   return PhenoTips;
 }(PhenoTips || {}));
 
-document.observe("xwiki:dom:loaded", function() {
-  $$('.xwiki-free-multiselect').each(function(element) {
-    new PhenoTips.widgets.FreeMultiselect(element);
+var init = function(event) {
+  ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+    element.select('.xwiki-free-multiselect').each(function(element) {
+      new PhenoTips.widgets.FreeMultiselect(element);
+    });
   });
-});</code>
+};
+(XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+document.observe("xwiki:dom:updated", init);
+</code>
     </property>
     <property>
       <name>Free Multiselect</name>
