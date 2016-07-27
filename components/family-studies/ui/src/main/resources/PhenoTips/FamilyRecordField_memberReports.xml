@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>FamilyRecordField_memberReports</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1468980885000</creationDate>
+  <parent>PhenoTips.FamilySheet</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1469429244000</date>
+  <contentUpdateDate>1469429244000</contentUpdateDate>
+  <version>1.1</version>
+  <title>$services.localization.render('phenotips.familyRecord.field.memberReports')</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content/>
+  <object>
+    <name>PhenoTips.FamilyRecordField_memberReports</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>6dd15984-f589-4aae-87b4-2172a8ac783d</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content>{{include reference="PhenoTips.FormMacros" /}}
+
+{{velocity}}
+#if (!$services.recordConfiguration.getActiveConfiguration().getEnabledFieldNames().contains('reports_history'))
+  #break
+#end
+#set ($dateFormat = $services.jodatime.getDateTimeFormatterForPattern('yyyy-MM-dd'))
+#foreach ($patient in $family.members)
+  #if ($patient)
+    #set ($patientDoc = $xwiki.getDocument($patient.document))
+    #set ($patientReports = $patientDoc.getObject('PhenoTips.PatientClass').getProperty('reports_history').value)
+    #if ($patientReports.size() &gt; 0)
+      #set ($id = "$!patient.externalId")
+      #if ($id == '')
+        #set ($id = $patient.id)
+      #end
+      #set ($name = "$!{patient.getData('patientName').first_name} $!{patient.getData('patientName').last_name}")
+      #set ($name = $name.trim())
+      #set ($dob = "$!{dateFormat.print($patient.getData('dates').date_of_birth)}")
+      #set ($meta = "$name#if($name != '' &amp;&amp; $dob != ''), #end$dob")
+      #set ($patientLabel = "$id#if ($meta != '') ($meta)#end")
+      ; $patientLabel
+      : $patientDoc.display('reports_history', 'view')
+    #end
+  #end
+#end
+{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>phenotips.familyRecord.section.reports</extensionPointId>
+    </property>
+    <property>
+      <name>phenotips.familyRecord.field.memberReports</name>
+    </property>
+    <property>
+      <parameters>title=$services.localization.render('phenotips.familyRecord.field.memberReports')
+enabled=true
+required=
+order=2
+fields=</parameters>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+</xwikidoc>

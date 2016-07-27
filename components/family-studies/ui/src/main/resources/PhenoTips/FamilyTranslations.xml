@@ -43,6 +43,18 @@ PhenoTips.FamilyClass_members=Family members
 PhenoTips.FamilyClass_reports=Reports
 PhenoTips.FamilyClass_warning=Display sensitive information warning
 PhenoTips.FamilyClass_warning_message=Sensitive information warning text
+
+phenotips.familyRecord.section.about=About
+phenotips.familyRecord.section.familyMembers=Members
+phenotips.familyRecord.section.pedigree=Pedigree
+phenotips.familyRecord.section.reports=Medical reports
+
+phenotips.familyRecord.field.externalId=Identifier
+phenotips.familyRecord.field.sensitiveInfoWarning=Sensitive information warning
+phenotips.familyRecord.field.familyMembers=Family members
+phenotips.familyRecord.field.pedigree=Pedigree
+phenotips.familyRecord.field.memberReports=Family members medical reports
+phenotips.familyRecord.field.familyReports=Medical reports
 </content>
   <object>
     <name>PhenoTips.FamilyTranslations</name>
