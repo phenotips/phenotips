@@ -677,8 +677,8 @@ $xwiki.ssx.use('PhenoTips.ProjectClass', {'colorTheme' : "$xwiki.getSpacePrefere
       #set ($fullName = $project.getFullName())
       ##
       |(% class="name" %) [[$project.getName()&gt;&gt;$fullName]] ##
-      \\(% class="members"%)$colUsers collaborator user#if($colUsers != 1)s#end(%%)##
-      \\(% class="members"%)$patientsNumber patient#if($patientsNumber != 1)s#end(%%)##
+      \\(% class="members"%)$colUsers $services.localization.render('phenotips.templateClass.collaborator')#if($colUsers != 1)s#end(%%)##
+      \\(% class="members"%)$patientsNumber $services.localization.render('phenotips.templateClass.patient')#if($patientsNumber != 1)s#end(%%)##
       #if ($xcontext.macro.params.fullinfo == 'true')|##
         #if ("$!{$description}" != '')
           (% class="desc" %) ((($description)))
