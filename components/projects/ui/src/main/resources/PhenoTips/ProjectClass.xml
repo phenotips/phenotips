@@ -339,20 +339,16 @@
 {{error}}$errorMessage{{/error}}
 #end
 ##
-#set ($projectClassName = 'PhenoTips.ProjectClass')
-#set ($projectTemplateName = 'PhenoTips.ProjectTemplate')
-#set ($projectsHome = 'Projects.WebHome')
-$xwiki.ssx.use($projectClassName, {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})
-$xwiki.jsx.use($projectClassName)
+$xwiki.ssx.use('PhenoTips.ProjectClass', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})
 ##
 {{html}}
 &lt;form id="project-creation-form" class="xformInline" action="$doc.getURL($xcontext.action, $request.queryString)" method="post"&gt;
   &lt;div&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
     &lt;input type="hidden" name="doCreate" value="1" /&gt;
-    &lt;input type="hidden" name="classTemplate" value="$projectTemplateName" /&gt;
-    &lt;input type="hidden" name="space" value="$xwiki.getDocument(${projectsHome}).space" /&gt;
-    &lt;input type="hidden" name="parent" value="${projectsHome}" /&gt;
+    &lt;input type="hidden" name="classTemplate" value="PhenoTips.ProjectTemplate" /&gt;
+    &lt;input type="hidden" name="space" value="$xwiki.getDocument('Projects.WebHome').space" /&gt;
+    &lt;input type="hidden" name="parent" value="Projects.WebHome" /&gt;
     &lt;label&gt;
       &lt;span class="fa fa-plus-circle"&gt;&lt;/span&gt;
       $services.localization.render('phenotips.projectClass.newProject.label')
@@ -658,14 +654,12 @@ $xwiki.jsx.use($projectClassName)
     </class>
     <property>
       <code>{{velocity}}
+$xwiki.ssx.use('PhenoTips.ProjectClass', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})
 #set ($projectsData = $services.projects.getProjectsCurrentUserCanContributeTo())
 #set ($max = $mathtool.toInteger($xcontext.macro.params.max))
 #if (!($max &amp;&amp; $max &gt; 0 &amp;&amp; $max &lt; $projectsData.size()))
   #set ($max = $projectsData.size())
 #end
-##
-$xwiki.ssx.use('PhenoTips.ProjectClass', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})
-$xwiki.jsx.use('PhenoTips.ProjectClass')
 ##
 (% id="projects-table" %)
 #if ($projectsData.size() == 0)
@@ -683,7 +677,7 @@ $xwiki.jsx.use('PhenoTips.ProjectClass')
       #set ($fullName = $project.getFullName())
       ##
       |(% class="name" %) [[$project.getName()&gt;&gt;$fullName]] ##
-      \\(% class="members"%)$colUsers collabortor user#if($colUsers != 1)s#end(%%)##
+      \\(% class="members"%)$colUsers collaborator user#if($colUsers != 1)s#end(%%)##
       \\(% class="members"%)$patientsNumber patient#if($patientsNumber != 1)s#end(%%)##
       #if ($xcontext.macro.params.fullinfo == 'true')|##
         #if ("$!{$description}" != '')
