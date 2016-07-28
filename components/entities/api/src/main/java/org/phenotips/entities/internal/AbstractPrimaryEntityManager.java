@@ -239,7 +239,7 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
     public E load(DocumentModelBridge document) throws IllegalArgumentException
     {
         try {
-            getEntityConstructor().newInstance(document);
+            return getEntityConstructor().newInstance(document);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException ex) {
             this.logger.error("Failed to instantiate primary entity of type [{}] from document [{}]: {}",
                 getEntityXClassReference(), document, ex.getMessage());
