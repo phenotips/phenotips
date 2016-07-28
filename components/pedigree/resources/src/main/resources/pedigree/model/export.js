@@ -239,6 +239,7 @@ define([
 
      var alertUnknownGenderFound = false; // BOADICEA does not support unknown genders
      var warnAboutMissingDOB     = false; // BOADICEA seem to require all individuals with cancer to have some age specified
+     var warnMissingDOBUnaff     = false; // BOADICEA recommends age information for unaffected individuals
 
      for (var i = 0; i <= pedigree.GG.getMaxRealVertexId(); i++) {
          if (!pedigree.GG.isPerson(i)) continue;
@@ -341,6 +342,7 @@ define([
          // TODO: Contralateral breast cancer export/field?
          var cancerSequence = [ "Breast", "", "Ovarian", "Prostate", "Pancreatic" ];
 
+         var is_affected = false;
          for (var c = 0; c < cancerSequence.length; c++) {
              cancer = cancerSequence[c];
              if (cancer == "" || !pedigree.GG.properties[i].hasOwnProperty("cancers")) {
@@ -356,13 +358,15 @@ define([
                      var ageAtDetection = cancerData.hasOwnProperty("numericAgeAtDiagnosis") && (cancerData.numericAgeAtDiagnosis > 0)
                                           ? cancerData.numericAgeAtDiagnosis : "AU";
                      output += ageAtDetection.toString() + "\t";
-                     if (yob == "0") {
-                         warnAboutMissingDOB = true;
-                     }
+                     is_affected = true;
                  }
              } else {
                  output += "0\t";
              }
+         }
+         if (yob == "0") {
+            warnAboutMissingDOB = warnAboutMissingDOB || is_affected;
+            warnMissingDOBUnaff = warnMissingDOBUnaff || !is_affected;
          }
 
          output += "0\t"; // TODO: Genetic test status
@@ -404,24 +408,28 @@ define([
          output += "\n";
      }
 
-     if (alertUnknownGenderFound || warnAboutMissingDOB) {
+     if (alertUnknownGenderFound || warnAboutMissingDOB || warnMissingDOBUnaff) {
          var warningText = "Pedigree can be exported, but there are warnings:\n\n\n";
-
-         var numberWarnings = false;
-         if (alertUnknownGenderFound && warnAboutMissingDOB) {
-             numberWarnings = true;
-         }
+         var warnings = [];
          if (alertUnknownGenderFound) {
-             warningText += (numberWarnings ? "1) " : "") +
-                             "BOADICEA format does not support unknown or other genders.\n\n" +
-                            "All persons of unknown or other gender were either assigned a gender "+
-                            "opposite to their partner's gender or saved as male in the export file";
+             warnings.push("BOADICEA format does not support unknown or other genders.\n\n" +
+                           "All persons of unknown or other gender were either assigned a gender " +
+                           "opposite to their partner's gender or saved as male in the export file");
          }
          if (warnAboutMissingDOB) {
-             warningText += (numberWarnings ? "\n\n\n2) " : "") +
-                            "BOADICEA requires that all individuals with cancer have their age specified or estimated.\n\n" +
-                            "A person with cancer is missing age data, data will be exported but may not be accepted by BOADICEA";
+              warnings.push("BOADICEA requires that all individuals with cancer have their year of " +
+                            "birth and age at cancer diagnosis specified or estimated\n\n" +
+                            "A person with cancer is missing age data, data will be exported but may not be accepted by BOADICEA");
          }
+         if(warnMissingDOBUnaff) {
+             warnings.push("BOADICEA recommends that all unaffected individuals have their year of birth and" +
+                           " year of death, if applicable, specified or estimated." +
+                           " Not doing so may lead to an overestimation of risk.");
+         }
+         if(warnings.length > 1) {
+             warnings = warnings.map(function(v, i, a) { return (i + 1) + ") " + v; });
+         }
+         warningText += warnings.join('\n\n\n');
          alert(warningText);
      }
 
