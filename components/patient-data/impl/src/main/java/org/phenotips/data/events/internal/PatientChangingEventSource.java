@@ -81,7 +81,7 @@ public class PatientChangingEventSource implements EventListener
         if (patientRecordObj == null || "PatientTemplate".equals(doc.getDocumentReference().getName())) {
             return;
         }
-        Patient patient = this.repo.loadPatientFromDocument(doc);
+        Patient patient = this.repo.load(doc);
         User user = this.userManager.getCurrentUser();
         CancelableEvent patientEvent = new PatientChangingEvent(patient, user);
         this.observationManager.notify(patientEvent, doc);

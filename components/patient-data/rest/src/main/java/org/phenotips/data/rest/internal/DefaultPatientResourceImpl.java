@@ -79,7 +79,7 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
     public Response getPatient(String id)
     {
         this.logger.debug("Retrieving patient record [{}] via REST", id);
-        Patient patient = this.repository.getPatientById(id);
+        Patient patient = this.repository.get(id);
         if (patient == null) {
             this.logger.debug("No such patient record: [{}]", id);
             return Response.status(Status.NOT_FOUND).build();
@@ -101,7 +101,7 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
     public Response updatePatient(String json, String id)
     {
         this.logger.debug("Updating patient record [{}] via REST with JSON: {}", id, json);
-        Patient patient = this.repository.getPatientById(id);
+        Patient patient = this.repository.get(id);
         if (patient == null) {
             this.logger.debug(
                 "Patient record [{}] doesn't exist yet. It can be created by POST-ing the JSON to /rest/patients", id);
@@ -143,7 +143,7 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
     public Response deletePatient(String id)
     {
         this.logger.debug("Deleting patient record [{}] via REST", id);
-        Patient patient = this.repository.getPatientById(id);
+        Patient patient = this.repository.get(id);
         if (patient == null) {
             this.logger.debug("Patient record [{}] didn't exist", id);
             return Response.status(Status.NOT_FOUND).build();

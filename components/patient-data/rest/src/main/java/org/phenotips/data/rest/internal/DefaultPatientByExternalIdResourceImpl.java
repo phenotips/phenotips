@@ -93,7 +93,7 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
     public Response getPatient(String eid)
     {
         this.logger.debug("Retrieving patient record with external ID [{}] via REST", eid);
-        Patient patient = this.repository.getPatientByExternalId(eid);
+        Patient patient = this.repository.getByName(eid);
         if (patient == null) {
             return checkForMultipleRecords(patient, eid);
         }
@@ -115,7 +115,7 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
     public Response updatePatient(String json, String eid)
     {
         this.logger.debug("Updating patient record with external ID [{}] via REST with JSON: {}", eid, json);
-        Patient patient = this.repository.getPatientByExternalId(eid);
+        Patient patient = this.repository.getByName(eid);
         if (patient == null) {
             return checkForMultipleRecords(patient, eid);
         }
@@ -145,7 +145,7 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
     public Response deletePatient(String eid)
     {
         this.logger.debug("Deleting patient record with external ID [{}] via REST", eid);
-        Patient patient = this.repository.getPatientByExternalId(eid);
+        Patient patient = this.repository.getByName(eid);
         if (patient == null) {
             return checkForMultipleRecords(patient, eid);
         }

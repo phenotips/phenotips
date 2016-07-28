@@ -39,7 +39,7 @@
   <hidden>true</hidden>
   <content>{{velocity}}
 #set ($_service = $services.permissions)
-#set ($patient = $services.patients.getPatientById("$!{request.patient}"))
+#set ($patient = $services.patients.get("$!{request.patient}"))
 #if ("$!{request.xaction}" == 'meta')
   ## ===========================================================
   ## Get meta information about available accessLevels
@@ -1094,7 +1094,7 @@ $xwiki.ssx.use($serviceDocName)
 
 {{velocity}}
 #if ($xcontext.action != 'export')
-#set ($patient = $services.patients.getPatientById($doc.documentReference))
+#set ($patient = $services.patients.get($doc.documentReference))
 #if ("$!patient.id" != '')
   #set ($_service = $services.permissions)
   #set ($patientAccess = $_service.getPatientAccess($patient))

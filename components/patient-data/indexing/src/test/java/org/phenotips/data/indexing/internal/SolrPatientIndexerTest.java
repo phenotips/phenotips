@@ -366,7 +366,7 @@ public class SolrPatientIndexerTest
         Query testQuery = mock(Query.class);
         doReturn(testQuery).when(this.qm).createQuery("from doc.object(PhenoTips.PatientClass) as patient", Query.XWQL);
         doReturn(patientDocs).when(testQuery).execute();
-        doReturn(this.patient).when(this.patientRepository).getPatientById("P0000001");
+        doReturn(this.patient).when(this.patientRepository).get("P0000001");
 
         Set<Feature> patientFeatures = new HashSet<>();
         Feature testFeature = mock(Feature.class);

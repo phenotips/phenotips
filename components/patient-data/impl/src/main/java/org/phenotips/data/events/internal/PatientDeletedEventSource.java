@@ -84,7 +84,7 @@ public class PatientDeletedEventSource implements EventListener
         if (patientRecordObj == null || "PatientTemplate".equals(doc.getDocumentReference().getName())) {
             return;
         }
-        Patient patient = this.repo.loadPatientFromDocument(odoc);
+        Patient patient = this.repo.load(odoc);
         User user = this.userManager.getCurrentUser();
         this.observationManager.notify(new PatientDeletedEvent(patient, user), odoc);
     }

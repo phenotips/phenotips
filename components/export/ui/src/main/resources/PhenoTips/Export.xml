@@ -55,7 +55,7 @@ $response.addHeader("content-disposition", "attachment; filename=phenotips_${xwi
 $response.setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')##
 #set ($patients = [])
 #foreach ($patientId in $patientIds)
-  #set ($discard = $patients.add($services.patients.getPatientById($patientId)))
+  #set ($discard = $patients.add($services.patients.get($patientId)))
 #end
 $services.spreadsheetexport.export($patients, $enabledFields, $response.getOutputStream())
 

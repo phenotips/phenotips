@@ -201,7 +201,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
     @Override
     public Set<Consent> getMissingConsentsForPatient(String patientId)
     {
-        return this.getMissingConsentsForPatient(this.repository.getPatientById(patientId));
+        return this.getMissingConsentsForPatient(this.repository.get(patientId));
     }
 
     @Override
@@ -213,7 +213,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
     @Override
     public Set<Consent> getAllConsentsForPatient(String patientId)
     {
-        return this.getAllConsentsForPatient(this.repository.getPatientById(patientId));
+        return this.getAllConsentsForPatient(this.repository.get(patientId));
     }
 
     @Override
@@ -288,7 +288,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
     @Override
     public boolean hasConsent(String patientId, String consentId)
     {
-        return this.hasConsent(this.repository.getPatientById(patientId), consentId);
+        return this.hasConsent(this.repository.get(patientId), consentId);
     }
 
     @Override

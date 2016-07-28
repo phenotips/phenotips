@@ -159,7 +159,7 @@ public class DefaultPatientConsentResourceImpl extends XWikiResource implements 
 
     private Security securityCheck(String patientId, Right right)
     {
-        Patient patient = this.repository.getPatientById(patientId);
+        Patient patient = this.repository.get(patientId);
         if (patient == null) {
             this.logger.debug("No such patient record: [{}]", patientId);
             Response response = Response.status(PATIENT_NOT_FOUND).build();

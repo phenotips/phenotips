@@ -152,7 +152,7 @@ public class DefaultPatientByExternalIdResourceImplTest
         when(this.patient.getDocument()).thenReturn(this.patientReference);
         when(this.users.getCurrentUser()).thenReturn(this.user);
         when(this.user.getProfileDocument()).thenReturn(this.userReference);
-        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(this.patient);
+        when(this.repository.getByName(this.eid)).thenReturn(this.patient);
         when(this.access.hasAccess(Right.VIEW, this.userReference, this.patientReference)).thenReturn(true);
         when(this.access.hasAccess(Right.EDIT, this.userReference, this.patientReference)).thenReturn(true);
         when(this.access.hasAccess(Right.DELETE, this.userReference, this.patientReference)).thenReturn(true);
@@ -193,7 +193,7 @@ public class DefaultPatientByExternalIdResourceImplTest
     public void getPatientNotFoundChecksForMultipleRecords() throws ComponentLookupException, QueryException
     {
         Query query = mock(DefaultQuery.class);
-        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(null);
+        when(this.repository.getByName(this.eid)).thenReturn(null);
         when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
         when(query.execute()).thenReturn(new ArrayList<Object>());
 
@@ -206,7 +206,7 @@ public class DefaultPatientByExternalIdResourceImplTest
     public void updatePatientNotFoundChecksForMultipleRecords() throws ComponentLookupException, QueryException
     {
         Query query = mock(DefaultQuery.class);
-        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(null);
+        when(this.repository.getByName(this.eid)).thenReturn(null);
         when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
         when(query.execute()).thenReturn(new ArrayList<Object>());
 
@@ -256,7 +256,7 @@ public class DefaultPatientByExternalIdResourceImplTest
     public void deletePatientReturnsNotFoundStatus() throws QueryException
     {
         Query query = mock(DefaultQuery.class);
-        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(null);
+        when(this.repository.getByName(this.eid)).thenReturn(null);
         when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
         when(query.execute()).thenReturn(new ArrayList<Object>());
 
@@ -284,7 +284,7 @@ public class DefaultPatientByExternalIdResourceImplTest
         XWiki wiki = mock(XWiki.class);
         doReturn(wiki).when(this.context).getWiki();
         doThrow(XWikiException.class).when(wiki).deleteDocument(any(XWikiDocument.class), eq(this.context));
-        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(this.patient);
+        when(this.repository.getByName(this.eid)).thenReturn(this.patient);
         when(this.access.hasAccess(Right.DELETE, null, null)).thenReturn(true);
 
         WebApplicationException ex = null;
@@ -325,7 +325,7 @@ public class DefaultPatientByExternalIdResourceImplTest
         results.add(this.eid);
         doReturn(results).when(q).execute();
 
-        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(null);
+        when(this.repository.getByName(this.eid)).thenReturn(null);
 
         Response responseGet = this.component.getPatient(this.eid);
         Response responseUpdate = this.component.updatePatient(this.eid, this.eid);
@@ -345,7 +345,7 @@ public class DefaultPatientByExternalIdResourceImplTest
         doThrow(QueryException.class).when(this.qm)
             .createQuery("where doc.object(PhenoTips.PatientClass).external_id = :eid", Query.XWQL);
 
-        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(null);
+        when(this.repository.getByName(this.eid)).thenReturn(null);
 
         Response responseGet = this.component.getPatient(this.eid);
         Response responseUpdate = this.component.updatePatient(this.eid, this.eid);

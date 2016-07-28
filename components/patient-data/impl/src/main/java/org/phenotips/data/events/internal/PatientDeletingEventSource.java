@@ -94,7 +94,7 @@ public class PatientDeletingEventSource implements EventListener
         if (patientRecordObj == null) {
             return;
         }
-        Patient patient = this.repo.loadPatientFromDocument(odoc);
+        Patient patient = this.repo.load(odoc);
         User user = this.userManager.getCurrentUser();
         CancelableEvent patientEvent = new PatientDeletingEvent(patient, user);
         this.observationManager.notify(patientEvent, odoc);

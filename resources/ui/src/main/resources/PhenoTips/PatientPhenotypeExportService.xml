@@ -50,7 +50,7 @@ $!response.setContentType('application/json')##
 #set ($rows = [])
 #set ($result = {'rows': $rows, 'returnedrows': 0})
 #if ("$!request.id" != '')
-  #set ($patient = $services.patients.getPatientById($request.id))
+  #set ($patient = $services.patients.get($request.id))
   #set ($result.source = $patient.id)
 #elseif ("$!request.eid" != '')
   #set ($patient = $services.patients.getPatientByExternalId($request.eid))

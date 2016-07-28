@@ -85,7 +85,7 @@ public class PatientCreatingEventSourceTest
 
         PatientRepository repo = this.mocker.getInstance(PatientRepository.class);
         Patient p = mock(Patient.class);
-        when(repo.loadPatientFromDocument(doc)).thenReturn(p);
+        when(repo.load(doc)).thenReturn(p);
 
         UserManager um = this.mocker.getInstance(UserManager.class);
         User u = mock(User.class);

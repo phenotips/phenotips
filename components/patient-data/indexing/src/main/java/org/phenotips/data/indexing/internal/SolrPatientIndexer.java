@@ -175,7 +175,7 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
                 this.qm.createQuery("from doc.object(PhenoTips.PatientClass) as patient", Query.XWQL).execute();
             this.server.deleteByQuery("*:*");
             for (String patientDoc : patientDocs) {
-                this.index(this.patientRepository.getPatientById(patientDoc));
+                this.index(this.patientRepository.get(patientDoc));
             }
             this.server.commit();
         } catch (SolrServerException ex) {

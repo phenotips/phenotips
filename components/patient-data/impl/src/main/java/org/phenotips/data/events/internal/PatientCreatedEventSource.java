@@ -81,7 +81,7 @@ public class PatientCreatedEventSource implements EventListener
         if (patientRecordObj == null || "PatientTemplate".equals(doc.getDocumentReference().getName())) {
             return;
         }
-        Patient patient = this.repo.loadPatientFromDocument(doc);
+        Patient patient = this.repo.load(doc);
         User user = this.userManager.getCurrentUser();
         this.observationManager.notify(new PatientCreatedEvent(patient, user), source);
         this.observationManager.notify(new PatientChangedEvent(patient, user), source);

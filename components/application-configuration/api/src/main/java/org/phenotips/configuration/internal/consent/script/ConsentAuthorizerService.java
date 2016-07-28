@@ -58,7 +58,7 @@ public class ConsentAuthorizerService implements ScriptService
      */
     public List<RecordElement> filterEnabled(List<RecordElement> elements, String patientId)
     {
-        Patient patient = this.repository.getPatientById(patientId);
+        Patient patient = this.repository.get(patientId);
         return this.authorizer.filterForm(elements, patient);
     }
 

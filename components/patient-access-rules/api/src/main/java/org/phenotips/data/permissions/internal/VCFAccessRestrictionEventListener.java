@@ -96,7 +96,7 @@ public class VCFAccessRestrictionEventListener extends AbstractEventListener
 
         if (StringUtils.endsWithIgnoreCase(filename, ".vcf")) {
             XWikiDocument doc = context.getDoc();
-            Patient patient = this.patients.getPatientById(doc.getDocumentReference().toString());
+            Patient patient = this.patients.get(doc.getDocumentReference().toString());
             PatientAccess access = this.permissions.getPatientAccess(patient);
             if (!access.hasAccessLevel(this.edit)) {
                 ((CancelableEvent) event).cancel();

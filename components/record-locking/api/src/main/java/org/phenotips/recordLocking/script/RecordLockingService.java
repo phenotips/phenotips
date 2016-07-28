@@ -78,7 +78,7 @@ public class RecordLockingService implements ScriptService
      */
     public int lockPatient(String patientID)
     {
-        Patient patient = this.pr.getPatientById(patientID);
+        Patient patient = this.pr.get(patientID);
         return patient == null ? HttpStatus.SC_BAD_REQUEST : this.lockPatient(patient);
     }
 
@@ -90,7 +90,7 @@ public class RecordLockingService implements ScriptService
      */
     public int unlockPatient(String patientID)
     {
-        Patient patient = this.pr.getPatientById(patientID);
+        Patient patient = this.pr.get(patientID);
         return patient == null ? HttpStatus.SC_BAD_REQUEST : this.unlockPatient(patient);
     }
 

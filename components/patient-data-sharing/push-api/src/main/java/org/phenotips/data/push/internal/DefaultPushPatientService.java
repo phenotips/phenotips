@@ -193,7 +193,7 @@ public class DefaultPushPatientService implements PushPatientService
 
     private Patient getPatientByID(String patientID, String accessLevelName)
     {
-        Patient patient = this.patientRepository.getPatientById(patientID);
+        Patient patient = this.patientRepository.get(patientID);
         if (patient == null) {
             return null;
         }

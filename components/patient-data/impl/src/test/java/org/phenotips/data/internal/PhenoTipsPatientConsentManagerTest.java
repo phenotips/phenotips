@@ -224,7 +224,7 @@ public class PhenoTipsPatientConsentManagerTest
         DocumentModelBridge patientDoc = mock(XWikiDocument.class);
         BaseObject idsHolder = mock(BaseObject.class);
 
-        doReturn(patient).when(repository).getPatientById(patientId);
+        doReturn(patient).when(repository).get(patientId);
         doReturn(patientRef).when(patient).getDocument();
         doReturn(patientDoc).when(dab).getDocument(patientRef);
         doReturn(idsHolder).when((XWikiDocument) patientDoc).getXObject(any(EntityReference.class));
@@ -292,7 +292,7 @@ public class PhenoTipsPatientConsentManagerTest
         DocumentModelBridge patientDoc = mock(XWikiDocument.class);
         BaseObject idsHolder = mock(BaseObject.class);
 
-        doReturn(patient).when(repository).getPatientById(patientId);
+        doReturn(patient).when(repository).get(patientId);
         doReturn(patientRef).when(patient).getDocument();
         doReturn(patientDoc).when(dab).getDocument(patientRef);
         doReturn(idsHolder).when((XWikiDocument) patientDoc).getXObject(any(EntityReference.class));

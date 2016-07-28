@@ -61,7 +61,7 @@ $response.setContentType('application/json')##
 #set($isFirst = true)
 #foreach ($patientId in $patientIds)
   #set ($patientDoc = $xwiki.getDocument($patientId))
-  #set ($patient = $services.patients.getPatientById($patientId))
+  #set ($patient = $services.patients.get($patientId))
   #if ($patientDoc &amp;&amp; $patient)
     #set ($JSON = $patient.toJSON($displayedFields))
     #if ($isFirst)

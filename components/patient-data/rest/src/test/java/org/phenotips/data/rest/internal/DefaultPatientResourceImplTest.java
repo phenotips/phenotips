@@ -133,7 +133,7 @@ public class DefaultPatientResourceImplTest
         doReturn(this.userProfileDocument).when(this.currentUser).getProfileDocument();
 
         this.patientDocument = new DocumentReference("wiki", "data", "P0000001");
-        doReturn(this.patient).when(this.repository).getPatientById(this.id);
+        doReturn(this.patient).when(this.repository).get(this.id);
         doReturn(this.patientDocument).when(this.patient).getDocument();
 
         doReturn(new URI(this.uriString)).when(this.uriInfo).getRequestUri();
@@ -148,7 +148,7 @@ public class DefaultPatientResourceImplTest
     @Test
     public void getPatientIgnoresMissingPatient()
     {
-        doReturn(null).when(this.repository).getPatientById(anyString());
+        doReturn(null).when(this.repository).get(anyString());
 
         Response response = this.patientResource.getPatient(this.id);
 
@@ -198,7 +198,7 @@ public class DefaultPatientResourceImplTest
     @Test
     public void updatePatientIgnoresMissingPatient()
     {
-        doReturn(null).when(this.repository).getPatientById(anyString());
+        doReturn(null).when(this.repository).get(anyString());
 
         WebApplicationException ex = null;
         try {
@@ -295,7 +295,7 @@ public class DefaultPatientResourceImplTest
     @Test
     public void deletePatientIgnoresMissingPatient()
     {
-        doReturn(null).when(this.repository).getPatientById(anyString());
+        doReturn(null).when(this.repository).get(anyString());
 
         Response response = this.patientResource.deletePatient(this.id);
 

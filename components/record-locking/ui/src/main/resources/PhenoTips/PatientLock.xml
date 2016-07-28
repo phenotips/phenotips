@@ -377,7 +377,7 @@
   $xwiki.jsx.use('PhenoTips.PatientLock')##
   $xwiki.ssx.use('PhenoTips.PatientLock')##
   #set ($lockDocName = 'PhenoTips.PatientLock')
-  #set ($patient = $services.patients.getPatientById($doc.documentReference))
+  #set ($patient = $services.patients.get($doc.documentReference))
   #set ($patientAccess = $services.permissions.getPatientAccess($patient))
   #set ($patientLockingService = $xwiki.getDocument($lockDocName))
   #set ($lockingServiceRequestParams = "sheet=${lockDocName}&amp;token=$!{escapetool.xml($services.csrf.token)}")

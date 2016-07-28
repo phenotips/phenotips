@@ -193,7 +193,7 @@
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-#if (!$services.permissions.getPatientAccess($services.patients.getPatientById($doc.documentReference)).hasAccessLevel('edit'))
+#if (!$services.permissions.getPatientAccess($services.patients.get($doc.documentReference)).hasAccessLevel('edit'))
   #break
 #end
 

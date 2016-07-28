@@ -88,7 +88,7 @@ public class VCFAccessRestrictionEventListenerTest
     {
         MockitoAnnotations.initMocks(this);
         this.patients = this.mocker.getInstance(PatientRepository.class);
-        when(this.patients.getPatientById("xwiki:data.P0000001")).thenReturn(this.patient);
+        when(this.patients.get("xwiki:data.P0000001")).thenReturn(this.patient);
         this.permissions = this.mocker.getInstance(PermissionsManager.class);
         when(this.permissions.getPatientAccess(this.patient)).thenReturn(this.access);
         this.edit = this.mocker.getInstance(AccessLevel.class, "edit");
