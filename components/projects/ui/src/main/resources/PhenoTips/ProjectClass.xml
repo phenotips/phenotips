@@ -486,8 +486,10 @@ $xwiki.ssx.use('PhenoTips.ProjectClass', {'colorTheme' : "$xwiki.getSpacePrefere
       <cache>long</cache>
     </property>
     <property>
-      <code>#project-creation-form input {
-    width: auto;
+      <code>#template("colorThemeInit.vm")
+
+#project-creation-form input {
+  width: auto;
 }
 
 #projects-table td {
@@ -523,6 +525,10 @@ $xwiki.ssx.use('PhenoTips.ProjectClass', {'colorTheme' : "$xwiki.getSpacePrefere
   position: absolute;
   top: 0;
   left: -16px;
+}
+
+#projects-table .tools{
+  min-width: 2.5em;
 }</code>
     </property>
     <property>
@@ -532,7 +538,7 @@ $xwiki.ssx.use('PhenoTips.ProjectClass', {'colorTheme' : "$xwiki.getSpacePrefere
       <name/>
     </property>
     <property>
-      <parse/>
+      <parse>1</parse>
     </property>
     <property>
       <use>currentPage</use>
@@ -675,8 +681,10 @@ $xwiki.ssx.use('PhenoTips.ProjectClass', {'colorTheme' : "$xwiki.getSpacePrefere
       #set ($patientsNumber = $project.getNumberOfPatients())
       #set ($description = $project.getDescription())
       #set ($fullName = $project.getFullName())
+      #set ($logo = $project.getImage())
       ##
-      |(% class="name" %) [[$project.getName()&gt;&gt;$fullName]] ##
+      |(% class="logo" %)#if ("$!{logo}" != '')[[image:$logo|| width="80px"]]#end##
+      |(% class="name" %) [[$project.getName()&gt;&gt;$fullName]]##
       \\(% class="members"%)$colUsers $services.localization.render('phenotips.templateClass.collaborator')#if($colUsers != 1)s#end(%%)##
       \\(% class="members"%)$patientsNumber $services.localization.render('phenotips.templateClass.patient')#if($patientsNumber != 1)s#end(%%)##
       #if ($xcontext.macro.params.fullinfo == 'true')|##

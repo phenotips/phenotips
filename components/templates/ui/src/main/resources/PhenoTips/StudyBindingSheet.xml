@@ -46,6 +46,5 @@
 : {{include reference="PhenoTips.StudyBindingClass" /}}
 #end
 #end
-{{/velocity}}
-</content>
+{{/velocity}}</content>
 </xwikidoc>
