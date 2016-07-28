@@ -25,7 +25,9 @@ import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.projects.data.Project;
 import org.phenotips.templates.data.Template;
 
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.model.reference.AttachmentReference;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
@@ -40,8 +42,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.slf4j.Logger;
+import javax.inject.Provider;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -57,6 +64,9 @@ public class DefaultProject implements Project
     private XWikiDocument projectObject;
 
     private DocumentReference projectReference;
+
+    /** Logging helper object. */
+    private Logger logger = LoggerFactory.getLogger(DefaultProject.class);
 
     /**
      * Basic constructor.
@@ -97,8 +107,31 @@ public class DefaultProject implements Project
     @Override
     public String getDescription()
     {
-        // TODO
-        return "";
+        return this.projectObject.getContent();
+    }
+
+    @Override
+    public String getImage()
+    {
+        String avatarURL = "";
+        try {
+            DocumentAccessBridge documentAccessBridge =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
+            List<AttachmentReference> attachmentRefs =
+                documentAccessBridge.getAttachmentReferences(this.getReference());
+            if (attachmentRefs.size() > 0) {
+                avatarURL = documentAccessBridge.getAttachmentURL(attachmentRefs.get(0), true);
+            } else {
+                Provider<XWikiContext> xcontextProvider =
+                    ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiContext.TYPE_PROVIDER);
+                XWikiContext context = xcontextProvider.get();
+                XWiki xwiki = context.getWiki();
+                avatarURL = xwiki.getSkinFile("icons/xwiki/noavatargroup.png", context);
+            }
+        } catch (Exception ex) {
+            this.logger.error("Failed to access project data for ({})", this.getName(), ex.getMessage());
+        }
+        return avatarURL;
     }
 
     @Override
