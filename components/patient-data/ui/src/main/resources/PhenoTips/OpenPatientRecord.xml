@@ -103,7 +103,7 @@
   #elseif ($matchingDocuments.size() &gt; 1)
     {{error}}Non-unique identifier.{{/error}}
   #elseif ("$!{request.create}" == 'true')
-    #set ($patient = $services.patients.createNewPatient())
+    #set ($patient = $services.patients.create())
     #if ($patient)
       #set ($patientDoc = $xwiki.getDocument($patient.document))
       #fixMode()

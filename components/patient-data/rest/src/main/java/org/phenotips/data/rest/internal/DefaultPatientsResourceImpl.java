@@ -110,7 +110,7 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
             throw new WebApplicationException(Status.BAD_REQUEST);
         }
         try {
-            Patient patient = this.repository.createNewPatient();
+            Patient patient = this.repository.create();
             patient.updateFromJSON(jsonInput);
 
             URI targetURI =

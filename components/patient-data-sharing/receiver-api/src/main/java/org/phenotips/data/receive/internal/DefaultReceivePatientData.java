@@ -522,7 +522,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
                 this.logger.warn("Loaded existing patient [{}] successfully", affectedPatient.getDocument().getName());
             } else {
 
-                affectedPatient = this.patientRepository.createNewPatient(user.getProfileDocument());
+                affectedPatient = this.patientRepository.create(user.getProfileDocument());
 
                 XWikiDocument doc = getPatientDocument(affectedPatient);
                 doc.setAuthorReference(user.getProfileDocument());

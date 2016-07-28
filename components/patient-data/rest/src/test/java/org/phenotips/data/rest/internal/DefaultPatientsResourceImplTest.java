@@ -159,7 +159,7 @@ public class DefaultPatientsResourceImplTest
     {
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
             any(EntityReference.class));
-        doReturn(this.patient).when(this.repository).createNewPatient();
+        doReturn(this.patient).when(this.repository).create();
         WebApplicationException exception = null;
         try {
             this.patientsResource.addPatient(null);
@@ -178,7 +178,7 @@ public class DefaultPatientsResourceImplTest
         Exception exception = new NullPointerException();
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
             any(EntityReference.class));
-        doThrow(exception).when(this.repository).createNewPatient();
+        doThrow(exception).when(this.repository).create();
         Response response = this.patientsResource.addPatient(json.toString());
         Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
         verify(this.logger).error("Could not process patient creation request: {}", exception.getMessage(), exception);
@@ -189,7 +189,7 @@ public class DefaultPatientsResourceImplTest
     {
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
             any(EntityReference.class));
-        doReturn(this.patient).when(this.repository).createNewPatient();
+        doReturn(this.patient).when(this.repository).create();
         JSONObject jsonPatient = new JSONObject();
         Response response = this.patientsResource.addPatient(jsonPatient.toString());
         Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
