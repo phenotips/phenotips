@@ -166,7 +166,7 @@ public class PatientSpecificityScriptService implements ScriptService
 
         private FakePatient(final String[] symptoms, final String[] negativeSymptoms)
         {
-            Set<Feature> result = new HashSet<Feature>();
+            Set<Feature> result = new HashSet<>();
             if (symptoms != null && symptoms.length > 0) {
                 for (String symptom : symptoms) {
                     if (TERM_FORMAT.matcher(symptom).matches()) {
