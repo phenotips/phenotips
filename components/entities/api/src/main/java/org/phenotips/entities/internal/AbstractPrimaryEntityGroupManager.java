@@ -66,14 +66,15 @@ public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntityG
     public Collection<G> getGroupsForEntity(PrimaryEntity entity)
     {
         try {
+            // FIXME GROUP_MEMBERSHIP_CLASS should be replaced with a static method call
             Query q = this.qm.createQuery(
                 "select gdoc.fullName from Document edoc, edoc.object("
                     + this.localSerializer.serialize(PrimaryEntityGroup.GROUP_MEMBERSHIP_CLASS)
                     + ") as binding, Document gdoc, gdoc.object("
                     + this.localSerializer.serialize(getEntityXClassReference())
-                    + ") where gdoc.space = :gspace and binding.reference = concat('"
+                    + ") as grp where gdoc.space = :gspace and binding.reference = concat('"
                     + this.xcontextProvider.get().getWikiId()
-                    + ":', gdoc.fullName) and gdoc.fullName = :name order by gdoc.fullName asc",
+                    + ":', gdoc.fullName) and edoc.fullName = :name order by gdoc.fullName asc",
                 Query.XWQL);
             q.bindValue("gspace", this.getDataSpace().getName());
             q.bindValue("name", this.localSerializer.serialize(entity.getDocument()));
