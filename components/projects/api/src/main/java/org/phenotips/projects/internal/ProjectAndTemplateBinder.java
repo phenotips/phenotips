@@ -55,7 +55,7 @@ public class ProjectAndTemplateBinder
 {
     private static final String PROJECT_BINDING_FIELD = "projectReference";
 
-    private static final String TEMPLATE_BINDING_FIELD = "templateReference";
+    private static final String TEMPLATE_BINDING_FIELD = "studyReference";
 
     private static final String PROJECTS_SEPARATOR = ";";
 

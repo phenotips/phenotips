@@ -675,6 +675,7 @@
   padding: 0.5em 1em;
   position: relative;
 }
+
 #templates-directory td.desc &gt; div:before {
   content: "";
   border-top: 0 none;
@@ -688,12 +689,19 @@
 
 #study-creation-form input {
   width: auto;
+  margin-left: 10px;
 }
+
 #studies-tools {
   text-align: right;
 }
+
 #studies-tools .read-more {
   font-size: .9;
+}
+
+div.infomessage {
+  margin-top: 1.5em;
 }</code>
     </property>
     <property>
@@ -825,6 +833,8 @@
 #set ($templateClassName = 'PhenoTips.StudyClass')
 #set ($templateTemplateName = 'PhenoTips.StudyTemplate')
 #set ($templatesHome = 'Studies.WebHome')
+$xwiki.ssx.use($templateClassName, {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})
+$xwiki.jsx.use($templateClassName)
 #set ($orders = {
   'name' : 'asc',
   'members' : 'desc',
@@ -841,7 +851,7 @@
 #set ($templateData = [])
 
 #set ($filterby = "$!{xcontext.macro.params.filterby}")
-#set ($filterval = "$!{xcontext.macro.params.filterval.replaceAll('&apos;', '''')}")
+#set ($filterval = "$!{xcontext.macro.params.filterval}")
 #foreach ($templateDoc in $templateDocs)
   #set ($templateObj = $templateDoc.getObject($templateClassName))
   #set ($filterbyprop = $templateObj.getProperty($filterby))
@@ -852,6 +862,7 @@
       'obj' : $templateObj,
       'doc.fullName' : $templateDoc.fullName,
       'name' : $templateDoc.title,
+      'description' : $templateDoc.content,
       'groups' : $services.query.xwql('from doc.object(PhenoTips.PhenoTipsGroupClass) as g where :template member of g.studies').bindValue('template', $services.model.serialize($templateDoc.documentReference, 'local')).count(),
       'cases' : $services.query.xwql('from doc.object(PhenoTips.PatientClass) as p, doc.object(PhenoTips.StudyBindingClass) as o where o.studyReference = :template').bindValue('template', $services.model.serialize($templateDoc.documentReference, 'default')).count()
     }))
@@ -863,33 +874,38 @@
 #if (!($max &amp;&amp; $max &gt; 0 &amp;&amp; $max &lt; $templateSortedData.size()))
   #set ($max = $templateSortedData.size())
 #end
-
-$xwiki.ssx.use($templateClassName, {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})
-$xwiki.jsx.use($templateClassName)
 {{/velocity}}
 
 {{velocity}}
 (% id="templates-directory" %)
 #if ($templateSortedData.size() == 0)
-#if ($isFilterActive)
+  #if ($isFilterActive)
 
-{{info}}$services.localization.render('phenotips.templateClass.filter.noMatches'){{/info}}
+    {{info}}$services.localization.render('phenotips.templateClass.filter.noMatches'){{/info}}
 
+  #else
+
+    {{info}}$services.localization.render('phenotips.templateClass.noneDefined')#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[$services.localization.render('phenotips.templateClass.manage')&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=studies')}]]#end{{/info}}
+
+  #end
 #else
-
-{{info}}$services.localization.render('phenotips.templateClass.noneDefined')#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[$services.localization.render('phenotips.templateClass.manage')&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=studies')}]]#end{{/info}}
-
-#end
-#else
-#foreach ($templateDatum in $templateSortedData)#if ($foreach.index &lt; $max)
-## We double escape because the link label is wiki-interpreted twice
-|(% class="name" %) [[[[${services.rendering.escape($services.rendering.escape($templateDatum.get('name'), $doc.syntax), $doc.syntax)}&gt;&gt;${services.rendering.escape($templateDatum.get('doc.fullName'), $doc.syntax)}]] \\(% class="members"%)$templateDatum.get('groups') group#if($templateDatum.get('groups') != 1)s#end(%%) \\(% class="patients"%)$templateDatum.get('cases') case#if($templateDatum.get('cases') != 1)s#end(%%)##
-#if ($xcontext.macro.params.fullinfo == 'true')|#if ("$!{templateDatum.get('obj').getProperty('description').value.trim()}" != '')(% class="desc" %) ((($templateDatum.get('doc').display('description'))))#end#end
-#if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|(% class="tools" %) (((##
-  [[{{icon name="pencil" title="$services.localization.render('phenotips.templateClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($templateDatum.get('doc.fullName'), 'edit')||class="tool edit"]]##
-  [[{{icon name="times" title="$services.localization.render('phenotips.templateClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($templateDatum.get('doc.fullName'), 'delete')||class="tool delete"]]##
-)))#end\\
-#end#end
+  #foreach ($templateDatum in $templateSortedData)
+  ## We double escape because the link label is wiki-interpreted twice
+    #if ($foreach.index &lt; $max)##
+      |(% class="name" %) [[${services.rendering.escape($services.rendering.escape($templateDatum.get('name'), $doc.syntax), $doc.syntax)}&gt;&gt;${services.rendering.escape($templateDatum.get('doc.fullName'), $doc.syntax)}]]##
+      \\(% class="members"%)$services.localization.render('phenotips.templateClass.group', [$templateDatum.get('groups')])(%%)##
+      \\(% class="patients"%)$services.localization.render('phenotips.templateClass.case', [$templateDatum.get('cases')])(%%)##
+      #if ($xcontext.macro.params.fullinfo == 'true')|##
+        #if ($templateDatum.description.trim() != '')(% class="desc" %) ((($templateDatum.description.trim())))#end
+      #end
+      #if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|##
+        (% class="tools" %) (((##
+        [[{{icon name="pencil" title="$services.localization.render('phenotips.templateClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($templateDatum.get('doc.fullName'), 'edit')||class="tool edit"]]##
+        [[{{icon name="times" title="$services.localization.render('phenotips.templateClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($templateDatum.get('doc.fullName'), 'delete')||class="tool delete"]]##
+        )))
+      #end\\
+    #end
+  #end
 #end
 {{/velocity}}</code>
     </property>

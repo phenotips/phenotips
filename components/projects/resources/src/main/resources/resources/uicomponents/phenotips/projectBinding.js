@@ -1,7 +1,3 @@
-document.observe("projects:projectselection:popupcreated", function(event) {
-   new PhenoTips.widgets.SelectProject();
-});
-
 var PhenoTips = (function (PhenoTips) {
    var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
    widgets.SelectProject = Class.create({
@@ -22,8 +18,17 @@ var PhenoTips = (function (PhenoTips) {
    _registerListeners : function(sectionId, documentName)
    {
       _this._checkboxes.map(function(item) {
-         item.observe('click', function() {
-             _this._projectSelected();
+         item.observe('click', function(event) {
+             if (event.element().id == "noproject") {
+                 _this._checkboxes.map(function(item) {
+                     if (item.id != "noproject") {
+                         item.checked = false;
+                     }
+                 });
+             } else {
+                 $('noproject').checked = false;
+                 _this._projectSelected();
+             }
          });
       });
    },
@@ -46,7 +51,14 @@ var PhenoTips = (function (PhenoTips) {
             templatesSelect.addClassName("loading");
          },
          onSuccess : function(response) {
-            templatesSelect.update(response.responseText);
+             var selectedTemplate = templatesSelect.value;
+             if (response.responseText) {
+                 templatesSelect.update(response.responseText);
+                 // if user has already selected a template, the selection remains if any of selected projects has that template 
+                 if (response.responseText.include(selectedTemplate)) {
+                     templatesSelect.value = selectedTemplate;
+                 }
+             }
          },
          onFailure : function(response) {
             var failureReason = response.responseText || response.statusText;
