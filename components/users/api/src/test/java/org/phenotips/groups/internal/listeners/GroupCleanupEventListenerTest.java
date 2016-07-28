@@ -30,6 +30,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.util.List;
 
+import javax.inject.Provider;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -74,7 +76,9 @@ public class GroupCleanupEventListenerTest
         Utils.setComponentManager(this.mocker);
 
         DocumentReference docReference = new DocumentReference("xwiki", "Groups", "Group1");
+        Provider<XWikiContext> contextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         XWikiContext context = mock(XWikiContext.class);
+        when(contextProvider.get()).thenReturn(context);
         XWiki xwiki = mock(XWiki.class);
         when(context.getWiki()).thenReturn(xwiki);
 
@@ -101,7 +105,9 @@ public class GroupCleanupEventListenerTest
         Utils.setComponentManager(this.mocker);
 
         DocumentReference docReference = new DocumentReference("xwiki", "Groups", "Group1");
+        Provider<XWikiContext> contextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         XWikiContext context = mock(XWikiContext.class);
+        when(contextProvider.get()).thenReturn(context);
         XWikiDocument doc = mock(XWikiDocument.class);
         when(doc.getOriginalDocument()).thenReturn(null);
 
@@ -118,7 +124,9 @@ public class GroupCleanupEventListenerTest
         Utils.setComponentManager(this.mocker);
 
         DocumentReference docReference = new DocumentReference("xwiki", "Groups", "Group1");
+        Provider<XWikiContext> contextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         XWikiContext context = mock(XWikiContext.class);
+        when(contextProvider.get()).thenReturn(context);
         XWikiDocument doc = mock(XWikiDocument.class);
         when(doc.getXObject(Group.CLASS_REFERENCE)).thenReturn(null);
         XWikiDocument newDoc = mock(XWikiDocument.class);
@@ -137,7 +145,9 @@ public class GroupCleanupEventListenerTest
         Utils.setComponentManager(this.mocker);
 
         DocumentReference docReference = new DocumentReference("xwiki", "Groups", "Group1");
+        Provider<XWikiContext> contextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         XWikiContext context = mock(XWikiContext.class);
+        when(contextProvider.get()).thenReturn(context);
         XWiki xwiki = mock(XWiki.class);
         when(context.getWiki()).thenReturn(xwiki);
 

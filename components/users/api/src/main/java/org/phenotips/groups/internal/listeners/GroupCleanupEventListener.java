@@ -30,6 +30,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -53,6 +54,9 @@ public class GroupCleanupEventListener implements EventListener
     @Inject
     private Logger logger;
 
+    @Inject
+    private Provider<XWikiContext> xcontextProvider;
+
     @Override
     public String getName()
     {
@@ -68,12 +72,11 @@ public class GroupCleanupEventListener implements EventListener
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        // FIXME: Use components to access the context and the current document
         XWikiDocument doc = ((XWikiDocument) source).getOriginalDocument();
         if (doc == null || doc.getXObject(Group.CLASS_REFERENCE) == null) {
             return;
         }
-        XWikiContext context = (XWikiContext) data;
+        XWikiContext context = this.xcontextProvider.get();
         DocumentReference docReference = doc.getDocumentReference();
         DocumentReference adminsReference =
             new DocumentReference(docReference.getName() + " Administrators", docReference.getLastSpaceReference());

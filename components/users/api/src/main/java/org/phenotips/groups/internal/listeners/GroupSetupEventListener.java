@@ -33,6 +33,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -70,6 +71,9 @@ public class GroupSetupEventListener implements EventListener
     @Inject
     private Logger logger;
 
+    @Inject
+    private Provider<XWikiContext> xcontextProvider;
+
     /** Provides access to the data. */
     @Inject
     private DocumentAccessBridge dab;
@@ -89,7 +93,6 @@ public class GroupSetupEventListener implements EventListener
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        // FIXME: Use components to access the context and the current document
         XWikiDocument doc = (XWikiDocument) source;
         if (doc.getXObject(Group.CLASS_REFERENCE) == null) {
             return;
@@ -98,7 +101,7 @@ public class GroupSetupEventListener implements EventListener
         if ("PhenoTipsGroupTemplate".equals(docReference.getName())) {
             return;
         }
-        XWikiContext context = (XWikiContext) data;
+        XWikiContext context = this.xcontextProvider.get();
         DocumentReference adminsReference =
             new DocumentReference(docReference.getName() + " Administrators", docReference.getLastSpaceReference());
         XWiki xwiki = context.getWiki();
