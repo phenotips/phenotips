@@ -52,13 +52,27 @@ public class PatientDataScriptService implements ScriptService
      * @return the patient data, or {@code null} if the requested patient does not exist, is not a valid patient, or is
      *         not accessible by the current user
      */
-    public Patient getPatientById(String id)
+    public Patient get(String id)
     {
         try {
-            return this.internalService.getPatientById(id);
+            return this.internalService.get(id);
         } catch (SecurityException ex) {
             return null;
         }
+    }
+
+    /**
+     * Retrieve a {@link Patient patient} by it's PhenoTips identifier.
+     *
+     * @param id the patient identifier, i.e. the serialized document reference
+     * @return the patient data, or {@code null} if the requested patient does not exist, is not a valid patient, or is
+     *         not accessible by the current user
+     * @deprecated use {@link #get(String)} instead
+     */
+    @Deprecated
+    public Patient getPatientById(String id)
+    {
+        return get(id);
     }
 
     /**
@@ -72,7 +86,7 @@ public class PatientDataScriptService implements ScriptService
     public Patient getPatientByExternalId(String externalId)
     {
         try {
-            return this.internalService.getPatientByExternalId(externalId);
+            return this.internalService.getByName(externalId);
         } catch (SecurityException ex) {
             return null;
         }
@@ -83,11 +97,24 @@ public class PatientDataScriptService implements ScriptService
      *
      * @return the created patient record, or {@code null} if the user does not have the right to create a new patient
      *         record or the creation fails
+     * @deprecated use {@link #create()} instead
      */
+    @Deprecated
     public Patient createNewPatient()
     {
+        return create();
+    }
+
+    /**
+     * Create and return a new empty patient record.
+     *
+     * @return the created patient record, or {@code null} if the user does not have the right to create a new patient
+     *         record or the creation fails
+     */
+    public Patient create()
+    {
         try {
-            return this.internalService.createNewPatient();
+            return this.internalService.create();
         } catch (SecurityException ex) {
             return null;
         }

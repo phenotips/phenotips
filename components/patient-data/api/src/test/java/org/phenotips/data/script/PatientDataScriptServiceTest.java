@@ -57,44 +57,76 @@ public class PatientDataScriptServiceTest
     }
 
     @Test
+    public void getForwardsCalls() throws ComponentLookupException
+    {
+        when(this.repo.get("P0123456")).thenReturn(this.patient);
+        Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().get("P0123456"));
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
     public void getPatientByIdForwardsCalls() throws ComponentLookupException
     {
-        when(this.repo.getPatientById("P0123456")).thenReturn(this.patient);
+        when(this.repo.get("P0123456")).thenReturn(this.patient);
         Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().getPatientById("P0123456"));
     }
 
     @Test
+    public void getCatchesUnauthorizedException() throws ComponentLookupException
+    {
+        when(this.repo.get("P0123456")).thenThrow(new SecurityException("Unauthorized"));
+        Assert.assertNull(this.mocker.getComponentUnderTest().get("P0123456"));
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
     public void getPatientByIdCatchesUnauthorizedException() throws ComponentLookupException
     {
-        when(this.repo.getPatientById("P0123456")).thenThrow(new SecurityException("Unauthorized"));
+        when(this.repo.get("P0123456")).thenThrow(new SecurityException("Unauthorized"));
         Assert.assertNull(this.mocker.getComponentUnderTest().getPatientById("P0123456"));
     }
 
     @Test
     public void getPatientByExternalIdForwardsCalls() throws ComponentLookupException
     {
-        when(this.repo.getPatientByExternalId("Neuro123")).thenReturn(this.patient);
+        when(this.repo.getByName("Neuro123")).thenReturn(this.patient);
         Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().getPatientByExternalId("Neuro123"));
     }
 
     @Test
     public void getPatientByExternalIdCatchesUnauthorizedException() throws ComponentLookupException
     {
-        when(this.repo.getPatientByExternalId("Neuro123")).thenThrow(new SecurityException("Unauthorized"));
+        when(this.repo.getByName("Neuro123")).thenThrow(new SecurityException("Unauthorized"));
         Assert.assertNull(this.mocker.getComponentUnderTest().getPatientByExternalId("Neuro123"));
     }
 
     @Test
+    public void createForwardsCalls() throws ComponentLookupException
+    {
+        when(this.repo.create()).thenReturn(this.patient);
+        Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().create());
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
     public void createNewPatientForwardsCalls() throws ComponentLookupException
     {
-        when(this.repo.createNewPatient()).thenReturn(this.patient);
+        when(this.repo.create()).thenReturn(this.patient);
         Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().createNewPatient());
     }
 
     @Test
+    public void createCatchesUnauthorizedException() throws ComponentLookupException
+    {
+        when(this.repo.create()).thenThrow(new SecurityException("Unauthorized"));
+        Assert.assertNull(this.mocker.getComponentUnderTest().create());
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
     public void createNewCatchesUnauthorizedException() throws ComponentLookupException
     {
-        when(this.repo.createNewPatient()).thenThrow(new SecurityException("Unauthorized"));
+        when(this.repo.create()).thenThrow(new SecurityException("Unauthorized"));
         Assert.assertNull(this.mocker.getComponentUnderTest().createNewPatient());
     }
 }

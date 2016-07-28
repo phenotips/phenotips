@@ -18,6 +18,7 @@
 package org.phenotips.data;
 
 import org.phenotips.Constants;
+import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
@@ -34,9 +35,10 @@ import org.json.JSONObject;
  *
  * @version $Id$
  * @since 1.0M8
+ * @since 1.3M2 this class was retrofitted to use the Entities API
  */
 @Unstable
-public interface Patient
+public interface Patient extends PrimaryEntity
 {
     /** The XClass used for storing patient data. */
     EntityReference CLASS_REFERENCE = new EntityReference("PatientClass", EntityType.DOCUMENT,
@@ -46,25 +48,11 @@ public interface Patient
     EntityReference DEFAULT_DATA_SPACE = new EntityReference("data", EntityType.SPACE);
 
     /**
-     * Returns the internal PhenoTips identifier of the patient record.
-     *
-     * @return a short identifier
-     */
-    String getId();
-
-    /**
      * Returns the external identifier of the patient record.
      *
      * @return string ID
      */
     String getExternalId();
-
-    /**
-     * Returns a reference to the document where the patient record is stored.
-     *
-     * @return a valid document reference
-     */
-    DocumentReference getDocument();
 
     /**
      * Returns a reference to the profile of the user that created the patient record.
@@ -119,6 +107,7 @@ public interface Patient
      *
      * @return the patient data, using the org.json classes
      */
+    @Override
     JSONObject toJSON();
 
     /**
@@ -138,5 +127,6 @@ public interface Patient
      *
      * @param json JSON object containing patient data
      */
+    @Override
     void updateFromJSON(JSONObject json);
 }

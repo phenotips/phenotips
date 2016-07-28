@@ -26,6 +26,7 @@ import org.phenotips.data.PatientSpecificityService;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.stability.Unstable;
 
@@ -184,6 +185,12 @@ public class PatientSpecificityScriptService implements ScriptService
         }
 
         @Override
+        public EntityReference getType()
+        {
+            return Patient.CLASS_REFERENCE;
+        }
+
+        @Override
         public String getId()
         {
             return null;
@@ -191,6 +198,18 @@ public class PatientSpecificityScriptService implements ScriptService
 
         @Override
         public String getExternalId()
+        {
+            return null;
+        }
+
+        @Override
+        public String getName()
+        {
+            return null;
+        }
+
+        @Override
+        public String getDescription()
         {
             return null;
         }

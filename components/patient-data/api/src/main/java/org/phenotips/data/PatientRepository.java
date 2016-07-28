@@ -17,6 +17,8 @@
  */
 package org.phenotips.data;
 
+import org.phenotips.entities.PrimaryEntityManager;
+
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.DocumentReference;
@@ -27,17 +29,20 @@ import org.xwiki.stability.Unstable;
  *
  * @version $Id$
  * @since 1.0M10 (was named PatientData since 1.0M8)
+ * @since 1.3M2 this class was retrofitted to use the Entities API
  */
 @Unstable
 @Role
-public interface PatientRepository
+public interface PatientRepository extends PrimaryEntityManager<Patient>
 {
     /**
      * Retrieve a {@link Patient patient} by it's PhenoTips identifier.
      *
      * @param id the patient identifier, i.e. the serialized document reference
      * @return the patient data, or {@code null} if the requested patient does not exist or is not a valid patient
+     * @deprecated use {@link #get(String)} instead
      */
+    @Deprecated
     Patient getPatientById(String id);
 
     /**
@@ -46,7 +51,9 @@ public interface PatientRepository
      *
      * @param externalId the patient's clinical identifier, as set by the patient's reporter
      * @return the patient data, or {@code null} if the requested patient does not exist or is not a valid patient
+     * @deprecated use {@link #getByName(String)} instead
      */
+    @Deprecated
     Patient getPatientByExternalId(String externalId);
 
     /**
@@ -56,14 +63,18 @@ public interface PatientRepository
      * @param document the document where the patient data is stored
      * @return the patient data
      * @throws IllegalArgumentException if the provided document doesn't contain a patient record
+     * @deprecated use {@link #load(DocumentModelBridge)} instead
      */
+    @Deprecated
     Patient loadPatientFromDocument(DocumentModelBridge document);
 
     /**
      * Create and return a new empty patient record (owned by the currently logged in user).
      *
      * @return the created patient record
+     * @deprecated use {@link #create()} instead
      */
+    @Deprecated
     Patient createNewPatient();
 
     /**
@@ -72,6 +83,8 @@ public interface PatientRepository
      * @param creator a reference to the document representing an entity (a user or a group) which will be set as the
      *            owner for the created {@link Patient patient}.
      * @return the created patient record
+     * @deprecated use {@link #create(DocumentReference)} instead
      */
+    @Deprecated
     Patient createNewPatient(DocumentReference creator);
 }

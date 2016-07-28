@@ -30,6 +30,9 @@ import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -44,7 +47,7 @@ import org.slf4j.Logger;
  * @version $Id$
  * @since 1.3M1
  */
-@Component
+@Component(roles = PatientRepository.class)
 @Named("secure")
 @Singleton
 public class SecurePatientRepository implements PatientRepository
@@ -71,45 +74,115 @@ public class SecurePatientRepository implements PatientRepository
     private EntityReferenceResolver<EntityReference> currentResolver;
 
     @Override
+    public EntityReference getDataSpace()
+    {
+        return this.internalService.getDataSpace();
+    }
+
+    @Override
+    public Patient create()
+    {
+        return create(this.bridge.getCurrentUserReference());
+    }
+
+    @Override
+    public synchronized Patient createNewPatient()
+    {
+        return create();
+    }
+
+    @Override
+    public Patient create(DocumentReference creator)
+    {
+        if (this.access.hasAccess(Right.EDIT, creator,
+            this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
+            return this.internalService.create(creator);
+        }
+        throw new SecurityException("User not authorized to create new patients");
+    }
+
+    @Override
+    public Patient createNewPatient(DocumentReference creator)
+    {
+        return create(creator);
+    }
+
+    @Override
+    public Patient get(String id)
+    {
+        Patient patient = this.internalService.get(id);
+        return checkAccess(patient, this.bridge.getCurrentUserReference());
+    }
+
+    @Override
     public Patient getPatientById(String id)
     {
-        Patient patient = this.internalService.getPatientById(id);
+        return get(id);
+    }
+
+    @Override
+    public Patient get(DocumentReference reference)
+    {
+        Patient patient = this.internalService.get(reference);
+        return checkAccess(patient, this.bridge.getCurrentUserReference());
+    }
+
+    @Override
+    public Patient getByName(String name)
+    {
+        Patient patient = this.internalService.getByName(name);
         return checkAccess(patient, this.bridge.getCurrentUserReference());
     }
 
     @Override
     public Patient getPatientByExternalId(String externalId)
     {
-        Patient patient = this.internalService.getPatientByExternalId(externalId);
-        return checkAccess(patient, this.bridge.getCurrentUserReference());
+        return getByName(externalId);
+    }
+
+    @Override
+    public Collection<Patient> getAll()
+    {
+        Collection<Patient> result = new LinkedList<>();
+        DocumentReference user = this.bridge.getCurrentUserReference();
+        for (Patient patient : this.internalService.getAll()) {
+            if (checkAccess(patient, user) != null) {
+                result.add(patient);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public boolean delete(Patient patient)
+    {
+        if (checkAccess(Right.DELETE, patient, this.bridge.getCurrentDocumentReference()) != null) {
+            this.internalService.delete(patient);
+        }
+        return false;
+    }
+
+    @Override
+    public Patient load(DocumentModelBridge document) throws IllegalArgumentException
+    {
+        // If the caller already has access to the document, then it's safe to proceed
+        return this.internalService.load(document);
     }
 
     @Override
     public Patient loadPatientFromDocument(DocumentModelBridge document)
     {
-        // If the caller already has access to the document, then it's safe to proceed
-        return this.internalService.loadPatientFromDocument(document);
-    }
-
-    @Override
-    public Patient createNewPatient(DocumentReference creator)
-    {
-        if (this.access.hasAccess(Right.EDIT, creator,
-            this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
-            return this.internalService.createNewPatient();
-        }
-        throw new SecurityException("User not authorized to create new patients");
-    }
-
-    @Override
-    public synchronized Patient createNewPatient()
-    {
-        return createNewPatient(this.bridge.getCurrentUserReference());
+        return load(document);
     }
 
     private Patient checkAccess(Patient patient, DocumentReference user)
     {
-        if (patient != null && this.access.hasAccess(Right.VIEW, user, patient.getDocument())) {
+        return checkAccess(Right.VIEW, patient, user);
+    }
+
+    private Patient checkAccess(Right right, Patient patient, DocumentReference user)
+    {
+        if (patient != null && this.access.hasAccess(right, user, patient.getDocument())) {
             return patient;
         } else if (patient != null) {
             this.logger.warn("Illegal access requested for patient [{}] by user [{}]", patient.getId(), user);

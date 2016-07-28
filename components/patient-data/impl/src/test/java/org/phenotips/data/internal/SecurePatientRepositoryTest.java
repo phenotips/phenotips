@@ -75,10 +75,11 @@ public class SecurePatientRepositoryTest
         when(bridge.getCurrentUserReference()).thenReturn(this.currentUser);
         when(this.patient.getDocument()).thenReturn(this.patientReference);
 
-        when(internalRepo.getPatientById("P0123456")).thenReturn(this.patient);
-        when(internalRepo.getPatientByExternalId("Neuro123")).thenReturn(this.patient);
-        when(internalRepo.createNewPatient()).thenReturn(this.patient);
-        when(internalRepo.loadPatientFromDocument(any(DocumentModelBridge.class))).thenReturn(this.patient);
+        when(internalRepo.get("P0123456")).thenReturn(this.patient);
+        when(internalRepo.getByName("Neuro123")).thenReturn(this.patient);
+        when(internalRepo.create()).thenReturn(this.patient);
+        when(internalRepo.create(this.currentUser)).thenReturn(this.patient);
+        when(internalRepo.load(any(DocumentModelBridge.class))).thenReturn(this.patient);
 
         EntityReferenceResolver<EntityReference> currentResolver =
             this.mocker.getInstance(EntityReferenceResolver.TYPE_REFERENCE, "current");
@@ -87,63 +88,63 @@ public class SecurePatientRepositoryTest
     }
 
     @Test
-    public void getPatientByIdForwardsCallsWhenAuthorized() throws ComponentLookupException
+    public void getForwardsCallsWhenAuthorized() throws ComponentLookupException
     {
         when(this.access.hasAccess(Right.VIEW, this.currentUser, this.patientReference)).thenReturn(true);
-        Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().getPatientById("P0123456"));
+        Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().get("P0123456"));
     }
 
     @Test
-    public void getPatientByIdForwardsNullResults() throws ComponentLookupException
+    public void getForwardsNullResults() throws ComponentLookupException
     {
-        Assert.assertNull(this.mocker.getComponentUnderTest().getPatientById("P0123457"));
+        Assert.assertNull(this.mocker.getComponentUnderTest().get("P0123457"));
     }
 
     @Test(expected = SecurityException.class)
-    public void getPatientByIdDeniesUnauthorizedAccess() throws ComponentLookupException
+    public void getDeniesUnauthorizedAccess() throws ComponentLookupException
     {
         when(this.access.hasAccess(Right.VIEW, this.currentUser, this.patientReference)).thenReturn(false);
-        this.mocker.getComponentUnderTest().getPatientById("P0123456");
+        this.mocker.getComponentUnderTest().get("P0123456");
     }
 
     @Test
-    public void getPatientByExternalIdForwardsCallsWhenAuthorized() throws ComponentLookupException
+    public void getByNameForwardsCallsWhenAuthorized() throws ComponentLookupException
     {
         when(this.access.hasAccess(Right.VIEW, this.currentUser, this.patientReference)).thenReturn(true);
-        Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().getPatientByExternalId("Neuro123"));
+        Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().getByName("Neuro123"));
     }
 
     @Test
-    public void getPatientByExternalIdForwardsNullResults() throws ComponentLookupException
+    public void getByNameForwardsNullResults() throws ComponentLookupException
     {
-        Assert.assertNull(this.mocker.getComponentUnderTest().getPatientByExternalId("NotAPatient"));
+        Assert.assertNull(this.mocker.getComponentUnderTest().getByName("NotAPatient"));
     }
 
     @Test(expected = SecurityException.class)
-    public void getPatientByExternalIdDeniesUnauthorizedAccess() throws ComponentLookupException
+    public void getByNameDeniesUnauthorizedAccess() throws ComponentLookupException
     {
         when(this.access.hasAccess(Right.VIEW, this.currentUser, this.patientReference)).thenReturn(false);
-        this.mocker.getComponentUnderTest().getPatientByExternalId("Neuro123");
+        this.mocker.getComponentUnderTest().getByName("Neuro123");
     }
 
     @Test
-    public void createNewPatientForwardsCallsWhenAuthorized() throws ComponentLookupException
+    public void createForwardsCallsWhenAuthorized() throws ComponentLookupException
     {
         when(this.access.hasAccess(Right.EDIT, this.currentUser, this.patientReference.getParent())).thenReturn(true);
-        Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().createNewPatient());
+        Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().create());
     }
 
     @Test(expected = SecurityException.class)
-    public void createNewPatientDeniesUnauthorizedAccess() throws ComponentLookupException
+    public void createDeniesUnauthorizedAccess() throws ComponentLookupException
     {
         when(this.access.hasAccess(Right.EDIT, this.currentUser, this.patientReference.getParent())).thenReturn(false);
-        this.mocker.getComponentUnderTest().createNewPatient();
+        this.mocker.getComponentUnderTest().create();
     }
 
     @Test
-    public void loadPatientFromDocumentForwardsCalls() throws ComponentLookupException
+    public void loadForwardsCalls() throws ComponentLookupException
     {
         XWikiDocument doc = new XWikiDocument(this.patientReference);
-        Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().loadPatientFromDocument(doc));
+        Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().load(doc));
     }
 }

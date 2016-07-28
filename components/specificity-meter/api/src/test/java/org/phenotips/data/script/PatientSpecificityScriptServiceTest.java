@@ -144,8 +144,11 @@ public class PatientSpecificityScriptServiceTest
         Assert.assertTrue(hasHP1);
         Assert.assertTrue(hasHP2);
         // This is a stub patient, no real values are used
+        Assert.assertEquals(Patient.CLASS_REFERENCE, patient.getType());
         Assert.assertNull(patient.getId());
         Assert.assertNull(patient.getExternalId());
+        Assert.assertNull(patient.getName());
+        Assert.assertNull(patient.getDescription());
         Assert.assertNull(patient.getDocument());
         Assert.assertNull(patient.getReporter());
         Assert.assertNull(patient.getDisorders());

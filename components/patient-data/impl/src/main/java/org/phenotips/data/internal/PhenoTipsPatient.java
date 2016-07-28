@@ -25,8 +25,8 @@ import org.phenotips.data.FeatureMetadatum;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.entities.internal.AbstractPrimaryEntity;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
@@ -40,8 +40,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
-import javax.inject.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -63,7 +61,7 @@ import com.xpn.xwiki.objects.ListProperty;
  * @version $Id$
  * @since 1.0M8
  */
-public class PhenoTipsPatient implements Patient
+public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
 {
     /** The default template for creating a new patient. */
     public static final EntityReference TEMPLATE_REFERENCE = new EntityReference("PatientTemplate",
@@ -97,9 +95,6 @@ public class PhenoTipsPatient implements Patient
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(PhenoTipsPatient.class);
 
-    /** @see #getDocument() */
-    private DocumentReference document;
-
     /** @see #getReporter() */
     private DocumentReference reporter;
 
@@ -122,7 +117,7 @@ public class PhenoTipsPatient implements Patient
      */
     public PhenoTipsPatient(XWikiDocument doc)
     {
-        this.document = doc.getDocumentReference();
+        super(doc);
         this.reporter = doc.getCreatorReference();
 
         BaseObject data = doc.getXObject(CLASS_REFERENCE);
@@ -142,6 +137,12 @@ public class PhenoTipsPatient implements Patient
         this.features = Collections.unmodifiableSet(this.features);
         this.disorders = Collections.unmodifiableSet(this.disorders);
 
+    }
+
+    @Override
+    public EntityReference getType()
+    {
+        return CLASS_REFERENCE;
     }
 
     private void loadFeatures(XWikiDocument doc, BaseObject data)
@@ -239,12 +240,6 @@ public class PhenoTipsPatient implements Patient
     }
 
     @Override
-    public String getId()
-    {
-        return this.document.getName();
-    }
-
-    @Override
     public String getExternalId()
     {
         try {
@@ -252,12 +247,6 @@ public class PhenoTipsPatient implements Patient
         } catch (Exception ex) {
             return null;
         }
-    }
-
-    @Override
-    public DocumentReference getDocument()
-    {
-        return this.document;
     }
 
     @Override
@@ -528,21 +517,15 @@ public class PhenoTipsPatient implements Patient
             // TODO: Check versions and throw if versions mismatch if necessary
             // TODO: Separate updateFromJSON and saveToDB? Move to PatientRepository?
 
-            Provider<XWikiContext> xcontextProvider =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiContext.TYPE_PROVIDER);
-            XWikiContext context = xcontextProvider.get();
+            XWikiContext context = getXContext();
 
-            DocumentAccessBridge documentAccessBridge =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
-            XWikiDocument doc = (XWikiDocument) documentAccessBridge.getDocument(getDocument());
-
-            BaseObject data = doc.getXObject(CLASS_REFERENCE);
+            BaseObject data = this.document.getXObject(CLASS_REFERENCE);
             if (data == null) {
                 return;
             }
 
-            updateFeaturesFromJSON(doc, data, context, json);
-            updateDisordersFromJSON(doc, data, context, json);
+            updateFeaturesFromJSON(this.document, data, context, json);
+            updateDisordersFromJSON(this.document, data, context, json);
 
             for (PatientDataController<?> serializer : this.serializers.values()) {
                 try {

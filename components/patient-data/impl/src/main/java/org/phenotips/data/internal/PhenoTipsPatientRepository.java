@@ -17,32 +17,21 @@
  */
 package org.phenotips.data.internal;
 
-import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRecordInitializer;
 import org.phenotips.data.PatientRepository;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.context.Execution;
-import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
-import org.xwiki.query.QueryManager;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
-
-import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -54,57 +43,32 @@ import com.xpn.xwiki.doc.XWikiDocument;
  * @version $Id$
  * @since 1.0M8
  */
-@Component
+@Component(roles = PatientRepository.class)
 @Singleton
-public class PhenoTipsPatientRepository implements PatientRepository
+public class PhenoTipsPatientRepository extends PatientEntityManager implements PatientRepository
 {
-    /** Logging helper object. */
     @Inject
-    private Logger logger;
-
-    /** Provides access to the current execution context. */
-    @Inject
-    private Execution execution;
-
-    /** Provides access to the XWiki data. */
-    @Inject
-    private DocumentAccessBridge bridge;
-
-    /** Runs queries for finding patients. */
-    @Inject
-    private QueryManager qm;
-
-    /** Parses string representations of document references into proper references. */
-    @Inject
-    @Named("current")
-    private DocumentReferenceResolver<String> stringResolver;
-
-    /** Fills in missing reference fields with those from the current context document to create a full reference. */
-    @Inject
-    @Named("current")
-    private DocumentReferenceResolver<EntityReference> referenceResolver;
+    private Provider<List<PatientRecordInitializer>> initializers;
 
     @Override
     public Patient getPatientById(String id)
     {
-        DocumentReference reference = this.stringResolver.resolve(id, Patient.DEFAULT_DATA_SPACE);
-        try {
-            XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(reference);
-            if (doc != null && doc.getXObject(Patient.CLASS_REFERENCE) != null) {
-                return new PhenoTipsPatient(doc);
-            }
-        } catch (Exception ex) {
-            this.logger.warn("Failed to access patient with id [{}]: {}", id, ex.getMessage(), ex);
-        }
-        return null;
+        return get(id);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The name in this case is actually the external identifier, stored in the {@code external_id} property of the
+     * {@code PatientClass} object.
+     * </p>
+     */
     @Override
-    public Patient getPatientByExternalId(String externalId)
+    public Patient getByName(String name)
     {
         try {
             Query q = this.qm.createQuery("where doc.object(PhenoTips.PatientClass).external_id = :eid", Query.XWQL);
-            q.bindValue("eid", externalId);
+            q.bindValue("eid", name);
             List<String> results = q.execute();
             if (results.size() == 1) {
                 DocumentReference reference =
@@ -112,60 +76,54 @@ public class PhenoTipsPatientRepository implements PatientRepository
                 return new PhenoTipsPatient((XWikiDocument) this.bridge.getDocument(reference));
             }
         } catch (QueryException ex) {
-            this.logger.warn("Failed to search for the patient with external id [{}]: {}", externalId, ex.getMessage(),
+            this.logger.warn("Failed to search for the patient with external id [{}]: {}", name, ex.getMessage(),
                 ex);
         } catch (Exception ex) {
-            this.logger.warn("Failed to access patient with external id [{}]: {}", externalId, ex.getMessage(), ex);
+            this.logger.warn("Failed to access patient with external id [{}]: {}", name, ex.getMessage(), ex);
         }
         return null;
     }
 
     @Override
+    public Patient getPatientByExternalId(String externalId)
+    {
+        return getByName(externalId);
+    }
+
+    @Override
     public Patient loadPatientFromDocument(DocumentModelBridge document)
     {
-        XWikiDocument xdocument = (XWikiDocument) document;
-        if (xdocument.getXObject(Patient.CLASS_REFERENCE) == null) {
-            throw new IllegalArgumentException("No patient stored in the provided document ["
-                + document.getDocumentReference() + "]");
-        }
-        return new PhenoTipsPatient(xdocument);
+        return load(document);
+    }
+
+    @Override
+    public synchronized Patient createNewPatient()
+    {
+        return create();
     }
 
     @Override
     public synchronized Patient createNewPatient(DocumentReference creator)
     {
-        try {
-            // FIXME Take these from the configuration
-            String prefix = "P";
+        return create(creator);
+    }
 
-            XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-            long id = getLastUsedId();
-            DocumentReference newDoc;
-            do {
-                newDoc = this.referenceResolver.resolve(new EntityReference(
-                    prefix + String.format("%07d", ++id), EntityType.DOCUMENT, Patient.DEFAULT_DATA_SPACE));
-            } while (this.bridge.exists(newDoc));
-            XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(newDoc);
-            doc.readFromTemplate(this.referenceResolver.resolve(PhenoTipsPatient.TEMPLATE_REFERENCE), context);
-            doc.setTitle(newDoc.getName());
-            doc.getXObject(Patient.CLASS_REFERENCE).setLongValue("identifier", id);
+    @Override
+    public synchronized Patient create(DocumentReference creator)
+    {
+        try {
+            XWikiContext context = this.xcontextProvider.get();
+            Patient patient = super.create(creator);
+            XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(patient.getDocument());
+            doc.getXObject(Patient.CLASS_REFERENCE).setLongValue("identifier",
+                Integer.parseInt(patient.getDocument().getName().replaceAll("\\D++", "")));
             if (creator != null) {
                 doc.setCreatorReference(creator);
                 doc.setAuthorReference(creator);
                 doc.setContentAuthorReference(creator);
             }
             context.getWiki().saveDocument(doc, context);
-
-            Patient patient = new PhenoTipsPatient(doc);
-            List<PatientRecordInitializer> initializers = Collections.emptyList();
-            try {
-                initializers = ComponentManagerRegistry.getContextComponentManager().getInstanceList(
-                    PatientRecordInitializer.class);
-            } catch (ComponentLookupException e) {
-                this.logger.error("Failed to get initializers", e);
-            }
-
-            for (PatientRecordInitializer initializer : initializers) {
+            for (PatientRecordInitializer initializer : this.initializers.get()) {
                 try {
                     initializer.initialize(patient);
                 } catch (Exception ex) {
@@ -184,24 +142,24 @@ public class PhenoTipsPatientRepository implements PatientRepository
     }
 
     @Override
-    public synchronized Patient createNewPatient()
-    {
-        return createNewPatient(this.bridge.getCurrentUserReference());
-    }
-
-    private long getLastUsedId() throws QueryException
+    protected long getLastUsedId()
     {
         long crtMaxID = 0;
-        Query q =
-            this.qm.createQuery(
-                "select patient.identifier from Document doc, doc.object(PhenoTips.PatientClass) as patient"
-                    + " where patient.identifier is not null order by patient.identifier desc", Query.XWQL)
-                .setLimit(1);
-        List<Long> crtMaxIDList = q.execute();
-        if (!crtMaxIDList.isEmpty() && crtMaxIDList.get(0) != null) {
-            crtMaxID = crtMaxIDList.get(0);
+        try {
+            Query q =
+                this.qm.createQuery(
+                    "select patient.identifier from Document doc, doc.object(PhenoTips.PatientClass) as patient"
+                        + " where patient.identifier is not null order by patient.identifier desc",
+                    Query.XWQL)
+                    .setLimit(1);
+            List<Long> crtMaxIDList = q.execute();
+            if (!crtMaxIDList.isEmpty() && crtMaxIDList.get(0) != null) {
+                crtMaxID = crtMaxIDList.get(0);
+            }
+            crtMaxID = Math.max(crtMaxID, 0);
+        } catch (QueryException ex) {
+
         }
-        crtMaxID = Math.max(crtMaxID, 0);
         return crtMaxID;
     }
 }
