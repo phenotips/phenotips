@@ -95,6 +95,10 @@ define([
        return (this.dropdown.selectedIndex >= 0) ? this.dropdown.options[this.dropdown.selectedIndex].value : '';
     },
 
+    getSelectedClass : function() {
+        return (this.dropdown.selectedIndex >= 0) ? this.dropdown.options[this.dropdown.selectedIndex].className : '';
+    },
+
     getSelectedOption : function () {
        return (this.dropdown.selectedIndex >= 0) ? this.dropdown.options[this.dropdown.selectedIndex].innerHTML : '';
     },
@@ -153,9 +157,10 @@ define([
             values.push({"value" : (y + "s"), "cssClass" : "decade", "text" : (y + 's')});
         }
       }
-      values.push({"value": "1800s", "cssClass" : "decade"});
-      values.push({"value": "1700s", "cssClass" : "decade"});
-      values.push({"value": "1600s", "cssClass" : "decade"});
+      values.push({"value": "1800s", "cssClass" : "century"});
+      values.push({"value": "1700s", "cssClass" : "century"});
+      values.push({"value": "1600s", "cssClass" : "century"});
+      values.push({"value": "1500s", "cssClass" : "century"});
 
       this.yearSelector.populate(values);
       this.yearSelector.onSelect(this.yearSelected.bind(this));
@@ -254,8 +259,11 @@ define([
         var dateObject = {};
 
         var y = this.yearSelector.getSelectedValue();
-        if (y.match(/\d\d\d\ds$/)) {
-            dateObject["decade"] = y;
+        var rangeMatch = y.match(/(\d\d\d\d)s$/);
+        if (rangeMatch) {
+            var range = (this.yearSelector.getSelectedClass() == "century") ? 100 : 10;
+            dateObject["range"] = { "years": range };
+            dateObject["year"] = rangeMatch[1];
         } else {
             if (y != "") {
                 dateObject["year"] = y;

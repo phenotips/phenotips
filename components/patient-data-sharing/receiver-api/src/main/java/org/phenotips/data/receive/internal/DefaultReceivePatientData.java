@@ -303,7 +303,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
     protected JSONObject generateEmptyResponse()
     {
         JSONObject response = new JSONObject();
-        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_PROTOCOLVER, ShareProtocol.JSON_RESPONSE_PROTOCOL_VERSION);
+        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_PROTOCOLVER, ShareProtocol.CURRENT_PUSH_PROTOCOL_VERSION);
         return response;
     }
 
@@ -445,7 +445,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
     protected boolean isCompatibleVersion(String clientVersion)
     {
-        if (ShareProtocol.COMPATIBLE_PROTOCOL_VERSIONS.contains(clientVersion)) {
+        if (ShareProtocol.COMPATIBLE_CLIENT_PROTOCOL_VERSIONS.contains(clientVersion)) {
             return true;
         }
         return false;
@@ -583,7 +583,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
     /**
      * Exctacts the list of granted consents from a request
-     * 
+     *
      * @param rawPatientState patient state JSON string directly from the {@link Request} object
      */
     private Set<String> extractConsents(String rawPatientState)
@@ -665,7 +665,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
                 }
 
                 String serverName = getRemoteServerName(serverConfig, request);
-                this.logger.warn("Remote server name: [{}]", serverName);
+                this.logger.debug("Remote server name: [{}]", serverName);
 
                 this.storageManager.storeLocalLoginToken(userName, serverName, token);
 

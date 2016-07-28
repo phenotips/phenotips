@@ -201,8 +201,8 @@
 #set ($enteredValue = $object.getProperty("${name}_entered").value)
 #if ("$!enteredValue" != '' &amp;&amp; "$!enteredValue" != '{}')
   #set ($enteredValue = $jsontool.parse($enteredValue))
-  #if ($enteredValue.decade)
-    &lt;span class="date"&gt;$!escapetool.xml($enteredValue.decade)&lt;/span&gt;
+  #if ($enteredValue.range &amp;&amp; $enteredValue.range.years &amp;&amp; $enteredValue.range.years > 1)
+    &lt;span class="date"&gt;$!escapetool.xml($enteredValue.year)s&lt;/span&gt;
   #else
     #set ($displayedValue = $format)
     #if ($enteredValue.year)
@@ -215,6 +215,8 @@
       #end
     #end
     #set ($displayedValue = $displayedValue.replaceAll('[a-zA-Z]+(\W|$)', '').replaceAll('^\W+|\W+$', ''))
+    ## add leading 0-s to 1-digit month and days, if missing
+    #set ($displayedValue = $displayedValue.replaceAll('(?&lt;=(^|\D))(\d)(\D|$)', '0$2$3'))
     &lt;span class="date"&gt;$!escapetool.xml($displayedValue)&lt;/span&gt;
   #end
 #elseif ($value)
@@ -264,8 +266,8 @@
 #set ($enteredValue = $object.getProperty("${name}_entered").value)
 #if ("$!enteredValue" != '' &amp;&amp; "$!enteredValue" != '{}')
   #set ($enteredValue = $jsontool.parse($enteredValue))
-  #if ($enteredValue.decade)
-    &lt;span class="date"&gt;$!escapetool.xml($enteredValue.decade)&lt;/span&gt;
+  #if ($enteredValue.range &amp;&amp; $enteredValue.range.years &amp;&amp; $enteredValue.range.years > 1)
+    &lt;span class="date"&gt;$!escapetool.xml($enteredValue.year)s&lt;/span&gt;
   #else
     #set ($displayedValue = $format)
     #if ($enteredValue.year)
@@ -278,6 +280,8 @@
       #end
     #end
     #set ($displayedValue = $displayedValue.replaceAll('[a-zA-Z]+(\W|$)', '').replaceAll('^\W+|\W+$', ''))
+    ## add leading 0-s to 1-digit month and days, if missing
+    #set ($displayedValue = $displayedValue.replaceAll('(?&lt;=(^|\D))(\d)(\D|$)', '0$2$3'))
     &lt;span class="date"&gt;$!escapetool.xml($displayedValue)&lt;/span&gt;
   #end
 #elseif ($value)
