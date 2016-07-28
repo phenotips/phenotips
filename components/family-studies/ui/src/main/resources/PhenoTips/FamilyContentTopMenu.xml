@@ -836,8 +836,8 @@
   ## Make sure we use an absolute reference (see XWIKI-9672)
     #set ($colorTheme = $services.model.resolveDocument($colorTheme, $doc.documentReference))
   #end
-  $xwiki.ssx.use('PhenoTips.ContentTopMenu', {'colorTheme': $colorTheme})##
-  $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
+  $xwiki.ssx.use('PhenoTips.FamilyContentTopMenu', {'colorTheme': $colorTheme})##
+  $xwiki.jsx.use('PhenoTips.FamilyContentTopMenu')##
 (% id="record-actions" %)(((
 (% id="pr-more-actions-menu" class="menu menu-horizontal" %)(((
   #if ($xcontext.action == 'view')
