@@ -671,25 +671,14 @@
   exportLinks.invoke('observe', 'click', function (event) {
     event.stop();
     if (typeof event.findElement('.editbody') !== "undefined") {
-      // We are in edit mode. Ask whether to save first
-      new XWiki.widgets.ConfirmationBox(
-        {
-          onYes : function() {
-            var myWindow = window.open("","_blank");
-            var exportAfterSave = function() {
-              myWindow.location = event.findElement().href;
-              document.stopObserving('xwiki:document:saved', exportAfterSave);
-            };
-            document.observe('xwiki:document:saved', exportAfterSave);
-            document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
-          },
-          onNo : function() {
-            window.open(event.findElement().href,"_blank");
-          }
-        },
-        /* Interaction parameters */
-        { confirmationText: "$services.localization.render('phenotips.contentTopMenu.saveBeforeExport')", showCancelButton: true }
-      );
+      // We are in edit mode.
+      var myWindow = window.open("","_blank");
+      var exportAfterSave = function() {
+        myWindow.location = event.findElement().href;
+        document.stopObserving('xwiki:document:saved', exportAfterSave);
+      };
+      document.observe('xwiki:document:saved', exportAfterSave);
+      document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
     } else {
       // View mode
       window.open(event.findElement().href,"_blank");
@@ -698,7 +687,7 @@
 });</code>
     </property>
     <property>
-      <name>Prompt to save before exporting in edit mode</name>
+      <name>Save before exporting in edit mode</name>
     </property>
     <property>
       <parse>1</parse>
@@ -1169,62 +1158,43 @@
   #if ($xcontext.action == 'view')
     #if($hasEdit &amp;&amp; !$isReadOnly)
       #set($editaction = $doc.getDefaultEditMode())
-    * [[#__icon("pencil")$services.localization.render(
-      'core.menu.edit')&gt;&gt;path:$doc.getURL($editaction, $!languageparams)|| id="prActionEdit"]]
-    #end## HAS EDIT
+* [[#__icon("pencil")$services.localization.render('core.menu.edit')&gt;&gt;path:$doc.getURL($editaction, $!languageparams)|| id="prActionEdit"]]
+#end## HAS EDIT
     #set ($canDelete = !$doc.isNew() &amp;&amp; $xwiki.hasAccessLevel('delete'))
     #if ($canDelete)
-    * [[#__icon("times")$services.localization.render('core.menu.delete')&gt;&gt;path:$doc.getURL(
-      'delete', $!languageparams)|| id="prActionDelete"]]
-    #end## HAS DELETE
+* [[#__icon("times")$services.localization.render('core.menu.delete')&gt;&gt;path:$doc.getURL('delete', $!languageparams)|| id="prActionDelete"]]
+#end## HAS DELETE
   #else## NOT IN VIEW MODE, SHOW EDIT MODE ACTIONS
-  * (% class="xDropdown" %){{html clean="false"}}&lt;span class="fa fa-fw fa-check"&gt; &lt;/span&gt;&lt;label&gt;
-      &lt;input type="submit" value="$services.localization.render('phenotips.contentTopMenu.save')"
-             name="action_saveandcontinue"/&gt;&lt;/label&gt;{{/html}}
-  ** {{html clean="false"}}&lt;label&gt;&lt;input id="tmActionSave" type="submit"
-                                         value="$services.localization.render('saveandcontinue')"
-                                         title="$services.localization.render('saveandcontinue')"
-                                         name="action_saveandcontinue"/&gt;&lt;/label&gt;{{/html}}
-  ** {{html clean="false"}}&lt;label&gt;&lt;input id="tmActionSaveAndContinue" type="submit"
-                                         value="$services.localization.render('saveandview')"
-                                         title="$services.localization.render('saveandview')"
-                                         name="action_save"/&gt;&lt;/label&gt;{{/html}}
-  * {{html clean="false"}}&lt;span class="fa fa-fw fa-ban"&gt; &lt;/span&gt;&lt;label&gt;
-      &lt;input id="tmActionCancel" type="submit" value="$services.localization.render('phenotips.contentTopMenu.cancel')"
-             title="$services.localization.render('phenotips.contentTopMenu.cancel.title')"
-             name="action_cancel"/&gt;&lt;/label&gt;
-  {{/html}}
-  #end## DONE WITH EDIT MODE SPECIFIC ACTIONS
-* (% class="xDropdown" %){{html clean="false"}}&lt;span class="fa fa-fw fa-list"&gt; &lt;/span&gt;&lt;span
-        id="toc-entry"&gt;$services.localization.render('phenotips.contentTopMenu.jumpMenu')&lt;/span&gt;{{/html}}
-##The ToC will be populated by JS
-** ----
+* (% class="xDropdown" %){{html clean="false"}}&lt;span class="fa fa-fw fa-check"&gt; &lt;/span&gt;&lt;label&gt;&lt;input type="submit" value="$services.localization.render('phenotips.contentTopMenu.save')" name="action_saveandcontinue"/&gt;&lt;/label&gt;{{/html}}
+** {{html clean="false"}}&lt;label&gt;&lt;input id="tmActionSave" type="submit" value="$services.localization.render('saveandcontinue')" title="$services.localization.render('saveandcontinue')" name="action_saveandcontinue"/&gt;&lt;/label&gt;{{/html}}
+** {{html clean="false"}}&lt;label&gt;&lt;input id="tmActionSaveAndContinue" type="submit" value="$services.localization.render('saveandview')" title="$services.localization.render('saveandview')" name="action_save"/&gt;&lt;/label&gt;{{/html}}
+* {{html clean="false"}}&lt;span class="fa fa-fw fa-ban"&gt; &lt;/span&gt;&lt;label&gt;&lt;input id="tmActionCancel" type="submit" value="$services.localization.render('phenotips.contentTopMenu.cancel')" title="$services.localization.render('phenotips.contentTopMenu.cancel.title')" name="action_cancel"/&gt;&lt;/label&gt;{{/html}}
+#end## DONE WITH EDIT MODE SPECIFIC ACTIONS
 * (% class="xDropdown" %)#__icon("cog") $services.localization.render('phenotips.contentTopMenu.moreActionsMenu')
   #if ($xcontext.action != 'view' || $viewer != 'content')
-  ** [[$services.localization.render(
-    'phenotips.contentTopMenu.moreActionsMenu.viewMode')&gt;&gt;$doc.fullName|| title="$services.localization.render(
-    'phenotips.contentTopMenu.moreActionsMenu.viewMode.title')" target="__blank"]]
-  #end
+** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.viewMode')&gt;&gt;$doc.fullName|| title="$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.viewMode.title')" target="_blank"]]
+#end
   #if ($isAdvancedUser &amp;&amp; $xcontext.action != 'view' || $viewer != 'history')
-  ** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.history')&gt;&gt;path:$doc.getURL(
-    'view', 'viewer=history')|| target="__blank" title="$services.localization.render(
-    'phenotips.contentTopMenu.moreActionsMenu.history.title')"]]
-  #end
+** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.history')&gt;&gt;path:$doc.getURL('view', 'viewer=history')|| target="_blank" title="$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.history.title')"]]
+#end
   #if ($xwiki.getDocument($xwiki.getSpacePreference('colorTheme')).getObject('XWiki.PDFClass'))
     #set ($pdfTemplate = $xwiki.getSpacePreference('colorTheme'))
   #else
     #set ($pdfTemplate = 'PhenoTips.PatientSheetCode')
   #end
-  #if($isAdvancedUser)
+#if($isAdvancedUser)
   ** (% class="empty" %)----
-  ** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.exportXAR')&gt;&gt;path:$doc.getURL(
-    'export', "format=xar&amp;name=${doc.fullName}&amp;pages=${doc.fullName}")|| class="export-link"]]
-  #end
-  #foreach ($e in $services.uix.getExtensions("org.phenotips.familyRecordMenu.moreActions"))
-    #if ($foreach.index == 0)
-    ** ----
+** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.exportXAR')&gt;&gt;path:$doc.getURL('export', "format=xar&amp;name=${doc.fullName}&amp;pages=${doc.fullName}")|| class="export-link"]]
+#end
+#foreach ($e in $services.uix.getExtensions("org.phenotips.familyRecordMenu.moreActions"))
+  #set ($extensionContent = $services.rendering.render($e.execute(), 'xhtml/1.0'))
+  #if ($stringtool.isNotBlank($extensionContent) &amp;&amp; !$foreach.hasContent)
+    #if (!$foreach.hasContent)
+      ** ----
+      #set ($foreach.hasContent = true)
     #end
-  ** {{html clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
+    ** {{html clean=false}}$extensionContent{{/html}}
+  #end
   #end
 )))## menu
 )))## container
