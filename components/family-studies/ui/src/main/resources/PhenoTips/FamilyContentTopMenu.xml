@@ -40,7 +40,7 @@
   <content/>
   <object>
     <name>PhenoTips.FamilyContentTopMenu</name>
-    <number>1</number>
+    <number>0</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>c49062ca-ada8-475f-a75c-e6a35d216cb8</guid>
     <class>
@@ -171,7 +171,7 @@
   </object>
   <object>
     <name>PhenoTips.FamilyContentTopMenu</name>
-    <number>3</number>
+    <number>1</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>e02cb601-df70-4abc-b078-3bfe5be91c44</guid>
     <class>
@@ -273,7 +273,7 @@
   </object>
   <object>
     <name>PhenoTips.FamilyContentTopMenu</name>
-    <number>4</number>
+    <number>2</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>712c0004-e43c-42c0-afed-0b5aa0752843</guid>
     <class>
