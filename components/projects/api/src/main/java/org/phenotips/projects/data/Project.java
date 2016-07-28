@@ -81,6 +81,13 @@ public interface Project extends Comparable<Project>
     String getDescription();
 
     /**
+     * Returns the logo image link of the project.
+     *
+     * @return the image URL of the project
+     */
+    String getImage();
+
+    /**
      * Returns the number of users collaborating in the project. That is, number of contributor and leader users plus
      * the number of all the users in contributor and leader groups.
      *

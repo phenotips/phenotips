@@ -700,7 +700,9 @@
   top: 0;
   left: -16px;
 }
-
+#groups-directory .tools{
+  min-width: 2.5em;
+}
 #group-creation-form input {
   width: auto;
 }
