@@ -60,6 +60,10 @@ $xwiki.jsfx.use('uicomponents/phenotips/projectBinding.js', true)
 #set ($projectIds = $projectIds.split(";"))
 #if ($mode == 'edit')
    #set ($projects = $services.projects.getProjectsCurrentUserCanContributeTo())
+   #set ($patientProjects = $services.projects.getProjectsForPatient($request.patientId))
+    &lt;div&gt;
+      &lt;input type="checkbox" id="noproject" name="" #if ($patientProjects.size() == 0) checked #end/&gt;$services.localization.render('phenotips.projectBindingClass.noProjectOption')
+    &lt;/div&gt;
    #foreach ($p in $projects)
       &lt;div&gt;
       #set ($checkedString = '')
@@ -67,7 +71,7 @@ $xwiki.jsfx.use('uicomponents/phenotips/projectBinding.js', true)
          #set ($checkedString = 'checked')
       #else
       #end
-      &lt;input type="checkbox" name="${p.getName()}" $!checkedString /&gt;$p.getName()
+      &lt;input type="checkbox" name="${p.getName()}" $!checkedString /&gt;[[$p.getName()>>$p.getFullName()||rel='__blank' class='button secondary']]
       &lt;/div&gt;
    #end
 #else

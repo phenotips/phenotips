@@ -38,13 +38,35 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
-#if ($services.templates.getAllTemplates().size() &gt; 0)
-; $services.localization.render('phenotips.templateBindingSheet.selectTemplate')
-#if ($doc.getObject('PhenoTips.StudyBindingClass'))
-: $doc.getObject('PhenoTips.StudyBindingClass').studyReference
-#else
-: {{include reference="PhenoTips.StudyBindingClass" /}}
+{{html clean="false"}}&lt;h2&gt;$services.localization.render('phenotips.templateBindingSheet.templatesSectionHeader')&lt;/h2&gt;{{/html}}
+
+#set ($templates = $services.templates.getAllTemplates())
+#if ($xcontext.action != 'export' &amp;&amp; $templates.size() &gt; 0)
+  #if ($!{request.patientId} != '')
+  #set ($template = $services.projects.getTemplateForPatient($request.patientId))
+    #if ("$!template" != '')
+      {{html clean="false"}}&lt;p class='xHint'&gt;$services.localization.render('phenotips.templateBindingClass.patientCurrentTemplate')&lt;/p&gt;{{/html}}
+      (% class='buttonwrapper' %)
+      [[{{icon name='copy' /}} ${template.getName()}>>$template.getId()||rel='__blank' class='button secondary']]
+      (%%)
+    #else
+      (% class="xHint" %)$services.localization.render('phenotips.templateBindingSheet.noneTemplates')
+      (%%)
+    #end
+  #else
+    (% class="xHint" %)$services.localization.render('phenotips.templateBindingSheet.noneTemplates')
+    (%%)
+  #end
 #end
+#if ($templates.size() &gt; 0)
+  (% class="xHint" %)$services.localization.render('phenotips.templateBindingSheet.selectTemplate')(%%)
+  #if ($doc.getObject('PhenoTips.StudyBindingClass'))
+    : $doc.getObject('PhenoTips.StudyBindingClass').studyReference
+  #else
+    : {{include reference="PhenoTips.StudyBindingClass" /}}
+  #end
+#else
+  (% class="xHint" %)$services.localization.render('phenotips.templateBindingSheet.noTemplatesAvailable')(%%)
 #end
 {{/velocity}}</content>
 </xwikidoc>

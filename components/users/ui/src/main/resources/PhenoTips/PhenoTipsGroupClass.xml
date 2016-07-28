@@ -412,7 +412,7 @@
       <displayInSection>workgroups</displayInSection>
     </property>
     <property>
-      <heading>$services.localization.render('phenotips.groups.adminTitle')</heading>
+      <heading/>
     </property>
     <property>
       <iconAttachment/>
@@ -674,6 +674,7 @@
   padding: 1em;
   vertical-align: top;
 }
+
 #groups-directory tr:last-child td {
   border-bottom: 0 none;
 }
@@ -690,6 +691,7 @@
   padding: 0.5em 1em;
   position: relative;
 }
+
 #groups-directory td.desc &gt; div:before {
   content: "";
   border-top: 0 none;
@@ -700,17 +702,26 @@
   top: 0;
   left: -16px;
 }
+
 #groups-directory .tools{
   min-width: 2.5em;
 }
+
 #group-creation-form input {
   width: auto;
+  margin-left: 10px;
 }
+
 #groups-tools {
   text-align: right;
 }
+
 #groups-tools .read-more {
   font-size: .9;
+}
+
+div.infomessage {
+  margin-top: 1.5em;
 }</code>
     </property>
     <property>

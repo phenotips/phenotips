@@ -75,9 +75,10 @@ public class ProjectsController implements PatientDataController<Project>
     private ProjectsRepository projectRepository;
 
     @Override
-    public PatientData<Project> load(Patient patient) {
+    public PatientData<Project> load(Patient patient)
+    {
         List<Project> projects = this.ptBinder.getProjectsForPatient(patient);
-        if (projects == null || projects.size() == 0) {
+        if (projects.size() == 0) {
             return null;
         }
 
@@ -85,7 +86,8 @@ public class ProjectsController implements PatientDataController<Project>
     }
 
     @Override
-    public void save(Patient patient) {
+    public void save(Patient patient)
+    {
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
@@ -117,12 +119,14 @@ public class ProjectsController implements PatientDataController<Project>
     }
 
     @Override
-    public void writeJSON(Patient patient, JSONObject json) {
+    public void writeJSON(Patient patient, JSONObject json)
+    {
         writeJSON(patient, json, null);
     }
 
     @Override
-    public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames) {
+    public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
+    {
         if (selectedFieldNames != null && !selectedFieldNames.contains(DATA_NAME)) {
             return;
         }
@@ -140,7 +144,8 @@ public class ProjectsController implements PatientDataController<Project>
     }
 
     @Override
-    public PatientData<Project> readJSON(JSONObject json) {
+    public PatientData<Project> readJSON(JSONObject json)
+    {
         if (!json.has(DATA_NAME)) {
             // no supported data in provided JSON
             return null;
@@ -164,7 +169,8 @@ public class ProjectsController implements PatientDataController<Project>
     }
 
     @Override
-    public String getName() {
+    public String getName()
+    {
         return DATA_NAME;
     }
 }

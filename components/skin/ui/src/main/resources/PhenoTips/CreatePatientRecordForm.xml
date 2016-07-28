@@ -207,8 +207,10 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
           onSuccess : function(response) {
              section.update(response.responseText);
              sectionCreated[section.id] = true;
-             if (__this._areAllSectionsCreated()) {
-                document.fire("projects:projectselection:popupcreated");
+             var templatesSelect = $('templatesSelect');
+             __this._oldTemplate = (templatesSelect) ? templatesSelect.value : '';
+             if (__this._areAllSectionsCreated() &amp;&amp; !__this._selectProjectWidget) {
+                __this._selectProjectWidget = new PhenoTips.widgets.SelectProject();
              }
           },
           onFailure : function(response) {
@@ -245,20 +247,20 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
        formDataWrapper.insert(__this._messages);
 
        __this.newPatientForm.select('input[type="hidden"]').each(function(item) {
-          formDataWrapper.insert(new Element('input', {type : item.type, name: item.name, value: item.value}));
+          formDataWrapper.insert(new Element('input', {type : item.type, name : item.name, value : item.value}));
        });
 
-       formDataWrapper.insert(new Element('input', {name: 'projectsSelected', id: 'projectsSelected', type : 'hidden'}));
-       formDataWrapper.insert(new Element('input', {name: 'templateSelected', id: 'templateSelected', type : 'hidden'}));
+       formDataWrapper.insert(new Element('input', {name : 'projectsSelected', id : 'projectsSelected', type : 'hidden'}));
+       formDataWrapper.insert(new Element('input', {name : 'templateSelected', id : 'templateSelected', type : 'hidden'}));
 
-       formDataWrapper.insert(new Element('p'));
+       formDataWrapper.insert(new Element('br')).insert(new Element('br'));
 
        var submitButton = new Element('input', {id : 'submitButton', type : 'submit', 'class' : 'button'});
-       formDataWrapper.insert(submitButton);
+       formDataWrapper.insert(new Element('span', {'class' : 'buttonwrapper'}).insert(submitButton));
        var cancelText = "$services.localization.render('phenotips.chooseProjectTemplate.cancelButton')";
        var cancelButton = new Element('input', {id : 'cancelButton', type : 'button', value : cancelText, 'class' : 'button secondary'});
-       formDataWrapper.insert(' ').insert(cancelButton);
-       __this.modalBox = new PhenoTips.widgets.ModalPopup(selectionForm, false, {'verticalPosition': 'top', 'removeOnClose': false});
+       formDataWrapper.insert(' ').insert(new Element('span', {'class' : 'buttonwrapper'}).insert(cancelButton));
+       __this.modalBox = new PhenoTips.widgets.ModalPopup(selectionForm, false, {'verticalPosition' : 'top', 'removeOnClose' : false, 'title' : "$services.localization.render('phenotips.chooseProjectTemplate.title')"});
        cancelButton.observe('click', function(event) {
           __this.modalBox.closeDialog();
        });
@@ -279,11 +281,14 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
 
     _updatePopupByMode : function() {
        var submitFunction;
+       var submitButton = $('submitButton');
        if (__this._currentMode == __this._MODES.CREATE) {
           submitFunction = __this._submitCreateForm;
+          submitButton.value = "$services.localization.render('phenotips.chooseProjectTemplate.continueButton')";
        }
        else if (__this._currentMode == __this._MODES.UPDATE) {
           submitFunction = __this._updateProjectTemplateSelection;
+          submitButton.value = "$services.localization.render('phenotips.chooseProjectTemplate.okButton')";
 
           // Simulate project checkboxes clicking
           document.fire("projects:projectselection:popupupdated");
@@ -292,8 +297,6 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
           return;
        }
 
-       var submitButton = $('submitButton');
-       submitButton.value = "$services.localization.render('phenotips.chooseProjectTemplate.okButton')";
        submitButton.stopObserving('click');
        submitButton.observe('click', submitFunction);
     },
@@ -312,15 +315,8 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
           });
        }
 
-       var templateSelected = '';
        var templatesSelect = $('templatesSelect');
-       if (templatesSelect) {
-          var templates = $('templatesSelect').select("option").map(function(item) {
-             if (item.selected) {
-                templateSelected = item.value;
-             }
-          });
-       }
+       var templateSelected = (templatesSelect) ? templatesSelect.value : '';
 
        return {projectsSelected : projectsSelected,
                templateSelected : templateSelected};
@@ -352,6 +348,11 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
           onSuccess: function(response) {
              __this._refreshExtensions();
              __this.modalBox.closeDialog();
+             var templatesSelect = $('templatesSelect');
+             var currentTemplateSelected = (templatesSelect) ? templatesSelect.value : '';
+             if (__this._oldTemplate != currentTemplateSelected) {
+                window.location.reload();
+             }
           },
           onFailure : function(response) {
              var failureReason = response.responseText || response.statusText;
@@ -511,13 +512,18 @@ document.observe("xwiki:dom:loaded", function() {
     </property>
     <property>
       <code>.tp-assignment-config {
-  width: 48%;
   float: left;
 }
 .tp-assignment-config a.button {
   font-size: 1em;
   font-weight: normal;
   text-transform: none;
+}
+#projectsSection dt, #templatesSection dt {
+  margin-bottom: 5px;
+}
+#projectsSection h2, #templatesSection h2 {
+  margin-top: 1.5em;
 }</code>
     </property>
     <property>
@@ -611,42 +617,33 @@ $xwiki.ssx.use('PhenoTips.CreatePatientRecordForm')
 {{velocity}}
 (% class="tp-assignment-config" %)
 #set ($projects = $services.projects.getProjectsCurrentUserCanContributeTo())
+#set ($templates = $services.templates.getAllTemplates())
+#if ($xcontext.action != 'export' &amp;&amp; $templates.size() + $projects.size() &gt; 0)
+  #set ($faction = $doc.getURL('save', "form_token=${services.csrf.token}&amp;amp;xredirect=$escapetool.url($doc.getURL($xcontext.action))"))
+  #set ($buttonTitle = $services.localization.render('phenotips.templateBindingClass.changeTemplateButton.title'))
+  (% class='buttonwrapper' %)##
+  [[ {{icon name="edit" title="$buttonTitle" /}} $buttonTitle##
+  {{html clean=false}}&lt;input type="hidden" name="faction" value="$faction"/&gt;{{/html}}##
+  &gt;&gt;path:$doc.getURL('get', "sheet='PhenoTips.CreatePatientRecordForm'&amp;faction=$!{faction}")||class="button" rel="__blank" id="pt-assignment-config" class="button"]]
+  (%%)
+  (%%)
+#end
 #if ($xcontext.action != 'export' &amp;&amp; $projects.size() &gt; 0)
-Projects: ##
   #set ($projects = $services.projects.getProjectsForPatient($doc.getName()))
   #if ($projects == '' || $projects.size() == 0)
-(% class="hint" %)None(%%)
+    (% class="hint" %)$services.localization.render('phenotips.projectBindingSheet.noneProjects')(%%)
   #else
+    $services.localization.render('phenotips.projectBindingClass.patientProjects'): ##
     #set ($projectsString = '')
     #foreach ($project in $projects)
       #set ($projectsString = "${projectsString}(% class='buttonwrapper' %)[[{{icon name='copy' /}} $project.getName()&gt;&gt;$project.getFullName()||rel='__blank' class='button secondary']](%%)")
       #if ($foreach.count&lt;$projects.size())
-         #set ($projectsString = "${projectsString}##")
+        #set ($projectsString = "${projectsString}##")
       #end
     #end
     $projectsString
   #end
 #end
-#set ($templates = $services.templates.getAllTemplates())
-#if ($xcontext.action != 'export' &amp;&amp; $templates.size() &gt; 0)
-Template: ##
-  #set ($template = $services.projects.getTemplateForPatient($doc.getName()))
-  #if ("$!template" == '')
-(% class="hint" %)None(%%)
-  #else
-(% class='buttonwrapper' %)[[{{icon name='copy' /}} ${template.getName()}&gt;&gt;$template.getId()||rel='__blank' class='button secondary']](%%)
-  #end
-#end
-#if ($xcontext.action != 'export' &amp;&amp; $templates.size() + $projects.size() &gt; 0)
-#set ($faction = $doc.getURL('save', "form_token=${services.csrf.token}&amp;amp;xredirect=$escapetool.url($doc.getURL($xcontext.action))"))
-(% class='buttonwrapper' %)##
-[[ {{icon name="edit" title="$services.localization.render('phenotips.templateBindingClass.changeTemplateButton.title')" /}}##
-{{html clean=false}}&lt;input type="hidden" name="faction" value="$faction"/&gt;{{/html}}##
-&gt;&gt;path:$doc.getURL('get', "sheet='PhenoTips.CreatePatientRecordForm'&amp;faction=$!{faction}")||class="button" rel="__blank" id="pt-assignment-config" class="$xcontext.action"]]
-(%%)
-(%%)
-#end
-##
 {{/velocity}}</content>
     </property>
     <property>
