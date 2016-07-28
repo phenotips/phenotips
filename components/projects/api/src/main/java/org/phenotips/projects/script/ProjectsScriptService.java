@@ -27,6 +27,7 @@ import org.phenotips.templates.data.Template;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -117,12 +118,13 @@ public class ProjectsScriptService implements ScriptService
      */
     public List<Project> getProjectsForPatient(String patientId)
     {
+        List<Project> projects = new ArrayList<Project>();
         Patient patient = this.patientsRepository.getPatientById(patientId);
         if (patient == null) {
-            return null;
+            return projects;
         }
-        List<Project> projects = this.ptBinder.getProjectsForPatient(patient);
-        if (projects != null && projects.size() > 1) {
+        projects = this.ptBinder.getProjectsForPatient(patient);
+        if (projects.size() > 1) {
             Collections.sort(projects);
         }
         return projects;

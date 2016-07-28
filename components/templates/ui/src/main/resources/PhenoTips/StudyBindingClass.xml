@@ -53,7 +53,7 @@
 {{html clean="false" wiki="true"}}
 #set ($patientDoc = $xwiki.getDocument($request.patientSpace,$request.patientId))
 #set ($boundTemplate = $patientDoc.getObject('PhenoTips.StudyBindingClass'))
-#set ($boundTemplate = $boundTemplate.getProperty('templateReference').value)
+#set ($boundTemplate = $boundTemplate.getProperty('studyReference').value)
 #if ($mode == 'edit')
    #if ("$!request.input" == '')
       #set ($templates = $services.templates.getAllTemplates())
@@ -65,7 +65,7 @@
    #end
    &lt;select id="templatesSelect"&gt;
       &lt;div class="form-template-option"&gt;
-         &lt;option name="${prefix}${name}" value="" /&gt;$services.localization.render('phenotips.templateBindingClass.noTemplateOption')&lt;/option&gt;
+         &lt;option name="notemplate" value="" /&gt;$services.localization.render('phenotips.templateBindingClass.noTemplateOption')&lt;/option&gt;
       &lt;/div&gt;
    #foreach ($s in $templates)
       #set ($configTitle = $s.getTitle())

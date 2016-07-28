@@ -61,9 +61,9 @@ $!doc.content
 #if ($xcontext.action == 'view')
 #set ($filterVal = $services.rendering.escape($doc.fullName, $doc.syntax))
 #set ($sections = [
-  {'id' : 'members', 'name' : "$services.localization.render('phenotips.templateSheet.groupsSection', [$groupsCount])", 'icon' : 'group',       'content' : "((({{phenotips-groups filterby='studies' filterval='$doc.fullName' /}})))"},
+  {'id' : 'members', 'name' : "$services.localization.render('phenotips.templateSheet.groupsSection', [$groupsCount])", 'icon' : 'group', 'content' : "((({{phenotips-groups filterby='studies' filterval='$doc.fullName' /}})))"},
   {'id' : 'cases',   'name' : "$services.localization.render('phenotips.templateSheet.casesSection', [$casesCount])",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.StudyCases"/}}'},
-  {'id' : 'form' ,   'name' : "$services.localization.render('phenotips.templateSheet.formConfigSection')",  'icon' : 'cog',        'content' : "{{include reference='PhenoTips.FormDesigner' /}}"}
+  {'id' : 'form' ,   'name' : "$services.localization.render('phenotips.templateSheet.formConfigSection')", 'icon' : 'cog', 'content' : "{{include reference='PhenoTips.FormDesigner' /}}"}
 ])
 #set ($menu = [])
 #set ($contents = {})
@@ -175,10 +175,8 @@ $!doc.content
     <property>
       <code>document.observe("xwiki:dom:loaded", function () {
   (function(link) {
-    if (!link) {
-      return;
-    }
-    var saveAfterClick = function(event) {
+    if (link) {
+      var saveAfterClick = function() {
       event.stop();
       document.observe('xwiki:document:saved', followLinkAfterSave);
       document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
@@ -190,6 +188,7 @@ $!doc.content
       link.observe('click', saveAfterClick);
     };
     link.observe('click', saveAfterClick);
+  }
   })($("patientConfigurationLink"));
 });</code>
     </property>
@@ -314,6 +313,9 @@ $!doc.content
   float: left;
   max-width: 30%;
   margin: 0 10px 10px 0;
+}
+.vertical-menu {
+  width: 16em;
 }
 .vertical-menu a {
   color: $theme.textColor !important;

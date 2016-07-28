@@ -490,6 +490,7 @@ $xwiki.ssx.use('PhenoTips.ProjectClass', {'colorTheme' : "$xwiki.getSpacePrefere
 
 #project-creation-form input {
   width: auto;
+  margin-left: 10px;
 }
 
 #projects-table td {
@@ -529,6 +530,14 @@ $xwiki.ssx.use('PhenoTips.ProjectClass', {'colorTheme' : "$xwiki.getSpacePrefere
 
 #projects-table .tools{
   min-width: 2.5em;
+}
+
+#projects-table .name{
+  min-width: 6em;
+}
+
+div.infomessage {
+  margin-top: 1.5em;
 }</code>
     </property>
     <property>
@@ -669,10 +678,12 @@ $xwiki.ssx.use('PhenoTips.ProjectClass', {'colorTheme' : "$xwiki.getSpacePrefere
 ##
 (% id="projects-table" %)
 #if ($projectsData.size() == 0)
+
   {{info}}$services.localization.render('phenotips.projectClass.noneDefined')
-    #if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences')
-      [[$services.localization.render('phenotips.projectClass.manage')&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin','editor=globaladmin&amp;section=studies')}]]
-    #end
+
+  #if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences')
+    [[$services.localization.render('phenotips.projectClass.manage')&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin','editor=globaladmin&amp;section=studies')}]]
+  #end
   {{/info}}
 #else
   #foreach ($project in $projectsData)
@@ -680,16 +691,16 @@ $xwiki.ssx.use('PhenoTips.ProjectClass', {'colorTheme' : "$xwiki.getSpacePrefere
       #set ($colUsers = $project.getNumberOfCollaboratorsUsers())
       #set ($patientsNumber = $project.getNumberOfPatients())
       #set ($description = $project.getDescription())
-      #set ($fullName = $project.getFullName())
+      #set ($fullName = $!escapetool.html($project.getFullName()))
       #set ($logo = $project.getImage())
       ##
-      |(% class="logo" %)#if ("$!{logo}" != '')[[image:$logo|| width="80px"]]#end##
+      |(% class="logo" %)#if ("$!{logo}" != '')[[image:path:$logo|| width="80px"]]#end##
       |(% class="name" %) [[$project.getName()&gt;&gt;$fullName]]##
-      \\(% class="members"%)$colUsers $services.localization.render('phenotips.templateClass.collaborator')#if($colUsers != 1)s#end(%%)##
-      \\(% class="members"%)$patientsNumber $services.localization.render('phenotips.templateClass.patient')#if($patientsNumber != 1)s#end(%%)##
+      \\(% class="members"%)$services.localization.render('phenotips.templateClass.collaborator', [$colUsers])(%%)##
+      \\(% class="members"%)$services.localization.render('phenotips.templateClass.patient', [$patientsNumber])(%%)##
       #if ($xcontext.macro.params.fullinfo == 'true')|##
-        #if ("$!{$description}" != '')
-          (% class="desc" %) ((($description)))
+        #if ("$!{description}" != '')##
+          (% class="desc" %) ((($description)))##
         #end
       #end
       #set ($projectLeader = ($project.getCurrentUserAccessLevel().getName() == 'leader'))
