@@ -23,7 +23,7 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
-import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * API that provides access for a specific type of entity, with support for simple CRUD operations. No access rights are
@@ -92,9 +92,9 @@ public interface PrimaryEntityManager<E extends PrimaryEntity>
     /**
      * Retrieves all entities of the managed type, in a random order.
      *
-     * @return a collection of entities, may be empty if no entities exist
+     * @return an iterator over all entities, may be empty if no entities exist
      */
-    Collection<E> getAll();
+    Iterator<E> getAll();
 
     /**
      * Deletes an entity.

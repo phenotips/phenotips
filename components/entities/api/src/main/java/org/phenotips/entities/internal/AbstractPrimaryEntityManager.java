@@ -37,9 +37,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -199,7 +198,7 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
     }
 
     @Override
-    public Collection<E> getAll()
+    public Iterator<E> getAll()
     {
         try {
             Query q = this.qm.createQuery(
@@ -209,16 +208,12 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
                 Query.XWQL).bindValue("template1", this.getEntityXClassReference().getName() + "Template")
                 .bindValue("template1", this.getEntityXClassReference().getName() + "Template");
             List<String> docNames = q.execute();
-            Collection<E> result = new ArrayList<>(docNames.size());
-            for (String docName : docNames) {
-                result.add(get(docName));
-            }
-            return result;
+            return new LazyPrimaryEntityIterator<>(docNames, this);
         } catch (QueryException ex) {
             this.logger.warn("Failed to query all entities of type [{}]: {}", getEntityXClassReference(),
                 ex.getMessage());
         }
-        return Collections.emptyList();
+        return Collections.emptyIterator();
     }
 
     @Override

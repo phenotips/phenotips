@@ -23,6 +23,7 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.stability.Unstable;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * API that provides access for a specific type of groups of entities, with support for simple CRUD operations. No
@@ -100,10 +101,10 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E ex
     /**
      * Retrieves all groups of the managed type, in a random order.
      *
-     * @return a collection of groups, may be empty if no groups exist
+     * @return an iterator over all groups, may be empty if no groups exist
      */
     @Override
-    Collection<G> getAll();
+    Iterator<G> getAll();
 
     /**
      * Deletes a group.

@@ -518,12 +518,6 @@
               <justification>Will be used in new controllers</justification>
             </difference>
             <difference>
-              <className>org/phenotips/data/PatientRepository</className>
-              <differenceType>7012</differenceType>
-              <method>java.util.Iterator getAllPatientsIterator()</method>
-              <justification>Needed for matching notification</justification>
-            </difference>
-            <difference>
               <className>org/phenotips/data/permissions/PermissionsManager</className>
               <differenceType>7012</differenceType>
               <method>java.util.Collection filterByVisibility(java.util.Collection, org.phenotips.data.permissions.Visibility)</method>

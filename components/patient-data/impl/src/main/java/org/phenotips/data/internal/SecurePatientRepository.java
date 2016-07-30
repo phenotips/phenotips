@@ -30,9 +30,7 @@ import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -142,16 +140,10 @@ public class SecurePatientRepository implements PatientRepository
     }
 
     @Override
-    public Collection<Patient> getAll()
+    public Iterator<Patient> getAll()
     {
-        Collection<Patient> result = new LinkedList<>();
-        DocumentReference user = this.bridge.getCurrentUserReference();
-        for (Patient patient : this.internalService.getAll()) {
-            if (checkAccess(patient, user) != null) {
-                result.add(patient);
-            }
-        }
-        return result;
+        Iterator<Patient> patientsIterator = this.internalService.getAll();
+        return new SecurePatientIterator(patientsIterator);
     }
 
     @Override
@@ -174,13 +166,6 @@ public class SecurePatientRepository implements PatientRepository
     public Patient loadPatientFromDocument(DocumentModelBridge document)
     {
         return load(document);
-    }
-
-    @Override
-    public Iterator<Patient> getAllPatientsIterator()
-    {
-        Iterator<Patient> patientsIterator = this.internalService.getAllPatientsIterator();
-        return new SecurePatientIterator(patientsIterator);
     }
 
     private Patient checkAccess(Patient patient, DocumentReference user)

@@ -27,8 +27,6 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -162,25 +160,5 @@ public class PhenoTipsPatientRepository extends PatientEntityManager implements 
 
         }
         return crtMaxID;
-    }
-
-    @Override
-    public Iterator<Patient> getAllPatientsIterator()
-    {
-        List<String> patientIds = null;
-        try {
-            Query q = this.qm.createQuery("select doc.name "
-                + "from Document doc, "
-                + "doc.object(PhenoTips.PatientClass) as patient "
-                + "where patient.identifier >= 0 "
-                + "order by doc.name",
-                Query.XWQL);
-            patientIds = q.execute();
-        } catch (QueryException e) {
-            this.logger.error("Failed to query all patients: {}", e);
-            patientIds = new LinkedList<>();
-        }
-
-        return new LazyPatientIterator(patientIds);
     }
 }
