@@ -24,6 +24,8 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.stability.Unstable;
 
+import java.util.Iterator;
+
 /**
  * API that provides access to patient data. No access rights are checked here.
  *
@@ -81,10 +83,16 @@ public interface PatientRepository extends PrimaryEntityManager<Patient>
      * Create and return a new empty patient record (owned by the given entity).
      *
      * @param creator a reference to the document representing an entity (a user or a group) which will be set as the
-     *            owner for the created {@link Patient patient}.
+     *            owner for the created {@link Patient patient}
      * @return the created patient record
      * @deprecated use {@link #create(DocumentReference)} instead
      */
     @Deprecated
     Patient createNewPatient(DocumentReference creator);
+
+    /**
+     * @return an iterator for traversing all patients
+     * @since 1.3M2
+     */
+    Iterator<Patient> getAllPatientsIterator();
 }

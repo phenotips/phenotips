@@ -62,11 +62,14 @@ import com.xpn.xwiki.objects.BaseObject;
 public class DatesController implements PatientDataController<Date>
 {
     protected static final String PATIENT_DATEOFDEATH_FIELDNAME = "date_of_death";
+
     protected static final String PATIENT_DATEOFDEATHENTERED_FIELDNAME = "date_of_death_entered";
+
     protected static final String PATIENT_DATEOFBIRTH_FIELDNAME = "date_of_birth";
+
     protected static final String PATIENT_DATEOFBIRTHENTERED_FIELDNAME = "date_of_birth_entered";
 
-    protected static final String PATIENT_EXAMDATE_FIELDNAME    = "exam_date";
+    protected static final String PATIENT_EXAMDATE_FIELDNAME = "exam_date";
 
     private static final String DATA_NAME = "dates";
 
@@ -198,6 +201,6 @@ public class DatesController implements PatientDataController<Date>
     protected List<String> getProperties()
     {
         return Arrays.asList(PATIENT_DATEOFBIRTH_FIELDNAME, PATIENT_DATEOFBIRTHENTERED_FIELDNAME,
-                PATIENT_DATEOFDEATH_FIELDNAME, PATIENT_DATEOFDEATHENTERED_FIELDNAME, PATIENT_EXAMDATE_FIELDNAME);
+            PATIENT_DATEOFDEATH_FIELDNAME, PATIENT_DATEOFDEATHENTERED_FIELDNAME, PATIENT_EXAMDATE_FIELDNAME);
     }
 }

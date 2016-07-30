@@ -31,6 +31,7 @@ import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.inject.Inject;
@@ -173,6 +174,13 @@ public class SecurePatientRepository implements PatientRepository
     public Patient loadPatientFromDocument(DocumentModelBridge document)
     {
         return load(document);
+    }
+
+    @Override
+    public Iterator<Patient> getAllPatientsIterator()
+    {
+        Iterator<Patient> patientsIterator = this.internalService.getAllPatientsIterator();
+        return new SecurePatientIterator(patientsIterator);
     }
 
     private Patient checkAccess(Patient patient, DocumentReference user)

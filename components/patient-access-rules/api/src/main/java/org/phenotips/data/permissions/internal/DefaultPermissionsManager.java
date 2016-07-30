@@ -31,6 +31,7 @@ import org.xwiki.component.manager.ComponentManager;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.TreeSet;
 
 import javax.inject.Inject;
@@ -136,6 +137,28 @@ public class DefaultPermissionsManager implements PermissionsManager
     public PatientAccess getPatientAccess(Patient targetPatient)
     {
         return new DefaultPatientAccess(targetPatient, getHelper(), this);
+    }
+
+    @Override
+    public Collection<Patient> filterByVisibility(Collection<Patient> patients, Visibility requiredVisibility)
+    {
+        if (requiredVisibility == null) {
+            return patients;
+        }
+        Collection<Patient> patientsWithVisibility = new LinkedList<>();
+        if (patients == null || patients.isEmpty()) {
+            return patientsWithVisibility;
+        }
+        for (Patient patient : patients) {
+            if (patient != null) {
+                Visibility patientVisibility = this.getPatientAccess(patient).getVisibility();
+                if (requiredVisibility.compareTo(patientVisibility) <= 0) {
+                    patientsWithVisibility.add(patient);
+                }
+            }
+        }
+
+        return patientsWithVisibility;
     }
 
     private PatientAccessHelper getHelper()
