@@ -23,6 +23,7 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * @version $Id$
@@ -75,4 +76,16 @@ public interface PermissionsManager
      * @since 1.3M2
      */
     Collection<Patient> filterByVisibility(Collection<Patient> patients, Visibility requiredVisibility);
+
+    /**
+     * Receives a collection of patients and returns a only those with {@code visibility >= requiredVisibility}.
+     *
+     * @param patients an iterator over a collection of patients
+     * @param requiredVisibility minimum level of visibility required for patients
+     * @return an iterator returning only the patients with {@code visibility >= requiredVisibility}; may be empty;
+     *         preserves the order of the input iterator; if the threshold visibility is {@code null}, the input is
+     *         returned unaltered
+     * @since 1.3M2
+     */
+    Iterator<Patient> filterByVisibility(Iterator<Patient> patients, Visibility requiredVisibility);
 }

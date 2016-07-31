@@ -520,7 +520,7 @@
             <difference>
               <className>org/phenotips/data/permissions/PermissionsManager</className>
               <differenceType>7012</differenceType>
-              <method>java.util.Collection filterByVisibility(java.util.Collection, org.phenotips.data.permissions.Visibility)</method>
+              <method>java.util.* filterByVisibility(java.util.*, org.phenotips.data.permissions.Visibility)</method>
               <justification>Needed for matching notification</justification>
             </difference>
           </ignored>

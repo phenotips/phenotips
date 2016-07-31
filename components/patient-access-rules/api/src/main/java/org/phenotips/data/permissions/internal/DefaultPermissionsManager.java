@@ -161,6 +161,18 @@ public class DefaultPermissionsManager implements PermissionsManager
         return patientsWithVisibility;
     }
 
+    @Override
+    public Iterator<Patient> filterByVisibility(Iterator<Patient> patients, Visibility requiredVisibility)
+    {
+        if (requiredVisibility == null) {
+            return patients;
+        }
+        if (patients == null || !patients.hasNext()) {
+            return Collections.emptyIterator();
+        }
+        return new FilteringIterator(patients, requiredVisibility, this);
+    }
+
     private PatientAccessHelper getHelper()
     {
         try {

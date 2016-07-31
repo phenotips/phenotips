@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -278,7 +279,7 @@ public class DefaultPermissionsManagerTest
     }
 
     @Test
-    public void filterByVisibilityWithEmptyInputReturnsEmptyList() throws ComponentLookupException
+    public void filterCollectionByVisibilityWithEmptyInputReturnsEmptyCollection() throws ComponentLookupException
     {
         Collection<Patient> result = this.mocker.getComponentUnderTest()
             .filterByVisibility(Collections.<Patient>emptyList(), new PrivateVisibility());
@@ -287,16 +288,34 @@ public class DefaultPermissionsManagerTest
     }
 
     @Test
-    public void filterByVisibilityWithNullInputReturnsEmptyList() throws ComponentLookupException
+    public void filterIteratorByVisibilityWithEmptyInputReturnsEmptyIterator() throws ComponentLookupException
+    {
+        Iterator<Patient> result = this.mocker.getComponentUnderTest()
+            .filterByVisibility(Collections.<Patient>emptyIterator(), new PrivateVisibility());
+        Assert.assertNotNull(result);
+        Assert.assertFalse(result.hasNext());
+    }
+
+    @Test
+    public void filterCollectionByVisibilityWithNullInputReturnsEmptyCollection() throws ComponentLookupException
     {
         Collection<Patient> result = this.mocker.getComponentUnderTest()
-            .filterByVisibility(null, new PrivateVisibility());
+            .filterByVisibility((Collection<Patient>) null, new PrivateVisibility());
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isEmpty());
     }
 
     @Test
-    public void filterByVisibilityWithValidInputFiltersPatients() throws ComponentLookupException
+    public void filterIteratorByVisibilityWithNullInputReturnsEmptyIterator() throws ComponentLookupException
+    {
+        Iterator<Patient> result = this.mocker.getComponentUnderTest()
+            .filterByVisibility((Iterator<Patient>) null, new PrivateVisibility());
+        Assert.assertNotNull(result);
+        Assert.assertFalse(result.hasNext());
+    }
+
+    @Test
+    public void filterCollectionByVisibilityWithValidInputFiltersPatients() throws ComponentLookupException
     {
         ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
         PatientAccessHelper helper = mock(PatientAccessHelper.class);
@@ -323,7 +342,35 @@ public class DefaultPermissionsManagerTest
     }
 
     @Test
-    public void filterByVisibilityWithNullInInputFiltersValidPatients() throws ComponentLookupException
+    public void filterIteratorByVisibilityWithValidInputFiltersPatients() throws ComponentLookupException
+    {
+        ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
+        PatientAccessHelper helper = mock(PatientAccessHelper.class);
+        when(cm.getInstance(PatientAccessHelper.class)).thenReturn(helper);
+
+        Collection<Patient> input = new ArrayList<>();
+        Patient p1 = mock(Patient.class);
+        when(helper.getVisibility(p1)).thenReturn(new PublicVisibility());
+        input.add(p1);
+        Patient p2 = mock(Patient.class);
+        when(helper.getVisibility(p2)).thenReturn(new HiddenVisibility());
+        input.add(p2);
+        Patient p3 = mock(Patient.class);
+        when(helper.getVisibility(p3)).thenReturn(new PrivateVisibility());
+        input.add(p3);
+
+        Iterator<Patient> result = this.mocker.getComponentUnderTest()
+            .filterByVisibility(input.iterator(), new PrivateVisibility());
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.hasNext());
+        Assert.assertSame(p1, result.next());
+        Assert.assertTrue(result.hasNext());
+        Assert.assertSame(p3, result.next());
+        Assert.assertFalse(result.hasNext());
+    }
+
+    @Test
+    public void filterCollectionByVisibilityWithNullInInputFiltersValidPatients() throws ComponentLookupException
     {
         ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
         PatientAccessHelper helper = mock(PatientAccessHelper.class);
@@ -340,6 +387,7 @@ public class DefaultPermissionsManagerTest
         Patient p3 = mock(Patient.class);
         when(helper.getVisibility(p3)).thenReturn(new PrivateVisibility());
         input.add(p3);
+        input.add(null);
 
         Collection<Patient> result = this.mocker.getComponentUnderTest()
             .filterByVisibility(input, new PrivateVisibility());
@@ -351,7 +399,37 @@ public class DefaultPermissionsManagerTest
     }
 
     @Test
-    public void filterByVisibilityWithNonMatchingInputReturnsEmptyList() throws ComponentLookupException
+    public void filterIteratorByVisibilityWithNullInInputFiltersValidPatients() throws ComponentLookupException
+    {
+        ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
+        PatientAccessHelper helper = mock(PatientAccessHelper.class);
+        when(cm.getInstance(PatientAccessHelper.class)).thenReturn(helper);
+
+        Collection<Patient> input = new ArrayList<>();
+        Patient p1 = mock(Patient.class);
+        when(helper.getVisibility(p1)).thenReturn(new PublicVisibility());
+        input.add(p1);
+        Patient p2 = mock(Patient.class);
+        when(helper.getVisibility(p2)).thenReturn(new HiddenVisibility());
+        input.add(p2);
+        input.add(null);
+        Patient p3 = mock(Patient.class);
+        when(helper.getVisibility(p3)).thenReturn(new PrivateVisibility());
+        input.add(p3);
+        input.add(null);
+
+        Iterator<Patient> result = this.mocker.getComponentUnderTest()
+            .filterByVisibility(input.iterator(), new PrivateVisibility());
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.hasNext());
+        Assert.assertSame(p1, result.next());
+        Assert.assertTrue(result.hasNext());
+        Assert.assertSame(p3, result.next());
+        Assert.assertFalse(result.hasNext());
+    }
+
+    @Test
+    public void filterCollectionByVisibilityWithNonMatchingInputReturnsEmptyList() throws ComponentLookupException
     {
         ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
         PatientAccessHelper helper = mock(PatientAccessHelper.class);
@@ -376,7 +454,32 @@ public class DefaultPermissionsManagerTest
     }
 
     @Test
-    public void filterByVisibilityWithNullThresholdReturnsUnfilteredList() throws ComponentLookupException
+    public void filterIteratorByVisibilityWithNonMatchingInputReturnsEmptyIterator() throws ComponentLookupException
+    {
+        ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
+        PatientAccessHelper helper = mock(PatientAccessHelper.class);
+        when(cm.getInstance(PatientAccessHelper.class)).thenReturn(helper);
+
+        Collection<Patient> input = new ArrayList<>();
+        Patient p1 = mock(Patient.class);
+        when(helper.getVisibility(p1)).thenReturn(new HiddenVisibility());
+        input.add(p1);
+        Patient p2 = mock(Patient.class);
+        when(helper.getVisibility(p2)).thenReturn(new HiddenVisibility());
+        input.add(p2);
+        input.add(null);
+        Patient p3 = mock(Patient.class);
+        when(helper.getVisibility(p3)).thenReturn(new PrivateVisibility());
+        input.add(p3);
+
+        Iterator<Patient> result = this.mocker.getComponentUnderTest()
+            .filterByVisibility(input.iterator(), new PublicVisibility());
+        Assert.assertNotNull(result);
+        Assert.assertFalse(result.hasNext());
+    }
+
+    @Test
+    public void filterCollectionByVisibilityWithNullThresholdReturnsUnfilteredList() throws ComponentLookupException
     {
         ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
         PatientAccessHelper helper = mock(PatientAccessHelper.class);
@@ -403,5 +506,81 @@ public class DefaultPermissionsManagerTest
         Assert.assertSame(p2, it.next());
         Assert.assertNull(it.next());
         Assert.assertSame(p3, it.next());
+    }
+
+    @Test
+    public void filterIteratorByVisibilityWithNullThresholdReturnsUnfilteredIterator() throws ComponentLookupException
+    {
+        ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
+        PatientAccessHelper helper = mock(PatientAccessHelper.class);
+        when(cm.getInstance(PatientAccessHelper.class)).thenReturn(helper);
+
+        Collection<Patient> input = new ArrayList<>();
+        Patient p1 = mock(Patient.class);
+        when(helper.getVisibility(p1)).thenReturn(new PublicVisibility());
+        input.add(p1);
+        Patient p2 = mock(Patient.class);
+        when(helper.getVisibility(p2)).thenReturn(new HiddenVisibility());
+        input.add(p2);
+        input.add(null);
+        Patient p3 = mock(Patient.class);
+        when(helper.getVisibility(p3)).thenReturn(new PrivateVisibility());
+        input.add(p3);
+
+        Iterator<Patient> result = this.mocker.getComponentUnderTest()
+            .filterByVisibility(input.iterator(), null);
+        Assert.assertTrue(result.hasNext());
+        Assert.assertSame(p1, result.next());
+        Assert.assertTrue(result.hasNext());
+        Assert.assertSame(p2, result.next());
+        Assert.assertTrue(result.hasNext());
+        Assert.assertNull(result.next());
+        Assert.assertTrue(result.hasNext());
+        Assert.assertSame(p3, result.next());
+        Assert.assertFalse(result.hasNext());
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void filterIteratorByVisibilityReturnsReadonlyIterator() throws ComponentLookupException
+    {
+        ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
+        PatientAccessHelper helper = mock(PatientAccessHelper.class);
+        when(cm.getInstance(PatientAccessHelper.class)).thenReturn(helper);
+
+        Collection<Patient> input = new ArrayList<>();
+        Patient p1 = mock(Patient.class);
+        when(helper.getVisibility(p1)).thenReturn(new PublicVisibility());
+        input.add(p1);
+        Patient p2 = mock(Patient.class);
+        when(helper.getVisibility(p2)).thenReturn(new HiddenVisibility());
+        input.add(p2);
+        input.add(null);
+        Patient p3 = mock(Patient.class);
+        when(helper.getVisibility(p3)).thenReturn(new PrivateVisibility());
+        input.add(p3);
+
+        Iterator<Patient> result = this.mocker.getComponentUnderTest()
+            .filterByVisibility(input.iterator(), new PrivateVisibility());
+        Assert.assertSame(p1, result.next());
+        result.remove();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void filterIteratorByVisibilityReturnsCorrectIterator() throws ComponentLookupException
+    {
+        ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
+        PatientAccessHelper helper = mock(PatientAccessHelper.class);
+        when(cm.getInstance(PatientAccessHelper.class)).thenReturn(helper);
+
+        Collection<Patient> input = new ArrayList<>();
+        Patient p1 = mock(Patient.class);
+        when(helper.getVisibility(p1)).thenReturn(new PublicVisibility());
+        input.add(p1);
+
+        Iterator<Patient> result = this.mocker.getComponentUnderTest()
+            .filterByVisibility(input.iterator(), new PrivateVisibility());
+        Assert.assertSame(p1, result.next());
+        Assert.assertFalse(result.hasNext());
+        result.next();
     }
 }
