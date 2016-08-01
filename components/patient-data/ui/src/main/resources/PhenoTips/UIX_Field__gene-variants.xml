@@ -115,8 +115,7 @@
 {{velocity}}
 $xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
 $xwiki.jsfx.use('uicomponents/widgets/extraGeneVariantData.js', true)##
-$xwiki.jsfx.use('uicomponents/widgets/geneValidation.js', true)##
-$xwiki.jsfx.use('uicomponents/widgets/variantValidation.js', true)##
+$xwiki.jsfx.use('uicomponents/widgets/geneVariantValidation.js', true)##
 $xwiki.ssfx.use('uicomponents/widgets/extraGeneVariantData.css', true)##
 #template('geneVariantMacros.vm')
 #set ($geneClassName = 'PhenoTips.GeneClass')

@@ -198,3 +198,6 @@ a.action-edit.secondary.variant-edit:hover, a.action-edit.secondary.variant-edit
 .gene-table .variant-title {
   background-color: #d5e6ff !important;
 }
+#inline td.variant.variant-default-input.cdna {
+  height: 3em;
+}

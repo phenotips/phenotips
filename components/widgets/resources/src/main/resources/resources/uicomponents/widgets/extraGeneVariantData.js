@@ -103,6 +103,8 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
           var dataRow = deleteTrigger.up('tr:not(.head-group)');
           var dataTable = deleteTrigger.up('table.gene-table.extradata-list');
           if (dataRow) {
+            var geneNameInput = dataRow.down('input.gene-name');
+            geneNameInput.__validation.destroy();
             $$('.variant-gene-' + geneIndex).each(function(item) {
               item.remove();
             });
@@ -204,6 +206,8 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
         onSuccess : function() {
           var dataRow = deleteTrigger.up('tr:not(.head-group)');
           if (dataRow) {
+            var cdnaInput = dataRow.down('.variant.cdna input');
+            cdnaInput.__validation.destroy();
             var className = dataRow.previous().className;
             var geneIndex = parseInt(className.substring(className.lastIndexOf('-') + 1), 10);
             //we are deleting the only variant in the gene: remove variant table header,
