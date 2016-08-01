@@ -143,7 +143,7 @@ public class SecurePatientRepository implements PatientRepository
     public Iterator<Patient> getAll()
     {
         Iterator<Patient> patientsIterator = this.internalService.getAll();
-        return new SecurePatientIterator(patientsIterator);
+        return new SecurePatientIterator(patientsIterator, this.access, this.bridge);
     }
 
     @Override

@@ -28,6 +28,10 @@
   <artifactId>phenotips-entities-api</artifactId>
   <name>PhenoTips - Entities - Java APIs</name>
 
+  <properties>
+    <coverage.instructionRatio>0.01</coverage.instructionRatio>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
@@ -62,6 +66,13 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
+    </dependency>
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-tool-test-component</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

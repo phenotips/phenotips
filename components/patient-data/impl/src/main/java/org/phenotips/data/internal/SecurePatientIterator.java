@@ -17,20 +17,15 @@
  */
 package org.phenotips.data.internal;
 
-import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 
 import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An iterator on an immutable, patients collection, which only returns patients that the current user has access to.
@@ -40,40 +35,25 @@ import org.slf4j.LoggerFactory;
  */
 public class SecurePatientIterator implements Iterator<Patient>
 {
-    private static final AuthorizationManager ACCESS;
-
-    private static final DocumentAccessBridge BRIDGE;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SecurePatientIterator.class);
-
     private Iterator<Patient> patientIterator;
 
     private DocumentReference currentUser;
 
-    private Patient nextPatient;
+    private AuthorizationManager access;
 
-    static {
-        AuthorizationManager access = null;
-        DocumentAccessBridge bridge = null;
-        try {
-            access = ComponentManagerRegistry.getContextComponentManager().getInstance(AuthorizationManager.class);
-            bridge = ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
-        } catch (ComponentLookupException e) {
-            LOGGER.error("Error loading static components: {}", e.getMessage(), e);
-        }
-        ACCESS = access;
-        BRIDGE = bridge;
-    }
+    private Patient nextPatient;
 
     /**
      * Default constructor.
      *
      * @param patientIterator Iterator for a collection of patients that this class wraps with security.
      */
-    public SecurePatientIterator(Iterator<Patient> patientIterator)
+    public SecurePatientIterator(Iterator<Patient> patientIterator, AuthorizationManager access,
+        DocumentAccessBridge bridge)
     {
         this.patientIterator = patientIterator;
-        this.currentUser = SecurePatientIterator.BRIDGE.getCurrentUserReference();
+        this.currentUser = bridge.getCurrentUserReference();
+        this.access = access;
 
         this.findNextPatient();
     }
@@ -106,10 +86,13 @@ public class SecurePatientIterator implements Iterator<Patient>
     private void findNextPatient()
     {
         this.nextPatient = null;
+        if (this.patientIterator == null) {
+            return;
+        }
 
         while (this.patientIterator.hasNext() && this.nextPatient == null) {
             Patient potentialNextPatient = this.patientIterator.next();
-            if (SecurePatientIterator.ACCESS.hasAccess(
+            if (this.access.hasAccess(
                 Right.VIEW, this.currentUser, potentialNextPatient.getDocument())) {
                 this.nextPatient = potentialNextPatient;
             }
