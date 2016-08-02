@@ -19,6 +19,8 @@ package org.phenotips.security.encryption.internal;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
+
 
 import org.jasypt.digest.StandardStringDigester;
 import org.jasypt.util.text.StrongTextEncryptor;
@@ -27,44 +29,50 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.phenotips.security.encryption.CryptoUtils;
 import org.phenotips.security.encryption.SystemPasswordConfiguration;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-public class DefaultCryptoUtilsTest {
 
+public class DefaultCryptoUtilsTest {
+	
 	@Rule
 	public MockitoComponentMockingRule<CryptoUtils> mocker = new 
-		MockitoComponentMockingRule<CryptoUtils>(DefaultCryptoUtils.class);
+	MockitoComponentMockingRule<CryptoUtils>(DefaultCryptoUtils.class);	
 
-	@Mock
-	private SystemPasswordConfiguration passwordConfig;
+	//private StrongTextEncryptor encryptor;
 
-	private StrongTextEncryptor encryptor;
-
-	private StandardStringDigester digester;
+	//private StandardStringDigester digester;
 	
 	@Before
-	public void initMocks() throws InitializationException
+	public void setUp()
 	{
 		MockitoAnnotations.initMocks(this);
-		this.encryptor = new StrongTextEncryptor();
-        this.encryptor.setPassword(this.passwordConfig.getSystemPassword());
-
-        this.digester = new StandardStringDigester();
-        this.digester.setAlgorithm("SHA-512");
-        this.digester.setIterations(100);
-        this.digester.setSaltSizeBytes(16);
-        this.digester.initialize();
 	}
 	
 	@Test
-	public void properlyEncryptsWithSystemKey() throws ComponentLookupException
+	public void testEncryption() throws ComponentLookupException
+	{
+	    SystemPasswordConfiguration passwordConfig = this.mocker.getInstance(SystemPasswordConfiguration.class);
+	    when(passwordConfig.getSystemPassword()).thenReturn("X");
+	    String enc = this.mocker.getComponentUnderTest().encryptWithSystemKey("test");
+	    Assert.assertNotNull(enc);
+	    Assert.assertTrue(enc.length() >= 8);
+	    Assert.assertEquals("test", this.mocker.getComponentUnderTest().decryptWithSystemKey(enc));
+	}
+	
+	@Test
+	public void testDigester() throws ComponentLookupException
 	{	
-		//when(this.encryptor.encrypt(null)).thenReturn(null);
-		Assert.assertNotNull(this.mocker.getComponentUnderTest().encryptWithSystemKey(null));
+		StandardStringDigester digester = this.mocker.getInstance(StandardStringDigester.class);
+		when(digester.matches("test", "SHA-512")).thenReturn(true);
+		String digest = this.mocker.getComponentUnderTest().digest("test");
+		Assert.assertNotNull(digest);
+		Assert.assertTrue(this.mocker.getComponentUnderTest().validateDigest("test", digest));		
 	}
 }
