@@ -26,7 +26,7 @@ import org.mockito.MockitoAnnotations;
 import org.phenotips.security.authorization.AuthorizationModule;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
@@ -126,7 +126,7 @@ public class AuthorizationModuleListProviderTest {
         }
 
         @Override
-        public Boolean hasAccess(User user, Right access, DocumentReference document)
+        public Boolean hasAccess(User user, Right access, EntityReference entity)
         {
             return Boolean.TRUE;
         }
@@ -135,7 +135,7 @@ public class AuthorizationModuleListProviderTest {
     private static class BModule extends AModule
     {
         @Override
-        public Boolean hasAccess(User user, Right access, DocumentReference document)
+        public Boolean hasAccess(User user, Right access, EntityReference entity)
         {
             return Boolean.FALSE;
         }

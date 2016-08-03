@@ -20,7 +20,7 @@ package org.phenotips.security.authorization.internal;
 import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
@@ -51,8 +51,8 @@ public class XWikiACLAuthorizationModule implements AuthorizationModule
     }
 
     @Override
-    public Boolean hasAccess(User user, Right access, DocumentReference document)
+    public Boolean hasAccess(User user, Right access, EntityReference entity)
     {
-        return this.authorizationManager.hasAccess(access, user == null ? null : user.getProfileDocument(), document);
+        return this.authorizationManager.hasAccess(access, user == null ? null : user.getProfileDocument(), entity);
     }
 }

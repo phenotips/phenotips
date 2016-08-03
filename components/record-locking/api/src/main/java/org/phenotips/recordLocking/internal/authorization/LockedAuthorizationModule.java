@@ -64,12 +64,15 @@ public class LockedAuthorizationModule implements AuthorizationModule
     }
 
     @Override
-    public Boolean hasAccess(User user, Right access, DocumentReference document)
+    public Boolean hasAccess(User user, Right access, EntityReference entity)
     {
+        if (!(entity instanceof DocumentReference)) {
+            return null;
+        }
         XWikiContext context = this.contextProvider.get();
 
         try {
-            XWikiDocument doc = context.getWiki().getDocument(document, context);
+            XWikiDocument doc = context.getWiki().getDocument((DocumentReference) entity, context);
             BaseObject lock = doc.getXObject(this.lockClassReference);
             if (lock != null && !access.isReadOnly()) {
                 return Boolean.FALSE;

@@ -18,7 +18,7 @@
 package org.phenotips.security.authorization;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.stability.Unstable;
 import org.xwiki.users.User;
@@ -48,13 +48,13 @@ public interface AuthorizationModule
     int getPriority();
 
     /**
-     * Checks if the specified user has the requested access level on the target document.
+     * Checks if the specified user has the requested access level on the target entity.
      *
      * @param user the user whose rights should be checked
      * @param access the requested access level
-     * @param document the target document
+     * @param entity the target entity (document, space, wiki...)
      * @return {@code True} if access is granted, {@code False} if access is denied, {@code null} if this module cannot
      *         determine if access should be granted or denied
      */
-    Boolean hasAccess(User user, Right access, DocumentReference document);
+    Boolean hasAccess(User user, Right access, EntityReference entity);
 }

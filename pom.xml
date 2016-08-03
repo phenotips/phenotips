@@ -523,6 +523,20 @@
               <method>java.util.* filterByVisibility(java.util.*, org.phenotips.data.permissions.Visibility)</method>
               <justification>Needed for matching notification</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/security/authorization/AuthorizationModule</className>
+              <differenceType>7005</differenceType>
+              <method>java.lang.Boolean hasAccess(org.xwiki.users.User, org.xwiki.security.authorization.Right, org.xwiki.model.reference.DocumentReference)</method>
+              <to>java.lang.Boolean hasAccess(org.xwiki.users.User, org.xwiki.security.authorization.Right, org.xwiki.model.reference.EntityReference)</to>
+              <justification>Made more generic to also be able to deal with spaces</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/security/authorization/AuthorizationService</className>
+              <differenceType>7005</differenceType>
+              <method>boolean hasAccess(org.xwiki.users.User, org.xwiki.security.authorization.Right, org.xwiki.model.reference.DocumentReference)</method>
+              <to>boolean hasAccess(org.xwiki.users.User, org.xwiki.security.authorization.Right, org.xwiki.model.reference.EntityReference)</to>
+              <justification>Made more generic to also be able to deal with spaces</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

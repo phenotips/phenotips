@@ -21,7 +21,7 @@ import org.phenotips.security.authorization.AuthorizationModule;
 import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 
@@ -53,11 +53,11 @@ public class DefaultAuthorizationService implements AuthorizationService
     private Provider<List<AuthorizationModule>> modules;
 
     @Override
-    public boolean hasAccess(User user, Right access, DocumentReference document)
+    public boolean hasAccess(User user, Right access, EntityReference entity)
     {
         for (AuthorizationModule service : this.modules.get()) {
             try {
-                Boolean decision = service.hasAccess(user, access, document);
+                Boolean decision = service.hasAccess(user, access, entity);
                 if (decision != null) {
                     return decision;
                 }

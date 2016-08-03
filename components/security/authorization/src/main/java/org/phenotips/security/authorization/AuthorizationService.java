@@ -18,13 +18,13 @@
 package org.phenotips.security.authorization;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.stability.Unstable;
 import org.xwiki.users.User;
 
 /**
- * Service which checks if a specific operation on a patient record should be granted or not. The default implementation
+ * Service which checks if a specific operation on an entity should be granted or not. The default implementation
  * forwards the decision to implementations of the {@link AuthorizationModule} role, in descending order of their
  * {@link AuthorizationModule#getPriority() priority}, until one responds with a non-null decision.
  *
@@ -36,12 +36,12 @@ import org.xwiki.users.User;
 public interface AuthorizationService
 {
     /**
-     * Checks if the specified user has the requested access level on the target document.
+     * Checks if the specified user has the requested access level on the target entity.
      *
      * @param user the user whose rights should be checked
      * @param access the requested access level
-     * @param document the target document
+     * @param entity the target entity (document, space, wiki...)
      * @return {@code true} if access is granted, {@code false} if access is denied
      */
-    boolean hasAccess(User user, Right access, DocumentReference document);
+    boolean hasAccess(User user, Right access, EntityReference entity);
 }

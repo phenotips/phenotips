@@ -21,7 +21,7 @@ import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
-import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 
@@ -55,7 +55,7 @@ public class BaseAuthorizationModule implements AuthorizationModule
     }
 
     @Override
-    public Boolean hasAccess(User user, Right access, DocumentReference document)
+    public Boolean hasAccess(User user, Right access, EntityReference entity)
     {
         Boolean result = this.configuration.getProperty("phenotips.security.authorization.allowAllAccessByDefault");
         if (result == null) {

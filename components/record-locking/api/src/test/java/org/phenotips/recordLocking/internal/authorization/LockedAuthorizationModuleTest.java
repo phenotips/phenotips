@@ -101,6 +101,13 @@ public class LockedAuthorizationModuleTest
     }
 
     @Test
+    public void ignoresNonDocumentReferences() throws ComponentLookupException
+    {
+        Assert.assertNull(
+            this.mocker.getComponentUnderTest().hasAccess(this.user, this.right, this.documentReference.getParent()));
+    }
+
+    @Test
     public void ignoresWhenActionIsReadOnly() throws ComponentLookupException, XWikiException
     {
         Mockito.doReturn(this.document).when(this.xwiki).getDocument(this.documentReference, this.context);
