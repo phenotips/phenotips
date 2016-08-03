@@ -17,13 +17,8 @@
  */
 package org.phenotips.security.authorization.internal;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.phenotips.security.authorization.AuthorizationModule;
+
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.model.reference.EntityReference;
@@ -31,10 +26,18 @@ import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
 
-import javax.inject.Provider;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.inject.Provider;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doReturn;
@@ -42,9 +45,10 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 /**
- *  Test for the {@link AuthorizationModuleListProvider} component
+ * Test for the {@link AuthorizationModuleListProvider} component
  */
-public class AuthorizationModuleListProviderTest {
+public class AuthorizationModuleListProviderTest
+{
 
     @Rule
     public MockitoComponentMockingRule<Provider<List<AuthorizationModule>>> mocker =
