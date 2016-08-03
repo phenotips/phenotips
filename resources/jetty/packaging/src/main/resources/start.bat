@@ -59,17 +59,17 @@ set JAVA_PATH=%JAVAW_PATH:\javaw.exe=%\java.exe
 if "%JAVA_PATH%"=="" set JAVA_PATH=java
 
 REM Location where XWiki stores generated data and where database files are.
-set XWIKI_DATA_DIR=data
+set XWIKI_DATA_DIR=%AppData%\PhenoTips
 set START_OPTS=%START_OPTS% -Dxwiki.data.dir=%XWIKI_DATA_DIR%
 
 REM Ensure the data directory exists so that XWiki can use it for storing permanent data.
-if not exist %XWIKI_DATA_DIR% mkdir %XWIKI_DATA_DIR%
+if not exist %XWIKI_DATA_DIR% (
+  mkdir %XWIKI_DATA_DIR%
+  xcopy /E /Q data %XWIKI_DATA_DIR%
+)
 
 REM Ensure the logs directory exists as otherwise Jetty reports an error
 if not exist %XWIKI_DATA_DIR%\logs mkdir %XWIKI_DATA_DIR%\logs
-
-REM Ensure the work directory exists so that Jetty uses it for its temporary files.
-if not exist %JETTY_HOME%\work mkdir %JETTY_HOME%\work
 
 REM Specify port on which HTTP requests will be handled
 set START_OPTS=%START_OPTS% -Djetty.port=%JETTY_PORT%
