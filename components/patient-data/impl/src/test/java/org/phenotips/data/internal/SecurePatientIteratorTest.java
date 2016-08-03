@@ -18,12 +18,12 @@
 package org.phenotips.data.internal;
 
 import org.phenotips.data.Patient;
+import org.phenotips.security.authorization.AuthorizationService;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
+import org.xwiki.users.User;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -54,7 +54,8 @@ public class SecurePatientIteratorTest
     @Mock
     private Patient p3;
 
-    private DocumentReference currentUser = new DocumentReference("xwiki", "XWiki", "jdoe");
+    @Mock
+    private User currentUser;
 
     private DocumentReference p1Reference = new DocumentReference("xwiki", "data", "P01");
 
@@ -63,17 +64,13 @@ public class SecurePatientIteratorTest
     private DocumentReference p3Reference = new DocumentReference("xwiki", "data", "P03");
 
     @Mock
-    private AuthorizationManager access;
-
-    @Mock
-    private DocumentAccessBridge bridge;
+    private AuthorizationService access;
 
     @Before
     public void setup() throws ComponentLookupException
     {
         MockitoAnnotations.initMocks(this);
 
-        when(this.bridge.getCurrentUserReference()).thenReturn(this.currentUser);
         when(this.p1.getDocument()).thenReturn(this.p1Reference);
         when(this.p2.getDocument()).thenReturn(this.p2Reference);
         when(this.p3.getDocument()).thenReturn(this.p3Reference);
@@ -84,7 +81,7 @@ public class SecurePatientIteratorTest
     {
         List<Patient> input = new LinkedList<>();
 
-        SecurePatientIterator iterator = new SecurePatientIterator(input.iterator(), this.access, this.bridge);
+        SecurePatientIterator iterator = new SecurePatientIterator(input.iterator(), this.access, this.currentUser);
         Assert.assertFalse(iterator.hasNext());
         boolean exception = false;
         try {
@@ -104,7 +101,7 @@ public class SecurePatientIteratorTest
         input.add(this.p2);
         input.add(this.p3);
 
-        SecurePatientIterator iterator = new SecurePatientIterator(input.iterator(), this.access, this.bridge);
+        SecurePatientIterator iterator = new SecurePatientIterator(input.iterator(), this.access, this.currentUser);
         Assert.assertFalse(iterator.hasNext());
         boolean exception = false;
         try {
@@ -120,7 +117,7 @@ public class SecurePatientIteratorTest
     public void removeThrowsUnsupportedOperationException() throws UnsupportedOperationException
     {
         List<Patient> input = new LinkedList<>();
-        SecurePatientIterator iterator = new SecurePatientIterator(input.iterator(), this.access, this.bridge);
+        SecurePatientIterator iterator = new SecurePatientIterator(input.iterator(), this.access, this.currentUser);
         iterator.remove();
     }
 
@@ -131,11 +128,11 @@ public class SecurePatientIteratorTest
         input.add(this.p1);
         input.add(this.p2);
         input.add(this.p3);
-        when(this.access.hasAccess(Right.VIEW, this.currentUser, this.p1Reference)).thenReturn(false);
-        when(this.access.hasAccess(Right.VIEW, this.currentUser, this.p2Reference)).thenReturn(true);
-        when(this.access.hasAccess(Right.VIEW, this.currentUser, this.p3Reference)).thenReturn(true);
+        when(this.access.hasAccess(this.currentUser, Right.VIEW, this.p1Reference)).thenReturn(false);
+        when(this.access.hasAccess(this.currentUser, Right.VIEW, this.p2Reference)).thenReturn(true);
+        when(this.access.hasAccess(this.currentUser, Right.VIEW, this.p3Reference)).thenReturn(true);
 
-        SecurePatientIterator iterator = new SecurePatientIterator(input.iterator(), this.access, this.bridge);
+        SecurePatientIterator iterator = new SecurePatientIterator(input.iterator(), this.access, this.currentUser);
         Assert.assertTrue(iterator.hasNext());
         Assert.assertSame(this.p2, iterator.next());
         Assert.assertTrue(iterator.hasNext());

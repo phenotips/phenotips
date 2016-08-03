@@ -99,6 +99,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-authorization</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>vocabularies-api</artifactId>
       <version>${project.version}</version>
     </dependency>

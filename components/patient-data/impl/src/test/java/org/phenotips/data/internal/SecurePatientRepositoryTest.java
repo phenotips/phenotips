@@ -19,17 +19,18 @@ package org.phenotips.data.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.security.authorization.AuthorizationService;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
-import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -64,11 +65,12 @@ public class SecurePatientRepositoryTest
     @Mock
     private Patient patient;
 
-    private DocumentReference currentUser = new DocumentReference("xwiki", "XWiki", "jdoe");
+    @Mock
+    private User currentUser;
 
     private DocumentReference patientReference = new DocumentReference("xwiki", "data", "P0123456");
 
-    private AuthorizationManager access;
+    private AuthorizationService access;
 
     private PatientRepository internalRepo;
 
@@ -76,17 +78,18 @@ public class SecurePatientRepositoryTest
     public void setup() throws ComponentLookupException
     {
         MockitoAnnotations.initMocks(this);
-        this.access = this.mocker.getInstance(AuthorizationManager.class);
+        this.access = this.mocker.getInstance(AuthorizationService.class);
         this.internalRepo = this.mocker.getInstance(PatientRepository.class);
 
-        DocumentAccessBridge bridge = this.mocker.getInstance(DocumentAccessBridge.class);
-        when(bridge.getCurrentUserReference()).thenReturn(this.currentUser);
+        UserManager userManager = this.mocker.getInstance(UserManager.class);
+        when(userManager.getCurrentUser()).thenReturn(this.currentUser);
+        when(this.currentUser.getProfileDocument()).thenReturn(new DocumentReference("xwiki", "XWiki", "jdoe"));
         when(this.patient.getDocument()).thenReturn(this.patientReference);
 
         when(this.internalRepo.get("P0123456")).thenReturn(this.patient);
         when(this.internalRepo.getByName("Neuro123")).thenReturn(this.patient);
         when(this.internalRepo.create()).thenReturn(this.patient);
-        when(this.internalRepo.create(this.currentUser)).thenReturn(this.patient);
+        when(this.internalRepo.create(this.currentUser.getProfileDocument())).thenReturn(this.patient);
         when(this.internalRepo.load(any(DocumentModelBridge.class))).thenReturn(this.patient);
 
         EntityReferenceResolver<EntityReference> currentResolver =
@@ -98,7 +101,7 @@ public class SecurePatientRepositoryTest
     @Test
     public void getForwardsCallsWhenAuthorized() throws ComponentLookupException
     {
-        when(this.access.hasAccess(Right.VIEW, this.currentUser, this.patientReference)).thenReturn(true);
+        when(this.access.hasAccess(this.currentUser, Right.VIEW, this.patientReference)).thenReturn(true);
         Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().get("P0123456"));
     }
 
@@ -111,14 +114,14 @@ public class SecurePatientRepositoryTest
     @Test(expected = SecurityException.class)
     public void getDeniesUnauthorizedAccess() throws ComponentLookupException
     {
-        when(this.access.hasAccess(Right.VIEW, this.currentUser, this.patientReference)).thenReturn(false);
+        when(this.access.hasAccess(this.currentUser, Right.VIEW, this.patientReference)).thenReturn(false);
         this.mocker.getComponentUnderTest().get("P0123456");
     }
 
     @Test
     public void getByNameForwardsCallsWhenAuthorized() throws ComponentLookupException
     {
-        when(this.access.hasAccess(Right.VIEW, this.currentUser, this.patientReference)).thenReturn(true);
+        when(this.access.hasAccess(this.currentUser, Right.VIEW, this.patientReference)).thenReturn(true);
         Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().getByName("Neuro123"));
     }
 
@@ -131,21 +134,23 @@ public class SecurePatientRepositoryTest
     @Test(expected = SecurityException.class)
     public void getByNameDeniesUnauthorizedAccess() throws ComponentLookupException
     {
-        when(this.access.hasAccess(Right.VIEW, this.currentUser, this.patientReference)).thenReturn(false);
+        when(this.access.hasAccess(this.currentUser, Right.VIEW, this.patientReference)).thenReturn(false);
         this.mocker.getComponentUnderTest().getByName("Neuro123");
     }
 
     @Test
     public void createForwardsCallsWhenAuthorized() throws ComponentLookupException
     {
-        when(this.access.hasAccess(Right.EDIT, this.currentUser, this.patientReference.getParent())).thenReturn(true);
+        when(this.access.hasAccess(this.currentUser, Right.EDIT, this.patientReference.getParent()))
+            .thenReturn(true);
         Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().create());
     }
 
     @Test(expected = SecurityException.class)
     public void createDeniesUnauthorizedAccess() throws ComponentLookupException
     {
-        when(this.access.hasAccess(Right.EDIT, this.currentUser, this.patientReference.getParent())).thenReturn(false);
+        when(this.access.hasAccess(this.currentUser, Right.EDIT, this.patientReference.getParent()))
+            .thenReturn(false);
         this.mocker.getComponentUnderTest().create();
     }
 
@@ -163,12 +168,12 @@ public class SecurePatientRepositoryTest
         Patient p1 = mock(Patient.class);
         DocumentReference p1ref = mock(DocumentReference.class);
         when(p1.getDocument()).thenReturn(p1ref);
-        when(this.access.hasAccess(Right.VIEW, this.currentUser, p1ref)).thenReturn(false);
+        when(this.access.hasAccess(this.currentUser, Right.VIEW, p1ref)).thenReturn(false);
         rawInput.add(p1);
         Patient p2 = mock(Patient.class);
         DocumentReference p2ref = mock(DocumentReference.class);
         when(p2.getDocument()).thenReturn(p2ref);
-        when(this.access.hasAccess(Right.VIEW, this.currentUser, p2ref)).thenReturn(true);
+        when(this.access.hasAccess(this.currentUser, Right.VIEW, p2ref)).thenReturn(true);
         rawInput.add(p2);
 
         when(this.internalRepo.getAll()).thenReturn(rawInput.iterator());

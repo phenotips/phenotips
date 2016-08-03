@@ -18,11 +18,10 @@
 package org.phenotips.data.internal;
 
 import org.phenotips.data.Patient;
+import org.phenotips.security.authorization.AuthorizationService;
 
-import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
+import org.xwiki.users.User;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -37,9 +36,9 @@ public class SecurePatientIterator implements Iterator<Patient>
 {
     private Iterator<Patient> patientIterator;
 
-    private DocumentReference currentUser;
+    private User currentUser;
 
-    private AuthorizationManager access;
+    private AuthorizationService access;
 
     private Patient nextPatient;
 
@@ -47,12 +46,13 @@ public class SecurePatientIterator implements Iterator<Patient>
      * Default constructor.
      *
      * @param patientIterator Iterator for a collection of patients that this class wraps with security.
+     * @param access the authorization manager actually responsible for checking if a patient is accessible
+     * @param currentUser the current user, may be {@code null}
      */
-    public SecurePatientIterator(Iterator<Patient> patientIterator, AuthorizationManager access,
-        DocumentAccessBridge bridge)
+    public SecurePatientIterator(Iterator<Patient> patientIterator, AuthorizationService access, User currentUser)
     {
         this.patientIterator = patientIterator;
-        this.currentUser = bridge.getCurrentUserReference();
+        this.currentUser = currentUser;
         this.access = access;
 
         this.findNextPatient();
@@ -92,8 +92,7 @@ public class SecurePatientIterator implements Iterator<Patient>
 
         while (this.patientIterator.hasNext() && this.nextPatient == null) {
             Patient potentialNextPatient = this.patientIterator.next();
-            if (this.access.hasAccess(
-                Right.VIEW, this.currentUser, potentialNextPatient.getDocument())) {
+            if (this.access.hasAccess(this.currentUser, Right.VIEW, potentialNextPatient.getDocument())) {
                 this.nextPatient = potentialNextPatient;
             }
         }

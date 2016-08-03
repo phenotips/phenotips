@@ -19,16 +19,18 @@ package org.phenotips.data.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.security.authorization.AuthorizationService;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
-import org.xwiki.security.authorization.AuthorizationManager;
+import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.security.authorization.Right;
+import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
 
 import java.util.Iterator;
 
@@ -57,11 +59,11 @@ public class SecurePatientRepository implements PatientRepository
 
     /** Used for checking access rights. */
     @Inject
-    private AuthorizationManager access;
+    private AuthorizationService access;
 
     /** Used for obtaining the current user. */
     @Inject
-    private DocumentAccessBridge bridge;
+    private UserManager userManager;
 
     /** Wrapped trusted API, doing the actual work. */
     @Inject
@@ -72,6 +74,10 @@ public class SecurePatientRepository implements PatientRepository
     @Named("current")
     private EntityReferenceResolver<EntityReference> currentResolver;
 
+    /** Serializes references to strings. */
+    @Inject
+    private EntityReferenceSerializer<String> serializer;
+
     @Override
     public EntityReference getDataSpace()
     {
@@ -81,7 +87,7 @@ public class SecurePatientRepository implements PatientRepository
     @Override
     public Patient create()
     {
-        return create(this.bridge.getCurrentUserReference());
+        return create(this.userManager.getCurrentUser());
     }
 
     @Override
@@ -93,9 +99,14 @@ public class SecurePatientRepository implements PatientRepository
     @Override
     public Patient create(DocumentReference creator)
     {
-        if (this.access.hasAccess(Right.EDIT, creator,
+        return create(this.userManager.getUser(this.serializer.serialize(creator)));
+    }
+
+    private Patient create(User creator)
+    {
+        if (this.access.hasAccess(creator, Right.EDIT,
             this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
-            return this.internalService.create(creator);
+            return this.internalService.create(creator.getProfileDocument());
         }
         throw new SecurityException("User not authorized to create new patients");
     }
@@ -110,7 +121,7 @@ public class SecurePatientRepository implements PatientRepository
     public Patient get(String id)
     {
         Patient patient = this.internalService.get(id);
-        return checkAccess(patient, this.bridge.getCurrentUserReference());
+        return checkAccess(patient, this.userManager.getCurrentUser());
     }
 
     @Override
@@ -123,14 +134,14 @@ public class SecurePatientRepository implements PatientRepository
     public Patient get(DocumentReference reference)
     {
         Patient patient = this.internalService.get(reference);
-        return checkAccess(patient, this.bridge.getCurrentUserReference());
+        return checkAccess(patient, this.userManager.getCurrentUser());
     }
 
     @Override
     public Patient getByName(String name)
     {
         Patient patient = this.internalService.getByName(name);
-        return checkAccess(patient, this.bridge.getCurrentUserReference());
+        return checkAccess(patient, this.userManager.getCurrentUser());
     }
 
     @Override
@@ -143,13 +154,13 @@ public class SecurePatientRepository implements PatientRepository
     public Iterator<Patient> getAll()
     {
         Iterator<Patient> patientsIterator = this.internalService.getAll();
-        return new SecurePatientIterator(patientsIterator, this.access, this.bridge);
+        return new SecurePatientIterator(patientsIterator, this.access, this.userManager.getCurrentUser());
     }
 
     @Override
     public boolean delete(Patient patient)
     {
-        if (checkAccess(Right.DELETE, patient, this.bridge.getCurrentDocumentReference()) != null) {
+        if (checkAccess(Right.DELETE, patient, this.userManager.getCurrentUser()) != null) {
             this.internalService.delete(patient);
         }
         return false;
@@ -168,14 +179,14 @@ public class SecurePatientRepository implements PatientRepository
         return load(document);
     }
 
-    private Patient checkAccess(Patient patient, DocumentReference user)
+    private Patient checkAccess(Patient patient, User user)
     {
         return checkAccess(Right.VIEW, patient, user);
     }
 
-    private Patient checkAccess(Right right, Patient patient, DocumentReference user)
+    private Patient checkAccess(Right right, Patient patient, User user)
     {
-        if (patient != null && this.access.hasAccess(right, user, patient.getDocument())) {
+        if (patient != null && this.access.hasAccess(user, right, patient.getDocument())) {
             return patient;
         } else if (patient != null) {
             this.logger.warn("Illegal access requested for patient [{}] by user [{}]", patient.getId(), user);
