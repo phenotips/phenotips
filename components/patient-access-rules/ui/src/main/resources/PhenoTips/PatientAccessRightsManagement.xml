@@ -1110,7 +1110,7 @@ $xwiki.ssx.use($serviceDocName)
   #end
   #set ($canManage = $patientAccess.hasAccessLevel('manage'))
   #if ("$!{ownerReference}" != '')
-    #set ($ownerElement = "{{html wiki='true' clean='false'}}&lt;a class='owner' href=""${xwiki.getURL($ownerReference)}""&gt;{{icon name='user'/}}$ownerName&lt;/a&gt;{{/html}}")
+    #set ($ownerElement = "{{html wiki='true' clean='false'}}&lt;a class='owner' href=""${xwiki.getURL($ownerReference)}""&gt;{{icon name='user'/}}$ownerName.replaceAll('~|&lt;', '~$0')&lt;/a&gt;{{/html}}")
   #else
     #set ($ownerElement = "{{html wiki='true' clean='false'}}&lt;span class='owner'&gt;{{icon name='user'/}}$ownerName&lt;/span&gt;{{/html}}")
   #end
