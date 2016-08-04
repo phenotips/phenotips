@@ -1173,7 +1173,7 @@ $xwiki.ssx.use($serviceDocName)
             &lt;option value="" selected="selected" class="hidden"&gt;$services.localization.render('phenotips.patientAccessRightsManagement.newOwnerGroup')&lt;/option&gt;
             &lt;optgroup label="$services.localization.render('phenotips.patientAccessRightsManagement.newOwnerGroup')"&gt;
             #foreach ($g in $groups.entrySet())
-              &lt;option value="${g.key}"#if ("$!{ownerReference}" == "$g.key") selected="selected"#end&gt;${g.value}&lt;/option&gt;
+              &lt;option value="${services.model.serialize($g.key).replaceAll('~|"', '~$0')}"#if ("$!{ownerReference}" == "$g.key") selected="selected"#end&gt;${g.value.replaceAll('~|&lt;', '~$0')}&lt;/option&gt;
             #end
             &lt;/optgroup&gt;
           &lt;/select&gt;
