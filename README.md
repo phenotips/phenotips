@@ -3,7 +3,7 @@ Jenkins CI : [![Build Status](https://ci.phenotips.org/job/phenotips/badge/icon)
 
 # About #
 
-This project mainly aims at providing **an easy way to collect clinical phenotypes using a standardized vocabulary**, thus alllowing for **straight-forward cross-referencing with gene and disease databases**.
+This project mainly aims at providing **an easy way to collect clinical phenotypes using a standardized vocabulary**, thus allowing for **straight-forward cross-referencing with gene and disease databases**.
 
 The patient data being managed includes:
 * demographic information (name, date of birth, ...)
