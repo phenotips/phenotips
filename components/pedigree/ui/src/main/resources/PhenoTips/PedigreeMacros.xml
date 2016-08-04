@@ -44,10 +44,14 @@
 #macro(pedigreeLegend $pedigreeData $header)
   #set ($pedigreeDataJSON = $jsontool.parse($pedigreeData))
   #set ($disorderColors = $pedigreeDataJSON.settings.colors.disorders)
-  #set ($geneColors = $pedigreeDataJSON.settings.colors.genes)
+  #set ($candidateGeneColors = $pedigreeDataJSON.settings.colors.candidateGenes)
+  #set ($causalGeneColors = $pedigreeDataJSON.settings.colors.causalGenes)
   #set ($cancerColors = $pedigreeDataJSON.settings.colors.cancers)
 
-  #if (($disorderColors &amp;&amp; $disorderColors.size() &gt; 0) || ($geneColors &amp;&amp; $geneColors.size() &gt; 0) || ($cancerColors &amp;&amp; $cancerColors.size() &gt; 0))
+  #if (($disorderColors &amp;&amp; $disorderColors.size() &gt; 0) ||
+       ($candidateGeneColors &amp;&amp; $candidateGeneColors.size() &gt; 0) ||
+       ($causalGeneColors &amp;&amp; $causalGeneColors.size() &gt; 0) ||
+       ($cancerColors &amp;&amp; $cancerColors.size() &gt; 0))
     #if ($xcontext.action == 'export')
       #set ($circle = '⬤')
       #set ($listyle = 'margin: 0 .5em 0 0; font-family: FreeSerif, serif;')
@@ -74,10 +78,21 @@
       #end
       &lt;/ul&gt;
     #end
-    #if ($geneColors &amp;&amp; $geneColors.size() &gt; 0)
+    #if ($causalGeneColors &amp;&amp; $causalGeneColors.size() &gt; 0)
+      causal Genes:
+      &lt;ul class="pedigree-legend-list" style="margin-top: .4em"&gt;
+      #foreach ($color in $causalGeneColors.entrySet())
+        &lt;li class="pedigree-disorder-item" style="list-style-type: none;"&gt;
+          &lt;span class="pedigree-disorder-color" style="color: $color.value; $listyle"&gt;$circle&lt;/span&gt;
+          &lt;span class="pedigree-disorder-name"&gt;$color.key&lt;/span&gt;
+        &lt;/li&gt;
+      #end
+      &lt;/ul&gt;
+    #end
+    #if ($candidateGeneColors &amp;&amp; $candidateGeneColors.size() &gt; 0)
       Candidate Genes:
       &lt;ul class="pedigree-legend-list" style="margin-top: .4em"&gt;
-      #foreach ($color in $geneColors.entrySet())
+      #foreach ($color in $candidateGeneColors.entrySet())
         &lt;li class="pedigree-disorder-item" style="list-style-type: none;"&gt;
           &lt;span class="pedigree-disorder-color" style="color: $color.value; $listyle"&gt;$circle&lt;/span&gt;
           &lt;span class="pedigree-disorder-name"&gt;$color.key&lt;/span&gt;

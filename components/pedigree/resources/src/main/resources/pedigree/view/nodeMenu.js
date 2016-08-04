@@ -141,8 +141,8 @@ define([
             //this._setFieldValue['disease-picker'].bind(this);
 
             // Update gene colors
-            this._updateGeneColor = function(id, color) {
-                this.menuBox.select('.field-candidate_genes li input[value="' + id + '"]').each(function(item) {
+            this._updateGeneColor = function(container, id, color) {
+                container.select('li input[value="' + id + '"]').each(function(item) {
                     var colorBubble = item.up('li').down('.abnormality-color');
                     if (!colorBubble) {
                         colorBubble = new Element('span', {'class' : 'abnormality-color'});
@@ -152,10 +152,15 @@ define([
                 });
             }.bind(this);
             document.observe('gene:color', function(event) {
-                if (!event.memo || !event.memo.id || !event.memo.color) {
+                if (!event.memo || !event.memo.id || !event.memo.color || !event.memo.prefix) {
                     return;
                 }
-                _this._updateGeneColor(event.memo.id, event.memo.color);
+                try {
+                    var container = $$('.field-' + event.memo.prefix + "_genes")[0];
+                    _this._updateGeneColor(container, event.memo.id, event.memo.color);
+                } catch (err) {
+                    // in case $$ returns nothing
+                }
             });
         },
 
@@ -1060,9 +1065,11 @@ define([
 
         _setFieldValue : {
             'radio' : function (container, value) {
-                var target = container.down('input[type=radio][value=' + value + ']');
-                if (target) {
-                    target.checked = true;
+                if (value != "") {
+                    var target = container.down('input[type=radio][value=' + value + ']');
+                    if (target) {
+                        target.checked = true;
+                    }
                 }
             },
             'checkbox' : function (container, value) {
@@ -1200,7 +1207,7 @@ define([
                     if (values) {
                         values.each(function(v) {
                             target._suggestPicker.addItem(v, v, '');
-                            _this._updateGeneColor(v, editor.getGeneLegend().getObjectColor(v));
+                            _this._updateGeneColor(container, v, editor.getGeneColor(v, _this.targetNode.getID()));
                         })
                     }
                     target._silent = false;
@@ -1221,9 +1228,11 @@ define([
                 }
             },
             'select' : function (container, value) {
-                var target = container.down('select option[value=' + value + ']');
-                if (target) {
-                    target.selected = 'selected';
+                if (value != '') {
+                    var target = container.down('select option[value=' + value + ']');
+                    if (target) {
+                        target.selected = 'selected';
+                    }
                 }
             },
             'cancerlist': function (container, value) {
@@ -1234,7 +1243,7 @@ define([
 
                     var statusSelect = container.down('select[id="cancer_status_' + cancerName + '"]');
                     var ageSelect    = container.down('select[id="cancer_age_' + cancerName + '"]');
-                    var notesInput  = container.down('"#cancer_notes_' + cancerName + '"');
+                    var notesInput   = container.down('#cancer_notes_' + cancerName);
                     var enableNotesIcon = container.down("label[for=" + notesInput.id + "]");
 
                     if (!statusSelect) {

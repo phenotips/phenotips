@@ -22,7 +22,8 @@ define([
         "pedigree/view/workspace",
         "pedigree/view/disorderLegend",
         "pedigree/view/exportSelector",
-        "pedigree/view/geneLegend",
+        "pedigree/view/candidateGeneLegend",
+        "pedigree/view/causalGeneLegend",
         "pedigree/view/hpoLegend",
         "pedigree/view/importSelector",
         "pedigree/view/cancersLegend",
@@ -49,7 +50,8 @@ define([
         Workspace,
         DisorderLegend,
         ExportSelector,
-        GeneLegend,
+        CandidateGeneLegend,
+        CausalGeneLegend,
         HPOLegend,
         ImportSelector,
         CancerLegend,
@@ -101,7 +103,8 @@ define([
             //initialize the elements of the app
             this._workspace = new Workspace();
             this._disorderLegend = new DisorderLegend();
-            this._geneLegend = new GeneLegend();
+            this._candidateGeneLegend = new CandidateGeneLegend();
+            this._causalGeneLegend = new CausalGeneLegend();
             this._hpoLegend = new HPOLegend();
             this._cancerLegend = new CancerLegend();
             this._nodetypeSelectionBubble = new NodetypeSelectionBubble(false);
@@ -356,10 +359,48 @@ define([
 
         /**
          * @method getGeneLegend
+         * @return {Legend} Responsible for managing and displaying the genes having this status.
+         *                  May be null for statuses with no legend.
+         */
+        getGeneLegend: function(geneStatus) {
+            if (geneStatus == "candidate") {
+                return this.getCandidateGeneLegend();
+            } else if (geneStatus == "solved") {
+                return this.getCausalGeneLegend();
+            }
+            return null;
+        },
+
+        /**
+         * @method getCausalGeneLegend
+         * @return {Legend} Responsible for managing and displaying the causal genes legend
+         */
+        getCausalGeneLegend: function() {
+            return this._causalGeneLegend;
+        },
+
+        /**
+         * @method getCandidateGeneLegend
          * @return {Legend} Responsible for managing and displaying the candidate genes legend
          */
-        getGeneLegend: function() {
-            return this._geneLegend;
+        getCandidateGeneLegend: function() {
+            return this._candidateGeneLegend;
+        },
+
+        /**
+         * Returns the color of the gene for a given person.
+         * If a gene does not belong to any legend "undefined" is returned.
+         */
+        getGeneColor: function(geneId, nodeID) {
+            var availableLegends = ["solved", "candidate"];
+            for (var i = 0; i < availableLegends.length; i++) {
+                var colorInLegendForNode = this.getGeneLegend(availableLegends[i]).getGeneColor(geneId, nodeID);
+                if (colorInLegendForNode) {
+                    return colorInLegendForNode;
+                }
+            }
+            // none of the legends have it - return undefined;
+            return undefined;
         },
 
         /**

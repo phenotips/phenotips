@@ -1,19 +1,38 @@
 /**
- * Class responsible for keeping track of candidate genes.
+ * Class responsible for keeping track of some genes.
  * This information is graphically displayed in a 'Legend' box.
  *
  * @class GeneLegend
  * @constructor
  */
- define(["pedigree/view/legend"], function(Legend){
+ define([ "pedigree/view/legend",
+          "pedigree/model/helpers" ],
+    function( Legend,
+              Helpers) {
     var GeneLegend = Class.create( Legend, {
 
-        initialize: function($super) {
-            $super('Candidate Genes', true);
+        initialize: function($super, title, prefix, palette, getOperation, setOperation) {
+            this.prefix = prefix;
+            this.prefColors = palette;
+            this.setOperation = setOperation; // for drag and drop
+            this.getOperation = getOperation; // for drag and drop
+            $super(title, true);
         },
 
         _getPrefix: function(id) {
-            return "gene";
+            return this.prefix + "gene";
+        },
+
+        /**
+         * Retrieve the color associated with the given gene - regardless of which gene legend has it
+         *
+         * @method getGeneColor
+         */
+        getGeneColor: function(geneID, nodeID) {
+            if (this._hasAffectedNodes(geneID) && Helpers.arrayIndexOf(this._affectedNodes[geneID], nodeID) >= 0){
+                return this.getObjectColor(geneID);
+            }
+            return undefined;
         },
 
         /**
@@ -28,7 +47,7 @@
             if (!this._objectColors.hasOwnProperty(geneID)) {
                 var color = this._generateColor(geneID);
                 this._objectColors[geneID] = color;
-                document.fire('gene:color', {'id' : geneID, color: color});
+                document.fire('gene:color', {'id' : geneID, "color": color, "prefix": this.prefix});
             }
 
             return $super(geneID, name);
@@ -45,15 +64,17 @@
             if (node.isPersonGroup()) {
                 return;
             }
-            var currentGenes = node.getGenes().slice(0);
+            var currentGenes = node[this.getOperation]();
+            // TODO: check if indexof STILL MAKES SENSE
             if (currentGenes.indexOf(geneID) == -1) {   // only if the node does not have this gene yet
                 currentGenes.push(geneID);
                 editor.getView().unmarkAll();
-                var properties = { "setGenes": currentGenes };
+                var properties = {};
+                properties[this.setOperation] = currentGenes;
                 var event = { "nodeID": node.getID(), "properties": properties };
                 document.fire("pedigree:node:setproperty", event);
             } else {
-                this._onFailedDrag(node, "This person already has the selected candidate gene", "Can't drag this gene to this person");
+                this._onFailedDrag(node, "This person already has the selected " + this.prefix + " gene", "Can't drag this gene to this person");
             }
         },
 
@@ -70,17 +91,16 @@
                 return this._objectColors[geneID];
             }
 
-            var usedColors = Object.values(this._objectColors),
-            // green palette
-            prefColors = ['#81a270', '#c4e8c4', '#56a270', '#b3b16f', '#4a775a', '#65caa3'];
+            var usedColors = Object.values(this._objectColors);
+
             if (this.getPreferedColor(geneID) !== null) {
-                prefColors.unshift(this.getPreferedColor(geneID));
+                this.prefColors.unshift(this.getPreferedColor(geneID));
             }
-            usedColors.each( function(color) {
-                prefColors = prefColors.without(color);
-            });
-            if(prefColors.length > 0) {
-                return prefColors[0];
+            for (var i = 0; i < usedColors.length; i++) {
+                this.prefColors = this.prefColors.without(usedColors[i]);
+            };
+            if(this.prefColors.length > 0) {
+                return this.prefColors[0];
             }
             else {
                 var randomColor = Raphael.getColor();

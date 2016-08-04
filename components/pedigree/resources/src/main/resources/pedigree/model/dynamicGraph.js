@@ -290,17 +290,10 @@ define([
                 delete this.DG.GG.properties[0].disorders;
             }
 
-            var genes = [];
             if (patientObject.hasOwnProperty("genes")) {
-                // e.g.: "genes":[{"gene":"E2F2","comments":""}]
-                for (var i = 0; i < patientObject.genes.length; i++) {
-                    genes.push(patientObject.genes[i].gene);
-                }
-            }
-            if (genes.length > 0) {
-                this.DG.GG.properties[0].candidateGenes = genes;
+                this.DG.GG.properties[0].genes = patientObject.genes;
             } else {
-                delete this.DG.GG.properties[0].candidateGenes;
+                delete this.DG.GG.properties[0].genes;
             }
 
             return genderOK;
