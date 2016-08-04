@@ -108,12 +108,6 @@ define("PhenotypeSelectionUtils", [], function() {
       }).filter(function(e) { return e; });
     },
 
-    /**
-     * Updates a selected phenotype. If the phenotype is not selected, do nothing.
-     */
-    /*updateSelectedPhenotype: function(phenotype) {
-    },*/
-
     _findFormElementForPhenotype: function(id, negative, subtype) {
       var result = null;
       if ($('prefix')) {
