@@ -110,12 +110,12 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
 
 #macro (__displaySelectableAttachment $attachment $targetDocument $selection)
   {{html wiki=true clean=false}}&lt;div class="attachment-item #if($options.isImage) image #else #__getExtension(${attachment.filename})#{end}#if($selection.contains(${attachment.filename})) selected#{end}"&gt;
-  &lt;label for='${fieldName}_${attachment.filename}' title='${attachment.filename}'&gt;
-  {{html wiki=false clean=false}}&lt;input id='${fieldName}_${attachment.filename}' type='${options.inputType}' name='${fieldName}' value='${attachment.filename}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;{{/html}}${attachment.filename} &lt;span class="size"&gt;(#dynamicsize($attachment.filesize))&lt;/span&gt;&lt;/label&gt;##
+  &lt;label for='${fieldName}_${escapetool.xml($attachment.filename)}' title='${escapetool.xml($attachment.filename)}'&gt;
+  {{html wiki=false clean=false}}&lt;input id='${fieldName}_${escapetool.xml($attachment.filename)}' type='${options.inputType}' name='${fieldName}' value='${escapetool.xml($attachment.filename)}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;{{/html}}${escapetool.xml($attachment.filename)} &lt;span class="size"&gt;(#dynamicsize($attachment.filesize))&lt;/span&gt;&lt;/label&gt;##
   #if ($options.manage)
   &lt;a class='action delete fa fa-times-circle fa-lg fa-fw' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($xcontext.action, $request.queryString))}")" title="$services.localization.render('phenotips.imageDisplayer.delete')"&gt;&lt;/a&gt;##
   #end
-  #if($options.isImage)(% class="attachment-preview" %)((([[image:${targetDoc.fullName}@${attachment.filename}||title="${attachment.filename}"]])))#else##
+  #if($options.isImage)(% class="attachment-preview" %)((([[image:${targetDoc.fullName.replaceAll('~|]|\||&gt;', '~$0')}@${attachment.filename.replaceAll('~|]|\||&gt;|@', '~$0')}||title="${attachment.filename.replaceAll('~|]|"', '~$0')}"]])))#else##
  &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="$services.localization.render('phenotips.imageDisplayer.openImage', [$!{attachment.filename}])"&gt; [open]&lt;/a&gt;#end##
   &lt;/div&gt;{{/html}}##
 #end
@@ -168,9 +168,9 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
   #foreach ($name in  $selection)
     #if ("$!{targetDocument.getAttachment(${name})}" != '')
       #if ($options.isImage)
-        #set ($content = "$!{content}[[image:${targetDocument.fullName}@${name}||style=""max-width:100%""]]${util.newline}")
+        #set ($content = "$!{content}[[image:${targetDocument.fullName.replaceAll('~|]|\||&gt;', '~$0')}@${name.replaceAll('~|]|\||&gt;|@', '~$0')}||style=""max-width:100%""]]${util.newline}")
       #else
-        #set ($content = "$!{content}[[attach:${targetDocument.fullName}@${name}||class='attachment-link #__getExtension($name)']]${util.newline}")
+        #set ($content = "$!{content}[[attach:${targetDocument.fullName.replaceAll('~|]|\||&gt;', '~$0')}@${name.replaceAll('~|]|\||&gt;|@', '~$0')}||class='attachment-link #__getExtension($name)']]${util.newline}")
       #end
     #end
   #end
