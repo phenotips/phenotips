@@ -115,7 +115,7 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
   #if ($options.manage)
   &lt;a class='action delete fa fa-times-circle fa-lg fa-fw' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($xcontext.action, $request.queryString))}")" title="$services.localization.render('phenotips.imageDisplayer.delete')"&gt;&lt;/a&gt;##
   #end
-  #if($options.isImage)(% class="attachment-preview" %)((([[image:${targetDoc.fullName.replaceAll('~|]|\||&gt;', '~$0')}@${attachment.filename.replaceAll('~|]|\||&gt;|@', '~$0')}||title="${attachment.filename.replaceAll('~|]|"', '~$0')}"]])))#else##
+  #if($options.isImage)(% class="attachment-preview" %)((([[image:${services.rendering.escape($targetDoc.fullName, $doc.syntax)}@${services.rendering.escape($attachment.filename, $doc.syntax)}||title="${services.rendering.escape($attachment.filename, $doc.syntax)}"]])))#else##
  &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="$services.localization.render('phenotips.imageDisplayer.openImage', [$!{attachment.filename}])"&gt; [open]&lt;/a&gt;#end##
   &lt;/div&gt;{{/html}}##
 #end
@@ -168,9 +168,9 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
   #foreach ($name in  $selection)
     #if ("$!{targetDocument.getAttachment(${name})}" != '')
       #if ($options.isImage)
-        #set ($content = "$!{content}[[image:${targetDocument.fullName.replaceAll('~|]|\||&gt;', '~$0')}@${name.replaceAll('~|]|\||&gt;|@', '~$0')}||style=""max-width:100%""]]${util.newline}")
+        #set ($content = "$!{content}[[image:${services.rendering.escape($targetDocument.fullName, $doc.syntax)}@${services.rendering.escape($name, $doc.syntax)}||style=""max-width:100%""]]${util.newline}")
       #else
-        #set ($content = "$!{content}[[attach:${targetDocument.fullName.replaceAll('~|]|\||&gt;', '~$0')}@${name.replaceAll('~|]|\||&gt;|@', '~$0')}||class='attachment-link #__getExtension($name)']]${util.newline}")
+        #set ($content = "$!{content}[[attach:${services.rendering.escape($targetDocument.fullName, $doc.syntax)}@${services.rendering.escape($name, $doc.syntax)}||class='attachment-link #__getExtension($name)']]${util.newline}")
       #end
     #end
   #end
