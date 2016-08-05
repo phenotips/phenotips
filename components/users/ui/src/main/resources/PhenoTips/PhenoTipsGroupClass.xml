@@ -885,8 +885,8 @@ $xwiki.jsx.use($groupClassName)
 #end
 #else
 #foreach ($groupDatum in $groupSortedData)#if ($foreach.index &lt; $max)
-|(% class="logo" %) #if ("$!{groupDatum.get('logo')}" != '')[[[[image:${groupDatum.get('logo')}|| width="80px"]]&gt;&gt;$groupDatum.get('doc.fullName')]]#end##
-|(% class="name" %) [[$groupDatum.get('name')&gt;&gt;$groupDatum.get('doc.fullName')]] \\(% class="members"%)$services.localization.render('phenotips.group.info.members', [$groupDatum.get('members')])(%%) \\(% class="patients"%)$services.localization.render('phenotips.group.info.cases', [$groupDatum.get('cases')])(%%)##
+|(% class="logo" %) #if ("$!{groupDatum.get('logo')}" != '')[[[[image:${services.rendering.escape($groupDatum.get('logo'), $doc.syntax)}||width="80px"]]&gt;&gt;${services.rendering.escape($groupDatum.get('doc.fullName'), $doc.syntax)}]]#end##
+|(% class="name" %) [[${services.rendering.escape($groupDatum.get('name'), $doc.syntax)}&gt;&gt;${services.rendering.escape($groupDatum.get('doc.fullName'), $doc.syntax)}]] \\(% class="members"%)$services.localization.render('phenotips.group.info.members', [$groupDatum.get('members')])(%%) \\(% class="patients"%)$services.localization.render('phenotips.group.info.cases', [$groupDatum.get('cases')])(%%)##
 #if ($xcontext.macro.params.fullinfo == 'true')|#if ("$!{groupDatum.get('obj').getProperty('description').value.trim()}" != '')(% class="desc" %) ((($groupDatum.get('doc').display('description'))))#end#end
 #if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|(% class="tools" %) (((##
   [[{{icon name="pencil" title="$services.localization.render('phenotips.groups.edit')"/}}&gt;&gt;path:$xwiki.getURL($groupDatum.get('doc.fullName'), 'edit')||class="tool edit"]]##
