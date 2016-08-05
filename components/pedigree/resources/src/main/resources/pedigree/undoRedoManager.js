@@ -56,7 +56,7 @@ define([
             if (!nextState) return;
 
             this._currentState++;
-            if (nextState.eventToGetToThisState) {
+            if (nextState.eventToGetToThisState && nextState.eventToGetToThisState.hasOwnProperty("memo")) {
                 var memo = nextState.eventToGetToThisState.memo;
                 memo["noUndoRedo"] = true;  // so that this event is not added to the undo/redo stack again
                 document.fire( nextState.eventToGetToThisState.eventName, memo );
