@@ -59,8 +59,9 @@ $xwiki.jsx.use('PhenoTips.StudySheet')##
 #else
 $!doc.content
 #if ($xcontext.action == 'view')
+#set ($filterVal = $services.rendering.escape($doc.fullName, $doc.syntax))
 #set ($sections = [
-  {'id' : 'members', 'name' : "$services.localization.render('phenotips.studySheet.groupsSection', [$groupsCount])", 'icon' : 'group',       'content' : "((({{phenotips-groups filterby='studies' filterval='$doc.fullName' /}})))"},
+  {'id' : 'members', 'name' : "$services.localization.render('phenotips.studySheet.groupsSection', [$groupsCount])", 'icon' : 'group',       'content' : "((({{phenotips-groups filterby='studies' filterval='$filterVal' /}})))"},
   {'id' : 'cases',   'name' : "$services.localization.render('phenotips.studySheet.casesSection', [$casesCount])",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.StudyCases"/}}'},
   {'id' : 'form' ,   'name' : "$services.localization.render('phenotips.studySheet.formConfigSection')",  'icon' : 'cog',        'content' : "{{include reference='PhenoTips.FormDesigner' /}}"}
 ])
