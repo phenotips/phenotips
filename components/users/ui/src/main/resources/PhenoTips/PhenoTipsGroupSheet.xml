@@ -95,7 +95,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
   #set ($discard = $sections.add({'id' : 'sharedCases', 'name' : "$services.localization.render('phenotips.groups.menu.sharedCases')", 'icon' : 'share-square', 'content' : '{{include reference="PhenoTips.GroupSharedCases"/}}'}))
 #end
 #if ($xwiki.exists('PhenoTips.StudyClass'))
-  #set ($discard = $sections.add({'id' : 'studies' ,   'name' : "$services.localization.render('phenotips.groups.menu.studies')",  'icon' : 'copy',        'content' : "((({{phenotips-studies filterby='group' filterval='$doc.fullName' /}})))"}))
+  #set ($discard = $sections.add({'id' : 'studies' ,   'name' : "$services.localization.render('phenotips.groups.menu.studies')",  'icon' : 'copy',        'content' : "((({{phenotips-studies filterby='group' filterval='${services.rendering.escape($doc.fullName, $doc.syntax)}' /}})))"}))
 #end
 #set ($menu = [])
 #set ($contents = {})
