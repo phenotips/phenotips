@@ -538,15 +538,18 @@ define([
             // Mutn: 0 = untested, N = no mutation, 1 = BRCA1 positive, 2 = BRCA2 positive, 3 = BRCA1 and BRCA2 positive
             var mutations = parts[17];
             if (mutations == "1" || mutations == "2" || mutations == "3") {
-                properties["candidateGenes"] = [];
+                properties["genes"] = [];
                 if (mutations == 1 || mutations == 3) {
-                    properties["candidateGenes"].push("BRCA1");
+                    properties["genes"].push({"gene": "BRCA1", "status": "solved", "comment": "BOADICEA import"});
                 }
                 if (mutations == 2 || mutations == 3) {
-                    properties["candidateGenes"].push("BRCA2");
+                    properties["genes"].push({"gene": "BRCA2", "status": "solved", "comment": "BOADICEA import"});
                 }
             } else if (mutations == "N") {
-                addCommentToProperties(properties, "BRCA tested: no mutations");
+                properties["genes"].push({"gene": "BRCA1", "status": "rejected", "comment": "BOADICEA import"});
+                properties["genes"].push({"gene": "BRCA2", "status": "rejected", "comment": "BOADICEA import"});
+                // TODO: add comments?
+                //addCommentToProperties(properties, "BRCA tested: no mutations");
             }
 
             var ashkenazi = parts[18];
@@ -675,6 +678,7 @@ define([
      *   - "comments": string (default: none)
      *   - "externalId": string (default: none)
      *   - "sex": one of "male" or "m", "female" or "f", "other" or "o", "unknown" or "u" (default: "unknown")
+     *   - "genes": array of objects, each representing information about one gene in PhenoTips JSON format
      *   - "twinGroup": integer. All children of the sam eparents with the same twin group are considered twins. (fefault: none)
      *   - "monozygotic": boolean. (only applicable for twins)
      *   - "adoptedIn": boolean (default: false)
@@ -825,9 +829,10 @@ define([
                        }
                    } else {
                        var processed = PedigreeImport.convertProperty(property, value);
-                       if (processed !== null) {
-                           // supported property
-                           properties[processed.propertyName] = processed.value;
+                       // one input (external) property may be represented by multiple internal properties
+                       // if the property is not supported an empty array is returned, and no data gets transferred
+                       for (var p = 0; p < processed.length; p++) {
+                           properties[processed[p].propertyName] = processed[p].value;
                        }
                    }
                }
@@ -1363,7 +1368,7 @@ define([
             "lifestatus":      "lifeStatus",
             "disorders":       "disorders",
             "hpoterms":        "hpoTerms",
-            "candidategenes":  "candidateGenes",
+            "genes":           "genes",
             "ethnicities":     "ethnicities",
             "carrierstatus":   "carrierStatus",
             "externalid":      "externalID",
@@ -1381,13 +1386,28 @@ define([
      * support aliases for some terms and weed out unsupported terms.
      */
     PedigreeImport.convertProperty = function(externalPropertyName, value) {
+        try {
+            if (externalPropertyName.toLowerCase() == "candidategenes") {
+                // old "candidateGenes" was an array of candidate gene IDs
+                var genes = [];
+                for (var i = 0; i < value.length; i++) {
+                    var gene = { "gene": value[i], "status": "candidate" };
+                    genes.push(gene);
+                }
+                return [ {"propertyName": "genes", "value": genes} ];
+            }
 
-        if (!PedigreeImport.JSONToInternalPropertyMapping.hasOwnProperty(externalPropertyName))
-            return null;
+            if (!PedigreeImport.JSONToInternalPropertyMapping.hasOwnProperty(externalPropertyName)) {
+                return [];
+            }
 
-        var internalPropertyName = PedigreeImport.JSONToInternalPropertyMapping[externalPropertyName];
+            var internalPropertyName = PedigreeImport.JSONToInternalPropertyMapping[externalPropertyName];
 
-        return {"propertyName": internalPropertyName, "value": value };
+            return [ {"propertyName": internalPropertyName, "value": value } ];
+        } catch (err) {
+            console.log("Error importing property [" + externalPropertyName + "]");
+            return [];
+        }
     }
 
     PedigreeImport.JSONToInternalRelationshipPropertyMapping = {
@@ -1398,18 +1418,23 @@ define([
         };
 
     PedigreeImport.convertRelationshipProperty = function(externalPropertyName, value) {
-
-        if (!PedigreeImport.JSONToInternalRelationshipPropertyMapping.hasOwnProperty(externalPropertyName))
-            return null;
-
-        var internalPropertyName = PedigreeImport.JSONToInternalRelationshipPropertyMapping[externalPropertyName];
-
-        if (externalPropertyName == "consanguinity") {
-            if (value != "Y" && value != "N") {
+        try {
+            if (!PedigreeImport.JSONToInternalRelationshipPropertyMapping.hasOwnProperty(externalPropertyName)) {
                 return null;
             }
+
+            var internalPropertyName = PedigreeImport.JSONToInternalRelationshipPropertyMapping[externalPropertyName];
+
+            if (externalPropertyName == "consanguinity") {
+                if (value != "Y" && value != "N") {
+                    return null;
+                }
+            }
+            return {"propertyName": internalPropertyName, "value": value };
+        } catch (err) {
+            console.log("Error importing relationship property [" + externalPropertyName + "]");
+            return null;
         }
-        return {"propertyName": internalPropertyName, "value": value };
     }
     //===============================================================================================
 

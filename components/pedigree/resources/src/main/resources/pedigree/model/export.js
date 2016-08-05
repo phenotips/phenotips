@@ -372,20 +372,39 @@ define([
          output += "0\t"; // TODO: Genetic test status
 
          // BRCA1/BRCA2 mutations
-         if (pedigree.GG.properties[i].hasOwnProperty("candidateGenes")) {
-             var genes = pedigree.GG.properties[i].candidateGenes;
+         if (pedigree.GG.properties[i].hasOwnProperty("genes")) {
+             var genes = pedigree.GG.properties[i].genes;
+
+             var hasGeneWithOneOfStatuses = function(geneName, statusList) {
+                 var statusSet = Helpers.toObjectWithTrue(statusList);
+                 for (var i = 0; i < genes.length; i++) {
+                     var geneObject = genes[i];
+                     if (geneObject.gene == geneName && statusSet.hasOwnProperty(geneObject.status)) {
+                         return true;
+                     }
+                 }
+                 return false;
+             };
+
              var status = "0";
-             if (Helpers.arrayIndexOf(genes, "BRCA1") >= 0) {
+             if (hasGeneWithOneOfStatuses("BRCA1", ["candidate","solved"])) {
                  status = "1";
              }
-             if (Helpers.arrayIndexOf(genes, "BRCA2") >= 0) {
+             if (hasGeneWithOneOfStatuses("BRCA2", ["candidate","solved"])) {
                  if (status == "1") {
                      status = "3";
                  } else {
                      status = "2";
                  }
              }
-             // TODO: if BRCA1 and/or BRCA2 are among rejected genes set status to "N"
+             if (status == "0") {
+                 // if BRCA1 and BRCA2 are among rejected genes set status to "N"
+                 // TODO: what if only one is rejected and another untested?
+                 if (hasGeneWithOneOfStatuses("BRCA1", ["rejected"]) &&
+                     hasGeneWithOneOfStatuses("BRCA2", ["rejected"])) {
+                     status = "N";
+                 }
+             }
              output += status + "\t";
          } else {
              output += "0\t";
@@ -460,7 +479,7 @@ define([
           "gender":        "sex",
           "numPersons":    "numPersons",
           "hpoTerms":      "hpoTerms",
-          "candidateGenes":"candidateGenes",
+          "genes":         "genes",
           "lostContact":   "lostContact",
           "nodeNumber":    "nodeNumber",
           "cancers":       "cancers",
