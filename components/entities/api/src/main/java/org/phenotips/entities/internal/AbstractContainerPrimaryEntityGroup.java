@@ -50,12 +50,12 @@ import com.xpn.xwiki.objects.BaseObject;
  * In order to function properly, a {@link PrimaryEntityManager} component with the hint ({@code @Named}) set to the
  * name of {@link #getMemberType() the XClass used for members} must exist. Shorter versions of the XClass name are also
  * accepted. For example, for members of type {@code PhenoTips.PatientClass}, the following names are supported:
+ * </p>
  * <ol>
  * <li>PhenoTips.PatientClass</li>
  * <li>PatientClass</li>
  * <li>Patient</li>
  * </ol>
- * </p>
  *
  * @param <E> the type of entities belonging to this group; if more than one type of entities can be part of the group,
  *            then a generic {@code PrimaryEntity} should be used instead
