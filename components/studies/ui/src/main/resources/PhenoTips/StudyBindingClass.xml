@@ -104,7 +104,7 @@
       #set ($configTitle = "${s.name}")
     #end
     &lt;div class="form-template-option"&gt;
-    &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value="${s.documentReference}" #if ("$!{value}" == "${s.documentReference}") checked="checked" #end/&gt;$configTitle&lt;/label&gt;
+    &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value="${services.rendering.escape($services.model.serialize($s.documentReference), $doc.syntax)}" #if ("$!{value}" == "${s.documentReference}") checked="checked" #end/&gt;$services.rendering.escape($configTitle, $doc.syntax)&lt;/label&gt;
     &lt;p class="xHint"&gt;$!{s.content}&lt;/p&gt;
     &lt;/div&gt;
   #end
