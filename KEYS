@@ -1,3 +1,21 @@
+This file contains the PGP keys of various developers, used mainly for signing releases.
+
+Users:
+    gpg --import KEYS
+
+Developers:
+    (gpg --list-keys --fingerprint <your email> && gpg --armor --export <your email>) >> KEYS
+
+Verifying a tag signature:
+    git tag -v phenotips-1.2.3
+
+Verifying a downloaded artifact:
+    # Download the artifact from Nexus, for example phenotips-standalone-1.2.3.zip from https://nexus.phenotips.org/nexus/content/repositories/releases/org/phenotips/phenotips-standalone/1.2.3/
+    # Download the .asc signature file from the same directory
+    gpg --verify phenotips-standalone-1.2.3.zip.asc
+
+
+
 pub   4096R/31DA0A4F 2013-10-01 [expires: 2018-09-30]
       Key fingerprint = 1A08 58E8 6BDF 1045 8A9C  50AA F2E0 473A 31DA 0A4F
 uid       [ultimate] Sergiu Dumitriu <sergiu@phenotips.org>
