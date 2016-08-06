@@ -18,6 +18,7 @@
 package org.phenotips.groups.internal;
 
 import org.phenotips.groups.UserOrGroupResolver;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;

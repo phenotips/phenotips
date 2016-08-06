@@ -85,14 +85,14 @@ public class DefaultGroupManager implements GroupManager
 
         DocumentReference profile = user.getProfileDocument();
 
-        Set<Group> result = new LinkedHashSet<Group>();
+        Set<Group> result = new LinkedHashSet<>();
         try {
             Query q =
                 this.qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (:u, :su)", Query.XWQL);
             q.bindValue("u", profile.toString());
             q.bindValue("su", this.compactSerializer.serialize(profile));
             List<Object> groups = q.execute();
-            List<Object> nestedGroups = new ArrayList<Object>(groups);
+            List<Object> nestedGroups = new ArrayList<>(groups);
             while (!nestedGroups.isEmpty()) {
                 StringBuilder qs = new StringBuilder("from doc.object(XWiki.XWikiGroups) grp where grp.member in (");
                 for (int i = 0; i < nestedGroups.size(); ++i) {
