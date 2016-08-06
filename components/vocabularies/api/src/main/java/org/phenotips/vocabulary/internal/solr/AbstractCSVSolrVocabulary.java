@@ -86,7 +86,7 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
             return 2;
         }
         try {
-            Collection<SolrInputDocument> termBatch = new HashSet<SolrInputDocument>();
+            Collection<SolrInputDocument> termBatch = new HashSet<>();
             Iterator<SolrInputDocument> dataIterator = data.iterator();
             int batchCounter = 0;
             while (dataIterator.hasNext()) {

@@ -95,13 +95,13 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
         String realOntologyUrl = StringUtils.defaultIfBlank(sourceUrl, getDefaultSourceLocation());
 
         SolrUpdateGenerator generator = new SolrUpdateGenerator();
-        Map<String, Double> fieldSelection = new HashMap<String, Double>();
+        Map<String, Double> fieldSelection = new HashMap<>();
         Map<String, TermData> data = generator.transform(realOntologyUrl, fieldSelection);
         if (data == null || data.isEmpty()) {
             return 2;
         }
         try {
-            Collection<SolrInputDocument> termBatch = new HashSet<SolrInputDocument>();
+            Collection<SolrInputDocument> termBatch = new HashSet<>();
             Iterator<Map.Entry<String, TermData>> dataIterator = data.entrySet().iterator();
             int batchCounter = 0;
             while (dataIterator.hasNext()) {
