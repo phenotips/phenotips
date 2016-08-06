@@ -34,7 +34,7 @@ import javax.ws.rs.core.Response;
  * identifier and the internal collaborator identifier.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M2
  */
 @Path("/patients/{patient-id}/permissions/collaborators/{collaborator-id}")
 @Relation("https://phenotips.org/rel/collaborator")

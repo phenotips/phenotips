@@ -34,7 +34,7 @@ import javax.ws.rs.core.UriInfo;
  * Factory class for generating REST representations of various types of entities, used within the permissions module.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M2
  */
 @Unstable
 @Role

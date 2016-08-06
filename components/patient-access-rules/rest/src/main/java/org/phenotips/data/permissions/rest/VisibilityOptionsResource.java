@@ -27,7 +27,7 @@ import javax.ws.rs.Path;
  * Resource for working with patient independent features of {@link org.phenotips.data.permissions.Visibility}.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M2
  */
 @Path("/permissions/visibility")
 @Relation("https://phenotips.org/rel/visibilityOptions")

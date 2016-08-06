@@ -37,7 +37,7 @@ import org.slf4j.Logger;
  * current user does not have the minimum required rights, the context will fail to initialize.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M2
  */
 public class PatientAccessContext
 {

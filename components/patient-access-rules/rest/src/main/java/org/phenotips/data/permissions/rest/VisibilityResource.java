@@ -35,7 +35,7 @@ import javax.ws.rs.core.Response;
  * identifier.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M2
  */
 @Role
 @Path("/patients/{patient-id}/permissions/visibility")

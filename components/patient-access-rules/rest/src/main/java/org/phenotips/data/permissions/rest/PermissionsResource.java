@@ -33,7 +33,7 @@ import javax.ws.rs.core.Response;
  * record's internal PhenoTips identifier.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M2
  */
 @Path("/patients/{patient-id}/permissions")
 @Relation("https://phenotips.org/rel/permissions")

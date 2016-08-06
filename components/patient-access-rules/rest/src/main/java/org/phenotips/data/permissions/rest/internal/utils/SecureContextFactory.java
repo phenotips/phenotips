@@ -27,7 +27,7 @@ import javax.ws.rs.WebApplicationException;
  * if the minimum rights levels are not met.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M2
  */
 @Unstable
 @Role

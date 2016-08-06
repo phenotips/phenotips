@@ -36,7 +36,7 @@ import groovy.lang.Singleton;
  * between default implementations of the REST resources.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M2
  */
 @Component
 @Singleton

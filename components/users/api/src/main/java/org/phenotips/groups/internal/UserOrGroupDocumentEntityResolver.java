@@ -32,7 +32,7 @@ import javax.inject.Named;
  * with the specified ID, then {@code null} is returned instead of a valid reference.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M2
  */
 @Component
 @Named("userOrGroup")

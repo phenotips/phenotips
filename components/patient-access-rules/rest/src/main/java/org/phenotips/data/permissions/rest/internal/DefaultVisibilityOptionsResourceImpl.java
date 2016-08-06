@@ -40,7 +40,7 @@ import javax.inject.Singleton;
  * Default implementation for {@link VisibilityOptionsResource} using XWiki's support for REST resources.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M2
  */
 @Component
 @Named("org.phenotips.data.permissions.rest.internal.DefaultVisibilityOptionsResourceImpl")

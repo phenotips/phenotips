@@ -51,7 +51,7 @@ import net.sf.json.JSONObject;
 
 /**
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M2
  */
 @Component
 @Named("org.phenotips.data.permissions.rest.internal.DefaultPermissionsResourceImpl")

@@ -28,7 +28,7 @@ import java.util.Set;
  * Class for determining the valid HTTP methods that can be performed on a REST endpoint given the current user.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M2
  */
 
 @Unstable

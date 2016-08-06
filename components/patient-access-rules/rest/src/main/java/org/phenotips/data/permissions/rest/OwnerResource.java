@@ -34,7 +34,7 @@ import javax.ws.rs.core.Response;
  * Resource for working with patient record's owners, identified by patient record's internal PhenoTips identifier.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M2
  */
 @Role
 @Path("/patients/{patient-id}/permissions/owner")
