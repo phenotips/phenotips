@@ -20,8 +20,6 @@ package org.phenotips.data.permissions.rest;
 import org.phenotips.data.permissions.rest.internal.utils.annotations.Relation;
 import org.phenotips.data.rest.model.VisibilityOptionsRepresentation;
 
-import org.xwiki.component.annotation.Role;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 

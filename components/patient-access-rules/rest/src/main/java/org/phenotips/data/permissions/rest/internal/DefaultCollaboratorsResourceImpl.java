@@ -104,14 +104,14 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
             this.factory.createCollaboratorsRepresentation(patientAccessContext.getPatient(), this.uriInfo);
 
         result.withLinks(new LinkBuilder()
-                .withUriInfo(this.uriInfo)
-                .withAccessLevel(patientAccessContext.getPatientAccess().getAccessLevel())
-                .withRootInterface(this.getClass().getInterfaces()[0])
-                .withActionResolver(restActionResolver)
-                .withActionableResources(PermissionsResource.class)
-                .build());
+            .withUriInfo(this.uriInfo)
+            .withAccessLevel(patientAccessContext.getPatientAccess().getAccessLevel())
+            .withRootInterface(this.getClass().getInterfaces()[0])
+            .withActionResolver(this.restActionResolver)
+            .withActionableResources(PermissionsResource.class)
+            .build());
         result.withLinks(new Link().withRel(Relations.PATIENT_RECORD)
-                                    .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));
+            .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));
 
         return result;
     }
@@ -131,8 +131,8 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
     @Override
     public Response postCollaboratorWithForm(String patientId)
     {
-        Object idInRequest = container.getRequest().getProperty("collaborator");
-        Object levelInRequest = container.getRequest().getProperty(LEVEL);
+        Object idInRequest = this.container.getRequest().getProperty("collaborator");
+        Object levelInRequest = this.container.getRequest().getProperty(LEVEL);
         if (idInRequest instanceof String && levelInRequest instanceof String) {
             String id = idInRequest.toString().trim();
             String level = levelInRequest.toString().trim();
@@ -161,8 +161,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
     {
         this.checkCollaboratorInfo(collaboratorId, accessLevelName);
 
-        this.logger.debug(
-            "Adding collaborator [{}] with permission level [{}] to the patient record [{}] via REST",
+        this.logger.debug("Adding collaborator [{}] with permission level [{}] to the patient record [{}] via REST",
             collaboratorId, accessLevelName, patientId);
         // besides getting the patient, checks that the user has manage access
         PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, MANAGE_LEVEL);
@@ -259,6 +258,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
     private class CollaboratorInfo
     {
         private String id;
+
         private String level;
 
         CollaboratorInfo(String id, String level)
@@ -269,12 +269,12 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
 
         public String getId()
         {
-            return id;
+            return this.id;
         }
 
         public String getLevel()
         {
-            return level;
+            return this.level;
         }
     }
 }

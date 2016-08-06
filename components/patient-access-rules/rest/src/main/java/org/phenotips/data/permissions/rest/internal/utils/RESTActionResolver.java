@@ -24,7 +24,6 @@ import org.xwiki.stability.Unstable;
 
 import java.util.Set;
 
-
 /**
  * Class for determining the valid HTTP methods that can be performed on a REST endpoint given the current user.
  *
@@ -36,13 +35,12 @@ import java.util.Set;
 @Role
 public interface RESTActionResolver
 {
-
     /**
      * Determines the set of valid HTTP methods that can be performed on a given REST endpoint.
+     *
      * @param restInterface The interface defining the RESTful endpoint
-     * @param accessLevel   The current accessLevel
+     * @param accessLevel The current accessLevel
      * @return A set of Http methods that can be performed on the provided endpoint
      */
     Set<String> resolveActions(Class restInterface, AccessLevel accessLevel);
-
 }

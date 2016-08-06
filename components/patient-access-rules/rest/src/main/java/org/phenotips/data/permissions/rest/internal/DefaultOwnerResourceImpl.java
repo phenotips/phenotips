@@ -36,7 +36,6 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.rest.XWikiResource;
-import org.xwiki.text.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -45,6 +44,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import net.sf.json.JSONObject;
@@ -91,20 +91,21 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
 
         // adding links relative to this context
         result.withLinks(new LinkBuilder()
-                .withUriInfo(this.uriInfo)
-                .withAccessLevel(patientAccessContext.getPatientAccess().getAccessLevel())
-                .withActionResolver(restActionResolver)
-                .withTargetPatient(patientId)
-                .withActionableResources(PermissionsResource.class)
-                .withRootInterface(this.getClass().getInterfaces()[0])
-                .build());
+            .withUriInfo(this.uriInfo)
+            .withAccessLevel(patientAccessContext.getPatientAccess().getAccessLevel())
+            .withActionResolver(this.restActionResolver)
+            .withTargetPatient(patientId)
+            .withActionableResources(PermissionsResource.class)
+            .withRootInterface(this.getClass().getInterfaces()[0])
+            .build());
         result.getLinks().add(new Link().withRel(Relations.PATIENT_RECORD)
-                .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));
+            .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));
 
         return result;
     }
 
-    @Override public Response putOwnerWithJson(String json, String patientId)
+    @Override
+    public Response putOwnerWithJson(String json, String patientId)
     {
         try {
             String id = JSONObject.fromObject(json).getString("id");
@@ -115,9 +116,10 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
         }
     }
 
-    @Override public Response putOwnerWithForm(String patientId)
+    @Override
+    public Response putOwnerWithForm(String patientId)
     {
-        Object ownerIdInRequest = container.getRequest().getProperty("owner");
+        Object ownerIdInRequest = this.container.getRequest().getProperty("owner");
         if (ownerIdInRequest instanceof String) {
             String ownerId = ownerIdInRequest.toString();
             if (StringUtils.isNotBlank(ownerId)) {

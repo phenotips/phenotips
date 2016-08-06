@@ -36,7 +36,6 @@ import javax.ws.rs.HttpMethod;
  *
  * @version $Id$
  * @since 1.3M2
- *
  */
 @Component
 @Singleton
@@ -47,7 +46,8 @@ public class DefaultRESTActionResolver implements RESTActionResolver
     private PermissionsManager pm;
 
     @Override
-    public Set<String> resolveActions(Class restInterface, AccessLevel accessLevel) {
+    public Set<String> resolveActions(Class restInterface, AccessLevel accessLevel)
+    {
         Set<String> accessLevelMethods = this.getHTTPMethodsForAccessLevel(accessLevel);
         Set<String> interfaceMethods = this.getHTTPMethodsForInterface(restInterface);
         interfaceMethods.retainAll(accessLevelMethods);
@@ -55,18 +55,20 @@ public class DefaultRESTActionResolver implements RESTActionResolver
 
     }
 
-    private Set<String> getHTTPMethodsForInterface(Class restInterface) {
+    private Set<String> getHTTPMethodsForInterface(Class restInterface)
+    {
         Method[] methods = restInterface.getMethods();
         Set<String> classAnnotations = new HashSet<>();
-        for (Method method: methods) {
-            for (Annotation annotation: method.getAnnotations()) {
+        for (Method method : methods) {
+            for (Annotation annotation : method.getAnnotations()) {
                 classAnnotations.add(annotation.annotationType().getSimpleName());
             }
         }
         return classAnnotations;
     }
 
-    private Set<String> getHTTPMethodsForAccessLevel(AccessLevel level) {
+    private Set<String> getHTTPMethodsForAccessLevel(AccessLevel level)
+    {
         Set<String> result = new HashSet<>();
         if (level.compareTo(this.pm.resolveAccessLevel("view")) >= 0) {
             result.add(HttpMethod.GET);

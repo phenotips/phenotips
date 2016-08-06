@@ -45,7 +45,7 @@ public interface DomainObjectFactory
      *
      * @param patient the owner of this patient will be serialized
      * @return a summary of the patient record's owner, or {@code null} if the current user doesn't have access to the
-     * patient or accessing the patient data fails
+     *         patient or accessing the patient data fails
      */
     UserSummary createOwnerRepresentation(Patient patient);
 
@@ -55,7 +55,7 @@ public interface DomainObjectFactory
      *
      * @param patient whose visibility is of interest
      * @return a summary of the patient record's visibility, or {@code null} if the current user doesn't have access to
-     * the patient or accessing the patient data fails
+     *         the patient or accessing the patient data fails
      */
     VisibilityRepresentation createVisibilityRepresentation(Patient patient);
 
@@ -74,7 +74,7 @@ public interface DomainObjectFactory
      * @param patient the (list of) collaborators that are attached to this patient record
      * @param uriInfo the URI information for the rest system and the current request
      * @return a summary of each collaborator on the patient record, or {@code null} if the current user doesn't have
-     * access to the patient or accessing the patient data fails.
+     *         access to the patient or accessing the patient data fails.
      */
     CollaboratorsRepresentation createCollaboratorsRepresentation(Patient patient, UriInfo uriInfo);
 
@@ -85,7 +85,7 @@ public interface DomainObjectFactory
      * @param patient to whom the collaborator is attached
      * @param collaborator that is to be represented
      * @return a summary of the collaborator, or {@code null} if the current user doesn't have access to the patient or
-     * accessing the patient data fails.
+     *         accessing the patient data fails.
      */
     CollaboratorRepresentation createCollaboratorRepresentation(Patient patient, Collaborator collaborator);
 }

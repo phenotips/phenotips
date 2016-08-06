@@ -51,7 +51,8 @@ public interface CollaboratorsResource
      * @param patientId internal identifier of a patient record
      * @return REST representation of a collection of patient record's collaborators
      */
-    @GET CollaboratorsRepresentation getCollaborators(@PathParam("patient-id") String patientId);
+    @GET
+    CollaboratorsRepresentation getCollaborators(@PathParam("patient-id") String patientId);
 
     /**
      * Adds a new collaborator, or updates the permission level of a collaborator. If the indicated patient record
@@ -63,8 +64,8 @@ public interface CollaboratorsResource
      * @return a status message
      */
     @POST
-    @Consumes(MediaType.APPLICATION_JSON) Response postCollaboratorWithJson(String json,
-        @PathParam("patient-id") String patientId);
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response postCollaboratorWithJson(String json, @PathParam("patient-id") String patientId);
 
     /**
      * Adds a new collaborator, or updates the permission level of a collaborator. If the indicated patient record
@@ -76,8 +77,8 @@ public interface CollaboratorsResource
      * @return a status message
      */
     @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED) Response postCollaboratorWithForm(
-        @PathParam("patient-id") String patientId);
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    Response postCollaboratorWithForm(@PathParam("patient-id") String patientId);
 
     /**
      * Updates all collaborators, replacing all previous collaborators. If the indicated patient record doesn't exist,
@@ -85,13 +86,13 @@ public interface CollaboratorsResource
      * performed and an error is returned.
      *
      * @param json a JSON collection containing collaborators, each of which must be an object with "id" and "level"
-     * properties
+     *            properties
      * @param patientId internal identifier of a patient record
      * @return a status message
      */
     @PUT
-    @Consumes(MediaType.APPLICATION_JSON) Response putCollaborators(String json,
-        @PathParam("patient-id") String patientId);
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response putCollaborators(String json, @PathParam("patient-id") String patientId);
 
     /**
      * Deletes all collaborators. If the indicated patient record doesn't exist, or if the user sending the request
@@ -100,5 +101,6 @@ public interface CollaboratorsResource
      * @param patientId internal identifier of a patient record
      * @return a status message
      */
-    @DELETE Response deleteCollaborators(@PathParam("patient-id") String patientId);
+    @DELETE
+    Response deleteCollaborators(@PathParam("patient-id") String patientId);
 }

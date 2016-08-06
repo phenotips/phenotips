@@ -63,8 +63,8 @@ public interface VisibilityResource
      * @return a status message
      */
     @PUT
-    @Consumes(MediaType.APPLICATION_JSON) Response putVisibilityWithJson(String json,
-        @PathParam("patient-id") String patientId);
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response putVisibilityWithJson(String json, @PathParam("patient-id") String patientId);
 
     /**
      * Updates the visibility of a patient. If the indicated patient record doesn't exist, or if the user sending the
@@ -75,6 +75,6 @@ public interface VisibilityResource
      * @return a status message
      */
     @PUT
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED) Response putVisibilityWithForm(
-        @PathParam("patient-id") String patientId);
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    Response putVisibilityWithForm(@PathParam("patient-id") String patientId);
 }

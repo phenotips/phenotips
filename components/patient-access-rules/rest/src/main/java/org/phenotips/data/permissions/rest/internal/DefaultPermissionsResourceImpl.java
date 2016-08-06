@@ -50,7 +50,6 @@ import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 /**
- *
  * @version $Id$
  * @since 1.3M1
  */
@@ -98,28 +97,28 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
             this.factory.createCollaboratorsRepresentation(patientAccessContext.getPatient(), this.uriInfo);
 
         AccessLevel accessLevel = patientAccessContext.getPatientAccess().getAccessLevel();
-        //adding links into sub-parts
+        // adding links into sub-parts
         owner.withLinks(new LinkBuilder()
-                .withAccessLevel(accessLevel)
-                .withActionableResources(OwnerResource.class)
-                .withActionResolver(restActionResolver)
-                .withTargetPatient(patientId)
-                .withUriInfo(this.uriInfo)
-                .build());
+            .withAccessLevel(accessLevel)
+            .withActionableResources(OwnerResource.class)
+            .withActionResolver(this.restActionResolver)
+            .withTargetPatient(patientId)
+            .withUriInfo(this.uriInfo)
+            .build());
         visibility.withLinks(new LinkBuilder()
-                .withAccessLevel(accessLevel)
-                .withActionableResources(VisibilityResource.class)
-                .withActionResolver(restActionResolver)
-                .withTargetPatient(patientId)
-                .withUriInfo(this.uriInfo)
-                .build());
+            .withAccessLevel(accessLevel)
+            .withActionableResources(VisibilityResource.class)
+            .withActionResolver(this.restActionResolver)
+            .withTargetPatient(patientId)
+            .withUriInfo(this.uriInfo)
+            .build());
         collaborators.withLinks(new LinkBuilder()
-                .withAccessLevel(accessLevel)
-                .withActionableResources(CollaboratorsResource.class)
-                .withActionResolver(restActionResolver)
-                .withTargetPatient(patientId)
-                .withUriInfo(this.uriInfo)
-                .build());
+            .withAccessLevel(accessLevel)
+            .withActionableResources(CollaboratorsResource.class)
+            .withActionResolver(this.restActionResolver)
+            .withTargetPatient(patientId)
+            .withUriInfo(this.uriInfo)
+            .build());
 
         result.withOwner(owner);
         result.withVisibility(visibility);
@@ -127,14 +126,14 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
 
         // adding links relative to this context
         result.withLinks(new LinkBuilder()
-                .withAccessLevel(accessLevel)
-                .withRootInterface(PermissionsResource.class)
-                .withActionResolver(restActionResolver)
-                .withTargetPatient(patientId)
-                .withUriInfo(this.uriInfo)
-                .build());
+            .withAccessLevel(accessLevel)
+            .withRootInterface(PermissionsResource.class)
+            .withActionResolver(this.restActionResolver)
+            .withTargetPatient(patientId)
+            .withUriInfo(this.uriInfo)
+            .build());
         result.getLinks().add(new Link().withRel(Relations.PATIENT_RECORD)
-                .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));
+            .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));
 
         return result;
     }
@@ -162,9 +161,9 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        ownerResource.putOwnerWithJson(ownerJsonStr, patientId);
-        visibilityResource.putVisibilityWithJson(visibilityJsonStr, patientId);
-        collaboratorsResource.putCollaborators(collaboratorsJsonStr, patientId);
+        this.ownerResource.putOwnerWithJson(ownerJsonStr, patientId);
+        this.visibilityResource.putVisibilityWithJson(visibilityJsonStr, patientId);
+        this.collaboratorsResource.putCollaborators(collaboratorsJsonStr, patientId);
 
         return Response.ok().build();
     }

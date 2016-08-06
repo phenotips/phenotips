@@ -48,7 +48,8 @@ public interface CollaboratorResource
      * @param collaboratorId fully qualified, internal id of a collaborator (ex. xwiki:XWiki.JohnAdams)
      * @return REST representation of a single collaborator
      */
-    @GET CollaboratorRepresentation getCollaborator(@PathParam("patient-id") String patientId,
+    @GET
+    CollaboratorRepresentation getCollaborator(@PathParam("patient-id") String patientId,
         @PathParam("collaborator-id") String collaboratorId);
 
     /**
@@ -62,8 +63,9 @@ public interface CollaboratorResource
      * @return a status message
      */
     @PUT
-    @Consumes(MediaType.APPLICATION_JSON) Response putLevelWithJson(String json,
-        @PathParam("patient-id") String patientId, @PathParam("collaborator-id") String collaboratorId);
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response putLevelWithJson(String json, @PathParam("patient-id") String patientId,
+        @PathParam("collaborator-id") String collaboratorId);
 
     /**
      * Updates the access level of a collaborator. If the indicated patient record doesn't exist, or if the user sending
@@ -75,8 +77,9 @@ public interface CollaboratorResource
      * @return a status message
      */
     @PUT
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED) Response putLevelWithForm(
-        @PathParam("patient-id") String patientId, @PathParam("collaborator-id") String collaboratorId);
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    Response putLevelWithForm(@PathParam("patient-id") String patientId,
+        @PathParam("collaborator-id") String collaboratorId);
 
     /**
      * Removes a particular collaborator from a patient record. If the indicated patient record doesn't exist, or if the
@@ -87,6 +90,7 @@ public interface CollaboratorResource
      * @param collaboratorId fully qualified, internal id of a collaborator (ex. xwiki:XWiki.JohnAdams)
      * @return a status message
      */
-    @DELETE Response deleteCollaborator(@PathParam("patient-id") String patientId,
+    @DELETE
+    Response deleteCollaborator(@PathParam("patient-id") String patientId,
         @PathParam("collaborator-id") String collaboratorId);
 }

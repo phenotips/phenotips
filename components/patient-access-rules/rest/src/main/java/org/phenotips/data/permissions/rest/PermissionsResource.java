@@ -46,7 +46,8 @@ public interface PermissionsResource
      * @param patientId internal identifier of a patient record
      * @return REST representation of an owner of a patient record
      */
-    @GET PermissionsRepresentation getPermissions(@PathParam("patient-id") String patientId);
+    @GET
+    PermissionsRepresentation getPermissions(@PathParam("patient-id") String patientId);
 
     /**
      * Overwrites all permissions: owner, collaborators, visibility. If the indicated patient record doesn't exist, or
@@ -58,6 +59,6 @@ public interface PermissionsResource
      * @return a status message
      */
     @PUT
-    @Consumes(MediaType.APPLICATION_JSON) Response putPermissions(String json,
-        @PathParam("patient-id") String patientId);
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response putPermissions(String json, @PathParam("patient-id") String patientId);
 }

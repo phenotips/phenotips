@@ -110,6 +110,6 @@ public class PatientAccessContext
      */
     public PatientAccess getPatientAccess()
     {
-        return patientAccess;
+        return this.patientAccess;
     }
 }

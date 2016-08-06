@@ -49,7 +49,8 @@ public interface OwnerResource
      * @param patientId internal identifier of a patient record
      * @return REST representation of an owner of a patient record
      */
-    @GET UserSummary getOwner(@PathParam("patient-id") String patientId);
+    @GET
+    UserSummary getOwner(@PathParam("patient-id") String patientId);
 
     /**
      * Updates the owner of a patient record - identified by `patientId` - with the owner specified in JSON. If the
@@ -57,13 +58,13 @@ public interface OwnerResource
      * target patient record, no change is performed and an error is returned.
      *
      * @param json that contains a "id" property, with a value of either a fully qualified username or a plain username
-     * (eg. "xwiki:XWiki.username" or "username")
+     *            (eg. "xwiki:XWiki.username" or "username")
      * @param patientId identifier of the patient, whose owner should be changed
      * @return a status message
      */
     @PUT
-    @Consumes(MediaType.APPLICATION_JSON) Response putOwnerWithJson(String json,
-        @PathParam("patient-id") String patientId);
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response putOwnerWithJson(String json, @PathParam("patient-id") String patientId);
 
     /**
      * Updates the owner of a patient record - identified by `patientId` - with the owner specified in JSON. If the
@@ -75,6 +76,6 @@ public interface OwnerResource
      * @return a status message
      */
     @PUT
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED) Response putOwnerWithForm(
-        @PathParam("patient-id") String patientId);
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    Response putOwnerWithForm(@PathParam("patient-id") String patientId);
 }

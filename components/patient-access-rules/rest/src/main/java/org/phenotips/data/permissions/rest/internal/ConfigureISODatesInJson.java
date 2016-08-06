@@ -30,9 +30,7 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.ext.jackson.JacksonConverter;
 
-
-/* todo. figure out if this class should stay. it is a duplicate of a class in patient-data */
-
+/* TODO Figure out if this class should stay. it is a duplicate of a class in patient-data */
 
 /**
  * Configures the Jackson serializer used in the Restlet framework to print dates as ISO-formatted string instead of

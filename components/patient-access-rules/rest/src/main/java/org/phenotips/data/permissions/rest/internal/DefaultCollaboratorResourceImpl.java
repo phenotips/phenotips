@@ -38,7 +38,6 @@ import org.xwiki.container.Container;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.rest.XWikiResource;
-import org.xwiki.text.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -47,6 +46,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import net.sf.json.JSONObject;
@@ -86,8 +86,8 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     @Override
     public CollaboratorRepresentation getCollaborator(String patientId, String collaboratorId)
     {
-        this.logger.debug(
-            "Retrieving collaborator with id [{}] of patient record [{}] via REST", collaboratorId, patientId);
+        this.logger.debug("Retrieving collaborator with id [{}] of patient record [{}] via REST", collaboratorId,
+            patientId);
         // besides getting the patient, checks that the user has view access
         PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
 
@@ -103,14 +103,14 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
 
         // adding links relative to this context
         result.withLinks(new LinkBuilder()
-                .withUriInfo(this.uriInfo)
-                .withAccessLevel(patientAccessContext.getPatientAccess().getAccessLevel())
-                .withActionResolver(restActionResolver)
-                .withRootInterface(CollaboratorsResource.class)
-                .withActionableResources(CollaboratorsResource.class, PermissionsResource.class)
-                .build());
+            .withUriInfo(this.uriInfo)
+            .withAccessLevel(patientAccessContext.getPatientAccess().getAccessLevel())
+            .withActionResolver(this.restActionResolver)
+            .withRootInterface(CollaboratorsResource.class)
+            .withActionableResources(CollaboratorsResource.class, PermissionsResource.class)
+            .build());
         result.getLinks().add(new Link().withRel(Relations.PATIENT_RECORD)
-                .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));
+            .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));
         return result;
     }
 
@@ -131,7 +131,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     @Override
     public Response putLevelWithForm(String patientId, String collaboratorId)
     {
-        Object levelInRequest = container.getRequest().getProperty(LEVEL);
+        Object levelInRequest = this.container.getRequest().getProperty(LEVEL);
         if (levelInRequest instanceof String) {
             String level = levelInRequest.toString().trim();
             if (StringUtils.isNotBlank(level)) {
@@ -145,8 +145,8 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     @Override
     public Response deleteCollaborator(String patientId, String collaboratorId)
     {
-        this.logger.debug(
-            "Removing collaborator with id [{}] from patient record [{}] via REST", collaboratorId, patientId);
+        this.logger.debug("Removing collaborator with id [{}] from patient record [{}] via REST", collaboratorId,
+            patientId);
         // besides getting the patient, checks that the user has manage access
         PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "manage");
 

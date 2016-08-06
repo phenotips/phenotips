@@ -32,8 +32,8 @@ import org.slf4j.Logger;
 import groovy.lang.Singleton;
 
 /**
- * Default implementation of {@link SecureContextFactory}. The purpose is to reduce the number of common
- * injections between default implementations of the REST resources.
+ * Default implementation of {@link SecureContextFactory}. The purpose is to reduce the number of common injections
+ * between default implementations of the REST resources.
  *
  * @version $Id$
  * @since 1.3M1
@@ -58,6 +58,6 @@ public class DefaultSecureContextFactory implements SecureContextFactory
     public PatientAccessContext getContext(String patientId, String minimumAccessLevel) throws WebApplicationException
     {
         AccessLevel level = this.manager.resolveAccessLevel(minimumAccessLevel);
-        return new PatientAccessContext(patientId, level, repository, users, manager, logger);
+        return new PatientAccessContext(patientId, level, this.repository, this.users, this.manager, this.logger);
     }
 }

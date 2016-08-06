@@ -33,18 +33,18 @@ import javax.ws.rs.WebApplicationException;
 @Role
 public interface SecureContextFactory
 {
-    // todo. should the return type be an interface?
+    // TODO should the return type be an interface?
 
     /**
-     * Provides the patient, current user, and access context, making sure that the current user has high enough
-     * access level.
+     * Provides the patient, current user, and access context, making sure that the current user has high enough access
+     * level.
      *
      * @param patientId by which a patient is to be found
-     * @param minimumAccessLevel that the current user must have, that maps to one
-     * of {@link org.phenotips.data.permissions.AccessLevel}
+     * @param minimumAccessLevel that the current user must have, that maps to one of
+     *            {@link org.phenotips.data.permissions.AccessLevel}
      * @return context containing a {@link Patient} instance and the current user
      * @throws WebApplicationException if the patient could not be found, or the current user does not have high enough
-     * access level
+     *             access level
      */
     PatientAccessContext getContext(String patientId, String minimumAccessLevel) throws WebApplicationException;
 }

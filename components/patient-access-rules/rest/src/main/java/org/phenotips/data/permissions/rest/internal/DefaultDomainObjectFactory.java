@@ -98,8 +98,9 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
     @Override
     public void initialize() throws InitializationException
     {
-        this.userObjectReference = this.referenceResolver.resolve(
-            new EntityReference("XWikiUsers", EntityType.DOCUMENT), new EntityReference("XWiki", EntityType.SPACE));
+        this.userObjectReference =
+            this.referenceResolver.resolve(new EntityReference("XWikiUsers", EntityType.DOCUMENT),
+                new EntityReference("XWiki", EntityType.SPACE));
         this.groupObjectReference =
             this.referenceResolver.resolve(new EntityReference("PhenoTipsGroupClass", EntityType.DOCUMENT),
                 new EntityReference("PhenoTips", EntityType.SPACE));
@@ -143,11 +144,12 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
     private class NameEmail
     {
         private String name;
+
         private String email;
+
         NameEmail(String type, XWikiDocument document) throws Exception
         {
-            if (StringUtils.equals("group", type))
-            {
+            if (StringUtils.equals("group", type)) {
                 fetchFromGroup(document);
             } else if (StringUtils.equals("user", type)) {
                 fetchFromUser(document);
@@ -158,7 +160,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
 
         private void fetchFromUser(XWikiDocument document)
         {
-            BaseObject userObj = document.getXObject(userObjectReference);
+            BaseObject userObj = document.getXObject(DefaultDomainObjectFactory.this.userObjectReference);
             this.email = userObj.getStringValue("email");
             StringBuilder nameBuilder = new StringBuilder();
             nameBuilder.append(userObj.getStringValue("first_name"));
@@ -169,26 +171,26 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
 
         private void fetchFromGroup(XWikiDocument document)
         {
-            BaseObject groupObject = document.getXObject(groupObjectReference);
+            BaseObject groupObject = document.getXObject(DefaultDomainObjectFactory.this.groupObjectReference);
             this.email = groupObject.getStringValue("contact");
             this.name = document.getDocumentReference().getName();
         }
 
         public String getName()
         {
-            return name;
+            return this.name;
         }
 
         public String getEmail()
         {
-            return email;
+            return this.email;
         }
     }
 
     @Override
     public VisibilityRepresentation createVisibilityRepresentation(Patient patient)
     {
-        // todo. is this allowed?
+        // TODO Is this allowed?
         PatientAccess patientAccess = new SecurePatientAccess(this.manager.getPatientAccess(patient), this.manager);
         Visibility visibility = patientAccess.getVisibility();
 
@@ -202,9 +204,9 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
             return null;
         }
         return (new VisibilityRepresentation())
-                .withLevel(visibility.getName())
-                .withLabel(visibility.getLabel())
-                .withDescription(visibility.getDescription());
+            .withLevel(visibility.getName())
+            .withLabel(visibility.getLabel())
+            .withDescription(visibility.getDescription());
     }
 
     @Override
@@ -214,16 +216,15 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
         Collection<Collaborator> collaborators = patientAccess.getCollaborators();
 
         CollaboratorsRepresentation result = new CollaboratorsRepresentation();
-        for (Collaborator collaborator : collaborators)
-        {
+        for (Collaborator collaborator : collaborators) {
             CollaboratorRepresentation collaboratorObject =
                 this.createCollaboratorRepresentation(patientAccess, collaborator);
             String href = uriInfo.getBaseUriBuilder().path(CollaboratorResource.class)
                 .build(patient.getId(), collaborator.getUser().getName()).toString();
             collaboratorObject.withLinks(new Link().withRel(Relations.COLLABORATOR)
-                    .withHref(href)
-                    .withAllowedMethods(restActionResolver.resolveActions(CollaboratorsResource.class,
-                            patientAccess.getAccessLevel())));
+                .withHref(href)
+                .withAllowedMethods(this.restActionResolver.resolveActions(CollaboratorsResource.class,
+                    patientAccess.getAccessLevel())));
 
             result.withCollaborators(collaboratorObject);
         }

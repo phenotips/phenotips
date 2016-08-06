@@ -56,8 +56,7 @@ public class DefaultVisibilityOptionsResourceImpl extends XWikiResource implemen
     @Override
     public VisibilityOptionsRepresentation getVisibilityOptions()
     {
-        // todo. should this be world-visible?
-
+        // TODO Should this be world-visible?
         List<VisibilityRepresentation> visibilities = new LinkedList<>();
         for (Visibility visibility : this.manager.listVisibilityOptions()) {
             visibilities.add(this.factory.createVisibilityRepresentation(visibility));

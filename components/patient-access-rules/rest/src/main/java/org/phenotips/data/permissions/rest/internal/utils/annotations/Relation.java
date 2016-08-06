@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
  * Created by matthew on 2016-03-03.
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Relation {
+public @interface Relation
+{
     String value();
 }

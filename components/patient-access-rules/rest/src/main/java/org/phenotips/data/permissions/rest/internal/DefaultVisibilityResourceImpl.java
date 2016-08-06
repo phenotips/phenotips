@@ -23,17 +23,21 @@ import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.PermissionsResource;
-import org.phenotips.data.rest.Relations;
 import org.phenotips.data.permissions.rest.VisibilityResource;
-import org.phenotips.data.permissions.rest.internal.utils.*;
+import org.phenotips.data.permissions.rest.internal.utils.LinkBuilder;
+import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
+import org.phenotips.data.permissions.rest.internal.utils.RESTActionResolver;
+import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.rest.PatientResource;
+import org.phenotips.data.rest.Relations;
 import org.phenotips.data.rest.model.Link;
 import org.phenotips.data.rest.model.VisibilityRepresentation;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.container.Container;
 import org.xwiki.rest.XWikiResource;
-import org.xwiki.text.StringUtils;
+
+import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -41,12 +45,10 @@ import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import net.sf.json.JSONObject;
-
-import java.util.Collection;
-
 
 /**
  * Default implementation for {@link VisibilityResource} using XWiki's support for REST resources.
@@ -89,12 +91,12 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
 
         AccessLevel accessLevel = patientAccessContext.getPatientAccess().getAccessLevel();
         LinkBuilder linkBuilder = new LinkBuilder()
-                .withActionResolver(this.restActionResolver)
-                .withAccessLevel(accessLevel)
-                .withUriInfo(this.uriInfo)
-                .withRootInterface(this.getClass().getInterfaces()[0])
-                .withTargetPatient(patientId)
-                .withActionableResources(PermissionsResource.class);
+            .withActionResolver(this.restActionResolver)
+            .withAccessLevel(accessLevel)
+            .withUriInfo(this.uriInfo)
+            .withRootInterface(this.getClass().getInterfaces()[0])
+            .withTargetPatient(patientId)
+            .withActionableResources(PermissionsResource.class);
         try {
             Collection<Link> links = linkBuilder.build();
             links.add(new Link().withRel(Relations.PATIENT_RECORD)
@@ -121,7 +123,7 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
     @Override
     public Response putVisibilityWithForm(String patientId)
     {
-        Object visibilityInRequest = container.getRequest().getProperty("visibility");
+        Object visibilityInRequest = this.container.getRequest().getProperty("visibility");
         if (visibilityInRequest instanceof String) {
             String visibility = visibilityInRequest.toString();
             if (StringUtils.isNotBlank(visibility)) {
@@ -141,8 +143,7 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
         String visibilityName = visibilityNameRaw.trim();
         // checking that the visibility level is valid
         Visibility visibility = null;
-        for (Visibility visibilityOption : this.manager.listVisibilityOptions())
-        {
+        for (Visibility visibilityOption : this.manager.listVisibilityOptions()) {
             if (StringUtils.equalsIgnoreCase(visibilityOption.getName(), visibilityName)) {
                 visibility = visibilityOption;
                 break;
