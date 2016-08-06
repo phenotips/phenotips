@@ -25,12 +25,12 @@ import org.phenotips.data.permissions.internal.DefaultCollaborator;
 import org.phenotips.data.permissions.rest.CollaboratorsResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.PermissionsResource;
-import org.phenotips.data.permissions.rest.Relations;
 import org.phenotips.data.permissions.rest.internal.utils.LinkBuilder;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.RESTActionResolver;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.rest.PatientResource;
+import org.phenotips.data.rest.Relations;
 import org.phenotips.data.rest.model.CollaboratorsRepresentation;
 import org.phenotips.data.rest.model.Link;
 

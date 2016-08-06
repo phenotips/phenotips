@@ -33,6 +33,16 @@ public class LinkBuilder
         this.linkedActionableInterfaces = new LinkedList<>();
     }
 
+    public static String getRel(Class restInterface)
+    {
+        String relation = null;
+        Relation relationAnnotation = (Relation) restInterface.getAnnotation(Relation.class);
+        if (relationAnnotation != null) {
+            relation = relationAnnotation.value();
+        }
+        return relation;
+    }
+
     public LinkBuilder withActionResolver(RESTActionResolver actionResolver)
     {
         this.actionResolver = actionResolver;
@@ -93,7 +103,7 @@ public class LinkBuilder
         Link link = new Link();
 
         link.withHref(this.getPath(this.uriInfo, endpoint, this.patientId));
-        link.withRel(this.getRel(endpoint));
+        link.withRel(LinkBuilder.getRel(endpoint));
         link.withAllowedMethods(this.getAllowedMethods(endpoint, this.accessLevel));
 
         return link;
@@ -116,16 +126,6 @@ public class LinkBuilder
     private String getPath(UriInfo uriInfo, Class restInterface, String... params)
     {
         return uriInfo.getBaseUriBuilder().path(restInterface).build(params).toString();
-    }
-
-    private String getRel(Class restInterface)
-    {
-        String relation = null;
-        Relation relationAnnotation = (Relation) restInterface.getAnnotation(Relation.class);
-        if (relationAnnotation != null) {
-            relation = relationAnnotation.value();
-        }
-        return relation;
     }
 
     private Set<String> getAllowedMethods(Class restInterface, AccessLevel accessLevel)

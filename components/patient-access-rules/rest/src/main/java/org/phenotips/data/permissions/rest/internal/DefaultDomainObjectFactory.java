@@ -26,7 +26,7 @@ import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.rest.CollaboratorResource;
 import org.phenotips.data.permissions.rest.CollaboratorsResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
-import org.phenotips.data.permissions.rest.Relations;
+import org.phenotips.data.permissions.rest.internal.utils.LinkBuilder;
 import org.phenotips.data.permissions.rest.internal.utils.RESTActionResolver;
 import org.phenotips.data.permissions.script.SecurePatientAccess;
 import org.phenotips.data.rest.model.CollaboratorRepresentation;
@@ -221,7 +221,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
                 this.createCollaboratorRepresentation(patientAccess, collaborator);
             String href = uriInfo.getBaseUriBuilder().path(CollaboratorResource.class)
                 .build(patient.getId(), collaborator.getUser().getName()).toString();
-            collaboratorObject.withLinks(new Link().withRel(Relations.COLLABORATOR)
+            collaboratorObject.withLinks(new Link().withRel(LinkBuilder.getRel(CollaboratorResource.class))
                 .withHref(href)
                 .withAllowedMethods(this.restActionResolver.resolveActions(CollaboratorsResource.class,
                     patientAccess.getAccessLevel())));
