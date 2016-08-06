@@ -32,10 +32,10 @@ import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.Relations;
 import org.phenotips.data.rest.model.CollaboratorRepresentation;
 import org.phenotips.data.rest.model.Link;
-import org.phenotips.groups.UserOrGroupResolver;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.container.Container;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.rest.XWikiResource;
 import org.xwiki.text.StringUtils;
@@ -71,7 +71,8 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     private SecureContextFactory secureContextFactory;
 
     @Inject
-    private UserOrGroupResolver userOrGroupResolver;
+    @Named("userOrGroup")
+    private DocumentReferenceResolver<String> userOrGroupResolver;
 
     @Inject
     private DomainObjectFactory factory;

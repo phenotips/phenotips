@@ -2,4 +2,4 @@ org.phenotips.groups.internal.DefaultGroupManager
 org.phenotips.groups.internal.listeners.GroupCleanupEventListener
 org.phenotips.groups.internal.listeners.GroupSetupEventListener
 org.phenotips.groups.script.GroupManagerScriptService
-org.phenotips.groups.internal.DefaultUserOrGroupResolver
+org.phenotips.groups.internal.UserOrGroupDocumentEntityResolver

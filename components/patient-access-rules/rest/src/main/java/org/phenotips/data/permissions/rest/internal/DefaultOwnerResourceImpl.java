@@ -29,11 +29,11 @@ import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.Relations;
 import org.phenotips.data.rest.model.Link;
 import org.phenotips.data.rest.model.UserSummary;
-import org.phenotips.groups.UserOrGroupResolver;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.container.Container;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.rest.XWikiResource;
 import org.xwiki.text.StringUtils;
@@ -67,7 +67,8 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
     private SecureContextFactory secureContextFactory;
 
     @Inject
-    private UserOrGroupResolver userOrGroupResolver;
+    @Named("userOrGroup")
+    private DocumentReferenceResolver<String> userOrGroupResolver;
 
     @Inject
     private DomainObjectFactory factory;
