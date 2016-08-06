@@ -21,10 +21,10 @@ import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.VisibilityOptionsResource;
+import org.phenotips.data.permissions.rest.model.Link;
+import org.phenotips.data.permissions.rest.model.VisibilityOptionsRepresentation;
+import org.phenotips.data.permissions.rest.model.VisibilityRepresentation;
 import org.phenotips.data.rest.Relations;
-import org.phenotips.data.rest.model.Link;
-import org.phenotips.data.rest.model.VisibilityOptionsRepresentation;
-import org.phenotips.data.rest.model.VisibilityRepresentation;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rest.XWikiResource;

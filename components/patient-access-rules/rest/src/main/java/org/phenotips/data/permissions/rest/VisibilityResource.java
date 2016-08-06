@@ -18,7 +18,7 @@
 package org.phenotips.data.permissions.rest;
 
 import org.phenotips.data.permissions.rest.internal.utils.annotations.Relation;
-import org.phenotips.data.rest.model.VisibilityRepresentation;
+import org.phenotips.data.permissions.rest.model.VisibilityRepresentation;
 
 import org.xwiki.component.annotation.Role;
 

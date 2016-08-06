@@ -27,13 +27,13 @@ import org.phenotips.data.permissions.rest.internal.utils.LinkBuilder;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.RESTActionResolver;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
+import org.phenotips.data.permissions.rest.model.CollaboratorsRepresentation;
+import org.phenotips.data.permissions.rest.model.Link;
+import org.phenotips.data.permissions.rest.model.PermissionsRepresentation;
+import org.phenotips.data.permissions.rest.model.UserSummary;
+import org.phenotips.data.permissions.rest.model.VisibilityRepresentation;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.Relations;
-import org.phenotips.data.rest.model.CollaboratorsRepresentation;
-import org.phenotips.data.rest.model.Link;
-import org.phenotips.data.rest.model.PermissionsRepresentation;
-import org.phenotips.data.rest.model.UserSummary;
-import org.phenotips.data.rest.model.VisibilityRepresentation;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rest.XWikiResource;

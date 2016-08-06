@@ -28,12 +28,12 @@ import org.phenotips.data.permissions.rest.CollaboratorsResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.internal.utils.LinkBuilder;
 import org.phenotips.data.permissions.rest.internal.utils.RESTActionResolver;
+import org.phenotips.data.permissions.rest.model.CollaboratorRepresentation;
+import org.phenotips.data.permissions.rest.model.CollaboratorsRepresentation;
+import org.phenotips.data.permissions.rest.model.Link;
+import org.phenotips.data.permissions.rest.model.UserSummary;
+import org.phenotips.data.permissions.rest.model.VisibilityRepresentation;
 import org.phenotips.data.permissions.script.SecurePatientAccess;
-import org.phenotips.data.rest.model.CollaboratorRepresentation;
-import org.phenotips.data.rest.model.CollaboratorsRepresentation;
-import org.phenotips.data.rest.model.Link;
-import org.phenotips.data.rest.model.UserSummary;
-import org.phenotips.data.rest.model.VisibilityRepresentation;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;

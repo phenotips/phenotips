@@ -2,7 +2,7 @@ package org.phenotips.data.permissions.rest.internal.utils;
 
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.rest.internal.utils.annotations.Relation;
-import org.phenotips.data.rest.model.Link;
+import org.phenotips.data.permissions.rest.model.Link;
 
 import java.util.Collection;
 import java.util.LinkedList;

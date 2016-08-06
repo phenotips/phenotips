@@ -156,7 +156,7 @@
         <artifactId>maven-jaxb2-plugin</artifactId>
         <version>0.12.3</version>
         <configuration>
-          <generatePackage>org.phenotips.data.rest.model</generatePackage>
+          <generatePackage>org.phenotips.data.permissions.rest.model</generatePackage>
 
           <!-- Enable fluent API generation, see https://java.net/projects/jaxb2-commons/pages/Fluent-api -->
           <plugins>
@@ -184,7 +184,7 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
           <excludes>
-            org/phenotips/data/rest/model/*.java
+            org/phenotips/data/permissions/rest/model/*.java
           </excludes>
         </configuration>
       </plugin>
