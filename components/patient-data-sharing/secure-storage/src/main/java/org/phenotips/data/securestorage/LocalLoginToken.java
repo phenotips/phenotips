@@ -55,11 +55,6 @@ public class LocalLoginToken
         // Nothing to do, Hibernate will populate all the fields from the database
     }
 
-    /**
-     * TODO
-     *
-     * @param
-     */
     public LocalLoginToken(String localUserName, String sourceServerName, String loginToken)
     {
         this.localUserName = localUserName;

@@ -64,8 +64,6 @@ public class PatientPushedToInfo
 
     /**
      * Used by the SecureStorageManager
-     *
-     * @param
      */
     public PatientPushedToInfo(String patientID, String remoteServerName,
         String remotePatientGUID, String remotePatientID, String remotePatientURL)

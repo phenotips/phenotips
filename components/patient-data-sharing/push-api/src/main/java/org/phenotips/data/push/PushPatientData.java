@@ -99,12 +99,11 @@ public interface PushPatientData
      * null, the token is used and the password is ignored.
      *
      * @param remoteServerIdentifier server name as configured in TODO
-     * @param remotePatientGUID GUID of the remote patient object, as received from the remote server when the patient
-     *            was created
-     * @param remoteServerIdentifier server name as configured in TODO
+     * @param remoteGUID GUID of the remote patient object, as received from the remote server when the patient was
+     *            created
      * @param userName user name on the remote server
      * @param password user password on the remote server. Ignored if user_token is not null.
-     * @param user_token passwordless-login token provided by the remote server on the last successful login (optional,
+     * @param userToken passwordless-login token provided by the remote server on the last successful login (optional,
      *            can be {@code null})
      * @return server response which, upon successful login, contains the remote patient URL and ID. See
      *         {@code PushServerGetPatientIDResponse}.
@@ -113,5 +112,5 @@ public interface PushPatientData
      *         problem, etc.)
      */
     PushServerGetPatientIDResponse getPatientURL(String remoteServerIdentifier, String remoteGUID,
-        String userName, String password, String user_token);
+        String userName, String password, String userToken);
 }

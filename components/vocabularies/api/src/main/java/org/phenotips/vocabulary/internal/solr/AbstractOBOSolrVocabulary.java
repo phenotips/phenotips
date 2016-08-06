@@ -54,7 +54,11 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
 
     protected static final String VERSION_FIELD_NAME = "version";
 
-    /** The number of documents to be added and committed to Solr at a time. */
+    /**
+     * The number of documents to be added and committed to Solr at a time.
+     *
+     * @return a positive integer, or a negative number to disable batching and pushing all terms in one go
+     */
     protected abstract int getSolrDocsPerBatch();
 
     @Override

@@ -31,12 +31,6 @@ import org.xwiki.component.annotation.Role;
 @Role
 public interface SecureStorageManager
 {
-    /**
-     * TODO
-     *
-     * @param
-     * @return
-     */
     void storeRemoteLoginData(String userName, String serverName, String remoteUserName, String remoteLoginToken);
 
     void storeLocalLoginToken(String userName, String sourceServerName, String loginToken);

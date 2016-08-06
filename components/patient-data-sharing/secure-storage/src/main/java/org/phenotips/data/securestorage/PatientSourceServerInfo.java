@@ -51,8 +51,6 @@ public class PatientSourceServerInfo
 
     /**
      * For use by SecureStorageManager
-     *
-     * @param
      */
     public PatientSourceServerInfo(String patientGUID, String sourceServerName)
     {

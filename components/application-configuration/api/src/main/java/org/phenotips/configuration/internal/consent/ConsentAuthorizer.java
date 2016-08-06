@@ -40,13 +40,14 @@ public interface ConsentAuthorizer
      * The system might have no consents configured, or purposefully turned them off, in which case the authorizer
      * should not be doing checks.
      *
-     * @return true if this {@link ConsentAuthorizer} is on, false otherwise
+     * @return {@code true} if this {@code ConsentAuthorizer} is on, {@code false} otherwise
      */
     boolean consentsGloballyEnabled();
 
     /**
-     * The patient form (the one displayed to the user) consists of blocks, some of which should not be presented to
-     * the user based on consents granted.
+     * The patient form (the one displayed to the user) consists of blocks, some of which should not be presented to the
+     * user based on consents granted.
+     *
      * @param elements the form elements which will be filtered
      * @param patient the patient record that will be presented to the user
      * @return list of form elements that should be presented to the user
@@ -57,25 +58,27 @@ public interface ConsentAuthorizer
      * Determines if all required (by the system) consents have been granted for the given patient record.
      *
      * @param patient record in question
-     * @return {@link true} if the patient record can be modified or viewed, {@link false} otherwise
+     * @return {@code true} if the patient record can be modified or viewed, {@code false} otherwise
      */
     boolean authorizeInteraction(Patient patient);
 
     /**
      * Determines if the set of granted consents includes all the required consents configured in the system.
      *
-     * @param grantedConsents list of consents that have been granted; can be {@link null}.
-     * @return true if interactions with the patient record can occur given the set of consents, false otherwise.
+     * @param grantedConsents list of consents that have been granted; can be {@code null}.
+     * @return {@code true} if interactions with the patient record can occur given the set of consents, {@code false}
+     *         otherwise.
      */
     boolean authorizeInteraction(Set<String> grantedConsents);
 
     /**
      * This {@link ConsentAuthorizer} takes into account several factors in deciding whether a {@link RecordElement} is
-     * enabled. Sometimes, however, it is necessary to know if an {@link RecordElement} is consented, rather than if it
+     * enabled. Sometimes, however, it is necessary to know if a {@link RecordElement} is consented, rather than if it
      * is fully enabled.
+     *
      * @param element in question
      * @param patient record which does or does not consent to collection of data with the `element`
-     * @return {@link true} if the element has necessary consents granted, {@link false} otherwise
+     * @return {@code true} if the element has necessary consents granted, {@code false} otherwise
      */
     boolean isElementConsented(RecordElement element, Patient patient);
 }

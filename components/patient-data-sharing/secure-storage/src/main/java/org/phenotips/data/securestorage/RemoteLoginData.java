@@ -56,8 +56,6 @@ public class RemoteLoginData
 
     /**
      * For use by SecureStorageManager
-     *
-     * @param
      */
     public RemoteLoginData(String localUserName, String serverName, String remoteUserName, String loginToken)
     {

@@ -52,9 +52,8 @@ public interface PushPatientService
     Map<PushServerInfo, PatientPushHistory> getPushTargetsWithHistory(String localPatientID);
 
     /**
-     * @return Data about the last push attempt of the given local patient to the given remote server;
-     *         that includes remote GUID and ID, if the push was successful, and the time of the last push.
-     *         Null otherwise.
+     * @return Data about the last push attempt of the given local patient to the given remote server; that includes
+     *         remote GUID and ID, if the push was successful, and the time of the last push. Null otherwise.
      */
     PatientPushHistory getPatientPushHistory(String localPatientID, String remoteServerIdentifier);
 
@@ -81,7 +80,7 @@ public interface PushPatientService
      * user is a member of on the remote server.
      *
      * @param remoteServerIdentifier server name as configured in TODO
-     * @param userName user name on the remote server
+     * @param remoteUserName user name on the remote server
      * @param password user password on the remote server
      * @param saveUserToken save userLoignToken received from the remote server or not. The user may not wish to
      *            compromise his account on the remote server if someone gets access to the account on the local server
@@ -120,10 +119,7 @@ public interface PushPatientService
      * given GUID exists on the remote server and owned by the given group and is authored by the given user - in which
      * case remote patient will be updated (only the submitted fields)
      *
-     * @param patient local patient to be pushed to the remove server
-     * @param userName user name on the remote server
-     * @param user_token passwordless-login token provided by the remote server on the last successful login (optional,
-     *            can be {@code null})
+     * @param patientID local patient to be pushed to the remove server
      * @param exportFieldListJSON patient fields to be pushed, as a string representing a JSON array. When not
      *            {@code null} only patient data fields listed will be pushed. When {@code null}, all available data
      *            fields will be pushed.
@@ -134,6 +130,7 @@ public interface PushPatientService
      *            by the given user patient data will be updated instead of creating a new patient (optional, can be
      *            {@code null})
      * @param remoteServerIdentifier server name as configured in TODO
+     * @param remoteUserName user name on the remote server
      * @param password user password on the remote server. Ignored if user_token is not null.
      * @return Server response, see {@code PushServerSendPatientResponse}.
      *         <p>
