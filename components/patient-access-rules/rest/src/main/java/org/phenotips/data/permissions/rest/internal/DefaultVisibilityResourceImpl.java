@@ -46,9 +46,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
-
-import net.sf.json.JSONObject;
 
 /**
  * Default implementation for {@link VisibilityResource} using XWiki's support for REST resources.
@@ -112,7 +111,7 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
     public Response putVisibilityWithJson(String json, String patientId)
     {
         try {
-            String visibility = JSONObject.fromObject(json).getString("level");
+            String visibility = new JSONObject(json).getString("level");
             return putVisibility(visibility, patientId);
         } catch (Exception ex) {
             this.logger.error("The json was not properly formatted", ex.getMessage());

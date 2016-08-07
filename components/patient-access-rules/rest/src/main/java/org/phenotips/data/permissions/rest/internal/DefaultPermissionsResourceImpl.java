@@ -44,10 +44,9 @@ import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
 
 /**
  * @version $Id$
@@ -148,10 +147,10 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
         String visibilityJsonStr;
         String collaboratorsJsonStr;
         try {
-            JSONObject jsonObject = JSONObject.fromObject(json);
-            JSON owner = jsonObject.getJSONObject("owner");
-            JSON visibility = jsonObject.getJSONObject("visibility");
-            JSON collaborators = jsonObject.getJSONArray("collaborators");
+            JSONObject jsonObject = new JSONObject(json);
+            JSONObject owner = jsonObject.getJSONObject("owner");
+            JSONObject visibility = jsonObject.getJSONObject("visibility");
+            JSONArray collaborators = jsonObject.getJSONArray("collaborators");
 
             ownerJsonStr = owner.toString();
             visibilityJsonStr = visibility.toString();

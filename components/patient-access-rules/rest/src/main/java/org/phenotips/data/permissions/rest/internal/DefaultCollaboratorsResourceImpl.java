@@ -51,10 +51,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Default implementation for {@link CollaboratorsResource} using XWiki's support for REST resources.
@@ -120,7 +119,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
     public Response postCollaboratorWithJson(String json, String patientId)
     {
         try {
-            CollaboratorInfo info = this.collaboratorInfoFromJson(JSONObject.fromObject(json));
+            CollaboratorInfo info = this.collaboratorInfoFromJson(new JSONObject(json));
             return postCollaborator(info.id, info.level, patientId);
         } catch (Exception ex) {
             this.logger.error("The json was not properly formatted", ex.getMessage());
@@ -236,10 +235,10 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
     private List<Collaborator> jsonToCollaborators(String json)
     {
         List<Collaborator> collaborators = new LinkedList<>();
-        JSONArray collaboratorsArray = JSONArray.fromObject(json);
+        JSONArray collaboratorsArray = new JSONArray(json);
         for (Object collaboratorObject : collaboratorsArray) {
             CollaboratorInfo collaboratorInfo =
-                this.collaboratorInfoFromJson(JSONObject.fromObject(collaboratorObject));
+                this.collaboratorInfoFromJson((JSONObject) collaboratorObject);
             this.checkCollaboratorInfo(collaboratorInfo.getId(), collaboratorInfo.getLevel());
 
             EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorInfo.getId());

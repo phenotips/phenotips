@@ -47,9 +47,8 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
-
-import net.sf.json.JSONObject;
 
 /**
  * Default implementation for {@link CollaboratorResource} using XWiki's support for REST resources.
@@ -119,8 +118,8 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     {
         String level;
         try {
-            JSONObject jsonObject = JSONObject.fromObject(json);
-            level = jsonObject.getString(LEVEL);
+            JSONObject jsonObject = new JSONObject(json);
+            level = jsonObject.optString(LEVEL);
         } catch (Exception ex) {
             this.logger.debug("Changing collaborator's access level failed: the JSON was not properly formatted");
             throw new WebApplicationException(Response.Status.BAD_REQUEST);

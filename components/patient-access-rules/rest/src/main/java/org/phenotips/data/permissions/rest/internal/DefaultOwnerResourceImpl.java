@@ -45,9 +45,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
-
-import net.sf.json.JSONObject;
 
 /**
  * Default implementation for {@link OwnerResource} using XWiki's support for REST resources.
@@ -108,7 +107,7 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
     public Response putOwnerWithJson(String json, String patientId)
     {
         try {
-            String id = JSONObject.fromObject(json).getString("id");
+            String id = new JSONObject(json).getString("id");
             return putOwner(id, patientId);
         } catch (Exception ex) {
             this.logger.error("The json was not properly formatted", ex.getMessage());
