@@ -42,5 +42,5 @@ public interface RESTActionResolver
      * @param accessLevel The current accessLevel
      * @return A set of Http methods that can be performed on the provided endpoint
      */
-    Set<String> resolveActions(Class restInterface, AccessLevel accessLevel);
+    Set<String> resolveActions(Class<?> restInterface, AccessLevel accessLevel);
 }

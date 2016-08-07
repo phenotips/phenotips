@@ -39,11 +39,11 @@ public class LinkBuilder
 
     private AccessLevel accessLevel;
 
-    private Class rootInterface;
+    private Class<?> rootInterface;
 
     private String patientId;
 
-    private List<Class> linkedActionableInterfaces;
+    private List<Class<?>> linkedActionableInterfaces;
 
     /**
      * Basic constructor, initializes a new factory instance with no link configuration.
@@ -64,7 +64,7 @@ public class LinkBuilder
         this.linkedActionableInterfaces = new LinkedList<>();
     }
 
-    public static String getRel(Class restInterface)
+    public static String getRel(Class<?> restInterface)
     {
         String relation = null;
         Relation relationAnnotation = (Relation) restInterface.getAnnotation(Relation.class);
@@ -80,7 +80,7 @@ public class LinkBuilder
         return this;
     }
 
-    public LinkBuilder withRootInterface(Class restInterface)
+    public LinkBuilder withRootInterface(Class<?> restInterface)
     {
         this.rootInterface = restInterface;
         return this;
@@ -92,9 +92,9 @@ public class LinkBuilder
         return this;
     }
 
-    public LinkBuilder withActionableResources(Class... restInterfaces)
+    public LinkBuilder withActionableResources(Class<?>... restInterfaces)
     {
-        for (Class arg : restInterfaces) {
+        for (Class<?> arg : restInterfaces) {
             this.linkedActionableInterfaces.add(arg);
         }
         return this;
@@ -111,13 +111,13 @@ public class LinkBuilder
         if (this.rootInterface != null) {
             links.add(this.getActionableLinkToSelf());
         }
-        for (Class endpoint : this.linkedActionableInterfaces) {
+        for (Class<?> endpoint : this.linkedActionableInterfaces) {
             links.add(this.getActionableLink(endpoint));
         }
         return links;
     }
 
-    private Link getActionableLink(Class endpoint)
+    private Link getActionableLink(Class<?> endpoint)
     {
         Link link = new Link();
 
@@ -138,12 +138,12 @@ public class LinkBuilder
         }
     }
 
-    private String getPath(UriInfo uriInfo, Class restInterface, String... params)
+    private String getPath(UriInfo uriInfo, Class<?> restInterface, Object... params)
     {
         return uriInfo.getBaseUriBuilder().path(restInterface).build(params).toString();
     }
 
-    private Set<String> getAllowedMethods(Class restInterface, AccessLevel accessLevel)
+    private Set<String> getAllowedMethods(Class<?> restInterface, AccessLevel accessLevel)
     {
         return this.actionResolver.resolveActions(restInterface, accessLevel);
     }

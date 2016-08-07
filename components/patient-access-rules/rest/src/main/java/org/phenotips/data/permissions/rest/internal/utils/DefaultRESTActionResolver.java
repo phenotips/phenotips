@@ -41,12 +41,11 @@ import javax.ws.rs.HttpMethod;
 @Singleton
 public class DefaultRESTActionResolver implements RESTActionResolver
 {
-
     @Inject
     private PermissionsManager pm;
 
     @Override
-    public Set<String> resolveActions(Class restInterface, AccessLevel accessLevel)
+    public Set<String> resolveActions(Class<?> restInterface, AccessLevel accessLevel)
     {
         Set<String> accessLevelMethods = this.getHTTPMethodsForAccessLevel(accessLevel);
         Set<String> interfaceMethods = this.getHTTPMethodsForInterface(restInterface);
@@ -55,7 +54,7 @@ public class DefaultRESTActionResolver implements RESTActionResolver
 
     }
 
-    private Set<String> getHTTPMethodsForInterface(Class restInterface)
+    private Set<String> getHTTPMethodsForInterface(Class<?> restInterface)
     {
         Method[] methods = restInterface.getMethods();
         Set<String> classAnnotations = new HashSet<>();
