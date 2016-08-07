@@ -45,7 +45,6 @@ import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -188,6 +187,6 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
 
     private Response putLevel(String collaboratorId, String accessLevelName, String patientId)
     {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 }
