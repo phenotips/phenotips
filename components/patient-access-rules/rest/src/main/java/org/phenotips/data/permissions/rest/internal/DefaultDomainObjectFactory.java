@@ -37,8 +37,6 @@ import org.phenotips.data.permissions.script.SecurePatientAccess;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -68,7 +66,7 @@ import com.xpn.xwiki.objects.BaseObject;
 @Unstable
 @Component
 @Singleton
-public class DefaultDomainObjectFactory implements DomainObjectFactory, Initializable
+public class DefaultDomainObjectFactory implements DomainObjectFactory
 {
     /** Provides access to the underlying data storage. */
     @Inject
@@ -91,20 +89,11 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
     @Inject
     private RESTActionResolver restActionResolver;
 
-    private EntityReference userObjectReference;
+    private EntityReference userObjectReference =
+        new EntityReference("XWikiUsers", EntityType.DOCUMENT, new EntityReference("XWiki", EntityType.SPACE));
 
-    private EntityReference groupObjectReference;
-
-    @Override
-    public void initialize() throws InitializationException
-    {
-        this.userObjectReference =
-            this.referenceResolver.resolve(new EntityReference("XWikiUsers", EntityType.DOCUMENT),
-                new EntityReference("XWiki", EntityType.SPACE));
-        this.groupObjectReference =
-            this.referenceResolver.resolve(new EntityReference("PhenoTipsGroupClass", EntityType.DOCUMENT),
-                new EntityReference("PhenoTips", EntityType.SPACE));
-    }
+    private EntityReference groupObjectReference = new EntityReference("PhenoTipsGroupClass", EntityType.DOCUMENT,
+        new EntityReference("PhenoTips", EntityType.SPACE));
 
     @Override
     public UserSummary createOwnerRepresentation(Patient patient)
