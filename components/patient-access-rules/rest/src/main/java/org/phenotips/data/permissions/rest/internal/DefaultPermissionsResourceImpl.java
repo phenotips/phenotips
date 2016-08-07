@@ -97,26 +97,20 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
 
         AccessLevel accessLevel = patientAccessContext.getPatientAccess().getAccessLevel();
         // adding links into sub-parts
-        owner.withLinks(new LinkBuilder()
+        owner.withLinks(new LinkBuilder(this.uriInfo, this.restActionResolver)
             .withAccessLevel(accessLevel)
             .withActionableResources(OwnerResource.class)
-            .withActionResolver(this.restActionResolver)
             .withTargetPatient(patientId)
-            .withUriInfo(this.uriInfo)
             .build());
-        visibility.withLinks(new LinkBuilder()
+        visibility.withLinks(new LinkBuilder(this.uriInfo, this.restActionResolver)
             .withAccessLevel(accessLevel)
             .withActionableResources(VisibilityResource.class)
-            .withActionResolver(this.restActionResolver)
             .withTargetPatient(patientId)
-            .withUriInfo(this.uriInfo)
             .build());
-        collaborators.withLinks(new LinkBuilder()
+        collaborators.withLinks(new LinkBuilder(this.uriInfo, this.restActionResolver)
             .withAccessLevel(accessLevel)
             .withActionableResources(CollaboratorsResource.class)
-            .withActionResolver(this.restActionResolver)
             .withTargetPatient(patientId)
-            .withUriInfo(this.uriInfo)
             .build());
 
         result.withOwner(owner);
@@ -124,12 +118,10 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
         result.withCollaborators(collaborators);
 
         // adding links relative to this context
-        result.withLinks(new LinkBuilder()
+        result.withLinks(new LinkBuilder(this.uriInfo, this.restActionResolver)
             .withAccessLevel(accessLevel)
             .withRootInterface(PermissionsResource.class)
-            .withActionResolver(this.restActionResolver)
             .withTargetPatient(patientId)
-            .withUriInfo(this.uriInfo)
             .build());
         result.getLinks().add(new Link().withRel(Relations.PATIENT_RECORD)
             .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));

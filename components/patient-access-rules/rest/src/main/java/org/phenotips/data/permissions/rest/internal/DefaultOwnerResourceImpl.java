@@ -89,10 +89,8 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
         UserSummary result = this.factory.createOwnerRepresentation(patientAccessContext.getPatient());
 
         // adding links relative to this context
-        result.withLinks(new LinkBuilder()
-            .withUriInfo(this.uriInfo)
+        result.withLinks(new LinkBuilder(this.uriInfo, this.restActionResolver)
             .withAccessLevel(patientAccessContext.getPatientAccess().getAccessLevel())
-            .withActionResolver(this.restActionResolver)
             .withTargetPatient(patientId)
             .withActionableResources(PermissionsResource.class)
             .withRootInterface(this.getClass().getInterfaces()[0])

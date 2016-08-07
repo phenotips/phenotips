@@ -89,10 +89,8 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
             this.factory.createVisibilityRepresentation(patientAccessContext.getPatient());
 
         AccessLevel accessLevel = patientAccessContext.getPatientAccess().getAccessLevel();
-        LinkBuilder linkBuilder = new LinkBuilder()
-            .withActionResolver(this.restActionResolver)
+        LinkBuilder linkBuilder = new LinkBuilder(this.uriInfo, this.restActionResolver)
             .withAccessLevel(accessLevel)
-            .withUriInfo(this.uriInfo)
             .withRootInterface(this.getClass().getInterfaces()[0])
             .withTargetPatient(patientId)
             .withActionableResources(PermissionsResource.class);

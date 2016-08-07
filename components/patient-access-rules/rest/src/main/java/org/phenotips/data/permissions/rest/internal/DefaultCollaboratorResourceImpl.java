@@ -100,10 +100,8 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         }
 
         // adding links relative to this context
-        result.withLinks(new LinkBuilder()
-            .withUriInfo(this.uriInfo)
+        result.withLinks(new LinkBuilder(this.uriInfo, this.restActionResolver)
             .withAccessLevel(patientAccessContext.getPatientAccess().getAccessLevel())
-            .withActionResolver(this.restActionResolver)
             .withRootInterface(CollaboratorsResource.class)
             .withActionableResources(CollaboratorsResource.class, PermissionsResource.class)
             .build());

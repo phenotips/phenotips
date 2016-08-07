@@ -102,11 +102,9 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         CollaboratorsRepresentation result =
             this.factory.createCollaboratorsRepresentation(patientAccessContext.getPatient(), this.uriInfo);
 
-        result.withLinks(new LinkBuilder()
-            .withUriInfo(this.uriInfo)
+        result.withLinks(new LinkBuilder(this.uriInfo, this.restActionResolver)
             .withAccessLevel(patientAccessContext.getPatientAccess().getAccessLevel())
             .withRootInterface(this.getClass().getInterfaces()[0])
-            .withActionResolver(this.restActionResolver)
             .withActionableResources(PermissionsResource.class)
             .build());
         result.withLinks(new Link().withRel(Relations.PATIENT_RECORD)

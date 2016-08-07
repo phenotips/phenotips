@@ -33,20 +33,34 @@ import javax.ws.rs.core.UriInfo;
  */
 public class LinkBuilder
 {
-    private AccessLevel accessLevel;
+    private final RESTActionResolver actionResolver;
 
-    private UriInfo uriInfo;
+    private final UriInfo uriInfo;
+
+    private AccessLevel accessLevel;
 
     private Class rootInterface;
 
     private String patientId;
 
-    private RESTActionResolver actionResolver;
-
     private List<Class> linkedActionableInterfaces;
 
-    public LinkBuilder()
+    /**
+     * Basic constructor, initializes a new factory instance with no link configuration.
+     *
+     * @param uriInfo the URI used for accessing the current resource
+     * @param actionResolver the action resolver instance to use
+     */
+    public LinkBuilder(UriInfo uriInfo, RESTActionResolver actionResolver)
     {
+        if (uriInfo == null) {
+            throw new IllegalArgumentException("uriInfo cannot be null");
+        }
+        this.uriInfo = uriInfo;
+        if (actionResolver == null) {
+            throw new IllegalArgumentException("actionResolver cannot be null");
+        }
+        this.actionResolver = actionResolver;
         this.linkedActionableInterfaces = new LinkedList<>();
     }
 
@@ -60,21 +74,9 @@ public class LinkBuilder
         return relation;
     }
 
-    public LinkBuilder withActionResolver(RESTActionResolver actionResolver)
-    {
-        this.actionResolver = actionResolver;
-        return this;
-    }
-
     public LinkBuilder withAccessLevel(AccessLevel accessLevel)
     {
         this.accessLevel = accessLevel;
-        return this;
-    }
-
-    public LinkBuilder withUriInfo(UriInfo uriInfo)
-    {
-        this.uriInfo = uriInfo;
         return this;
     }
 
@@ -128,10 +130,6 @@ public class LinkBuilder
 
     private void validateSelf() throws Exception
     {
-        if (this.actionResolver == null || this.uriInfo == null) {
-            // TODO: what kind of exception?
-            throw new Exception();
-        }
         if (!this.linkedActionableInterfaces.isEmpty()) {
             // has actionable links, make sure other fields are present
             if (this.accessLevel == null || this.patientId == null) {
