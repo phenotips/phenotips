@@ -25,11 +25,10 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.users.UserManager;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 
 import org.slf4j.Logger;
-
-import groovy.lang.Singleton;
 
 /**
  * Default implementation of {@link SecureContextFactory}. The purpose is to reduce the number of common injections
