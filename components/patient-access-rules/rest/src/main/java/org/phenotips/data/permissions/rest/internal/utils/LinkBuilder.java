@@ -29,7 +29,11 @@ import java.util.Set;
 import javax.ws.rs.core.UriInfo;
 
 /**
- * Created by matthew on 2016-03-30.
+ * An improved factory class for automatically creating links between resources, depending on the permissions that the
+ * current user has.
+ *
+ * @version $Id$
+ * @since 1.3M2
  */
 public class LinkBuilder
 {
@@ -48,7 +52,7 @@ public class LinkBuilder
     /**
      * Basic constructor, initializes a new factory instance with no link configuration.
      *
-     * @param uriInfo the URI used for accessing the current resource
+     * @param uriInfo the URI used for accessing the {@link #withRootInterface(Class) current resource}
      * @param actionResolver the action resolver instance to use
      */
     public LinkBuilder(UriInfo uriInfo, RESTActionResolver actionResolver)
@@ -64,34 +68,67 @@ public class LinkBuilder
         this.linkedActionableInterfaces = new LinkedList<>();
     }
 
+    /**
+     * Get the relation type specified in the {@code @Relation} annotation on the target class.
+     *
+     * @param restInterface the class of a REST resource, which must have a {@code @Relation} annotation
+     * @return the specified relation type, usually in the form of an URL, or {@code null} if not set
+     */
     public static String getRel(Class<?> restInterface)
     {
         String relation = null;
-        Relation relationAnnotation = (Relation) restInterface.getAnnotation(Relation.class);
+        Relation relationAnnotation = restInterface.getAnnotation(Relation.class);
         if (relationAnnotation != null) {
             relation = relationAnnotation.value();
         }
         return relation;
     }
 
+    /**
+     * Set the access level that the current user has on the main entity. This access level limits which actions are
+     * available, and thus can be linked to.
+     *
+     * @param accessLevel the access level of the current user
+     * @return self, for chaining method calls
+     */
     public LinkBuilder withAccessLevel(AccessLevel accessLevel)
     {
         this.accessLevel = accessLevel;
         return this;
     }
 
+    /**
+     * Set the resource for which to generate links. If this is set, then a {@code self} link will be generated.
+     *
+     * @param restInterface a class, may be {@code null}
+     * @return self, for chaining method calls
+     */
     public LinkBuilder withRootInterface(Class<?> restInterface)
     {
         this.rootInterface = restInterface;
         return this;
     }
 
+    /**
+     * Set the patient whose permissions are being managed. Setting a patient is <b>mandatory if</b>
+     * {@link #withActionableResources(Class...) links to other resources} are requested.
+     *
+     * @param patientId the {@link org.phenotips.data.Patient#getId() identifier} of the managed patient
+     * @return self, for chaining method calls
+     */
     public LinkBuilder withTargetPatient(String patientId)
     {
         this.patientId = patientId;
         return this;
     }
 
+    /**
+     * Add other resources that should be linked to. {@link #withTargetPatient(String) Setting a patient} is also
+     * required if related resources are added.
+     *
+     * @param restInterfaces a list of other REST resources to be added
+     * @return self, for chaining method calls
+     */
     public LinkBuilder withActionableResources(Class<?>... restInterfaces)
     {
         for (Class<?> arg : restInterfaces) {
@@ -100,14 +137,19 @@ public class LinkBuilder
         return this;
     }
 
+    /**
+     * Build the link collection, if the state of the builder is {@link #validateSelf() valid}.
+     *
+     * @return a collection of links, may be empty
+     */
     public Collection<Link> build()
     {
+        List<Link> links = new LinkedList<>();
         try {
             this.validateSelf();
         } catch (Exception e) {
-            return null;
+            return links;
         }
-        List<Link> links = new LinkedList<>();
         if (this.rootInterface != null) {
             links.add(this.getActionableLinkToSelf());
         }

@@ -21,10 +21,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Created by matthew on 2016-03-03.
+ * Used for setting a resource type identifier, generally a URI. This identifier can then be used to identify the type
+ * of <b>rel</b>ation between two <b>link</b>ed resources.
+ *
+ * @version $Id$
+ * @since 1.3M2
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Relation
 {
+    /**
+     * @return the specified resource type identifier, usually in the form of an URI
+     */
     String value();
 }
