@@ -61,7 +61,7 @@ public class PatientAccessContext
     public PatientAccessContext(String patientId, AccessLevel minimumAccessLevel, PatientRepository repository,
         UserManager users, PermissionsManager manager, Logger logger) throws WebApplicationException
     {
-        this.patient = repository.getPatientById(patientId);
+        this.patient = repository.get(patientId);
         if (this.patient == null) {
             logger.debug("No such patient record: [{}]", patientId);
             throw new WebApplicationException(Response.Status.NOT_FOUND);
