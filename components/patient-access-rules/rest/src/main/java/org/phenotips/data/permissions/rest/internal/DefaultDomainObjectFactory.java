@@ -33,7 +33,6 @@ import org.phenotips.data.permissions.rest.model.CollaboratorsRepresentation;
 import org.phenotips.data.permissions.rest.model.Link;
 import org.phenotips.data.permissions.rest.model.UserSummary;
 import org.phenotips.data.permissions.rest.model.VisibilityRepresentation;
-import org.phenotips.data.permissions.script.SecurePatientAccess;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -78,6 +77,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     private DocumentReferenceResolver<EntityReference> referenceResolver;
 
     @Inject
+    @Named("secure")
     private PermissionsManager manager;
 
     @Inject
@@ -101,8 +101,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         // TODO This method should not return UserSummary - it should return OwnerRepresentation, but the class
         // generator doesn't want to generate OwnerRepresentation
 
-        // TODO Is this allowed?
-        PatientAccess patientAccess = new SecurePatientAccess(this.manager.getPatientAccess(patient), this.manager);
+        PatientAccess patientAccess = this.manager.getPatientAccess(patient);
         Owner owner = patientAccess.getOwner();
 
         // links should be added at a later point, to allow the reuse of this method in different contexts
@@ -179,8 +178,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     @Override
     public VisibilityRepresentation createVisibilityRepresentation(Patient patient)
     {
-        // TODO Is this allowed?
-        PatientAccess patientAccess = new SecurePatientAccess(this.manager.getPatientAccess(patient), this.manager);
+        PatientAccess patientAccess = this.manager.getPatientAccess(patient);
         Visibility visibility = patientAccess.getVisibility();
 
         return this.createVisibilityRepresentation(visibility);
@@ -201,7 +199,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     @Override
     public CollaboratorsRepresentation createCollaboratorsRepresentation(Patient patient, UriInfo uriInfo)
     {
-        PatientAccess patientAccess = new SecurePatientAccess(this.manager.getPatientAccess(patient), this.manager);
+        PatientAccess patientAccess = this.manager.getPatientAccess(patient);
         Collection<Collaborator> collaborators = patientAccess.getCollaborators();
 
         CollaboratorsRepresentation result = new CollaboratorsRepresentation();
@@ -224,12 +222,12 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     @Override
     public CollaboratorRepresentation createCollaboratorRepresentation(Patient patient, Collaborator collaborator)
     {
-        PatientAccess patientAccess = new SecurePatientAccess(this.manager.getPatientAccess(patient), this.manager);
+        PatientAccess patientAccess = this.manager.getPatientAccess(patient);
         return this.createCollaboratorRepresentation(patientAccess, collaborator);
     }
 
-    private CollaboratorRepresentation createCollaboratorRepresentation(
-        PatientAccess patientAccess, Collaborator collaborator)
+    private CollaboratorRepresentation createCollaboratorRepresentation(PatientAccess patientAccess,
+        Collaborator collaborator)
     {
         String accessLevel = patientAccess.getAccessLevel(collaborator.getUser()).toString();
         CollaboratorRepresentation result = (CollaboratorRepresentation) this.loadUserSummary(

@@ -22,7 +22,6 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
-import org.phenotips.data.permissions.script.SecurePatientAccess;
 
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
@@ -67,7 +66,7 @@ public class PatientAccessContext
             logger.debug("No such patient record: [{}]", patientId);
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
-        this.patientAccess = new SecurePatientAccess(manager.getPatientAccess(this.patient), manager);
+        this.patientAccess = manager.getPatientAccess(this.patient);
         this.initializeUser(minimumAccessLevel, users, logger);
     }
 

@@ -25,6 +25,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.users.UserManager;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 
@@ -51,12 +52,14 @@ public class DefaultSecureContextFactory implements SecureContextFactory
     private UserManager users;
 
     @Inject
-    private PermissionsManager manager;
+    @Named("secure")
+    private PermissionsManager permissionsManager;
 
     @Override
     public PatientAccessContext getContext(String patientId, String minimumAccessLevel) throws WebApplicationException
     {
-        AccessLevel level = this.manager.resolveAccessLevel(minimumAccessLevel);
-        return new PatientAccessContext(patientId, level, this.repository, this.users, this.manager, this.logger);
+        AccessLevel level = this.permissionsManager.resolveAccessLevel(minimumAccessLevel);
+        return new PatientAccessContext(patientId, level, this.repository, this.users, this.permissionsManager,
+            this.logger);
     }
 }
