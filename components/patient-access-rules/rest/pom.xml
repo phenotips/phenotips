@@ -31,9 +31,6 @@
   <properties>
     <!-- Fixme. Coverage. -->
     <coverage.instructionRatio>0.0</coverage.instructionRatio>
-    <!-- too many classes are instantiated in DefaultDomainObjectFactory,
-    but there isn't really a better place to instantiate them -->
-    <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
   </properties>
 
   <dependencies>
