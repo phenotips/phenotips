@@ -161,21 +161,23 @@ public class LinkBuilder
 
     private Link getActionableLink(Class<?> endpoint)
     {
-        Link link = new Link();
-
-        link.withHref(this.getPath(this.uriInfo, endpoint, this.patientId));
-        link.withRel(LinkBuilder.getRel(endpoint));
-        link.withAllowedMethods(this.getAllowedMethods(endpoint, this.accessLevel));
+        Link link = new Link()
+            .withHref(this.getPath(this.uriInfo, endpoint, this.patientId))
+            .withRel(getRel(endpoint))
+            .withAllowedMethods(this.getAllowedMethods(endpoint, this.accessLevel));
 
         return link;
     }
 
-    private void validateSelf() throws Exception
+    private void validateSelf() throws IllegalStateException
     {
         if (!this.linkedActionableInterfaces.isEmpty()) {
             // has actionable links, make sure other fields are present
-            if (this.accessLevel == null || this.patientId == null) {
-                throw new Exception();
+            if (this.patientId == null) {
+                throw new IllegalStateException("No base entity specified, cannot compute which links are valid");
+            }
+            if (this.accessLevel == null) {
+                throw new IllegalStateException("No access level specified, cannot compute which links are valid");
             }
         }
     }
