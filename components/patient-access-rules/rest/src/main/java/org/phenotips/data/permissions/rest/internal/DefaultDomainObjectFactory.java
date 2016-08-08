@@ -61,7 +61,7 @@ import com.xpn.xwiki.objects.BaseObject;
  * Default implementation of {@link DomainObjectFactory}.
  *
  * @version $Id$
- * @since 1.2M5
+ * @since 1.3M2
  */
 @Unstable
 @Component
@@ -98,10 +98,10 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     @Override
     public UserSummary createOwnerRepresentation(Patient patient)
     {
-        // todo. this method should not return UserSummary - it should return OwnerRepresentation, but the class
+        // TODO This method should not return UserSummary - it should return OwnerRepresentation, but the class
         // generator doesn't want to generate OwnerRepresentation
 
-        // todo. is this allowed?
+        // TODO Is this allowed?
         PatientAccess patientAccess = new SecurePatientAccess(this.manager.getPatientAccess(patient), this.manager);
         Owner owner = patientAccess.getOwner();
 
