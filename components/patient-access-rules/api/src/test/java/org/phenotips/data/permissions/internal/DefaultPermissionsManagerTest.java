@@ -20,6 +20,7 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.PermissionsConfiguration;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.internal.access.EditAccessLevel;
@@ -224,6 +225,16 @@ public class DefaultPermissionsManagerTest
         when(cm.<Visibility>getInstanceList(Visibility.class)).thenThrow(new ComponentLookupException("None"));
         Collection<Visibility> returnedVisibilities = this.mocker.getComponentUnderTest().listVisibilityOptions();
         Assert.assertTrue(returnedVisibilities.isEmpty());
+    }
+
+    @Test
+    public void getDefaultVisibilityForwardsCalls() throws ComponentLookupException
+    {
+        PermissionsConfiguration config = this.mocker.getInstance(PermissionsConfiguration.class);
+        when(config.getDefaultVisibility()).thenReturn("public");
+        ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
+        when(cm.getInstance(Visibility.class, "public")).thenReturn(this.publicVisibility);
+        Assert.assertSame(this.publicVisibility, this.mocker.getComponentUnderTest().getDefaultVisibility());
     }
 
     /** {@link PermissionsManager#resolveVisibility(String)} returns the right implementation. */
