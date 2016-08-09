@@ -58,7 +58,7 @@ public class R71493PhenoTips2504DataMigration extends AbstractHibernateDataMigra
     @Override
     public String getDescription()
     {
-        return "Update all templates to reference to use DBStringListProperty instead of StringListProperty";
+        return "Update all templates to reference the new 'gene-variants' field instead of the old 'genes' one";
     }
 
     @Override
