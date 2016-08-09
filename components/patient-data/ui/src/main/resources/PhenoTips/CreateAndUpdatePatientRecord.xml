@@ -42,22 +42,6 @@
   #if ($services.csrf.isTokenValid($request.form_token))
     #set ($patient = $services.patients.create())
     #if ("$!patient.id" != '')
-      ## FIXME Move this to a PatientRecordInitializer
-      #set ($formBindingClassNameArray = ['PhenoTips.StudyBindingClass', 'PhenoTips.ProjectBindingClass'])
-      #set ($formBindingPropertyNameArray = ['studyReference', 'projectReference'])
-      #set ($patientDoc = $xwiki.getDocument($patient.document))
-      #foreach ($discard in $formBindingClassNameArray)
-        #set ($formBindingClassName = $formBindingClassNameArray[$foreach.index])
-        #set ($formBindingPropertyName = $formBindingPropertyNameArray[$foreach.index])
-        #set ($formBindingPropertyValue = $request.get("$!{formBindingClassName}_${formBindingPropertyName}"))
-        #if ($formBindingPropertyValue)
-          #set ($formBindingObj = $patientDoc.getObject($formBindingClassName, true))
-          #if ($formBindingObj)
-            #set ($discard = $formBindingObj.set($formBindingPropertyName, $formBindingPropertyValue))
-          #end
-        #end
-      #end
-      #set ($discard = $patientDoc.save())
       $response.sendRedirect($xwiki.getURL($patient.document, 'edit', ''))
     #else
       Cannot create patient
