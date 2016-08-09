@@ -167,8 +167,13 @@ define([
                     this._printDialog = new PrintDialog();
 
                     // finally, load the pedigree
-                    var documentId = editor.getGraph().getCurrentPatientId();
-                    this._saveLoadEngine.load(documentId);
+                    var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
+                    if (newPatientId && newPatientId != ""){
+                        this._saveLoadEngine.load(XWiki.currentDocument.page);
+                    } else {
+                        var documentId = editor.getGraph().getCurrentPatientId();
+                        this._saveLoadEngine.load(documentId);
+                    }
                 }.bind(this) );
 
             this._controller = new Controller();
