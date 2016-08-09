@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data.permissions.internal;
+package org.phenotips.data.templates.internal;
 
 import org.xwiki.component.annotation.Component;
 
@@ -46,7 +46,7 @@ import com.xpn.xwiki.store.migration.hibernate.HibernateDataMigration;
  * @since 1.3M2
  */
 @Component(roles = { HibernateDataMigration.class })
-@Named("R71493-PT-2504")
+@Named("R71493PhenoTips#2504")
 @Singleton
 public class R71493PhenoTips2504DataMigration extends AbstractHibernateDataMigration
     implements HibernateCallback<Object>

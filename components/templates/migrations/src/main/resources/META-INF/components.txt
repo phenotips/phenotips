@@ -1,2 +1,4 @@
-org.phenotips.data.permissions.internal.R71492PhenoTips2592DataMigration
-org.phenotips.data.permissions.internal.R71493PhenoTips2504DataMigration
+org.phenotips.data.templates.internal.R71492PhenoTips2592DataMigration
+org.phenotips.data.templates.internal.R71493PhenoTips2504DataMigration
+org.phenotips.data.templates.internal.R71494PhenoTips2692DataMigration
+org.phenotips.data.templates.internal.R71495PhenoTips2692DataMigration
