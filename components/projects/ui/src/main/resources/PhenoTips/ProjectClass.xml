@@ -336,7 +336,7 @@
         'title' : $request.name,
         'parent' : $request.parent,
         'form_token' : $request.form_token,
-        'xredirect' : $xwiki.getURL($targetDocument, 'edit', 'editor=inline')
+        'xredirect' : $xwiki.getURL($targetDocument, 'edit', 'editor=inline&amp;newProject=true')
       })
       $response.sendRedirect($xwiki.getURL($targetDocument, 'save', "$!escapetool.url($params)")))
     #end
