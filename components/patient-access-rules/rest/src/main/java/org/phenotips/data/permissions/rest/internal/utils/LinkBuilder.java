@@ -179,7 +179,7 @@ public class LinkBuilder
         Link link = new Link()
             .withHref(this.getPath(endpoint))
             .withRel(getRel(endpoint))
-            .withAllowedMethods(this.getAllowedMethods(endpoint, this.accessLevel));
+            .withAllowedMethods(this.getAllowedMethods(endpoint));
 
         return link;
     }
@@ -189,16 +189,16 @@ public class LinkBuilder
         return this.uriInfo.getBaseUriBuilder().path(restInterface).buildFromMap(this.extraParameters).toString();
     }
 
-    private Set<String> getAllowedMethods(Class<?> restInterface, AccessLevel accessLevel)
+    private Set<String> getAllowedMethods(Class<?> restInterface)
     {
-        return this.actionResolver.resolveActions(restInterface, accessLevel);
+        return this.actionResolver.resolveActions(restInterface, this.accessLevel);
     }
 
     private Link getActionableLinkToSelf()
     {
         return new Link()
             .withRel("self")
-            .withAllowedMethods(this.getAllowedMethods(this.rootInterface, this.accessLevel))
+            .withAllowedMethods(this.getAllowedMethods(this.rootInterface))
             .withHref(this.uriInfo.getRequestUri().toString());
     }
 }
