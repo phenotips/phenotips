@@ -42,8 +42,14 @@ public interface Collaborator
 
     String getType();
 
+    /**
+     * @return true if collaborator is of type user.
+     */
     boolean isUser();
 
+    /**
+     * @return true if collaborator if of type group.
+     */
     boolean isGroup();
 
     /**
@@ -75,7 +81,7 @@ public interface Collaborator
      * @return true if the user is included in collaborator
      */
     boolean isUserIncluded(User user);
-    
+
     /**
      * Returns a collection of all the users under this collaborator. If the collabrator is a user, then
      * getAllUserNames().size()==1 and getUsername().equals(getAllUserNames().get(0)). If the collaborator is a group
