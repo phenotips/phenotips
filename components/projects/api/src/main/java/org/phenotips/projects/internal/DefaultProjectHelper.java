@@ -229,7 +229,7 @@ public class DefaultProjectHelper
                 if (StringUtils.isBlank(templateString)) {
                     continue;
                 }
-                Template s = new DefaultTemplate(templateString);
+                Template s = DefaultTemplate.getTemplateById(templateString);
                 templates.add(s);
             }
         }

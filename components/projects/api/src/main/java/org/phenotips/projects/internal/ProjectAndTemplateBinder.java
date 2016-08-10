@@ -149,7 +149,7 @@ public class ProjectAndTemplateBinder
         if (templateBindingObject != null) {
             String templateId = templateBindingObject.getStringValue(TEMPLATE_BINDING_FIELD);
             if (templateId != null) {
-                template = new DefaultTemplate(templateId);
+                template = DefaultTemplate.getTemplateById(templateId);
             }
         }
         return template;
