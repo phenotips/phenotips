@@ -68,16 +68,16 @@
          &lt;option name="notemplate" value="" /&gt;$services.localization.render('phenotips.templateBindingClass.noTemplateOption')&lt;/option&gt;
       &lt;/div&gt;
    #foreach ($s in $templates)
-      #set ($configTitle = $s.getTitle())
+      #set ($configTitle = $s.getName())
       #if ($configTitle == '')
          #set ($configTitle = $s.getName())
       #end
       #set ($selectedString = '')
-      #if ($s.getDocumentReference() == $boundTemplate)
+      #if ($s.getDocument() == $boundTemplate)
          #set ($selectedString = 'selected')
       #end
       &lt;div class="form-template-option"&gt;
-         &lt;option name="${prefix}${name}" value="${s.getDocumentReference()}" $!selectedString /&gt;$configTitle&lt;/option&gt;
+         &lt;option name="${prefix}${name}" value="${s.getDocument()}" $!selectedString /&gt;$configTitle&lt;/option&gt;
       &lt;/div&gt;
    #end
    &lt;/select&gt;

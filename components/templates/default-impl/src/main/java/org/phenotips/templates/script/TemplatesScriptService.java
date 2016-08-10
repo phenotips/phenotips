@@ -67,7 +67,7 @@ public class TemplatesScriptService implements ScriptService
      */
     public Template getTemplateById(String templateId)
     {
-        return new DefaultTemplate(templateId);
+        return DefaultTemplate.getTemplateById(templateId);
     }
 }
 

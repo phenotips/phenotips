@@ -164,7 +164,7 @@ public class DefaultGroup implements Group
         List<String> templatesList = groupDocument.getListValue("studies");
         List<Template> templates = new ArrayList<Template>();
         for (String id : templatesList) {
-            templates.add(new DefaultTemplate(id));
+            templates.add(DefaultTemplate.getTemplateById(id));
         }
 
         return templates;

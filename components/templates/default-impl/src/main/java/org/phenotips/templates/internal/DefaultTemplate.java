@@ -18,108 +18,67 @@
 package org.phenotips.templates.internal;
 
 import org.phenotips.components.ComponentManagerRegistry;
+import org.phenotips.entities.internal.AbstractPrimaryEntity;
 import org.phenotips.templates.data.Template;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.model.reference.EntityReference;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * @version $Id$
  */
-public class DefaultTemplate implements Template
+public class DefaultTemplate extends AbstractPrimaryEntity implements Template
 {
-    private static final String XWIKI_STRING = "xwiki:";
-
-    private String templateId;
-
-    private XWikiDocument templateObject;
-
-    private DocumentReference templateReference;
-
     /**
      * Create a template.
      *
-     * @param templateId id of template
+     * @param document of template
      */
-    public DefaultTemplate(String templateId)
+    public DefaultTemplate(XWikiDocument document)
     {
-        this.templateId = this.removeXwikiFromString(templateId);
-        this.templateObject = this.getTemplateObject();
-        this.templateReference = this.templateObject.getDocumentReference();
+        super(document);
     }
 
-    @Override
-    public String getId()
+    /**
+     * TODO Temporary factory method.
+     *
+     * @param templateId template id
+     * @return new default template
+     */
+    public static Template getTemplateById(String templateId)
     {
-        return this.templateId;
-    }
-
-    @Override
-    public String getName()
-    {
-        return this.templateId.split("\\.")[1];
-    }
-
-    @Override
-    public String getTitle()
-    {
-        return this.templateObject.getTitle();
-    }
-
-    @Override
-    public DocumentReference getDocumentReference()
-    {
-        return this.templateReference;
-    }
-
-    private XWikiDocument getTemplateObject()
-    {
-        DocumentReference reference = this.getStringResolver().resolve(this.templateId, Template.DEFAULT_DATA_SPACE);
+        DocumentReferenceResolver<String> stringResolver = null;
+        DocumentAccessBridge dab = null;
+        Logger logger = LoggerFactory.getLogger(DefaultTemplate.class);
         try {
-            return (XWikiDocument) this.getBridge().getDocument(reference);
-        } catch (Exception ex) {
-            this.getLogger().warn("Failed to access project with id [{}]: {}", templateId, ex.getMessage(), ex);
-        }
-        return null;
-    }
-
-    private DocumentReferenceResolver<String> getStringResolver()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager()
-                .getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
+            ComponentManager cm = ComponentManagerRegistry.getContextComponentManager();
+            stringResolver = cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
+            dab = cm.getInstance(DocumentAccessBridge.class);
         } catch (ComponentLookupException e) {
-            // Should not happen
+            logger.error("Failed to create a new DefaultTemplate.");
+            return null;
         }
-        return null;
-    }
 
-    private DocumentAccessBridge getBridge()
-    {
+        DocumentReference reference = stringResolver.resolve(templateId, Template.DEFAULT_DATA_SPACE);
+        XWikiDocument document;
         try {
-            return ComponentManagerRegistry.getContextComponentManager()
-                .getInstance(DocumentAccessBridge.class);
-        } catch (ComponentLookupException e) {
-            // Should not happen
+            document = (XWikiDocument) dab.getDocument(reference);
+        } catch (Exception e) {
+            logger.error("Failed to create a new DefaultTemplate.");
+            return null;
         }
-        return null;
-    }
 
-    private Logger getLogger()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager()
-                .getInstance(Logger.class);
-        } catch (ComponentLookupException e) {
-            // Should not happen
-        }
-        return null;
+        return new DefaultTemplate(document);
     }
 
     @Override
@@ -138,12 +97,15 @@ public class DefaultTemplate implements Template
         return this.getId().hashCode();
     }
 
-    private String removeXwikiFromString(String id) {
-        if (id.startsWith(DefaultTemplate.XWIKI_STRING)) {
-            return id.substring(DefaultTemplate.XWIKI_STRING.length());
-        } else {
-            return id;
-        }
+    @Override
+    public EntityReference getType()
+    {
+        return Template.CLASS_REFERENCE;
     }
 
+    @Override
+    public void updateFromJSON(JSONObject json)
+    {
+        // TODO Auto-generated method stub
+    }
 }

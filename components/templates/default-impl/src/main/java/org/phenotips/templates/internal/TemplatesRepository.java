@@ -126,7 +126,7 @@ public class TemplatesRepository
         List<Template> templates = new ArrayList<Template>();
         if (queryResults != null) {
             for (String queryResult : queryResults) {
-                Template t = new DefaultTemplate(queryResult);
+                Template t = DefaultTemplate.getTemplateById(queryResult);
                 templates.add(t);
             }
         }

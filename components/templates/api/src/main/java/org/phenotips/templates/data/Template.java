@@ -18,15 +18,15 @@
 package org.phenotips.templates.data;
 
 import org.phenotips.Constants;
+import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 /**
  * @version $Id$
  */
-public interface Template
+public interface Template extends PrimaryEntity
 {
     /** The XClass used for storing project data. */
     EntityReference CLASS_REFERENCE = new EntityReference("StudyClass", EntityType.DOCUMENT,
@@ -34,24 +34,4 @@ public interface Template
 
     /** The default space where patient data is stored. */
     EntityReference DEFAULT_DATA_SPACE = new EntityReference("Studies", EntityType.SPACE);
-
-    /**
-     * @return id of template. e.g. Study.t1.
-     */
-    String getId();
-
-    /**
-     * @return name of template. e.g. t1
-     */
-    String getName();
-
-    /**
-     * @return title of template
-     */
-    String getTitle();
-
-    /**
-     * @return reference of template document
-     */
-    DocumentReference getDocumentReference();
 }
