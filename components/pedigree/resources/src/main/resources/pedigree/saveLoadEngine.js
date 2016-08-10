@@ -92,12 +92,12 @@ define([
             var _this = this;
 
             var finalizeCreation = function(loadedPatientData) {
+                var familyMemberIds = Object.keys(loadedPatientData);
                 if (loadedPatientData !== null) {
 
                     var allLinkedNodes = editor.getGraph().getAllPatientLinks();
 
                     if (dataSource && dataSource == "template") {
-                        var familyMemberIds = Object.keys(loadedPatientData);
                         if (familyMemberIds.length == 1 && allLinkedNodes.linkedPatients.length == 0) {
                             var probandNodeID = editor.getGraph().getProbandId();
                             var probandProperties = editor.getGraph().getProperties(probandNodeID);
@@ -151,6 +151,7 @@ define([
                         editor.getSaveLoadEngine().save(true); // ignore warnings
                         return;
                     }
+
                     callbackWhenDataLoaded && callbackWhenDataLoaded();
                 }
 
@@ -160,6 +161,12 @@ define([
 
                 if (centerAroundProband) {
                     editor.getWorkspace().centerAroundNode(editor.getGraph().getProbandId());
+                }
+
+                // if created new family, save when loaded to generate image
+                var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
+                if (newPatientId && newPatientId != "" && familyMemberIds.length == 1 && allLinkedNodes.linkedPatients.length == 1) {
+                    editor.getSaveLoadEngine().save(true);
                 }
 
                 document.fire("pedigree:load:finish");
