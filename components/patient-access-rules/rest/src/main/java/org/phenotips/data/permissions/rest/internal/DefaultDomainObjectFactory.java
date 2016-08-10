@@ -35,11 +35,7 @@ import org.phenotips.data.permissions.rest.model.OwnerRepresentation;
 import org.phenotips.data.permissions.rest.model.UserSummary;
 import org.phenotips.data.permissions.rest.model.VisibilityRepresentation;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.stability.Unstable;
@@ -52,10 +48,7 @@ import javax.inject.Singleton;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Default implementation of {@link DomainObjectFactory}.
@@ -68,33 +61,18 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class DefaultDomainObjectFactory implements DomainObjectFactory
 {
-    /** Provides access to the underlying data storage. */
-    @Inject
-    private DocumentAccessBridge documentAccessBridge;
-
-    /** Parses string representations of document references into proper references. */
-    @Inject
-    @Named("current")
-    private DocumentReferenceResolver<EntityReference> referenceResolver;
-
     @Inject
     @Named("secure")
     private PermissionsManager manager;
 
     @Inject
-    private Logger logger;
+    private NameAndEmailExtractor nameAndEmailExtractor;
 
     @Inject
     private EntityReferenceSerializer<String> entitySerializer;
 
     @Inject
     private RESTActionResolver restActionResolver;
-
-    private EntityReference userObjectReference =
-        new EntityReference("XWikiUsers", EntityType.DOCUMENT, new EntityReference("XWiki", EntityType.SPACE));
-
-    private EntityReference groupObjectReference = new EntityReference("PhenoTipsGroupClass", EntityType.DOCUMENT,
-        new EntityReference("PhenoTips", EntityType.SPACE));
 
     @Override
     public OwnerRepresentation createOwnerRepresentation(Patient patient)
@@ -107,70 +85,20 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         return loadUserSummary(new OwnerRepresentation(), owner.getUser(), owner.getType());
     }
 
-    private <E extends UserSummary> E loadUserSummary(E result, EntityReference user, String type)
+    private <E extends UserSummary> E loadUserSummary(E result, EntityReference reference, String type)
     {
-        result.withId(this.entitySerializer.serialize(user));
+        result.withId(this.entitySerializer.serialize(reference));
         result.withType(type);
-
-        // there is a chance of not being able to retrieve the rest of the data,
-        // which should not prevent the returning of `id` and `type`
-        try {
-            DocumentReference userRef = this.referenceResolver.resolve(user);
-            XWikiDocument entityDocument = (XWikiDocument) this.documentAccessBridge.getDocument(userRef);
-            NameEmail nameEmail = new NameEmail(type, entityDocument);
-
-            result.withName(nameEmail.getName());
-            result.withEmail(nameEmail.getEmail());
-        } catch (Exception ex) {
-            this.logger.error("Could not load user's or group's document", ex.getMessage());
-        }
-        return result;
-    }
-
-    private class NameEmail
-    {
-        private String name;
-
-        private String email;
-
-        NameEmail(String type, XWikiDocument document) throws Exception
-        {
-            if (StringUtils.equals("group", type)) {
-                fetchFromGroup(document);
-            } else if (StringUtils.equals("user", type)) {
-                fetchFromUser(document);
-            } else {
-                throw new Exception("The type does not match any know (user) type");
+        Pair<String, String> nameAndEmail = this.nameAndEmailExtractor.getNameAndEmail(type, reference);
+        if (nameAndEmail != null) {
+            if (!StringUtils.isBlank(nameAndEmail.getLeft())) {
+                result.withName(nameAndEmail.getLeft());
+            }
+            if (!StringUtils.isBlank(nameAndEmail.getRight())) {
+                result.withEmail(nameAndEmail.getRight());
             }
         }
-
-        private void fetchFromUser(XWikiDocument document)
-        {
-            BaseObject userObj = document.getXObject(DefaultDomainObjectFactory.this.userObjectReference);
-            this.email = userObj.getStringValue("email");
-            StringBuilder nameBuilder = new StringBuilder();
-            nameBuilder.append(userObj.getStringValue("first_name"));
-            nameBuilder.append(" ");
-            nameBuilder.append(userObj.getStringValue("last_name"));
-            this.name = nameBuilder.toString().trim();
-        }
-
-        private void fetchFromGroup(XWikiDocument document)
-        {
-            BaseObject groupObject = document.getXObject(DefaultDomainObjectFactory.this.groupObjectReference);
-            this.email = groupObject.getStringValue("contact");
-            this.name = document.getDocumentReference().getName();
-        }
-
-        public String getName()
-        {
-            return this.name;
-        }
-
-        public String getEmail()
-        {
-            return this.email;
-        }
+        return result;
     }
 
     @Override
