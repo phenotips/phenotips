@@ -224,7 +224,7 @@ public class DefaultProject implements Project
         List<Patient> patients = new LinkedList<Patient>();
         Collection<String> patientIds = getAllPatientIds();
         for (String id : patientIds) {
-            Patient patient = patientRepository.getPatientById(id);
+            Patient patient = patientRepository.get(id);
             if (patient != null) {
                 patients.add(patient);
             }
