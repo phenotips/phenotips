@@ -140,7 +140,7 @@ public class ProjectAndTemplateBinder
      * @param patient to get the template from
      * @return template
      */
-    public Template getTempalteForPatient(Patient patient)
+    public Template getTemplateForPatient(Patient patient)
     {
         Template template = null;
         XWikiDocument patientXDoc = this.getPatientXWikiDocument(patient);
