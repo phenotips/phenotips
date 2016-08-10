@@ -166,7 +166,7 @@
       if (pedigreeDelete) {
         pedigreeDelete.observe("click", function(event) {
           event.stop();
-          var familyID = $('familyId').innerHTML;
+          var familyID = $('familyIdentifier').value;
           var fullURL = familyInterfaceDoc.getURL('get', 'rand='+ Math.random()) + '&amp;action=familyinfo&amp;document_id=' + familyID;
           new Ajax.Request(fullURL, {
             method: "POST",
@@ -631,6 +631,7 @@
   #else
     #set ($pedigreeObj = $services.families.getPedigreeForPatient($doc.getName()))
     #set ($family = $services.families.getFamilyForPatient($doc.getName()))
+    #set ($hasFamily = $family &amp;&amp; "$family.getId()" != '')
   #end
 ##
   #if ($pedigreeObj)
@@ -665,7 +666,7 @@
       #set ($pDelete = "$services.localization.render('phenotips.patientRecord.pedigree.delete')")
       #set ($pPrint = "$services.localization.render('phenotips.patientRecord.pedigree.print')")
       #set ($pDownload = "$services.localization.render('phenotips.patientRecord.pedigree.download')")
-      #if ("$family.getWarningMessage()" != "")
+      #if ($hasFamily &amp;&amp; "$family.getWarningMessage()" != "")
         #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.open')")
         #set ($pClass = 'open')
         #set ($pContent = $pAction)
@@ -679,7 +680,9 @@
       #set ($pClass = 'draw')
       #set ($pContent = $pAction)
     #end
-    (% class="pedigree-wrapper" %)((({{html clean="false"}}&lt;div style="display:inline-block;" id="pedigree-thumbnail" class="pedigree-box ${pClass} #if($canEditP) pedigree-edit-trigger #end" title="${pAction}" &gt;${pContent}&lt;/div&gt;
+    (% class="pedigree-wrapper" %)((({{html clean="false"}}
+    &lt;input type="hidden" id="familyIdentifier" value="$!{family.getId()}" /&gt;
+    &lt;div style="display:inline-block;" id="pedigree-thumbnail" class="pedigree-box ${pClass} #if($canEditP) pedigree-edit-trigger #end" title="${pAction}" &gt;${pContent}&lt;/div&gt;
  ##
     #if ("$!image" != '')
       &lt;div class="pedigree-buttons" id="pedigree-buttons"&gt;
@@ -689,7 +692,7 @@
         &lt;/div&gt;
         #if(!$doc.getObject('PhenoTips.FamilyClass'))
         &lt;div class="buttonwrapper pedigree-button p-delete"&gt;
-          &lt;a class="action-delete fa fa-remove delete-pedegree button secondary" href="$doc.getURL('objectremove', 'classname=${pedigreeObj.xWikiClass.name}&amp;classid=${pedigreeObj.number}&amp;form_token=$!{services.csrf.getToken()}')" title="${pDelete}" id="pedigree-delete"&gt;&lt;/a&gt;
+          &lt;a class="action-delete fa fa-remove delete-pedegree button secondary" href="" title="${pDelete}" id="pedigree-delete"&gt;&lt;/a&gt;
         &lt;/div&gt;
         #end
       #end
