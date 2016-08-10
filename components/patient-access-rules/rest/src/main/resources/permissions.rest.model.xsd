@@ -69,7 +69,7 @@
     <complexContent>
       <extension base="phenotips:LinkCollection">
         <sequence>
-          <element name="collaborators" type="phenotips:CollaboratorSummary" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="collaborator" type="phenotips:CollaboratorSummary" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
       </extension>
     </complexContent>
