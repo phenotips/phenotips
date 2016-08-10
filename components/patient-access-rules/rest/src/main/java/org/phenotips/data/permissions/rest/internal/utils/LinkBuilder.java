@@ -22,8 +22,11 @@ import org.phenotips.data.permissions.rest.internal.utils.annotations.Relation;
 import org.phenotips.data.permissions.rest.model.Link;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.ws.rs.core.UriInfo;
@@ -45,9 +48,9 @@ public class LinkBuilder
 
     private Class<?> rootInterface;
 
-    private String patientId;
-
     private List<Class<?>> linkedActionableInterfaces;
+
+    private Map<String, String> extraParameters = new HashMap<>();
 
     /**
      * Basic constructor, initializes a new factory instance with no link configuration.
@@ -66,6 +69,11 @@ public class LinkBuilder
         }
         this.actionResolver = actionResolver;
         this.linkedActionableInterfaces = new LinkedList<>();
+        for (Entry<String, List<String>> entry : this.uriInfo.getPathParameters().entrySet()) {
+            if (!entry.getValue().isEmpty()) {
+                this.extraParameters.put(entry.getKey(), entry.getValue().get(0));
+            }
+        }
     }
 
     /**
@@ -110,21 +118,7 @@ public class LinkBuilder
     }
 
     /**
-     * Set the patient whose permissions are being managed. Setting a patient is <b>mandatory if</b>
-     * {@link #withActionableResources(Class...) links to other resources} are requested.
-     *
-     * @param patientId the {@link org.phenotips.data.Patient#getId() identifier} of the managed patient
-     * @return self, for chaining method calls
-     */
-    public LinkBuilder withTargetPatient(String patientId)
-    {
-        this.patientId = patientId;
-        return this;
-    }
-
-    /**
-     * Add other resources that should be linked to. {@link #withTargetPatient(String) Setting a patient} is also
-     * required if related resources are added.
+     * Add other resources that should be linked to.
      *
      * @param restInterfaces a list of other REST resources to be added
      * @return self, for chaining method calls
@@ -138,18 +132,39 @@ public class LinkBuilder
     }
 
     /**
-     * Build the link collection, if the state of the builder is {@link #validateSelf() valid}.
+     * Add or replace path parameter values that may be used in the link generation.
+     *
+     * @param parameters additional parameter values to be used, may be empty; the map keys are the parameter names, as
+     *            used in the path specification, and the map values are the desired values
+     * @return self, for chaining method calls
+     */
+    public LinkBuilder withExtraParameters(Map<String, String> parameters)
+    {
+        this.extraParameters.putAll(parameters);
+        return this;
+    }
+
+    /**
+     * Add or replace a path parameter value that may be used in the link generation.
+     *
+     * @param parameterName the name of the path parameter
+     * @param value the value to use, replacing any previous value that may have been set before
+     * @return self, for chaining method calls
+     */
+    public LinkBuilder withExtraParameters(String parameterName, String value)
+    {
+        this.extraParameters.put(parameterName, value);
+        return this;
+    }
+
+    /**
+     * Build the link collection.
      *
      * @return a collection of links, may be empty
      */
     public Collection<Link> build()
     {
         List<Link> links = new LinkedList<>();
-        try {
-            this.validateSelf();
-        } catch (Exception e) {
-            return links;
-        }
         if (this.rootInterface != null) {
             links.add(this.getActionableLinkToSelf());
         }
@@ -162,29 +177,16 @@ public class LinkBuilder
     private Link getActionableLink(Class<?> endpoint)
     {
         Link link = new Link()
-            .withHref(this.getPath(this.uriInfo, endpoint, this.patientId))
+            .withHref(this.getPath(endpoint))
             .withRel(getRel(endpoint))
             .withAllowedMethods(this.getAllowedMethods(endpoint, this.accessLevel));
 
         return link;
     }
 
-    private void validateSelf() throws IllegalStateException
+    private String getPath(Class<?> restInterface)
     {
-        if (!this.linkedActionableInterfaces.isEmpty()) {
-            // has actionable links, make sure other fields are present
-            if (this.patientId == null) {
-                throw new IllegalStateException("No base entity specified, cannot compute which links are valid");
-            }
-            if (this.accessLevel == null) {
-                throw new IllegalStateException("No access level specified, cannot compute which links are valid");
-            }
-        }
-    }
-
-    private String getPath(UriInfo uriInfo, Class<?> restInterface, Object... params)
-    {
-        return uriInfo.getBaseUriBuilder().path(restInterface).build(params).toString();
+        return this.uriInfo.getBaseUriBuilder().path(restInterface).buildFromMap(this.extraParameters).toString();
     }
 
     private Set<String> getAllowedMethods(Class<?> restInterface, AccessLevel accessLevel)

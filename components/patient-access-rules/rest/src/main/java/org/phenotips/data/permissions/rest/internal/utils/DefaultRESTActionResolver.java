@@ -47,9 +47,11 @@ public class DefaultRESTActionResolver implements RESTActionResolver
     @Override
     public Set<String> resolveActions(Class<?> restInterface, AccessLevel accessLevel)
     {
-        Set<String> accessLevelMethods = this.getHTTPMethodsForAccessLevel(accessLevel);
         Set<String> interfaceMethods = this.getHTTPMethodsForInterface(restInterface);
-        interfaceMethods.retainAll(accessLevelMethods);
+        if (accessLevel != null) {
+            Set<String> accessLevelMethods = this.getHTTPMethodsForAccessLevel(accessLevel);
+            interfaceMethods.retainAll(accessLevelMethods);
+        }
         return interfaceMethods;
 
     }

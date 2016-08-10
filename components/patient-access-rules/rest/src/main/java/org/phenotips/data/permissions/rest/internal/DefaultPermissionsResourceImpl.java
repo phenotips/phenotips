@@ -100,17 +100,14 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
         owner.withLinks(new LinkBuilder(this.uriInfo, this.restActionResolver)
             .withAccessLevel(accessLevel)
             .withActionableResources(OwnerResource.class)
-            .withTargetPatient(patientId)
             .build());
         visibility.withLinks(new LinkBuilder(this.uriInfo, this.restActionResolver)
             .withAccessLevel(accessLevel)
             .withActionableResources(VisibilityResource.class)
-            .withTargetPatient(patientId)
             .build());
         collaborators.withLinks(new LinkBuilder(this.uriInfo, this.restActionResolver)
             .withAccessLevel(accessLevel)
             .withActionableResources(CollaboratorsResource.class)
-            .withTargetPatient(patientId)
             .build());
 
         result.withOwner(owner);
@@ -121,7 +118,6 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
         result.withLinks(new LinkBuilder(this.uriInfo, this.restActionResolver)
             .withAccessLevel(accessLevel)
             .withRootInterface(PermissionsResource.class)
-            .withTargetPatient(patientId)
             .build());
         result.getLinks().add(new Link().withRel(Relations.PATIENT_RECORD)
             .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));

@@ -92,7 +92,6 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
         LinkBuilder linkBuilder = new LinkBuilder(this.uriInfo, this.restActionResolver)
             .withAccessLevel(accessLevel)
             .withRootInterface(this.getClass().getInterfaces()[0])
-            .withTargetPatient(patientId)
             .withActionableResources(PermissionsResource.class);
         try {
             Collection<Link> links = linkBuilder.build();

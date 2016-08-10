@@ -24,13 +24,11 @@ import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.rest.CollaboratorResource;
-import org.phenotips.data.permissions.rest.CollaboratorsResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.internal.utils.LinkBuilder;
 import org.phenotips.data.permissions.rest.internal.utils.RESTActionResolver;
 import org.phenotips.data.permissions.rest.model.CollaboratorRepresentation;
 import org.phenotips.data.permissions.rest.model.CollaboratorsRepresentation;
-import org.phenotips.data.permissions.rest.model.Link;
 import org.phenotips.data.permissions.rest.model.OwnerRepresentation;
 import org.phenotips.data.permissions.rest.model.UserSummary;
 import org.phenotips.data.permissions.rest.model.VisibilityRepresentation;
@@ -132,12 +130,11 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         for (Collaborator collaborator : collaborators) {
             CollaboratorRepresentation collaboratorObject =
                 this.createCollaboratorRepresentation(patientAccess, collaborator);
-            String href = uriInfo.getBaseUriBuilder().path(CollaboratorResource.class)
-                .build(patient.getId(), collaborator.getUser().getName()).toString();
-            collaboratorObject.withLinks(new Link().withRel(LinkBuilder.getRel(CollaboratorResource.class))
-                .withHref(href)
-                .withAllowedMethods(this.restActionResolver.resolveActions(CollaboratorsResource.class,
-                    patientAccess.getAccessLevel())));
+
+            collaboratorObject.withLinks(new LinkBuilder(uriInfo, this.restActionResolver)
+                .withActionableResources(CollaboratorResource.class)
+                .withExtraParameters("collaborator-id", collaborator.getUser().getName())
+                .withAccessLevel(patientAccess.getAccessLevel()).build());
 
             result.withCollaborators(collaboratorObject);
         }
