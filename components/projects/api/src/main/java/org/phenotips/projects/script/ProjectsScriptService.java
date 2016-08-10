@@ -154,7 +154,7 @@ public class ProjectsScriptService implements ScriptService
         if (patient == null) {
             return null;
         }
-        return this.ptBinder.getTempalteForPatient(patient);
+        return this.ptBinder.getTemplateForPatient(patient);
     }
 
     /**
