@@ -119,7 +119,7 @@ public class ProjectsScriptService implements ScriptService
     public List<Project> getProjectsForPatient(String patientId)
     {
         List<Project> projects = new ArrayList<Project>();
-        Patient patient = this.patientsRepository.getPatientById(patientId);
+        Patient patient = this.patientsRepository.get(patientId);
         if (patient == null) {
             return projects;
         }
@@ -138,7 +138,7 @@ public class ProjectsScriptService implements ScriptService
      */
     public void setProjectsForPatient(String projects, String patientId)
     {
-        Patient patient = this.patientsRepository.getPatientById(patientId);
+        Patient patient = this.patientsRepository.get(patientId);
         this.ptBinder.setProjectsForPatient(projects, patient);
     }
 
@@ -150,7 +150,7 @@ public class ProjectsScriptService implements ScriptService
      */
     public Template getTemplateForPatient(String patientId)
     {
-        Patient patient = this.patientsRepository.getPatientById(patientId);
+        Patient patient = this.patientsRepository.get(patientId);
         if (patient == null) {
             return null;
         }
@@ -165,7 +165,7 @@ public class ProjectsScriptService implements ScriptService
      */
     public void setTemplateForPatient(String templateId, String patientId)
     {
-        Patient patient = this.patientsRepository.getPatientById(patientId);
+        Patient patient = this.patientsRepository.get(patientId);
         this.ptBinder.setTemplateForPatient(templateId, patient);
     }
 
