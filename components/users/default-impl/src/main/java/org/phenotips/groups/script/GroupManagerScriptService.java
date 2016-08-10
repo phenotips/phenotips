@@ -62,13 +62,13 @@ public class GroupManagerScriptService implements ScriptService
     {
         User user = this.userManager.getUser(username);
         if (user == null) {
-            return Collections.EMPTY_SET;
+            return Collections.<Group>emptySet();
         }
 
         try {
             return this.manager.getGroupsForUser(user);
         } catch (Exception ex) {
-            return Collections.EMPTY_SET;
+            return Collections.<Group>emptySet();
         }
     }
 }
