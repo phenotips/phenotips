@@ -49,6 +49,12 @@
     </complexContent>
   </complexType>
 
+  <complexType name="OwnerSummary">
+    <complexContent>
+      <extension base="phenotips:UserSummary"/>
+    </complexContent>
+  </complexType>
+
   <complexType name="CollaboratorSummary">
     <complexContent>
       <extension base="phenotips:UserSummary">
@@ -63,7 +69,7 @@
     <complexContent>
       <extension base="phenotips:LinkCollection">
         <sequence>
-          <element name="collaborators" type="phenotips:UserSummary" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="collaborators" type="phenotips:CollaboratorSummary" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
       </extension>
     </complexContent>
@@ -95,7 +101,7 @@
     <complexContent>
       <extension base="phenotips:LinkCollection">
         <sequence>
-          <element name="owner" type="phenotips:UserSummary"/>
+          <element name="owner" type="phenotips:OwnerSummary"/>
           <element name="visibility" type="phenotips:VisibilitySummary"/>
           <element name="collaborators" type="phenotips:UserCollection"/>
         </sequence>
@@ -109,9 +115,7 @@
   *
   -->
 
-  <!-- this bugger does not want to be generated as OwnerRepresentation class,
-  like the rest - it generates as UserSummary -->
-  <element name="ownerRepresentation" type="phenotips:UserSummary"/>
+  <element name="ownerRepresentation" type="phenotips:OwnerSummary"/>
 
   <element name="collaboratorRepresentation" type="phenotips:CollaboratorSummary"/>
 

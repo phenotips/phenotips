@@ -31,6 +31,7 @@ import org.phenotips.data.permissions.rest.internal.utils.RESTActionResolver;
 import org.phenotips.data.permissions.rest.model.CollaboratorRepresentation;
 import org.phenotips.data.permissions.rest.model.CollaboratorsRepresentation;
 import org.phenotips.data.permissions.rest.model.Link;
+import org.phenotips.data.permissions.rest.model.OwnerRepresentation;
 import org.phenotips.data.permissions.rest.model.UserSummary;
 import org.phenotips.data.permissions.rest.model.VisibilityRepresentation;
 
@@ -96,20 +97,17 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         new EntityReference("PhenoTips", EntityType.SPACE));
 
     @Override
-    public UserSummary createOwnerRepresentation(Patient patient)
+    public OwnerRepresentation createOwnerRepresentation(Patient patient)
     {
-        // TODO This method should not return UserSummary - it should return OwnerRepresentation, but the class
-        // generator doesn't want to generate OwnerRepresentation
-
         PatientAccess patientAccess = this.manager.getPatientAccess(patient);
         Owner owner = patientAccess.getOwner();
 
         // links should be added at a later point, to allow the reuse of this method in different contexts
 
-        return loadUserSummary(new UserSummary(), owner.getUser(), owner.getType());
+        return loadUserSummary(new OwnerRepresentation(), owner.getUser(), owner.getType());
     }
 
-    private UserSummary loadUserSummary(UserSummary result, EntityReference user, String type)
+    private <E extends UserSummary> E loadUserSummary(E result, EntityReference user, String type)
     {
         result.withId(this.entitySerializer.serialize(user));
         result.withType(type);
@@ -230,7 +228,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         Collaborator collaborator)
     {
         String accessLevel = patientAccess.getAccessLevel(collaborator.getUser()).toString();
-        CollaboratorRepresentation result = (CollaboratorRepresentation) this.loadUserSummary(
+        CollaboratorRepresentation result = this.loadUserSummary(
             new CollaboratorRepresentation(), collaborator.getUser(), collaborator.getType());
         result.withLevel(accessLevel);
         return result;

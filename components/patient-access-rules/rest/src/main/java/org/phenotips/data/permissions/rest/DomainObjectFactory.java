@@ -22,7 +22,7 @@ import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.rest.model.CollaboratorRepresentation;
 import org.phenotips.data.permissions.rest.model.CollaboratorsRepresentation;
-import org.phenotips.data.permissions.rest.model.UserSummary;
+import org.phenotips.data.permissions.rest.model.OwnerRepresentation;
 import org.phenotips.data.permissions.rest.model.VisibilityRepresentation;
 
 import org.xwiki.component.annotation.Role;
@@ -47,7 +47,7 @@ public interface DomainObjectFactory
      * @return a summary of the patient record's owner, or {@code null} if the current user doesn't have access to the
      *         patient or accessing the patient data fails
      */
-    UserSummary createOwnerRepresentation(Patient patient);
+    OwnerRepresentation createOwnerRepresentation(Patient patient);
 
     /**
      * Create the REST representation for a {@link org.phenotips.data.permissions.Visibility}'s summary, starting from a

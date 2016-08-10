@@ -29,8 +29,8 @@ import org.phenotips.data.permissions.rest.internal.utils.RESTActionResolver;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.permissions.rest.model.CollaboratorsRepresentation;
 import org.phenotips.data.permissions.rest.model.Link;
+import org.phenotips.data.permissions.rest.model.OwnerRepresentation;
 import org.phenotips.data.permissions.rest.model.PermissionsRepresentation;
-import org.phenotips.data.permissions.rest.model.UserSummary;
 import org.phenotips.data.permissions.rest.model.VisibilityRepresentation;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.Relations;
@@ -89,7 +89,7 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
         PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
 
         PermissionsRepresentation result = new PermissionsRepresentation();
-        UserSummary owner = this.factory.createOwnerRepresentation(patientAccessContext.getPatient());
+        OwnerRepresentation owner = this.factory.createOwnerRepresentation(patientAccessContext.getPatient());
         VisibilityRepresentation visibility =
             this.factory.createVisibilityRepresentation(patientAccessContext.getPatient());
         CollaboratorsRepresentation collaborators =
