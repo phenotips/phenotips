@@ -109,17 +109,7 @@
     </class>
     <property>
       <content>{{velocity}}
-$xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
-#set ($family = $services.families.getFamilyForPatient($doc.getDocumentReference().getName()))
-#set ($hasFamily = $family &amp;&amp; "$family.getId()" != '')
-#if ($hasFamily)
-##
-
-#set ($familyLabel = "$family.getId()#if (""$family.getExternalId()"" != '') ($family.getExternalId())#end")
-(% class="clear family-study" %)(((##
-  (% class="family-id-div" %)((([[$familyLabel&gt;&gt;path:$xwiki.getURL($family.getDocumentReference(), 'edit')||id="familyId"]])))
-)))##
-#end
+$doc.display('reference', $doc.getObject('PhenoTips.FamilyReferenceClass'))
 {{/velocity}}
 </content>
     </property>

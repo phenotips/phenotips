@@ -50,7 +50,13 @@
     <reference>
       <cache>0</cache>
       <classname>PhenoTips.FamilyClass</classname>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#set ($family = $services.families.getFamilyById($value))
+#if ("$family.getId()" != '')
+[[$family.getId()#if ("$family.getExternalId()" != '') ($family.getExternalId())#end&gt;&gt;path:$xwiki.getURL($family.getDocumentReference(), 'edit')||id="familyId"]]
+#end
+{{/velocity}}
+</customDisplay>
       <disabled>0</disabled>
       <displayType>input</displayType>
       <idField/>
@@ -58,7 +64,7 @@
       <name>reference</name>
       <number>1</number>
       <picker>0</picker>
-      <prettyName>reference</prettyName>
+      <prettyName>Family reference</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator/>
       <separators/>
