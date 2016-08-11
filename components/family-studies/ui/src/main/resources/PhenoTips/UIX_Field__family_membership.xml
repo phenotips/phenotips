@@ -124,7 +124,9 @@ $doc.display('reference', $doc.getObject('PhenoTips.FamilyReferenceClass'))
 enabled=true
 required=
 order=1
-fields=</parameters>
+fields=reference
+pt_class=PhenoTips.FamilyReferenceClass
+</parameters>
     </property>
     <property>
       <scope>wiki</scope>
