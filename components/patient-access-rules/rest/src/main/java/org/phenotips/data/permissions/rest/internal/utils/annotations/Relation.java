@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -16,23 +14,24 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
--->
+ */
+package org.phenotips.data.permissions.rest.internal.utils.annotations;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
-    <version>1.3-SNAPSHOT</version>
-  </parent>
-  <artifactId>patient-access-rules</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Patient access rules</name>
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-  <modules>
-    <module>api</module>
-    <module>migrations</module>
-    <module>ui</module>
-    <module>rest</module>
-  </modules>
-</project>
+/**
+ * Used for setting a resource type identifier, generally a URI. This identifier can then be used to identify the type
+ * of <b>rel</b>ation between two <b>link</b>ed resources.
+ *
+ * @version $Id$
+ * @since 1.3M2
+ */
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Relation
+{
+    /**
+     * @return the specified resource type identifier, usually in the form of an URI
+     */
+    String value();
+}

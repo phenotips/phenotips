@@ -537,6 +537,11 @@
               <to>boolean hasAccess(org.xwiki.users.User, org.xwiki.security.authorization.Right, org.xwiki.model.reference.EntityReference)</to>
               <justification>Made more generic to also be able to deal with spaces</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/data/permissions/script/SecurePatientAccess</className>
+              <differenceType>8001</differenceType>
+              <justification>Moved the functionality into an internal package, since script services shouldn't have that much application logic</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

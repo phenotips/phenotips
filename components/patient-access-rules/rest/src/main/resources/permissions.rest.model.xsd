@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://phenotips.org/"
+  xmlns:phenotips="https://phenotips.org/" elementFormDefault="qualified">
+
+
+  <complexType name="Link">
+    <sequence>
+      <element name="allowed_methods" type="string" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+    <attribute name="href" type="string"/>
+    <attribute name="rel" type="string"/>
+    <attribute name="type" type="string"/>
+    <attribute name="hrefLang" type="string"/>
+  </complexType>
+
+  <complexType name="LinkCollection">
+    <sequence>
+      <element name="link" type="phenotips:Link" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="UserSummary">
+    <complexContent>
+      <extension base="phenotips:LinkCollection">
+        <sequence>
+          <element name="id" type="string"/>
+          <element name="name" type="string"/>
+          <element name="email" type="string"/>
+          <element name="type" type="string"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="OwnerSummary">
+    <complexContent>
+      <extension base="phenotips:UserSummary"/>
+    </complexContent>
+  </complexType>
+
+  <complexType name="CollaboratorSummary">
+    <complexContent>
+      <extension base="phenotips:UserSummary">
+        <sequence>
+          <element name="level" type="string"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="UserCollection">
+    <complexContent>
+      <extension base="phenotips:LinkCollection">
+        <sequence>
+          <element name="collaborator" type="phenotips:CollaboratorSummary" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="VisibilitySummary">
+    <complexContent>
+      <extension base="phenotips:LinkCollection">
+        <sequence>
+          <element name="level" type="string"/>
+          <element name="label" type="string"/>
+          <element name="description" type="string"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="VisibilityOptions">
+    <complexContent>
+      <extension base="phenotips:LinkCollection">
+        <sequence>
+          <element name="visibility" type="phenotips:VisibilitySummary" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="PermissionsSummary">
+    <complexContent>
+      <extension base="phenotips:LinkCollection">
+        <sequence>
+          <element name="owner" type="phenotips:OwnerSummary"/>
+          <element name="visibility" type="phenotips:VisibilitySummary"/>
+          <element name="collaborators" type="phenotips:UserCollection"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <!--
+  *
+  * ELEMENTS
+  *
+  -->
+
+  <element name="ownerRepresentation" type="phenotips:OwnerSummary"/>
+
+  <element name="collaboratorRepresentation" type="phenotips:CollaboratorSummary"/>
+
+  <element name="visibilityRepresentation" type="phenotips:VisibilitySummary"/>
+
+  <element name="collaboratorsRepresentation" type="phenotips:UserCollection"/>
+
+  <element name="visibilityOptionsRepresentation" type="phenotips:VisibilityOptions"/>
+
+  <element name="permissionsRepresentation" type="phenotips:PermissionsSummary"/>
+</schema>
