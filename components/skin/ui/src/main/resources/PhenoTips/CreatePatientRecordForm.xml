@@ -53,7 +53,7 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
       #if ($xwiki.exists('PhenoTips.CreatePatientRecordForm'))
          $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
          $xwiki.ssx.use('PhenoTips.CreatePatientRecordForm')##
-         &lt;input type="hidden" id="numberOfTemplates" value="$services.templates.getAllTemplates().size()" /&gt;
+         &lt;input type="hidden" id="numberOfTemplates" value="$services.templates.getNumberOfTemplates()" /&gt;
       #end
       ##
       ## Extensions displayed before the content
@@ -617,8 +617,7 @@ $xwiki.ssx.use('PhenoTips.CreatePatientRecordForm')
 {{velocity}}
 (% class="tp-assignment-config" %)
 #set ($projects = $services.projects.getProjectsCurrentUserCanContributeTo())
-#set ($templates = $services.templates.getAllTemplates())
-#if ($xcontext.action != 'export' &amp;&amp; $templates.size() + $projects.size() &gt; 0)
+#if ($xcontext.action != 'export' &amp;&amp; $templates.getNumberOfTemplates() + $projects.size() &gt; 0)
   #set ($faction = $doc.getURL('save', "form_token=${services.csrf.token}&amp;amp;xredirect=$escapetool.url($doc.getURL($xcontext.action))"))
   #set ($buttonTitle = $services.localization.render('phenotips.templateBindingClass.changeTemplateButton.title'))
   (% class='buttonwrapper' %)##

@@ -21,7 +21,7 @@ import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.projects.data.Project;
 import org.phenotips.templates.data.Template;
-import org.phenotips.templates.internal.DefaultTemplate;
+import org.phenotips.templates.data.TemplateRepository;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -78,6 +78,9 @@ public class ProjectAndTemplateBinder
 
     @Inject
     private ProjectsRepository projectsRepository;
+
+    @Inject
+    private TemplateRepository templateRepository;
 
     /**
      * Assigns project(s) to a patient.
@@ -149,7 +152,7 @@ public class ProjectAndTemplateBinder
         if (templateBindingObject != null) {
             String templateId = templateBindingObject.getStringValue(TEMPLATE_BINDING_FIELD);
             if (templateId != null) {
-                template = DefaultTemplate.getTemplateById(templateId);
+                template = this.templateRepository.get(templateId);
             }
         }
         return template;

@@ -1,2 +1,2 @@
 org.phenotips.templates.script.TemplatesScriptService
-org.phenotips.templates.internal.TemplatesRepository
+org.phenotips.templates.internal.DefaultTemplateRepository

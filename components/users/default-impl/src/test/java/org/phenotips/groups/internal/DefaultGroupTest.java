@@ -21,6 +21,8 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 import org.phenotips.templates.data.Template;
+import org.phenotips.templates.data.TemplateRepository;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -79,6 +81,9 @@ public class DefaultGroupTest
     DocumentReferenceResolver<String> resolver;
 
     @Mock
+    TemplateRepository templateRepository;
+
+    @Mock
     UsersAndGroups usersAndGroups;
 
     @Mock
@@ -97,6 +102,7 @@ public class DefaultGroupTest
         when(this.cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current")).thenReturn(this.resolver);
         when(this.cm.getInstance(Logger.class)).thenReturn(this.logger);
         when(this.cm.getInstance(UsersAndGroups.class)).thenReturn(this.usersAndGroups);
+        when(this.cm.getInstance(TemplateRepository.class)).thenReturn(this.templateRepository);
     }
 
     /** Basic tests for {@link DefaultGroup#getReference()}. */
@@ -180,11 +186,8 @@ public class DefaultGroupTest
         // With 2 studies
         String id = "studies.t1";
         templatesIdsList.add(id);
-        DocumentReference templateRef = mock(DocumentReference.class);
-        XWikiDocument templateXDocument = mock(XWikiDocument.class);
-        when(this.resolver.resolve(id, Template.DEFAULT_DATA_SPACE)).thenReturn(templateRef);
-        when(this.bridge.getDocument(templateRef)).thenReturn(templateXDocument);
-        when(templateXDocument.getDocumentReference()).thenReturn(templateRef);
+        Template t = mock(Template.class);
+        when(this.templateRepository.get(id)).thenReturn(t);
         when(groupXDocument.getListValue("studies")).thenReturn(templatesIdsList);
         Collection<Template> template = group.getTemplates();
         Assert.assertEquals(template.size(), 1);
