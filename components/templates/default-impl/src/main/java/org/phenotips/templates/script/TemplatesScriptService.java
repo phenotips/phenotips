@@ -18,13 +18,12 @@
 package org.phenotips.templates.script;
 
 import org.phenotips.templates.data.Template;
-import org.phenotips.templates.internal.DefaultTemplate;
-import org.phenotips.templates.internal.TemplatesRepository;
+import org.phenotips.templates.data.TemplateRepository;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 
-import java.util.Collection;
+import java.util.Iterator;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,41 +32,48 @@ import javax.inject.Singleton;
 /**
  * @version $Id$
  */
-
 @Component
 @Named("templates")
 @Singleton
 public class TemplatesScriptService implements ScriptService
 {
     @Inject
-    private TemplatesRepository templatesRepository;
+    private TemplateRepository templateRepository;
 
     /**
      * Returns a JSON object with a list of templates, all with ids that fit a search criterion.
      *
-     * @param input the beginning of the template id
-     * @param resultsLimit maximal length of list
+     * @param input the beginning of the template id, must not be null. To get all templates use {@code getAll()}.
+     * @param resultsLimit maximal length of list, non-negative number
      * @return JSON object with a list of templates
      */
     public String searchTemplates(String input, int resultsLimit)
     {
-        return templatesRepository.searchTemplates(input, resultsLimit);
+        return this.templateRepository.searchTemplates(input, resultsLimit);
     }
 
     /**
-     * @return a collection of all templates
+     * @return number of templates
      */
-    public Collection<Template> getAllTemplates() {
-        return templatesRepository.getAllTemplates();
-    }
-
-    /**
-     * @param templateId id of template to get
-     * @return a template
-     */
-    public Template getTemplateById(String templateId)
+    public int getNumberOfTemplates()
     {
-        return DefaultTemplate.getTemplateById(templateId);
+        // TODO: will change in AbstractPrimaryEntityManager
+
+        int count = 0;
+        Iterator<Template> iterator = this.templateRepository.getAll();
+        while (iterator.hasNext()) {
+            iterator.next();
+            count++;
+        }
+        return count;
+    }
+
+    /**
+     * @return an iterator over the all templates
+     */
+    public Iterator<Template> getAll()
+    {
+        return this.templateRepository.getAll();
     }
 }
 
