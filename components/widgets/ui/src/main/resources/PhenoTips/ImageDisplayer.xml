@@ -90,7 +90,7 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
 #set($options.html5Filter = "$!{object.getxWikiClass().get($property).getProperty('validationRegExp').value}")
 #set($formats = "$!{object.getxWikiClass().get($property).getProperty('validationMessage').value}")
 #if ($formats != '')
-  #set ($options.filter = $formats.split('\\s*[,| ]\\s*'))
+  #set ($options.filter = $formats.split('\s*[,| ]\s*'))
   #if (!$options.html5Filter.contains('image'))
     #set ($options.isImage = false)
   #end
