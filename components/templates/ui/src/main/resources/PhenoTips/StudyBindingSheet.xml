@@ -40,7 +40,7 @@
   <content>{{velocity}}
 {{html clean="false"}}&lt;h2&gt;$services.localization.render('phenotips.templateBindingSheet.templatesSectionHeader')&lt;/h2&gt;{{/html}}
 
-#set ($templates = $services.templates.getAllTemplates())
+#set ($templates = $services.templates.getAll())
 #if ($xcontext.action != 'export' &amp;&amp; $templates.size() &gt; 0)
   #if ($!{request.patientId} != '')
   #set ($template = $services.projects.getTemplateForPatient($request.patientId))

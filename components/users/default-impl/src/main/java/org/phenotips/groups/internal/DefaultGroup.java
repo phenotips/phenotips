@@ -21,7 +21,7 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 import org.phenotips.templates.data.Template;
-import org.phenotips.templates.internal.DefaultTemplate;
+import org.phenotips.templates.data.TemplateRepository;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -164,7 +164,7 @@ public class DefaultGroup implements Group
         List<String> templatesList = groupDocument.getListValue("studies");
         List<Template> templates = new ArrayList<Template>();
         for (String id : templatesList) {
-            templates.add(DefaultTemplate.getTemplateById(id));
+            templates.add(getTemplateRepository().get(id));
         }
 
         return templates;
@@ -215,6 +215,16 @@ public class DefaultGroup implements Group
     {
         try {
             return ComponentManagerRegistry.getContextComponentManager().getInstance(UsersAndGroups.class);
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
+    private TemplateRepository getTemplateRepository()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(TemplateRepository.class);
         } catch (ComponentLookupException e) {
             // Should not happen
         }
