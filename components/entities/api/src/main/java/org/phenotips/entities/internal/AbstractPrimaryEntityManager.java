@@ -206,7 +206,8 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
                     + this.localSerializer.serialize(getEntityXClassReference())
                     + ") as entity where doc.name not in (:template1, :template2) order by doc.name asc",
                 Query.XWQL).bindValue("template1", this.getEntityXClassReference().getName() + "Template")
-                .bindValue("template1", this.getEntityXClassReference().getName() + "Template");
+                .bindValue("template2",
+                    StringUtils.removeEnd(this.getEntityXClassReference().getName(), "Class") + "Template");
             List<String> docNames = q.execute();
             return new LazyPrimaryEntityIterator<>(docNames, this);
         } catch (QueryException ex) {
