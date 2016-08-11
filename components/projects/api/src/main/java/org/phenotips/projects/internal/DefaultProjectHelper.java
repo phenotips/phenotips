@@ -24,7 +24,7 @@ import org.phenotips.data.permissions.internal.DefaultCollaborator;
 import org.phenotips.projects.access.ProjectAccessLevel;
 import org.phenotips.projects.data.Project;
 import org.phenotips.templates.data.Template;
-import org.phenotips.templates.internal.DefaultTemplate;
+import org.phenotips.templates.data.TemplateRepository;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
@@ -94,6 +94,9 @@ public class DefaultProjectHelper
 
     @Inject
     private Provider<XWikiContext> contextProvider;
+
+    @Inject
+    private TemplateRepository templateRepository;
 
     /**
      * Sets the list of project collaborators.
@@ -229,8 +232,8 @@ public class DefaultProjectHelper
                 if (StringUtils.isBlank(templateString)) {
                     continue;
                 }
-                Template s = DefaultTemplate.getTemplateById(templateString);
-                templates.add(s);
+                Template t = templateRepository.get(templateString);
+                templates.add(t);
             }
         }
 

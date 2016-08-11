@@ -17,20 +17,12 @@
  */
 package org.phenotips.templates.internal;
 
-import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.entities.internal.AbstractPrimaryEntity;
 import org.phenotips.templates.data.Template;
 
-import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 
@@ -47,38 +39,6 @@ public class DefaultTemplate extends AbstractPrimaryEntity implements Template
     public DefaultTemplate(XWikiDocument document)
     {
         super(document);
-    }
-
-    /**
-     * TODO Temporary factory method.
-     *
-     * @param templateId template id
-     * @return new default template
-     */
-    public static Template getTemplateById(String templateId)
-    {
-        DocumentReferenceResolver<String> stringResolver = null;
-        DocumentAccessBridge dab = null;
-        Logger logger = LoggerFactory.getLogger(DefaultTemplate.class);
-        try {
-            ComponentManager cm = ComponentManagerRegistry.getContextComponentManager();
-            stringResolver = cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
-            dab = cm.getInstance(DocumentAccessBridge.class);
-        } catch (ComponentLookupException e) {
-            logger.error("Failed to create a new DefaultTemplate.");
-            return null;
-        }
-
-        DocumentReference reference = stringResolver.resolve(templateId, Template.DEFAULT_DATA_SPACE);
-        XWikiDocument document;
-        try {
-            document = (XWikiDocument) dab.getDocument(reference);
-        } catch (Exception e) {
-            logger.error("Failed to create a new DefaultTemplate.");
-            return null;
-        }
-
-        return new DefaultTemplate(document);
     }
 
     @Override
