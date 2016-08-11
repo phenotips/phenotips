@@ -33,6 +33,7 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.users.User;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -249,5 +250,19 @@ public class DefaultCollaboratorTest
 
         groups.add(new DefaultGroup(documentReference));
         Assert.assertTrue(groupC.isUserIncluded(user));
+    }
+
+    @Test
+    public void getAllUserNamesTest1()
+    {
+        User user = mock(User.class);
+        DocumentReference userRef = new DocumentReference("xwiki", "XWiki", "user");
+
+        Collaborator userC = new DefaultCollaborator(userRef, access);
+        when(this.usersAndGroups.getType(userRef)).thenReturn(UsersAndGroups.USER);
+        when(user.getProfileDocument()).thenReturn(userRef);
+
+        Collection<String> allUserNames = userC.getAllUserNames();
+        Assert.assertEquals(1, allUserNames.size());
     }
 }
