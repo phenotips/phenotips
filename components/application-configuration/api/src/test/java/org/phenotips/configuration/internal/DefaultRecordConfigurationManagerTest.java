@@ -84,14 +84,14 @@ public class DefaultRecordConfigurationManagerTest
     {
         DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
         DocumentReference currentDocument = new DocumentReference("xwiki", "data", "P0000001");
-        DocumentReference bindingClass = new DocumentReference("xwiki", "PhenoTips", "StudyBindingClass");
+        DocumentReference bindingClass = new DocumentReference("xwiki", "PhenoTips", "TemplateBindingClass");
         DocumentReference gr = new DocumentReference("xwiki", "Groups", "Dentists");
         when(dab.getCurrentDocumentReference()).thenReturn(currentDocument);
         DocumentReferenceResolver<EntityReference> resolver =
             this.mocker.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current");
-        when(resolver.resolve(DefaultRecordConfigurationManager.STUDY_BINDING_CLASS_REFERENCE))
+        when(resolver.resolve(DefaultRecordConfigurationManager.TEMPLATE_BINDING_CLASS_REFERENCE))
             .thenReturn(bindingClass);
-        when(dab.getProperty(currentDocument, bindingClass, "studyReference")).thenReturn("Groups.Dentists");
+        when(dab.getProperty(currentDocument, bindingClass, "templateReference")).thenReturn("Groups.Dentists");
         DocumentReferenceResolver<String> referenceParser =
             this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
         when(referenceParser.resolve("Groups.Dentists")).thenReturn(gr);
@@ -115,14 +115,14 @@ public class DefaultRecordConfigurationManagerTest
     {
         DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
         DocumentReference currentDocument = new DocumentReference("xwiki", "data", "P0000001");
-        DocumentReference bindingClass = new DocumentReference("xwiki", "PhenoTips", "StudyBindingClass");
+        DocumentReference bindingClass = new DocumentReference("xwiki", "PhenoTips", "TemplateBindingClass");
         DocumentReference gr = new DocumentReference("xwiki", "Groups", "Dentists");
         when(dab.getCurrentDocumentReference()).thenReturn(currentDocument);
         DocumentReferenceResolver<EntityReference> resolver =
             this.mocker.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current");
-        when(resolver.resolve(DefaultRecordConfigurationManager.STUDY_BINDING_CLASS_REFERENCE))
+        when(resolver.resolve(DefaultRecordConfigurationManager.TEMPLATE_BINDING_CLASS_REFERENCE))
             .thenReturn(bindingClass);
-        when(dab.getProperty(currentDocument, bindingClass, "studyReference")).thenReturn("Groups.Dentists");
+        when(dab.getProperty(currentDocument, bindingClass, "templateReference")).thenReturn("Groups.Dentists");
         DocumentReferenceResolver<String> referenceParser =
             this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
         when(referenceParser.resolve("Groups.Dentists")).thenReturn(gr);
@@ -142,17 +142,17 @@ public class DefaultRecordConfigurationManagerTest
     {
         DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
         DocumentReference currentDocument = new DocumentReference("xwiki", "data", "P0000001");
-        DocumentReference bindingClass = new DocumentReference("xwiki", "PhenoTips", "StudyBindingClass");
-        DocumentReference sr = new DocumentReference("xwiki", "Studies", "Missing");
+        DocumentReference bindingClass = new DocumentReference("xwiki", "PhenoTips", "TemplateBindingClass");
+        DocumentReference sr = new DocumentReference("xwiki", "Templates", "Missing");
         when(dab.getCurrentDocumentReference()).thenReturn(currentDocument);
         DocumentReferenceResolver<EntityReference> resolver =
             this.mocker.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current");
-        when(resolver.resolve(DefaultRecordConfigurationManager.STUDY_BINDING_CLASS_REFERENCE))
+        when(resolver.resolve(DefaultRecordConfigurationManager.TEMPLATE_BINDING_CLASS_REFERENCE))
             .thenReturn(bindingClass);
-        when(dab.getProperty(currentDocument, bindingClass, "studyReference")).thenReturn("Studies.Missing");
+        when(dab.getProperty(currentDocument, bindingClass, "templateReference")).thenReturn("Templates.Missing");
         DocumentReferenceResolver<String> referenceParser =
             this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
-        when(referenceParser.resolve("Studies.Missing")).thenReturn(sr);
+        when(referenceParser.resolve("Templates.Missing")).thenReturn(sr);
         XWikiDocument doc = mock(XWikiDocument.class);
         when(this.xwiki.getDocument(sr, this.context)).thenReturn(doc);
         when(doc.isNew()).thenReturn(true);
@@ -171,17 +171,17 @@ public class DefaultRecordConfigurationManagerTest
     {
         DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
         DocumentReference currentDocument = new DocumentReference("xwiki", "data", "P0000001");
-        DocumentReference bindingClass = new DocumentReference("xwiki", "PhenoTips", "StudyBindingClass");
-        DocumentReference sr = new DocumentReference("xwiki", "Studies", "Inaccessible");
+        DocumentReference bindingClass = new DocumentReference("xwiki", "PhenoTips", "TemplateBindingClass");
+        DocumentReference sr = new DocumentReference("xwiki", "Templates", "Inaccessible");
         when(dab.getCurrentDocumentReference()).thenReturn(currentDocument);
         DocumentReferenceResolver<EntityReference> resolver =
             this.mocker.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current");
-        when(resolver.resolve(DefaultRecordConfigurationManager.STUDY_BINDING_CLASS_REFERENCE))
+        when(resolver.resolve(DefaultRecordConfigurationManager.TEMPLATE_BINDING_CLASS_REFERENCE))
             .thenReturn(bindingClass);
-        when(dab.getProperty(currentDocument, bindingClass, "studyReference")).thenReturn("Studies.Inaccessible");
+        when(dab.getProperty(currentDocument, bindingClass, "templateReference")).thenReturn("Templates.Inaccessible");
         DocumentReferenceResolver<String> referenceParser =
             this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
-        when(referenceParser.resolve("Studies.Inaccessible")).thenReturn(sr);
+        when(referenceParser.resolve("Templates.Inaccessible")).thenReturn(sr);
         when(this.xwiki.getDocument(sr, this.context)).thenReturn(null);
 
         RecordConfiguration result = this.mocker.getComponentUnderTest().getActiveConfiguration();

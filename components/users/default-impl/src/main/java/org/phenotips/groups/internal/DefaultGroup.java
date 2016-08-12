@@ -161,7 +161,7 @@ public class DefaultGroup implements Group
         }
 
         @SuppressWarnings("unchecked")
-        List<String> templatesList = groupDocument.getListValue("studies");
+        List<String> templatesList = groupDocument.getListValue("templates");
         List<Template> templates = new ArrayList<Template>();
         TemplateRepository templateRepository = getTemplateRepository();
         for (String id : templatesList) {
@@ -225,7 +225,8 @@ public class DefaultGroup implements Group
     private TemplateRepository getTemplateRepository()
     {
         try {
-            return ComponentManagerRegistry.getContextComponentManager().getInstance(TemplateRepository.class, "Study");
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(TemplateRepository.class,
+                "Template");
         } catch (ComponentLookupException e) {
             // Should not happen
         }

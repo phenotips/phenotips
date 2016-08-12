@@ -56,7 +56,7 @@ public class ProjectAndTemplateBinder
 {
     private static final String PROJECT_BINDING_FIELD = "projectReference";
 
-    private static final String TEMPLATE_BINDING_FIELD = "studyReference";
+    private static final String TEMPLATE_BINDING_FIELD = "templateReference";
 
     private static final String PROJECTS_SEPARATOR = ";";
 
@@ -65,7 +65,7 @@ public class ProjectAndTemplateBinder
         Constants.CODE_SPACE_REFERENCE);
 
     /** The XClass used to store collaborators in the patient record. */
-    private EntityReference templateBindingReference = new EntityReference("StudyBindingClass", EntityType.DOCUMENT,
+    private EntityReference templateBindingReference = new EntityReference("TemplateBindingClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
     @Inject
@@ -81,7 +81,7 @@ public class ProjectAndTemplateBinder
     private ProjectsRepository projectsRepository;
 
     @Inject
-    @Named("Study")
+    @Named("Template")
     private TemplateRepository templateRepository;
 
     /**

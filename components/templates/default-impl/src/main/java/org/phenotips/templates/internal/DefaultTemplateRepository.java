@@ -37,8 +37,8 @@ import org.json.JSONObject;
 /**
  * @version $Id$
  */
-@Component(roles = {PrimaryEntityManager.class, TemplateRepository.class })
-@Named("Study")
+@Component(roles = { PrimaryEntityManager.class, TemplateRepository.class })
+@Named("Template")
 @Singleton
 public class DefaultTemplateRepository extends AbstractPrimaryEntityManager<Template> implements TemplateRepository
 {

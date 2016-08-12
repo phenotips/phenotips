@@ -20,7 +20,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>StudyClass</name>
+  <name>TemplateClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -39,7 +39,7 @@
   <hidden>true</hidden>
   <content/>
   <class>
-    <name>PhenoTips.StudyClass</name>
+    <name>PhenoTips.TemplateClass</name>
     <customClass/>
     <customMapping/>
     <defaultViewSheet/>
@@ -121,7 +121,7 @@
     </sections>
   </class>
   <object>
-    <name>PhenoTips.StudyClass</name>
+    <name>PhenoTips.TemplateClass</name>
     <number>0</number>
     <className>XWiki.ClassSheetBinding</className>
     <guid>ca8e78a3-0377-4b80-9cd9-a90abc6a4c7e</guid>
@@ -149,11 +149,11 @@
       </sheet>
     </class>
     <property>
-      <sheet>StudySheet</sheet>
+      <sheet>TemplateSheet</sheet>
     </property>
   </object>
   <object>
-    <name>PhenoTips.StudyClass</name>
+    <name>PhenoTips.TemplateClass</name>
     <number>0</number>
     <className>XWiki.ConfigurableClass</className>
     <guid>fc5f7101-092c-4797-9267-1f703d4a52ec</guid>
@@ -360,12 +360,12 @@
 {{error}}$errorMessage{{/error}}
 
 #end
-#set ($templateClassName = 'PhenoTips.StudyClass')
-#set ($templateTemplateName = 'PhenoTips.StudyTemplate')
-#set ($templatesHome = 'Studies.WebHome')
+#set ($templateClassName = 'PhenoTips.TemplateClass')
+#set ($templateTemplateName = 'PhenoTips.TemplateTemplate')
+#set ($templatesHome = 'Templates.WebHome')
 
 {{html}}
-&lt;form id="study-creation-form" class="xformInline" action="$doc.getURL($xcontext.action, $request.queryString)" method="post"&gt;&lt;div&gt;
+&lt;form id="templates-creation-form" class="xformInline" action="$doc.getURL($xcontext.action, $request.queryString)" method="post"&gt;&lt;div&gt;
   &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
   &lt;input type="hidden" name="doCreate" value="1" /&gt;
   &lt;input type="hidden" name="classTemplate" value="$templateTemplateName" /&gt;
@@ -375,7 +375,7 @@
 &lt;/div&gt;&lt;/form&gt;
 {{/html}}
 
-{{include reference="Studies.WebHome" /}}</codeToExecute>
+{{include reference="Templates.WebHome" /}}</codeToExecute>
     </property>
     <property>
       <configurationClass/>
@@ -387,7 +387,7 @@
       <displayInCategory>phenotips</displayInCategory>
     </property>
     <property>
-      <displayInSection>studies</displayInSection>
+      <displayInSection>templates</displayInSection>
     </property>
     <property>
       <heading/>
@@ -406,7 +406,7 @@
     </property>
   </object>
   <object>
-    <name>PhenoTips.StudyClass</name>
+    <name>PhenoTips.TemplateClass</name>
     <number>0</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>02916482-1d6e-4fb7-a622-dea0194ec043</guid>
@@ -526,7 +526,7 @@
     }
   });
 
-  var creationForm = $('study-creation-form');
+  var creationForm = $('templates-creation-form');
   if (creationForm) {
     creationForm.observe('submit', function(event) {
       var iName = creationForm.down('input[name="name"]');
@@ -549,7 +549,7 @@
     </property>
   </object>
   <object>
-    <name>PhenoTips.StudyClass</name>
+    <name>PhenoTips.TemplateClass</name>
     <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
     <guid>658dafd9-d28c-4dd7-af19-bbb5bb02f4f3</guid>
@@ -680,16 +680,16 @@
   left: -16px;
 }
 
-#study-creation-form input {
+#templates-creation-form input {
   width: auto;
   margin-left: 10px;
 }
 
-#studies-tools {
+#templates-tools {
   text-align: right;
 }
 
-#studies-tools .read-more {
+#templates-tools .read-more {
   font-size: .9;
 }
 
@@ -708,7 +708,7 @@ div.infomessage {
     </property>
   </object>
   <object>
-    <name>PhenoTips.StudyClass</name>
+    <name>PhenoTips.TemplateClass</name>
     <number>0</number>
     <className>XWiki.WikiMacroClass</className>
     <guid>6ce660c1-677c-4b54-8ab6-f8b106aefe59</guid>
@@ -823,9 +823,9 @@ div.infomessage {
     </class>
     <property>
       <code>{{velocity output="false"}}
-#set ($templateClassName = 'PhenoTips.StudyClass')
-#set ($templateTemplateName = 'PhenoTips.StudyTemplate')
-#set ($templatesHome = 'Studies.WebHome')
+#set ($templateClassName = 'PhenoTips.TemplateClass')
+#set ($templateTemplateName = 'PhenoTips.TemplateTemplate')
+#set ($templatesHome = 'Templates.WebHome')
 $xwiki.ssx.use($templateClassName, {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})
 $xwiki.jsx.use($templateClassName)
 #set ($orders = {
@@ -849,15 +849,15 @@ $xwiki.jsx.use($templateClassName)
   #set ($templateObj = $templateDoc.getObject($templateClassName))
   #set ($filterbyprop = $templateObj.getProperty($filterby))
   #set ($isFilterActive = ($filterby != '' &amp;&amp; ("$!filterbyprop" != '' || $filterby == 'group')))
-  #if ($filterby == '' || "$!filterbyprop" != '' &amp;&amp; ($filterbyprop.value == $filterval || $filterbyprop.value.contains($filterval)) || $filterby == 'group' &amp;&amp; $!xwiki.getDocument($filterval).getObject('PhenoTips.PhenoTipsGroupClass').getProperty('studies').value.contains($services.model.serialize($templateDoc.documentReference, 'local')))
+  #if ($filterby == '' || "$!filterbyprop" != '' &amp;&amp; ($filterbyprop.value == $filterval || $filterbyprop.value.contains($filterval)) || $filterby == 'group' &amp;&amp; $!xwiki.getDocument($filterval).getObject('PhenoTips.PhenoTipsGroupClass').getProperty('templates').value.contains($services.model.serialize($templateDoc.documentReference, 'local')))
     #set ($discard = $templateData.add({
       'doc' : $templateDoc,
       'obj' : $templateObj,
       'doc.fullName' : $templateDoc.fullName,
       'name' : $templateDoc.title,
       'description' : $templateDoc.content,
-      'groups' : $services.query.xwql('from doc.object(PhenoTips.PhenoTipsGroupClass) as g where :template member of g.studies').bindValue('template', $services.model.serialize($templateDoc.documentReference, 'local')).count(),
-      'cases' : $services.query.xwql('from doc.object(PhenoTips.PatientClass) as p, doc.object(PhenoTips.StudyBindingClass) as o where o.studyReference = :template').bindValue('template', $services.model.serialize($templateDoc.documentReference, 'default')).count()
+      'groups' : $services.query.xwql('from doc.object(PhenoTips.PhenoTipsGroupClass) as g where :template member of g.templates').bindValue('template', $services.model.serialize($templateDoc.documentReference, 'local')).count(),
+      'cases' : $services.query.xwql('from doc.object(PhenoTips.PatientClass) as p, doc.object(PhenoTips.TemplateBindingClass) as o where o.templateReference = :template').bindValue('template', $services.model.serialize($templateDoc.documentReference, 'default')).count()
     }))
   #end
 #end
@@ -878,7 +878,7 @@ $xwiki.jsx.use($templateClassName)
 
   #else
 
-    {{info}}$services.localization.render('phenotips.templateClass.noneDefined')#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[$services.localization.render('phenotips.templateClass.manage')&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=studies')}]]#end{{/info}}
+    {{info}}$services.localization.render('phenotips.templateClass.noneDefined')#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[$services.localization.render('phenotips.templateClass.manage')&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=templates')}]]#end{{/info}}
 
   #end
 #else
@@ -911,13 +911,13 @@ $xwiki.jsx.use($templateClassName)
       <defaultCategory/>
     </property>
     <property>
-      <description>Lists PhenoTips studies</description>
+      <description>Lists PhenoTips templates</description>
     </property>
     <property>
-      <id>phenotips-studies</id>
+      <id>phenotips-templates</id>
     </property>
     <property>
-      <name>PhenoTips study list</name>
+      <name>PhenoTips template list</name>
     </property>
     <property>
       <supportsInlineMode>0</supportsInlineMode>
@@ -927,7 +927,7 @@ $xwiki.jsx.use($templateClassName)
     </property>
   </object>
   <object>
-    <name>PhenoTips.StudyClass</name>
+    <name>PhenoTips.TemplateClass</name>
     <number>0</number>
     <className>XWiki.WikiMacroParameterClass</className>
     <guid>8d44e4b7-b664-4ae8-b641-db6215e10cce</guid>
@@ -993,7 +993,7 @@ $xwiki.jsx.use($templateClassName)
     </property>
   </object>
   <object>
-    <name>PhenoTips.StudyClass</name>
+    <name>PhenoTips.TemplateClass</name>
     <number>1</number>
     <className>XWiki.WikiMacroParameterClass</className>
     <guid>0086267a-f522-450a-8e96-608dd7513e6d</guid>
@@ -1049,7 +1049,7 @@ $xwiki.jsx.use($templateClassName)
       <defaultValue>false</defaultValue>
     </property>
     <property>
-      <description>Whether to display the study management tools (edit, delete) for administrators (true|false; defaults to false)</description>
+      <description>Whether to display the template management tools (edit, delete) for administrators (true|false; defaults to false)</description>
     </property>
     <property>
       <mandatory>0</mandatory>
@@ -1059,7 +1059,7 @@ $xwiki.jsx.use($templateClassName)
     </property>
   </object>
   <object>
-    <name>PhenoTips.StudyClass</name>
+    <name>PhenoTips.TemplateClass</name>
     <number>2</number>
     <className>XWiki.WikiMacroParameterClass</className>
     <guid>e2ae620c-d2d4-41e9-987b-358e1e407952</guid>
@@ -1115,7 +1115,7 @@ $xwiki.jsx.use($templateClassName)
       <defaultValue>name</defaultValue>
     </property>
     <property>
-      <description>How to sort the studies. Supported values: name, groups. Default: name.</description>
+      <description>How to sort the templates. Supported values: name, groups. Default: name.</description>
     </property>
     <property>
       <mandatory>0</mandatory>
@@ -1125,7 +1125,7 @@ $xwiki.jsx.use($templateClassName)
     </property>
   </object>
   <object>
-    <name>PhenoTips.StudyClass</name>
+    <name>PhenoTips.TemplateClass</name>
     <number>3</number>
     <className>XWiki.WikiMacroParameterClass</className>
     <guid>2f1871f7-5e6e-4f21-80fd-efe40023d0ea</guid>
@@ -1191,7 +1191,7 @@ $xwiki.jsx.use($templateClassName)
     </property>
   </object>
   <object>
-    <name>PhenoTips.StudyClass</name>
+    <name>PhenoTips.TemplateClass</name>
     <number>4</number>
     <className>XWiki.WikiMacroParameterClass</className>
     <guid>db8e9923-7a1b-4b86-b713-61fa96df6c6b</guid>
@@ -1257,7 +1257,7 @@ $xwiki.jsx.use($templateClassName)
     </property>
   </object>
   <object>
-    <name>PhenoTips.StudyClass</name>
+    <name>PhenoTips.TemplateClass</name>
     <number>5</number>
     <className>XWiki.WikiMacroParameterClass</className>
     <guid>3f684849-c614-4ccd-a708-a09391593483</guid>

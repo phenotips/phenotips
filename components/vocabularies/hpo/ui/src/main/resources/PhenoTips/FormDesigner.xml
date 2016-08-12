@@ -255,9 +255,9 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 ## Initialize the form parameters
 ## ----------------------------------------------------------------------
 #if ($hasEdit)
-  #set ($studyConfig = $doc.getObject('PhenoTips.StudyClass'))
+  #set ($templateConfig = $doc.getObject('PhenoTips.TemplateClass'))
 #end
-#if ("$!{studyConfig}" == '')
+#if ("$!{templateConfig}" == '')
   #set ($globalConfig = $hasAdmin)
   #set ($prefix = '')
   #set ($formAction = "$doc.getURL($xcontext.action, $!request.queryString)")
@@ -267,7 +267,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
     "sections" : "" 
   })
 #else
-  #set ($prefix = "${studyConfig.xWikiClass.name}_${studyConfig.number}_")
+  #set ($prefix = "${templateConfig.xWikiClass.name}_${templateConfig.number}_")
   #set ($formAction = $doc.getURL('save'))
   #set ($formSubmit = "action_save")
   #set ($formParams = {
@@ -277,8 +277,8 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
     "${prefix}mapping" : ""
   })
 #end
-#if($studyConfig)
-    #set($customConfig = $studyConfig)
+#if($templateConfig)
+    #set($customConfig = $templateConfig)
     #if (!$customConfig.getProperty('sections'))
       $customConfig.getXWikiObject().setDBStringListValue('sections', [])
     #end
@@ -363,7 +363,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 ## ---------------------------------------------------------------------- 
 #macro (_formDesigner__displaySectionWithId $id)
   #set ($sectionsData = [])
-  #_formDesigner__getExtensionsData('section', 'name', "${sectionExtensionIdPrefix}${id}", $sectionExtensionPointId, $!studyConfig.getProperty('sections').value, $sectionsData)
+  #_formDesigner__getExtensionsData('section', 'name', "${sectionExtensionIdPrefix}${id}", $sectionExtensionPointId, $!templateConfig.getProperty('sections').value, $sectionsData)
   #foreach ($section in $sectionsData)
     #_formDesigner__displaySection($section true)
   #end
@@ -396,7 +396,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 ## =====================================================================
 ## SHOW FORM DESIGNER
 ## =====================================================================
-#if ($globalConfig || $studyConfig)
+#if ($globalConfig || $templateConfig)
 ## ----------------------------------------------------------------------
 ## Display the configuration form if the user has permissions
 ## ----------------------------------------------------------------------
@@ -426,7 +426,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 })
 #_formDesigner__displaySection($defaultSectionData false)
 )))
-#elseif ($studyConfig)
+#elseif ($templateConfig)
 ##
 ## Enable mapping configuration as well
 ##
@@ -436,7 +436,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 {{info}}$services.localization.render('phenotips.formDesigner.defaultPhenotypes.info'){{/info}}
 ; $services.localization.render('phenotips.formDesigner.configurationDocs.title')
 : (((
-{{html clean=false wiki=false}}&lt;label class="xwiki-form-listclass default" for="xwiki-form-mapping-0-default"&gt;&lt;input id="xwiki-form-mapping-0-default" type="radio" name="${prefix}mapping" value="" #if ("$!{studyConfig.getProperty('mapping').value}" == '') checked="checked" #end/&gt;$services.localization.render('phenotips.formDesigner.defaultPhenotypes.defaultOption')&lt;/label&gt;{{/html}}
+{{html clean=false wiki=false}}&lt;label class="xwiki-form-listclass default" for="xwiki-form-mapping-0-default"&gt;&lt;input id="xwiki-form-mapping-0-default" type="radio" name="${prefix}mapping" value="" #if ("$!{templateConfig.getProperty('mapping').value}" == '') checked="checked" #end/&gt;$services.localization.render('phenotips.formDesigner.defaultPhenotypes.defaultOption')&lt;/label&gt;{{/html}}
 $doc.display('mapping', 'edit')
 )))
 
