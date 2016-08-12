@@ -20,6 +20,7 @@ package org.phenotips.vocabulary.internal.solr;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,25 +43,40 @@ import org.json.JSONObject;
  */
 public class SolrVocabularyTerm implements VocabularyTerm
 {
-    private static final String ID = "id";
+    /**
+     * The name of the id field.
+     */
+    protected static final String ID = "id";
 
-    private static final String NAME = "name";
+    /**
+     * The name of the name field.
+     */
+    protected static final String NAME = "name";
 
-    private static final String DEF = "def";
+    /**
+     * The name of the definition field.
+     */
+    protected static final String DEF = "def";
 
-    private static final String TERM_CATEGORY = "term_category";
+    /**
+     * The name of the term category field.
+     */
+    protected static final String TERM_CATEGORY = "term_category";
 
-    private static final String IS_A = "is_a";
+    /**
+     * The name of the is_a field.
+     */
+    protected static final String IS_A = "is_a";
 
     /** The Solr document representing this term. */
-    private SolrDocument doc;
+    private Map<String, ? extends Object> doc;
 
     /**
      * The owner ontology.
      *
      * @see #getVocabulary()
      */
-    private Vocabulary ontology;
+    protected final Vocabulary ontology;
 
     /**
      * The parents of this term, transformed from a set of IDs into a real set of terms.
@@ -89,19 +105,15 @@ public class SolrVocabularyTerm implements VocabularyTerm
      * @param doc the {@link #doc Solr document} representing this term
      * @param ontology the {@link #ontology owner ontology}
      */
-    public SolrVocabularyTerm(SolrDocument doc, Vocabulary ontology)
+    public SolrVocabularyTerm(Map<String, ? extends Object> doc, Vocabulary ontology)
     {
         this.doc = doc;
         this.ontology = ontology;
         if (doc != null) {
             this.removeSelfDuplicate();
-            this.parents = new LazySolrTermSet(doc.getFieldValues(IS_A), ontology);
-            this.ancestors = new LazySolrTermSet(doc.getFieldValues(TERM_CATEGORY), ontology);
-            Collection<Object> termSet = new HashSet<Object>();
-            termSet.add(this.getId());
-            if (doc.getFieldValues(TERM_CATEGORY) != null) {
-                termSet.addAll(doc.getFieldValues(TERM_CATEGORY));
-            }
+            this.parents = new LazySolrTermSet(getValues(IS_A), ontology);
+            this.ancestors = new LazySolrTermSet(getValues(TERM_CATEGORY), ontology);
+            Collection<Object> termSet = getAncestorsAndSelfTermSet();
             this.ancestorsAndSelf = new LazySolrTermSet(termSet, this.ontology);
         }
     }
@@ -113,7 +125,7 @@ public class SolrVocabularyTerm implements VocabularyTerm
      */
     private void removeSelfDuplicate()
     {
-        Object value = this.doc.getFieldValue(TERM_CATEGORY);
+        Object value = getFirstValue(TERM_CATEGORY);
         if (!(value instanceof List)) {
             return;
         }
@@ -122,22 +134,85 @@ public class SolrVocabularyTerm implements VocabularyTerm
         listValue.remove(this.getId());
     }
 
+    /**
+     * Return the term set for the getAncestorsAndSelf method.
+     *
+     * @return the set
+     */
+    protected Collection<Object> getAncestorsAndSelfTermSet()
+    {
+        Collection<Object> termSet = new HashSet<Object>();
+        termSet.add(this.getId());
+        if (getValues(TERM_CATEGORY) != null) {
+            termSet.addAll(getValues(TERM_CATEGORY));
+        }
+        return termSet;
+    }
+
+    /**
+     * Get the values corresponding to the key given in the document
+     *
+     * @param key the key
+     * @return the collection of values
+     */
+    protected Collection<Object> getValues(String key)
+    {
+        Object o = doc.get(key);
+        if (o == null) {
+            return null;
+        }
+        if (o instanceof Collection) {
+            return (Collection<Object>) o;
+        }
+        Collection<Object> c = new ArrayList<>();
+        if (o instanceof Iterable) {
+            for (Object element : (Iterable<Object>) o) {
+                c.add(element);
+            }
+            return c;
+        }
+        c.add(o);
+        return c;
+    }
+
+    /**
+     * Get the first value corresponding to the key given in the document.
+     *
+     * @param key the key
+     * @return the first value
+     */
+    protected Object getFirstValue(String key)
+    {
+        if (doc == null) {
+            return null;
+        }
+        Object o = doc.get(key);
+        if (o == null) {
+            return null;
+        }
+        if (o instanceof Iterable) {
+            Iterable <Object> iterable = (Iterable) o;
+            return iterable.iterator().next();
+        }
+        return o;
+    }
+
     @Override
     public String getId()
     {
-        return this.doc != null ? (String) this.doc.getFirstValue(ID) : null;
+        return (String) getFirstValue(ID);
     }
 
     @Override
     public String getName()
     {
-        return this.doc != null ? (String) this.doc.getFirstValue(NAME) : null;
+        return (String) getFirstValue(NAME);
     }
 
     @Override
     public String getDescription()
     {
-        return this.doc != null ? (String) this.doc.getFirstValue(DEF) : null;
+        return (String) getFirstValue(DEF);
     }
 
     @Override
@@ -161,7 +236,20 @@ public class SolrVocabularyTerm implements VocabularyTerm
     @Override
     public Object get(String name)
     {
-        return this.doc != null ? this.doc.getFieldValue(name) : null;
+        if (doc == null) {
+            return null;
+        }
+        Object o = doc.get(name);
+        if (o instanceof Iterable) {
+            int count = 0;
+            for (Object inner : (Iterable) o) {
+                count++;
+            }
+            if (count == 1) {
+                return ((Iterable) o).iterator().next();
+            }
+        }
+        return o;
     }
 
     @Override
@@ -233,10 +321,7 @@ public class SolrVocabularyTerm implements VocabularyTerm
     {
         JSONObject json = new JSONObject();
 
-        Iterator<Map.Entry<String, Object>> fieldIterator = this.doc.iterator();
-
-        while (fieldIterator.hasNext()) {
-            Map.Entry<String, Object> field = fieldIterator.next();
+        for (Map.Entry<String, ? extends Object> field : this.doc.entrySet()) {
             addAsCorrectType(json, field.getKey(), field.getValue());
         }
 
