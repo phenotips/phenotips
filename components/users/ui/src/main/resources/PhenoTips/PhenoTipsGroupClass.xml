@@ -110,7 +110,7 @@
       <values>members=Show member list to non-members|cases=Show list of public cases to non-members</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </public_sections>
-    <studies>
+    <templates>
       <cache>0</cache>
       <classname/>
       <customDisplay/>
@@ -118,22 +118,22 @@
       <displayType>checkbox</displayType>
       <idField/>
       <multiSelect>1</multiSelect>
-      <name>studies</name>
+      <name>templates</name>
       <number>5</number>
       <picker>0</picker>
-      <prettyName>studies</prettyName>
+      <prettyName>templates</prettyName>
       <relationalStorage>1</relationalStorage>
       <separator> </separator>
       <separators/>
       <size>1</size>
       <sort>none</sort>
-      <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where doc.fullName &lt;&gt; 'PhenoTips.StudyTemplate' and obj.name = doc.fullName and obj.className = 'PhenoTips.StudyClass'</sql>
+      <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where doc.fullName &lt;&gt; 'PhenoTips.TemplateTemplate' and obj.name = doc.fullName and obj.className = 'PhenoTips.TemplateClass'</sql>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-    </studies>
+    </templates>
   </class>
   <object>
     <name>PhenoTips.PhenoTipsGroupClass</name>

@@ -19,7 +19,7 @@
 -->
 
 <xwikidoc version="1.1">
-  <web>Studies</web>
+  <web>Templates</web>
   <name>WebHome</name>
   <language/>
   <defaultLanguage/>
@@ -32,14 +32,14 @@
   <date>1401822187000</date>
   <contentUpdateDate>1401822187000</contentUpdateDate>
   <version>1.1</version>
-  <title>Studies</title>
+  <title>Templates</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-  <content>{{phenotips-studies fullinfo="true" tools="true" orderby="name"/}}</content>
+  <content>{{phenotips-templates fullinfo="true" tools="true" orderby="name"/}}</content>
   <object>
-    <name>Studies.WebHome</name>
+    <name>Templates.WebHome</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>d16bb606-e5b1-437f-95f5-fb4038616dcc</guid>
@@ -158,7 +158,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 {{/html}}{{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.header.top:Studies</extensionPointId>
+      <extensionPointId>org.phenotips.header.top:Templates</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.header.top.globalMenu</name>
@@ -171,7 +171,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
     </property>
   </object>
   <object>
-    <name>Studies.WebHome</name>
+    <name>Templates.WebHome</name>
     <number>1</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>70e88f2f-ffd6-45a9-97d0-cf2428fe026e</guid>
@@ -305,7 +305,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 {{/html}}{{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.header.bottom:Studies</extensionPointId>
+      <extensionPointId>org.phenotips.header.bottom:Templates</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.header.bottom.globalTools</name>
@@ -318,7 +318,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
     </property>
   </object>
   <object>
-    <name>Studies.WebHome</name>
+    <name>Templates.WebHome</name>
     <number>2</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>e2fb8f2c-f7b6-4195-898d-ed4b706e71d2</guid>
@@ -390,7 +390,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
       <content/>
     </property>
     <property>
-      <extensionPointId>org.phenotips.main.top:Studies</extensionPointId>
+      <extensionPointId>org.phenotips.main.top:Templates</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.main.top.empty</name>
@@ -403,7 +403,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
     </property>
   </object>
   <object>
-    <name>Studies.WebHome</name>
+    <name>Templates.WebHome</name>
     <number>3</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>5d5411cc-6862-4bf5-95e6-e5bda1e44c82</guid>
@@ -475,7 +475,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
       <content/>
     </property>
     <property>
-      <extensionPointId>org.phenotips.content.top:Studies</extensionPointId>
+      <extensionPointId>org.phenotips.content.top:Templates</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.content.top.empty</name>

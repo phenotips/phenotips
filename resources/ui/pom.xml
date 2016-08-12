@@ -198,7 +198,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>templates-ui</artifactId>
+      <artifactId>phenotips-templates-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
       <scope>runtime</scope>

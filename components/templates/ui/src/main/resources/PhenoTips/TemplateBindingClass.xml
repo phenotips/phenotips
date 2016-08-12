@@ -20,13 +20,13 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>StudyBindingClass</name>
+  <name>TemplateBindingClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
   <creationDate>1401822126000</creationDate>
-  <parent>PhenoTips.StudyClass</parent>
+  <parent>PhenoTips.TemplateClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <date>1442523313000</date>
@@ -42,18 +42,18 @@
   #set ($mode = 'edit')
 #end
 #if ("$!name" == '')
-  #set ($name = 'studyReference')
+  #set ($name = 'templateReference')
 #end
 #if ("$!prefix" == '')
-  #set ($prefix = 'PhenoTips.StudyBindingClass_')
+  #set ($prefix = 'PhenoTips.TemplateBindingClass_')
 #end
 #if ("$!value" == '')
   #set ($value = '')
 #end
 {{html clean="false" wiki="true"}}
 #set ($patientDoc = $xwiki.getDocument($request.patientSpace,$request.patientId))
-#set ($boundTemplate = $patientDoc.getObject('PhenoTips.StudyBindingClass'))
-#set ($boundTemplate = $boundTemplate.getProperty('studyReference').value)
+#set ($boundTemplate = $patientDoc.getObject('PhenoTips.TemplateBindingClass'))
+#set ($boundTemplate = $boundTemplate.getProperty('templateReference').value)
 #if ($mode == 'edit')
    #if ("$!request.input" == '')
       #set ($templates = $services.templates.getAll())
@@ -86,7 +86,7 @@
     None
   #else
     #set ($s = $xwiki.getDocument($value))
-    #set ($config = $s.getObject('PhenoTips.StudyClass'))
+    #set ($config = $s.getObject('PhenoTips.TemplateClass'))
     #set ($configTitle = '')
     #if ("$!{s.plainTitle}" != '')
       #set ($configTitle = "$s.plainTitle")
@@ -98,7 +98,7 @@
 #end
 {{/html}}{{/velocity}}</content>
   <class>
-    <name>PhenoTips.StudyBindingClass</name>
+    <name>PhenoTips.TemplateBindingClass</name>
     <customClass/>
     <customMapping/>
     <defaultViewSheet/>
@@ -106,15 +106,15 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
-    <studyReference>
+    <templateReference>
       <cache>0</cache>
       <classname/>
-      <customDisplay>{{include reference="PhenoTips.StudyBindingClass" /}}</customDisplay>
+      <customDisplay>{{include reference="PhenoTips.TemplateBindingClass" /}}</customDisplay>
       <disabled>0</disabled>
       <displayType>select</displayType>
       <idField/>
       <multiSelect>0</multiSelect>
-      <name>studyReference</name>
+      <name>templateReference</name>
       <number>1</number>
       <picker>0</picker>
       <prettyName>Configuration to use</prettyName>
@@ -129,6 +129,6 @@
       <validationRegExp/>
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-    </studyReference>
+    </templateReference>
   </class>
 </xwikidoc>

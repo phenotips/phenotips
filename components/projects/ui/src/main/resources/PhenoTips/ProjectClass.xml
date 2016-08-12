@@ -689,7 +689,7 @@ $xwiki.ssx.use('PhenoTips.ProjectClass', {'colorTheme' : "$xwiki.getSpacePrefere
   {{info}}$services.localization.render('phenotips.projectClass.noneDefined')
 
   #if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences')
-    [[$services.localization.render('phenotips.projectClass.manage')&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin','editor=globaladmin&amp;section=studies')}]]
+    [[$services.localization.render('phenotips.projectClass.manage')&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin','editor=globaladmin&amp;section=templates')}]]
   #end
   {{/info}}
 #else
@@ -871,7 +871,7 @@ $xwiki.ssx.use('PhenoTips.ProjectClass', {'colorTheme' : "$xwiki.getSpacePrefere
       <defaultValue>false</defaultValue>
     </property>
     <property>
-      <description>Whether to display the study management tools (edit, delete) for administrators (true|false; defaults to false)</description>
+      <description>Whether to display the template management tools (edit, delete) for administrators (true|false; defaults to false)</description>
     </property>
     <property>
       <mandatory>0</mandatory>
@@ -937,7 +937,7 @@ $xwiki.ssx.use('PhenoTips.ProjectClass', {'colorTheme' : "$xwiki.getSpacePrefere
       <defaultValue>name</defaultValue>
     </property>
     <property>
-      <description>How to sort the studies. Supported values: name. Default: name.</description>
+      <description>How to sort the templates. Supported values: name. Default: name.</description>
     </property>
     <property>
       <mandatory>0</mandatory>

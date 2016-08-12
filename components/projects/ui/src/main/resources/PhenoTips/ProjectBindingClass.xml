@@ -71,7 +71,7 @@ $xwiki.jsfx.use('uicomponents/phenotips/projectBinding.js', true)
          #set ($checkedString = 'checked')
       #else
       #end
-      &lt;input type="checkbox" name="${p.getId()}" $!checkedString /&gt;[[$p.getName()>>$p.getFullName()||rel='__blank' class='button secondary']]
+      &lt;input type="checkbox" name="${p.getId()}" $!checkedString /&gt;[[$p.getName()&gt;&gt;$p.getFullName()||rel='__blank' class='button secondary']]
       &lt;/div&gt;
    #end
 #else

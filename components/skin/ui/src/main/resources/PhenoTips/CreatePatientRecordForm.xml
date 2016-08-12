@@ -53,7 +53,7 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
       #if ($xwiki.exists('PhenoTips.CreatePatientRecordForm'))
          $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
          $xwiki.ssx.use('PhenoTips.CreatePatientRecordForm')##
-         &lt;input type="hidden" id="numberOfTemplates" value="$templatesNum()" /&gt;
+         &lt;input type="hidden" id="numberOfTemplates" value="$templatesNum" /&gt;
       #end
       ##
       ## Extensions displayed before the content
@@ -276,7 +276,7 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
        formDataWrapper.insert(__this._createSection(projectsSection, 'PhenoTips.ProjectBindingSheet'));
 
        var templatesSection = $(templatesSectionId);
-       formDataWrapper.insert(__this._createSection(templatesSection, 'PhenoTips.StudyBindingSheet'));
+       formDataWrapper.insert(__this._createSection(templatesSection, 'PhenoTips.TemplateBindingSheet'));
     },
 
     _updatePopupByMode : function() {
@@ -618,7 +618,7 @@ $xwiki.ssx.use('PhenoTips.CreatePatientRecordForm')
 (% class="tp-assignment-config" %)
 #set ($projectsNum = $services.projects.getProjectsCurrentUserCanContributeTo().size())
 #set ($templatesNum = $services.templates.getNumberOfTemplates())
-#if ($xcontext.action != 'export' &amp;&amp; $templatesNum() + $projectsNum() &gt; 0)
+#if ($xcontext.action != 'export' &amp;&amp; $templatesNum + $projectsNum &gt; 0)
   #set ($faction = $doc.getURL('save', "form_token=${services.csrf.token}&amp;amp;xredirect=$escapetool.url($doc.getURL($xcontext.action))"))
   #set ($buttonTitle = $services.localization.render('phenotips.templateBindingClass.changeTemplateButton.title'))
   (% class='buttonwrapper' %)##
@@ -628,7 +628,7 @@ $xwiki.ssx.use('PhenoTips.CreatePatientRecordForm')
   (%%)
   (%%)
 #end
-#if ($xcontext.action != 'export' &amp;&amp; $projectsNum() &gt; 0)
+#if ($xcontext.action != 'export' &amp;&amp; $projectsNum &gt; 0)
   #set ($projects = $services.projects.getProjectsForPatient($doc.getName()))
   #if ($projects == '' || $projects.size() == 0)
     (% class="hint" %)$services.localization.render('phenotips.projectBindingSheet.noneProjects')(%%)

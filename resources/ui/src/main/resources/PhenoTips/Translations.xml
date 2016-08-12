@@ -38,7 +38,7 @@
   <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
   <content>admin.workgroups=Work groups
-admin.studies=Templates
+admin.templates=Templates
 
 saveandview=Save and view summary
 saveandcontinue=Quick save

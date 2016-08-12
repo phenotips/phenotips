@@ -46,7 +46,7 @@ public interface RecordConfiguration
      */
     @Deprecated
     EntityReference CUSTOM_PREFERENCES_CLASS =
-        new EntityReference("StudyClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+        new EntityReference("TemplateClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /**
      * The list of sections enabled for this record type.

@@ -29,9 +29,9 @@ import org.xwiki.model.reference.EntityReference;
 public interface Template extends PrimaryEntity
 {
     /** The XClass used for storing project data. */
-    EntityReference CLASS_REFERENCE = new EntityReference("StudyClass", EntityType.DOCUMENT,
+    EntityReference CLASS_REFERENCE = new EntityReference("TemplateClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
     /** The default space where patient data is stored. */
-    EntityReference DEFAULT_DATA_SPACE = new EntityReference("Studies", EntityType.SPACE);
+    EntityReference DEFAULT_DATA_SPACE = new EntityReference("Templates", EntityType.SPACE);
 }
