@@ -45,7 +45,7 @@ var PhenoTips = (function (PhenoTips) {
       });
 
       var templatesSelect = $('templatesSelect');
-      new Ajax.Request(new XWiki.Document('StudyBindingClass', 'PhenoTips').getURL('get'), {
+      new Ajax.Request(new XWiki.Document('TemplateBindingClass', 'PhenoTips').getURL('get'), {
          parameters : {'input' : selected},
          onCreate : function() {
             templatesSelect.addClassName("loading");
@@ -63,9 +63,9 @@ var PhenoTips = (function (PhenoTips) {
          onFailure : function(response) {
             var failureReason = response.responseText || response.statusText;
             if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-               failureReason = "$services.localization.render('phenotips.studyBindingClass.failure.noResponse')";
+               failureReason = "$services.localization.render('phenotips.templateBindingClass.failure.noResponse')";
             }
-            _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.studyBindingClass.failureMessage')" + ' ' + failureReason));
+            _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.templateBindingClass.failureMessage')" + ' ' + failureReason));
           },
           on0 : function (response) {
              response.request.options.onFailure(response);

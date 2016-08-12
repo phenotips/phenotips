@@ -22,10 +22,10 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>templates</artifactId>
+    <artifactId>phenotips-templates</artifactId>
     <version>1.3-SNAPSHOT</version>
   </parent>
-  <artifactId>templates-api</artifactId>
+  <artifactId>phenotips-templates-api</artifactId>
   <name>PhenoTips - Templates - Java APIs</name>
   <dependencies>
     <dependency>

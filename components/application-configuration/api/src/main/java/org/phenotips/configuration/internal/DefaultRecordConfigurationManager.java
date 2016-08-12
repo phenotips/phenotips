@@ -54,7 +54,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 public class DefaultRecordConfigurationManager implements RecordConfigurationManager
 {
     /** Reference to the xclass which allows to bind a specific form customization to a patient record. */
-    public static final EntityReference STUDY_BINDING_CLASS_REFERENCE = new EntityReference("StudyBindingClass",
+    public static final EntityReference TEMPLATE_BINDING_CLASS_REFERENCE = new EntityReference("TemplateBindingClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /** Logging helper. */
@@ -99,7 +99,7 @@ public class DefaultRecordConfigurationManager implements RecordConfigurationMan
     }
 
     /**
-     * If the current document is a patient record, and it has a valid specific study binding specified, then return
+     * If the current document is a patient record, and it has a valid specific template binding specified, then return
      * that configuration.
      *
      * @return a form configuration, if one is bound to the current document, or {@code null} otherwise
@@ -112,7 +112,7 @@ public class DefaultRecordConfigurationManager implements RecordConfigurationMan
         }
         String boundConfig =
             (String) this.dab.getProperty(this.dab.getCurrentDocumentReference(),
-                this.resolver.resolve(STUDY_BINDING_CLASS_REFERENCE), "studyReference");
+                this.resolver.resolve(TEMPLATE_BINDING_CLASS_REFERENCE), "templateReference");
         if (StringUtils.isNotBlank(boundConfig)) {
             try {
                 XWikiContext context = this.xcontextProvider.get();

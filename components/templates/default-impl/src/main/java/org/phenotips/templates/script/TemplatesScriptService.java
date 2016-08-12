@@ -38,7 +38,7 @@ import javax.inject.Singleton;
 public class TemplatesScriptService implements ScriptService
 {
     @Inject
-    @Named("Study")
+    @Named("Template")
     private TemplateRepository templateRepository;
 
     /**
@@ -77,4 +77,3 @@ public class TemplatesScriptService implements ScriptService
         return this.templateRepository.getAll();
     }
 }
-

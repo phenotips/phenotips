@@ -48,7 +48,7 @@
       {{html clean="false"}}&lt;p class='xHint'&gt;$services.localization.render('phenotips.projectBindingClass.patientProjects')&lt;/p&gt;{{/html}}
       (% class='buttonwrapper' %)
       #foreach ($project in $patientProjects)
-        [[{{icon name='copy' /}} $project.getName()>>$project.getFullName()||rel='__blank' class='button secondary']]
+        [[{{icon name='copy' /}} $project.getName()&gt;&gt;$project.getFullName()||rel='__blank' class='button secondary']]
       #end
       (%%)
     #else

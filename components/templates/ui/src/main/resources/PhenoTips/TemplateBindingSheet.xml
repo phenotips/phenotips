@@ -20,13 +20,13 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>StudyBindingSheet</name>
+  <name>TemplateBindingSheet</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
   <creationDate>1401822203000</creationDate>
-  <parent>PhenoTips.StudyBindingClass</parent>
+  <parent>PhenoTips.TemplateBindingClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <date>1401822203000</date>
@@ -47,7 +47,7 @@
     #if ("$!template" != '')
       {{html clean="false"}}&lt;p class='xHint'&gt;$services.localization.render('phenotips.templateBindingClass.patientCurrentTemplate')&lt;/p&gt;{{/html}}
       (% class='buttonwrapper' %)
-      [[{{icon name='copy' /}} ${template.getName()}>>$template.getId()||rel='__blank' class='button secondary']]
+      [[{{icon name='copy' /}} ${template.getName()}&gt;&gt;$template.getDocument()||rel='__blank' class='button secondary']]
       (%%)
     #else
       (% class="xHint" %)$services.localization.render('phenotips.templateBindingSheet.noneTemplates')
@@ -60,10 +60,10 @@
 #end
 #if ($templates.hasNext())
   (% class="xHint" %)$services.localization.render('phenotips.templateBindingSheet.selectTemplate')(%%)
-  #if ($doc.getObject('PhenoTips.StudyBindingClass'))
-    : $doc.getObject('PhenoTips.StudyBindingClass').studyReference
+  #if ($doc.getObject('PhenoTips.TemplateBindingClass'))
+    : $doc.getObject('PhenoTips.TemplateBindingClass').templateReference
   #else
-    : {{include reference="PhenoTips.StudyBindingClass" /}}
+    : {{include reference="PhenoTips.TemplateBindingClass" /}}
   #end
 #else
   (% class="xHint" %)$services.localization.render('phenotips.templateBindingSheet.noTemplatesAvailable')(%%)
