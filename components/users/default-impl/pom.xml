@@ -101,7 +101,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>templates-default-impl</artifactId>
+      <artifactId>phenotips-templates-default-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!-- Test dependencies -->

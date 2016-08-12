@@ -19,14 +19,14 @@
 -->
 
 <xwikidoc version="1.1">
-  <web>Studies</web>
+  <web>Templates</web>
   <name>WebPreferences</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
   <creationDate>1401822187000</creationDate>
-  <parent>Studies.WebHome</parent>
+  <parent>Templates.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <date>1401822187000</date>
@@ -39,7 +39,7 @@
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>Studies.WebPreferences</name>
+    <name>Templates.WebPreferences</name>
     <number>0</number>
     <className>XWiki.XWikiGlobalRights</className>
     <guid>bc5b9361-cf58-41d1-a9bd-3937547ab7f8</guid>

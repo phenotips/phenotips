@@ -20,7 +20,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>StudySheet</name>
+  <name>TemplateSheet</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -38,11 +38,11 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
-$xwiki.ssx.use('PhenoTips.StudySheet')##
-$xwiki.jsx.use('PhenoTips.StudySheet')##
-#set ($groups = $services.query.xwql('from doc.object(PhenoTips.PhenoTipsGroupClass) as g where :study member of g.studies').bindValue('study', $services.model.serialize($doc.documentReference, 'local')))
+$xwiki.ssx.use('PhenoTips.TemplateSheet')##
+$xwiki.jsx.use('PhenoTips.TemplateSheet')##
+#set ($groups = $services.query.xwql('from doc.object(PhenoTips.PhenoTipsGroupClass) as g where :template member of g.templates').bindValue('template', $services.model.serialize($doc.documentReference, 'local')))
 #set ($groupsCount = $groups.count())
-#set ($casesCount = $services.query.xwql('from doc.object(PhenoTips.PatientClass) as p, doc.object(PhenoTips.StudyBindingClass) as o where o.studyReference = :study').bindValue('study', $services.model.serialize($doc.documentReference, 'default')).count())
+#set ($casesCount = $services.query.xwql('from doc.object(PhenoTips.PatientClass) as p, doc.object(PhenoTips.TemplateBindingClass) as o where o.templateReference = :template').bindValue('template', $services.model.serialize($doc.documentReference, 'default')).count())
 
 #if ($xcontext.action == 'edit')
 (% class="xform" %)(((
@@ -61,8 +61,8 @@ $!doc.content
 #if ($xcontext.action == 'view')
 #set ($filterVal = $services.rendering.escape($doc.fullName, $doc.syntax))
 #set ($sections = [
-  {'id' : 'members', 'name' : "$services.localization.render('phenotips.templateSheet.groupsSection', [$groupsCount])", 'icon' : 'group', 'content' : "((({{phenotips-groups filterby='studies' filterval='$doc.fullName' /}})))"},
-  {'id' : 'cases',   'name' : "$services.localization.render('phenotips.templateSheet.casesSection', [$casesCount])",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.StudyCases"/}}'},
+  {'id' : 'members', 'name' : "$services.localization.render('phenotips.templateSheet.groupsSection', [$groupsCount])", 'icon' : 'group', 'content' : "((({{phenotips-groups filterby='templates' filterval='$doc.fullName' /}})))"},
+  {'id' : 'cases',   'name' : "$services.localization.render('phenotips.templateSheet.casesSection', [$casesCount])",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.TemplateCases"/}}'},
   {'id' : 'form' ,   'name' : "$services.localization.render('phenotips.templateSheet.formConfigSection')", 'icon' : 'cog', 'content' : "{{include reference='PhenoTips.FormDesigner' /}}"}
 ])
 #set ($menu = [])
@@ -94,7 +94,7 @@ $!doc.content
 #end
 {{/velocity}}</content>
   <object>
-    <name>PhenoTips.StudySheet</name>
+    <name>PhenoTips.TemplateSheet</name>
     <number>0</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>8d0c4135-9fab-4106-9cc8-97b3e9ff99a0</guid>
@@ -193,7 +193,7 @@ $!doc.content
 });</code>
     </property>
     <property>
-      <name>Save study before opening configuration file</name>
+      <name>Save template before opening configuration file</name>
     </property>
     <property>
       <parse>0</parse>
@@ -203,7 +203,7 @@ $!doc.content
     </property>
   </object>
   <object>
-    <name>PhenoTips.StudySheet</name>
+    <name>PhenoTips.TemplateSheet</name>
     <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
     <guid>615ece93-e9ae-4b28-bf12-bf6f9f6a4139</guid>

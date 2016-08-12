@@ -39,7 +39,7 @@
   <hidden>true</hidden>
   <content>admin.ontology=Ontology index
 admin.workgroups=Work groups
-admin.studies=Templates
+admin.templates=Templates
 
 saveandview=Save and view summary
 saveandcontinue=Quick save

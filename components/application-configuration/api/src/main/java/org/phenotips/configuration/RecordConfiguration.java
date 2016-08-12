@@ -41,7 +41,7 @@ public interface RecordConfiguration
 
     /** The XClass used for storing group- and user-specific configurations. */
     EntityReference CUSTOM_PREFERENCES_CLASS =
-        new EntityReference("StudyClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+        new EntityReference("TemplateClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /**
      * The list of sections enabled in the patient record.

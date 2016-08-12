@@ -20,13 +20,13 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>StudyTemplate</name>
+  <name>TemplateTemplate</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
   <creationDate>1401822207000</creationDate>
-  <parent>Studies.WebHome</parent>
+  <parent>Templates.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <date>1401822207000</date>
@@ -39,12 +39,12 @@
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>PhenoTips.StudyTemplate</name>
+    <name>PhenoTips.TemplateTemplate</name>
     <number>0</number>
-    <className>PhenoTips.StudyClass</className>
+    <className>PhenoTips.TemplateClass</className>
     <guid>730d2481-a65b-414b-a83c-6109de6d1156</guid>
     <class>
-      <name>PhenoTips.StudyClass</name>
+      <name>PhenoTips.TemplateClass</name>
       <customClass/>
       <customMapping/>
       <defaultViewSheet/>

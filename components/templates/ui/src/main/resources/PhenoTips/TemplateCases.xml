@@ -20,13 +20,13 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>StudyCases</name>
+  <name>TemplateCases</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
   <creationDate>1401822210000</creationDate>
-  <parent>PhenoTips.StudySheet</parent>
+  <parent>PhenoTips.TemplateSheet</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <date>1401822210000</date>
@@ -73,8 +73,8 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 {{velocity}}#__filters_display('xform'){{/velocity}})))", "xwiki/2.1"))
 #set ($discard = $columns.add('_actions'))
 ##
-#set ($filterFrom = ", BaseObject studyBindingObj, StringProperty study")
-#set ($filterWhere = "and studyBindingObj.name = doc.fullName and studyBindingObj.className = 'PhenoTips.StudyBindingClass' and study.id.id = studyBindingObj.id and study.value = '${escapetool.sql($doc.documentReference)}'")
+#set ($filterFrom = ", BaseObject templateBindingObj, StringProperty template")
+#set ($filterWhere = "and templateBindingObj.name = doc.fullName and templateBindingObj.className = 'PhenoTips.TemplateBindingClass' and template.id.id = templateBindingObj.id and template.value = '${escapetool.sql($doc.documentReference)}'")
 #if ($isGuest)
   #set ($filterWhere = "${filterWhere} and doc.creator = 'XWiki.XWikiGuest' and not exists (from BaseObject accessObj where accessObj.name = doc.fullName and accessObj.className = 'PhenoTips.OwnerClass')")
 #elseif (!$hasAdmin)

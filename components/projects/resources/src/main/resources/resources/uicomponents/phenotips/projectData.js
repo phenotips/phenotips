@@ -107,7 +107,7 @@ var PhenoTips = (function (PhenoTips) {
     _initializeSuggestTemplates: function() {
       var suggestTemplates = $('suggestTemplates');
       suggestTemplates._suggest = new PhenoTips.widgets.Suggest(suggestTemplates, {
-        script: "$xwiki.getURL('Studies.StudiesSearch', 'get', 'outputSyntax=plain')" + "&",
+        script: "$xwiki.getURL('Templates.TemplatesSearch', 'get', 'outputSyntax=plain')" + "&",
         varname: "input",
         noresults: "$services.localization.render('phenotips.projectSheet.noTemplateResults')",
         resultsParameter: "matchedTemplates",
