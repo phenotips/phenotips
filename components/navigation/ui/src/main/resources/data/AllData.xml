@@ -99,8 +99,11 @@ $xwiki.ssx.use('PhenoTips.PatientConsent')##
 #end
 #foreach ($column in $columns)
   #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0) &amp;&amp; ($column != 'doc.creator') &amp;&amp; ($column != 'doc.author'))
-  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'view', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true}))
+  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'field', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true}))
 #end
+#set ($discard = $columnsProperties.get('doc.name').put('link', 'view'))
+#set ($discard = $columnsProperties.identifier.put('link', 'view'))
+#set ($discard = $columnsProperties.external_id.put('link', 'view'))
 ##  toggle-filters
 #set ($topFilters = $doc.getRenderedContent("(% class='xform' %)((( {{html clean='false'}}&lt;span class='buttonwrapper'&gt;&lt;a class='button toggle-filters' href='#'&gt;$services.localization.render('phenotips.allData.filterButton')&lt;/a&gt;&lt;/span&gt;{{/html}}
 {{velocity}}#__filters_display('xform'){{/velocity}})))", "xwiki/2.1"))
