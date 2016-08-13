@@ -53,30 +53,71 @@
   #end
 #end
 
-#macro(__xclass__displayFieldList $xclassName $targetFieldName $targetFieldType $valuesList)
-  #if("$!{hideClassFields}" != 'true')
-  #set($xclass = $xwiki.getDocument($xclassName).getxWikiClass())
-  #if ($xclass.properties)
-    #if ($targetFieldType == 'select')
-      &lt;select name="${targetFieldName}" id="${targetFieldName}_${field.name}"&gt;
-      #foreach ($field in $xclass.properties)
-        &lt;option  value="${field.name}" #if($value == ${field.name}) selected="selected" #end&gt;${field.translatedPrettyName}&lt;/option&gt;
+#macro (__addElementFieldsToOptions $eClass $eFields $acceptEmptyFieldSet $optionList)
+  #set ($xClass = $xwiki.getDocument($eClass).getxWikiClass())
+  #if ($eFields.size() &gt; 0)
+    #foreach ($eField in $eFields)
+      #set ($f = $xClass.get($eField))
+      #if ("$!{f}" != '')
+        #set ($discard = $optionList.add({'field' : $f, 'pt_class' : $eClass}))
       #end
-      &lt;/select&gt;
-    #else
-      &lt;ul  class="custom-display-list col-2"&gt;
-      #foreach ($field in $xclass.properties)
-        &lt;li&gt;
-          &lt;label for="${targetFieldName}_${field.name}"&gt;
-          &lt;input type="$targetFieldType" name="${targetFieldName}" id="${targetFieldName}_${field.name}" value="${field.name}" #if($targetFieldType == 'radio' &amp;&amp; $value == ${field.name} || $value.contains(${field.name})) checked="checked" #end /&gt;
-          ${field.translatedPrettyName}
-        &lt;/li&gt;
-      #end
-      &lt;/ul&gt;
     #end
-    &lt;input type="hidden" name="${targetFieldName}" value="" /&gt;
+  #elseif ($acceptEmptyFieldSet)
+    #foreach ($f in $xClass.properties)
+      #set ($discard = $optionList.add({'field' : $f, 'pt_class' : $eClass}))
+    #end
   #end
+#end
+
+#macro (__displayFieldListForActiveConfig $recordConfiguration $targetFieldName $valueList)
+  #set($ignored = {
+    'fields' : ['negative_phenotype', 'negative_prenatal_phenotype'],
+    'types'  : ['PhenoTips.PedigreeClass']
+  })
+  #set ($optionList = {})
+  #foreach ($section in $recordConfiguration.enabledSections)
+    #set ($sectionOptions = [])
+    #foreach ($element in $section.enabledElements)
+      #set ($eClasses = $element.extension.parameters.pt_class.split(','))
+      #set ($eClassUsages = $element.extension.parameters.pt_class_usage.split(','))
+      #if ($eClasses)
+        #set ($eFields = $element.extension.parameters.fields.split(','))
+        #set ($eClassUsage = 'singleton')
+        #foreach ($eClass in $eClasses)
+          #if ($eClassUsages &amp;&amp; $eClassUsages.size() &gt; $foreach.index)
+            #set ($eClassUsage = $eClassUsages.get($foreach.index))
+          #end
+          #if (!$ignored.types.contains($eClass) &amp;&amp; $eClassUsage == 'singleton')
+            #__addElementFieldsToOptions($eClass $eFields true $sectionOptions)
+          #end## !$ignored.types.contains($eClass)
+        #end## #foreach ($eClass in $eClasses)
+      #else## $eClasses
+        #set ($eFields = $element.extension.parameters.fields.split(','))
+        #if ($eFields &amp;&amp; $eFields.size() &gt; 0)
+          #__addElementFieldsToOptions('PhenoTips.PatientClass' $eFields false $sectionOptions)
+        #end## $eFields
+      #end## eClasses
+    #end## foreach element
+    #if ($sectionOptions.size() &gt; 0)
+      #set ($discard = $optionList.put($section.name, $sectionOptions))
+    #end
+  #end## foreach section
+  ##
+  #foreach ($section in $optionList.keySet())
+    &lt;strong&gt;$section&lt;/strong&gt;
+    &lt;ul class="custom-display-list col-2"&gt;
+      #foreach ($option in $optionList.get($section))
+      &lt;li&gt;
+        #set ($optionValue = "${option.field.name}/${option.pt_class}")
+        #set ($selected = $value.contains($optionValue))
+        &lt;label for="${targetFieldName}_${option.field.name}"&gt;
+          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${option.field.name}" value="$optionValue" #if($selected) checked="checked" #end /&gt;
+          ${option.field.translatedPrettyName}&lt;/label&gt;
+      &lt;/li&gt;
+      #end
+    &lt;/ul&gt;
   #end
+  &lt;input type="hidden" name="${targetFieldName}" value="" /&gt;
 #end
 
 #set ($displayType = $object.xWikiClass.get($name).getProperty('displayType').value)
@@ -95,6 +136,7 @@
 //Select the fields that will be displayed in this section://
 
 #end
-{{html wiki=false clean=false}}#__xclass__displayFieldList('PhenoTips.PatientClass' "$prefix$name" $displayType $value){{/html}}
+
+{{html wiki=false clean=false}}#__displayFieldListForActiveConfig($services.recordConfiguration.getActiveConfiguration() "$prefix$name" $value){{/html}}
 {{/velocity}}</content>
 </xwikidoc>

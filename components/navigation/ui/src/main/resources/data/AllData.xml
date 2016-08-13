@@ -82,10 +82,21 @@ $xwiki.ssx.use('PhenoTips.PatientConsent')##
   #set ($configuredColumns = 'doc.name')
 #end
 #set ($columns = [])
-#set ($discard = $columns.addAll($configuredColumns))
+#set ($columnFilters = {})
+#foreach($c in $configuredColumns)
+  #set($pieces = $c.split('/', 2))
+  #set ($discard = $columns.add($pieces[0]))
+  #if ($pieces.size() &gt; 1 &amp;&amp; $pieces[1] != $patientClassName)
+    #set ($discard = $columnFilters.put("${pieces[0]}/class", $pieces[1]))
+  #end
+#end
 #set ($columnsProperties = {
   '_actions' : {'actions': ['edit', 'delete']}
 })
+#set($columnFiltersContent = '')
+#foreach ($f in $columnFilters.keySet())
+  #set($columnFiltersContent = "${columnFiltersContent}&lt;input type='hidden' name='$escapetool.xml($f)' value='$escapetool.xml($columnFilters.get($f))'/&gt;")
+#end
 #foreach ($column in $columns)
   #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0) &amp;&amp; ($column != 'doc.creator') &amp;&amp; ($column != 'doc.author'))
   #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'view', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true}))
@@ -102,7 +113,7 @@ $xwiki.ssx.use('PhenoTips.PatientConsent')##
   'maxPages'          : 10,
   'selectedColumn'    : $config.getProperty('livetableSortColumn').value,
   'defaultOrder'      : 'asc',
-  'topFilters'        : $topFilters,
+  'topFilters'        : "${topFilters}${columnFiltersContent}",
   'resultPage'        : 'PhenoTips.LiveTableResults'
 })
 #if ($isGuest)

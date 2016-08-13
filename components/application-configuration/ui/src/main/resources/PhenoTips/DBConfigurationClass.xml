@@ -88,7 +88,7 @@ $!value
     </enableImperialUnitSystem>
     <livetableColumns>
       <cache>0</cache>
-      <customDisplay>//{{translation key="phenotips.DBConfigurationClass.metaInfo" /}}//
+      <customDisplay>**{{translation key="phenotips.DBConfigurationClass.metaInfo" /}}**
 
 {{velocity output=false}}
 #set ($docFields = ['doc.name', 'doc.creator', 'doc.author', 'doc.creationDate', 'doc.date'])
@@ -109,8 +109,6 @@ $!value
 #end
 &lt;/ul&gt;
 {{/html}}{{/velocity}}
-
-//{{translation key="phenotips.DBConfigurationClass.patientInfo" /}}//
 
 {{include reference="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
       <disabled>0</disabled>
@@ -150,7 +148,11 @@ $!value
 {{html clean="false"}}
 &lt;select name="${prefix}${name}" id="${prefix}${name}"&gt;
 #foreach($column in $object.getProperty('livetableColumns').value)
-  &lt;option value="$escapetool.xml($column)"#if ($column == $value) selected="selected"#{end}&gt;$services.localization.render("patient.livetable.${column}")&lt;/option&gt;
+  #set ($fieldClass = $stringtool.substringAfter($column, '/'))
+  #if ($fieldClass == '')
+    #set ($fieldClass = 'PhenoTips.PatientClass')
+  #end
+  &lt;option value="$escapetool.xml($column)"#if ($column == $value) selected="selected"#{end}&gt;#if ($services.localization.get("patient.livetable.${stringtool.substringBefore($column, '/')}"))$services.localization.render("patient.livetable.${stringtool.substringBefore($column, '/')}")#else$xwiki.getClass($fieldClass).get($stringtool.substringBefore($column, '/')).translatedPrettyName#end&lt;/option&gt;
 #end
 &lt;/select&gt;
 {{/html}}
