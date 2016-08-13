@@ -87,7 +87,6 @@
     #if("$!orderDirection" != '' &amp;&amp; "$!orderDirection" != 'asc')
       #set($orderDirection = 'desc')
     #end
-    ## FIXME: Add support for ordering on properties from another XClass
     #set($tableAlias = $order)
     ## Only safe version should be used in SQL queries
     #set($safe_tableAlias = "$!{tableAlias.replaceAll('[^a-zA-Z0-9_.]', '')}")
@@ -100,12 +99,13 @@
         #set ($orderSql = " order by ${safe_tableAlias}.value ${orderDirection}")
       #end
     #else
-      #set($multiselect = $class.get($order).getProperty('multiSelect').getValue())
+      #livetable_selectTargetObject($order true)
+      #set($multiselect = $propClass.get($order).getProperty('multiSelect').getValue())
       #if("$multiselect" != '1')
         #livetable_getTableName($order)
         #set($fromSql = "${fromSql}, ${tableName} ${safe_tableAlias}")
         ## FIXME: Check if this is indeed a property of the class
-        #set($whereSql = "${whereSql} and obj.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.name = ?")
+        #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.name = ?")
         #set($discard = $whereParams.add("${order}"))
         #set($orderSql = " order by ${safe_tableAlias}.value ${orderDirection}")
       #end
@@ -364,6 +364,24 @@
   #end
 #end
 
+#macro(livetable_selectTargetObject $colname $forceFilter)
+  #set($propClassName = "$!request.get(${colname.concat('/class')})")
+  #set ($targetedObject = 'obj')
+  #if($propClassName != '')
+    #set ($propClass = $xwiki.getDocument($propClassName).getxWikiClass())
+    #if ($propClass &amp;&amp; $propClass.getPropertyNames().contains($colname) &amp;&amp; !$extraClassesAddedToQuery.containsKey($propClassName) &amp;&amp; $forceFilter)
+      #set ($targetedObject = "extraobj${extraClassesAddedToQuery.size()}")
+      #set ($discard = $extraClassesAddedToQuery.put($propClassName, $targetedObject))
+      #set ($fromSql = "${fromSql}, BaseObject ${targetedObject}")
+      #set ($whereSql = "${whereSql} and ${targetedObject}.className = ? and ${targetedObject}.name = doc.fullName")
+      #set ($discard = $whereParams.add($propClassName))
+    #end
+    #set ($targetedObject = $extraClassesAddedToQuery.get($propClassName))
+  #else
+    #set($propClass = $class)
+  #end
+#end
+
 #**
  * Macro to extend the query to select the properties for the livetable columns.
  * NOTE $colname is filtered (all characters but [a-zA-Z0-9_.] are removed) before use
@@ -394,21 +412,7 @@
   #if ("$!request.getParameter($colname.concat('/dependsOn'))" != '' &amp;&amp; "$!stringtool.join($request.getParameterValues($!request.getParameter($colname.concat('/dependsOn'))), '')" == '')
     #set($propertyHasFilterValue = false)
   #end
-  #set($propClassName = "$!request.get(${colname.concat('/class')})")
-  #set ($targetedObject = 'obj')
-  #if($propClassName != '')
-    #set ($propClass = $xwiki.getDocument($propClassName).getxWikiClass())
-    #if ($propClass &amp;&amp; $propClass.getPropertyNames().contains($colname) &amp;&amp; !$extraClassesAddedToQuery.containsKey($propClassName) &amp;&amp; $propertyHasFilterValue)
-      #set ($targetedObject = "extraobj${extraClassesAddedToQuery.size()}")
-      #set ($discard = $extraClassesAddedToQuery.put($propClassName, $targetedObject))
-      #set ($fromSql = "${fromSql}, BaseObject ${targetedObject}")
-      #set ($whereSql = "${whereSql} and ${targetedObject}.className = ? and ${targetedObject}.name = doc.fullName")
-      #set ($discard = $whereParams.add($propClassName))
-    #end
-    #set ($targetedObject = $extraClassesAddedToQuery.get($propClassName))
-  #else
-    #set($propClass = $class)
-  #end
+  #livetable_selectTargetObject($colname $propertyHasFilterValue)
   #if($propClass &amp;&amp; $propClass.getPropertyNames().contains($colname))
     #set($propType = "$!{propClass.get($colname).type}")
   #elseif (!$colname.startsWith('doc.'))
