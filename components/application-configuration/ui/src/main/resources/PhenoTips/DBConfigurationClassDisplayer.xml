@@ -38,21 +38,6 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity output=false}}
-#macro(__xclass__displayCustomClassOption)
-  #if ($customValues &amp;&amp; $customValues.size() &gt; 0)
-  &lt;ul class="custom-display-list"&gt;
-  #foreach($customVal in $customValues.keySet())
-  &lt;li&gt;
-    &lt;label for="${prefix}${name}_${customVal}"&gt;
-    &lt;input type="checkbox" name="${prefix}${name}" id="${prefix}${name}_${customVal}" value="$customVal"#if ($value.contains($customVal)) checked="checked"#end/&gt;
-    Display ${customValues.get($customVal)}
-    &lt;/label&gt;
-  &lt;/li&gt;
-  #end
-  &lt;/ul&gt;
-  #end
-#end
-
 #macro (__addElementFieldsToOptions $eClass $eFields $acceptEmptyFieldSet $optionList)
   #set ($xClass = $xwiki.getDocument($eClass).getxWikiClass())
   #if ($eFields.size() &gt; 0)
@@ -119,24 +104,9 @@
   #end
   &lt;input type="hidden" name="${targetFieldName}" value="" /&gt;
 #end
-
-#set ($displayType = $object.xWikiClass.get($name).getProperty('displayType').value)
-#set ($multiSelect = $object.xWikiClass.get($name).getProperty('multiSelect').value)
-#if ("$!displayType" == '')
-  #set ($displayType = 'select')
-#elseif ($displayType != 'radio' &amp;&amp; $displayType != 'select' || $multiSelect == '1')
-  #set ($displayType = 'checkbox')
-#end
 {{/velocity}}
 
 {{velocity}}
-{{html wiki=false clean=false}}#__xclass__displayCustomClassOption(){{/html}}
-
-#if ($name.indexOf('section__') == 0 &amp;&amp; "$!{hideClassFields}" != 'true')
-//Select the fields that will be displayed in this section://
-
-#end
-
-{{html wiki=false clean=false}}#__displayFieldListForActiveConfig($services.recordConfiguration.getActiveConfiguration() "$prefix$name" $value){{/html}}
+{{html wiki="false" clean="false"}}#__displayFieldListForActiveConfig($services.recordConfiguration.getActiveConfiguration() "$prefix$name" $value){{/html}}
 {{/velocity}}</content>
 </xwikidoc>
