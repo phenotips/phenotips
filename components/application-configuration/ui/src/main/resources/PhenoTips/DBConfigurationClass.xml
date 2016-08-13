@@ -63,7 +63,7 @@ $!value
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>dateOfBirthFormat</name>
-      <number>5</number>
+      <number>2</number>
       <picker>0</picker>
       <prettyName>Date of birth format</prettyName>
       <size>30</size>
@@ -79,7 +79,7 @@ $!value
       <displayFormType>checkbox</displayFormType>
       <displayType/>
       <name>enableImperialUnitSystem</name>
-      <number>6</number>
+      <number>3</number>
       <prettyName>Enable imperial unit system for entering measurements</prettyName>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -117,7 +117,7 @@ $!value
       <displayType>input</displayType>
       <multiSelect>1</multiSelect>
       <name>livetableColumns</name>
-      <number>8</number>
+      <number>5</number>
       <picker>0</picker>
       <prettyName>Livetable columns</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -135,7 +135,7 @@ $!value
       <customDisplay/>
       <disabled>0</disabled>
       <name>livetableRows</name>
-      <number>10</number>
+      <number>8</number>
       <numberType>integer</numberType>
       <prettyName>Number of rows to display by default</prettyName>
       <size>30</size>
@@ -160,7 +160,7 @@ $!value
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>livetableSortColumn</name>
-      <number>9</number>
+      <number>7</number>
       <picker>0</picker>
       <prettyName>Column to sort by default</prettyName>
       <size>30</size>
@@ -180,7 +180,7 @@ $!value
       <displayType>radio</displayType>
       <multiSelect>0</multiSelect>
       <name>measurementUnitSystem</name>
-      <number>7</number>
+      <number>4</number>
       <picker>0</picker>
       <prettyName>Default unit system for entering measurements, when "Imperial unit system" is enabled</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -203,7 +203,7 @@ $!value
       <idField>doc.fullName</idField>
       <multiSelect>0</multiSelect>
       <name>phenotypeMapping</name>
-      <number>4</number>
+      <number>1</number>
       <picker>0</picker>
       <prettyName>Phenotype configuration document</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -243,7 +243,7 @@ $!value
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -259,6 +259,22 @@ $!value
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
       <name>
         <disabled>0</disabled>
         <name>name</name>
@@ -288,10 +304,10 @@ $!value
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
