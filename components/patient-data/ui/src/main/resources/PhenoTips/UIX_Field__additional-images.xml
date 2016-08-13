@@ -133,7 +133,10 @@ $xwiki.jsx.use('PhenoTips.ImageDisplayer')##
 enabled=true
 required=
 order=3
-fields=</parameters>
+fields=
+pt_class=PhenoTips.ExternalImageClass
+pt_class_usage=multiple
+</parameters>
     </property>
     <property>
       <scope>wiki</scope>

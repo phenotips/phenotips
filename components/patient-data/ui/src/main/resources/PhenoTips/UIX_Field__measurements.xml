@@ -166,7 +166,9 @@ enabled=true
 required=
 order=2
 fields=
-pt_class=PhenoTips.MeasurementsClass</parameters>
+pt_class=PhenoTips.MeasurementsClass
+pt_class_usage=multiple
+</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -138,7 +138,9 @@ enabled=true
 required=
 order=1
 fields=genes
-pt_class=PhenoTips.GeneClass</parameters>
+pt_class=PhenoTips.GeneClass
+pt_class_usage=multiple
+</parameters>
     </property>
     <property>
       <scope>wiki</scope>

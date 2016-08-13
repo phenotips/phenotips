@@ -134,7 +134,9 @@ enabled=true
 required=
 order=1
 fields=relative_type,relative_of
-pt_class=PhenoTips.RelativeClass</parameters>
+pt_class=PhenoTips.RelativeClass
+pt_class_usage=multiple
+</parameters>
     </property>
     <property>
       <scope>wiki</scope>
