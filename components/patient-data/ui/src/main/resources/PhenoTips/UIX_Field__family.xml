@@ -116,7 +116,7 @@
 #set ($targetClassName = 'PhenoTips.RelativeClass')
 #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
   {{error}}This component is deprecated. Please specify relevant family relationships in the pedigree.{{/error}}
-  
+
   (% class="clear relatives-info" %)(((
     === $services.localization.render('phenotips.UIXField.family.heading') ===
     #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true, 'mode' : $xcontext.action})
