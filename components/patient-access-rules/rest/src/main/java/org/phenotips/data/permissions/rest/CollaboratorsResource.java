@@ -25,7 +25,6 @@ import org.xwiki.component.annotation.Role;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -64,7 +63,7 @@ public interface CollaboratorsResource
      * @param patientId internal identifier of a patient record
      * @return a status message
      */
-    @POST
+    @PATCH
     @Consumes(MediaType.APPLICATION_JSON)
     Response addCollaborators(CollaboratorsRepresentation collaborators, @PathParam("patient-id") String patientId);
 
@@ -77,7 +76,7 @@ public interface CollaboratorsResource
      * @param patientId internal identifier of a patient record
      * @return a status message
      */
-    @POST
+    @PATCH
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     Response addCollaborators(@PathParam("patient-id") String patientId);
 

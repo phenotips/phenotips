@@ -22,7 +22,6 @@ import org.phenotips.data.permissions.rest.model.PermissionsRepresentation;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -77,7 +76,7 @@ public interface PermissionsResource
      * @param patientId identifier of the patient whose permissions should be changed
      * @return a status message
      */
-    @POST
+    @PATCH
     @Consumes(MediaType.APPLICATION_JSON)
     Response updatePermissions(PermissionsRepresentation permissions, @PathParam("patient-id") String patientId);
 }
