@@ -43,7 +43,7 @@ import javax.ws.rs.core.Response;
 public interface VisibilityResource
 {
     /**
-     * Retrieves the {@link Visibility} of a patient identified by `patientId`. If the indicated patient record doesn't
+     * Retrieve the {@link Visibility} of a patient identified by `patientId`. If the indicated patient record doesn't
      * exist, or if the user sending the request doesn't have the right to view the target patient record, an error is
      * returned.
      *
@@ -54,27 +54,27 @@ public interface VisibilityResource
     VisibilityRepresentation getVisibility(@PathParam("patient-id") String patientId);
 
     /**
-     * Updates the visibility of a patient. If the indicated patient record doesn't exist, or if the user sending the
+     * Update the visibility of a patient. If the indicated patient record doesn't exist, or if the user sending the
      * request doesn't have the right to edit the target patient record, no change is performed and an error is
      * returned.
      *
-     * @param json which must contain "level" parameter, with a value of a visibility level
-     * @param patientId whose visibility level is to be updated
+     * @param visibility which must contain "level" parameter, with a valid visibility level name as the value
+     * @param patientId identifier of the patient whose visibility should be changed
      * @return a status message
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    Response putVisibilityWithJson(String json, @PathParam("patient-id") String patientId);
+    Response setVisibility(VisibilityRepresentation visibility, @PathParam("patient-id") String patientId);
 
     /**
-     * Updates the visibility of a patient. If the indicated patient record doesn't exist, or if the user sending the
+     * Update the visibility of a patient. If the indicated patient record doesn't exist, or if the user sending the
      * request doesn't have the right to edit the target patient record, no change is performed and an error is
-     * returned. The request must contain a "visibility" parameter, with a value of a visibility level
+     * returned. The request must contain a "visibility" parameter, with a valid visibility level name as the value.
      *
-     * @param patientId whose visibility level is to be updated
+     * @param patientId identifier of the patient whose visibility should be changed
      * @return a status message
      */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    Response putVisibilityWithForm(@PathParam("patient-id") String patientId);
+    Response setVisibility(@PathParam("patient-id") String patientId);
 }

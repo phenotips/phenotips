@@ -44,8 +44,6 @@ import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 
 /**
@@ -126,32 +124,47 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
     }
 
     @Override
-    public Response putPermissions(String json, String patientId)
+    public Response setPermissions(PermissionsRepresentation permissions, String patientId)
     {
         this.logger.debug("Setting permissions of patient record [{}] via REST", patientId);
         // no permissions checks here, since this method is just a recombination of existing endpoints
+        if (permissions.getOwner() == null || permissions.getCollaborators() == null
+            || permissions.getVisibility() == null) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
 
-        String ownerJsonStr;
-        String visibilityJsonStr;
-        String collaboratorsJsonStr;
         try {
-            JSONObject jsonObject = new JSONObject(json);
-            JSONObject owner = jsonObject.getJSONObject("owner");
-            JSONObject visibility = jsonObject.getJSONObject("visibility");
-            JSONArray collaborators = jsonObject.getJSONArray("collaborators");
-
-            ownerJsonStr = owner.toString();
-            visibilityJsonStr = visibility.toString();
-            collaboratorsJsonStr = collaborators.toString();
+            this.ownerResource.setOwner(permissions.getOwner(), patientId);
+            this.visibilityResource.setVisibility(permissions.getVisibility(), patientId);
+            this.collaboratorsResource.setCollaborators(permissions.getCollaborators(), patientId);
         } catch (Exception ex) {
             this.logger.error("JSON was not properly formatted");
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        this.ownerResource.putOwnerWithJson(ownerJsonStr, patientId);
-        this.visibilityResource.putVisibilityWithJson(visibilityJsonStr, patientId);
-        this.collaboratorsResource.putCollaborators(collaboratorsJsonStr, patientId);
+        return Response.ok().build();
+    }
 
+    @Override
+    public Response updatePermissions(PermissionsRepresentation permissions, String patientId)
+    {
+        this.logger.debug("Updating permissions of patient record [{}] via REST", patientId);
+        // no permissions checks here, since this method is just a recombination of existing endpoints
+
+        try {
+            if (permissions.getOwner() != null) {
+                this.ownerResource.setOwner(permissions.getOwner(), patientId);
+            }
+            if (permissions.getCollaborators() != null) {
+                this.collaboratorsResource.addCollaborators(permissions.getCollaborators(), patientId);
+            }
+            if (permissions.getVisibility() != null) {
+                this.visibilityResource.setVisibility(permissions.getVisibility(), patientId);
+            }
+        } catch (Exception ex) {
+            this.logger.error("JSON was not properly formatted");
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
         return Response.ok().build();
     }
 }

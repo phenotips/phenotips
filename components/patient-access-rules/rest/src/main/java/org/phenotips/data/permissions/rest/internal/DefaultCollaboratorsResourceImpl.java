@@ -21,7 +21,6 @@ import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
-import org.phenotips.data.permissions.internal.DefaultCollaborator;
 import org.phenotips.data.permissions.rest.CollaboratorsResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.PermissionsResource;
@@ -29,6 +28,7 @@ import org.phenotips.data.permissions.rest.internal.utils.LinkBuilder;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.RESTActionResolver;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
+import org.phenotips.data.permissions.rest.model.CollaboratorRepresentation;
 import org.phenotips.data.permissions.rest.model.CollaboratorsRepresentation;
 import org.phenotips.data.permissions.rest.model.Link;
 import org.phenotips.data.rest.PatientResource;
@@ -41,8 +41,10 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.rest.XWikiResource;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -51,8 +53,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 
 /**
@@ -66,8 +66,6 @@ import org.slf4j.Logger;
 @Singleton
 public class DefaultCollaboratorsResourceImpl extends XWikiResource implements CollaboratorsResource
 {
-    private static final String LEVEL = "level";
-
     private static final String MANAGE_LEVEL = "manage";
 
     @Inject
@@ -96,7 +94,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
     public CollaboratorsRepresentation getCollaborators(String patientId)
     {
         this.logger.debug("Retrieving collaborators of patient record [{}] via REST", patientId);
-        // besides getting the patient, checks that the user has view access
+        // Besides getting the patient, checks that the user has view access
         PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
 
         CollaboratorsRepresentation result =
@@ -114,164 +112,145 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
     }
 
     @Override
-    public Response postCollaboratorWithJson(String json, String patientId)
+    public Response addCollaborators(CollaboratorsRepresentation collaborators, String patientId)
     {
-        try {
-            CollaboratorInfo info = this.collaboratorInfoFromJson(new JSONObject(json));
-            return postCollaborator(info.id, info.level, patientId);
-        } catch (Exception ex) {
-            this.logger.error("The json was not properly formatted", ex.getMessage());
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        this.logger.debug("Adding {} collaborators to patient record [{}] via REST",
+            collaborators.getCollaborators().size(), patientId);
+        return this.setCollaborators(collaborators.getCollaborators(), patientId, false);
+    }
+
+    @Override
+    public Response addCollaborators(String patientId)
+    {
+        this.logger.debug("Adding new collaborators to patient record [{}] via REST", patientId);
+        List<Object> collaborators = this.container.getRequest().getProperties("collaborator");
+        List<Object> accessLevels = this.container.getRequest().getProperties("level");
+
+        if (collaborators.size() != accessLevels.size()) {
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                .entity("The number of collaborator identifiers and access levels don't match").build());
         }
-    }
-
-    @Override
-    public Response postCollaboratorWithForm(String patientId)
-    {
-        Object idInRequest = this.container.getRequest().getProperty("collaborator");
-        Object levelInRequest = this.container.getRequest().getProperty(LEVEL);
-        if (idInRequest instanceof String && levelInRequest instanceof String) {
-            String id = idInRequest.toString().trim();
-            String level = levelInRequest.toString().trim();
-            if (StringUtils.isNotBlank(id) && StringUtils.isNotBlank(level)) {
-                return postCollaborator(id, level, patientId);
-            }
+        Map<EntityReference, AccessLevel> internalCollaborators = new LinkedHashMap<>(collaborators.size());
+        for (int i = 0; i < collaborators.size(); ++i) {
+            String collaboratorId = (String) collaborators.get(i);
+            String accessLevelName = (String) accessLevels.get(i);
+            this.checkCollaboratorInfo(collaboratorId, accessLevelName);
+            internalCollaborators.put(this.userOrGroupResolver.resolve(collaboratorId),
+                this.manager.resolveAccessLevel(accessLevelName));
         }
-        this.logger.error("The id, permissions level, or both were not provided or are invalid");
-        throw new WebApplicationException(Response.Status.BAD_REQUEST);
-    }
 
-    @Override
-    public Response deleteCollaborators(String patientId)
-    {
-        return this.updateCollaborators(new LinkedList<Collaborator>(), patientId);
-    }
-
-    @Override
-    public Response putCollaborators(String json, String patientId)
-    {
-        List<Collaborator> collaborators = this.jsonToCollaborators(json);
-        return this.updateCollaborators(collaborators, patientId);
-    }
-
-    private Response postCollaborator(String collaboratorId, String accessLevelName, String patientId)
-    {
-        this.checkCollaboratorInfo(collaboratorId, accessLevelName);
-
-        this.logger.debug("Adding collaborator [{}] with permission level [{}] to the patient record [{}] via REST",
-            collaboratorId, accessLevelName, patientId);
-        // besides getting the patient, checks that the user has manage access
         PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, MANAGE_LEVEL);
         PatientAccess patientAccess = patientAccessContext.getPatientAccess();
 
-        // will throw an error if something goes wrong
-        this.addCollaborator(collaboratorId, accessLevelName.trim(), patientAccess);
-        return Response.ok().build();
-    }
-
-    private Response updateCollaborators(Collection<Collaborator> collaborators, String patientId)
-    {
-        // besides getting the patient, checks that the user has manage access
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, MANAGE_LEVEL);
-        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
-
-        if (!patientAccess.updateCollaborators(collaborators)) {
-            this.logger.error("Could not update collaborators");
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        for (Map.Entry<EntityReference, AccessLevel> e : internalCollaborators.entrySet()) {
+            patientAccess.addCollaborator(e.getKey(), e.getValue());
         }
         return Response.ok().build();
     }
 
-    private void addCollaborator(String id, String levelName, PatientAccess patientAccess)
-        throws WebApplicationException
+    @Override
+    public Response deleteAllCollaborators(String patientId)
     {
-        // checking that the access level is valid
-        AccessLevel level = this.getAccessLevelFromString(levelName);
-        EntityReference collaboratorReference = this.userOrGroupResolver.resolve(id);
-        if (collaboratorReference == null) {
-            // what would be a better status to indicate that the user/group id is not valid?
-            // ideally, the status page should show some sort of a message indicating that the id was not found
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
-
-        // todo. function .addCollaborator has to check if the collaborator already exists before adding them
-        if (!patientAccess.addCollaborator(collaboratorReference, level)) {
-            // todo. should this status be an internal server error, or a bad request?
-            this.logger.error("Could not add a collaborator [{}] with access level [{}]", id, levelName);
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
-        }
+        this.logger.debug("Deleting all collaborators from patient record [{}] via REST", patientId);
+        return setCollaborators(Collections.<CollaboratorRepresentation>emptyList(), patientId, true);
     }
 
-    private AccessLevel getAccessLevelFromString(String accessLevelName)
+    @Override
+    public Response setCollaborators(CollaboratorsRepresentation collaborators, String patientId)
     {
-        for (AccessLevel accessLevelOption : this.manager.listAccessLevels()) {
-            if (StringUtils.equalsIgnoreCase(accessLevelOption.getName(), accessLevelName)) {
-                return accessLevelOption;
+        this.logger.debug("Setting {} collaborators to patient record [{}] via REST",
+            collaborators.getCollaborators().size(), patientId);
+        return this.setCollaborators(collaborators.getCollaborators(), patientId, true);
+    }
+
+    private Response setCollaborators(Collection<CollaboratorRepresentation> collaborators, String patientId,
+        boolean replace)
+    {
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, MANAGE_LEVEL);
+        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
+
+        Map<EntityReference, Collaborator> internalCollaborators = new LinkedHashMap<>();
+        if (!replace) {
+            for (Collaborator c : patientAccess.getCollaborators()) {
+                internalCollaborators.put(c.getUser(), c);
             }
         }
-        this.logger.error("The access level name does not match any available levels");
-        throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        for (CollaboratorRepresentation collaborator : collaborators) {
+            EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaborator.getId());
+            checkCollaboratorInfo(collaborator.getId(), collaborator.getLevel());
+            internalCollaborators.put(collaboratorReference,
+                new StubCollaborator(collaboratorReference, this.manager.resolveAccessLevel(collaborator.getLevel())));
+        }
+        patientAccess.updateCollaborators(internalCollaborators.values());
+        return Response.ok().build();
     }
 
     private void checkCollaboratorInfo(String collaboratorId, String levelName)
     {
         if (StringUtils.isBlank(collaboratorId)) {
-            this.logger.error("The collaborator id was not provided");
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                .entity("The collaborator id was not provided").build());
+        }
+        if (this.userOrGroupResolver.resolve(collaboratorId) == null) {
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                .entity("Unknown collaborator: " + collaboratorId).build());
         }
         if (StringUtils.isBlank(levelName)) {
-            this.logger.error("The permissions level was not provided");
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                .entity("The collaborator's access level was not provided").build());
+        }
+        if (this.manager.resolveAccessLevel(levelName) == null) {
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                .entity("Invalid access level requested: " + levelName).build());
         }
     }
 
-    private CollaboratorInfo collaboratorInfoFromJson(final JSONObject json)
+    private static final class StubCollaborator implements Collaborator
     {
-        return new CollaboratorInfo(json.optString("id"), json.optString(LEVEL));
-    }
+        private EntityReference user;
 
-    private List<Collaborator> jsonToCollaborators(String json)
-    {
-        List<Collaborator> collaborators = new LinkedList<>();
-        JSONArray collaboratorsArray = new JSONArray(json);
-        for (Object collaboratorObject : collaboratorsArray) {
-            CollaboratorInfo collaboratorInfo =
-                this.collaboratorInfoFromJson((JSONObject) collaboratorObject);
-            this.checkCollaboratorInfo(collaboratorInfo.getId(), collaboratorInfo.getLevel());
+        private AccessLevel access;
 
-            EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorInfo.getId());
-            if (collaboratorReference == null) {
-                // what would be a better status to indicate that the user/group id is not valid?
-                // ideally, the status page should show some sort of a message indicating that the id was not found
-                throw new WebApplicationException(Response.Status.NOT_FOUND);
-            }
-            AccessLevel level = this.getAccessLevelFromString(collaboratorInfo.getLevel());
-            Collaborator collaborator = new DefaultCollaborator(collaboratorReference, level, null);
-            collaborators.add(collaborator);
-        }
-        return collaborators;
-    }
-
-    private class CollaboratorInfo
-    {
-        private String id;
-
-        private String level;
-
-        CollaboratorInfo(String id, String level)
+        private StubCollaborator(EntityReference user, AccessLevel access)
         {
-            this.id = id;
-            this.level = level;
+            this.user = user;
+            this.access = access;
         }
 
-        public String getId()
+        @Override
+        public String getType()
         {
-            return this.id;
+            return "";
         }
 
-        public String getLevel()
+        @Override
+        public boolean isUser()
         {
-            return this.level;
+            return false;
+        }
+
+        @Override
+        public boolean isGroup()
+        {
+            return false;
+        }
+
+        @Override
+        public EntityReference getUser()
+        {
+            return this.user;
+        }
+
+        @Override
+        public String getUsername()
+        {
+            return null;
+        }
+
+        @Override
+        public AccessLevel getAccessLevel()
+        {
+            return this.access;
         }
     }
 }

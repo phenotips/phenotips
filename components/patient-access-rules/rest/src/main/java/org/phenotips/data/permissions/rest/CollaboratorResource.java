@@ -45,7 +45,7 @@ public interface CollaboratorResource
      * user sending the request doesn't have the right to view the target patient record, an error is returned.
      *
      * @param patientId internal identifier of a patient record
-     * @param collaboratorId fully qualified, internal id of a collaborator (ex. xwiki:XWiki.JohnAdams)
+     * @param collaboratorId internal id of a collaborator, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
      * @return REST representation of a single collaborator
      */
     @GET
@@ -54,40 +54,41 @@ public interface CollaboratorResource
 
     /**
      * Updates the access level of a collaborator. If the indicated patient record doesn't exist, or if the user sending
-     * the request doesn't have the right to edit the target patient record, no change is performed and an error is
-     * returned.
+     * the request doesn't have the right to edit the target patient record, or if no access level is sent, or if the
+     * requested access level isn't valid, then no change is performed and an error is returned.
      *
-     * @param json must contain "level" property, with a value which is a valid access level
+     * @param collaborator a collaborator representation, must contain the "level" property, with a value which is a
+     *            valid access level; all other properties are ignored
      * @param patientId internal identifier of a patient record
-     * @param collaboratorId fully qualified, internal id of a collaborator (ex. xwiki:XWiki.JohnAdams)
+     * @param collaboratorId internal id of a collaborator, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
      * @return a status message
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    Response putLevelWithJson(String json, @PathParam("patient-id") String patientId,
+    Response setLevel(CollaboratorRepresentation collaborator, @PathParam("patient-id") String patientId,
         @PathParam("collaborator-id") String collaboratorId);
 
     /**
      * Updates the access level of a collaborator. If the indicated patient record doesn't exist, or if the user sending
-     * the request doesn't have the right to edit the target patient record, no change is performed and an error is
-     * returned. The request must contain "level" property, with a value which is a valid access level.
+     * the request doesn't have the right to edit the target patient record, or if no access level is sent, or if the
+     * requested access level isn't valid, then no change is performed and an error is returned. The request must
+     * contain a "level" property, with a value which is a valid access level.
      *
      * @param patientId internal identifier of a patient record
-     * @param collaboratorId fully qualified, internal id of a collaborator (ex. xwiki:XWiki.JohnAdams)
+     * @param collaboratorId internal id of a collaborator, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
      * @return a status message
      */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    Response putLevelWithForm(@PathParam("patient-id") String patientId,
-        @PathParam("collaborator-id") String collaboratorId);
+    Response setLevel(@PathParam("patient-id") String patientId, @PathParam("collaborator-id") String collaboratorId);
 
     /**
      * Removes a particular collaborator from a patient record. If the indicated patient record doesn't exist, or if the
-     * user sending the request doesn't have the right to edit the target patient record, no change is performed and an
-     * error is returned.
+     * user sending the request doesn't have the right to edit the target patient record, or if the requested
+     * collaborator isn't actually a collaborator, no change is performed and an error is returned.
      *
      * @param patientId internal identifier of a patient record
-     * @param collaboratorId fully qualified, internal id of a collaborator (ex. xwiki:XWiki.JohnAdams)
+     * @param collaboratorId internal id of a collaborator, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
      * @return a status message
      */
     @DELETE

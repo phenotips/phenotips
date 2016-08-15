@@ -65,7 +65,7 @@
     </complexContent>
   </complexType>
 
-  <complexType name="UserCollection">
+  <complexType name="CollaboratorsCollection">
     <complexContent>
       <extension base="phenotips:LinkCollection">
         <sequence>
@@ -103,7 +103,7 @@
         <sequence>
           <element name="owner" type="phenotips:OwnerSummary"/>
           <element name="visibility" type="phenotips:VisibilitySummary"/>
-          <element name="collaborators" type="phenotips:UserCollection"/>
+          <element name="collaborators" type="phenotips:CollaboratorsCollection"/>
         </sequence>
       </extension>
     </complexContent>
@@ -121,7 +121,7 @@
 
   <element name="visibilityRepresentation" type="phenotips:VisibilitySummary"/>
 
-  <element name="collaboratorsRepresentation" type="phenotips:UserCollection"/>
+  <element name="collaboratorsRepresentation" type="phenotips:CollaboratorsCollection"/>
 
   <element name="visibilityOptionsRepresentation" type="phenotips:VisibilityOptions"/>
 

@@ -18,7 +18,7 @@
 package org.phenotips.data.permissions.rest;
 
 import org.phenotips.data.permissions.rest.internal.utils.annotations.Relation;
-import org.phenotips.data.permissions.rest.model.UserSummary;
+import org.phenotips.data.permissions.rest.model.OwnerRepresentation;
 
 import org.xwiki.component.annotation.Role;
 
@@ -50,21 +50,21 @@ public interface OwnerResource
      * @return REST representation of an owner of a patient record
      */
     @GET
-    UserSummary getOwner(@PathParam("patient-id") String patientId);
+    OwnerRepresentation getOwner(@PathParam("patient-id") String patientId);
 
     /**
      * Updates the owner of a patient record - identified by `patientId` - with the owner specified in JSON. If the
      * indicated patient record doesn't exist, or if the user sending the request doesn't have the right to edit the
      * target patient record, no change is performed and an error is returned.
      *
-     * @param json that contains a "id" property, with a value of either a fully qualified username or a plain username
-     *            (eg. "xwiki:XWiki.username" or "username")
-     * @param patientId identifier of the patient, whose owner should be changed
+     * @param owner an owner representation, only the {@code id} property is required, with a value of either a fully
+     *            qualified username or a plain username (eg. {@code xwiki:XWiki.username} or {@code username})
+     * @param patientId identifier of the patient whose owner should be changed
      * @return a status message
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    Response putOwnerWithJson(String json, @PathParam("patient-id") String patientId);
+    Response setOwner(OwnerRepresentation owner, @PathParam("patient-id") String patientId);
 
     /**
      * Updates the owner of a patient record - identified by `patientId` - with the owner specified in JSON. If the
@@ -77,5 +77,5 @@ public interface OwnerResource
      */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    Response putOwnerWithForm(@PathParam("patient-id") String patientId);
+    Response setOwner(@PathParam("patient-id") String patientId);
 }
