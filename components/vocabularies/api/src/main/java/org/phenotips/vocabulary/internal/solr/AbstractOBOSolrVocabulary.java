@@ -20,15 +20,22 @@ package org.phenotips.vocabulary.internal.solr;
 import org.phenotips.obo2solr.ParameterPreparer;
 import org.phenotips.obo2solr.SolrUpdateGenerator;
 import org.phenotips.obo2solr.TermData;
+import org.phenotips.vocabulary.VocabularyExtension;
+import org.phenotips.vocabulary.VocabularyInputTerm;
 import org.phenotips.vocabulary.VocabularyTerm;
 
+import org.xwiki.component.phase.InitializationException;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -55,11 +62,24 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     protected static final String VERSION_FIELD_NAME = "version";
 
     /**
+     * Enabled vocabulary extensions.
+     */
+    @Inject
+    private List<VocabularyExtension> extensions;
+
+    /**
      * The number of documents to be added and committed to Solr at a time.
      *
      * @return a positive integer, or a negative number to disable batching and pushing all terms in one go
      */
     protected abstract int getSolrDocsPerBatch();
+
+    @Override
+    public void initialize() throws InitializationException
+    {
+        super.initialize();
+        extensions = getSupportedExtensions();
+    }
 
     @Override
     public VocabularyTerm getTerm(String id)
@@ -80,7 +100,31 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     public int reindex(String sourceUrl)
     {
         this.clear();
-        return this.index(sourceUrl);
+        for (VocabularyExtension ext : extensions) {
+            ext.indexingStarted(getIdentifier());
+        }
+        int retval = this.index(sourceUrl);
+        for (VocabularyExtension ext : extensions) {
+            ext.indexingEnded(getIdentifier());
+        }
+        return retval;
+    }
+
+    /**
+     * Get the list of extensions that this vocabulary supports.
+     *
+     * @return the list of supported extensions
+     */
+    private List<VocabularyExtension> getSupportedExtensions()
+    {
+        List<VocabularyExtension> retval = new ArrayList<>(extensions.size());
+        String name = getIdentifier();
+        for (VocabularyExtension ext : extensions) {
+            if (ext.getSupportedVocabularies().contains(name)) {
+                retval.add(ext);
+            }
+        }
+        return retval;
     }
 
     /**
@@ -119,6 +163,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
                         doc.addField(name, value, ParameterPreparer.DEFAULT_BOOST.floatValue());
                     }
                 }
+                extendTerm(new SolrVocabularyInputTerm(doc, this));
                 termBatch.add(doc);
                 batchCounter++;
             }
@@ -132,6 +177,18 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
             this.logger.warn("Failed to add terms to the Solr. Ran out of memory. {}", ex.getMessage());
         }
         return 1;
+    }
+
+    /**
+     * Run the term given through all the vocabulary extensions we have.
+     *
+     * @param term the term
+     */
+    protected void extendTerm(VocabularyInputTerm term)
+    {
+        for (VocabularyExtension ext : extensions) {
+            ext.extendTerm(term, getIdentifier());
+        }
     }
 
     protected void commitTerms(Collection<SolrInputDocument> batch)

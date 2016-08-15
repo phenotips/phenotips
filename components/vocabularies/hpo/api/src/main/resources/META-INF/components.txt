@@ -1,1 +1,2 @@
 org.phenotips.vocabulary.internal.solr.HumanPhenotypeOntology
+org.phenotips.vocabulary.internal.translation.XMLTranslatedVocabularyExtension

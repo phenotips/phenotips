@@ -25,13 +25,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -68,15 +66,15 @@ public class SolrVocabularyTerm implements VocabularyTerm
      */
     protected static final String IS_A = "is_a";
 
-    /** The Solr document representing this term. */
-    private Map<String, ? extends Object> doc;
-
     /**
      * The owner ontology.
      *
      * @see #getVocabulary()
      */
     protected final Vocabulary ontology;
+
+    /** The Solr document representing this term. */
+    private Map<String, ? extends Object> doc;
 
     /**
      * The parents of this term, transformed from a set of IDs into a real set of terms.
@@ -150,7 +148,7 @@ public class SolrVocabularyTerm implements VocabularyTerm
     }
 
     /**
-     * Get the values corresponding to the key given in the document
+     * Get the values corresponding to the key given in the document.
      *
      * @param key the key
      * @return the collection of values
@@ -191,7 +189,7 @@ public class SolrVocabularyTerm implements VocabularyTerm
             return null;
         }
         if (o instanceof Iterable) {
-            Iterable <Object> iterable = (Iterable) o;
+            Iterable<Object> iterable = (Iterable) o;
             return iterable.iterator().next();
         }
         return o;
