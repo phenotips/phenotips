@@ -20,6 +20,7 @@ package org.phenotips.data.permissions.rest.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.rest.CollaboratorResource;
 import org.phenotips.data.permissions.rest.CollaboratorsResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
@@ -71,6 +72,9 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
 
     @Inject
     private DomainObjectFactory factory;
+
+    @Inject
+    private PermissionsManager manager;
 
     @Inject
     private RESTActionResolver restActionResolver;
@@ -180,6 +184,11 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
 
     private Response setLevel(String collaboratorId, String accessLevelName, String patientId)
     {
-        throw new UnsupportedOperationException();
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "manage");
+        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
+
+        EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorId);
+        patientAccess.addCollaborator(collaboratorReference, this.manager.resolveAccessLevel(accessLevelName));
+        return Response.ok().build();
     }
 }
