@@ -77,6 +77,7 @@ public class DefaultRESTActionResolver implements RESTActionResolver
         if (level.compareTo(this.pm.resolveAccessLevel("manage")) >= 0) {
             result.add(HttpMethod.PUT);
             result.add(HttpMethod.POST);
+            result.add("PATCH");
             result.add(HttpMethod.DELETE);
         }
         return result;
