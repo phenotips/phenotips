@@ -66,8 +66,6 @@ import org.slf4j.Logger;
 @Singleton
 public class DefaultCollaboratorsResourceImpl extends XWikiResource implements CollaboratorsResource
 {
-    private static final String MANAGE_LEVEL = "manage";
-
     @Inject
     private Logger logger;
 
@@ -95,7 +93,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
     {
         this.logger.debug("Retrieving collaborators of patient record [{}] via REST", patientId);
         // Besides getting the patient, checks that the user has view access
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getReadContext(patientId);
 
         CollaboratorsRepresentation result =
             this.factory.createCollaboratorsRepresentation(patientAccessContext.getPatient(), this.uriInfo);
@@ -139,7 +137,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
                 this.manager.resolveAccessLevel(accessLevelName));
         }
 
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, MANAGE_LEVEL);
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
         PatientAccess patientAccess = patientAccessContext.getPatientAccess();
 
         for (Map.Entry<EntityReference, AccessLevel> e : internalCollaborators.entrySet()) {
@@ -166,7 +164,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
     private Response setCollaborators(Collection<CollaboratorRepresentation> collaborators, String patientId,
         boolean replace)
     {
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, MANAGE_LEVEL);
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
         PatientAccess patientAccess = patientAccessContext.getPatientAccess();
 
         Map<EntityReference, Collaborator> internalCollaborators = new LinkedHashMap<>();

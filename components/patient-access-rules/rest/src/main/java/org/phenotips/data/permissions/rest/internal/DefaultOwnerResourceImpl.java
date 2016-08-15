@@ -82,7 +82,7 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
     {
         this.logger.debug("Retrieving patient record's owner [{}] via REST", patientId);
         // besides getting the patient, checks that the user has view access
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getReadContext(patientId);
 
         OwnerRepresentation result = this.factory.createOwnerRepresentation(patientAccessContext.getPatient());
 
@@ -128,7 +128,7 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
         }
         this.logger.debug("Setting owner of the patient record [{}] to [{}] via REST", patientId, ownerId);
         // besides getting the patient, checks that the current user has manage access
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "manage");
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
 
         EntityReference ownerReference = this.userOrGroupResolver.resolve(ownerId);
         if (ownerReference == null) {

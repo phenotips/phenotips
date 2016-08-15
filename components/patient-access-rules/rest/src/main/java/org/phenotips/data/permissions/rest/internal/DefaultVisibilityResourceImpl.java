@@ -83,7 +83,7 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
     {
         this.logger.debug("Retrieving patient record's visibility [{}] via REST", patientId);
         // besides getting the patient, checks that the user has view access
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getReadContext(patientId);
 
         VisibilityRepresentation result =
             this.factory.createVisibilityRepresentation(patientAccessContext.getPatient());
@@ -152,7 +152,7 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
         this.logger.debug(
             "Setting the visibility of the patient record [{}] to [{}] via REST", patientId, visibilityName);
         // besides getting the patient, checks that the user has manage access
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "manage");
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
 
         PatientAccess patientAccess = patientAccessContext.getPatientAccess();
         if (!patientAccess.setVisibility(visibility)) {

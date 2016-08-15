@@ -62,4 +62,16 @@ public class DefaultSecureContextFactory implements SecureContextFactory
         return new PatientAccessContext(patientId, level, this.repository, this.users, this.permissionsManager,
             this.logger);
     }
+
+    @Override
+    public PatientAccessContext getReadContext(String patientId) throws WebApplicationException
+    {
+        return getContext(patientId, "view");
+    }
+
+    @Override
+    public PatientAccessContext getWriteContext(String patientId) throws WebApplicationException
+    {
+        return getContext(patientId, "manage");
+    }
 }

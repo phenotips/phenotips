@@ -89,7 +89,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         this.logger.debug("Retrieving collaborator with id [{}] of patient record [{}] via REST", collaboratorId,
             patientId);
         // besides getting the patient, checks that the user has view access
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getReadContext(patientId);
 
         CollaboratorRepresentation result;
         try {
@@ -143,7 +143,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         this.logger.debug("Removing collaborator with id [{}] from patient record [{}] via REST", collaboratorId,
             patientId);
         // besides getting the patient, checks that the user has manage access
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "manage");
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
 
         PatientAccess patientAccess = patientAccessContext.getPatientAccess();
         EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorId);
@@ -184,7 +184,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
 
     private Response setLevel(String collaboratorId, String accessLevelName, String patientId)
     {
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "manage");
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
         PatientAccess patientAccess = patientAccessContext.getPatientAccess();
 
         EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorId);

@@ -84,7 +84,7 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
     {
         this.logger.debug("Retrieving patient record [{}] via REST", patientId);
         // besides getting the patient, checks that the user has view access
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getReadContext(patientId);
 
         PermissionsRepresentation result = new PermissionsRepresentation();
         OwnerRepresentation owner = this.factory.createOwnerRepresentation(patientAccessContext.getPatient());
