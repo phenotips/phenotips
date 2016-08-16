@@ -542,6 +542,12 @@
               <differenceType>8001</differenceType>
               <justification>Moved the functionality into an internal package, since script services shouldn't have that much application logic</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/data/permissions/AccessLevel</className>
+              <differenceType>7012</differenceType>
+              <method>org.xwiki.security.authorization.Right getGrantedRight()</method>
+              <justification>New API method bringing XWiki Rights into PhenoTips Permissions.</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

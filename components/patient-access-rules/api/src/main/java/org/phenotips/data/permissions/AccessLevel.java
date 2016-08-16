@@ -18,6 +18,7 @@
 package org.phenotips.data.permissions;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.security.authorization.Right;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -59,4 +60,11 @@ public interface AccessLevel extends Comparable<AccessLevel>
      * @return {@code true} if this level can be assigned to collaborators, {@code false} otherwise
      */
     boolean isAssignable();
+
+    /**
+     * The equivalent XWiki right granted by this access level.
+     *
+     * @return an equivalent right
+     */
+    Right getGrantedRight();
 }

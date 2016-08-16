@@ -2,6 +2,7 @@ org.phenotips.data.internal.controller.ContactInformationController
 org.phenotips.data.permissions.internal.DefaultPatientAccessHelper
 org.phenotips.data.permissions.internal.DefaultPermissionsConfiguration
 org.phenotips.data.permissions.internal.DefaultPermissionsManager
+org.phenotips.data.permissions.internal.ManageRightRegistrationEventListener
 org.phenotips.data.permissions.internal.OwnerUpdateEventListener
 org.phenotips.data.permissions.internal.RightsUpdateEventListener
 org.phenotips.data.permissions.internal.SecurePermissionsManager

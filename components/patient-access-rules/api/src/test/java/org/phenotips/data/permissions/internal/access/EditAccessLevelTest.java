@@ -21,6 +21,7 @@ import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.translation.TranslationManager;
 
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import org.junit.Assert;
@@ -62,6 +63,12 @@ public class EditAccessLevelTest
     public void isAssignable() throws ComponentLookupException
     {
         Assert.assertTrue(this.mocker.getComponentUnderTest().isAssignable());
+    }
+
+    @Test
+    public void grantsEditRight() throws ComponentLookupException
+    {
+        Assert.assertSame(Right.EDIT, this.mocker.getComponentUnderTest().getGrantedRight());
     }
 
     /** Basic test for {@link AccessLevel#getLabel()}. */
