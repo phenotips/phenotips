@@ -111,7 +111,7 @@ public class RightsUpdateEventListener extends AbstractEventListener
         XWikiDocument doc = (XWikiDocument) source;
         XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
         // Map of permissions to users/groups
-        Map<String, Map<String, String>> oldRights = new HashMap<String, Map<String, String>>();
+        Map<String, Map<String, String>> oldRights = new HashMap<>();
         Map<String, BaseObject> rightsObjects = findRights(doc);
         List<String> missingRights = findMissingRights(rightsObjects);
         clearRights(rightsObjects, oldRights);
@@ -132,9 +132,9 @@ public class RightsUpdateEventListener extends AbstractEventListener
     {
         List<BaseObject> allRights = doc.getXObjects(RIGHTS_CLASS);
         if (allRights == null) {
-            return new HashMap<String, BaseObject>();
+            return new HashMap<>();
         }
-        Map<String, BaseObject> rightsObjects = new HashMap<String, BaseObject>();
+        Map<String, BaseObject> rightsObjects = new HashMap<>();
         for (BaseObject right : allRights) {
             // getXObjects returns an ArrayList that could be lacking elements
             if (right == null) {
@@ -156,7 +156,7 @@ public class RightsUpdateEventListener extends AbstractEventListener
      */
     private List<String> findMissingRights(Map<String, BaseObject> rightsObjects)
     {
-        List<String> missingRights = new LinkedList<String>(rightsCombinations);
+        List<String> missingRights = new LinkedList<>(rightsCombinations);
         for (String rightLevel : rightsObjects.keySet()) {
             if (missingRights.contains(rightLevel)) {
                 missingRights.remove(rightLevel);
@@ -171,7 +171,7 @@ public class RightsUpdateEventListener extends AbstractEventListener
     private void clearRights(Map<String, BaseObject> rightsObjects, Map<String, Map<String, String>> oldRights)
     {
         for (BaseObject right : rightsObjects.values()) {
-            Map<String, String> entityList = new HashMap<String, String>();
+            Map<String, String> entityList = new HashMap<>();
             entityList.put(GROUPS, right.getStringValue(GROUPS));
             entityList.put(USERS, right.getStringValue(USERS));
             oldRights.put(right.getStringValue("levels"), entityList);
@@ -253,8 +253,8 @@ public class RightsUpdateEventListener extends AbstractEventListener
             } else {
                 return;
             }
-            List<String> users = new LinkedList<String>();
-            List<String> groups = new LinkedList<String>();
+            List<String> users = new LinkedList<>();
+            List<String> groups = new LinkedList<>();
             for (DocumentReference userOrGroup : entry.getValue()) {
                 if (isUser(userOrGroup)) {
                     users.add(userOrGroup.toString());
@@ -292,8 +292,7 @@ public class RightsUpdateEventListener extends AbstractEventListener
 
     private Map<AccessLevel, List<DocumentReference>> getCollaborators(XWikiDocument doc)
     {
-        Map<AccessLevel, List<DocumentReference>> collaborators =
-            new LinkedHashMap<AccessLevel, List<DocumentReference>>();
+        Map<AccessLevel, List<DocumentReference>> collaborators = new LinkedHashMap<>();
         List<BaseObject> collaboratorObjects = doc.getXObjects(Collaborator.CLASS_REFERENCE);
         if (collaboratorObjects == null || collaboratorObjects.isEmpty()) {
             return Collections.emptyMap();
@@ -313,7 +312,7 @@ public class RightsUpdateEventListener extends AbstractEventListener
             AccessLevel access = this.manager.resolveAccessLevel(accessName);
             List<DocumentReference> list = collaborators.get(access);
             if (list == null) {
-                list = new LinkedList<DocumentReference>();
+                list = new LinkedList<>();
                 collaborators.put(access, list);
             }
             list.add(userOrGroup);
