@@ -20,6 +20,8 @@ package org.phenotips.projects.access;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.internal.AbstractAccessLevel;
 
+import org.xwiki.security.authorization.Right;
+
 /**
  * @version $Id$
  */
@@ -40,5 +42,12 @@ public abstract class AbstractProjectAccessLevel extends AbstractAccessLevel imp
             return super.compareTo(o);
         }
         return Integer.MIN_VALUE;
+    }
+
+    @Override
+    public Right getGrantedRight()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
