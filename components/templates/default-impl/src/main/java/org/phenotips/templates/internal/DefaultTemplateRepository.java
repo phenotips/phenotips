@@ -63,8 +63,8 @@ public class DefaultTemplateRepository extends AbstractPrimaryEntityManager<Temp
             }
 
             JSONObject templateJSON = new JSONObject();
-            templateJSON.put("id", template.getName());
-            templateJSON.put("textSummary", template.getDescription());
+            templateJSON.put("id", template.getId());
+            templateJSON.put("textSummary", template.getName());
             templatesArray.put(templateJSON);
         }
 
