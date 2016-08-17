@@ -502,15 +502,15 @@
         #set($typedFilterValueHighLimit = $mathtool.toDouble($filterValueHighLimit).longValue().valueOf($filterValueHighLimit))
       #end
       ## Checks present filter value
-      #if ($filterValue != '')
+      #if ("$!typedFilterValue" != '')
         #set($whereSql = "${whereSql} and ${safe_tableAlias}.value = ?")
         #set($discard = $whereParams.add($typedFilterValue))
       #else ## filters by min and max values
-        #if ($filterValueLowLimit != '')
+        #if ("$!typedFilterValueLowLimit" != '')
           #set($whereSql = "${whereSql} and ${safe_tableAlias}.value &gt;= ?")
           #set($discard = $whereParams.add($typedFilterValueLowLimit))
         #end
-        #if ($filterValueHighLimit != '')
+        #if ("$!typedFilterValueHighLimit" != '')
           #set($whereSql = "${whereSql} and ${safe_tableAlias}.value &lt;= ?")
           #set($discard = $whereParams.add($typedFilterValueHighLimit))
         #end
