@@ -17,6 +17,7 @@
  */
 package org.phenotips.templates.internal;
 
+import org.phenotips.entities.PrimaryEntityManager;
 import org.phenotips.entities.internal.AbstractPrimaryEntityManager;
 import org.phenotips.templates.data.Template;
 import org.phenotips.templates.data.TemplateRepository;
@@ -27,6 +28,7 @@ import org.xwiki.model.reference.EntityReference;
 
 import java.util.Iterator;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.json.JSONArray;
@@ -35,7 +37,8 @@ import org.json.JSONObject;
 /**
  * @version $Id$
  */
-@Component(roles = TemplateRepository.class)
+@Component(roles = {PrimaryEntityManager.class, TemplateRepository.class })
+@Named("Study")
 @Singleton
 public class DefaultTemplateRepository extends AbstractPrimaryEntityManager<Template> implements TemplateRepository
 {
