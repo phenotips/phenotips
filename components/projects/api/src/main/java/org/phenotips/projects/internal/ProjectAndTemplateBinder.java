@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
@@ -80,6 +81,7 @@ public class ProjectAndTemplateBinder
     private ProjectsRepository projectsRepository;
 
     @Inject
+    @Named("Study")
     private TemplateRepository templateRepository;
 
     /**

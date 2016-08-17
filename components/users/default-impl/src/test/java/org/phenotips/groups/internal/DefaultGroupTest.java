@@ -102,7 +102,7 @@ public class DefaultGroupTest
         when(this.cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current")).thenReturn(this.resolver);
         when(this.cm.getInstance(Logger.class)).thenReturn(this.logger);
         when(this.cm.getInstance(UsersAndGroups.class)).thenReturn(this.usersAndGroups);
-        when(this.cm.getInstance(TemplateRepository.class)).thenReturn(this.templateRepository);
+        when(this.cm.getInstance(TemplateRepository.class, "Study")).thenReturn(this.templateRepository);
     }
 
     /** Basic tests for {@link DefaultGroup#getReference()}. */
