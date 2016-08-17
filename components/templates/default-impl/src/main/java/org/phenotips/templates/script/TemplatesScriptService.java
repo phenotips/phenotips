@@ -38,6 +38,7 @@ import javax.inject.Singleton;
 public class TemplatesScriptService implements ScriptService
 {
     @Inject
+    @Named("Study")
     private TemplateRepository templateRepository;
 
     /**
