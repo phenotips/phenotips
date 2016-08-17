@@ -154,7 +154,7 @@ var PhenoTips = (function (PhenoTips) {
        }
        var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
        row.insert(new Element('td', {'class' : 'mainTd'}).insert(template.value)
-               .insert(new Element('input', {'type': 'hidden', 'name' : 'templates', 'value' : template.id}))
+               .insert(new Element('input', {'type': 'hidden', 'name' : 'templates', 'value' : template.name}))
        )
        if (_this.editmode) {
           var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times'});
