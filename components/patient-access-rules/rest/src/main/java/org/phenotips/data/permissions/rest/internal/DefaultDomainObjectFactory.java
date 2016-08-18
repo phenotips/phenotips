@@ -131,7 +131,8 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
             CollaboratorRepresentation collaboratorObject =
                 this.createCollaboratorRepresentation(patientAccess, collaborator);
 
-            collaboratorObject.withLinks(this.autolinker.get().forSecondaryResource(CollaboratorResource.class, uriInfo)
+            collaboratorObject.withLinks(this.autolinker.get()
+                .forSecondaryResource(CollaboratorResource.class, uriInfo)
                 .withExtraParameters("collaborator-id", this.entitySerializer.serialize(collaborator.getUser()))
                 .withGrantedRight(patientAccess.getAccessLevel().getGrantedRight())
                 .build());
@@ -153,7 +154,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         Collaborator collaborator)
     {
         CollaboratorRepresentation result = this.loadUserSummary(
-            new CollaboratorRepresentation(), collaborator.getUser(), collaborator.getType());
+            new CollaboratorRepresentation(), collaborator.getUser(), collaborator.getCollaboratorType());
         result.withLevel(collaborator.getAccessLevel().getName());
         return result;
     }
