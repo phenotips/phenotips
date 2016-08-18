@@ -27,27 +27,25 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 /**
- * Resource for working with individual {@link org.phenotips.vocabulary.VocabularyTerm}.
+ * Resource for working with individual {@link org.phenotips.vocabulary.VocabularyTerm} when the containing vocabulary
+ * is not known.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M2
  */
 @Unstable("New API introduced in 1.3")
-@Path("/vocabularies/terms/{vocabulary-id}/{term-id}")
+@Path("/vocabularies/terms/{term-id}")
 @Relation("https://phenotips.org/rel/vocabularyTerm")
-public interface VocabularyTermResource
+public interface VocabularyTermResolveResource
 {
     /**
-     * Retrieves a JSON representation of the {@link org.phenotips.vocabulary.VocabularyTerm} by searching the specified
-     * vocabulary.
+     * Retrieves a JSON representation of the {@link org.phenotips.vocabulary.VocabularyTerm} by resolving the term
+     * using its prefix.
      *
-     * @param vocabularyId the vocabulary identifier, which is also used as a prefix in every term identifier from that
-     *            vocabulary, for example {@code HP} or {@code MIM}
      * @param termId the term identifier, in the format {@code <vocabulary prefix>:<term id>}, for example
      *            {@code HP:0002066}
-     * @return the requested term, or an error if the term doesn't exist in this vocabulary
+     * @return the requested term, or an error if the term could not be resolved
      */
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    Response getTerm(@PathParam("vocabulary-id") String vocabularyId, @PathParam("term-id") String termId);
+    Response resolveTerm(@PathParam("term-id") String termId);
 }

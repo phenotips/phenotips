@@ -18,8 +18,7 @@
 package org.phenotips.vocabularies.rest.internal;
 
 import org.phenotips.rest.Autolinker;
-import org.phenotips.vocabularies.rest.VocabularyTermResource;
-import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabularies.rest.VocabularyTermResolveResource;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
@@ -33,19 +32,18 @@ import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 /**
- * Default implementation of the {@link VocabularyTermResource}.
+ * Default implementation of the {@link VocabularyTermResolveResource}.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M2
  */
 @Component
-@Named("org.phenotips.vocabularies.rest.internal.DefaultVocabularyTermResource")
+@Named("org.phenotips.vocabularies.rest.internal.DefaultVocabularyTermResolveResource")
 @Singleton
-public class DefaultVocabularyTermResource extends XWikiResource implements VocabularyTermResource
+public class DefaultVocabularyTermResolveResource extends XWikiResource implements VocabularyTermResolveResource
 {
     @Inject
     private VocabularyManager vm;
@@ -54,21 +52,15 @@ public class DefaultVocabularyTermResource extends XWikiResource implements Voca
     private Provider<Autolinker> autolinker;
 
     @Override
-    public Response getTerm(String vocabularyId, String termId)
+    public Response resolveTerm(String termId)
     {
-        if (StringUtils.isEmpty(vocabularyId) || StringUtils.isEmpty(termId)) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        Vocabulary vocabulary = this.vm.getVocabulary(vocabularyId);
-        if (vocabulary == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        VocabularyTerm term = vocabulary.getTerm(termId);
+        VocabularyTerm term = this.vm.resolveTerm(termId);
         if (term == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         JSONObject rep = term.toJSON();
-        rep.put("links", this.autolinker.get().forResource(getClass(), this.uriInfo).build());
+        rep.put("links", this.autolinker.get().forResource(getClass(), this.uriInfo)
+            .withExtraParameters("vocabulary-id", term.getVocabulary().getIdentifier()).build());
         return Response.ok(rep, MediaType.APPLICATION_JSON_TYPE).build();
     }
 }
