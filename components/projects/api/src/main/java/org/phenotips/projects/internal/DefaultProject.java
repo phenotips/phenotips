@@ -22,17 +22,18 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.entities.PrimaryEntity;
+import org.phenotips.entities.internal.AbstractPrimaryEntityGroup;
 import org.phenotips.projects.data.Project;
 import org.phenotips.templates.data.Template;
+import org.phenotips.templates.data.TemplateRepository;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.AttachmentReference;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
-import org.xwiki.query.QueryManager;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
@@ -44,6 +45,7 @@ import java.util.Set;
 
 import javax.inject.Provider;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,17 +55,16 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
+ * TODO remove class fan out style check suppressing.
+ *
  * @version $Id$
  */
-public class DefaultProject implements Project
+public class DefaultProject extends AbstractPrimaryEntityGroup<PrimaryEntity> implements Project
 {
     private static final String OPEN_FOR_CONTRIBUTION_KEY = "openProjectForContribution";
 
-    private String projectId;
-
+    // TODO remove
     private XWikiDocument projectObject;
-
-    private DocumentReference projectReference;
 
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(DefaultProject.class);
@@ -75,39 +76,14 @@ public class DefaultProject implements Project
      */
     public DefaultProject(XWikiDocument projectObject)
     {
+        super(projectObject);
         this.projectObject = projectObject;
-        this.projectReference = this.projectObject.getDocumentReference();
-        this.projectId = this.projectReference.getName();
-    }
-
-    @Override
-    public DocumentReference getReference()
-    {
-        return projectReference;
-    }
-
-    @Override
-    public String getId()
-    {
-        return this.projectId;
-    }
-
-    @Override
-    public String getName()
-    {
-        return this.projectReference.getName();
     }
 
     @Override
     public String getFullName()
     {
-        return projectReference.toString();
-    }
-
-    @Override
-    public String getDescription()
-    {
-        return this.projectObject.getContent();
+        return this.getDocument().toString();
     }
 
     @Override
@@ -118,7 +94,7 @@ public class DefaultProject implements Project
             DocumentAccessBridge documentAccessBridge =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
             List<AttachmentReference> attachmentRefs =
-                documentAccessBridge.getAttachmentReferences(this.getReference());
+                documentAccessBridge.getAttachmentReferences(this.getDocument());
             if (attachmentRefs.size() > 0) {
                 avatarURL = documentAccessBridge.getAttachmentURL(attachmentRefs.get(0), true);
             } else {
@@ -183,13 +159,28 @@ public class DefaultProject implements Project
     @Override
     public Collection<Template> getTemplates()
     {
-        return this.getDefaultProjectHelper().getTemplates(projectObject);
+        Collection<PrimaryEntity> templatesAsEntities = this.getMembersOfType(Template.CLASS_REFERENCE);
+        Collection<Template> templates = new HashSet<>(templatesAsEntities.size());
+        for (PrimaryEntity entity : templatesAsEntities) {
+            templates.add((Template) entity);
+        }
+        return templates;
     }
 
     @Override
-    public boolean setTemplates(Collection<EntityReference> templates)
+    public boolean setTemplates(Collection<String> templateIds)
     {
-        return this.getDefaultProjectHelper().setTemplates(projectObject, templates);
+        Collection<PrimaryEntity> existingTemplates = this.getMembersOfType(Template.CLASS_REFERENCE);
+        for (PrimaryEntity template : existingTemplates) {
+            this.removeMember(template);
+        }
+
+        for (String id : templateIds) {
+            Template template = this.getTemplateRepository().get(id);
+            this.addMember(template);
+        }
+
+        return true;
     }
 
     @Override
@@ -208,13 +199,13 @@ public class DefaultProject implements Project
         }
 
         DefaultProject otherProject = (DefaultProject) obj;
-        return this.projectId.equals(otherProject.projectId);
+        return this.getId().equals(otherProject.getId());
     }
 
     @Override
     public int hashCode()
     {
-        return this.projectId.hashCode();
+        return this.getId().hashCode();
     }
 
     @Override
@@ -289,17 +280,6 @@ public class DefaultProject implements Project
         return null;
     }
 
-    private QueryManager getQueryManager()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager()
-                .getInstance(QueryManager.class);
-        } catch (ComponentLookupException e) {
-            // Should not happen
-        }
-        return null;
-    }
-
     private UserManager getUserManager()
     {
         try {
@@ -343,4 +323,33 @@ public class DefaultProject implements Project
         return null;
     }
 
+    private TemplateRepository getTemplateRepository()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(TemplateRepository.class,
+                    "Study");
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
+    @Override
+    public EntityReference getMemberType()
+    {
+        //TODO
+        return Template.CLASS_REFERENCE;
+    }
+
+    @Override
+    public EntityReference getType()
+    {
+        return Project.CLASS_REFERENCE;
+    }
+
+    @Override
+    public void updateFromJSON(JSONObject json)
+    {
+        // TODO Auto-generated method stub
+    }
 }
