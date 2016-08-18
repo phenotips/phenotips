@@ -116,11 +116,11 @@
   #end
   #set ($discard = $project.setCollaborators($observers, $contributors, $leaders))
   ##
-  #set ($templates = [])
-  #foreach ($template in $templatesString)
-    #set ($discard = $templates.add($services.model.resolveDocument($template)))
+  #set ($templateIds = [])
+  #foreach ($id in $templatesString)
+    #set ($discard = $templateIds.add($id))
   #end
-  #set ($discard = $project.setTemplates($templates))
+  #set ($discard = $project.setTemplates($templateIds))
 #end
 {{/velocity}}</content>
 </xwikidoc>

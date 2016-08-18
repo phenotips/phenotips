@@ -21,10 +21,11 @@ import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.entities.PrimaryEntity;
+import org.phenotips.entities.PrimaryEntityGroup;
 import org.phenotips.templates.data.Template;
 
 import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collection;
@@ -32,7 +33,7 @@ import java.util.Collection;
 /**
  * @version $Id$
  */
-public interface Project extends Comparable<Project>
+public interface Project extends Comparable<Project>, PrimaryEntityGroup<PrimaryEntity>
 {
     /** The XClass used for storing project data. */
     EntityReference CLASS_REFERENCE = new EntityReference("ProjectClass", EntityType.DOCUMENT,
@@ -46,39 +47,11 @@ public interface Project extends Comparable<Project>
         new EntityReference("ProjectTemplate", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /**
-     * Returns the id of the project.
-     *
-     * @return id of the project
-     */
-    String getId();
-
-    /**
-     * Returns the document reference of the project.
-     *
-     * @return document reference of the project
-     */
-    DocumentReference getReference();
-
-    /**
-     * Returns the name of the projects.
-     *
-     * @return the name of the project
-     */
-    String getName();
-
-    /**
      * Returns the full name of project.
      *
      * @return the full name of the project
      */
     String getFullName();
-
-    /**
-     * Returns the description of the project.
-     *
-     * @return the description of the project
-     */
-    String getDescription();
 
     /**
      * Returns the logo image link of the project.
@@ -143,10 +116,10 @@ public interface Project extends Comparable<Project>
     /**
      * Sets the list of templates available for the project.
      *
-     * @param templates collection of templates
+     * @param templateIds collection of template ids
      * @return true if successful
      */
-    boolean setTemplates(Collection<EntityReference> templates);
+    boolean setTemplates(Collection<String> templateIds);
 
     /**
      * Returns the highest access level the current user has.

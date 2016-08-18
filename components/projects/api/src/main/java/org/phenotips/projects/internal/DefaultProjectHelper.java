@@ -22,9 +22,6 @@ import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.internal.DefaultCollaborator;
 import org.phenotips.projects.access.ProjectAccessLevel;
-import org.phenotips.projects.data.Project;
-import org.phenotips.templates.data.Template;
-import org.phenotips.templates.data.TemplateRepository;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
@@ -48,7 +45,6 @@ import org.slf4j.Logger;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.ListProperty;
 
 /**
  * Handles setting and getting of templates and collaborators in a project.
@@ -62,8 +58,6 @@ public class DefaultProjectHelper
     private static final String ACCESS_KEY = "access";
 
     private static final String COLLABORATOR_KEY = "collaborator";
-
-    private static final String TEMPLATE_FIELD_NAME = "templates";
 
     @Inject
     @Named("observer")
@@ -94,9 +88,6 @@ public class DefaultProjectHelper
 
     @Inject
     private Provider<XWikiContext> contextProvider;
-
-    @Inject
-    private TemplateRepository templateRepository;
 
     /**
      * Sets the list of project collaborators.
@@ -196,73 +187,5 @@ public class DefaultProjectHelper
         }
 
         return collaborators;
-    }
-
-    /**
-     * Returns a collection templates available for the project.
-     *
-     * @param projectObject xwiki object of project
-     * @return a collection of templates
-     */
-    public Collection<Template> getTemplates(XWikiDocument projectObject)
-    {
-        DocumentReference projectReference = projectObject.getDocumentReference();
-        String projectId = projectReference.getName();
-
-        BaseObject xObject = projectObject.getXObject(Project.CLASS_REFERENCE);
-        if (xObject == null) {
-            return Collections.emptyList();
-        }
-
-        ListProperty templatesXList = null;
-        try {
-            templatesXList = (ListProperty) xObject.get(TEMPLATE_FIELD_NAME);
-        } catch (Exception e) {
-            this.logger.error("Error reading property {} from project {}.",
-                TEMPLATE_FIELD_NAME, projectId, e.getMessage());
-        }
-        if (templatesXList == null) {
-            return Collections.emptyList();
-        }
-
-        List<String> templatesList = templatesXList.getList();
-        List<Template> templates = new ArrayList<Template>();
-        if (templatesList != null) {
-            for (String templateString : templatesList) {
-                if (StringUtils.isBlank(templateString)) {
-                    continue;
-                }
-                Template t = templateRepository.get(templateString);
-                templates.add(t);
-            }
-        }
-
-        return templates;
-    }
-
-    /**
-     * Sets the list of templates available for the project.
-     *
-     * @param projectObject xwiki object of project
-     * @param templates collection of templates
-     * @return true if successful
-     */
-    public boolean setTemplates(XWikiDocument projectObject, Collection<EntityReference> templates)
-    {
-        XWikiContext xContext = this.contextProvider.get();
-        List<String> templatesList = new ArrayList<String>();
-        for (EntityReference template : templates) {
-            templatesList.add(template.toString());
-        }
-
-        try {
-            BaseObject xObject = projectObject.getXObject(Project.CLASS_REFERENCE);
-            xObject.set(TEMPLATE_FIELD_NAME, templatesList, xContext);
-            xContext.getWiki().saveDocument(projectObject, "Updated templates", true, xContext);
-            return true;
-        } catch (Exception e) {
-            this.logger.error("Error in ProjectScriptService.setTempaltes: {}", e.getMessage(), e);
-        }
-        return false;
     }
 }
