@@ -86,16 +86,16 @@ public class DefaultCollaboratorTest
         when(this.cm.getInstance(GroupManager.class)).thenReturn(this.groupManager);
     }
 
-    /** Basic tests for {@link Collaborator#getType()}. */
+    /** Basic tests for {@link Collaborator#getCollaboratorType()}. */
     @Test
     public void getType() throws ComponentLookupException
     {
         Collaborator c = new DefaultCollaborator(COLLABORATOR, access);
         when(this.usersAndGroups.getType(COLLABORATOR)).thenReturn("user", "group", "unknown", null);
-        Assert.assertEquals("user", c.getType());
-        Assert.assertEquals("group", c.getType());
-        Assert.assertEquals("unknown", c.getType());
-        Assert.assertNull(c.getType());
+        Assert.assertEquals("user", c.getCollaboratorType());
+        Assert.assertEquals("group", c.getCollaboratorType());
+        Assert.assertEquals("unknown", c.getCollaboratorType());
+        Assert.assertNull(c.getCollaboratorType());
     }
 
     /** Basic tests for {@link Collaborator#isUser()}. */

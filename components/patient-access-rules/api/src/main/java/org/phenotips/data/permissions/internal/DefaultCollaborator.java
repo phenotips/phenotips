@@ -49,7 +49,7 @@ public class DefaultCollaborator implements Collaborator
     }
 
     @Override
-    public String getType()
+    public String getCollaboratorType()
     {
         return this.getUsersAndGroups().getType(this.user);
     }
@@ -57,13 +57,13 @@ public class DefaultCollaborator implements Collaborator
     @Override
     public boolean isUser()
     {
-        return UsersAndGroups.USER.equals(getType());
+        return UsersAndGroups.USER.equals(getCollaboratorType());
     }
 
     @Override
     public boolean isGroup()
     {
-        return UsersAndGroups.GROUP.equals(getType());
+        return UsersAndGroups.GROUP.equals(getCollaboratorType());
     }
 
     @Override
