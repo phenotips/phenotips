@@ -121,20 +121,16 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
     public Response setPermissions(PermissionsRepresentation permissions, String patientId)
     {
         this.logger.debug("Setting permissions of patient record [{}] via REST", patientId);
-        // no permissions checks here, since this method is just a recombination of existing endpoints
+
         if (permissions.getOwner() == null || permissions.getCollaborators() == null
             || permissions.getVisibility() == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        try {
-            this.ownerResource.setOwner(permissions.getOwner(), patientId);
-            this.visibilityResource.setVisibility(permissions.getVisibility(), patientId);
-            this.collaboratorsResource.setCollaborators(permissions.getCollaborators(), patientId);
-        } catch (Exception ex) {
-            this.logger.error("JSON was not properly formatted");
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        }
+        // No permissions checks here, since this method is just a recombination of existing endpoints
+        this.ownerResource.setOwner(permissions.getOwner(), patientId);
+        this.visibilityResource.setVisibility(permissions.getVisibility(), patientId);
+        this.collaboratorsResource.setCollaborators(permissions.getCollaborators(), patientId);
 
         return Response.ok().build();
     }
@@ -143,21 +139,16 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
     public Response updatePermissions(PermissionsRepresentation permissions, String patientId)
     {
         this.logger.debug("Updating permissions of patient record [{}] via REST", patientId);
-        // no permissions checks here, since this method is just a recombination of existing endpoints
 
-        try {
-            if (permissions.getOwner() != null) {
-                this.ownerResource.setOwner(permissions.getOwner(), patientId);
-            }
-            if (permissions.getCollaborators() != null) {
-                this.collaboratorsResource.addCollaborators(permissions.getCollaborators(), patientId);
-            }
-            if (permissions.getVisibility() != null) {
-                this.visibilityResource.setVisibility(permissions.getVisibility(), patientId);
-            }
-        } catch (Exception ex) {
-            this.logger.error("JSON was not properly formatted");
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        // No permissions checks here, since this method is just a recombination of existing endpoints
+        if (permissions.getOwner() != null) {
+            this.ownerResource.setOwner(permissions.getOwner(), patientId);
+        }
+        if (permissions.getCollaborators() != null && permissions.getCollaborators().getCollaborators() != null) {
+            this.collaboratorsResource.addCollaborators(permissions.getCollaborators(), patientId);
+        }
+        if (permissions.getVisibility() != null) {
+            this.visibilityResource.setVisibility(permissions.getVisibility(), patientId);
         }
         return Response.ok().build();
     }

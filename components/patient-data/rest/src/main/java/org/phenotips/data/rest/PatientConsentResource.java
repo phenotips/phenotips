@@ -45,7 +45,7 @@ public interface PatientConsentResource
      *
      * @param patientId of a record whose consents to retrieve
      * @return a JSON array of all consents if the user is allowed to do so and such a record exists, otherwise a failed
-     * response.
+     *         response.
      */
     @GET
     @RequiredAccess("view")
@@ -53,6 +53,7 @@ public interface PatientConsentResource
 
     /**
      * For granting a single consent in a patient record.
+     *
      * @param patientId of the record which is to be affected
      * @param id of the consent to grant
      * @return response with code 200 if successful, or a response with a non-successful code
@@ -65,6 +66,7 @@ public interface PatientConsentResource
 
     /**
      * For revoking a single consent in a patient record.
+     *
      * @param patientId of the record which is to be affected
      * @param id of the consent to revoke
      * @return response with code 200 if successful, or a response with a non-successful code
@@ -76,11 +78,9 @@ public interface PatientConsentResource
     Response revokeConsent(@PathParam("patient-id") String patientId, String id);
 
     /**
-     * For setting a set of consents at the same time.
-     *
-     * Note: for technical reasons both grantConsent() and revokeConsent() block the
-     * given patient document for a short time, in a way that all other requests to grant or revoke a consent
-     * for the same patient will fail until the document is "unblocked". So if multiple consents should
+     * For setting a set of consents at the same time. Note: for technical reasons both grantConsent() and
+     * revokeConsent() block the given patient document for a short time, in a way that all other requests to grant or
+     * revoke a consent for the same patient will fail until the document is "unblocked". So if multiple consents should
      * be changed at the same time it is advised to use this method instead of multiple gant/revoke calls.
      *
      * @param patientId of the record which is to be affected

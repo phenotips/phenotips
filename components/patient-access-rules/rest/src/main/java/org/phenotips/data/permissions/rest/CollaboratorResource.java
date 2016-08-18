@@ -45,7 +45,8 @@ public interface CollaboratorResource
 {
     /**
      * Retrieves information about a particular collaborator. If the indicated patient record doesn't exist, or if the
-     * user sending the request doesn't have the right to view the target patient record, an error is returned.
+     * indicated user is not a collaborator, or if the user sending the request doesn't have the right to view the
+     * target patient record, an error is returned.
      *
      * @param patientId internal identifier of a patient record
      * @param collaboratorId internal id of a collaborator, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
