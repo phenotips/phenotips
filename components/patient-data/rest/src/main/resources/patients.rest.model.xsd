@@ -16,25 +16,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://phenotips.org/"
-  xmlns:phenotips="https://phenotips.org/" elementFormDefault="qualified">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://phenotips.org/rest-patients/"
+  xmlns:ptpatients="https://phenotips.org/rest-patients/" elementFormDefault="qualified" xmlns:ptcommons="https://phenotips.org/rest-commons/">
 
-  <complexType name="Link">
-    <attribute name="href" type="string"/>
-    <attribute name="rel" type="string"/>
-    <attribute name="type" type="string"/>
-    <attribute name="hrefLang" type="string"/>
-  </complexType>
-
-  <complexType name="LinkCollection">
-    <sequence>
-      <element name="link" type="phenotips:Link" minOccurs="0" maxOccurs="unbounded"/>
-    </sequence>
-  </complexType>
+  <import namespace="https://phenotips.org/rest-commons/" schemaLocation="https://phenotips.org/rest-commons.model.xsd"/>
 
   <complexType name="PatientSummary">
     <complexContent>
-      <extension base="phenotips:LinkCollection">
+      <extension base="ptcommons:LinkCollection">
         <sequence>
           <element name="id" type="string"/>
           <element name="eid" type="string"/>
@@ -50,7 +39,7 @@
 
   <complexType name="Alternative">
     <complexContent>
-      <extension base="phenotips:LinkCollection">
+      <extension base="ptcommons:LinkCollection">
         <sequence>
           <element name="id" type="string"/>
         </sequence>
@@ -60,7 +49,7 @@
 
   <complexType name="Patient">
     <complexContent>
-      <extension base="phenotips:PatientSummary">
+      <extension base="ptpatients:PatientSummary">
         <sequence>
           <any minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
@@ -77,9 +66,9 @@
   <element name="patients">
     <complexType>
       <complexContent>
-        <extension base="phenotips:LinkCollection">
+        <extension base="ptcommons:LinkCollection">
           <sequence>
-            <element name="patientSummary" type="phenotips:PatientSummary" minOccurs="0" maxOccurs="unbounded"/>
+            <element name="patientSummary" type="ptpatients:PatientSummary" minOccurs="0" maxOccurs="unbounded"/>
           </sequence>
         </extension>
       </complexContent>
@@ -89,14 +78,14 @@
   <element name="alternatives">
     <complexType>
       <complexContent>
-        <extension base="phenotips:LinkCollection">
+        <extension base="ptcommons:LinkCollection">
           <sequence>
-            <element name="patient" type="phenotips:Alternative" minOccurs="0" maxOccurs="unbounded"/>
+            <element name="patient" type="ptpatients:Alternative" minOccurs="0" maxOccurs="unbounded"/>
           </sequence>
         </extension>
       </complexContent>
     </complexType>
   </element>
 
-  <element name="patient" type="phenotips:Patient"/>
+  <element name="patient" type="ptpatients:Patient"/>
 </schema>

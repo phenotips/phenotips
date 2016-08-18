@@ -1,0 +1,1 @@
+REWRITE_SYSTEM "https://phenotips.org/patients.rest.model.xsd" "maven:org.phenotips:patient-data-rest:jar::!/patients.rest.model.xsd"

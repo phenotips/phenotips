@@ -16,25 +16,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://phenotips.org/"
-  xmlns:phenotips="https://phenotips.org/" elementFormDefault="qualified">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://phenotips.org/rest-vocabularies/"
+  xmlns:ptvocab="https://phenotips.org/rest-vocabularies/" elementFormDefault="qualified" xmlns:ptcommons="https://phenotips.org/rest-commons/">
 
-  <complexType name="Link">
-    <attribute name="href" type="string"/>
-    <attribute name="rel" type="string"/>
-    <attribute name="type" type="string"/>
-    <attribute name="hrefLang" type="string"/>
-  </complexType>
-
-  <complexType name="LinkCollection">
-    <sequence>
-      <element name="link" type="phenotips:Link" minOccurs="0" maxOccurs="unbounded"/>
-    </sequence>
-  </complexType>
+  <import namespace="https://phenotips.org/rest-commons/" schemaLocation="https://phenotips.org/rest-commons.model.xsd"/>
 
   <complexType name="Vocabulary">
     <complexContent>
-      <extension base="phenotips:LinkCollection">
+      <extension base="ptcommons:LinkCollection">
         <sequence>
           <element name="identifier" type="string"/>
           <element name="name" type="string"/>
@@ -51,7 +40,7 @@
 
   <complexType name="VocabularyTermSummary">
     <complexContent>
-      <extension base="phenotips:LinkCollection">
+      <extension base="ptcommons:LinkCollection">
         <sequence>
           <element name="id" type="string"/>
           <element name="symbol" type="string"/>
@@ -64,7 +53,7 @@
 
   <complexType name="VocabularyTerm">
     <complexContent>
-      <extension base="phenotips:VocabularyTermSummary">
+      <extension base="ptvocab:VocabularyTermSummary">
         <sequence>
           <any minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
@@ -75,28 +64,28 @@
   <element name="vocabularies">
     <complexType>
       <complexContent>
-        <extension base="phenotips:LinkCollection">
+        <extension base="ptcommons:LinkCollection">
           <sequence>
-            <element name="vocabulary" type="phenotips:Vocabulary" minOccurs="0" maxOccurs="unbounded"/>
+            <element name="vocabulary" type="ptvocab:Vocabulary" minOccurs="0" maxOccurs="unbounded"/>
           </sequence>
         </extension>
       </complexContent>
     </complexType>
   </element>
 
-  <element name="vocabulary" type="phenotips:Vocabulary"/>
+  <element name="vocabulary" type="ptvocab:Vocabulary"/>
 
   <element name="vocabularyTerms">
     <complexType>
       <complexContent>
-        <extension base="phenotips:LinkCollection">
+        <extension base="ptcommons:LinkCollection">
           <sequence>
-            <element name="vocabularyTerm" type="phenotips:VocabularyTermSummary" minOccurs="0" maxOccurs="unbounded"/>
+            <element name="vocabularyTerm" type="ptvocab:VocabularyTermSummary" minOccurs="0" maxOccurs="unbounded"/>
           </sequence>
         </extension>
       </complexContent>
     </complexType>
   </element>
 
-  <element name="vocabularyTerm" type="phenotips:VocabularyTerm"/>
+  <element name="vocabularyTerm" type="ptvocab:VocabularyTerm"/>
 </schema>

@@ -146,7 +146,24 @@
         <version>0.12.3</version>
         <configuration>
           <generatePackage>org.phenotips.data.rest.model</generatePackage>
-
+          <extension>true</extension>
+          <episodes>
+            <episode>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>phenotips-rest-commons</artifactId>
+            </episode>
+          </episodes>
+          <catalogs>
+            <catalog>
+              <dependencyResource>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>phenotips-rest-commons</artifactId>
+                <version>${project.version}</version>
+                <resource>rest-commons.cat</resource>
+              </dependencyResource>
+            </catalog>
+          </catalogs>
+          <strict>false</strict>
           <!-- Enable fluent API generation, see https://java.net/projects/jaxb2-commons/pages/Fluent-api -->
           <plugins>
             <plugin>

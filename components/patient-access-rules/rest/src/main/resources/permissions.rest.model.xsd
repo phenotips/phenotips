@@ -16,29 +16,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://phenotips.org/"
-  xmlns:phenotips="https://phenotips.org/" elementFormDefault="qualified">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://phenotips.org/rest-permissions/"
+  xmlns:ptperm="https://phenotips.org/rest-permissions/" elementFormDefault="qualified" xmlns:ptcommons="https://phenotips.org/rest-commons/">
 
-
-  <complexType name="Link">
-    <sequence>
-      <element name="allowed_methods" type="string" minOccurs="0" maxOccurs="unbounded"/>
-    </sequence>
-    <attribute name="href" type="string"/>
-    <attribute name="rel" type="string"/>
-    <attribute name="type" type="string"/>
-    <attribute name="hrefLang" type="string"/>
-  </complexType>
-
-  <complexType name="LinkCollection">
-    <sequence>
-      <element name="link" type="phenotips:Link" minOccurs="0" maxOccurs="unbounded"/>
-    </sequence>
-  </complexType>
+  <import namespace="https://phenotips.org/rest-commons/" schemaLocation="https://phenotips.org/rest-commons.model.xsd"/>
 
   <complexType name="UserSummary">
     <complexContent>
-      <extension base="phenotips:LinkCollection">
+      <extension base="ptcommons:LinkCollection">
         <sequence>
           <element name="id" type="string"/>
           <element name="name" type="string"/>
@@ -51,13 +36,13 @@
 
   <complexType name="OwnerSummary">
     <complexContent>
-      <extension base="phenotips:UserSummary"/>
+      <extension base="ptperm:UserSummary"/>
     </complexContent>
   </complexType>
 
   <complexType name="CollaboratorSummary">
     <complexContent>
-      <extension base="phenotips:UserSummary">
+      <extension base="ptperm:UserSummary">
         <sequence>
           <element name="level" type="string"/>
         </sequence>
@@ -67,9 +52,9 @@
 
   <complexType name="CollaboratorsCollection">
     <complexContent>
-      <extension base="phenotips:LinkCollection">
+      <extension base="ptcommons:LinkCollection">
         <sequence>
-          <element name="collaborator" type="phenotips:CollaboratorSummary" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="collaborator" type="ptperm:CollaboratorSummary" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
       </extension>
     </complexContent>
@@ -77,7 +62,7 @@
 
   <complexType name="VisibilitySummary">
     <complexContent>
-      <extension base="phenotips:LinkCollection">
+      <extension base="ptcommons:LinkCollection">
         <sequence>
           <element name="level" type="string"/>
           <element name="label" type="string"/>
@@ -89,9 +74,9 @@
 
   <complexType name="VisibilityOptions">
     <complexContent>
-      <extension base="phenotips:LinkCollection">
+      <extension base="ptcommons:LinkCollection">
         <sequence>
-          <element name="visibility" type="phenotips:VisibilitySummary" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="visibility" type="ptperm:VisibilitySummary" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
       </extension>
     </complexContent>
@@ -99,11 +84,11 @@
 
   <complexType name="PermissionsSummary">
     <complexContent>
-      <extension base="phenotips:LinkCollection">
+      <extension base="ptcommons:LinkCollection">
         <sequence>
-          <element name="owner" type="phenotips:OwnerSummary"/>
-          <element name="visibility" type="phenotips:VisibilitySummary"/>
-          <element name="collaborators" type="phenotips:CollaboratorsCollection"/>
+          <element name="owner" type="ptperm:OwnerSummary"/>
+          <element name="visibility" type="ptperm:VisibilitySummary"/>
+          <element name="collaborators" type="ptperm:CollaboratorsCollection"/>
         </sequence>
       </extension>
     </complexContent>
@@ -115,15 +100,15 @@
   *
   -->
 
-  <element name="ownerRepresentation" type="phenotips:OwnerSummary"/>
+  <element name="ownerRepresentation" type="ptperm:OwnerSummary"/>
 
-  <element name="collaboratorRepresentation" type="phenotips:CollaboratorSummary"/>
+  <element name="collaboratorRepresentation" type="ptperm:CollaboratorSummary"/>
 
-  <element name="visibilityRepresentation" type="phenotips:VisibilitySummary"/>
+  <element name="visibilityRepresentation" type="ptperm:VisibilitySummary"/>
 
-  <element name="collaboratorsRepresentation" type="phenotips:CollaboratorsCollection"/>
+  <element name="collaboratorsRepresentation" type="ptperm:CollaboratorsCollection"/>
 
-  <element name="visibilityOptionsRepresentation" type="phenotips:VisibilityOptions"/>
+  <element name="visibilityOptionsRepresentation" type="ptperm:VisibilityOptions"/>
 
-  <element name="permissionsRepresentation" type="phenotips:PermissionsSummary"/>
+  <element name="permissionsRepresentation" type="ptperm:PermissionsSummary"/>
 </schema>

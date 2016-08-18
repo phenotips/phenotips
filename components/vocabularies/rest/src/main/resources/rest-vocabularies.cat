@@ -1,0 +1,1 @@
+REWRITE_SYSTEM "https://phenotips.org/vocabularies.rest.model.xsd" "maven:org.phenotips:patient-data-rest:jar::!/vocabularies.rest.model.xsd"

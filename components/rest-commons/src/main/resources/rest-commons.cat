@@ -1,0 +1,1 @@
+REWRITE_SYSTEM "https://phenotips.org/rest-commons.model.xsd" "maven:org.phenotips:phenotips-rest-commons:jar::!/rest-commons.model.xsd"

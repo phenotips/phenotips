@@ -1,0 +1,1 @@
+REWRITE_SYSTEM "https://phenotips.org/permissions.rest.model.xsd" "maven:org.phenotips:patient-access-rules-rest:jar::!/permissions.rest.model.xsd"
