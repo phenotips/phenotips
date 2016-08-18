@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data.permissions.rest;
+package org.phenotips.rest;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
@@ -30,7 +30,7 @@ import org.joda.time.format.ISODateTimeFormat;
  * {@code XMLGregorianCalendar}.
  *
  * @version $Id$
- * @since 1.3M2
+ * @since 1.2M5
  */
 public class DateTimeAdapter extends XmlAdapter<String, DateTime>
 {

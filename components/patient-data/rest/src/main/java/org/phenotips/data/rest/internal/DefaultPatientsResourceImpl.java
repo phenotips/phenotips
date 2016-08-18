@@ -22,13 +22,13 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.PatientsResource;
-import org.phenotips.data.rest.Relations;
-import org.phenotips.data.rest.model.Link;
 import org.phenotips.data.rest.model.PatientSummary;
 import org.phenotips.data.rest.model.Patients;
+import org.phenotips.rest.Autolinker;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.query.Query;
@@ -44,6 +44,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -87,6 +88,9 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
 
     @Inject
     private DomainObjectFactory factory;
+
+    @Inject
+    private Provider<Autolinker> autolinker;
 
     @Override
     public Response addPatient(String json)
@@ -157,7 +161,7 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
                     }
                 }
             }
-            result.getLinks().add(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()));
+            result.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo).build());
         } catch (Exception ex) {
             this.logger.error("Failed to list patients: {}", ex.getMessage(), ex);
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);

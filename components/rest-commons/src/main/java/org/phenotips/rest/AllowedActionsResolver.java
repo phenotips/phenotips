@@ -15,9 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data.permissions.rest.internal.utils;
-
-import org.phenotips.data.permissions.AccessLevel;
+package org.phenotips.rest;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
@@ -32,15 +30,15 @@ import java.util.Set;
  */
 @Unstable
 @Role
-public interface RESTActionResolver
+public interface AllowedActionsResolver
 {
     /**
-     * Determines the set of valid HTTP methods that can be performed on a given REST endpoint.
+     * Determines the set of valid HTTP methods (actions) that can be performed on a given REST endpoint. This is done
+     * using the annotations present on the interface methods, namely each method should be allowed with one or more of
+     * the {@link javax.ws.rs.HttpMethod} annotations.
      *
      * @param restInterface the interface defining the RESTful endpoint
-     * @param accessLevel the current accessLevel, may be {@code null} in which case all methods are assumed to be
-     *            allowed
-     * @return a set of Http methods that can be performed on the provided endpoint
+     * @return a set of HTTP methods that can be performed on the provided endpoint
      */
-    Set<String> resolveActions(Class<?> restInterface, AccessLevel accessLevel);
+    Set<String> resolveActions(Class<?> restInterface);
 }

@@ -17,8 +17,8 @@
  */
 package org.phenotips.data.permissions.rest;
 
-import org.phenotips.data.permissions.rest.internal.utils.annotations.Relation;
 import org.phenotips.data.permissions.rest.model.VisibilityOptionsRepresentation;
+import org.phenotips.rest.Relation;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

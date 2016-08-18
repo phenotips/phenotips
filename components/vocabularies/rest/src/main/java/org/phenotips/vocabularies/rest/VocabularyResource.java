@@ -17,6 +17,7 @@
  */
 package org.phenotips.vocabularies.rest;
 
+import org.phenotips.rest.Relation;
 import org.phenotips.vocabularies.rest.model.Vocabulary;
 
 import org.xwiki.stability.Unstable;
@@ -35,7 +36,8 @@ import javax.ws.rs.core.Response;
  * @since 1.3M1
  */
 @Unstable("New API introduced in 1.3")
-@Path("/vocabularies/{vocabulary}")
+@Path("/vocabularies/{vocabulary-id}")
+@Relation("https://phenotips.org/rel/vocabulary")
 public interface VocabularyResource
 {
     /**
@@ -46,7 +48,7 @@ public interface VocabularyResource
      * @return a {@link Vocabulary} representation
      */
     @GET
-    Vocabulary getVocabulary(@PathParam("vocabulary") String vocabularyId);
+    Vocabulary getVocabulary(@PathParam("vocabulary-id") String vocabularyId);
 
     /**
      * Reindex the whole vocabulary, fetching the source from the specified location, or from its
@@ -58,5 +60,5 @@ public interface VocabularyResource
      * @return a {@link Response} indicating whether the indexing was successful
      */
     @POST
-    Response reindex(@PathParam("vocabulary") String vocabularyId, @QueryParam("url") String sourceUrl);
+    Response reindex(@PathParam("vocabulary-id") String vocabularyId, @QueryParam("url") String sourceUrl);
 }

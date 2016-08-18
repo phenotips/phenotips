@@ -17,6 +17,7 @@
  */
 package org.phenotips.vocabularies.rest;
 
+import org.phenotips.rest.Relation;
 import org.phenotips.vocabularies.rest.model.VocabularyTerms;
 
 import javax.ws.rs.DefaultValue;
@@ -31,7 +32,8 @@ import javax.ws.rs.QueryParam;
  * @version $Id$
  * @since 1.3M1
  */
-@Path("/vocabularies/terms/{vocabulary}/suggest")
+@Path("/vocabularies/terms/{vocabulary-id}/suggest")
+@Relation("https://phenotips.org/rel/suggest")
 public interface VocabularyTermSuggestionsResource
 {
     /**
@@ -53,7 +55,7 @@ public interface VocabularyTermSuggestionsResource
      *         {@link org.phenotips.vocabularies.rest.model.VocabularyTerm} suggestions.
      */
     @GET
-    VocabularyTerms suggest(@PathParam("vocabulary") String vocabularyId,
+    VocabularyTerms suggest(@PathParam("vocabulary-id") String vocabularyId,
         @QueryParam("input") String input,
         @QueryParam("maxResults") @DefaultValue("10") int maxResults,
         @QueryParam("sort") String sort,

@@ -22,8 +22,8 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientByExternalIdResource;
 import org.phenotips.data.rest.PatientResource;
-import org.phenotips.data.rest.Relations;
 import org.phenotips.data.rest.model.Alternatives;
+import org.phenotips.rest.Autolinker;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.EntityReference;
@@ -41,6 +41,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -89,6 +90,9 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
     @Named("current")
     private EntityReferenceResolver<EntityReference> currentResolver;
 
+    @Inject
+    private Provider<Autolinker> autolinker;
+
     @Override
     public Response getPatient(String eid)
     {
@@ -105,9 +109,9 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
         }
 
         JSONObject json = patient.toJSON();
-        JSONObject link = new JSONObject().accumulate("rel", Relations.SELF).accumulate("href",
-            this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patient.getId()).toString());
-        json.accumulate("links", link);
+        json.put("links", this.autolinker.get().forResource(PatientResource.class, this.uriInfo)
+            .withExtraParameters("patient-id", patient.getId())
+            .build());
         return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
     }
 

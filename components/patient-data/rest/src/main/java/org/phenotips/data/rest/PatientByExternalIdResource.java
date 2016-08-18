@@ -17,6 +17,8 @@
  */
 package org.phenotips.data.rest;
 
+import org.phenotips.rest.Relation;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -33,6 +35,7 @@ import javax.ws.rs.core.Response;
  * @since 1.2M5
  */
 @Path("/patients/eid/{eid}")
+@Relation("https://phenotips.org/rel/patientRecord")
 public interface PatientByExternalIdResource
 {
     /**

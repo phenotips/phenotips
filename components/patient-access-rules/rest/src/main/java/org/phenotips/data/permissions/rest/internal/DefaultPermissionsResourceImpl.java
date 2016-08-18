@@ -23,23 +23,20 @@ import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.OwnerResource;
 import org.phenotips.data.permissions.rest.PermissionsResource;
 import org.phenotips.data.permissions.rest.VisibilityResource;
-import org.phenotips.data.permissions.rest.internal.utils.LinkBuilder;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
-import org.phenotips.data.permissions.rest.internal.utils.RESTActionResolver;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.permissions.rest.model.CollaboratorsRepresentation;
-import org.phenotips.data.permissions.rest.model.Link;
 import org.phenotips.data.permissions.rest.model.OwnerRepresentation;
 import org.phenotips.data.permissions.rest.model.PermissionsRepresentation;
 import org.phenotips.data.permissions.rest.model.VisibilityRepresentation;
-import org.phenotips.data.rest.PatientResource;
-import org.phenotips.data.rest.Relations;
+import org.phenotips.rest.Autolinker;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rest.XWikiResource;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -65,7 +62,7 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
     private DomainObjectFactory factory;
 
     @Inject
-    private RESTActionResolver restActionResolver;
+    private Provider<Autolinker> autolinker;
 
     @Inject
     @Named("org.phenotips.data.permissions.rest.internal.DefaultOwnerResourceImpl")
@@ -95,16 +92,13 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
 
         AccessLevel accessLevel = patientAccessContext.getPatientAccess().getAccessLevel();
         // adding links into sub-parts
-        owner.withLinks(new LinkBuilder(this.uriInfo, this.restActionResolver)
-            .withAccessLevel(accessLevel)
+        owner.withLinks(this.autolinker.get().forResource(null, this.uriInfo)
             .withActionableResources(OwnerResource.class)
             .build());
-        visibility.withLinks(new LinkBuilder(this.uriInfo, this.restActionResolver)
-            .withAccessLevel(accessLevel)
+        visibility.withLinks(this.autolinker.get().forResource(null, this.uriInfo)
             .withActionableResources(VisibilityResource.class)
             .build());
-        collaborators.withLinks(new LinkBuilder(this.uriInfo, this.restActionResolver)
-            .withAccessLevel(accessLevel)
+        collaborators.withLinks(this.autolinker.get().forResource(null, this.uriInfo)
             .withActionableResources(CollaboratorsResource.class)
             .build());
 
@@ -113,12 +107,8 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
         result.withCollaborators(collaborators);
 
         // adding links relative to this context
-        result.withLinks(new LinkBuilder(this.uriInfo, this.restActionResolver)
-            .withAccessLevel(accessLevel)
-            .withRootInterface(PermissionsResource.class)
+        result.withLinks(this.autolinker.get().forResource(this.getClass(), this.uriInfo)
             .build());
-        result.getLinks().add(new Link().withRel(Relations.PATIENT_RECORD)
-            .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));
 
         return result;
     }

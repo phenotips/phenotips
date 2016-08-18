@@ -20,11 +20,10 @@ package org.phenotips.data.rest.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientResource;
-import org.phenotips.data.rest.Relations;
 import org.phenotips.data.rest.model.Alternative;
 import org.phenotips.data.rest.model.Alternatives;
-import org.phenotips.data.rest.model.Link;
 import org.phenotips.data.rest.model.PatientSummary;
+import org.phenotips.rest.Autolinker;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -41,6 +40,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.ws.rs.core.UriInfo;
 
@@ -76,6 +76,9 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     @Named("current")
     private DocumentReferenceResolver<String> stringResolver;
 
+    @Inject
+    private Provider<Autolinker> autolinker;
+
     @Override
     public PatientSummary createPatientSummary(Patient patient, UriInfo uriInfo)
     {
@@ -103,9 +106,10 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         result.withVersion(doc.getVersion());
         result.withCreatedOn(new DateTime(doc.getCreationDate()).withZone(DateTimeZone.UTC));
         result.withLastModifiedOn(new DateTime(doc.getDate()).withZone(DateTimeZone.UTC));
-        Link l = new Link().withRel(Relations.PATIENT_RECORD).withHref(
-            uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patient.getId()).toString());
-        result.getLinks().add(l);
+        result.withLinks(this.autolinker.get().forResource(null, uriInfo)
+            .withActionableResources(PatientResource.class)
+            .withExtraParameters("patient-id", patient.getId())
+            .build());
         return result;
     }
 
@@ -130,9 +134,10 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         result.withVersion(String.valueOf(summaryData[4]));
         result.withCreatedOn(new DateTime(summaryData[3]).withZone(DateTimeZone.UTC));
         result.withLastModifiedOn(new DateTime(summaryData[6]).withZone(DateTimeZone.UTC));
-        Link l = new Link().withRel(Relations.PATIENT_RECORD).withHref(
-            uriInfo.getBaseUriBuilder().path(PatientResource.class).build(doc.getName()).toString());
-        result.getLinks().add(l);
+        result.withLinks(this.autolinker.get().forResource(null, uriInfo)
+            .withActionableResources(PatientResource.class)
+            .withExtraParameters("patient-id", doc.getName())
+            .build());
         return result;
     }
 
@@ -141,7 +146,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     {
         Alternatives result = new Alternatives();
         User currentUser = this.users.getCurrentUser();
-        result.getLinks().add(new Link().withRel(Relations.SELF).withHref(uriInfo.getRequestUri().toString()));
+        result.withLinks(this.autolinker.get().forResource(getClass(), uriInfo).build());
         for (String id : alternativeIdentifiers) {
             DocumentReference reference = this.stringResolver.resolve(id, Patient.DEFAULT_DATA_SPACE);
             if (!this.access.hasAccess(Right.VIEW, currentUser == null ? null : currentUser.getProfileDocument(),
@@ -158,8 +163,10 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     {
         Alternative result = new Alternative();
         result.withId(id);
-        result.getLinks().add(new Link().withRel(Relations.PATIENT_RECORD).withHref(
-            uriInfo.getBaseUriBuilder().path(PatientResource.class).build(id).toString()));
+        result.withLinks(this.autolinker.get().forResource(null, uriInfo)
+            .withActionableResources(PatientResource.class)
+            .withExtraParameters("patient-id", id)
+            .build());
         return result;
     }
 }

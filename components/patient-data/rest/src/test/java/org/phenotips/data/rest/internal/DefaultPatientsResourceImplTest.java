@@ -23,6 +23,7 @@ import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientsResource;
 import org.phenotips.data.rest.model.PatientSummary;
 import org.phenotips.data.rest.model.Patients;
+import org.phenotips.rest.Autolinker;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -137,6 +138,14 @@ public class DefaultPatientsResourceImplTest
         doReturn("P00000001").when(this.patient).getId();
         doReturn(this.currentUser).when(this.users).getCurrentUser();
         doReturn(this.userProfileDocument).when(this.currentUser).getProfileDocument();
+
+        Autolinker autolinker = this.mocker.getInstance(Autolinker.class);
+        when(autolinker.forResource(any(Class.class), any(UriInfo.class))).thenReturn(autolinker);
+        when(autolinker.withActionableResources(any(Class.class))).thenReturn(autolinker);
+        when(autolinker.withExtraParameters(any(String.class), any(String.class))).thenReturn(autolinker);
+        when(autolinker.build()).thenReturn(Collections
+            .singletonList(new org.phenotips.rest.model.Link()
+                .withHref(this.uri.toString()).withRel("self")));
     }
 
     @Test
@@ -245,7 +254,7 @@ public class DefaultPatientsResourceImplTest
     public void listPatientsNoUserAccess() throws QueryException
     {
         Object[] patientSummaryData = new Object[7];
-        List<Object[]> patientList = new ArrayList<Object[]>();
+        List<Object[]> patientList = new ArrayList<>();
         patientList.add(patientSummaryData);
         Query query = mock(DefaultQuery.class);
         doReturn(query).when(this.queries).createQuery(anyString(), anyString());
@@ -267,7 +276,7 @@ public class DefaultPatientsResourceImplTest
     public void listPatientsUserHasAccess() throws QueryException
     {
         Object[] patientSummaryData = new Object[7];
-        List<Object[]> patientList = new ArrayList<Object[]>();
+        List<Object[]> patientList = new ArrayList<>();
         patientList.add(patientSummaryData);
         Query query = mock(DefaultQuery.class);
         doReturn(query).when(this.queries).createQuery(anyString(), anyString());
@@ -288,7 +297,7 @@ public class DefaultPatientsResourceImplTest
     @Test
     public void listPatientsSpecificNumberOfRecords() throws QueryException
     {
-        List<Object[]> patientList = new ArrayList<Object[]>();
+        List<Object[]> patientList = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
             Object[] patientSummaryData = new Object[7];
             patientList.add(patientSummaryData);
@@ -317,7 +326,7 @@ public class DefaultPatientsResourceImplTest
     @Test
     public void listPatientsGetMoreRecordsThanAdded() throws QueryException
     {
-        List<Object[]> patientList = new ArrayList<Object[]>();
+        List<Object[]> patientList = new ArrayList<>();
         for (int i = 0; i < 15; i++) {
             Object[] patientSummaryData = new Object[7];
             patientList.add(patientSummaryData);

@@ -15,7 +15,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data.rest;
+package org.phenotips.rest;
+
+import org.phenotips.rest.DateTimeAdapter;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;

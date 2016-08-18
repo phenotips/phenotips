@@ -35,6 +35,7 @@
     <module>component-registry</module>
     <module>jodatime-service</module>
     <module>default-settings</module>
+    <module>rest-commons</module>
     <module>widgets</module>
     <module>skin</module>
     <module>navigation</module>

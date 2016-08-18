@@ -22,17 +22,12 @@ import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.rest.CollaboratorResource;
-import org.phenotips.data.permissions.rest.CollaboratorsResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
-import org.phenotips.data.permissions.rest.PermissionsResource;
-import org.phenotips.data.permissions.rest.internal.utils.LinkBuilder;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
-import org.phenotips.data.permissions.rest.internal.utils.RESTActionResolver;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.permissions.rest.model.CollaboratorRepresentation;
-import org.phenotips.data.permissions.rest.model.Link;
 import org.phenotips.data.rest.PatientResource;
-import org.phenotips.data.rest.Relations;
+import org.phenotips.rest.Autolinker;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.container.Container;
@@ -42,6 +37,7 @@ import org.xwiki.rest.XWikiResource;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -77,7 +73,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     private PermissionsManager manager;
 
     @Inject
-    private RESTActionResolver restActionResolver;
+    private Provider<Autolinker> autolinker;
 
     /** Needed for retrieving the `owner` parameter during the PUT request (as part of setting a new owner). */
     @Inject
@@ -102,13 +98,9 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         }
 
         // adding links relative to this context
-        result.withLinks(new LinkBuilder(this.uriInfo, this.restActionResolver)
-            .withAccessLevel(patientAccessContext.getPatientAccess().getAccessLevel())
-            .withRootInterface(CollaboratorsResource.class)
-            .withActionableResources(CollaboratorsResource.class, PermissionsResource.class)
+        result.withLinks(this.autolinker.get().forResource(this.getClass(), this.uriInfo)
+            .withActionableResources(PatientResource.class)
             .build());
-        result.getLinks().add(new Link().withRel(Relations.PATIENT_RECORD)
-            .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));
         return result;
     }
 

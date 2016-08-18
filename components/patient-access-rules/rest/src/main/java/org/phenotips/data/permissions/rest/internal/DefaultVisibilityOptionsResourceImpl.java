@@ -21,10 +21,9 @@ import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.VisibilityOptionsResource;
-import org.phenotips.data.permissions.rest.model.Link;
 import org.phenotips.data.permissions.rest.model.VisibilityOptionsRepresentation;
 import org.phenotips.data.permissions.rest.model.VisibilityRepresentation;
-import org.phenotips.data.rest.Relations;
+import org.phenotips.rest.Autolinker;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rest.XWikiResource;
@@ -34,6 +33,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 /**
@@ -53,6 +53,9 @@ public class DefaultVisibilityOptionsResourceImpl extends XWikiResource implemen
     @Inject
     private DomainObjectFactory factory;
 
+    @Inject
+    private Provider<Autolinker> autolinker;
+
     @Override
     public VisibilityOptionsRepresentation getVisibilityOptions()
     {
@@ -61,7 +64,7 @@ public class DefaultVisibilityOptionsResourceImpl extends XWikiResource implemen
             visibilities.add(this.factory.createVisibilityRepresentation(visibility));
         }
         VisibilityOptionsRepresentation result = (new VisibilityOptionsRepresentation()).withVisibilities(visibilities);
-        result.getLinks().add(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()));
+        result.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo).build());
         return result;
     }
 }

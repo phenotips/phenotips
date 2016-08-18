@@ -17,8 +17,8 @@
  */
 package org.phenotips.data.permissions.rest;
 
-import org.phenotips.data.permissions.rest.internal.utils.annotations.Relation;
 import org.phenotips.data.permissions.rest.model.OwnerRepresentation;
+import org.phenotips.rest.Relation;
 
 import org.xwiki.component.annotation.Role;
 

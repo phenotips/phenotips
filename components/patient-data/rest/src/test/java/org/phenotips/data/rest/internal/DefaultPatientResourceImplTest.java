@@ -20,7 +20,7 @@ package org.phenotips.data.rest.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.rest.PatientResource;
-import org.phenotips.data.rest.Relations;
+import org.phenotips.rest.Autolinker;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -36,6 +36,7 @@ import org.xwiki.users.UserManager;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -141,6 +142,13 @@ public class DefaultPatientResourceImplTest
 
         Provider<XWikiContext> provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         this.context = provider.get();
+
+        Autolinker autolinker = this.mocker.getInstance(Autolinker.class);
+        when(autolinker.forResource(any(Class.class), any(UriInfo.class))).thenReturn(autolinker);
+        when(autolinker.withExtraParameters(any(String.class), any(String.class))).thenReturn(autolinker);
+        when(autolinker.build()).thenReturn(Collections
+            .singletonList(new org.phenotips.rest.model.Link()
+                .withHref(this.uriString).withRel("self")));
     }
 
     // ----------------------------Get Patient Tests----------------------------
@@ -182,7 +190,7 @@ public class DefaultPatientResourceImplTest
         JSONObject selfLink = null;
         for (int i = 0; i < links.length(); ++i) {
             JSONObject link = links.getJSONObject(i);
-            if (Relations.SELF.equals(link.getString("rel"))) {
+            if ("self".equals(link.getString("rel"))) {
                 selfLink = link;
             }
         }

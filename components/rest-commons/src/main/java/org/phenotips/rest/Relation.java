@@ -15,10 +15,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data.permissions.rest.internal.utils.annotations;
+package org.phenotips.rest;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Used for setting a resource type identifier, generally a URI. This identifier can then be used to identify the type
@@ -27,7 +30,9 @@ import java.lang.annotation.RetentionPolicy;
  * @version $Id$
  * @since 1.3M2
  */
+@Documented
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
 public @interface Relation
 {
     /**

@@ -32,6 +32,6 @@
     <xjc:simple/>
 
     <!-- Use JodaTime's DateTime for representing dates instead of JAXB's default, XMLGregorianCalendar. -->
-    <xjc:javaType name="org.joda.time.DateTime" xmlType="xs:dateTime" adapter="org.phenotips.data.permissions.rest.DateTimeAdapter"/>
+    <xjc:javaType name="org.joda.time.DateTime" xmlType="xs:dateTime" adapter="org.phenotips.rest.DateTimeAdapter"/>
   </jaxb:globalBindings>
 </jaxb:bindings>

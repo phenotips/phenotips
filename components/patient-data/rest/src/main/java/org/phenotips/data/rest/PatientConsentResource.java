@@ -17,6 +17,8 @@
  */
 package org.phenotips.data.rest;
 
+import org.phenotips.rest.Relation;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -31,7 +33,8 @@ import javax.ws.rs.core.Response;
  * @version $Id$
  * @since 1.3M1
  */
-@Path("/patients/{patient_id}/consents")
+@Path("/patients/{patient-id}/consents")
+@Relation("https://phenotips.org/rel/consents")
 public interface PatientConsentResource
 {
     /**
@@ -42,7 +45,7 @@ public interface PatientConsentResource
      * response.
      */
     @GET
-    Response getConsents(@PathParam("patient_id") String patientId);
+    Response getConsents(@PathParam("patient-id") String patientId);
 
     /**
      * For granting a single consent in a patient record.
@@ -53,7 +56,7 @@ public interface PatientConsentResource
     @PUT
     @Path("/grant")
     @Consumes(MediaType.TEXT_PLAIN)
-    Response grantConsent(@PathParam("patient_id") String patientId, String id);
+    Response grantConsent(@PathParam("patient-id") String patientId, String id);
 
     /**
      * For revoking a single consent in a patient record.
@@ -64,7 +67,7 @@ public interface PatientConsentResource
     @PUT
     @Path("/revoke")
     @Consumes(MediaType.TEXT_PLAIN)
-    Response revokeConsent(@PathParam("patient_id") String patientId, String id);
+    Response revokeConsent(@PathParam("patient-id") String patientId, String id);
 
     /**
      * For setting a set of consents at the same time.
@@ -81,5 +84,5 @@ public interface PatientConsentResource
     @PUT
     @Path("/assign")
     @Consumes(MediaType.APPLICATION_JSON)
-    Response assignConsents(@PathParam("patient_id") String patientId, String json);
+    Response assignConsents(@PathParam("patient-id") String patientId, String json);
 }

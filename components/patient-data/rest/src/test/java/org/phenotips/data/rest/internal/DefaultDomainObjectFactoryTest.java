@@ -22,6 +22,7 @@ import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.Alternatives;
 import org.phenotips.data.rest.model.PatientSummary;
+import org.phenotips.rest.Autolinker;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -38,6 +39,7 @@ import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -59,6 +61,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -139,6 +142,14 @@ public class DefaultDomainObjectFactoryTest
         when(this.uriBuilder.build(this.patientReference1.getName())).thenReturn(new URI(this.uri1));
         when(this.uriBuilder.build(this.patientReference2.getName())).thenReturn(new URI(this.uri2));
         when(this.access.hasAccess(Right.VIEW, this.userReference1, this.patientReference1)).thenReturn(true);
+
+        Autolinker autolinker = this.mocker.getInstance(Autolinker.class);
+        when(autolinker.forResource(any(Class.class), any(UriInfo.class))).thenReturn(autolinker);
+        when(autolinker.withActionableResources(any(Class.class))).thenReturn(autolinker);
+        when(autolinker.withExtraParameters(any(String.class), any(String.class))).thenReturn(autolinker);
+        when(autolinker.build()).thenReturn(Collections
+            .singletonList(new org.phenotips.rest.model.Link()
+                .withHref(this.uri1).withRel("self")));
     }
 
     @Test

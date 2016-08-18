@@ -17,8 +17,9 @@
  */
 package org.phenotips.data.permissions.rest;
 
-import org.phenotips.data.permissions.rest.internal.utils.annotations.Relation;
 import org.phenotips.data.permissions.rest.model.PermissionsRepresentation;
+import org.phenotips.rest.PATCH;
+import org.phenotips.rest.Relation;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

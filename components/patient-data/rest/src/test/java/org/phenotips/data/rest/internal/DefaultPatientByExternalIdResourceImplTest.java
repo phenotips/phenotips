@@ -22,7 +22,7 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientByExternalIdResource;
 import org.phenotips.data.rest.PatientResource;
-import org.phenotips.data.rest.Relations;
+import org.phenotips.rest.Autolinker;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -43,6 +43,7 @@ import org.xwiki.users.UserManager;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Provider;
@@ -51,6 +52,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
@@ -156,6 +158,14 @@ public class DefaultPatientByExternalIdResourceImplTest
         when(this.access.hasAccess(Right.VIEW, this.userReference, this.patientReference)).thenReturn(true);
         when(this.access.hasAccess(Right.EDIT, this.userReference, this.patientReference)).thenReturn(true);
         when(this.access.hasAccess(Right.DELETE, this.userReference, this.patientReference)).thenReturn(true);
+
+        Autolinker autolinker = this.mocker.getInstance(Autolinker.class);
+        when(autolinker.forResource(any(Class.class), any(UriInfo.class))).thenReturn(autolinker);
+        when(autolinker.withActionableResources(any(Class.class))).thenReturn(autolinker);
+        when(autolinker.withExtraParameters(any(String.class), any(String.class))).thenReturn(autolinker);
+        when(autolinker.build()).thenReturn(Collections
+            .singletonList(new org.phenotips.rest.model.Link()
+                .withHref(this.uri.toString()).withRel("self")));
     }
 
     @Test
@@ -182,8 +192,8 @@ public class DefaultPatientByExternalIdResourceImplTest
         Response response = this.component.getPatient(this.eid);
         verify(this.logger).debug("Retrieving patient record with external ID [{}] via REST", this.eid);
 
-        JSONObject links = new JSONObject().accumulate("rel", Relations.SELF).accumulate("href", "uri");
-        JSONObject json = new JSONObject().accumulate("links", links);
+        JSONObject links = new JSONObject().accumulate("rel", "self").accumulate("href", "uri");
+        JSONObject json = new JSONObject().put("links", Collections.singletonList(links));
 
         assertTrue(json.similar(response.getEntity()));
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -195,7 +205,7 @@ public class DefaultPatientByExternalIdResourceImplTest
         Query query = mock(DefaultQuery.class);
         when(this.repository.getByName(this.eid)).thenReturn(null);
         when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
-        when(query.execute()).thenReturn(new ArrayList<Object>());
+        when(query.execute()).thenReturn(new ArrayList<>());
 
         Response response = this.component.getPatient(this.eid);
         verify(this.logger).debug("No patient record with external ID [{}] exists yet", this.eid);
@@ -208,7 +218,7 @@ public class DefaultPatientByExternalIdResourceImplTest
         Query query = mock(DefaultQuery.class);
         when(this.repository.getByName(this.eid)).thenReturn(null);
         when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
-        when(query.execute()).thenReturn(new ArrayList<Object>());
+        when(query.execute()).thenReturn(new ArrayList<>());
 
         Response response = this.component.updatePatient("json", this.eid);
         verify(this.logger).debug("No patient record with external ID [{}] exists yet", this.eid);
@@ -258,7 +268,7 @@ public class DefaultPatientByExternalIdResourceImplTest
         Query query = mock(DefaultQuery.class);
         when(this.repository.getByName(this.eid)).thenReturn(null);
         when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
-        when(query.execute()).thenReturn(new ArrayList<Object>());
+        when(query.execute()).thenReturn(new ArrayList<>());
 
         Response response = this.component.deletePatient(this.eid);
 

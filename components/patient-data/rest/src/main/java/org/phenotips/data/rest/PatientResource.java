@@ -17,6 +17,8 @@
  */
 package org.phenotips.data.rest;
 
+import org.phenotips.rest.Relation;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -32,7 +34,8 @@ import javax.ws.rs.core.Response;
  * @version $Id$
  * @since 1.2M5
  */
-@Path("/patients/{id}")
+@Path("/patients/{patient-id}")
+@Relation("https://phenotips.org/rel/patientRecord")
 public interface PatientResource
 {
     /**
@@ -44,7 +47,7 @@ public interface PatientResource
      * @return the JSON representation of the requested patient, or a status message in case of error
      */
     @GET
-    Response getPatient(@PathParam("id") String id);
+    Response getPatient(@PathParam("patient-id") String id);
 
     /**
      * Update a patient record, identified by its internal PhenoTips identifier, from its JSON representation. If the
@@ -58,7 +61,7 @@ public interface PatientResource
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    Response updatePatient(String json, @PathParam("id") String id);
+    Response updatePatient(String json, @PathParam("patient-id") String id);
 
     /**
      * Delete a patient record, identified by its internal PhenoTips identifier. If the indicated patient record doesn't
@@ -70,5 +73,5 @@ public interface PatientResource
      */
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
-    Response deletePatient(@PathParam("id") String id);
+    Response deletePatient(@PathParam("patient-id") String id);
 }

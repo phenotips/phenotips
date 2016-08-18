@@ -20,9 +20,10 @@ package org.phenotips.data.rest.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.rest.PatientResource;
-import org.phenotips.data.rest.Relations;
+import org.phenotips.rest.Autolinker;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.rest.XWikiResource;
@@ -33,6 +34,7 @@ import org.xwiki.users.UserManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -70,6 +72,9 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
     @Inject
     private UserManager users;
 
+    @Inject
+    private Provider<Autolinker> autolinker;
+
     /** Fills in missing reference fields with those from the current context document to create a full reference. */
     @Inject
     @Named("current")
@@ -85,15 +90,14 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
             return Response.status(Status.NOT_FOUND).build();
         }
         User currentUser = this.users.getCurrentUser();
-        if (!this.access.hasAccess(Right.VIEW, currentUser == null ? null : currentUser.getProfileDocument(),
-            patient.getDocument())) {
+        DocumentReference currentUserProfile = currentUser == null ? null : currentUser.getProfileDocument();
+        if (!this.access.hasAccess(Right.VIEW, currentUserProfile, patient.getDocument())) {
             this.logger.debug("View access denied to user [{}] on patient record [{}]", currentUser, id);
             return Response.status(Status.FORBIDDEN).build();
         }
         JSONObject json = patient.toJSON();
-        JSONObject link = new JSONObject().accumulate("rel", Relations.SELF).accumulate("href",
-            this.uriInfo.getRequestUri().toString());
-        json.append("links", link);
+        json.put("links",
+            this.autolinker.get().forResource(getClass(), this.uriInfo).build());
         return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
     }
 

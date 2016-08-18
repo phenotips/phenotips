@@ -17,12 +17,11 @@
  */
 package org.phenotips.vocabularies.rest.internal;
 
-import org.phenotips.data.rest.Relations;
+import org.phenotips.rest.Autolinker;
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
 import org.phenotips.vocabularies.rest.VocabulariesResource;
 import org.phenotips.vocabularies.rest.VocabularyResource;
 import org.phenotips.vocabularies.rest.VocabularyTermSuggestionsResource;
-import org.phenotips.vocabularies.rest.model.Link;
 import org.phenotips.vocabularies.rest.model.Vocabularies;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
@@ -35,8 +34,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
-import javax.ws.rs.core.UriBuilder;
 
 /**
  * Default implementation for {@link VocabulariesResource} using XWiki's support for REST resources.
@@ -55,6 +54,9 @@ public class DefaultVocabulariesResource extends XWikiResource implements Vocabu
     @Inject
     private DomainObjectFactory objectFactory;
 
+    @Inject
+    private Provider<Autolinker> autolinker;
+
     @Override
     public Vocabularies getAllVocabularies()
     {
@@ -65,22 +67,14 @@ public class DefaultVocabulariesResource extends XWikiResource implements Vocabu
             Vocabulary vocab = this.vm.getVocabulary(vocabularyID);
             org.phenotips.vocabularies.rest.model.Vocabulary rep =
                 this.objectFactory.createVocabularyRepresentation(vocab);
-            List<Link> linkList = new ArrayList<>();
-            linkList.add(new Link().withHref(
-                UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(VocabularyResource.class).build(vocabularyID)
-                    .toString())
-                .withRel(Relations.VOCABULARY));
-            linkList.add(new Link().withRel(Relations.SUGGEST)
-                .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri())
-                    .path(VocabularyTermSuggestionsResource.class)
-                    .build(vocabularyID)
-                    .toString()));
-            rep.withLinks(linkList);
+            rep.withLinks(this.autolinker.get().forResource(null, this.uriInfo)
+                .withActionableResources(VocabularyResource.class, VocabularyTermSuggestionsResource.class)
+                .withExtraParameters("vocabulary-id", vocabularyID)
+                .build());
             availableVocabs.add(rep);
         }
         result.withVocabularies(availableVocabs);
-        result.withLinks(new Link().withRel(Relations.SELF)
-            .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(VocabulariesResource.class).toString()));
+        result.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo).build());
         return result;
     }
 }

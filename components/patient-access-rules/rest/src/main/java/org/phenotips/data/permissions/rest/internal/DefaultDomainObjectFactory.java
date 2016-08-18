@@ -25,13 +25,12 @@ import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.rest.CollaboratorResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
-import org.phenotips.data.permissions.rest.internal.utils.LinkBuilder;
-import org.phenotips.data.permissions.rest.internal.utils.RESTActionResolver;
 import org.phenotips.data.permissions.rest.model.CollaboratorRepresentation;
 import org.phenotips.data.permissions.rest.model.CollaboratorsRepresentation;
 import org.phenotips.data.permissions.rest.model.OwnerRepresentation;
 import org.phenotips.data.permissions.rest.model.UserSummary;
 import org.phenotips.data.permissions.rest.model.VisibilityRepresentation;
+import org.phenotips.rest.Autolinker;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.EntityReference;
@@ -42,6 +41,7 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.ws.rs.core.UriInfo;
 
@@ -70,7 +70,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     private EntityReferenceSerializer<String> entitySerializer;
 
     @Inject
-    private RESTActionResolver restActionResolver;
+    private Provider<Autolinker> autolinker;
 
     @Override
     public OwnerRepresentation createOwnerRepresentation(Patient patient)
@@ -131,10 +131,10 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
             CollaboratorRepresentation collaboratorObject =
                 this.createCollaboratorRepresentation(patientAccess, collaborator);
 
-            collaboratorObject.withLinks(new LinkBuilder(uriInfo, this.restActionResolver)
+            collaboratorObject.withLinks(this.autolinker.get().forResource(null, uriInfo)
                 .withActionableResources(CollaboratorResource.class)
                 .withExtraParameters("collaborator-id", this.entitySerializer.serialize(collaborator.getUser()))
-                .withAccessLevel(patientAccess.getAccessLevel()).build());
+                .build());
 
             result.withCollaborators(collaboratorObject);
         }

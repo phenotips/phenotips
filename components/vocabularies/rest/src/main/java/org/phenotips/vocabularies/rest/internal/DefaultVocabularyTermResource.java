@@ -17,8 +17,7 @@
  */
 package org.phenotips.vocabularies.rest.internal;
 
-import org.phenotips.data.rest.Relations;
-import org.phenotips.vocabularies.rest.VocabularyResource;
+import org.phenotips.rest.Autolinker;
 import org.phenotips.vocabularies.rest.VocabularyTermResource;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
@@ -29,10 +28,10 @@ import org.xwiki.rest.XWikiResource;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -50,6 +49,9 @@ public class DefaultVocabularyTermResource extends XWikiResource implements Voca
 {
     @Inject
     private VocabularyManager vm;
+
+    @Inject
+    private Provider<Autolinker> autolinker;
 
     @Override
     public Response getTerm(String vocabularyId, String termId)
@@ -84,13 +86,7 @@ public class DefaultVocabularyTermResource extends XWikiResource implements Voca
     {
         JSONObject rep = term.toJSON();
         // decorate with links
-        JSONObject links = new JSONObject();
-        links.accumulate(Relations.SELF, this.uriInfo.getRequestUri().toString());
-        links.accumulate(Relations.VOCABULARY, UriBuilder.fromUri(this.uriInfo.getBaseUri())
-            .path(VocabularyResource.class)
-            .build(term.getVocabulary().getAliases().iterator().next())
-            .toString());
-        rep.accumulate("links", links);
+        rep.put("links", this.autolinker.get().forResource(getClass(), this.uriInfo).build());
         return rep;
     }
 }
