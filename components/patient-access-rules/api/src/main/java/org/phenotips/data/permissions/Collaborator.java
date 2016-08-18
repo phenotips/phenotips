@@ -40,7 +40,7 @@ public interface Collaborator
     EntityReference CLASS_REFERENCE = new EntityReference("CollaboratorClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
-    String getType();
+    String getCollaboratorType();
 
     /**
      * @return true if collaborator is of type user.
