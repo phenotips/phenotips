@@ -26,6 +26,8 @@ import org.xwiki.stability.Unstable;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 /**
  * Root resource for working with vocabularies, listing all the available vocabularies.
@@ -45,5 +47,6 @@ public interface VocabulariesResource
      * @return a {@link Vocabularies} resource representing all the vocabularies that are currently available
      */
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     Vocabularies getAllVocabularies();
 }

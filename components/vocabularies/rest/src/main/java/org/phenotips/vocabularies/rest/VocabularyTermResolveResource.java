@@ -25,6 +25,8 @@ import org.xwiki.stability.Unstable;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -49,5 +51,6 @@ public interface VocabularyTermResolveResource
      * @return the requested term, or an error if the term could not be resolved
      */
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     Response resolveTerm(@PathParam("term-id") String termId);
 }

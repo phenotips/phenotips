@@ -25,7 +25,9 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 /**
  * Resource for searching in a vocabulary for terms matching an input (vocabulary suggest).
@@ -57,6 +59,7 @@ public interface VocabularyTermSuggestionsResource
      *         {@link org.phenotips.vocabularies.rest.model.VocabularyTerm} suggestions.
      */
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     VocabularyTerms suggest(@PathParam("vocabulary-id") String vocabularyId,
         @QueryParam("input") String input,
         @QueryParam("maxResults") @DefaultValue("10") int maxResults,
