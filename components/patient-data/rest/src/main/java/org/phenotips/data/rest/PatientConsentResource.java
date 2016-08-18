@@ -19,6 +19,7 @@ package org.phenotips.data.rest;
 
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
+import org.phenotips.rest.RequiredAccess;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -47,6 +48,7 @@ public interface PatientConsentResource
      * response.
      */
     @GET
+    @RequiredAccess("view")
     Response getConsents(@PathParam("patient-id") String patientId);
 
     /**
@@ -58,6 +60,7 @@ public interface PatientConsentResource
     @PUT
     @Path("/grant")
     @Consumes(MediaType.TEXT_PLAIN)
+    @RequiredAccess("edit")
     Response grantConsent(@PathParam("patient-id") String patientId, String id);
 
     /**
@@ -69,6 +72,7 @@ public interface PatientConsentResource
     @PUT
     @Path("/revoke")
     @Consumes(MediaType.TEXT_PLAIN)
+    @RequiredAccess("edit")
     Response revokeConsent(@PathParam("patient-id") String patientId, String id);
 
     /**
@@ -86,5 +90,6 @@ public interface PatientConsentResource
     @PUT
     @Path("/assign")
     @Consumes(MediaType.APPLICATION_JSON)
+    @RequiredAccess("edit")
     Response assignConsents(@PathParam("patient-id") String patientId, String json);
 }

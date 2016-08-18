@@ -145,10 +145,11 @@ public class DefaultDomainObjectFactoryTest
 
         Autolinker autolinker = this.mocker.getInstance(Autolinker.class);
         when(autolinker.forResource(any(Class.class), any(UriInfo.class))).thenReturn(autolinker);
+        when(autolinker.withGrantedRight(any(Right.class))).thenReturn(autolinker);
         when(autolinker.withActionableResources(any(Class.class))).thenReturn(autolinker);
         when(autolinker.withExtraParameters(any(String.class), any(String.class))).thenReturn(autolinker);
         when(autolinker.build()).thenReturn(Collections
-            .singletonList(new org.phenotips.rest.model.Link()
+            .singletonList(new org.phenotips.rest.model.Link().withAllowedMethods(Collections.singletonList("GET"))
                 .withHref(this.uri1).withRel("self")));
     }
 

@@ -102,15 +102,23 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
             return checkForMultipleRecords(patient, eid);
         }
         User currentUser = this.users.getCurrentUser();
+        Right grantedRight;
         if (!this.access.hasAccess(Right.VIEW, currentUser == null ? null : currentUser.getProfileDocument(),
             patient.getDocument())) {
             this.logger.debug("View access denied to user [{}] on patient record [{}]", currentUser, patient.getId());
             return Response.status(Status.FORBIDDEN).build();
+        } else {
+            grantedRight = Right.VIEW;
+        }
+        if (this.access.hasAccess(Right.EDIT, currentUser == null ? null : currentUser.getProfileDocument(),
+            patient.getDocument())) {
+            grantedRight = Right.EDIT;
         }
 
         JSONObject json = patient.toJSON();
         json.put("links", this.autolinker.get().forResource(PatientResource.class, this.uriInfo)
             .withExtraParameters("patient-id", patient.getId())
+            .withGrantedRight(grantedRight)
             .build());
         return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
     }

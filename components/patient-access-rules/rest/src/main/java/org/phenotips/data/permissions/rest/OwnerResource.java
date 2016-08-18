@@ -20,6 +20,7 @@ package org.phenotips.data.permissions.rest;
 import org.phenotips.data.permissions.rest.model.OwnerRepresentation;
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
+import org.phenotips.rest.RequiredAccess;
 
 import org.xwiki.component.annotation.Role;
 
@@ -52,6 +53,7 @@ public interface OwnerResource
      * @return REST representation of an owner of a patient record
      */
     @GET
+    @RequiredAccess("view")
     OwnerRepresentation getOwner(@PathParam("patient-id") String patientId);
 
     /**
@@ -65,6 +67,7 @@ public interface OwnerResource
      * @return a status message
      */
     @PUT
+    @RequiredAccess("manage")
     @Consumes(MediaType.APPLICATION_JSON)
     Response setOwner(OwnerRepresentation owner, @PathParam("patient-id") String patientId);
 
@@ -78,6 +81,7 @@ public interface OwnerResource
      * @return a status message
      */
     @PUT
+    @RequiredAccess("manage")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     Response setOwner(@PathParam("patient-id") String patientId);
 }

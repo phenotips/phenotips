@@ -19,6 +19,7 @@ package org.phenotips.data.rest;
 
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
+import org.phenotips.rest.RequiredAccess;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -50,6 +51,7 @@ public interface PatientByExternalIdResource
      * @return the JSON representation of the requested patient, or a status message in case of error
      */
     @GET
+    @RequiredAccess("view")
     Response getPatient(@PathParam("eid") String eid);
 
     /**
@@ -65,6 +67,7 @@ public interface PatientByExternalIdResource
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
+    @RequiredAccess("edit")
     Response updatePatient(String json, @PathParam("eid") String eid);
 
     /**
@@ -78,5 +81,6 @@ public interface PatientByExternalIdResource
      */
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
+    @RequiredAccess("edit")
     Response deletePatient(@PathParam("eid") String eid);
 }

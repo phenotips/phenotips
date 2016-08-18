@@ -134,6 +134,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
             collaboratorObject.withLinks(this.autolinker.get().forResource(null, uriInfo)
                 .withActionableResources(CollaboratorResource.class)
                 .withExtraParameters("collaborator-id", this.entitySerializer.serialize(collaborator.getUser()))
+                .withGrantedRight(patientAccess.getAccessLevel().getGrantedRight())
                 .build());
 
             result.withCollaborators(collaboratorObject);

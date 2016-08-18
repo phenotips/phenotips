@@ -20,6 +20,7 @@ package org.phenotips.data.permissions.rest;
 import org.phenotips.data.permissions.rest.model.CollaboratorRepresentation;
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
+import org.phenotips.rest.RequiredAccess;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -51,6 +52,7 @@ public interface CollaboratorResource
      * @return REST representation of a single collaborator
      */
     @GET
+    @RequiredAccess("view")
     CollaboratorRepresentation getCollaborator(@PathParam("patient-id") String patientId,
         @PathParam("collaborator-id") String collaboratorId);
 
@@ -66,6 +68,7 @@ public interface CollaboratorResource
      * @return a status message
      */
     @PUT
+    @RequiredAccess("manage")
     @Consumes(MediaType.APPLICATION_JSON)
     Response setLevel(CollaboratorRepresentation collaborator, @PathParam("patient-id") String patientId,
         @PathParam("collaborator-id") String collaboratorId);
@@ -81,6 +84,7 @@ public interface CollaboratorResource
      * @return a status message
      */
     @PUT
+    @RequiredAccess("manage")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     Response setLevel(@PathParam("patient-id") String patientId, @PathParam("collaborator-id") String collaboratorId);
 
@@ -94,6 +98,7 @@ public interface CollaboratorResource
      * @return a status message
      */
     @DELETE
+    @RequiredAccess("manage")
     Response deleteCollaborator(@PathParam("patient-id") String patientId,
         @PathParam("collaborator-id") String collaboratorId);
 }

@@ -20,6 +20,7 @@ package org.phenotips.data.rest;
 import org.phenotips.data.rest.model.Patients;
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
+import org.phenotips.rest.RequiredAccess;
 
 import org.xwiki.rest.resources.RootResource;
 
@@ -51,6 +52,7 @@ public interface PatientsResource
      */
     @Consumes(MediaType.APPLICATION_JSON)
     @POST
+    @RequiredAccess("edit")
     Response addPatient(String json);
 
     /**
@@ -61,6 +63,7 @@ public interface PatientsResource
      * @return a list of patient records
      */
     @GET
+    @RequiredAccess("view")
     Patients listPatients(
         @QueryParam("start") @DefaultValue("0") Integer start,
         @QueryParam("number") @DefaultValue("30") Integer number,

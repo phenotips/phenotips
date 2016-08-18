@@ -18,6 +18,7 @@
 package org.phenotips.rest;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.security.authorization.Right;
 import org.xwiki.stability.Unstable;
 
 import java.util.Set;
@@ -35,10 +36,11 @@ public interface AllowedActionsResolver
     /**
      * Determines the set of valid HTTP methods (actions) that can be performed on a given REST endpoint. This is done
      * using the annotations present on the interface methods, namely each method should be allowed with one or more of
-     * the {@link javax.ws.rs.HttpMethod} annotations.
+     * the {@link javax.ws.rs.HttpMethod} annotated annotations, and a {@link RequiredRight} annotation.
      *
      * @param restInterface the interface defining the RESTful endpoint
+     * @param grantedRight the right granted for the current user on the entity being accessed
      * @return a set of HTTP methods that can be performed on the provided endpoint
      */
-    Set<String> resolveActions(Class<?> restInterface);
+    Set<String> resolveActions(Class<?> restInterface, Right grantedRight);
 }

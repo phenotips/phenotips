@@ -22,6 +22,7 @@ import org.phenotips.data.rest.PatientResource;
 import org.phenotips.rest.PATCH;
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
+import org.phenotips.rest.RequiredAccess;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -51,6 +52,7 @@ public interface PermissionsResource
      * @return REST representation of the permissions of a patient record
      */
     @GET
+    @RequiredAccess("view")
     PermissionsRepresentation getPermissions(@PathParam("patient-id") String patientId);
 
     /**
@@ -64,6 +66,7 @@ public interface PermissionsResource
      * @return a status message
      */
     @PUT
+    @RequiredAccess("manage")
     @Consumes(MediaType.APPLICATION_JSON)
     Response setPermissions(PermissionsRepresentation permissions, @PathParam("patient-id") String patientId);
 
@@ -81,6 +84,7 @@ public interface PermissionsResource
      * @return a status message
      */
     @PATCH
+    @RequiredAccess("manage")
     @Consumes(MediaType.APPLICATION_JSON)
     Response updatePermissions(PermissionsRepresentation permissions, @PathParam("patient-id") String patientId);
 }

@@ -99,6 +99,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
 
         // adding links relative to this context
         result.withLinks(this.autolinker.get().forResource(this.getClass(), this.uriInfo)
+            .withGrantedRight(patientAccessContext.getPatientAccess().getAccessLevel().getGrantedRight())
             .withActionableResources(PatientResource.class)
             .build());
         return result;

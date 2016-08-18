@@ -20,6 +20,7 @@ package org.phenotips.data.permissions.rest;
 import org.phenotips.data.permissions.rest.model.VisibilityRepresentation;
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
+import org.phenotips.rest.RequiredAccess;
 
 import org.xwiki.component.annotation.Role;
 
@@ -53,6 +54,7 @@ public interface VisibilityResource
      * @return a representation of {@link Visibility} of the patient
      */
     @GET
+    @RequiredAccess("view")
     VisibilityRepresentation getVisibility(@PathParam("patient-id") String patientId);
 
     /**
@@ -65,6 +67,7 @@ public interface VisibilityResource
      * @return a status message
      */
     @PUT
+    @RequiredAccess("manage")
     @Consumes(MediaType.APPLICATION_JSON)
     Response setVisibility(VisibilityRepresentation visibility, @PathParam("patient-id") String patientId);
 
@@ -77,6 +80,7 @@ public interface VisibilityResource
      * @return a status message
      */
     @PUT
+    @RequiredAccess("manage")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     Response setVisibility(@PathParam("patient-id") String patientId);
 }

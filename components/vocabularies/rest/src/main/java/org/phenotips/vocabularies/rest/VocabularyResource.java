@@ -19,6 +19,7 @@ package org.phenotips.vocabularies.rest;
 
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
+import org.phenotips.rest.RequiredAccess;
 import org.phenotips.vocabularies.rest.model.Vocabulary;
 
 import org.xwiki.stability.Unstable;
@@ -62,5 +63,6 @@ public interface VocabularyResource
      * @return a {@link Response} indicating whether the indexing was successful
      */
     @POST
+    @RequiredAccess("admin")
     Response reindex(@PathParam("vocabulary-id") String vocabularyId, @QueryParam("url") String sourceUrl);
 }

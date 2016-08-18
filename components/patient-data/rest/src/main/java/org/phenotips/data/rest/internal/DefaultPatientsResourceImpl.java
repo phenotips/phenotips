@@ -161,12 +161,27 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
                     }
                 }
             }
-            result.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo).build());
+            result.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo)
+                .withGrantedRight(getGrantedRight()).build());
         } catch (Exception ex) {
             this.logger.error("Failed to list patients: {}", ex.getMessage(), ex);
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
 
         return result;
+    }
+
+    private Right getGrantedRight()
+    {
+        User currentUser = this.users.getCurrentUser();
+        DocumentReference currentUserProfile = currentUser == null ? null : currentUser.getProfileDocument();
+        EntityReference dataSpace = this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE);
+        Right grantedRight = Right.ILLEGAL;
+        if (this.access.hasAccess(Right.EDIT, currentUserProfile, dataSpace)) {
+            grantedRight = Right.EDIT;
+        } else if (this.access.hasAccess(Right.VIEW, currentUserProfile, dataSpace)) {
+            grantedRight = Right.VIEW;
+        }
+        return grantedRight;
     }
 }

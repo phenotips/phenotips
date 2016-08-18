@@ -27,6 +27,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.rest.XWikiRestComponent;
+import org.xwiki.security.authorization.Right;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -63,6 +64,8 @@ public class DefaultAutolinker implements Autolinker
 
     private Class<?> baseResource;
 
+    private Right grantedRight;
+
     private Set<Class<?>> linkedActionableInterfaces = new LinkedHashSet<>();
 
     private Map<String, String> extraParameters = new HashMap<>();
@@ -84,6 +87,20 @@ public class DefaultAutolinker implements Autolinker
                 this.extraParameters.put(entry.getKey(), entry.getValue().get(0));
             }
         }
+        return this;
+    }
+
+    /**
+     * Set the access level that the current user has on the main entity. This access level limits which actions are
+     * available, and thus can be linked to.
+     *
+     * @param right the access level of the current user
+     * @return self, for chaining method calls
+     */
+    @Override
+    public DefaultAutolinker withGrantedRight(Right right)
+    {
+        this.grantedRight = right;
         return this;
     }
 
@@ -178,7 +195,7 @@ public class DefaultAutolinker implements Autolinker
 
     private Set<String> getAllowedMethods(Class<?> restInterface)
     {
-        return this.actionResolver.resolveActions(restInterface);
+        return this.actionResolver.resolveActions(restInterface, this.grantedRight);
     }
 
     private Link getActionableLinkToSelf()

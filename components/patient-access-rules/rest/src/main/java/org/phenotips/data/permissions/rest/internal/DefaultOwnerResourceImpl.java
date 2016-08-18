@@ -85,6 +85,7 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
 
         // adding links relative to this context
         result.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo)
+            .withGrantedRight(patientAccessContext.getPatientAccess().getAccessLevel().getGrantedRight())
             .withActionableResources(PatientResource.class)
             .build());
 

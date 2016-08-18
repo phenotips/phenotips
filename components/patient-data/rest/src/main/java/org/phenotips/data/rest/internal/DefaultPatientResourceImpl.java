@@ -91,13 +91,24 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
         }
         User currentUser = this.users.getCurrentUser();
         DocumentReference currentUserProfile = currentUser == null ? null : currentUser.getProfileDocument();
+        Right grantedRight;
         if (!this.access.hasAccess(Right.VIEW, currentUserProfile, patient.getDocument())) {
             this.logger.debug("View access denied to user [{}] on patient record [{}]", currentUser, id);
             return Response.status(Status.FORBIDDEN).build();
+        } else {
+            grantedRight = Right.VIEW;
+        }
+        if (this.access.hasAccess(Right.EDIT, currentUserProfile, patient.getDocument())) {
+            grantedRight = Right.EDIT;
+        }
+        Right manageRight = Right.toRight("manage");
+        if (manageRight != Right.ILLEGAL
+            && this.access.hasAccess(manageRight, currentUserProfile, patient.getDocument())) {
+            grantedRight = manageRight;
         }
         JSONObject json = patient.toJSON();
         json.put("links",
-            this.autolinker.get().forResource(getClass(), this.uriInfo).build());
+            this.autolinker.get().forResource(getClass(), this.uriInfo).withGrantedRight(grantedRight).build());
         return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
     }
 

@@ -161,10 +161,11 @@ public class DefaultPatientByExternalIdResourceImplTest
 
         Autolinker autolinker = this.mocker.getInstance(Autolinker.class);
         when(autolinker.forResource(any(Class.class), any(UriInfo.class))).thenReturn(autolinker);
+        when(autolinker.withGrantedRight(any(Right.class))).thenReturn(autolinker);
         when(autolinker.withActionableResources(any(Class.class))).thenReturn(autolinker);
         when(autolinker.withExtraParameters(any(String.class), any(String.class))).thenReturn(autolinker);
         when(autolinker.build()).thenReturn(Collections
-            .singletonList(new org.phenotips.rest.model.Link()
+            .singletonList(new org.phenotips.rest.model.Link().withAllowedMethods(Collections.singletonList("GET"))
                 .withHref(this.uri.toString()).withRel("self")));
     }
 
@@ -192,7 +193,8 @@ public class DefaultPatientByExternalIdResourceImplTest
         Response response = this.component.getPatient(this.eid);
         verify(this.logger).debug("Retrieving patient record with external ID [{}] via REST", this.eid);
 
-        JSONObject links = new JSONObject().accumulate("rel", "self").accumulate("href", "uri");
+        JSONObject links = new JSONObject().accumulate("rel", "self").accumulate("href", "uri")
+            .put("allowedMethods", new JSONArray(Collections.singletonList("GET")));
         JSONObject json = new JSONObject().put("links", Collections.singletonList(links));
 
         assertTrue(json.similar(response.getEntity()));

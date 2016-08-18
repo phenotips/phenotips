@@ -18,8 +18,10 @@
 package org.phenotips.rest.internal;
 
 import org.phenotips.rest.AllowedActionsResolver;
+import org.phenotips.rest.RequiredAccess;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.security.authorization.Right;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -40,7 +42,7 @@ import javax.ws.rs.HttpMethod;
 public class DefaultAllowedActionsResolver implements AllowedActionsResolver
 {
     @Override
-    public Set<String> resolveActions(Class<?> restInterface)
+    public Set<String> resolveActions(Class<?> restInterface, Right grantedRight)
     {
         Method[] methods = restInterface.getMethods();
         Set<String> result = new HashSet<>();
@@ -48,7 +50,16 @@ public class DefaultAllowedActionsResolver implements AllowedActionsResolver
             for (Annotation annotation : method.getAnnotations()) {
                 HttpMethod httpMethod = annotation.annotationType().getAnnotation(HttpMethod.class);
                 if (httpMethod != null) {
-                    result.add(httpMethod.value());
+                    RequiredAccess rightAnnotation = method.getAnnotation(RequiredAccess.class);
+                    if (grantedRight != null && rightAnnotation != null) {
+                        Right right = Right.toRight(rightAnnotation.value());
+                        if (right == grantedRight || grantedRight.getImpliedRights() != null
+                            && grantedRight.getImpliedRights().contains(right)) {
+                            result.add(httpMethod.value());
+                        }
+                    } else {
+                        result.add(httpMethod.value());
+                    }
                 }
             }
         }

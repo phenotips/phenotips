@@ -21,6 +21,7 @@ import org.phenotips.data.permissions.rest.model.CollaboratorsRepresentation;
 import org.phenotips.rest.PATCH;
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
+import org.phenotips.rest.RequiredAccess;
 
 import org.xwiki.component.annotation.Role;
 
@@ -54,6 +55,7 @@ public interface CollaboratorsResource
      * @return REST representation of a collection of patient record's collaborators
      */
     @GET
+    @RequiredAccess("view")
     CollaboratorsRepresentation getCollaborators(@PathParam("patient-id") String patientId);
 
     /**
@@ -67,6 +69,7 @@ public interface CollaboratorsResource
      * @return a status message
      */
     @PATCH
+    @RequiredAccess("manage")
     @Consumes(MediaType.APPLICATION_JSON)
     Response addCollaborators(CollaboratorsRepresentation collaborators, @PathParam("patient-id") String patientId);
 
@@ -80,6 +83,7 @@ public interface CollaboratorsResource
      * @return a status message
      */
     @PATCH
+    @RequiredAccess("manage")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     Response addCollaborators(@PathParam("patient-id") String patientId);
 
@@ -93,6 +97,7 @@ public interface CollaboratorsResource
      * @return a status message
      */
     @PUT
+    @RequiredAccess("manage")
     @Consumes(MediaType.APPLICATION_JSON)
     Response setCollaborators(CollaboratorsRepresentation collaborators, @PathParam("patient-id") String patientId);
 
@@ -104,5 +109,6 @@ public interface CollaboratorsResource
      * @return a status message
      */
     @DELETE
+    @RequiredAccess("manage")
     Response deleteAllCollaborators(@PathParam("patient-id") String patientId);
 }

@@ -96,6 +96,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
             this.factory.createCollaboratorsRepresentation(patientAccessContext.getPatient(), this.uriInfo);
 
         result.withLinks(this.autolinker.get().forResource(this.getClass(), this.uriInfo)
+            .withGrantedRight(patientAccessContext.getPatientAccess().getAccessLevel().getGrantedRight())
             .withActionableResources(PatientResource.class)
             .build());
 

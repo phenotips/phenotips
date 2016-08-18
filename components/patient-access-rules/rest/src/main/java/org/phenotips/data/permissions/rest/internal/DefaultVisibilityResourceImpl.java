@@ -85,6 +85,7 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
 
         AccessLevel accessLevel = patientAccessContext.getPatientAccess().getAccessLevel();
         result.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo)
+            .withGrantedRight(accessLevel.getGrantedRight())
             .withActionableResources(PatientResource.class)
             .build());
         return result;

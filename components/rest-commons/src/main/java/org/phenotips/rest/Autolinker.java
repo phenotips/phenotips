@@ -20,6 +20,7 @@ package org.phenotips.rest;
 import org.phenotips.rest.model.Link;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.security.authorization.Right;
 
 import java.util.Collection;
 import java.util.Map;
@@ -47,6 +48,15 @@ public interface Autolinker
      * @return self, for chaining method calls
      */
     Autolinker forResource(Class<?> baseResource, UriInfo uriInfo);
+
+    /**
+     * Set the access level that the current user has on the main entity. This access level limits which actions are
+     * available, and thus can be linked to.
+     *
+     * @param right the access level of the current user
+     * @return self, for chaining method calls
+     */
+    Autolinker withGrantedRight(Right right);
 
     /**
      * Add other resources that should be linked to.
