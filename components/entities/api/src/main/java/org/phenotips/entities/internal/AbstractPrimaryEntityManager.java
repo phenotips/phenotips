@@ -165,6 +165,9 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
     {
         try {
             DocumentModelBridge document = this.bridge.getDocument(reference);
+            if (document == null || ((XWikiDocument) document).isNew()) {
+                return null;
+            }
             return load(document);
         } catch (Exception ex) {
             this.logger.error("Failed to read document [{}]: {}", reference, ex.getMessage());
