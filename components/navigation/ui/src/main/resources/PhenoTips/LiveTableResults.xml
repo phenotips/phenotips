@@ -484,10 +484,15 @@
       #set($discard = $whereParams.add("${colname}"))
       ## Converts each used value into correct type
       #set($numberType = $propClass.get($colname).getProperty('numberType').getValue())
-      #if($numberType == 'integer')
+      ##
+      #if($numberType == 'integer' &amp;&amp; $filterValue.indexOf('.') &lt; 0 &amp;&amp; $filterValueLowLimit.indexOf('.') &lt; 0 &amp;&amp; $filterValueHighLimit.indexOf('.') &lt; 0)
         #set($typedFilterValue = $mathtool.toInteger($filterValue))
         #set($typedFilterValueLowLimit = $mathtool.toInteger($filterValueLowLimit))
         #set($typedFilterValueHighLimit = $mathtool.toInteger($filterValueHighLimit))
+      #elseif($numberType == 'long' &amp;&amp; $filterValue.indexOf('.') &lt; 0 &amp;&amp; $filterValueLowLimit.indexOf('.') &lt; 0 &amp;&amp; $filterValueHighLimit.indexOf('.') &lt; 0)
+        #set($typedFilterValue = $mathtool.toDouble($filterValue).longValue())
+        #set($typedFilterValueLowLimit = $mathtool.toDouble($filterValueLowLimit).longValue().valueOf($filterValueLowLimit))
+        #set($typedFilterValueHighLimit = $mathtool.toDouble($filterValueHighLimit).longValue().valueOf($filterValueHighLimit))
       #elseif($numberType == 'float')
         #set($typedFilterValue = $mathtool.toDouble($filterValue).floatValue())
         #set($typedFilterValueLowLimit = $mathtool.toDouble($filterValueLowLimit).floatValue())
@@ -496,10 +501,6 @@
         #set($typedFilterValue = $mathtool.toDouble($filterValue))
         #set($typedFilterValueLowLimit = $mathtool.toDouble($filterValueLowLimit))
         #set($typedFilterValueHighLimit = $mathtool.toDouble($filterValueHighLimit))
-      #else ## Long
-        #set($typedFilterValue = $mathtool.toDouble($filterValue).longValue())
-        #set($typedFilterValueLowLimit = $mathtool.toDouble($filterValueLowLimit).longValue().valueOf($filterValueLowLimit))
-        #set($typedFilterValueHighLimit = $mathtool.toDouble($filterValueHighLimit).longValue().valueOf($filterValueHighLimit))
       #end
       ## Checks present filter value
       #if ("$!typedFilterValue" != '')
