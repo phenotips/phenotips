@@ -41,9 +41,9 @@
 {{html clean="false"}}&lt;h2&gt;$services.localization.render('phenotips.templateBindingSheet.templatesSectionHeader')&lt;/h2&gt;{{/html}}
 
 #set ($templates = $services.templates.getAll())
-#if ($xcontext.action != 'export' &amp;&amp; $templates.size() &gt; 0)
+#if ($xcontext.action != 'export' &amp;&amp; $templates.hasNext())
   #if ($!{request.patientId} != '')
-  #set ($template = $services.projects.getTemplateForPatient($request.patientId))
+    #set ($template = $services.projects.getTemplateForPatient($request.patientId))
     #if ("$!template" != '')
       {{html clean="false"}}&lt;p class='xHint'&gt;$services.localization.render('phenotips.templateBindingClass.patientCurrentTemplate')&lt;/p&gt;{{/html}}
       (% class='buttonwrapper' %)
@@ -58,7 +58,7 @@
     (%%)
   #end
 #end
-#if ($templates.size() &gt; 0)
+#if ($templates.hasNext())
   (% class="xHint" %)$services.localization.render('phenotips.templateBindingSheet.selectTemplate')(%%)
   #if ($doc.getObject('PhenoTips.StudyBindingClass'))
     : $doc.getObject('PhenoTips.StudyBindingClass').studyReference
