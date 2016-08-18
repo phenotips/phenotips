@@ -154,7 +154,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     {
         String accessLevel = patientAccess.getAccessLevel(collaborator.getUser()).toString();
         CollaboratorRepresentation result = this.loadUserSummary(
-            new CollaboratorRepresentation(), collaborator.getUser(), collaborator.getType());
+            new CollaboratorRepresentation(), collaborator.getUser(), collaborator.getCollaboratorType());
         result.withLevel(accessLevel);
         return result;
     }

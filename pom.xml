@@ -518,6 +518,18 @@
               <justification>To return a (recursive) list of users in a collaborator. Currently used only in projects.</justification>
             </difference>
             <difference>
+              <className>org/phenotips/data/permissions/Collaborator</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getCollaboratorType()</method>
+              <justification>Renamed from getType(). getType() will be implemented from PrimaryEntity in the future.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/permissions/Collaborator</className>
+              <differenceType>7002</differenceType>
+              <method>java.lang.String getType()</method>
+              <justification>Renamed to getCollaboratorType().</justification>
+            </difference>
+            <difference>
               <className>org/phenotips/groups/Group</className>
               <differenceType>7012</differenceType>
               <method>java.util.Collection getAllUserNames()</method>
