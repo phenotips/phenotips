@@ -17,6 +17,7 @@
  */
 package org.phenotips.vocabularies.rest;
 
+import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
 import org.phenotips.vocabularies.rest.model.VocabularyTerms;
 
@@ -33,6 +34,7 @@ import javax.ws.rs.QueryParam;
  * @since 1.3M1
  */
 @Path("/vocabularies/terms/{vocabulary-id}/suggest")
+@ParentResource(VocabularyResource.class)
 @Relation("https://phenotips.org/rel/suggest")
 public interface VocabularyTermSuggestionsResource
 {

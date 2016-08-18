@@ -142,8 +142,9 @@ public class DefaultAutolinker implements Autolinker
         if (this.baseResource != null) {
             links.add(this.getActionableLinkToSelf());
         }
-        Set<Class<?>> endpoints = new LinkedHashSet<>();
+        Set<Class<?>> endpoints = new LinkedHashSet<>(findChildResources());
         endpoints.addAll(this.linkedActionableInterfaces);
+        endpoints.add(getParentResource());
         for (Class<?> endpoint : endpoints) {
             if (endpoint != null) {
                 Link link = this.getActionableLink(endpoint);
@@ -186,6 +187,36 @@ public class DefaultAutolinker implements Autolinker
             .withRel("self")
             .withAllowedMethods(this.getAllowedMethods(this.baseResource))
             .withHref(this.uriInfo.getRequestUri().toString());
+    }
+
+    private Class<?> getParentResource()
+    {
+        if (this.baseResource == null) {
+            return null;
+        }
+        ParentResource parent = this.baseResource.getAnnotation(ParentResource.class);
+        if (parent != null) {
+            return parent.value();
+        }
+        return null;
+    }
+
+    private Set<Class<?>> findChildResources()
+    {
+        Set<Class<?>> result = new LinkedHashSet<>();
+        for (XWikiRestComponent resource : this.resources.get()) {
+            Class<?> clazz = resource.getClass();
+            while (clazz != null) {
+                for (Class<?> i : clazz.getInterfaces()) {
+                    ParentResource parentAnnotation = i.getAnnotation(ParentResource.class);
+                    if (parentAnnotation != null && parentAnnotation.value().equals(this.baseResource)) {
+                        result.add(findResourceInterface(resource));
+                    }
+                }
+                clazz = clazz.getSuperclass();
+            }
+        }
+        return result;
     }
 
     private Class<?> findResourceInterface(Object instance)

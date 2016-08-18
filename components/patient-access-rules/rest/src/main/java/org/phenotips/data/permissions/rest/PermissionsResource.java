@@ -18,7 +18,9 @@
 package org.phenotips.data.permissions.rest;
 
 import org.phenotips.data.permissions.rest.model.PermissionsRepresentation;
+import org.phenotips.data.rest.PatientResource;
 import org.phenotips.rest.PATCH;
+import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
 
 import javax.ws.rs.Consumes;
@@ -38,6 +40,7 @@ import javax.ws.rs.core.Response;
  */
 @Path("/patients/{patient-id}/permissions")
 @Relation("https://phenotips.org/rel/permissions")
+@ParentResource(PatientResource.class)
 public interface PermissionsResource
 {
     /**

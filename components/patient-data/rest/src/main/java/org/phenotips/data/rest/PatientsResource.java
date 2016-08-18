@@ -18,7 +18,10 @@
 package org.phenotips.data.rest;
 
 import org.phenotips.data.rest.model.Patients;
+import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
+
+import org.xwiki.rest.resources.RootResource;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -37,6 +40,7 @@ import javax.ws.rs.core.Response;
  */
 @Path("/patients")
 @Relation("https://phenotips.org/rel/patientRecordsRepository")
+@ParentResource(RootResource.class)
 public interface PatientsResource
 {
     /**

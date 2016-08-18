@@ -15,33 +15,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data.permissions.rest;
+package org.phenotips.rest;
 
-import org.phenotips.data.permissions.rest.model.VisibilityOptionsRepresentation;
-import org.phenotips.rest.ParentResource;
-import org.phenotips.rest.Relation;
-
-import org.xwiki.rest.resources.RootResource;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Resource for working with patient independent features of {@link org.phenotips.data.permissions.Visibility}.
+ * Used for identifying a parent resource. This means that the annotated REST resource interface would normally be used
+ * as a descendant of the resource interface specified in {@link #value()}
  *
  * @version $Id$
  * @since 1.3M2
  */
-@Path("/permissions/visibility")
-@Relation("https://phenotips.org/rel/visibilityOptions")
-@ParentResource(RootResource.class)
-public interface VisibilityOptionsResource
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface ParentResource
 {
     /**
-     * The system has several predefined options of visibility levels.
-     *
-     * @return all the visibility levels present in the system
+     * @return the specified resource type identifier, usually in the form of an URI
      */
-    @GET
-    VisibilityOptionsRepresentation getVisibilityOptions();
+    Class<?> value();
 }

@@ -17,9 +17,11 @@
  */
 package org.phenotips.vocabularies.rest;
 
+import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
 import org.phenotips.vocabularies.rest.model.Vocabularies;
 
+import org.xwiki.rest.resources.RootResource;
 import org.xwiki.stability.Unstable;
 
 import javax.ws.rs.GET;
@@ -33,6 +35,7 @@ import javax.ws.rs.Path;
  */
 @Unstable("New API introduced in 1.3")
 @Path("/vocabularies")
+@ParentResource(RootResource.class)
 @Relation("https://phenotips.org/rel/vocabularies")
 public interface VocabulariesResource
 {

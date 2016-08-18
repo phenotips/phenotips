@@ -17,6 +17,7 @@
  */
 package org.phenotips.data.rest;
 
+import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
 
 import javax.ws.rs.Consumes;
@@ -35,6 +36,7 @@ import javax.ws.rs.core.Response;
  */
 @Path("/patients/{patient-id}/consents")
 @Relation("https://phenotips.org/rel/consents")
+@ParentResource(PatientResource.class)
 public interface PatientConsentResource
 {
     /**
