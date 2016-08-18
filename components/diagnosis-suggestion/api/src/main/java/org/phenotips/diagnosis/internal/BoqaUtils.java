@@ -61,7 +61,10 @@ public class BoqaUtils implements Utils
         if (!workspace.exists()) {
             workspace.mkdirs();
         }
-        FileCache.setCacheDirectory(new File(workspace, ".cache").getAbsolutePath());
+        File cacheFile = new File(workspace, ".cache");
+        if (cacheFile.exists()) {
+            FileCache.setCacheDirectory(cacheFile.getAbsolutePath());
+        }
         /* todo. Test if the name change has an effect. */
         final WorkSet ws = new WorkSet("PhenoTips");
         ws.setOboPath(oboFileName);
