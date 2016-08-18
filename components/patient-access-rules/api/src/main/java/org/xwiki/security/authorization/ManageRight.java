@@ -65,7 +65,7 @@ public class ManageRight extends Right
             @Override
             public Set<Right> getImpliedRights()
             {
-                return new RightSet(Right.EDIT, Right.DELETE);
+                return new RightSet(Right.VIEW, Right.EDIT, Right.DELETE);
             }
 
             @Override
