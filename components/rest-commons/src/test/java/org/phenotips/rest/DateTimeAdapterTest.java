@@ -17,8 +17,6 @@
  */
 package org.phenotips.rest;
 
-import org.phenotips.rest.DateTimeAdapter;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.IllegalFieldValueException;
@@ -28,6 +26,8 @@ import org.junit.Test;
 
 /**
  * Test for the {@link DateTimeAdapter} class.
+ *
+ * @version $Id$
  */
 public class DateTimeAdapterTest
 {

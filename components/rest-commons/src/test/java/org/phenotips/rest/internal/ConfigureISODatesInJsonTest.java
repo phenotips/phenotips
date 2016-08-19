@@ -35,6 +35,8 @@ import static org.hamcrest.Matchers.isA;
 
 /**
  * Tests for the {@link ConfigureISODatesInJson} component.
+ *
+ * @version $Id$
  */
 public class ConfigureISODatesInJsonTest
 {
