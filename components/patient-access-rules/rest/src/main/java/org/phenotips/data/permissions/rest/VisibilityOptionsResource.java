@@ -25,6 +25,8 @@ import org.xwiki.rest.resources.RootResource;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 /**
  * Resource for working with patient independent features of {@link org.phenotips.data.permissions.Visibility}.
@@ -43,5 +45,6 @@ public interface VisibilityOptionsResource
      * @return all the visibility levels present in the system
      */
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     VisibilityOptionsRepresentation getVisibilityOptions();
 }

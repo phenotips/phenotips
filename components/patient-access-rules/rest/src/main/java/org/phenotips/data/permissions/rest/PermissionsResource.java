@@ -29,6 +29,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -52,6 +53,7 @@ public interface PermissionsResource
      * @return REST representation of the permissions of a patient record
      */
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @RequiredAccess("view")
     PermissionsRepresentation getPermissions(@PathParam("patient-id") String patientId);
 
