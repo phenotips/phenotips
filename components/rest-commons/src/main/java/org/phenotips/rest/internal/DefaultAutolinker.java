@@ -62,6 +62,8 @@ public class DefaultAutolinker implements Autolinker
 
     private UriInfo uriInfo;
 
+    private boolean subresource;
+
     private Class<?> baseResource;
 
     private Right grantedRight;
@@ -87,6 +89,14 @@ public class DefaultAutolinker implements Autolinker
                 this.extraParameters.put(entry.getKey(), entry.getValue().get(0));
             }
         }
+        return this;
+    }
+
+    @Override
+    public DefaultAutolinker forSecondaryResource(Class<?> subResource, UriInfo uriInfo)
+    {
+        forResource(subResource, uriInfo);
+        this.subresource = true;
         return this;
     }
 
@@ -156,12 +166,34 @@ public class DefaultAutolinker implements Autolinker
     public Collection<Link> build()
     {
         List<Link> links = new LinkedList<>();
+        if (this.subresource) {
+            return buildForSecondaryResource();
+        }
         if (this.baseResource != null) {
             links.add(this.getActionableLinkToSelf());
         }
         Set<Class<?>> endpoints = new LinkedHashSet<>(findChildResources());
         endpoints.addAll(this.linkedActionableInterfaces);
         endpoints.add(getParentResource());
+        for (Class<?> endpoint : endpoints) {
+            if (endpoint != null) {
+                Link link = this.getActionableLink(endpoint);
+                if (link != null) {
+                    links.add(link);
+                }
+            }
+        }
+        return links;
+    }
+
+    private Collection<Link> buildForSecondaryResource()
+    {
+        List<Link> links = new LinkedList<>();
+        Set<Class<?>> endpoints = new LinkedHashSet<>();
+        if (this.baseResource != null) {
+            endpoints.add(this.baseResource);
+        }
+        endpoints.addAll(this.linkedActionableInterfaces);
         for (Class<?> endpoint : endpoints) {
             if (endpoint != null) {
                 Link link = this.getActionableLink(endpoint);

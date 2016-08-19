@@ -38,16 +38,31 @@ import javax.ws.rs.core.UriInfo;
 public interface Autolinker
 {
     /**
-     * Set the resource for which to generate links. Calling this method is mandatory. If a {@code null} base resource
-     * is given, then the resources to be linked to must be explicitly identified via calls to the
-     * {@link #withActionableResources} method.
+     * Set the main resource for which to generate links. When using the autolinker to generate links for a main
+     * resource, links are created for the resource itself (as a "self" link"), for the {@link ParentResource parent
+     * resource}, for {@link RelatedResources other related resources}, for child resources that identify it as their
+     * parent, and for {@link #withActionableResources other resources explicitly identified}. Calling either this
+     * method or {@link #forSecondaryResource} is mandatory. If a {@code null} base resource is given, then the
+     * resources to be linked to must be explicitly identified via calls to the {@link #withActionableResources} method.
      *
-     * @param baseResource a class, may be {@code null} if links for embedded resources are to be generated
+     * @param baseResource a class, may be {@code null} if links for explicitly identifier resources are to be generated
      * @param uriInfo the URI currently being requested, with information needed for generating the links; must not be
-     *    {@code null}
+     *            {@code null}
      * @return self, for chaining method calls
      */
     Autolinker forResource(Class<?> baseResource, UriInfo uriInfo);
+
+    /**
+     * Set a sub-resource for which to generate links. Calling either {@link #forResource} or this method is mandatory.
+     * When using the autolinker to generate links for a sub-resource, links are created for the resource itself with
+     * the annotated {@link Relation} and for {@link #withActionableResources other resources explicitly identified}.
+     *
+     * @param subResource a class, may be {@code null} if links for explicitly identifier resources are to be generated
+     * @param uriInfo the URI currently being requested, with information needed for generating the links; must not be
+     *            {@code null}
+     * @return self, for chaining method calls
+     */
+    Autolinker forSecondaryResource(Class<?> subResource, UriInfo uriInfo);
 
     /**
      * Set the access level that the current user has on the main entity. This access level limits which actions are

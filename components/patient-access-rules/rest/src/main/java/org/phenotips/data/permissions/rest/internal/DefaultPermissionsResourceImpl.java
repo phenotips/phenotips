@@ -92,17 +92,14 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
 
         AccessLevel accessLevel = patientAccessContext.getPatientAccess().getAccessLevel();
         // adding links into sub-parts
-        owner.withLinks(this.autolinker.get().forResource(null, this.uriInfo)
+        owner.withLinks(this.autolinker.get().forSecondaryResource(OwnerResource.class, this.uriInfo)
             .withGrantedRight(accessLevel.getGrantedRight())
-            .withActionableResources(OwnerResource.class)
             .build());
-        visibility.withLinks(this.autolinker.get().forResource(null, this.uriInfo)
+        visibility.withLinks(this.autolinker.get().forSecondaryResource(VisibilityResource.class, this.uriInfo)
             .withGrantedRight(accessLevel.getGrantedRight())
-            .withActionableResources(VisibilityResource.class)
             .build());
-        collaborators.withLinks(this.autolinker.get().forResource(null, this.uriInfo)
+        collaborators.withLinks(this.autolinker.get().forSecondaryResource(CollaboratorsResource.class, this.uriInfo)
             .withGrantedRight(accessLevel.getGrantedRight())
-            .withActionableResources(CollaboratorsResource.class)
             .build());
 
         result.withOwner(owner);
