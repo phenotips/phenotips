@@ -84,7 +84,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     {
         this.logger.debug("Retrieving collaborator with id [{}] of patient record [{}] via REST", collaboratorId,
             patientId);
-        // besides getting the patient, checks that the user has view access
+        // Besides getting the patient, checks that the user has view access
         PatientAccessContext patientAccessContext = this.secureContextFactory.getReadContext(patientId);
 
         CollaboratorRepresentation result;

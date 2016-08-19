@@ -45,12 +45,12 @@ import javax.ws.rs.core.Response;
 public interface CollaboratorResource
 {
     /**
-     * Retrieves information about a particular collaborator. If the indicated patient record doesn't exist, or if the
-     * indicated user is not a collaborator, or if the user sending the request doesn't have the right to view the
+     * Retrieve information about a particular collaborator. If the indicated patient record doesn't exist, or if the
+     * indicated principal is not a collaborator, or if the user sending the request doesn't have the right to view the
      * target patient record, an error is returned.
      *
      * @param patientId internal identifier of a patient record
-     * @param collaboratorId internal id of a collaborator, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
+     * @param collaboratorId internal id of a principal, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
      * @return REST representation of a single collaborator
      */
     @GET
@@ -60,14 +60,15 @@ public interface CollaboratorResource
         @PathParam("collaborator-id") String collaboratorId);
 
     /**
-     * Updates the access level of a collaborator. If the indicated patient record doesn't exist, or if the user sending
-     * the request doesn't have the right to edit the target patient record, or if no access level is sent, or if the
-     * requested access level isn't valid, then no change is performed and an error is returned.
+     * Update the access level of a collaborator. If the targeted principal wasn't a collaborator before, then it is
+     * added as one. If the indicated patient record doesn't exist, or if the user sending the request doesn't have the
+     * right to edit the target patient record, or if no access level is sent, or if the requested access level isn't
+     * valid, then no change is performed and an error is returned.
      *
      * @param collaborator a collaborator representation, must contain the "level" property, with a value which is a
      *            valid access level; all other properties are ignored
      * @param patientId internal identifier of a patient record
-     * @param collaboratorId internal id of a collaborator, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
+     * @param collaboratorId internal id of a principal, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
      * @return a status message
      */
     @PUT
@@ -77,13 +78,14 @@ public interface CollaboratorResource
         @PathParam("collaborator-id") String collaboratorId);
 
     /**
-     * Updates the access level of a collaborator. If the indicated patient record doesn't exist, or if the user sending
-     * the request doesn't have the right to edit the target patient record, or if no access level is sent, or if the
-     * requested access level isn't valid, then no change is performed and an error is returned. The request must
-     * contain a "level" property, with a value which is a valid access level.
+     * Update the access level of a collaborator. If the targeted principal wasn't a collaborator before, then it is
+     * added as one. If the indicated patient record doesn't exist, or if the user sending the request doesn't have the
+     * right to edit the target patient record, or if no access level is sent, or if the requested access level isn't
+     * valid, then no change is performed and an error is returned. The request must contain a "level" property, with a
+     * value which is a valid access level.
      *
      * @param patientId internal identifier of a patient record
-     * @param collaboratorId internal id of a collaborator, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
+     * @param collaboratorId internal id of a principal, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
      * @return a status message
      */
     @PUT
@@ -92,12 +94,12 @@ public interface CollaboratorResource
     Response setLevel(@PathParam("patient-id") String patientId, @PathParam("collaborator-id") String collaboratorId);
 
     /**
-     * Removes a particular collaborator from a patient record. If the indicated patient record doesn't exist, or if the
+     * Remove a particular collaborator from a patient record. If the indicated patient record doesn't exist, or if the
      * user sending the request doesn't have the right to edit the target patient record, or if the requested
      * collaborator isn't actually a collaborator, no change is performed and an error is returned.
      *
      * @param patientId internal identifier of a patient record
-     * @param collaboratorId internal id of a collaborator, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
+     * @param collaboratorId internal id of a principal, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
      * @return a status message
      */
     @DELETE
