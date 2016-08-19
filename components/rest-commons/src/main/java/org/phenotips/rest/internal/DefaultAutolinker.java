@@ -74,13 +74,6 @@ public class DefaultAutolinker implements Autolinker
 
     private Map<String, String> extraParameters = new HashMap<>();
 
-    /**
-     * Set the resource for which to generate links. Calling this method is mandatory.
-     *
-     * @param baseResource a class
-     * @param uriInfo the URI used for accessing the base resource
-     * @return self, for chaining method calls
-     */
     @Override
     public DefaultAutolinker forResource(Class<?> baseResource, UriInfo uriInfo)
     {
@@ -102,13 +95,6 @@ public class DefaultAutolinker implements Autolinker
         return this;
     }
 
-    /**
-     * Set the access level that the current user has on the main entity. This access level limits which actions are
-     * available, and thus can be linked to.
-     *
-     * @param right the access level of the current user
-     * @return self, for chaining method calls
-     */
     @Override
     public DefaultAutolinker withGrantedRight(Right right)
     {
@@ -116,12 +102,6 @@ public class DefaultAutolinker implements Autolinker
         return this;
     }
 
-    /**
-     * Add other resources that should be linked to.
-     *
-     * @param restInterfaces a list of other REST resources to be added
-     * @return self, for chaining method calls
-     */
     @Override
     public DefaultAutolinker withActionableResources(Class<?>... restInterfaces)
     {
@@ -131,13 +111,6 @@ public class DefaultAutolinker implements Autolinker
         return this;
     }
 
-    /**
-     * Add or replace path parameter values that may be used in the link generation.
-     *
-     * @param parameters additional parameter values to be used, may be empty; the map keys are the parameter names, as
-     *            used in the path specification, and the map values are the desired values
-     * @return self, for chaining method calls
-     */
     @Override
     public DefaultAutolinker withExtraParameters(Map<String, String> parameters)
     {
@@ -145,13 +118,6 @@ public class DefaultAutolinker implements Autolinker
         return this;
     }
 
-    /**
-     * Add or replace a path parameter value that may be used in the link generation.
-     *
-     * @param parameterName the name of the path parameter
-     * @param value the value to use, replacing any previous value that may have been set before
-     * @return self, for chaining method calls
-     */
     @Override
     public DefaultAutolinker withExtraParameters(String parameterName, String value)
     {
@@ -159,11 +125,6 @@ public class DefaultAutolinker implements Autolinker
         return this;
     }
 
-    /**
-     * Build the link collection.
-     *
-     * @return a collection of links, may be empty
-     */
     @Override
     public Collection<Link> build()
     {
