@@ -53,7 +53,7 @@ public class ConfigureNonNullFieldsInJson extends AbstractEventListener
         for (ConverterHelper converter : Engine.getInstance().getRegisteredConverters()) {
             if (converter instanceof JacksonConverter) {
                 JacksonConverter jconverter = (JacksonConverter) converter;
-                jconverter.getObjectMapper().getSerializationConfig().withSerializationInclusion(Inclusion.NON_NULL);
+                jconverter.getObjectMapper().setSerializationInclusion(Inclusion.NON_NULL);
             }
         }
     }
