@@ -20,6 +20,7 @@ package org.phenotips.rest.internal;
 import org.phenotips.rest.AllowedActionsResolver;
 import org.phenotips.rest.Autolinker;
 import org.phenotips.rest.ParentResource;
+import org.phenotips.rest.RelatedResources;
 import org.phenotips.rest.Relation;
 import org.phenotips.rest.model.Link;
 
@@ -30,6 +31,7 @@ import org.xwiki.rest.XWikiRestComponent;
 import org.xwiki.security.authorization.Right;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -173,8 +175,9 @@ public class DefaultAutolinker implements Autolinker
             links.add(this.getActionableLinkToSelf());
         }
         Set<Class<?>> endpoints = new LinkedHashSet<>(findChildResources());
-        endpoints.addAll(this.linkedActionableInterfaces);
         endpoints.add(getParentResource());
+        endpoints.addAll(this.linkedActionableInterfaces);
+        endpoints.addAll(getRelatedResources());
         for (Class<?> endpoint : endpoints) {
             if (endpoint != null) {
                 Link link = this.getActionableLink(endpoint);
@@ -248,6 +251,25 @@ public class DefaultAutolinker implements Autolinker
             return parent.value();
         }
         return null;
+    }
+
+    private Set<Class<?>> getRelatedResources()
+    {
+        if (this.baseResource == null) {
+            return Collections.emptySet();
+        }
+        Set<Class<?>> result = new LinkedHashSet<>();
+        RelatedResources related = this.baseResource.getAnnotation(RelatedResources.class);
+        if (related == null) {
+            return result;
+        }
+        for (Class<?> resource : related.value()) {
+            Class<?> clazz = findResourceInterface(resource);
+            if (clazz != null) {
+                result.add(findResourceInterface(resource));
+            }
+        }
+        return result;
     }
 
     private Set<Class<?>> findChildResources()

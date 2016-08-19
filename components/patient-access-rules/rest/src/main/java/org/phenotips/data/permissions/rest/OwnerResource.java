@@ -18,7 +18,9 @@
 package org.phenotips.data.permissions.rest;
 
 import org.phenotips.data.permissions.rest.model.OwnerRepresentation;
+import org.phenotips.data.rest.PatientResource;
 import org.phenotips.rest.ParentResource;
+import org.phenotips.rest.RelatedResources;
 import org.phenotips.rest.Relation;
 import org.phenotips.rest.RequiredAccess;
 
@@ -43,6 +45,7 @@ import javax.ws.rs.core.Response;
 @Path("/patients/{patient-id}/permissions/owner")
 @Relation("https://phenotips.org/rel/owner")
 @ParentResource(PermissionsResource.class)
+@RelatedResources(PatientResource.class)
 public interface OwnerResource
 {
     /**

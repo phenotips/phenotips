@@ -18,7 +18,9 @@
 package org.phenotips.data.permissions.rest;
 
 import org.phenotips.data.permissions.rest.model.CollaboratorRepresentation;
+import org.phenotips.data.rest.PatientResource;
 import org.phenotips.rest.ParentResource;
+import org.phenotips.rest.RelatedResources;
 import org.phenotips.rest.Relation;
 import org.phenotips.rest.RequiredAccess;
 
@@ -42,6 +44,7 @@ import javax.ws.rs.core.Response;
 @Path("/patients/{patient-id}/permissions/collaborators/{collaborator-id}")
 @Relation("https://phenotips.org/rel/collaborator")
 @ParentResource(CollaboratorsResource.class)
+@RelatedResources({ PermissionsResource.class, PatientResource.class })
 public interface CollaboratorResource
 {
     /**

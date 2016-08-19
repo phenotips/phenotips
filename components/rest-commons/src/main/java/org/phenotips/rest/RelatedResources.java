@@ -24,9 +24,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used for identifying a parent resource. This means that the annotated REST resource interface would normally be used
- * as a child of the resource interface specified in {@link #value()}. A link from the parent to the child, and a link
- * from the child to the parent, will be added automatically in their representations when using the {@link Autolinker}.
+ * Used for identifying related resource. This means that the annotated REST resource interface would normally be used
+ * as a descendant of the resource interface specified in {@link #value()} Used for identifying related resources. Links
+ * from the annotated resource to the designated resources will be added automatically in its representation when using
+ * the {@link Autolinker}.
  *
  * @version $Id$
  * @since 1.3M2
@@ -34,10 +35,10 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface ParentResource
+public @interface RelatedResources
 {
     /**
-     * @return the designated parent resource
+     * @return the designated related resources
      */
-    Class<?> value();
+    Class<?>[] value();
 }
