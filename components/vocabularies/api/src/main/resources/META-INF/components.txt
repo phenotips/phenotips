@@ -4,3 +4,4 @@ org.phenotips.vocabulary.script.VocabularyScriptService
 org.phenotips.vocabulary.internal.solr.DefaultSolrCoreContainerHandler
 org.phenotips.vocabulary.internal.solr.DefaultSolrVocabularyResourceManager
 org.phenotips.vocabulary.listeners.PatientVocabularyVersionRecorder
+org.phenotips.vocabulary.internal.translation.MSMachineTranslator

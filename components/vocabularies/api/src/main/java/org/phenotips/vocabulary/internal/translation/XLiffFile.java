@@ -18,6 +18,8 @@
 package org.phenotips.vocabulary.internal.translation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +50,11 @@ final class XLiffFile
     private static final int INITIAL_MAP_SIZE = 16384;
 
     /**
+     * The separator for target strings.
+     */
+    private static final String TARGET_SEPARATOR = "#";
+
+    /**
      * The version attribute.
      */
     @JacksonXmlProperty(localName = "version", isAttribute = true)
@@ -59,14 +66,31 @@ final class XLiffFile
     public File file = new File();
 
     /**
-     * Get one single translation unit.
+     * Get the first value of a translation unit, or null if there isn't one.
      *
      * @param id the id of the term
      * @param property the property
      * @return the translated string
      */
     @JsonIgnore
-    public String getString(String id, String property)
+    public String getFirstString(String id, String property)
+    {
+        List<String> strings = getStrings(id, property);
+        if (strings == null || strings.size() < 1) {
+            return null;
+        }
+        return strings.get(0);
+    }
+
+    /**
+     * Get all the target values of a translation unit.
+     *
+     * @param id the id of the term
+     * @param property the property
+     * @return the translated string
+     */
+    @JsonIgnore
+    public List<String> getStrings(String id, String property)
     {
         Map<String, TransUnit> properties = file.body.transUnits.get(id);
         if (properties == null) {
@@ -76,7 +100,13 @@ final class XLiffFile
         if (unit == null) {
             return null;
         }
-        return unit.target;
+        List<String> retval = new ArrayList<>(Arrays.asList(unit.target.split(TARGET_SEPARATOR)));
+        retval.removeAll(Collections.singleton(null));
+        for (int i = 0; i < retval.size(); i++) {
+            retval.set(i, retval.get(i).trim());
+        }
+        retval.removeAll(Collections.singleton(""));
+        return retval;
     }
 
     /**
@@ -90,20 +120,49 @@ final class XLiffFile
     @JsonIgnore
     public void setString(String id, String property, String source, String target)
     {
-        TransUnit unit;
-        Map<String, TransUnit> properties = file.body.transUnits.get(id);
-        if (properties == null) {
-            unit = new TransUnit();
-        } else {
-            unit = properties.get(property);
-            if (unit == null) {
-                unit = new TransUnit();
-                unit.id = String.format("%s_%s", id, property);
-                file.body.addTransUnit(unit);
-            }
-        }
+        TransUnit unit = getOrCreateTransUnit(id, property);
         unit.source = source;
         unit.target = target;
+    }
+
+    /**
+     * Add another term to a translation unit's source/value.
+     *
+     * @param id the id of the term
+     * @param property the property
+     * @param source the source text
+     * @param target the target text
+     */
+    @JsonIgnore
+    public void appendString(String id, String property, String source, String target)
+    {
+        TransUnit unit = getOrCreateTransUnit(id, property);
+        String delimiter = " " + TARGET_SEPARATOR;
+        unit.source += delimiter + source;
+        unit.target += delimiter + target;
+    }
+
+    /**
+     * Get or create the trans unit for the id/property given.
+     *
+     * @param id the id
+     * @param property the property
+     * @return the translation unit
+     */
+    @JsonIgnore
+    private TransUnit getOrCreateTransUnit(String id, String property)
+    {
+        TransUnit unit = null;
+        Map<String, TransUnit> properties = file.body.transUnits.get(id);
+        if (properties != null) {
+            unit = properties.get(property);
+        }
+        if (unit == null) {
+            unit = new TransUnit();
+            unit.id = String.format("%s_%s", id, property);
+            file.body.addTransUnit(unit);
+        }
+        return unit;
     }
 
     /**
@@ -148,6 +207,7 @@ final class XLiffFile
     {
         /**
          * The pattern to parse ids.
+         * TODO This should probably not be hardcoded...
          */
         @JsonIgnore
         private static final Pattern ID_PATTERN = Pattern.compile("^(.*)_(.*)$");
