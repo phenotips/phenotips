@@ -36,7 +36,7 @@ public interface AllowedActionsResolver
     /**
      * Determines the set of valid HTTP methods (actions) that can be performed on a given REST endpoint. This is done
      * using the annotations present on the interface methods, namely each method should be allowed with one or more of
-     * the {@link javax.ws.rs.HttpMethod} annotated annotations, and a {@link RequiredRight} annotation.
+     * the {@link javax.ws.rs.HttpMethod} annotated annotations, and a {@link RequiredAccess} annotation.
      *
      * @param restInterface the interface defining the RESTful endpoint
      * @param grantedRight the right granted for the current user on the entity being accessed

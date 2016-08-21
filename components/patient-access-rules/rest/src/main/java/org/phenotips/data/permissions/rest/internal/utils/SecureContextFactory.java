@@ -51,7 +51,7 @@ public interface SecureContextFactory
      * has view access on the patient record.
      *
      * @param patientId by which a patient is to be found
-     * @return context containing a {@link Patient} instance and the current user
+     * @return context containing a {@link org.phenotips.data.Patient} instance and the current user
      * @throws WebApplicationException if the patient could not be found, or the current user does not have high enough
      *             access level
      */
@@ -62,7 +62,7 @@ public interface SecureContextFactory
      * has manage access on the patient record.
      *
      * @param patientId by which a patient is to be found
-     * @return context containing a {@link Patient} instance and the current user
+     * @return context containing a {@link org.phenotips.data.Patient} instance and the current user
      * @throws WebApplicationException if the patient could not be found, or the current user does not have high enough
      *             access level
      */

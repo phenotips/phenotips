@@ -50,12 +50,12 @@ import javax.ws.rs.core.Response;
 public interface VisibilityResource
 {
     /**
-     * Retrieve the {@link Visibility} of a patient identified by `patientId`. If the indicated patient record doesn't
-     * exist, or if the user sending the request doesn't have the right to view the target patient record, an error is
-     * returned.
+     * Retrieve the {@link org.phenotips.data.permissions.Visibility} of a patient identified by `patientId`. If the
+     * indicated patient record doesn't exist, or if the user sending the request doesn't have the right to view the
+     * target patient record, an error is returned.
      *
      * @param patientId identifier of the patient whose visibility to retrieve
-     * @return a representation of {@link Visibility} of the patient
+     * @return a representation of the visibility of the patient
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)

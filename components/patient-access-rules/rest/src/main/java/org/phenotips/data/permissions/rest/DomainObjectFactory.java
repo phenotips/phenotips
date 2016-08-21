@@ -41,7 +41,8 @@ import javax.ws.rs.core.UriInfo;
 public interface DomainObjectFactory
 {
     /**
-     * Create the REST representation for a {@link Owner}'s summary, starting from a {@link Patient} instance.
+     * Create the REST representation for a {@link org.phenotips.data.permissions.Owner}'s summary, starting from a
+     * {@link Patient} instance.
      *
      * @param patient the owner of this patient will be serialized
      * @return a summary of the patient record's owner, or {@code null} if the current user doesn't have access to the
@@ -69,7 +70,7 @@ public interface DomainObjectFactory
     VisibilityRepresentation createVisibilityRepresentation(Visibility visibility);
 
     /**
-     * Create the REST representation for a list of {@link Collaborators}, starting from a {@link Patient} instance.
+     * Create the REST representation for a list of {@link Collaborator}s, starting from a {@link Patient} instance.
      *
      * @param patient the (list of) collaborators that are attached to this patient record
      * @param uriInfo the URI information for the rest system and the current request

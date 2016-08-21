@@ -27,9 +27,9 @@ import java.util.Collection;
  * vocabularies, identified by the {@link #getSupportedVocabularies()} method. Every time one of the supported
  * vocabularies is {@link org.phenotips.vocabulary.Vocabulary#reindex(String) reindexed}, first
  * {@link #indexingStarted(String)} is called, so that the extension can prepare its needed resources, if any. Then, for
- * each term parsed from its source the {@link #extendTerm(VocabularyInputTerm, String) method is called, and new fields
- * can be added to it. Once all the terms have been indexed, {@link #indexingEnded(String)} is called, and any resources
- * can be freed.
+ * each term parsed from its source the {@link #extendTerm(VocabularyInputTerm, String)} method is called, and new
+ * fields can be added to it. Once all the terms have been indexed, {@link #indexingEnded(String)} is called, and any
+ * resources can be freed.
  *
  * @version $Id$
  * @since 1.3M1
