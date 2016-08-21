@@ -145,6 +145,7 @@ public class DefaultDomainObjectFactoryTest
 
         Autolinker autolinker = this.mocker.getInstance(Autolinker.class);
         when(autolinker.forResource(any(Class.class), any(UriInfo.class))).thenReturn(autolinker);
+        when(autolinker.forSecondaryResource(any(Class.class), any(UriInfo.class))).thenReturn(autolinker);
         when(autolinker.withGrantedRight(any(Right.class))).thenReturn(autolinker);
         when(autolinker.withActionableResources(any(Class.class))).thenReturn(autolinker);
         when(autolinker.withExtraParameters(any(String.class), any(String.class))).thenReturn(autolinker);
