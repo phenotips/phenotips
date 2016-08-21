@@ -21,7 +21,7 @@ import org.phenotips.configuration.RecordConfigurationManager;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.data.internal.PhenoTipsDate;
+import org.phenotips.data.PhenoTipsDate;
 
 import org.xwiki.component.annotation.Component;
 

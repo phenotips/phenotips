@@ -20,6 +20,7 @@ package org.phenotips.data.internal;
 
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
+import org.phenotips.data.PhenoTipsDate;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
