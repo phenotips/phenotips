@@ -398,10 +398,9 @@
       #set ($discard = $filterValueList.add($i))
     #end
   #end
-  ## High/Low value filters (currently used for date and numbers)
+  ## High/Low value filters (currently used for dates and numbers)
   #set ($filterValueLowLimit = "$!{request.get(""${colname}/after"")}$!{request.get(""${colname}/min"")}")
   #set ($filterValueHighLimit = "$!{request.get(""${colname}/before"")}$!{request.get(""${colname}/max"")}")
-
   #set($tableAlias = $colname)
   ## only safe versions should be used in SQL queries
   #if (!$filterValueList &amp;&amp; "$filterValueLowLimit$filterValueHighLimit" == '')
@@ -485,19 +484,19 @@
       ## Converts each used value into correct type
       #set($numberType = $propClass.get($colname).getProperty('numberType').getValue())
       ##
-      #if($numberType == 'integer' &amp;&amp; $filterValue.indexOf('.') &lt; 0 &amp;&amp; $filterValueLowLimit.indexOf('.') &lt; 0 &amp;&amp; $filterValueHighLimit.indexOf('.') &lt; 0)
+      #if($numberType == 'integer' &amp;&amp; $filterValue.matches('\d*') &amp;&amp; $filterValueLowLimit.matches('\d*') &amp;&amp; $filterValueHighLimit.matches('\d*'))
         #set($typedFilterValue = $mathtool.toInteger($filterValue))
         #set($typedFilterValueLowLimit = $mathtool.toInteger($filterValueLowLimit))
         #set($typedFilterValueHighLimit = $mathtool.toInteger($filterValueHighLimit))
-      #elseif($numberType == 'long' &amp;&amp; $filterValue.indexOf('.') &lt; 0 &amp;&amp; $filterValueLowLimit.indexOf('.') &lt; 0 &amp;&amp; $filterValueHighLimit.indexOf('.') &lt; 0)
-        #set($typedFilterValue = $mathtool.toDouble($filterValue).longValue())
+      #elseif($numberType == 'long' &amp;&amp; $filterValue.matches('\d*') &amp;&amp; $filterValueLowLimit.matches('\d*') &amp;&amp; $filterValueHighLimit.matches('\d*'))
+        #set($typedFilterValue = $mathtool.toDouble($filterValue).longValue().valueOf($filterValue))
         #set($typedFilterValueLowLimit = $mathtool.toDouble($filterValueLowLimit).longValue().valueOf($filterValueLowLimit))
         #set($typedFilterValueHighLimit = $mathtool.toDouble($filterValueHighLimit).longValue().valueOf($filterValueHighLimit))
-      #elseif($numberType == 'float')
+      #elseif($numberType == 'float' &amp;&amp; $filterValue.matches('\d*\.?\d*') &amp;&amp; $filterValueLowLimit.matches('\d*\.?\d*') &amp;&amp; $filterValueHighLimit.matches('\d*\.?\d*'))
         #set($typedFilterValue = $mathtool.toDouble($filterValue).floatValue())
         #set($typedFilterValueLowLimit = $mathtool.toDouble($filterValueLowLimit).floatValue())
         #set($typedFilterValueHighLimit = $mathtool.toDouble($filterValueHighLimit).floatValue())
-      #elseif($numberType == 'double')
+      #elseif($numberType == 'double' &amp;&amp; $filterValue.matches('\d*\.?\d*') &amp;&amp; $filterValueLowLimit.matches('\d*\.?\d*') &amp;&amp; $filterValueHighLimit.matches('\d*\.?\d*'))
         #set($typedFilterValue = $mathtool.toDouble($filterValue))
         #set($typedFilterValueLowLimit = $mathtool.toDouble($filterValueLowLimit))
         #set($typedFilterValueHighLimit = $mathtool.toDouble($filterValueHighLimit))
