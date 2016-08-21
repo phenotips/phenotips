@@ -30,7 +30,7 @@ define("PhenotypeSelectionUtils", [], function() {
       var existingEl = this._findFormElementForPhenotype(phenotype.id, !phenotype.isObserved);
       if (existingEl) {
         if (existingEl._ynpicker) {
-          existingEl._ynpicker._select(phenotype.isObserved ? 'yes' : 'no');
+          existingEl._ynpicker._onSelect(phenotype.isObserved ? 'yes' : 'no');
         } else {
           existingEl.checked = true;
         }
@@ -78,7 +78,7 @@ define("PhenotypeSelectionUtils", [], function() {
     deselectPhenotype: function(phenotype) {
       var phenotypeEl = this._findFormElementForPhenotype(phenotype.id, !phenotype.isObserved);
       if (phenotypeEl) {
-        if (phenotypeEl) {
+        if (phenotypeEl._ynpicker) {
           phenotypeEl._ynpicker._onUnselect();
         } else {
           phenotypeEl.checked = false;
