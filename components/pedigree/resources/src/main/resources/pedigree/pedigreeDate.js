@@ -1,10 +1,10 @@
 /**
  * Class for storing either exact or fuzzy dates.
- * 
+ *
  * Assert:
- *   if day is set   => all of {decade, year, month, day} are set
- *   if month is set => all of {decade, year, month} are set
- *   if year is set  => decade is also set
+ *   if day is set => all of {year, month, day} are set
+ *   if month is set => all of {year, month} are set
+ *   no range is given => range in years == 1
  *
  * Note:
  *   month is from 1 to 12
@@ -18,62 +18,72 @@ define([], function(){
          * object with {year[,month][,day]} string or integer fields
          */
         initialize: function(date) {
-            this.decade = null;
-            this.year   = null;
-            this.month  = null;
-            this.day    = null;
+            this.range = { "years" : 1 };   // this should always be defined, even if year is unknown
+            this.year  = null;
+            this.month = null;
+            this.day   = null;
             if (date == null || !date) return;
 
-            var jsDate = null;
             if (typeof date === 'string' || date instanceof String) {
-                // check if string matches the "decade only" format
-                if (date.match(/^\d\d\d\ds$/)) {
-                    this.decade = date;
+                // suport the "yyyy(s)-mm-dd" format
+                var parsed = date.match(/(\d\d\d\d)(s)?-(\d\d)-(\d\d)/);
+                if (parsed != null) {
+                    if (parsed[2]) { // "s" is present
+                        this.range.years = 10;
+                    }
+                    this.year  = this.parseIntOrNull(parsed[1]);
+                    this.month = this.parseIntOrNull(parsed[3]);
+                    this.day   = this.parseIntOrNull(parsed[4]);
                 }
                 else if (!isNaN(Date.parse(date))) {  // empty string also parses to NaN
                     // deal with timezone differences: treat all dates as being in the same timezone.
                     // for that need to parse input string, if posible, and extract day/month/year
-                    // "as is", regardless of the timezone attached
+                    // "as is", regardless of the timezone specified
                     // As of now, expected/supported format is "Tue Dec 09 00:00:00 UTC 2014"
                     var parsed = date.match(/\w\w\w (\w\w\w) (\d\d) \d\d:\d\d:\d\d \w\w\w (\d\d\d\d)/);
                     if (parsed !== null) {
                         // use Date("Dec 09, 2014") constructor
                         var timezonelessDate = parsed[1] + " " + parsed[2] + ", " + parsed[3];
                         jsDate = new Date(timezonelessDate);
+                        this._initFromJSDate(new Date(date));
                     } else {
-                        // Also suport the PhenoTips patient JSON format "yyyy-mm-dd"
-                        var parsed = date.match(/(\d\d\d\d)-(\d\d)-(\d\d)/);
-                        if (parsed !== null) {
-                            // use Date("Dec 09, 2014") constructor
-                            var month0based = parseInt(parsed[2]) - 1;
-                            var timezonelessDate = this._getMonthName("en",month0based) + " " + parsed[3] + ", " + parsed[1];
-                            jsDate = new Date(timezonelessDate);
-                        } else {
-                            // parse any other format
-                            jsDate = new Date(date);
-                        }
+                        // parse any other format
+                        this._initFromJSDate(new Date(date));
                     }
                 }
             } else if (Object.prototype.toString.call(date) === '[object Date]') {
-                jsDate = date;
-            }
-
-            if (jsDate !== null) {
-                this.year   = jsDate.getFullYear();
-                this.month  = jsDate.getMonth() + 1;   // js Date's months are 0 to 11, this.month is 1 to 12
-                this.day    = jsDate.getDate();
-            }
-            else if (typeof date === 'object') {
-                date.hasOwnProperty("decade") && ( this.decade = date.decade );
+                this._initFromJSDate(date);
+            } else if (typeof date === 'object') {
                 // keep null-s, convert strings to integers
-                date.hasOwnProperty("year")   && ( this.year   = this.parseIntOrNull(date.year) );
-                date.hasOwnProperty("month")  && ( this.month  = this.parseIntOrNull(date.month) );
-                date.hasOwnProperty("day")    && ( this.day    = this.parseIntOrNull(date.day) );
+                date.hasOwnProperty("year")  && ( this.year   = this.parseIntOrNull(date.year) );
+                date.hasOwnProperty("month") && ( this.month  = this.parseIntOrNull(date.month) );
+                date.hasOwnProperty("day")   && ( this.day    = this.parseIntOrNull(date.day) );
+                if (date.hasOwnProperty("range")) {
+                    this.range = date.range;
+                } else if (date.hasOwnProperty("decade")) {
+                    // support deprecated format which included a "decade"
+                    var parsed = date.decade.match(/(\d\d\d\d)s?/);
+                    if (parsed) {
+                        if (!this.year) {
+                            this.year = parsed[1];
+                            this.range = { "years" : 10 };
+                        }
+                    }
+                }
             }
+            if (this.month < 1 || this.month > 12) {
+                this.month = null;
+            }
+            if (this.day < 1 || this.day > 31) {
+                this.day = null;
+            }
+        },
 
-            if (this.year !== null && this.decade === null) {
-                this.decade = this.year.toString().slice(0,-1) + '0s';
-            }
+        _initFromJSDate: function(date) {
+            this.range = { "years" : 1 };
+            this.year  = date.getFullYear();
+            this.month = date.getMonth() + 1;   // js Date's months are 0 to 11, this.month is 1 to 12
+            this.day   = date.getDate();
         },
 
         parseIntOrNull: function(expectedInteger) {
@@ -88,12 +98,11 @@ define([], function(){
         // a string in one of "year", "monthName year", "datOfWeek monthName day year" format.
         // initialize() is expected to accept this string as valid input
         toString: function() {
-            // note: Date.toDateString() is used for date-to-string conversions instead of
-            //       Date.toUTCString because output of toDateString is the only one which seems
-            //       to be uniformly supported by all browsers, new and old.
-
-            if (this.year === null && this.decade !== null) {
-                return this.decade;
+            if (this.year === null) {
+                return "";
+            }
+            if (this.range.years > 1) {
+                return this.year.toString() + "s";
             }
             if (this.year !== null && this.month == null) {
                 return this.year.toString();
@@ -102,6 +111,9 @@ define([], function(){
                 return this.getMonthName() + " " + this.year;
             }
             if (this.year !== null && this.month !== null && this.day !== null) {
+                // note: Date.toDateString() is used for date-to-string conversions instead of
+                //       Date.toUTCString because output of toDateString is the only one which seems
+                //       to be uniformly supported by all browsers, new and old.
                 var jsDate = this.toJSDate();
                 return jsDate.toDateString();
             }
@@ -121,8 +133,7 @@ define([], function(){
 
         // Returns a string which is a valid GEDCOM date (GEDCOME supports "ABT" keyword)
         toGEDCOMString: function() {
-            if (this.year === null && this.decade !== null) { 
-                // getYear(true) returns first year of decade as integer
+            if (this.year !== null && this.range.years > 1) {
                 return "ABT " + this.getYear(true).toString();
             }
             return this.toString();
@@ -130,27 +141,30 @@ define([], function(){
 
         /** Returns true if any part of the date has been set. */
         isSet: function() {
-            return (this.decade !== null || this.year !== null || this.month !== null || this.day !== null);
+            return (this.year !== null || this.month !== null || this.day !== null);
         },
 
-        /** Returns true iff the minimum precision level is set, ie. the decade. Useful for displaying the date. */
+        /** Returns true iff the minimum precision level is set, ie. the year. Useful for displaying the date. */
         isComplete: function() {
-            return (this.decade !== null);
+            return (this.year !== null);
         },
 
         onlyDecadeAvailable: function() {
-            return (this.decade !== null && this.year == null);
+            return (this.range.years > 1);
         },
 
         // Returns a string or null
         getDecade: function() {
-            return this.decade;
+            if (this.year == null) {
+                return "";
+            }
+            return this.year + "s";
         },
 
-        // Returns simple object with only the fields (decade, year, month, day) set
+        // Returns an object with some of the {range, year, month, day} fields set, depending on what data is available
         getSimpleObject: function() {
             var date = {};
-            if (this.decade !== null) date["decade"] = this.decade;
+            if (this.range.years != 1) date["range"] = this.range;
             if (this.year   !== null) date["year"]   = this.year;
             if (this.month  !== null) date["month"]  = this.month;
             if (this.day    !== null) date["day"]    = this.day;
@@ -159,9 +173,10 @@ define([], function(){
 
         // Returns best possible estimation of this date as a javascript Date object.
         //
-        // Aproximate dates (e.g. decades, or dates without a day or month) are set as 
-        // oldest possible date satisfying the date set (e.g. first year of decade, first month of the year, etc.)
+        // Aproximate dates (e.g. dates with range > 1) are set as oldest possible date
+        // satisfying the date set (e.g. first year of decade, first month of the year, etc.)
         toJSDate: function() {
+            if (!this.isComplete()) return null;
             var year  = this.getYear(true);       // true: failsafe, get first year of decade if only decade is set
             var month = this.getMonth(true) - 1;  // "-1": js Date's months are 0 to 11, this.month is 1 to 12
             var day   = this.getDay(true);
@@ -172,7 +187,7 @@ define([], function(){
         // Returns either a decade or the year (as string, which may include non-numeric characters, e.g. "1920s")
         getBestPrecisionStringYear: function() {
             if (!this.isComplete()) return "";
-            if (this.year == null) return this.decade;
+            if (this.range.years > 1) return (this.year.toString() + "s");
             return this.year.toString();
         },
 
@@ -194,8 +209,9 @@ define([], function(){
             if (!dateFormat) {
                 dateFormat = "DMY";
             }
-            if (!this.isComplete()) return "";
-            if (this.year == null) return this.decade;
+            if (this.month == null) {
+                return this.getBestPrecisionStringYear();
+            }
             var dateStr = this.getYear().toString();
             if (this.getMonth() != null && dateFormat != "Y") {
                 dateStr = ("0" + this.getMonth()).slice(-2) + "-" + dateStr;
@@ -206,30 +222,30 @@ define([], function(){
             return dateStr;
         },
 
-        // Returns the number of milliseconds since 1 January 1970 (same as Date.getTime()) 
+        // Returns the number of milliseconds since 1 January 1970 (same as Date.getTime())
         getTime: function() {
             return this.toJSDate().getTime();
         },
 
         // Returns an integer or null.
-        // Iff "failsafe" returns a value even if only decade is availabe (and year is not):
-        //  - iff "average" the middle year of the decade is returned, otherwise the first year of the decade.
+        // Iff "failsafe" returns a value even if only a range of years is known:
+        //  - iff "average" the middle year of the range is returned, otherwise the first year of the range.
         getYear: function(failsafe, average) {
-            if (this.isComplete() && this.year == null && failsafe) {
-                // remove trailing "s" from the decade && convert to integer
-                var year = parseInt( this.decade.slice(0,-1) );
-                if (average) {
-                    year += 5;
+            if (this.isComplete()) {
+                if (average && this.range.years > 1) {
+                    return this.year + Math.floor(this.range.years/2);
                 }
-                return year;
+                if (this.range.years == 1 || failsafe) {
+                    return this.year;
+                }
             }
-            return this.year;
+            return null; // exact year is unknown
         },
 
         // Returns an integer or null
         // Iff "failsafe" returns 1 if month is not set but at least some date (with any precision) is
         getMonth: function(failsafe) {
-            if (this.isComplete() && this.month == null && failsafe) {
+            if (this.month == null && failsafe) {
                 return 1;
             }
             return this.month;
@@ -238,7 +254,7 @@ define([], function(){
         // Returns an integer or null
         // Iff "failsafe" returns 1 if day is not set but at least some date (with any precision) is
         getDay: function(failsafe) {
-            if (this.isComplete() && this.day == null && failsafe) {
+            if (this.day == null && failsafe) {
                 return 1;
             }
             return this.day;
@@ -258,7 +274,7 @@ define([], function(){
             var leastOtherMonth = otherPedigreeDate.getMonth(true);
             var leastOtherDay   = otherPedigreeDate.getDay(true);
 
-            var maxThisYear  = this.year  ? this.year  : this.getYear(true) + 9;
+            var maxThisYear  = this.year + this.range.years - 1;
             var maxThisMonth = this.month ? this.month : 12;
             var maxThisDay   = this.day   ? this.day   : 31;
 

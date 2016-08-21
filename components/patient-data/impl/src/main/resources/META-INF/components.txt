@@ -28,6 +28,7 @@ org.phenotips.data.internal.controller.SolvedController
 org.phenotips.data.internal.controller.AllergiesController
 org.phenotips.data.internal.controller.LifeStatusController
 org.phenotips.data.internal.controller.MedicalReportsController
+org.phenotips.data.internal.controller.oldversions.DatesControllerV1
 org.phenotips.data.internal.DeprecatedPhenotypeUpdaterEventListener
 org.phenotips.data.internal.NonStandardFeatureCategoryUpdater
 org.phenotips.data.internal.PatientBirthdateUpdater

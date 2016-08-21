@@ -417,7 +417,7 @@ define([
                     }
                 } else {
                     if(person.getLifeStatus() == 'alive') {
-                        if (birthDate) {
+                        if (birthDate && birthDate.isComplete()) {
                             if (birthDate.onlyDecadeAvailable()) {
                                 text = "b. " + birthDate.getDecade();
                             } else {
@@ -441,7 +441,7 @@ define([
                         }
                     }
                     else {
-                        if(deathDate && birthDate) {
+                        if(deathDate && deathDate.isComplete() && birthDate && birthDate.isComplete()) {
                             var ageString = AgeCalc.getAgeString(birthDate, deathDate, dateFormat);
                             if (deathDate.getYear() != null && deathDate.getYear() != birthDate.getYear() && deathDate.getMonth() != null &&
                                 (ageString.indexOf("day") != -1 || ageString.indexOf("wk") != -1 || ageString.indexOf("mo") != -1) ) {
@@ -453,10 +453,10 @@ define([
                                 text += "\n" + ageString;
                             }
                         }
-                        else if (deathDate) {
+                        else if (deathDate && deathDate.isComplete()) {
                             text = "d. " + deathDate.getBestPrecisionStringYear();
                         }
-                        else if(birthDate) {
+                        else if (birthDate && birthDate.isComplete()) {
                             text = birthDate.getBestPrecisionStringYear() + " – ?";
                         }
                     }

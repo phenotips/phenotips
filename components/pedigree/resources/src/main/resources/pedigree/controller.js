@@ -269,10 +269,10 @@ define([
                         (propertySetFunction == "setDeathDate" || propertySetFunction == "setBirthDate")) {
                         // compare Date objects
                         try {
-                            if ( oldValue.decade == propValue.decade &&
-                                 oldValue.year   == propValue.year &&
-                                 oldValue.month  == propValue.month &&
-                                 oldValue.day    == propValue.day )
+                            if ( oldValue.range == Helpers.cloneObject(propValue.range) &&
+                                 oldValue.year  == propValue.year &&
+                                 oldValue.month == propValue.month &&
+                                 oldValue.day   == propValue.day )
                                 continue;
                         } catch (err) {
                             // fine, one of the objects is in some other format, maybe date picker has changed

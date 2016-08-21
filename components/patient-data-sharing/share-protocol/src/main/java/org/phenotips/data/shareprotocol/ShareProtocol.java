@@ -21,7 +21,9 @@ package org.phenotips.data.shareprotocol;
 import org.xwiki.stability.Unstable;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Push protocol constants defining client HTTP POST fields and server JSON response fields.
@@ -32,12 +34,45 @@ import java.util.List;
 @Unstable
 public class ShareProtocol
 {
-    public static final String VERSION_1 = "1";
+    /** version 1: first version */
+    public static final String VERSION_1   = "1";
+    /** version 1.1: added consents */
     public static final String VERSION_1_1 = "1.1";
+    /** version 1.2: new date format in patient JSON + new genes + new prenatal features format */   // TODO: check what is the difference between 1.1 and 1.2
+    public static final String VERSION_1_2 = "1.2";
 
-    public static final String CURRENT_PUSH_PROTOCOL_VERSION = VERSION_1_1;
-    public static final List<String> COMPATIBLE_PROTOCOL_VERSIONS = Arrays.asList(VERSION_1,VERSION_1_1);
+    public static final String CURRENT_PUSH_PROTOCOL_VERSION = VERSION_1_2;
+
+    // list of protocol versions that the current server can read data from
+    public static final List<String> COMPATIBLE_CLIENT_PROTOCOL_VERSIONS =
+            Arrays.asList(VERSION_1, VERSION_1_1, VERSION_1_2);
+
+    // list of versions which can push even if requred consents have not been checked
     public static final List<String> ALLOW_NO_CONSENTS_PROTOCOL_VERSIONS = Arrays.asList(VERSION_1);
+
+    // list of known incompatibilities, a.k.a. enabling field names which are seriallized differently
+    // in old versions of push protocol/patient JSON, together with a "compatibility" field (or null
+    // if data can not be serialized in an old way for some reason)
+    public static final Incompatibility BIRTH_DATE_INCOMPAT = new Incompatibility("date_of_birth", "date_of_birth_v1");
+    public static final Incompatibility DEATH_DATE_INCOMPAT = new Incompatibility("date_of_death", "date_of_death_v1");
+    public static final Incompatibility EXAM_DATE_INCOMPAT  = new Incompatibility("exam_date", "exam_date_v1");
+
+    // a list of known (fixable) incompatibilities in the supported past versions of push protocol
+    public static final Map<String, List<Incompatibility> > INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS =
+            new HashMap<String, List<Incompatibility> >();
+    static {
+        INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS.put(VERSION_1,
+                Arrays.asList( BIRTH_DATE_INCOMPAT, DEATH_DATE_INCOMPAT, EXAM_DATE_INCOMPAT ));
+        INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS.put(VERSION_1_1,
+                Arrays.asList( BIRTH_DATE_INCOMPAT, DEATH_DATE_INCOMPAT, EXAM_DATE_INCOMPAT ));
+    }
+
+    // list of old push protocol versions which are explicitly not supported. The idea is that clients are
+    // allowed to push to servers running unknown versions of push protocol (e.g. future not-yet-known versions).
+    // But we may explicitly disallow pushing to a known old version which is known to be incompatible
+    public static final List<String> OLD_INCOPMATIBLE_VERSIONS = Arrays.asList();
+
+    //=========================================================================
 
     // Every POST request should include the following parameters:
     public static final String CLIENT_POST_KEY_NAME_PROTOCOLVER  = "push_protocol_version";
@@ -66,8 +101,6 @@ public class ShareProtocol
 
     //=========================================================================
 
-    public static final String JSON_RESPONSE_PROTOCOL_VERSION = "1";
-
     // every server response JSON will include the following fields:
     public static final String SERVER_JSON_KEY_NAME_PROTOCOLVER = "response_protocol_version";
     public static final String SERVER_JSON_KEY_NAME_SUCCESS     = "success";
@@ -92,7 +125,7 @@ public class ShareProtocol
     public static final String SERVER_JSON_KEY_NAME_ERROR_INCORRECTGUID    = "incorrect_guid";         // GUID provided in the request does not represents a patient document
     public static final String SERVER_JSON_KEY_NAME_ERROR_GUIDACCESSDENIED = "guid_access_denied";     // GUID provided in the request represents a document which is not
                                                                                                        //  authored or owned by the user provided
-    public static final String SERVER_JSON_KEY_NAME_ERROR_MISSINGCONSENT   = "missing_consent";         // if any of the required consents are missing
+    public static final String SERVER_JSON_KEY_NAME_ERROR_MISSINGCONSENT   = "missing_consent";        // if any of the required consents are missing
 
     // response to a GETINFO action request will include the following fields (iff successful):
     public static final String SERVER_JSON_GETINFO_KEY_NAME_USERGROUPS     = "user_groups";
@@ -107,4 +140,32 @@ public class ShareProtocol
     public static final String SERVER_JSON_PUSH_KEY_NAME_PATIENTURL  = "patient_url";     // URL of the patient (either updated or newly created)
     public static final String SERVER_JSON_PUSH_KEY_NAME_PATIENTGUID = "patient_guid";    // GUID of the patient object on the remote server which can be used to link to the
                                                                                           //  patient from the remote server and/or to update the patient later
+
+    /**
+     * Helper class describing an incompatibility between serializers in two different PhenoTips versions.
+     *
+     * An incommpatibility is described in terms of a "controlling field name" which triggers
+     * (part of) a serializer when serializing a patient to JSON, i.e. one incompatibility is limited to
+     * one field name.
+     *
+     * An alternative "deprecated field name" may be specified, which is supposed to trigger an
+     * certain old serializer.
+     */
+    public static class Incompatibility
+    {
+        private String currentName;
+        private String deprecatedName;
+
+        public Incompatibility(String currentControllingFieldName, String deprecatedControllingFieldName) {
+            this.currentName = currentControllingFieldName;
+            this.deprecatedName = deprecatedControllingFieldName;
+        }
+
+        public String getCurrentFieldName() {
+            return this.currentName;
+        }
+        public String getDeprecatedFieldName() {
+            return this.deprecatedName;
+        }
+    }
 }

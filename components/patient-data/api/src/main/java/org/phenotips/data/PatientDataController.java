@@ -58,6 +58,12 @@ public interface PatientDataController<T>
     String ERROR_MESSAGE_NO_PATIENT_CLASS = "The patient does not have a PatientClass";
 
     /**
+     * The error message that should be used when a controller expects data in PatientClass
+     * associated with the controller to be in a certain format and it is not.
+     */
+    String ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT = "controller data in memory is in unexpected format";
+
+    /**
      * Plays the role of initialization function. Given a patient, extracts data from the underlying document and
      * returns it to the patient.
      *

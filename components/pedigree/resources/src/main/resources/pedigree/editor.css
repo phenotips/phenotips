@@ -999,3 +999,7 @@
   font-weight: bold;
   /*text-indent: 0;*/
 }
+.fuzzy-date-picker .year .century {
+  font-weight: bold;
+  /*text-indent: 0;*/
+}
