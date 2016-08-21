@@ -398,8 +398,10 @@
       #set ($discard = $filterValueList.add($i))
     #end
   #end
-  #set ($filterValueLowLimit = "$!{request.get(""${colname}/after"")}")
-  #set ($filterValueHighLimit = "$!{request.get(""${colname}/before"")}")
+  ## High/Low value filters (currently used for date and numbers)
+  #set ($filterValueLowLimit = "$!{request.get(""${colname}/after"")}$!{request.get(""${colname}/min"")}")
+  #set ($filterValueHighLimit = "$!{request.get(""${colname}/before"")}$!{request.get(""${colname}/max"")}")
+
   #set($tableAlias = $colname)
   ## only safe versions should be used in SQL queries
   #if (!$filterValueList &amp;&amp; "$filterValueLowLimit$filterValueHighLimit" == '')
@@ -474,8 +476,47 @@
     ##
     ## Object properties from now on
     ##
-    ## Numbers, exact match
-    #elseif($propType == 'NumberClass' || $propType == 'BooleanClass')
+    ## Numbers, exact match or min/max filters
+    #elseif($propType == 'NumberClass')
+      #livetable_getTableName($colname)
+      #set($fromSql = "${fromSql}, ${tableName} ${safe_tableAlias}")
+      #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ?")
+      #set($discard = $whereParams.add("${colname}"))
+      ## Converts each used value into correct type
+      #set($numberType = $propClass.get($colname).getProperty('numberType').getValue())
+      ##
+      #if($numberType == 'integer' &amp;&amp; $filterValue.indexOf('.') &lt; 0 &amp;&amp; $filterValueLowLimit.indexOf('.') &lt; 0 &amp;&amp; $filterValueHighLimit.indexOf('.') &lt; 0)
+        #set($typedFilterValue = $mathtool.toInteger($filterValue))
+        #set($typedFilterValueLowLimit = $mathtool.toInteger($filterValueLowLimit))
+        #set($typedFilterValueHighLimit = $mathtool.toInteger($filterValueHighLimit))
+      #elseif($numberType == 'long' &amp;&amp; $filterValue.indexOf('.') &lt; 0 &amp;&amp; $filterValueLowLimit.indexOf('.') &lt; 0 &amp;&amp; $filterValueHighLimit.indexOf('.') &lt; 0)
+        #set($typedFilterValue = $mathtool.toDouble($filterValue).longValue())
+        #set($typedFilterValueLowLimit = $mathtool.toDouble($filterValueLowLimit).longValue().valueOf($filterValueLowLimit))
+        #set($typedFilterValueHighLimit = $mathtool.toDouble($filterValueHighLimit).longValue().valueOf($filterValueHighLimit))
+      #elseif($numberType == 'float')
+        #set($typedFilterValue = $mathtool.toDouble($filterValue).floatValue())
+        #set($typedFilterValueLowLimit = $mathtool.toDouble($filterValueLowLimit).floatValue())
+        #set($typedFilterValueHighLimit = $mathtool.toDouble($filterValueHighLimit).floatValue())
+      #elseif($numberType == 'double')
+        #set($typedFilterValue = $mathtool.toDouble($filterValue))
+        #set($typedFilterValueLowLimit = $mathtool.toDouble($filterValueLowLimit))
+        #set($typedFilterValueHighLimit = $mathtool.toDouble($filterValueHighLimit))
+      #end
+      ## Checks present filter value
+      #if ("$!typedFilterValue" != '')
+        #set($whereSql = "${whereSql} and ${safe_tableAlias}.value = ?")
+        #set($discard = $whereParams.add($typedFilterValue))
+      #else ## filters by min and max values
+        #if ("$!typedFilterValueLowLimit" != '')
+          #set($whereSql = "${whereSql} and ${safe_tableAlias}.value &gt;= ?")
+          #set($discard = $whereParams.add($typedFilterValueLowLimit))
+        #end
+        #if ("$!typedFilterValueHighLimit" != '')
+          #set($whereSql = "${whereSql} and ${safe_tableAlias}.value &lt;= ?")
+          #set($discard = $whereParams.add($typedFilterValueHighLimit))
+        #end
+      #end
+    #elseif($propType=='BooleanClass')
       #livetable_getTableName($colname)
       #set($fromSql = "${fromSql}, ${tableName} ${safe_tableAlias}")
       #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and ${safe_tableAlias}.value = ?")
