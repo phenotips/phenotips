@@ -26,7 +26,6 @@ import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.rest.XWikiResource;
@@ -54,12 +53,6 @@ import javax.ws.rs.core.Response;
 @Unstable
 public class DefaultVocabularyResource extends XWikiResource implements VocabularyResource
 {
-    /**
-     * An entity reference used to check for wiki admin rights.
-     */
-    public static final EntityReference MAIN_WIKI_REFERENCE = new EntityReference("WebHome",
-        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
     @Inject
     private VocabularyManager vm;
 
@@ -73,7 +66,7 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
     private UserManager users;
 
     @Inject
-    @Named("current")
+    @Named("default")
     private DocumentReferenceResolver<EntityReference> resolver;
 
     @Inject
@@ -88,7 +81,8 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
         }
         org.phenotips.vocabularies.rest.model.Vocabulary rep =
             this.objectFactory.createVocabularyRepresentation(vocabulary);
-        rep.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo).build());
+        rep.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo)
+            .withGrantedRight(userIsAdmin() ? Right.ADMIN : Right.VIEW).build());
         return rep;
     }
 
@@ -124,6 +118,7 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
     private boolean userIsAdmin()
     {
         User user = this.users.getCurrentUser();
-        return this.authorizationService.hasAccess(user, Right.ADMIN, this.resolver.resolve(MAIN_WIKI_REFERENCE));
+        return this.authorizationService.hasAccess(user, Right.ADMIN,
+            this.resolver.resolve(Constants.XWIKI_SPACE_REFERENCE));
     }
 }
