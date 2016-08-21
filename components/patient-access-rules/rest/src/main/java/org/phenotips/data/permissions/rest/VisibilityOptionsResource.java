@@ -42,7 +42,7 @@ public interface VisibilityOptionsResource
     /**
      * The system has several predefined options of visibility levels.
      *
-     * @return all the visibility levels present in the system
+     * @return all the enabled visibility levels present in the system
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
