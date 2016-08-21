@@ -82,8 +82,8 @@ public class DefaultVocabularyTermSuggestionsResource extends XWikiResource impl
         List<VocabularyTermSummary> termReps = new ArrayList<>();
         for (VocabularyTerm term : termSuggestions) {
             VocabularyTermSummary termRep = this.objectFactory.createVocabularyTermRepresentation(term);
-            termRep.withLinks(this.autolinker.get().forResource(null, this.uriInfo)
-                .withActionableResources(VocabularyTermResource.class, VocabularyResource.class)
+            termRep.withLinks(this.autolinker.get().forSecondaryResource(VocabularyTermResource.class, this.uriInfo)
+                .withActionableResources(VocabularyResource.class)
                 .withExtraParameters("vocabulary-id", vocabularyId)
                 .withExtraParameters("term-id", term.getId())
                 .build());

@@ -67,8 +67,8 @@ public class DefaultVocabulariesResource extends XWikiResource implements Vocabu
             Vocabulary vocab = this.vm.getVocabulary(vocabularyID);
             org.phenotips.vocabularies.rest.model.Vocabulary rep =
                 this.objectFactory.createVocabularyRepresentation(vocab);
-            rep.withLinks(this.autolinker.get().forResource(null, this.uriInfo)
-                .withActionableResources(VocabularyResource.class, VocabularyTermSuggestionsResource.class)
+            rep.withLinks(this.autolinker.get().forSecondaryResource(VocabularyResource.class, this.uriInfo)
+                .withActionableResources(VocabularyTermSuggestionsResource.class)
                 .withExtraParameters("vocabulary-id", vocabularyID)
                 .build());
             availableVocabs.add(rep);

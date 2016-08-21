@@ -26,7 +26,6 @@ import org.phenotips.data.permissions.rest.VisibilityResource;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.permissions.rest.model.VisibilityRepresentation;
-import org.phenotips.data.rest.PatientResource;
 import org.phenotips.rest.Autolinker;
 
 import org.xwiki.component.annotation.Component;
@@ -86,7 +85,6 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
         AccessLevel accessLevel = patientAccessContext.getPatientAccess().getAccessLevel();
         result.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo)
             .withGrantedRight(accessLevel.getGrantedRight())
-            .withActionableResources(PatientResource.class)
             .build());
         return result;
     }

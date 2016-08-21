@@ -27,7 +27,6 @@ import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.permissions.rest.model.CollaboratorRepresentation;
 import org.phenotips.data.permissions.rest.model.CollaboratorsRepresentation;
-import org.phenotips.data.rest.PatientResource;
 import org.phenotips.rest.Autolinker;
 
 import org.xwiki.component.annotation.Component;
@@ -97,7 +96,6 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
 
         result.withLinks(this.autolinker.get().forResource(this.getClass(), this.uriInfo)
             .withGrantedRight(patientAccessContext.getPatientAccess().getAccessLevel().getGrantedRight())
-            .withActionableResources(PatientResource.class)
             .build());
 
         return result;

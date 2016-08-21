@@ -23,7 +23,6 @@ import org.phenotips.data.permissions.rest.OwnerResource;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.permissions.rest.model.OwnerRepresentation;
-import org.phenotips.data.rest.PatientResource;
 import org.phenotips.rest.Autolinker;
 
 import org.xwiki.component.annotation.Component;
@@ -86,7 +85,6 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
         // adding links relative to this context
         result.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo)
             .withGrantedRight(patientAccessContext.getPatientAccess().getAccessLevel().getGrantedRight())
-            .withActionableResources(PatientResource.class)
             .build());
 
         return result;
