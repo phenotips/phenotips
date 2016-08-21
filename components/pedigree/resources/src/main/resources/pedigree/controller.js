@@ -307,6 +307,10 @@ define([
                     if (propertySetFunction == "setCarrierStatus") {
                         undoEvent.memo.properties["setDisorders"] = node.getDisorders().slice(0);
                     }
+                    if (propertySetFunction == "setCausalGenes" || propertySetFunction == "setCandidateGenes") {
+                        undoEvent.memo.properties["setCausalGenes"]  = node.getCausalGenes();
+                        undoEvent.memo.properties["setCandidateGenes"]  = node.getCandidateGenes();
+                    }
 
                     node[propertySetFunction](propValue);
 
