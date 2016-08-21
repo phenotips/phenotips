@@ -53,15 +53,15 @@ import com.xpn.xwiki.store.migration.XWikiDBVersion;
 import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 
 /**
- * Migration for PhenoTips issue #2711: support for new genes in pedigree editor. Genes in pedigree are now
+ * Migration for PhenoTips issue PT-2711: support for new genes in pedigree editor. Genes in pedigree are now
  * stored in the same format they are stored in PhenoTips patient JSON, which requires conversion of existing
- * pedigree data. Also pedigree legend data has to be updated to have separate data for casual and candidate genes.
+ * pedigree data. Also pedigree legend data has to be updated to have separate data for causal and candidate genes.
  *
  * @version $Id$
  * @since 1.3M2
  */
 @Component
-@Named("R71495PhenoTips#2711")
+@Named("R71495-PT-2711")
 @Singleton
 public class R71495PhenoTips2711DataMigration extends AbstractHibernateDataMigration implements
     HibernateCallback<Object>
