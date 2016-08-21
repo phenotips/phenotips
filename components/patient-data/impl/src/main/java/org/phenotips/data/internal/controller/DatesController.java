@@ -58,7 +58,7 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class DatesController implements PatientDataController<PhenoTipsDate>
 {
-    // field names as stroed in the patient document
+    // field names as stored in the patient document
     protected static final String PATIENT_DATEOFDEATH_FIELDNAME = "date_of_death";
     protected static final String PATIENT_DATEOFBIRTH_FIELDNAME = "date_of_birth";
     protected static final String PATIENT_EXAMDATE_FIELDNAME    = "exam_date";
@@ -76,7 +76,7 @@ public class DatesController implements PatientDataController<PhenoTipsDate>
     protected static final String JSON_EXAMDATE_FIELDNAME    = PATIENT_EXAMDATE_FIELDNAME;
 
     // 1-to-1 mapping between PT and JSON field names. The reverse is computed from the same mapping.
-    // Onle the fields listd here will ever be read from the document by the controller.
+    // Only the fields listed here will ever be read from the document by the controller.
     protected static final Map<String, String> PHENOTIPS_TO_JSON_FIELDNAMES =
         Collections.unmodifiableMap(MapUtils.putAll(new LinkedHashMap<String, String>(), new String[][] {
             {PATIENT_DATEOFDEATH_FIELDNAME, JSON_DATEOFDEATH_FIELDNAME},
@@ -85,7 +85,7 @@ public class DatesController implements PatientDataController<PhenoTipsDate>
         }));
 
     // controlling/enabling field name - should be present in selectedFieldNames as passed to writeJSON()/readJSON()
-    // in order to include the correspomding data in the export or use it during import
+    // in order to include the corresponding data in the export or use it during import
     protected static final Map<String, String> CONTROLLING_FIELDNAMES =
         Collections.unmodifiableMap(MapUtils.putAll(new HashMap<String, String>(), new String[][] {
             {PATIENT_DATEOFDEATH_FIELDNAME, PATIENT_DATEOFDEATH_FIELDNAME},
@@ -218,9 +218,9 @@ public class DatesController implements PatientDataController<PhenoTipsDate>
     {
         Map<String, PhenoTipsDate> result = new LinkedHashMap<>();
 
-        // Some dates (birth/death) are internaly stored as a string-object pair, one for the date
+        // Some dates (birth/death) are internally stored as a string-object pair, one for the date
         // which should always be a correct date string, and one for the "date as entered", which is
-        // an string representing a JSON object suporting "fuzzy" and incomplete dates.
+        // an string representing a JSON object supporting "fuzzy" and incomplete dates.
         //
         // For now the following formats are supported for all dates in the incoming JSON:
         //  1) an object with {"decade", "year", "month", "day"} fields
@@ -232,7 +232,7 @@ public class DatesController implements PatientDataController<PhenoTipsDate>
         //  In the first case (an object with separate year-month-etc fields) the "date as entered" (if present)
         //  will be set to exactly the imported value, but the date-as-ISO string will be set to:
         //   1) in case of a valid exact date - the corresponding ISO string
-        //   2) in case of a fuzzy date with only a decade or a missing month/day - to the earlisest possible date
+        //   2) in case of a fuzzy date with only a decade or a missing month/day - to the earliest possible date
         //   3) in case of an incomplete date without a year - will not be set
 
         // TODO: review once internal date format is changed

@@ -43,7 +43,7 @@ import org.json.JSONObject;
 
 /**
  * Handles serializing patient's date of birth and death and the exam date when data should be
- * serialized in per-1.3M2 JSON format (e.g. for pushing to servers older than 1.2M2 and thus
+ * serialized in pre-1.3M2 JSON format (e.g. for pushing to servers older than 1.3M2 and thus
  * only supporting push protocols before version 1.2)
  *
  * @version $Id$
@@ -54,13 +54,13 @@ import org.json.JSONObject;
 @Singleton
 public class DatesControllerV1 implements PatientDataController<PhenoTipsDate>
 {
-    // field names as stroed in the patient document
+    // field names as stored in the patient document
     protected static final String PATIENT_DATEOFDEATH_FIELDNAME = "date_of_death";
     protected static final String PATIENT_DATEOFBIRTH_FIELDNAME = "date_of_birth";
     protected static final String PATIENT_EXAMDATE_FIELDNAME    = "exam_date";
 
     // controlling/enabling field name - should be present in selectedFieldNames as passed to writeJSON()/readJSON()
-    // in order to include the correspomding data in the export or use it during import
+    // in order to include the corresponding data in the export or use it during import
     protected static final Map<String, String> CONTROLLING_FIELDNAMES =
         Collections.unmodifiableMap(MapUtils.putAll(new HashMap<String, String>(), new String[][] {
             {PATIENT_DATEOFDEATH_FIELDNAME, "date_of_death_v1"},
@@ -74,7 +74,7 @@ public class DatesControllerV1 implements PatientDataController<PhenoTipsDate>
     protected static final String JSON_EXAMDATE_FIELDNAME    = PATIENT_EXAMDATE_FIELDNAME;
 
     // 1-to-1 mapping between PT and JSON field names. The reverse is computed from the same mapping.
-    // Onle the fields listd here will ever be read from the document by the controller.
+    // Only the fields lisetd here will ever be read from the document by the controller.
     protected static final Map<String, String> PHENOTIPS_TO_JSON_FIELDNAMES =
         Collections.unmodifiableMap(MapUtils.putAll(new LinkedHashMap<String, String>(), new String[][] {
             {PATIENT_DATEOFDEATH_FIELDNAME, JSON_DATEOFDEATH_FIELDNAME},

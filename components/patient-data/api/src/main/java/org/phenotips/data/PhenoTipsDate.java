@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 import org.json.JSONObject;
 
 /**
- * Implementation of a fuzzy date for internal use in Phenotips.
+ * Implementation of a fuzzy date for internal use in PhenoTips.
  *
  * @version $Id$
  * @since 1.3M2

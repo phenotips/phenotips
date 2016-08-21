@@ -60,7 +60,7 @@ import com.xpn.xwiki.store.migration.XWikiDBVersion;
 import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 
 /**
- * Migration for PhenoTips issue #1538: new format of phenotips JSON "dates_as_entered" fields
+ * Migration for PhenoTips issue PT-1538: new format of "dates_as_entered" JSON fields
  * ("range" instead of "decade") and same new format for pedigree dates.
  * <ul>
  * <li>For each {@code PatientClass} the existing value of birth_date_as_entered and death_date_as_entered fields
@@ -74,7 +74,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * @since 1.3M2
  */
 @Component
-@Named("R71494PhenoTips#1538")
+@Named("R71494-PT-1538")
 @Singleton
 public class R71494PhenoTips1538DataMigration extends AbstractHibernateDataMigration implements
     HibernateCallback<Object>
