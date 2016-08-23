@@ -21,6 +21,11 @@ import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyInputTerm;
 import org.phenotips.vocabulary.VocabularyTerm;
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.solr.common.SolrInputDocument;
@@ -31,8 +36,12 @@ import org.apache.solr.common.SolrInputField;
  *
  * @version $Id$
  */
-public class SolrVocabularyInputTerm extends SolrVocabularyTerm implements VocabularyInputTerm
+public class SolrVocabularyInputTerm extends AbstractSolrVocabularyTerm implements VocabularyInputTerm
 {
+    /* Inexplicably, SolrInputDocument and SolrDocument aren't (in version 5.3.2) in the same class hierarchy,
+     * which is why there has to be a common parent to this and the solrvocabularyterm instead of just
+     * extending from it. */
+
     /**
      * The solr input document.
      */
@@ -46,8 +55,64 @@ public class SolrVocabularyInputTerm extends SolrVocabularyTerm implements Vocab
      */
     public SolrVocabularyInputTerm(SolrInputDocument doc, Vocabulary ontology)
     {
-        super(doc, ontology);
+        super(ontology);
         this.doc = doc;
+    }
+
+    @Override
+    protected Iterable<Map.Entry<String, Object>> getEntrySet()
+    {
+        if (isNull()) {
+            return null;
+        }
+        Set<String> keySet = doc.keySet();
+        /* This sucks, but entrySet is of type Entry<String, SolrInputField> and will
+         * for sure wrap everything in an iterable, so we have to manually fix it */
+        List<Map.Entry<String, Object>> retval = new ArrayList<>(keySet.size());
+        for (String key : keySet) {
+            retval.add(new AbstractMap.SimpleImmutableEntry(key, get(key)));
+        }
+        return retval;
+    }
+
+    @Override
+    protected Object getFirstValue(String key)
+    {
+        if (isNull()) {
+            return null;
+        }
+        return this.doc.getFieldValue(key);
+    }
+
+    @Override
+    protected Collection<Object> getValues(String key)
+    {
+        if (isNull()) {
+            return null;
+        }
+        return doc.getFieldValues(key);
+    }
+
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public Object get(String key)
+    {
+        if (isNull()) {
+            return null;
+        }
+        SolrInputField field = doc.getField(key);
+        if (field == null) {
+            return null;
+        }
+        return field.getValue();
+    }
+
+    @Override
+    protected boolean isNull()
+    {
+        return doc == null;
     }
 
     @Override
