@@ -71,19 +71,21 @@ public class DefaultMeasurementPercentileResourceImpl extends AbstractMeasuremen
         }
 
         JSONObject resp = new JSONObject();
-        resp.accumulate("percentile", handler.valueToPercentile(isMale, ageMonths.floatValue(), value));
-        double stddev = handler.valueToStandardDeviation(isMale, ageMonths.floatValue(), value);
-        resp.accumulate("stddev", stddev);
-        resp.accumulate("fuzzy-value", MeasurementUtils.getFuzzyValue(stddev));
-
-        Collection<VocabularyTerm> terms = handler.getAssociatedTerms(Double.valueOf(stddev));
-        JSONArray termsJson = new JSONArray();
-        for (VocabularyTerm term : terms) {
-            if (term.getId() != null) {
-                termsJson.put(term.getId());
+        int percentile = handler.valueToPercentile(isMale, ageMonths.floatValue(), value);
+        if (percentile >= 0) {
+            resp.accumulate("percentile", handler.valueToPercentile(isMale, ageMonths.floatValue(), value));
+            double stddev = handler.valueToStandardDeviation(isMale, ageMonths.floatValue(), value);
+            resp.accumulate("stddev", stddev);
+            resp.accumulate("fuzzy-value", MeasurementUtils.getFuzzyValue(stddev));
+            Collection<VocabularyTerm> terms = handler.getAssociatedTerms(Double.valueOf(stddev));
+            JSONArray termsJson = new JSONArray();
+            for (VocabularyTerm term : terms) {
+                if (term.getId() != null) {
+                    termsJson.put(term.getId());
+                }
             }
+            resp.accumulate("associated-terms", termsJson);
         }
-        resp.accumulate("associated-terms", termsJson);
 
         return Response.ok(resp, MediaType.APPLICATION_JSON_TYPE).build();
     }
