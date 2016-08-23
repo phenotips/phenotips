@@ -35,8 +35,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- * Resource for working with patient collaborators, one at a time. Collaborators are found by both the internal patient
- * identifier and the internal collaborator identifier.
+ * Resource for working with patient record collaborators, one at a time. Collaborators are found by both the internal
+ * patient identifier and the internal collaborator identifier.
  *
  * @version $Id$
  * @since 1.3M2

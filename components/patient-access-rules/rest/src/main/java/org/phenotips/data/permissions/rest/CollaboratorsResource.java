@@ -38,7 +38,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- * Resource for working with patient record's collaborators, in bulk, where patients are identified by patient record's
+ * Resource for working with patient record collaborators, in bulk, where patients are identified by patient record's
  * internal PhenoTips identifier.
  *
  * @version $Id$
@@ -52,11 +52,11 @@ import javax.ws.rs.core.Response;
 public interface CollaboratorsResource
 {
     /**
-     * Retrieves information about the collaborators. If the indicated patient record doesn't exist, or if the user
+     * Retrieve information about the collaborators. If the indicated patient record doesn't exist, or if the user
      * sending the request doesn't have the right to view the target patient record, an error is returned.
      *
      * @param patientId internal identifier of a patient record
-     * @return REST representation of a collection of patient record's collaborators
+     * @return REST representation of a collection of collaborators
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -64,11 +64,11 @@ public interface CollaboratorsResource
     CollaboratorsRepresentation getCollaborators(@PathParam("patient-id") String patientId);
 
     /**
-     * Adds a new collaborator, or updates the permission level of a collaborator. If the indicated patient record
-     * doesn't exist, or if the user sending the request doesn't have the right to edit the target patient record, no
+     * Add new collaborators, or update the permission levels of existing collaborators. If the indicated patient record
+     * doesn't exist, or if the user sending the request doesn't have the right to manage the target patient record, no
      * change is performed and an error is returned.
      *
-     * @param collaborators a list of collaborators to add, each of which must have {@code id} and {@code level}
+     * @param collaborators a list of collaborators to modify, each of which must have {@code id} and {@code level}
      *            properties
      * @param patientId internal identifier of a patient record
      * @return a status message
@@ -79,10 +79,13 @@ public interface CollaboratorsResource
     Response addCollaborators(CollaboratorsRepresentation collaborators, @PathParam("patient-id") String patientId);
 
     /**
-     * Adds a new collaborator, or updates the permission level of a collaborator. If the indicated patient record
-     * doesn't exist, or if the user sending the request doesn't have the right to edit the target patient record, no
-     * change is performed and an error is returned. The payload of the request must contain properties "collaborator"
-     * and "level".
+     * Add new collaborators, or update the permission levels of existing collaborators. If the indicated patient record
+     * doesn't exist, or if the user sending the request doesn't have the right to manage the target patient record, no
+     * change is performed and an error is returned. The request data must contain properties "collaborator" and
+     * "level". Multiple values are accepted, if an equal number of values is received for both properties, and they are
+     * paired in the order that they appear in the request. Data can be sent both in the request body and in the query
+     * string, with the latter taking precedence over the former. If an unequal number of parameter values is received,
+     * then no change is performed and an error is returned.
      *
      * @param patientId internal identifier of a patient record
      * @return a status message
@@ -93,8 +96,8 @@ public interface CollaboratorsResource
     Response addCollaborators(@PathParam("patient-id") String patientId);
 
     /**
-     * Updates all collaborators, replacing all previous collaborators. If the indicated patient record doesn't exist,
-     * or if the user sending the request doesn't have the right to edit the target patient record, no change is
+     * Update all collaborators, replacing all previous collaborators. If the indicated patient record doesn't exist, or
+     * if the user sending the request doesn't have the right to manage the target patient record, no change is
      * performed and an error is returned.
      *
      * @param collaborators a list of collaborators, each of which must have {@code id} and {@code level} properties
@@ -107,8 +110,8 @@ public interface CollaboratorsResource
     Response setCollaborators(CollaboratorsRepresentation collaborators, @PathParam("patient-id") String patientId);
 
     /**
-     * Deletes all collaborators. If the indicated patient record doesn't exist, or if the user sending the request
-     * doesn't have the right to edit the target patient record, no change is performed and an error is returned.
+     * Delete all collaborators. If the indicated patient record doesn't exist, or if the user sending the request
+     * doesn't have the right to manage the target patient record, no change is performed and an error is returned.
      *
      * @param patientId internal identifier of a patient record
      * @return a status message
