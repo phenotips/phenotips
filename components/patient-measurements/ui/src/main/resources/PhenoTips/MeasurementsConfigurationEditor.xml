@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>MeasurementsConfigurationEditor</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1444409230000</creationDate>
+  <parent>XWiki.XWikiClasses</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1444427401000</date>
+  <contentUpdateDate>1444427401000</contentUpdateDate>
+  <version>1.1</version>
+  <title>MeasurementsConfigurationEditor</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity}}
+$xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
+$xwiki.ssx.use('PhenoTips.FormDesigner')##
+$xwiki.ssx.use('PhenoTips.MeasurementsConfigurationEditor')##
+$xwiki.jsx.use('PhenoTips.MeasurementsConfigurationEditor')##
+$xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
+##
+##
+#set ($configObjs = $services.query.xwql('from doc.object(PhenoTips.MeasurementsConfigurationClass) as obj').setLimit(1).execute())
+#set ($configDoc = $xwiki.getDocument($configObjs.get(0)))
+#set ($configObj = $configDoc.getObject('PhenoTips.MeasurementsConfigurationClass'))
+#set ($prefix = "${configObj.xWikiClass.name}_${configObj.number}_")
+#set ($formAction = $configDoc.getURL('save'))
+#set ($formSubmit = "action_save")
+#set ($formParams = {
+  "xredirect" : "$doc.getURL($xcontext.action, $!request.queryString)"
+})
+##
+#macro(measurementTool $name $icon $hint $url $attrs)&lt;a href="$url" title="$!{hint}" class="extension-tool ${name}" $!{attrs}&gt;&lt;i class="fa fa-${icon}"&gt;&lt;/i&gt;&lt;/a&gt;#end
+##
+#macro(measurementTools)
+{{html wiki=false clean=false}}&lt;div class="extension-tools"&gt;
+#measurementTool('move' 'arrows' "$services.localization.render('phenotips.formDesigner.moveExtension')" '#')
+&lt;/div&gt;{{/html}}
+#end
+##
+#macro(measurementInputs $meas $isEnabled)##
+{{html wiki=false clean=false}}
+&lt;input type="hidden" name="${prefix}ordering" value="$meas"/&gt;
+&lt;input type="hidden" name="${prefix}default" value="$meas"/&gt;
+&lt;input type="checkbox" class="uix-toggle" name="${prefix}enabled" value="$meas" #if ($isEnabled) checked="true" #end/&gt;
+{{/html}}##
+#end
+##
+#macro(measurement $meas $isEnabled)
+  (% class="extension-maquette" id="${meas}"%)((((% class="extension-title" %)(((#measurementInputs($meas $isEnabled) $services.localization.render("phenotips.UIXField.measurements.types.${meas}"))))#measurementTools())))
+#end
+##
+#macro(measurementSection $isDefault)
+#set ($defaults = $configObj.getProperty('default').value)
+#set ($enabled = $configObj.getProperty('enabled').value)
+#if ($isDefault)
+  #set ($id = 'default')
+#else
+  #set ($id = 'expanded')
+#end
+(% class="section-maquette" id="${id}"%)(((
+  (% class="section-title" %)(((#if ($isDefault) Default #else Expanded #end)))
+  (% class="section-contents" %)(((
+    #foreach ($meas in $configObj.getProperty('ordering').value)
+      #if ($isDefault == $defaults.contains($meas))
+        #measurement($meas $enabled.contains($meas))
+      #end
+    #end
+  )))
+)))
+#end
+##
+{{html clean=false wiki=false}}&lt;form action="$formAction" method="post"&gt;{{/html}}
+(% id="measurements-configuration-editor"%)(((
+  (% class="designer-panel extensions" %)(((
+    #measurementSection(true)
+    #measurementSection(false)
+  )))
+)))
+{{html clean=false wiki=false}}
+&lt;div class="hidden"&gt;
+  &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}"/&gt;
+#foreach ($p in $formParams.keySet())
+  &lt;input type="hidden" name="$p" value="$formParams.get($p)"/&gt;
+#end
+&lt;/div&gt;
+&lt;div class="buttons"&gt;
+ &lt;input class="button" type="submit" name="$formSubmit" value="$services.localization.render('phenotips.navigation.webHome.save')"/&gt;
+&lt;/div&gt;
+&lt;/form&gt;{{/html}}
+{{/velocity}}
+</content>
+  <object>
+    <name>PhenoTips.MeasurementsConfigurationEditor</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>d1768620-2509-4aa9-9125-a16c32a7a9f4</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function (PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+  widgets.MeasurementsConfigurationEditor = Class.create({
+
+    _ENHANCED_TOOL_CSS_CLASS : 'initialized',
+    _NEW_TOOL_SELECTOR: ':not(.initialized)',
+
+    initialize : function (element) {
+      if (!element) return;
+      this._element = element;
+      this._form = element.up('form');
+      this._enhanceExtensionTools();
+      this._enableFieldDragDrop = this._enableFieldDragDrop.bind(this);
+      this._syncDefaultValues = this._syncDefaultValues.bind(this);
+      this._syncDefaultValues();
+    },
+
+    _enhanceExtensionTools : function () {
+      this._silenceMoveButtons();
+      this._enableFieldDragDrop();
+    },
+
+    _silenceMoveButtons : function () {
+      this._element.select('a.move' + this._NEW_TOOL_SELECTOR).invoke('observe', 'click', function(event) {
+        event.stop();
+      });
+      this._element.select('a.move' + this._NEW_TOOL_SELECTOR).invoke('addClassName', this._ENHANCED_TOOL_CSS_CLASS);
+    },
+
+    _syncDefaultValues: function() {
+      this._element.select('.extension-maquette').each((function(el) {
+        el.down('input[name$=default]').disabled = !el.up('#default');
+      }).bind(this));
+    },
+
+    _enableFieldDragDrop : function () {
+       var _this = this;
+       var sections = this._element.select('.designer-panel .section-maquette .section-contents');
+       sections.each (function (section) {
+         Sortable.create(section, {
+           tag : 'div',
+           only: 'extension-maquette',
+           format: /^.*\.([^.]+)$/,
+           containment: sections,
+           dropOnEmpty: true,
+           constraint: false,
+           handle : 'move',
+           scroll: window,
+           onUpdate : function(container) {
+            _this._syncDefaultValues();
+           }
+         });
+       });
+    },
+  });
+  return PhenoTips;
+}(PhenoTips || {}));
+
+document.observe("xwiki:dom:loaded", function(){
+  window.wiz = new PhenoTips.widgets.MeasurementsConfigurationEditor($('measurements-configuration-editor'));
+});</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.MeasurementsConfigurationEditor</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>93b2be37-fbe3-4f31-821f-d220be3c6140</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>.designer-panel.extensions input[type="checkbox"] {
+  display: inline;
+}
+#measurements-configuration-editor {
+  overflow: auto;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+</xwikidoc>
