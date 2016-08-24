@@ -22,14 +22,13 @@ import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.PermissionsManager;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.users.UserManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
-
-import org.slf4j.Logger;
 
 /**
  * Default implementation of {@link SecureContextFactory}. The purpose is to reduce the number of common injections
@@ -43,9 +42,6 @@ import org.slf4j.Logger;
 public class DefaultSecureContextFactory implements SecureContextFactory
 {
     @Inject
-    private Logger logger;
-
-    @Inject
     private PatientRepository repository;
 
     @Inject
@@ -55,12 +51,16 @@ public class DefaultSecureContextFactory implements SecureContextFactory
     @Named("secure")
     private PermissionsManager permissionsManager;
 
+    @Inject
+    @Named("userOrGroup")
+    private DocumentReferenceResolver<String> userOrGroupResolver;
+
     @Override
     public PatientAccessContext getContext(String patientId, String minimumAccessLevel) throws WebApplicationException
     {
         AccessLevel level = this.permissionsManager.resolveAccessLevel(minimumAccessLevel);
         return new PatientAccessContext(patientId, level, this.repository, this.users, this.permissionsManager,
-            this.logger);
+            this.userOrGroupResolver);
     }
 
     @Override

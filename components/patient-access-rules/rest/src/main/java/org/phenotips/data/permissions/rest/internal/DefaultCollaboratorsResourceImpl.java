@@ -48,7 +48,6 @@ import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 /**
@@ -116,21 +115,22 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         List<Object> collaborators = this.container.getRequest().getProperties("collaborator");
         List<Object> accessLevels = this.container.getRequest().getProperties("level");
 
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
+        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
+
         if (collaborators.size() != accessLevels.size()) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
                 .entity("The number of collaborator identifiers and access levels don't match").build());
         }
+
         Map<EntityReference, AccessLevel> internalCollaborators = new LinkedHashMap<>(collaborators.size());
         for (int i = 0; i < collaborators.size(); ++i) {
             String collaboratorId = (String) collaborators.get(i);
             String accessLevelName = (String) accessLevels.get(i);
-            this.checkCollaboratorInfo(collaboratorId, accessLevelName);
+            patientAccessContext.checkCollaboratorInfo(collaboratorId, accessLevelName);
             internalCollaborators.put(this.userOrGroupResolver.resolve(collaboratorId),
                 this.manager.resolveAccessLevel(accessLevelName));
         }
-
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
-        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
 
         for (Map.Entry<EntityReference, AccessLevel> e : internalCollaborators.entrySet()) {
             patientAccess.addCollaborator(e.getKey(), e.getValue());
@@ -167,32 +167,12 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         }
         for (CollaboratorRepresentation collaborator : collaborators) {
             EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaborator.getId());
-            checkCollaboratorInfo(collaborator.getId(), collaborator.getLevel());
+            patientAccessContext.checkCollaboratorInfo(collaborator.getId(), collaborator.getLevel());
             internalCollaborators.put(collaboratorReference,
                 new StubCollaborator(collaboratorReference, this.manager.resolveAccessLevel(collaborator.getLevel())));
         }
         patientAccess.updateCollaborators(internalCollaborators.values());
         return Response.ok().build();
-    }
-
-    private void checkCollaboratorInfo(String collaboratorId, String levelName)
-    {
-        if (StringUtils.isBlank(collaboratorId)) {
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                .entity("The collaborator id was not provided").build());
-        }
-        if (this.userOrGroupResolver.resolve(collaboratorId) == null) {
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                .entity("Unknown collaborator: " + collaboratorId).build());
-        }
-        if (StringUtils.isBlank(levelName)) {
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                .entity("The collaborator's access level was not provided").build());
-        }
-        if (this.manager.resolveAccessLevel(levelName) == null) {
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                .entity("Invalid access level requested: " + levelName).build());
-        }
     }
 
     private static final class StubCollaborator implements Collaborator

@@ -176,6 +176,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     private Response setLevel(String collaboratorId, String accessLevelName, String patientId)
     {
         PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
+        patientAccessContext.checkCollaboratorInfo(collaboratorId, accessLevelName);
         PatientAccess patientAccess = patientAccessContext.getPatientAccess();
 
         EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorId);

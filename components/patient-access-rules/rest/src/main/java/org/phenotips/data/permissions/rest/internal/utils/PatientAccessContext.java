@@ -23,13 +23,16 @@ import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default context that securely provides the current user, patient instance, and patient access. In case that the
@@ -40,11 +43,17 @@ import org.slf4j.Logger;
  */
 public class PatientAccessContext
 {
+    private Logger logger = LoggerFactory.getLogger(PatientAccessContext.class);
+
     private Patient patient;
 
     private User currentUser;
 
     private PatientAccess patientAccess;
+
+    private PermissionsManager manager;
+
+    private DocumentReferenceResolver<String> userOrGroupResolver;
 
     /**
      * Initializes the context, making sure that the patient exists, and that the current user has sufficient rights. If
@@ -55,19 +64,22 @@ public class PatientAccessContext
      * @param repository used to find the patient record
      * @param users used to get the current user
      * @param manager used to initialize instance with access API
-     * @param logger for logging failures
+     * @param userOrGroupResolver document reference resolver that can resolve an identifier to either a user or a group
      * @throws WebApplicationException if the patient could not be found, or the current user has insufficient rights
      */
     public PatientAccessContext(String patientId, AccessLevel minimumAccessLevel, PatientRepository repository,
-        UserManager users, PermissionsManager manager, Logger logger) throws WebApplicationException
+        UserManager users, PermissionsManager manager, DocumentReferenceResolver<String> userOrGroupResolver)
+        throws WebApplicationException
     {
+        this.manager = manager;
         this.patient = repository.get(patientId);
         if (this.patient == null) {
-            logger.debug("No such patient record: [{}]", patientId);
+            this.logger.debug("No such patient record: [{}]", patientId);
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
-        this.patientAccess = manager.getPatientAccess(this.patient);
-        this.initializeUser(minimumAccessLevel, users, logger);
+        this.userOrGroupResolver = userOrGroupResolver;
+        this.patientAccess = this.manager.getPatientAccess(this.patient);
+        this.initializeUser(minimumAccessLevel, users, this.logger);
     }
 
     private void initializeUser(AccessLevel minimumAccessLevel, UserManager users, Logger logger)
@@ -110,5 +122,33 @@ public class PatientAccessContext
     public PatientAccess getPatientAccess()
     {
         return this.patientAccess;
+    }
+
+    /**
+     * Check if the data provided for a collaborator is valid: does the collaborator exist and is a valid principal, and
+     * is the specified access level valid?
+     *
+     * @param collaboratorId internal id of a principal, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
+     * @param levelName identifier (level name) of an access level
+     * @throws WebApplicationException if the data is invalid
+     */
+    public void checkCollaboratorInfo(String collaboratorId, String levelName) throws WebApplicationException
+    {
+        if (StringUtils.isBlank(collaboratorId)) {
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                .entity("The collaborator id was not provided").build());
+        }
+        if (this.userOrGroupResolver.resolve(collaboratorId) == null) {
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                .entity("Unknown collaborator: " + collaboratorId).build());
+        }
+        if (StringUtils.isBlank(levelName)) {
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                .entity("The collaborator's access level was not provided").build());
+        }
+        if (this.manager.resolveAccessLevel(levelName) == null) {
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                .entity("Invalid access level requested: " + levelName).build());
+        }
     }
 }
