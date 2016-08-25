@@ -22,11 +22,9 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.entities.PrimaryEntity;
-import org.phenotips.entities.internal.AbstractPrimaryEntityGroup;
+import org.phenotips.entities.internal.AbstractPrimaryEntity;
 import org.phenotips.projects.data.Project;
 import org.phenotips.templates.data.Template;
-import org.phenotips.templates.data.TemplateRepository;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -34,6 +32,7 @@ import org.xwiki.model.reference.AttachmentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
+import org.xwiki.query.QueryManager;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
@@ -59,7 +58,7 @@ import com.xpn.xwiki.objects.BaseObject;
  *
  * @version $Id$
  */
-public class DefaultProject extends AbstractPrimaryEntityGroup<PrimaryEntity> implements Project
+public class DefaultProject extends AbstractPrimaryEntity implements Project
 {
     private static final String OPEN_FOR_CONTRIBUTION_KEY = "openProjectForContribution";
 
@@ -69,6 +68,8 @@ public class DefaultProject extends AbstractPrimaryEntityGroup<PrimaryEntity> im
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(DefaultProject.class);
 
+    private TemplatePrimaryEntityGroup templateGroup;
+
     /**
      * Basic constructor.
      *
@@ -77,6 +78,9 @@ public class DefaultProject extends AbstractPrimaryEntityGroup<PrimaryEntity> im
     public DefaultProject(XWikiDocument projectObject)
     {
         super(projectObject);
+
+        this.templateGroup = new TemplatePrimaryEntityGroup(projectObject);
+
         this.projectObject = projectObject;
     }
 
@@ -159,28 +163,13 @@ public class DefaultProject extends AbstractPrimaryEntityGroup<PrimaryEntity> im
     @Override
     public Collection<Template> getTemplates()
     {
-        Collection<PrimaryEntity> templatesAsEntities = this.getMembersOfType(Template.CLASS_REFERENCE);
-        Collection<Template> templates = new HashSet<>(templatesAsEntities.size());
-        for (PrimaryEntity entity : templatesAsEntities) {
-            templates.add((Template) entity);
-        }
-        return templates;
+        return this.templateGroup.getMembers();
     }
 
     @Override
     public boolean setTemplates(Collection<String> templateIds)
     {
-        Collection<PrimaryEntity> existingTemplates = this.getMembersOfType(Template.CLASS_REFERENCE);
-        for (PrimaryEntity template : existingTemplates) {
-            this.removeMember(template);
-        }
-
-        for (String id : templateIds) {
-            Template template = this.getTemplateRepository().get(id);
-            this.addMember(template);
-        }
-
-        return true;
+        return this.templateGroup.setMembers(templateIds);
     }
 
     @Override
@@ -318,27 +307,20 @@ public class DefaultProject extends AbstractPrimaryEntityGroup<PrimaryEntity> im
         try {
             return ComponentManagerRegistry.getContextComponentManager().getInstance(PatientRepository.class);
         } catch (ComponentLookupException e) {
-            // Should not happen
+            this.logger.error("Failed to access the patient repository: {}", e.getMessage(), e);
         }
         return null;
     }
 
-    private TemplateRepository getTemplateRepository()
+    // TODO remove
+    private QueryManager getQueryManager()
     {
         try {
-            return ComponentManagerRegistry.getContextComponentManager().getInstance(TemplateRepository.class,
-                    "Study");
-        } catch (ComponentLookupException e) {
-            // Should not happen
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(QueryManager.class);
+        } catch (ComponentLookupException ex) {
+            this.logger.error("Failed to access the query manager: {}", ex.getMessage(), ex);
         }
         return null;
-    }
-
-    @Override
-    public EntityReference getMemberType()
-    {
-        //TODO
-        return Template.CLASS_REFERENCE;
     }
 
     @Override
