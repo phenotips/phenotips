@@ -20,6 +20,7 @@ package org.phenotips.data.permissions;
 import java.util.Collection;
 
 import org.phenotips.Constants;
+import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
@@ -34,7 +35,7 @@ import org.xwiki.users.User;
  * @since 1.0M9
  */
 @Unstable
-public interface Collaborator
+public interface Collaborator extends PrimaryEntity
 {
     /** The XClass used to store collaborators in the patient record. */
     EntityReference CLASS_REFERENCE = new EntityReference("CollaboratorClass", EntityType.DOCUMENT,

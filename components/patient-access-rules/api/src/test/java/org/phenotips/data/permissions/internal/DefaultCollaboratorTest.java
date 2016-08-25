@@ -25,11 +25,13 @@ import org.phenotips.groups.GroupManager;
 import org.phenotips.groups.internal.DefaultGroup;
 import org.phenotips.groups.internal.UsersAndGroups;
 
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.users.User;
 
@@ -46,6 +48,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.web.Utils;
 
 import static org.mockito.Mockito.mock;
@@ -70,6 +73,12 @@ public class DefaultCollaboratorTest
     @Mock
     private GroupManager groupManager;
 
+    @Mock
+    private DocumentReferenceResolver<EntityReference> resolver;
+
+    @Mock
+    private DocumentAccessBridge bridge;
+
     /** The user used as a collaborator. */
     private static final DocumentReference COLLABORATOR = new DocumentReference("xwiki", "XWiki", "hmccoy");
 
@@ -84,6 +93,8 @@ public class DefaultCollaboratorTest
         when(this.mockProvider.get()).thenReturn(this.cm);
         when(this.cm.getInstance(UsersAndGroups.class)).thenReturn(this.usersAndGroups);
         when(this.cm.getInstance(GroupManager.class)).thenReturn(this.groupManager);
+        when(this.cm.getInstance(DocumentAccessBridge.class)).thenReturn(this.bridge);
+        when(this.cm.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current")).thenReturn(this.resolver);
     }
 
     /** Basic tests for {@link Collaborator#getCollaboratorType()}. */

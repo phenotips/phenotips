@@ -36,16 +36,11 @@ import org.xwiki.users.User;
 /**
  * @version $Id$
  */
-public class DefaultCollaborator implements Collaborator
+public class DefaultCollaborator extends AbstractCollaboratorPrimaryEntity
 {
-    private final EntityReference user;
-
-    private final AccessLevel access;
-
     public DefaultCollaborator(EntityReference user, AccessLevel access)
     {
-        this.user = user;
-        this.access = access;
+        super(user, access);
     }
 
     @Override
@@ -67,24 +62,12 @@ public class DefaultCollaborator implements Collaborator
     }
 
     @Override
-    public EntityReference getUser()
-    {
-        return this.user;
-    }
-
-    @Override
     public String getUsername()
     {
         if (this.user == null) {
             return null;
         }
         return this.user.getName();
-    }
-
-    @Override
-    public AccessLevel getAccessLevel()
-    {
-        return this.access;
     }
 
     @Override
@@ -136,7 +119,7 @@ public class DefaultCollaborator implements Collaborator
         }
         return usersSet;
     }
-    
+
     private UsersAndGroups getUsersAndGroups()
     {
         try {

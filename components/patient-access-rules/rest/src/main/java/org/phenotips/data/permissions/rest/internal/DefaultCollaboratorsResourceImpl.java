@@ -21,6 +21,7 @@ import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.internal.AbstractCollaboratorPrimaryEntity;
 import org.phenotips.data.permissions.rest.CollaboratorsResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
@@ -178,16 +179,11 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         return Response.ok().build();
     }
 
-    private static final class StubCollaborator implements Collaborator
+    private static final class StubCollaborator extends AbstractCollaboratorPrimaryEntity
     {
-        private EntityReference user;
-
-        private AccessLevel access;
-
         private StubCollaborator(EntityReference user, AccessLevel access)
         {
-            this.user = user;
-            this.access = access;
+            super(user, access);
         }
 
         @Override
@@ -209,21 +205,9 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         }
 
         @Override
-        public EntityReference getUser()
-        {
-            return this.user;
-        }
-
-        @Override
         public String getUsername()
         {
             return null;
-        }
-
-        @Override
-        public AccessLevel getAccessLevel()
-        {
-            return this.access;
         }
 
         @Override
