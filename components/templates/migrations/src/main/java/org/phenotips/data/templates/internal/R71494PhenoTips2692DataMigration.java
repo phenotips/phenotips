@@ -23,6 +23,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -41,10 +42,12 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.store.XWikiHibernateBaseStore.HibernateCallback;
 import com.xpn.xwiki.store.XWikiHibernateStore;
+import com.xpn.xwiki.store.XWikiRecycleBinStoreInterface;
 import com.xpn.xwiki.store.migration.DataMigrationException;
 import com.xpn.xwiki.store.migration.XWikiDBVersion;
 import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 import com.xpn.xwiki.store.migration.hibernate.HibernateDataMigration;
+import com.xpn.xwiki.web.Utils;
 
 /**
  * Migration for PhenoTips issue PT-2692: After upgrade from 1.3 to 1.4, migrate existing old
@@ -101,6 +104,10 @@ public class R71494PhenoTips2692DataMigration extends AbstractHibernateDataMigra
         Query q = session.createQuery("select distinct o.name from BaseObject as o "
             + "where o.className='PhenoTips.StudyClass' and o.name <> 'PhenoTips.StudyTemplate'");
 
+        // Needed for rename, since it saves the pre-rename document in the recycle bin, and the recycle bin store isn't
+        // initialized yet
+        xwiki.setRecycleBinStore(Utils.<XWikiRecycleBinStoreInterface>getComponent(
+            (Type) XWikiRecycleBinStoreInterface.class, "hibernate"));
         @SuppressWarnings("unchecked")
         List<String> documents = q.list();
         this.logger.debug("Found {} templates", documents.size());
@@ -121,14 +128,21 @@ public class R71494PhenoTips2692DataMigration extends AbstractHibernateDataMigra
                 session.clear();
                 ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
                 session.flush();
-            } catch (DataMigrationException e) {
-                // We're in the middle of a migration, we're not expecting another migration
-            } finally {
+
+                // Another XWiki bug: rename only works outside of a session, so temporarily let XWiki "forget" that
+                // it's already doing a transaction so it can start a new one
+                Object crtSession = context.remove("hibsession");
+                Object crtTransaction = context.remove("hibtransaction");
                 DocumentReference ref = doc.getDocumentReference();
                 DocumentReference newRef = new DocumentReference(ref.getRoot().getName(), "Templates", ref.getName());
                 doc.rename(newRef, context);
+                context.put("hibsession", crtSession);
+                context.put("hibtransaction", crtTransaction);
+            } catch (DataMigrationException e) {
+                // We're in the middle of a migration, we're not expecting another migration
             }
         }
+        xwiki.setRecycleBinStore(null);
         return null;
     }
 }
