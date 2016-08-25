@@ -22,7 +22,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.entities.PrimaryEntity;
-import org.phenotips.entities.PrimaryEntityGroup;
 import org.phenotips.templates.data.Template;
 
 import org.xwiki.model.EntityType;
@@ -33,7 +32,7 @@ import java.util.Collection;
 /**
  * @version $Id$
  */
-public interface Project extends Comparable<Project>, PrimaryEntityGroup<PrimaryEntity>
+public interface Project extends Comparable<Project>, PrimaryEntity
 {
     /** The XClass used for storing project data. */
     EntityReference CLASS_REFERENCE = new EntityReference("ProjectClass", EntityType.DOCUMENT,
