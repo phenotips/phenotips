@@ -121,11 +121,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     public Response setLevel(String patientId, String collaboratorId)
     {
         String level = (String) this.container.getRequest().getProperty("level");
-        if (StringUtils.isNotBlank(level)) {
-            return setLevel(collaboratorId, level, patientId);
-        }
-        this.logger.error("The id, permissions level, or both were not provided or are invalid");
-        throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        return setLevel(collaboratorId, level, patientId);
     }
 
     @Override
@@ -156,12 +152,14 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         PatientAccess patientAccess)
     {
         String collaboratorId = id.trim();
-        // check if the space reference is used more than once in this class
         EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorId);
         if (collaboratorReference == null) {
+            this.logger.debug("Invalid collaborator of patient record [{}] requested: [{}]",
+                patient.getId(), collaboratorId);
             // what would be a better status to indicate that the user/group id is not valid?
             // ideally, the status page should show some sort of a message indicating that the id was not found
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                .entity("Invalid collaborator").build());
         }
 
         for (Collaborator collaborator : patientAccess.getCollaborators()) {
@@ -170,7 +168,10 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
             }
         }
         // same here
-        throw new WebApplicationException(Response.Status.NOT_FOUND);
+        this.logger.debug("Not a collaborator of patient record [{}] requested: [{}]",
+            patient.getId(), collaboratorId);
+        throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+            .entity("Not a collaborator").build());
     }
 
     private Response setLevel(String collaboratorId, String accessLevelName, String patientId)
@@ -178,7 +179,6 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
         patientAccessContext.checkCollaboratorInfo(collaboratorId, accessLevelName);
         PatientAccess patientAccess = patientAccessContext.getPatientAccess();
-
         EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorId);
         patientAccess.addCollaborator(collaboratorReference, this.manager.resolveAccessLevel(accessLevelName));
         return Response.ok().build();
