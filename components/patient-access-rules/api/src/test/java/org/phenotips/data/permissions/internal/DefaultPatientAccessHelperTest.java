@@ -17,6 +17,7 @@
  */
 package org.phenotips.data.permissions.internal;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
@@ -31,7 +32,9 @@ import org.phenotips.data.permissions.internal.access.ViewAccessLevel;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.EntityType;
@@ -49,12 +52,16 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.inject.Provider;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Matchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -62,6 +69,7 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.user.api.XWikiGroupService;
+import com.xpn.xwiki.web.Utils;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -134,6 +142,15 @@ public class DefaultPatientAccessHelperTest
 
     private XWikiContext context;
 
+    @Mock
+    private ComponentManager cm;
+
+    @Mock
+    private Provider<ComponentManager> mockProvider;
+
+    @Mock
+    DocumentReferenceResolver<EntityReference> resolver;
+
     @Before
     public void setup() throws ComponentLookupException
     {
@@ -172,6 +189,15 @@ public class DefaultPatientAccessHelperTest
         when(e.getContext()).thenReturn(ec);
         this.context = mock(XWikiContext.class);
         when(ec.getProperty("xwikicontext")).thenReturn(this.context);
+
+        // For constructing DefaultCollaborator
+        MockitoAnnotations.initMocks(this);
+        Utils.setComponentManager(this.cm);
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
+        when(this.mockProvider.get()).thenReturn(this.cm);
+
+        when(this.cm.getInstance(DocumentAccessBridge.class)).thenReturn(this.bridge);
+        when(this.cm.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current")).thenReturn(this.resolver);
     }
 
     /** Basic tests for {@link PatientAccessHelper#getCurrentUser()}. */

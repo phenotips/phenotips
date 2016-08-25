@@ -133,8 +133,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <!-- Some test classes are using an instance mock which is reused by individual methods. -->
-          <parallel>classes</parallel>
+          <!-- This would speed up build time, but we're playing with the singleton Utils.componentManager and this causes concurrency issues. -->
+          <parallel>none</parallel>
         </configuration>
       </plugin>
     </plugins>
