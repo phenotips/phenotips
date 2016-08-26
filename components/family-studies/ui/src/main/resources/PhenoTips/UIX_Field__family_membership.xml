@@ -109,7 +109,7 @@
     </class>
     <property>
       <content>{{velocity}}
-$doc.display('reference', $doc.getObject('PhenoTips.FamilyReferenceClass'))
+$!doc.display('reference', $doc.getObject('PhenoTips.FamilyReferenceClass'))
 {{/velocity}}
 </content>
     </property>
