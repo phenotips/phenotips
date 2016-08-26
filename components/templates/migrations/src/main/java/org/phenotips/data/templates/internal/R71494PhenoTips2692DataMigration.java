@@ -20,8 +20,10 @@ package org.phenotips.data.templates.internal;
 import org.phenotips.Constants;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.model.reference.EntityReference;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -63,6 +65,9 @@ import com.xpn.xwiki.web.Utils;
 public class R71494PhenoTips2692DataMigration extends AbstractHibernateDataMigration
     implements HibernateCallback<Object>
 {
+    private static final EntityReference NEW_PARENT_REFERENCE =
+        new EntityReference("WebHome", EntityType.DOCUMENT, new EntityReference("Templates", EntityType.SPACE));
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -120,6 +125,7 @@ public class R71494PhenoTips2692DataMigration extends AbstractHibernateDataMigra
                 doc.addXObject(newObject);
             }
             doc.removeXObjects(oldClassReference);
+            doc.setParentReference(NEW_PARENT_REFERENCE);
             doc.setComment("Migrated templates data to PhenoTips.TemplateClass");
             doc.setMinorEdit(true);
             try {
@@ -146,7 +152,6 @@ public class R71494PhenoTips2692DataMigration extends AbstractHibernateDataMigra
             xwiki.deleteDocument(
                 xwiki.getDocument(R71494PhenoTips2692DataMigration.this.resolver.resolve(docName), context), context);
         }
-        xwiki.setRecycleBinStore(null);
         return null;
     }
 }
