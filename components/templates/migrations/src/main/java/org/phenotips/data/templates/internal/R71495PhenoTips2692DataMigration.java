@@ -39,6 +39,7 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.StringProperty;
 import com.xpn.xwiki.store.XWikiHibernateBaseStore.HibernateCallback;
 import com.xpn.xwiki.store.XWikiHibernateStore;
 import com.xpn.xwiki.store.migration.DataMigrationException;
@@ -108,6 +109,15 @@ public class R71495PhenoTips2692DataMigration extends AbstractHibernateDataMigra
             for (BaseObject oldObject : doc.getXObjects(oldClassReference)) {
                 BaseObject newObject = oldObject.duplicate();
                 newObject.setXClassReference(newClassReference);
+                StringProperty oldProperty = (StringProperty) newObject.get("studyReference");
+                if (oldProperty != null) {
+                    StringProperty newProperty = (StringProperty) oldProperty.clone();
+                    newProperty.setId(oldProperty.getId());
+                    newProperty.setName("templateReference");
+                    newProperty.setValue(oldProperty.getValue().replaceFirst("xwiki:Studies", "xwiki:Templates"));
+                    newObject.addField("templateReference", newProperty);
+                    newObject.removeField("studyReference");
+                }
                 doc.addXObject(newObject);
             }
             doc.removeXObjects(oldClassReference);
