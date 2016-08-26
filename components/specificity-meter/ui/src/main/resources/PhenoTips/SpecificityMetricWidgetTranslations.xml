@@ -22,7 +22,7 @@
   <web>PhenoTips</web>
   <name>SpecificityMetricWidgetTranslations</name>
   <language/>
-  <defaultLanguage/>
+  <defaultLanguage>en</defaultLanguage>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
   <creationDate>1401822215000</creationDate>
