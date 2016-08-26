@@ -135,12 +135,16 @@ public class R71494PhenoTips2692DataMigration extends AbstractHibernateDataMigra
                 Object crtTransaction = context.remove("hibtransaction");
                 DocumentReference ref = doc.getDocumentReference();
                 DocumentReference newRef = new DocumentReference(ref.getRoot().getName(), "Templates", ref.getName());
-                doc.rename(newRef, context);
+                xwiki.copyDocument(ref, newRef, null, false, false, false, context);
                 context.put("hibsession", crtSession);
                 context.put("hibtransaction", crtTransaction);
             } catch (DataMigrationException e) {
                 // We're in the middle of a migration, we're not expecting another migration
             }
+        }
+        for (String docName : documents) {
+            xwiki.deleteDocument(
+                xwiki.getDocument(R71494PhenoTips2692DataMigration.this.resolver.resolve(docName), context), context);
         }
         xwiki.setRecycleBinStore(null);
         return null;
