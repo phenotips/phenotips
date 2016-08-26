@@ -254,32 +254,82 @@
       // Do nothing if the button was already clicked and it's waiting for a response from the server.
       return;
     } else {
-      var url = item.readAttribute('href') + "?confirm=1&amp;form_token=" + $$('meta[name=form_token]')[0].content + (Prototype.Browser.Opera ? "" : "&amp;ajax=1");
-      new XWiki.widgets.ConfirmedAjaxRequest(
-        /* Ajax request URL */
-        url,
-        /* Ajax request parameters */
-        {
-          onCreate : function() {
-            // Disable the button, to avoid a cascade of clicks from impatient users
-            item.disabled = true;
-          },
-          onSuccess : function() {
-            // Go to space WebHome
-            window.location = new XWiki.Document('WebHome', XWiki.Document.currentSpace).getURL('view');
-          },
-          onFailure : function() {
-            // Better luck next time!
-            item.disabled = false;
-          }
-        },
-        /* Interaction parameters */
-        {
-          confirmationText: "$services.localization.render('core.recyclebin.confirm')"
-        }
-      );
+      var familyID = $('familyIdentifier') ? $('familyIdentifier').value : undefined;
+      var familyInterfaceDoc = new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips');
+      if (familyID) {
+        var fullURL = familyInterfaceDoc.getURL('get', 'rand='+ Math.random()) + '&amp;action=familyinfo&amp;document_id=' + familyID;
+        new Ajax.Request(fullURL, {
+          method: "POST",
+          onSuccess: onFamilyDataReadyBeforeDeletion.bind(this)
+        });
+      } else {
+        var confirmationText = "$services.localization.render('core.recyclebin.confirm')";
+        standartPatientDelete(confirmationText);
+      }
     }
   });
+
+  var onFamilyDataReadyBeforeDeletion = function (response) {
+    if (response.responseJSON) {
+      var familyMembers = response.responseJSON.family.hasOwnProperty("familyMembers") ? response.responseJSON.family.familyMembers: [];
+      if (familyMembers.length &gt; 1) {
+        // remove patient from family
+        var warningMessage = "$services.localization.render('core.recyclebin.confirm')";
+        var parameters = {"action": "removepatient", "patient_id": XWiki.currentDocument.page};
+      } else {
+        // delete pedigree and family
+        var familyString = response.responseJSON.family.externalId == "" ? response.responseJSON.family.id :
+                         response.responseJSON.family.externalId + " (" + response.responseJSON.family.id + ")";
+        var warningMessage = "$services.localization.render('phenotips.patientRecord.deleteWarning')" + "&lt;br&gt;&lt;br&gt;" +
+                            "$services.localization.render('phenotips.patientRecord.pedigree.deleteFamilyWarning')" + " " + familyString;
+        var parameters = {"action": "deletefamily", "removemembers": false, "family_id": response.responseJSON.family.id};
+      }
+      standartPatientDelete(warningMessage, parameters, sendDeleteRequest);
+    }
+  }
+
+  var sendDeleteRequest = function(deleteParameters) {
+    var familyInterfaceDoc = new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips');
+    var fullURL = familyInterfaceDoc.getURL('get', 'rand='+ Math.random());
+    new Ajax.Request(fullURL, {
+      method: "POST",
+      parameters: deleteParameters,
+      onSuccess: function(response) {
+        window.location = new XWiki.Document('WebHome', XWiki.Document.currentSpace).getURL('view');
+      }
+    });
+  }
+
+  var standartPatientDelete = function (text, parameters, deleteFamilyCallback) {
+    var item = $('prActionDelete');
+    var url = item.readAttribute('href') + "?confirm=1&amp;form_token=" + $$('meta[name=form_token]')[0].content + (Prototype.Browser.Opera ? "" : "&amp;ajax=1");
+    new XWiki.widgets.ConfirmedAjaxRequest(
+      /* Ajax request URL */
+      url,
+      /* Ajax request parameters */
+      {
+        onCreate : function() {
+          // Disable the button, to avoid a cascade of clicks from impatient users
+          item.disabled = true;
+        },
+        onSuccess : function() {
+          if (deleteFamilyCallback){
+            deleteFamilyCallback(parameters);
+          }
+          // Go to space WebHome
+          window.location = new XWiki.Document('WebHome', XWiki.Document.currentSpace).getURL('view');
+        },
+        onFailure : function() {
+          // Better luck next time!
+          item.disabled = false;
+        }
+      },
+      /* Interaction parameters */
+      {
+        confirmationText: text
+      }
+    );
+  }
 });</code>
     </property>
     <property>
