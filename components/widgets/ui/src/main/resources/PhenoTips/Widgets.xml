@@ -4417,9 +4417,10 @@ document.observe("xwiki:dom:loaded", function() {
 
       var values = [];
       for (var y = crtYear; y &gt;= startYear; --y) {
-        values.push({"value" : y, "selected" : this.__date.year == y});
+        var yearSelected = (this.__date.year == y);
+        values.push({"value" : y, "selected" : yearSelected});
         if (y % 10 == 0) {
-            values.push({"value" : (y + "s"), "cssClass" : "decade", "text" : (y + 's'), "selected" : this.__date.decade == y + "s"});
+            values.push({"value" : (y + "s"), "cssClass" : "decade", "text" : (y + 's'), "selected" : (!yearSelected &amp;&amp; (this.__date.decade == y + "s"))});
         }
       }
       values.push({"value": "1800s", "cssClass" : "decade", "selected" : this.__date.decade == "1800s"});
@@ -4520,6 +4521,7 @@ document.observe("xwiki:dom:loaded", function() {
         } else {
             if (y != "") {
                 dateObject["year"] = y;
+                dateObject["decade"] = y + "s";
             }
         }
 

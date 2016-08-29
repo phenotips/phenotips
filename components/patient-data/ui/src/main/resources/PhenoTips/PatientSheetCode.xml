@@ -362,11 +362,11 @@ var isDateAfter = function(birth_date, death_date) {
    var death = death_date;
    var used_decade = false;	 
 
-   if (birth.decade) {
+   if (birth.decade &amp;&amp; !birth.year) {
      birth.year = birth.decade.substring(0, birth.decade.length-1);
      used_decade = true;
    }
-   if (death.decade) {
+   if (death.decade &amp;&amp; !death.year) {
      death.year = Number(death.decade.substring(0, death.decade.length-1)) + 9;
      used_decade = true;
    }

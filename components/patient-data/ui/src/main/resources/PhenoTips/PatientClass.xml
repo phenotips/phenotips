@@ -201,7 +201,7 @@
 #set ($enteredValue = $object.getProperty("${name}_entered").value)
 #if ("$!enteredValue" != '' &amp;&amp; "$!enteredValue" != '{}')
   #set ($enteredValue = $jsontool.parse($enteredValue))
-  #if ($enteredValue.decade)
+  #if ($enteredValue.decade &amp;&amp; !$enteredValue.year)
     &lt;span class="date"&gt;$!escapetool.xml($enteredValue.decade)&lt;/span&gt;
   #else
     #set ($displayedValue = $format)
@@ -264,7 +264,7 @@
 #set ($enteredValue = $object.getProperty("${name}_entered").value)
 #if ("$!enteredValue" != '' &amp;&amp; "$!enteredValue" != '{}')
   #set ($enteredValue = $jsontool.parse($enteredValue))
-  #if ($enteredValue.decade)
+  #if ($enteredValue.decade &amp;&amp; !$enteredValue.year)
     &lt;span class="date"&gt;$!escapetool.xml($enteredValue.decade)&lt;/span&gt;
   #else
     #set ($displayedValue = $format)
