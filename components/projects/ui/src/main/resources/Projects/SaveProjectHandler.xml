@@ -97,24 +97,8 @@
   ##
   $jsontool.serialize($data)
 #elseif ("$!{request.xaction}" == 'update')
-  #set ($observersStrings = $request.getParameterValues('observers'))
-  #set ($contributorsStrings = $request.getParameterValues('contributors'))
-  #set ($leadersString = $request.getParameterValues('leaders'))
-  #set ($templatesString = $request.getParameterValues('templates'))
-  ##
-  #set ($observers = [])
-  #foreach ($observer in $observersStrings)
-    #set ($discard = $observers.add($services.model.resolveDocument($observer)))
-  #end
-  #set ($contributors = [])
-  #foreach ($contributor in $contributorsStrings)
-    #set ($discard = $contributors.add($services.model.resolveDocument($contributor)))
-  #end
-  #set ($leaders = [])
-  #foreach ($leader in $leadersString)
-    #set ($discard = $leaders.add($services.model.resolveDocument($leader)))
-  #end
-  #set ($discard = $project.setCollaborators($observers, $contributors, $leaders))
+  #set ($collaborators = $request.getParameterValues('collaborators'))
+  #set ($discard = $_service.setCollaboratorsInProject($collaborators, $project))
   ##
   #set ($templateIds = [])
   #foreach ($id in $templatesString)

@@ -46,26 +46,19 @@ var PhenoTips = (function (PhenoTips) {
       // Save collaborators and templates when project is saved
       document.observe("xwiki:actions:save", function(event) {
         var formData = _this.form.serialize(true);
-        var leaders = formData.leaders || [];
+        var collaboratorsJSON = this._getCollaboratorsJSON(formData);
         var templates = formData.templates || [];
-        var contributors = formData.contributors || [];
-        var observers = formData.observers || [];
-        if (_this.openForContribution) {
-           contributors = [];
-        }
 
         new Ajax.Request(_this.ajaxService, {
-          parameters : {'projectId'    : _this.projectId,
-                        'xaction'      : 'update',
-                        'observers'    : observers,
-                        'contributors' : contributors,
-                        'leaders'      : leaders,
-                        'templates'    : templates},
+          parameters : {'projectId'     : _this.projectId,
+                        'xaction'       : 'update',
+                        'collaborators' : collaboratorsJSON,
+                        'templates'     : templates},
           onComplete: function(response) {
              _this._readCollaboratorsAndTemplates();
           }
         });
-      });
+      }.bind(_this));
     },
 
     _initializeCollaborators : function(type, searchUsers, searchGroups) {
@@ -272,6 +265,33 @@ var PhenoTips = (function (PhenoTips) {
     _addCurrentUserAsLeader : function() {
        var currentUser = PhenoTips.currentUser;
        this._addCollaborator({type: "user", name: currentUser.name, id: "$xcontext.mainWikiName"+":"+currentUser.id, icon : "$xwiki.getSkinFile('icons/xwiki/noavatar.png')"}, true, 'leaders');
+    },
+
+    _getCollaboratorsJSON : function(formData) {
+        var leaders = [].concat(formData.leaders || []);
+        var contributors = [].concat(formData.contributors || []);
+        var observers = [].concat(formData.observers || []);
+        if (_this.openForContribution) {
+           contributors = [];
+        }
+
+        var collaborators = [];
+        this._addCollaboratorsToJSON(collaborators, leaders, 'leader');
+        this._addCollaboratorsToJSON(collaborators, contributors, 'contributor');
+        this._addCollaboratorsToJSON(collaborators, observers, 'observer');
+
+        var collaboratorsJSON = {};
+        collaboratorsJSON.collaborators = collaborators;
+        return JSON.stringify(collaboratorsJSON);
+    },
+
+    _addCollaboratorsToJSON : function(collaborators, array, accessLevel) {
+        for (var i=0; i<array.length; i++) {
+            var item = new Object();
+            item.userOrGroup = array[i];
+            item.accessLevel = accessLevel;
+            collaborators.push(item);
+        }
     }
 
   });
