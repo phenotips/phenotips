@@ -23,7 +23,6 @@ import java.util.Collection;
 
 /**
  * A component capable of machine translating a vocabulary.
- * Will operate based on the default language.
  *
  * @version $Id$
  */
@@ -35,22 +34,24 @@ public interface MachineTranslator
      * that would be read from disk.
      *
      * @param vocabulary the vocabulary id
+     * @param lang the target language
      * @param term the term that would be translated
      * @param fields the fields to look at
      * @return the number of non-translated items.
      */
-    long getMissingCharacters(String vocabulary, VocabularyTerm term, Collection<String> fields);
+    long getMissingCharacters(String vocabulary, String lang, VocabularyTerm term, Collection<String> fields);
 
     /**
      * Translate the term given.
      * Whenever possible will read from disk.
      *
      * @param vocabulary the vocabulary id
+     * @param lang the target language
      * @param term the term to translate
      * @param fields the fields to translate in the terms
      * @return the number of translated characters.
      */
-    long translate(String vocabulary, VocabularyInputTerm term, Collection<String> fields);
+    long translate(String vocabulary, String lang, VocabularyInputTerm term, Collection<String> fields);
 
     /**
      * Return the set of supported vocabularies.
@@ -70,15 +71,17 @@ public interface MachineTranslator
      * Set things up to machine translate the vocabulary given.
      *
      * @param vocabulary the vocabulary.
+     * @param lang the target language
      * @return whether it succeeded
      */
-    boolean loadVocabulary(String vocabulary);
+    boolean loadVocabulary(String vocabulary, String lang);
 
     /**
      * Tear things down from the machine translation of the vocabulary given.
      *
      * @param vocabulary the vocabulary.
+     * @param lang the target language
      * @return whether it succeeded
      */
-    boolean unloadVocabulary(String vocabulary);
+    boolean unloadVocabulary(String vocabulary, String lang);
 }

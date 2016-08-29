@@ -68,6 +68,8 @@ public class AbstractMachineTranslatorTest
      */
     private static final String VOC_NAME = "dummy";
 
+    private static final String LANG = "es";
+
     /**
      * The mocker.
      */
@@ -123,7 +125,7 @@ public class AbstractMachineTranslatorTest
     @Before
     public void setUp() throws Exception
     {
-        Locale locale = new Locale("es");
+        Locale locale = new Locale(LANG);
         LocalizationContext ctx = mocker.getInstance(LocalizationContext.class);
         when(ctx.getCurrentLocale()).thenReturn(locale);
 
@@ -163,13 +165,13 @@ public class AbstractMachineTranslatorTest
         fields.add("name");
 
         translator = spy(mocker.getComponentUnderTest());
-        translator.loadVocabulary(VOC_NAME);
+        translator.loadVocabulary(VOC_NAME, LANG);
     }
 
     @After
     public void tearDown()
     {
-        translator.unloadVocabulary(VOC_NAME);
+        translator.unloadVocabulary(VOC_NAME, LANG);
     }
 
     /**
@@ -179,9 +181,9 @@ public class AbstractMachineTranslatorTest
     @Test
     public void testNoReTranslate()
     {
-        long count = translator.translate(VOC_NAME, term1, fields);
+        long count = translator.translate(VOC_NAME, LANG, term1, fields);
         assertEquals(0, count);
-        verify(translator, never()).doTranslate(term1.getName());
+        verify(translator, never()).doTranslate(term1.getName(), LANG);
         verify(term1).set("name_es", "El Dummy");
         verify(term1, never()).set(eq("name"), any(String.class));
     }
@@ -192,9 +194,9 @@ public class AbstractMachineTranslatorTest
     @Test
     public void testDoTranslate()
     {
-        long count = translator.translate(VOC_NAME, term2, fields);
+        long count = translator.translate(VOC_NAME, LANG, term2, fields);
         assertEquals(term2.getName().length(), count);
-        verify(translator).doTranslate(term2.getName());
+        verify(translator).doTranslate(term2.getName(), LANG);
         verify(term2).set("name_es", "El Whatever");
         verify(term2, never()).set(eq("name"), any(String.class));
     }
@@ -205,10 +207,10 @@ public class AbstractMachineTranslatorTest
     @Test
     public void testRemember()
     {
-        translator.translate(VOC_NAME, term2, fields);
-        long count = translator.translate(VOC_NAME, term2, fields);
+        translator.translate(VOC_NAME, LANG, term2, fields);
+        long count = translator.translate(VOC_NAME, LANG, term2, fields);
         assertEquals(0, count);
-        verify(translator, times(1)).doTranslate(term2.getName());
+        verify(translator, times(1)).doTranslate(term2.getName(), LANG);
         verify(term2, times(2)).set("name_es", "El Whatever");
         verify(term2, never()).set(eq("name"), any(String.class));
     }
@@ -219,13 +221,13 @@ public class AbstractMachineTranslatorTest
     @Test
     public void testNotWhenUnloaded()
     {
-        translator.unloadVocabulary(VOC_NAME);
+        translator.unloadVocabulary(VOC_NAME, LANG);
         try {
-            translator.translate(VOC_NAME, term1, fields);
+            translator.translate(VOC_NAME, LANG, term1, fields);
             fail("Did not throw on translate when unloaded");
         } catch (IllegalStateException e) {
             /* So tearDown doesn't fail */
-            translator.loadVocabulary(VOC_NAME);
+            translator.loadVocabulary(VOC_NAME, LANG);
         }
     }
 
@@ -236,11 +238,11 @@ public class AbstractMachineTranslatorTest
     public void testNewField()
     {
         fields.add("def");
-        long count = translator.translate(VOC_NAME, term1, fields);
+        long count = translator.translate(VOC_NAME, LANG, term1, fields);
         assertEquals(term1.getDescription().length(), count);
         verify(term1).set("def_es", "El " + term1.getDescription());
         verify(term1, never()).set(eq("def"), any(String.class));
-        verify(translator).doTranslate(term1.getDescription());
+        verify(translator).doTranslate(term1.getDescription(), LANG);
     }
 
     /**
@@ -250,12 +252,12 @@ public class AbstractMachineTranslatorTest
     @Test
     public void testPersist()
     {
-        translator.translate(VOC_NAME, term2, fields);
-        translator.unloadVocabulary(VOC_NAME);
-        translator.loadVocabulary(VOC_NAME);
-        long count = translator.translate(VOC_NAME, term2, fields);
+        translator.translate(VOC_NAME, LANG, term2, fields);
+        translator.unloadVocabulary(VOC_NAME, LANG);
+        translator.loadVocabulary(VOC_NAME, LANG);
+        long count = translator.translate(VOC_NAME, LANG, term2, fields);
         assertEquals(0, count);
-        verify(translator, times(1)).doTranslate(term2.getName());
+        verify(translator, times(1)).doTranslate(term2.getName(), LANG);
         verify(term2, times(2)).set("name_es", "El Whatever");
         verify(term2, never()).set(eq("name"), any(String.class));
     }
@@ -268,15 +270,15 @@ public class AbstractMachineTranslatorTest
     public void testNewFieldPersisted()
     {
         fields.add("def");
-        translator.translate(VOC_NAME, term1, fields);
-        translator.unloadVocabulary(VOC_NAME);
-        translator.loadVocabulary(VOC_NAME);
-        long count = translator.translate(VOC_NAME, term1, fields);
+        translator.translate(VOC_NAME, LANG, term1, fields);
+        translator.unloadVocabulary(VOC_NAME, LANG);
+        translator.loadVocabulary(VOC_NAME, LANG);
+        long count = translator.translate(VOC_NAME, LANG, term1, fields);
         assertEquals(0, count);
         /* One time for each translation */
         verify(term1, times(2)).set("def_es", "El Definition");
         /* Only once: for the first translation */
-        verify(translator, times(1)).doTranslate(term1.getDescription());
+        verify(translator, times(1)).doTranslate(term1.getDescription(), LANG);
         verify(term1, never()).set(eq("def"), any(String.class));
     }
 
@@ -291,11 +293,11 @@ public class AbstractMachineTranslatorTest
     {
         fields.clear();
         fields.add("synonym");
-        long count = translator.translate(VOC_NAME, term1, fields);
+        long count = translator.translate(VOC_NAME, LANG, term1, fields);
         assertEquals(0, count);
         verify(term1).set(eq("synonym_es"), argThat(containsInAnyOrder(translatedSynonyms.toArray())));
         verify(term1, never()).set(eq("synonym"), any(Set.class));
-        verify(translator, never()).doTranslate(any(String.class));
+        verify(translator, never()).doTranslate(any(String.class), any(String.class));
     }
 
     /**
@@ -306,12 +308,12 @@ public class AbstractMachineTranslatorTest
     {
         fields.clear();
         fields.add("synonym");
-        long count = translator.translate(VOC_NAME, term2, fields);
+        long count = translator.translate(VOC_NAME, LANG, term2, fields);
         assertEquals(synonymsLength, count);
         verify(term2, never()).set(eq("synonym"), any(Set.class));
-        verify(translator, times(synonyms.size())).doTranslate(any(String.class));
+        verify(translator, times(synonyms.size())).doTranslate(any(String.class), any(String.class));
         for (String synonym : synonyms) {
-            verify(translator).doTranslate(eq(synonym));
+            verify(translator).doTranslate(eq(synonym), eq(LANG));
         }
         for (String synonym : translatedSynonyms) {
             verify(term2).append(eq("synonym_es"), eq(synonym));
@@ -326,15 +328,15 @@ public class AbstractMachineTranslatorTest
     {
         fields.clear();
         fields.add("synonym");
-        translator.translate(VOC_NAME, term2, fields);
-        translator.unloadVocabulary(VOC_NAME);
-        translator.loadVocabulary(VOC_NAME);
-        long count = translator.translate(VOC_NAME, term2, fields);
+        translator.translate(VOC_NAME, LANG, term2, fields);
+        translator.unloadVocabulary(VOC_NAME, LANG);
+        translator.loadVocabulary(VOC_NAME, LANG);
+        long count = translator.translate(VOC_NAME, LANG, term2, fields);
         assertEquals(0, count);
         verify(term2, never()).set(eq("synonym"), any(String.class));
-        verify(translator, times(synonyms.size())).doTranslate(any(String.class));
+        verify(translator, times(synonyms.size())).doTranslate(any(String.class), any(String.class));
         for (String synonym : synonyms) {
-            verify(translator, times(1)).doTranslate(eq(synonym));
+            verify(translator, times(1)).doTranslate(eq(synonym), eq(LANG));
         }
         for (String synonym : translatedSynonyms) {
             verify(term2).append(eq("synonym_es"), eq(synonym));
@@ -348,7 +350,7 @@ public class AbstractMachineTranslatorTest
     {
         fields.add("synonym");
         fields.add("def");
-        long count = translator.getMissingCharacters(VOC_NAME, term2, fields);
+        long count = translator.getMissingCharacters(VOC_NAME, LANG, term2, fields);
         assertEquals(term2.getName().length() + term2.getDescription().length() + synonymsLength,
                 count);
         verify(term2, never()).set(any(String.class), any(Object.class));
@@ -367,7 +369,7 @@ public class AbstractMachineTranslatorTest
         public Collection<String> getSupportedLanguages()
         {
             Collection<String> retval = new HashSet<>(1);
-            retval.add("es");
+            retval.add(LANG);
             return retval;
         }
 
@@ -386,7 +388,7 @@ public class AbstractMachineTranslatorTest
         }
 
         @Override
-        protected String doTranslate(String msg)
+        protected String doTranslate(String msg, String lang)
         {
             return "El " + msg;
         }

@@ -166,7 +166,7 @@ public class MSMachineTranslator extends AbstractMachineTranslator
     }
 
     @Override
-    protected String doTranslate(String input)
+    protected String doTranslate(String input, String lang)
     {
         if (!enabled) {
             return null;
@@ -179,7 +179,7 @@ public class MSMachineTranslator extends AbstractMachineTranslator
             builder.addParameter("appId", "");
             builder.addParameter("text", input);
             builder.addParameter("from", "en");
-            builder.addParameter("to", getLanguage());
+            builder.addParameter("to", lang);
             builder.addParameter("contentType", "text/plain");
             URI uri = builder.build();
             String result = Request.Get(uri).

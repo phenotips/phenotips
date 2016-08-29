@@ -32,9 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -82,17 +80,12 @@ public abstract class AbstractMachineTranslator implements MachineTranslator, In
     /**
      * The loaded translations.
      */
-    private Map<String, XLiffFile> translations = new HashMap<>();
+    private XLiffMap translations = new XLiffMap();
 
     /**
      * The xml mapper.
      */
     private XmlMapper mapper = new XmlMapper();
-
-    /**
-     * The current language.
-     */
-    private String lang;
 
     @Override
     public void initialize() throws InitializationException
@@ -150,13 +143,12 @@ public abstract class AbstractMachineTranslator implements MachineTranslator, In
     }
 
     @Override
-    public boolean loadVocabulary(String vocabulary)
+    public boolean loadVocabulary(String vocabulary, String lang)
     {
-        lang = localizationContext.getCurrentLocale().getLanguage();
         File file = new File(home, getFileName(vocabulary, lang));
         try {
             XLiffFile xliff = mapper.readValue(file, XLiffFile.class);
-            translations.put(vocabulary, xliff);
+            translations.put(vocabulary, lang, xliff);
         } catch (IOException e) {
             logger.error(String.format("Could not load %s: %s", file.toString(), e.getMessage()));
             return false;
@@ -165,9 +157,9 @@ public abstract class AbstractMachineTranslator implements MachineTranslator, In
     }
 
     @Override
-    public boolean unloadVocabulary(String vocabulary)
+    public boolean unloadVocabulary(String vocabulary, String lang)
     {
-        XLiffFile xliff = translations.remove(vocabulary);
+        XLiffFile xliff = translations.remove(vocabulary, lang);
         File file = new File(home, getFileName(vocabulary, lang));
         try {
             mapper.writeValue(file, xliff);
@@ -180,11 +172,11 @@ public abstract class AbstractMachineTranslator implements MachineTranslator, In
     }
 
     @Override
-    public long getMissingCharacters(String vocabulary, VocabularyTerm term,
+    public long getMissingCharacters(String vocabulary, String lang, VocabularyTerm term,
             Collection<String> fields)
     {
         long count = 0;
-        XLiffFile xliff = getXliff(vocabulary);
+        XLiffFile xliff = translations.get(vocabulary, lang);
         for (String field : fields) {
             if (xliff.getFirstString(term.getId(), field) == null) {
                 Object o = term.get(field);
@@ -204,10 +196,11 @@ public abstract class AbstractMachineTranslator implements MachineTranslator, In
     }
 
     @Override
-    public long translate(String vocabulary, VocabularyInputTerm term, Collection<String> fields)
+    public long translate(String vocabulary, String lang, VocabularyInputTerm term,
+            Collection<String> fields)
     {
         long count = 0;
-        XLiffFile xliff = getXliff(vocabulary);
+        XLiffFile xliff = translations.get(vocabulary, lang);
         for (String field : fields) {
             String translatedField = field + "_" + lang;
             Object o = term.get(field);
@@ -218,7 +211,7 @@ public abstract class AbstractMachineTranslator implements MachineTranslator, In
                 } else {
                     String string = (String) o;
                     count += string.length();
-                    String result = doTranslate(string);
+                    String result = doTranslate(string, lang);
                     if (result != null) {
                         term.set(translatedField, result);
                         xliff.setString(term.getId(), field, string, result);
@@ -230,7 +223,7 @@ public abstract class AbstractMachineTranslator implements MachineTranslator, In
                 if (there != null) {
                     term.set(translatedField, there);
                 } else {
-                    count += translateIterable(objects, term, field, translatedField, xliff);
+                    count += translateIterable(objects, lang, term, field, translatedField, xliff);
                 }
             }
         }
@@ -241,12 +234,13 @@ public abstract class AbstractMachineTranslator implements MachineTranslator, In
      * Translate an iterable field.
      *
      * @param objects the iterable
+     * @param lang the target language
      * @param term the vocabulary term
      * @param field the field we're translating
      * @param translatedField the translated name of the field
      * @param xliff the xliff file to store translations in.
      */
-    private long translateIterable(Iterable<Object> objects, VocabularyInputTerm term,
+    private long translateIterable(Iterable<Object> objects, String lang, VocabularyInputTerm term,
             String field, String translatedField, XLiffFile xliff)
     {
         long count = 0;
@@ -254,7 +248,7 @@ public abstract class AbstractMachineTranslator implements MachineTranslator, In
             if (inner instanceof String) {
                 String string = (String) inner;
                 count += string.length();
-                String result = doTranslate(string);
+                String result = doTranslate(string, lang);
                 if (result != null) {
                     term.append(translatedField, result);
                     xliff.appendString(term.getId(), field, string, result);
@@ -273,34 +267,8 @@ public abstract class AbstractMachineTranslator implements MachineTranslator, In
      * for graceful failing of the translator.
      *
      * @param input the input
+     * @param lang the language
      * @return the translated string
      */
-    protected abstract String doTranslate(String input);
-
-    /**
-     * Get the XLiffFile object associated with the vocabulary given, throw if it isn't there.
-     *
-     * @param vocabulary the vocabulary to get an xliff for
-     * @return the xliff
-     * @throws IllegalStateException if the xliff file has not been read
-     */
-    protected XLiffFile getXliff(String vocabulary)
-    {
-        XLiffFile xliff = translations.get(vocabulary);
-        if (xliff == null) {
-            throw new IllegalStateException(String.format("Vocabulary %s never initialized",
-                        vocabulary));
-        }
-        return xliff;
-    }
-
-    /**
-     * Get the language we're translating to.
-     *
-     * @return the target language.
-     */
-    protected String getLanguage()
-    {
-        return lang;
-    }
+    protected abstract String doTranslate(String input, String lang);
 }
