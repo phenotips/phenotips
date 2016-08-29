@@ -734,8 +734,16 @@
             }
             var collaborators = _this._element.down('.collaborators');
             var collaboratorsCount = formData.collaborator ? (formData.collaborator.size &amp;&amp; formData.collaborator.size() || 1) : 0;
+            _this._updateDisplayedCollaborators(formData.collaborator);
             if (collaborators) {
-              collaborators.replaceChild(document.createTextNode(collaboratorsCount + ' collaborator' + (collaboratorsCount != 1 ? 's' : '')), collaborators.lastChild);
+              var topCollaborator = $$('#manage-collaborators tr').map(function(item) {return item.down('select').selectedIndex + ':' + item.down('td:nth-child(2)').innerText}).max();
+              topCollaborator = topCollaborator.substring(topCollaborator.indexOf(':') + 1);
+              var collaboratorText = topCollaborator;
+              if (collaboratorsCount &gt; 1) {
+                --collaboratorsCount;
+                collaboratorText = collaboratorsCount == 1 ? "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.oneCollaborator', ['" + collaboratorText + "', '" + collaboratorsCount + "'])" : "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.xCollaborators1', ['" + collaboratorText + "', '" + collaboratorsCount + "'])";
+              }
+              collaborators.replaceChild(document.createTextNode(collaboratorText), collaborators.lastChild);
             }
             _this._dialog.closeDialog();
           },
@@ -791,6 +799,19 @@
     _updateCollaborators : function (collaborators) {
       this._collaboratorsList.update('');
       collaborators.each(this._addCollaborator.bind(this));
+    },
+    
+    /* Updates the list of collaborators that is displayed on hover */
+    _updateDisplayedCollaborators : function (collaborators) {
+      var collabElement = this._element.down('.collaborators');
+      var collaboratorStr;
+      if (collaborators) {
+        collaborators = [].concat(collaborators); /* collaborators may be an array or a string */
+        collaboratorStr = $$('#manage-collaborators tr td:nth-child(2)').map(function(item) {return item.innerText}).join(', ');
+      } else {
+        collaboratorStr = "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.noCollaborators')";
+      }
+      collabElement.setAttribute("title", collaboratorStr);
     },
 
     /* Expected format for the collaborator object c : {id : 'string', 'type' : 'string', name : 'string', 'accessLevel' : 'string' } */
@@ -1104,20 +1125,27 @@ $xwiki.ssx.use($serviceDocName)
   #set ($visibility =  $patientAccess.visibility)
   #set ($collaborators = $patientAccess.collaborators)
   #set ($collaboratorsCount = $collaborators.size())
-  #set($collaboratorString = '')
+  #set ($collaboratorString = '')
+  #set ($collaboratorTooltipStr = '')
   #if ($collaboratorsCount == 0)
     #set ($collaboratorString = $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary.noCollaborators"))
+    #set ($collaboratorTooltipStr = $collaboratorString)
   #elseif ($collaboratorsCount == 1)
     #set ($firstCollaborator = $collaborators.iterator().next())
     #set ($firstCollaboratorReference = $firstCollaborator.user)
+    #set ($collaboratorTooltipStr = $xwiki.getDocument($firstCollaboratorReference).name)
     #if ($firstCollaborator.isUser())
       #set ($collaboratorString = $xwiki.getUserName("$firstCollaboratorReference", false))
     #else
       #set ($collaboratorString = $xwiki.getDocument($firstCollaboratorReference).plainTitle)
     #end
   #else
-    #set ($collaboratorString = $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary.xCollaborators", $collaboratorsCount))
-    #set ($collaboratorTooltipStr = 'listed collaborators')
+    #foreach ($collaborator in $collaborators)
+      #set ($collaboratorTooltipStr = $collaboratorTooltipStr + $xwiki.getDocument($collaborator.user).name + ", ")
+    #end
+    #set ($collabStrLen = $collaboratorTooltipStr.length() - 2)
+    #set ($collaboratorTooltipStr = $collaboratorTooltipStr.substring(0, $collabStrLen))
+    #set ($collaboratorString = $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary.xCollaborators", $collaboratorsCount))  
   #end
   #set ($owner = $patientAccess.getOwner())
   #set ($ownerReference = $owner.user)
