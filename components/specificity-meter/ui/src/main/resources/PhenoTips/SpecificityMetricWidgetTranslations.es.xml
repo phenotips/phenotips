@@ -26,6 +26,7 @@
   <translation>1</translation>
   <creator>xwiki:XWiki.Admin</creator>
   <creationDate>1472238942000</creationDate>
+  <parent>PhenoTips.SpecificityMetricWidget</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <date>1472238949000</date>
