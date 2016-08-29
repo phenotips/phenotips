@@ -58,7 +58,7 @@
       #set ($userDoc = $!{xwiki.getDocument($c.user)})
       #set ($discard = $collaborator.put('id', $c.user.toString()))
       #set ($discard = $collaborator.put('type', $c.type))
-      #if ($c.type == 'user')
+      #if ($c.isUser())
         #set ($discard = $collaborator.put('name', $xwiki.getUserName("${c.user}", false)))
       #else
         #set ($discard = $collaborator.put('name', "$!{userDoc.plainTitle}"))
