@@ -482,6 +482,15 @@ public class DatesControllerTest
         Assert.assertEquals(birthDate.toString(), result.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME).toString());
         Assert.assertEquals(deathDate.toString(), result.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME).toString());
         Assert.assertEquals(examDate.toString(), result.get(DatesController.PATIENT_EXAMDATE_FIELDNAME).toString());
+
+        PhenoTipsDate birthDateOldStyle = new PhenoTipsDate(new JSONObject("{'decade': '1990s'}"));
+        PhenoTipsDate deathDateOldStyle = new PhenoTipsDate(new JSONObject("{'decade': '1990s', 'year': '1995'}"));
+        JSONObject json2 = new JSONObject();
+        json2.put(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME, birthDateOldStyle.toJSON());
+        json2.put(DatesController.PATIENT_DATEOFDEATH_FIELDNAME, deathDateOldStyle.toJSON());
+        PatientData<PhenoTipsDate> result2 = this.mocker.getComponentUnderTest().readJSON(json2);
+        Assert.assertEquals(birthDateOldStyle.toString(), result2.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME).toString());
+        Assert.assertEquals(deathDateOldStyle.toString(), result2.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME).toString());
     }
 
     @Test

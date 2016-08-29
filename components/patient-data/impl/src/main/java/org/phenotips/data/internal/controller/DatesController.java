@@ -40,6 +40,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
@@ -121,7 +122,7 @@ public class DatesController implements PatientDataController<PhenoTipsDate>
                 String dateAsEntered = CORRESPONDING_ASENTERED_FIELDNAMES.containsKey(propertyName)
                                        ? data.getStringValue(CORRESPONDING_ASENTERED_FIELDNAMES.get(propertyName))
                                        : null;
-                if (dateAsEntered != null) {
+                if (!StringUtils.isEmpty(dateAsEntered)) {
                     // if "date as entered" is present, use it and disregard the date field itself.
                     try {
                         JSONObject dateAsEnteredJSON = new JSONObject(dateAsEntered);

@@ -49,7 +49,7 @@ public class PhenoTipsDate
     /** JSON field name of the deprecated decades field. */
     private static final String DEPRECATED_JSON_DECADE = "decade";
     /** Regular expression for the decades field. */
-    private static final Pattern DEPRECATED_DECADE_REGEXP = Pattern.compile("(\\d\\d\\d\\d)s");
+    private static final Pattern DEPRECATED_DECADE_REGEXP = Pattern.compile("(\\d\\d\\d(\\d)?)s");
     /** Range equivalent to having a decade. */
     private static final Integer DEPRECATED_DECADE_RANGE = 10;
 
@@ -116,7 +116,6 @@ public class PhenoTipsDate
 
                     Integer firstYearOfDecade = stringToIntegerInRange(m.group(1), null, null);
                     useFuzzyDate.put(JSON_YEAR_FIELDNAME, firstYearOfDecade);
-                    useFuzzyDate.put(JSON_RANGE_FIELDNAME, range);
                 }
             }
         }
