@@ -148,13 +148,6 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
     }
 
     @Override
-    public boolean setCollaborators(Collection<EntityReference> observers, Collection<EntityReference> contributors,
-        Collection<EntityReference> leaders)
-    {
-        return this.getDefaultProjectHelper().setCollaborators(projectObject, observers, contributors, leaders);
-    }
-
-    @Override
     public boolean setCollaborators(Collection<Collaborator> collaborators)
     {
         return this.getDefaultProjectHelper().setCollaborators(projectObject, collaborators);

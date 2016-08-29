@@ -89,17 +89,6 @@ public interface Project extends Comparable<Project>, PrimaryEntity
     /**
      * Sets the list of project collaborators.
      *
-     * @param observers collection of observers
-     * @param contributors collection of contributors
-     * @param leaders collection of project leaders
-     * @return true if successful
-     */
-    boolean setCollaborators(Collection<EntityReference> observers, Collection<EntityReference> contributors,
-        Collection<EntityReference> leaders);
-
-    /**
-     * Sets the list of project collaborators.
-     *
      * @param collaborators collection of contributors
      * @return true if successful
      */

@@ -93,40 +93,6 @@ public class DefaultProjectHelper
      * Sets the list of project collaborators.
      *
      * @param projectObject xwiki object of project
-     * @param observers collection of observers
-     * @param contributors collection of contributors
-     * @param leaders collection of project leaders
-     * @return true if successful
-     */
-    public boolean setCollaborators(XWikiDocument projectObject, Collection<EntityReference> observers,
-        Collection<EntityReference> contributors,
-        Collection<EntityReference> leaders)
-    {
-        // Convert EntityReference lists to Collaborators
-        Collection<Collaborator> collaborators = new ArrayList<Collaborator>();
-        if (observers != null) {
-            for (EntityReference observerRef : observers) {
-                collaborators.add(new DefaultCollaborator(observerRef, this.observerAccessLevel));
-            }
-        }
-        if (contributors != null) {
-            for (EntityReference contributorRef : contributors) {
-                collaborators.add(new DefaultCollaborator(contributorRef, this.contributorAccessLevel));
-            }
-        }
-        if (leaders != null) {
-            for (EntityReference leaderRef : leaders) {
-                collaborators.add(new DefaultCollaborator(leaderRef, this.leaderAccessLevel));
-            }
-        }
-
-        return this.setCollaborators(projectObject, collaborators);
-    }
-
-    /**
-     * Sets the list of project collaborators.
-     *
-     * @param projectObject xwiki object of project
      * @param collaborators collection of contributors
      * @return true if successful
      */

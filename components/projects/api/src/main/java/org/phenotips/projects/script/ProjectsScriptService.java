@@ -19,12 +19,18 @@ package org.phenotips.projects.script;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.data.permissions.AccessLevel;
+import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.internal.DefaultCollaborator;
 import org.phenotips.projects.data.Project;
 import org.phenotips.projects.internal.ProjectAndTemplateBinder;
 import org.phenotips.projects.internal.ProjectsRepository;
 import org.phenotips.templates.data.Template;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.script.service.ScriptService;
 
 import java.util.ArrayList;
@@ -37,6 +43,9 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * @version $Id$
@@ -55,6 +64,13 @@ public class ProjectsScriptService implements ScriptService
 
     @Inject
     private ProjectAndTemplateBinder ptBinder;
+
+    @Inject
+    @Named("secure")
+    private PermissionsManager manager;
+
+    @Inject
+    private DocumentReferenceResolver<String> stringResolver;
 
     /**
      * Returns a project by an id.
@@ -185,5 +201,34 @@ public class ProjectsScriptService implements ScriptService
         } else {
             return null;
         }
+    }
+
+    /**
+     * Receives a JSON object with collaborators and sets them in the given project.
+     *
+     * @param collaboratorJSONString JSON object containing information about collaborators. For example:
+     *        {'collaborators':[{'userOrGroup':'admin', 'accessLevel':'leader'}]}
+     * @param project to set collaborators for
+     */
+    public void setCollaboratorsInProject(String collaboratorJSONString, Project project)
+    {
+        JSONObject collaboratorsJSON = new JSONObject(collaboratorJSONString);
+        JSONArray collaboratorArray = collaboratorsJSON.getJSONArray("collaborators");
+
+        Collection<Collaborator> collaborators = new HashSet<>();
+        for (Object o : collaboratorArray) {
+            JSONObject collaboratorItem = (JSONObject) o;
+
+            String userOrGroupString = collaboratorItem.getString("userOrGroup");
+            EntityReference userOrGroup = this.stringResolver.resolve(userOrGroupString);
+
+            String accessLevelName = collaboratorItem.getString("accessLevel");
+            AccessLevel accessLevel = this.manager.resolveAccessLevel(accessLevelName);
+
+            Collaborator c = new DefaultCollaborator(userOrGroup, accessLevel);
+            collaborators.add(c);
+        }
+
+        project.setCollaborators(collaborators);
     }
 }
