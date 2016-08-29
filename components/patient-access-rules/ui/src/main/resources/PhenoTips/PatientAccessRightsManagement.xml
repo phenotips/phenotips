@@ -736,12 +736,16 @@
             var collaboratorsCount = formData.collaborator ? (formData.collaborator.size &amp;&amp; formData.collaborator.size() || 1) : 0;
             _this._updateDisplayedCollaborators(formData.collaborator);
             if (collaborators) {
-              var topCollaborator = $$('#manage-collaborators tr').map(function(item) {return item.down('select').selectedIndex + ':' + item.down('td:nth-child(2)').innerText}).max();
-              topCollaborator = topCollaborator.substring(topCollaborator.indexOf(':') + 1);
-              var collaboratorText = topCollaborator;
-              if (collaboratorsCount &gt; 1) {
+              if (collaboratorsCount == 0) {
+                collaboratorText = "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.noCollaborators')";
+              } else {
                 --collaboratorsCount;
-                collaboratorText = collaboratorsCount == 1 ? "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.oneCollaborator', ['" + collaboratorText + "', '" + collaboratorsCount + "'])" : "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.xCollaborators1', ['" + collaboratorText + "', '" + collaboratorsCount + "'])";
+                var topCollaborator = $$('#manage-collaborators tr').map(function(item) {return item.down('select').selectedIndex + ':' + item.down('td:nth-child(2)').innerText}).max();
+                topCollaborator = topCollaborator.substring(topCollaborator.indexOf(':') + 1);
+                var collaboratorText = topCollaborator;
+                if (collaboratorsCount &gt; 0) {
+                  collaboratorText = collaboratorsCount == 1 ? "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.oneCollaborator', ['" + collaboratorText + "', '" + collaboratorsCount + "'])" : "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.xCollaborators', ['" + collaboratorText + "', '" + collaboratorsCount + "'])";
+                }
               }
               collaborators.replaceChild(document.createTextNode(collaboratorText), collaborators.lastChild);
             }
@@ -1133,19 +1137,38 @@ $xwiki.ssx.use($serviceDocName)
   #elseif ($collaboratorsCount == 1)
     #set ($firstCollaborator = $collaborators.iterator().next())
     #set ($firstCollaboratorReference = $firstCollaborator.user)
-    #set ($collaboratorTooltipStr = $xwiki.getDocument($firstCollaboratorReference).name)
     #if ($firstCollaborator.isUser())
       #set ($collaboratorString = $xwiki.getUserName("$firstCollaboratorReference", false))
     #else
       #set ($collaboratorString = $xwiki.getDocument($firstCollaboratorReference).plainTitle)
     #end
+    #set ($collaboratorTooltipStr = $collaboratorString)
   #else
+    #set ($topCollaborator = $collaborators.iterator().next())
+    #set ($topCollaboratorReference = $topCollaborator.user)
     #foreach ($collaborator in $collaborators)
-      #set ($collaboratorTooltipStr = $collaboratorTooltipStr + $xwiki.getDocument($collaborator.user).name + ", ")
+      #if ($patientAccess.getAccessLevel($topCollaborator.user).compareTo($patientAccess.getAccessLevel($collaborator.user)) &lt; 0)
+        #set ($topCollaborator = $collaborator)
+      #end
+      #if ($collaborator.isUser())
+        #set ($collaboratorTooltipStr = $collaboratorTooltipStr + $xwiki.getUserName("$collaborator.user", false) + ", ")
+      #else
+        #set ($collaboratorTooltipStr = $collaboratorTooltipStr + $xwiki.getDocument($collaborator.user).plainTitle + ", ")
+      #end
     #end
     #set ($collabStrLen = $collaboratorTooltipStr.length() - 2)
     #set ($collaboratorTooltipStr = $collaboratorTooltipStr.substring(0, $collabStrLen))
-    #set ($collaboratorString = $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary.xCollaborators", $collaboratorsCount))  
+    #if ($topCollaborator.isUser())
+      #set ($topCollaboratorName = $xwiki.getUserName("$topCollaborator.user", false))
+    #else
+      #set ($topCollaboratorName = $xwiki.getDocument($topCollaborator.user).plainTitle)
+    #end
+    #set ($collaboratorsCount = $collaboratorsCount - 1)
+    #if ($collaboratorsCount == 1)
+      #set ($collaboratorString = $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary.oneCollaborator", [$topCollaboratorName, $collaboratorsCount]))
+    #else
+      #set ($collaboratorString = $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary.xCollaborators", [$topCollaboratorName, $collaboratorsCount]))
+    #end
   #end
   #set ($owner = $patientAccess.getOwner())
   #set ($ownerReference = $owner.user)
