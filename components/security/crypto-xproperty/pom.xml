@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-security</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-2</version>
   </parent>
   <artifactId>phenotips-crypto-xproperty</artifactId>
   <name>PhenoTips - Encrypted XProperty</name>
