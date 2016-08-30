@@ -382,6 +382,9 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
 }
 #patients-topfilters.collapsed .filters {
   display: none;
+}
+.xwiki-livetable a:not(:link) {
+    text-decoration: none;
 }</code>
     </property>
     <property>
