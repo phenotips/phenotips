@@ -59,7 +59,7 @@ public class DataToCellConverter
 {
     private static final String ALLERGIES = "allergies";
 
-    private Map<String, Set<String>> enabledHeaderIdsBySection = new HashMap<String, Set<String>>();
+    private Map<String, Set<String>> enabledHeaderIdsBySection = new HashMap<>();
 
     private ConversionHelpers phenotypeHelper;
 
@@ -98,7 +98,7 @@ public class DataToCellConverter
 
         DataSection section = new DataSection();
         List<String> orderedHeaderIds = Arrays.asList("category", "phenotype", "code", "meta", "meta_code");
-        Map<String, String> orderedHeaderNames = new HashMap<String, String>();
+        Map<String, String> orderedHeaderNames = new HashMap<>();
         orderedHeaderNames.put("category", "Category");
         orderedHeaderNames.put("phenotype", "Label");
         orderedHeaderNames.put("code", "ID");
@@ -143,7 +143,7 @@ public class DataToCellConverter
         this.phenotypeHelper.newPatient();
         Boolean categoriesEnabled = present.contains("category");
         List<Feature> sortedFeatures;
-        Map<String, String> sectionFeatureLookup = new HashMap<String, String>();
+        Map<String, String> sectionFeatureLookup = new HashMap<>();
         if (!categoriesEnabled) {
             sortedFeatures = this.phenotypeHelper.sortFeaturesSimple(features);
         } else {
@@ -333,7 +333,7 @@ public class DataToCellConverter
         List<String> fields =
             Arrays.asList("protein", "transcript", "dbsnp", "zygosity", "effect", "interpretation", "inheritance",
                 "evidence", "segregation", "sanger");
-        Map<String, String> headerTranslates = new HashMap<String, String>();
+        Map<String, String> headerTranslates = new HashMap<>();
         headerTranslates.put("dbsnp", "dbSNP");
         headerTranslates.put("segregation", "Segregation Studies");
         headerTranslates.put("sanger", "Sanger validation");
@@ -386,7 +386,7 @@ public class DataToCellConverter
         List<String> translatables =
             Arrays.asList("effect", "interpretation", "inheritance", "segregation", "sanger");
 
-        Map<String, String> valueTranslates = new HashMap<String, String>();
+        Map<String, String> valueTranslates = new HashMap<>();
         valueTranslates.put("likely_pathogenic", "Likely Pathogenic");
         valueTranslates.put("likely_benign", "Likely Benign");
         valueTranslates.put("variant_u_s", "Variant of Unknown Significance");
@@ -467,7 +467,7 @@ public class DataToCellConverter
         }
 
         List<String> fields = Arrays.asList("status", "strategy", "comments");
-        Map<String, String> valueTranslates = new HashMap<String, String>();
+        Map<String, String> valueTranslates = new HashMap<>();
         valueTranslates.put("sequencing", "Sequencing");
         valueTranslates.put("deletion", "Deletion/duplication");
         valueTranslates.put("familial_mutation", "Familial mutation");
@@ -507,7 +507,7 @@ public class DataToCellConverter
     public DataSection idHeader(Set<String> enabledFields) throws Exception
     {
         String sectionName = "id";
-        Set<String> present = new HashSet<String>();
+        Set<String> present = new HashSet<>();
         if (enabledFields.remove("doc.name")) {
             present.add("id");
         }
@@ -733,7 +733,7 @@ public class DataToCellConverter
     public DataSection familyHistoryHeader(Set<String> enabledFields) throws Exception
     {
         String sectionName = "familyHistory";
-        Map<String, String> fieldToHeaderMap = new LinkedHashMap<String, String>();
+        Map<String, String> fieldToHeaderMap = new LinkedHashMap<>();
         fieldToHeaderMap.put("global_mode_of_inheritance", "Mode of inheritance");
         fieldToHeaderMap.put("miscarriages", "3+ miscarriages");
         fieldToHeaderMap.put("consanguinity", "Consanguinity");
@@ -741,7 +741,7 @@ public class DataToCellConverter
         fieldToHeaderMap.put("maternal_ethnicity", "Maternal");
         fieldToHeaderMap.put("paternal_ethnicity", "Paternal");
 
-        Set<String> present = new LinkedHashSet<String>();
+        Set<String> present = new LinkedHashSet<>();
         for (String fieldId : fieldToHeaderMap.keySet()) {
             if (enabledFields.remove(fieldId)) {
                 present.add(fieldId);
@@ -870,7 +870,7 @@ public class DataToCellConverter
     public DataSection prenatalPerinatalHistoryHeader(Set<String> enabledFields) throws Exception
     {
         String sectionName = "prenatalPerinatalHistory";
-        Map<String, String> fieldToHeaderMap = new LinkedHashMap<String, String>();
+        Map<String, String> fieldToHeaderMap = new LinkedHashMap<>();
         fieldToHeaderMap.put("gestation", "Gestation at delivery");
         fieldToHeaderMap.put("prenatal_development", "Notes");
         fieldToHeaderMap.put("assistedReproduction_fertilityMeds", "Fertility medication");
@@ -883,7 +883,7 @@ public class DataToCellConverter
         fieldToHeaderMap.put("apgar1", "1 min");
         fieldToHeaderMap.put("apgar5", "5 min");
 
-        Set<String> present = new LinkedHashSet<String>();
+        Set<String> present = new LinkedHashSet<>();
         for (String fieldId : fieldToHeaderMap.keySet()) {
             if (enabledFields.remove(fieldId)) {
                 present.add(fieldId);
@@ -896,8 +896,8 @@ public class DataToCellConverter
 
         DataSection headerSection = new DataSection();
 
-        List<String> apgarFields = new LinkedList<String>(Arrays.asList("apgar1", "apgar2"));
-        List<String> assitedReproductionFields = new LinkedList<String>(
+        List<String> apgarFields = new LinkedList<>(Arrays.asList("apgar1", "apgar2"));
+        List<String> assitedReproductionFields = new LinkedList<>(
             Arrays.asList("assistedReproduction_iui", "ivf", "icsi", "assistedReproduction_surrogacy",
                 "assistedReproduction_fertilityMeds", "assistedReproduction_donoregg",
                 "assistedReproduction_donorsperm"));
@@ -1062,7 +1062,7 @@ public class DataToCellConverter
         features = this.prenatalPhenotypeHelper.filterFeaturesByPrenatal(features, true);
         Boolean categoriesEnabled = present.contains("category");
         List<Feature> sortedFeatures;
-        Map<String, String> sectionFeatureLookup = new HashMap<String, String>();
+        Map<String, String> sectionFeatureLookup = new HashMap<>();
         if (!categoriesEnabled) {
             sortedFeatures = this.prenatalPhenotypeHelper.sortFeaturesSimple(features);
         } else {
@@ -1429,7 +1429,7 @@ public class DataToCellConverter
 
     private Set<String> addHeaders(String[] fieldIds, String[][] headerIds, Set<String> enabledFields)
     {
-        Set<String> present = new HashSet<String>();
+        Set<String> present = new HashSet<>();
         int counter = 0;
         for (String fieldId : fieldIds) {
             if (enabledFields.remove(fieldId)) {
@@ -1447,7 +1447,7 @@ public class DataToCellConverter
         if (StringUtils.isBlank(value)) {
             return "";
         }
-        Map<String, String> valueTranslates = new HashMap<String, String>();
+        Map<String, String> valueTranslates = new HashMap<>();
         valueTranslates.put("rare", "Rare (MAF<0.01); ");
         valueTranslates.put("predicted", "Predicted damaging by in silico models; ");
         valueTranslates.put("reported", "Reported in other affected individuals; ");
