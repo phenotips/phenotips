@@ -747,7 +747,7 @@
                 if (collaboratorsCount == 0) {
                   collaboratorText = "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.oneCollaborator', ['" + beginHtml + "', '" + topCollaborator + "', '" + endHtml + "'])";
                 } else if (collaboratorsCount == 1) {
-                  collaboratorText = "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.oneOtherCollaborator', ['" + beginHtml + "', '" + topCollaborator + "', '" + collaboratorsCount + "', '" + endHtml + "'])";
+                  collaboratorText = "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.oneOtherCollaborator', ['" + beginHtml + "', '" + topCollaborator + "', '" + endHtml + "'])";
                 } else {
                   collaboratorText = "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.xOtherCollaborators', ['" + beginHtml + "', '" + topCollaborator + "', '" + collaboratorsCount + "', '" + endHtml + "'])";
                 }
@@ -1168,7 +1168,7 @@ $xwiki.ssx.use($serviceDocName)
     #end
     #set ($collaboratorsCount = $collaboratorsCount - 1)
     #if ($collaboratorsCount == 1)
-      #set ($collaboratorString = $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary.oneOtherCollaborator", ["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;", $topCollaboratorName, $collaboratorsCount, "&lt;/span&gt;{{/html}}(%%)"]))
+      #set ($collaboratorString = $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary.oneOtherCollaborator", ["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;", $topCollaboratorName, "&lt;/span&gt;{{/html}}(%%)"]))
     #else
       #set ($collaboratorString = $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary.xOtherCollaborators", ["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;", $topCollaboratorName, $collaboratorsCount, "&lt;/span&gt;{{/html}}(%%)"]))
     #end
