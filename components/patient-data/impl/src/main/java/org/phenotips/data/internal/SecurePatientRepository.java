@@ -106,7 +106,7 @@ public class SecurePatientRepository implements PatientRepository
     {
         if (this.access.hasAccess(creator, Right.EDIT,
             this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
-            return this.internalService.create(creator.getProfileDocument());
+            return this.internalService.create(creator != null ? creator.getProfileDocument() : null);
         }
         throw new SecurityException("User not authorized to create new patients");
     }
