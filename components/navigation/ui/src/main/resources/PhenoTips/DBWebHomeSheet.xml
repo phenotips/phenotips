@@ -384,7 +384,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
   display: none;
 }
 .xwiki-livetable a:not(:link) {
-    text-decoration: none;
+  text-decoration: none;
 }</code>
     </property>
     <property>
