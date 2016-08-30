@@ -22,6 +22,7 @@ import org.phenotips.data.Feature;
 import org.phenotips.data.FeatureMetadatum;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
+import org.phenotips.data.PhenoTipsDate;
 import org.phenotips.vocabulary.internal.solr.SolrVocabularyTerm;
 
 import org.xwiki.bridge.DocumentAccessBridge;
@@ -579,11 +580,11 @@ public class DataToCellConverter
             x++;
         }
         if (present.contains("date_of_birth")) {
-            Date dob = patient.<Date>getData("dates").get("date_of_birth");
+            PhenoTipsDate dob = patient.<PhenoTipsDate>getData("dates").get("date_of_birth");
             DataCell cell;
-            if (dob != null) {
+            if (dob != null && dob.toEarliestPossibleISODate() != null) {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
-                cell = new DataCell(format.format(dob), x, 0);
+                cell = new DataCell(format.format(dob.toEarliestPossibleISODate()), x, 0);
             } else {
                 cell = new DataCell("", x, 0);
             }
