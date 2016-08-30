@@ -157,6 +157,23 @@
     <field name="textSpell" type="text_spell" indexed="true" stored="false" multiValued="true"/>
     <field name="textStub" type="text_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
 
+    <!-- Language specific dynamic fields -->
+    <dynamicField name="name_*"             type="text_general" indexed="true" stored="true"/>
+    <dynamicField name="nameSpell_*"        type="text_spell" indexed="true" stored="false"/>
+    <dynamicField name="nameExact_*"        type="exact_match" indexed="true" stored="false" omitNorms="true"/>
+    <dynamicField name="namePrefix_*"       type="prefix_match" indexed="true" stored="false" omitNorms="true"/>
+    <dynamicField name="nameStub_*"         type="text_prefix" indexed="true" stored="false" omitNorms="true"/>
+    <dynamicField name="nameSort_*"         type="string" indexed="true" stored="false"/>
+    <dynamicField name="synonym_*"          type="text_general" indexed="true" stored="true" multiValued="true"/>
+    <dynamicField name="synonymSpell_*"     type="text_spell" indexed="true" stored="false" multiValued="true"/>
+    <dynamicField name="synonymExact_*"     type="exact_match" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+    <dynamicField name="synonymPrefix_*"    type="prefix_match" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+    <dynamicField name="synonymStub_*"      type="text_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+    <dynamicField name="def_*"              type="text_general" indexed="true" stored="true"/>
+    <dynamicField name="text_*"             type="text_general" indexed="true" stored="false" multiValued="true"/>
+    <dynamicField name="textSpell_*"        type="text_spell" indexed="true" stored="false" multiValued="true"/>
+    <dynamicField name="textStub_*"         type="text_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+
     <!-- Discard all other fields -->
     <dynamicField name="*" type="ignored" multiValued="true"/>
   </fields>
@@ -165,6 +182,22 @@
        Unless this field is marked with required="false", it will be a required field
     -->
   <uniqueKey>id</uniqueKey>
+
+  <!-- We wanna populate the *_en fields first, then all the language-specific copyfields
+       then do text -->
+  <copyField source="name" dest="name_en"/>
+  <copyField source="synonym" dest="synonym_en"/>
+  <copyField source="def" dest="def_en"/>
+
+  <copyField source="name_*" dest="nameSort_*"/>
+  <copyField source="name_*" dest="nameSpell_*"/>
+  <copyField source="name_*" dest="nameExact_*"/>
+  <copyField source="name_*" dest="namePrefix_*"/>
+  <copyField source="name_*" dest="nameStub_*"/>
+  <copyField source="synonym_*" dest="synonymSpell_*"/>
+  <copyField source="synonym_*" dest="synonymExact_*"/>
+  <copyField source="synonym_*" dest="synonymPrefix_*"/>
+  <copyField source="synonym_*" dest="synonymStub_*"/>
 
   <copyField source="name" dest="nameSort"/>
   <copyField source="name" dest="nameSpell"/>
@@ -175,7 +208,35 @@
   <copyField source="synonym" dest="synonymExact"/>
   <copyField source="synonym" dest="synonymPrefix"/>
   <copyField source="synonym" dest="synonymStub"/>
-  <copyField source="*" dest="text"/>
-  <copyField source="*" dest="textSpell"/>
-  <copyField source="*" dest="textStub"/>
+
+  <copyField source="version"       dest="text"/>
+  <copyField source="id"            dest="text"/>
+  <copyField source="alt_id"        dest="text"/>
+  <copyField source="def"           dest="text"/>
+  <copyField source="comment"       dest="text"/>
+  <copyField source="xref"          dest="text"/>
+  <copyField source="is_a"          dest="text"/>
+  <copyField source="term_category" dest="text"/>
+
+  <copyField source="*_en" dest="text"/>
+  <copyField source="text" dest="textSpell"/>
+  <copyField source="text" dest="textStub"/>
+
+  <!-- Gah there's no easy way to do this sadly -->
+  <copyField source="name_*" dest="text_*"/>
+  <copyField source="nameSpell_*" dest="text_*"/>
+  <copyField source="nameExact_*" dest="text_*"/>
+  <copyField source="namePrefix_*" dest="text_*"/>
+  <copyField source="nameStub_*" dest="text_*"/>
+  <copyField source="nameSort_*" dest="text_*"/>
+  <copyField source="synonym_*" dest="text_*"/>
+  <copyField source="synonymSpell_*" dest="text_*"/>
+  <copyField source="synonymExact_*" dest="text_*"/>
+  <copyField source="synonymPrefix_*" dest="text_*"/>
+  <copyField source="synonymStub_*" dest="text_*"/>
+  <copyField source="def_*" dest="text_*"/>
+
+  <copyField source="text_*" dest="textSpell_*"/>
+  <copyField source="text_*" dest="textStub_*"/>
+
 </schema>

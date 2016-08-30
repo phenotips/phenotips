@@ -253,6 +253,11 @@ extension.repositories=phenotips.org:xwiki:https://phenotips.org/rest/
 rendering.transformations=macro
 activeinstalls.pingURL=https://stats.phenotips.org
 activeinstalls.ipFetchURL=https://phenotips.org/get/Stats/Id
+# Used to get machine translations of vocabulary terms
+# Note: you may incur costs in your azure account if you turn these on
+# Simply follow steps 1 and 2 in https://msdn.microsoft.com/en-us/library/hh454950.aspx to get your hands on these
+translations.ms.clientId=
+translations.ms.clientSecret=
                 </xwikiPropertiesAdditionalProperties>
               </properties>
             </configuration>
