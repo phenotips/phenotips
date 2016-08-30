@@ -62,7 +62,6 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
 {
     private static final String OPEN_FOR_CONTRIBUTION_KEY = "openProjectForContribution";
 
-    // TODO remove
     private XWikiDocument projectObject;
 
     /** Logging helper object. */
