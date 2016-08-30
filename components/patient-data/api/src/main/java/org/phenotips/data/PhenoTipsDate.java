@@ -34,12 +34,16 @@ public class PhenoTipsDate
 {
     /** JSON field names for year. Value should be an integer; negative values represent years BC. */
     public static final String JSON_YEAR_FIELDNAME = "year";
+
     /** JSON field names for month. Value should be a positive integer between 1 and 12. */
     public static final String JSON_MONTH_FIELDNAME = "month";
+
     /** JSON field names for day. Value should be a positive integer between 1 and 31. */
     public static final String JSON_DAY_FIELDNAME = "day";
+
     /** JSON field names for a `range` object (representing the degree of `fuzzyness` of this date). */
     public static final String JSON_RANGE_FIELDNAME = "range";
+
     /** JSON field name of the year part of fuzzyness. Value should be a positive integer. */
     public static final String JSON_RANGE_YEARS = "years";
 
@@ -48,19 +52,27 @@ public class PhenoTipsDate
 
     /** JSON field name of the deprecated decades field. */
     private static final String DEPRECATED_JSON_DECADE = "decade";
+
     /** Regular expression for the decades field. */
     private static final Pattern DEPRECATED_DECADE_REGEXP = Pattern.compile("(\\d\\d\\d(\\d)?)s");
+
     /** Range equivalent to having a decade. */
     private static final Integer DEPRECATED_DECADE_RANGE = 10;
 
     private static final Integer MIN_DAY = 1;
+
     private static final Integer MAX_DAY = 31;
+
     private static final Integer MIN_MONTH = 1;
+
     private static final Integer MAX_MONTH = 12;
 
     private final Integer year;
+
     private final Integer month;
+
     private final Integer day;
+
     // for ranges, both `null` and 0 means `exact, no fuzziness`
     private final Integer rangeYears;
 
@@ -88,12 +100,11 @@ public class PhenoTipsDate
     }
 
     /**
-     * Initialize from a JSON object. It is assumed to contain the fields defined above
-     * (JSON_YEAR_FIELDNAME, etc). Partial input is supported, e.g. a month can be defined while
-     * a year is not.
+     * Initialize from a JSON object. It is assumed to contain the fields defined above (JSON_YEAR_FIELDNAME, etc).
+     * Partial input is supported, e.g. a month can be defined while a year is not.
      *
-     * @param jsonFuzzyDate a JSON object with all or some of the supported fields.
-     * Incorrect input is treated as no input.
+     * @param jsonFuzzyDate a JSON object with all or some of the supported fields. Incorrect input is treated as no
+     *            input.
      */
     public PhenoTipsDate(JSONObject jsonFuzzyDate)
     {
@@ -138,9 +149,9 @@ public class PhenoTipsDate
     }
 
     /**
-     * Initialize from a string, which may either be an ISO date in the "yyyy-mm-dd" format,
-     * or a modified ISO string where the year is followed by an "s" to indicade that decade only is known.
-     * Also supported: "yyyy[s]-mm" and "yyyy[s]". Formally, the format is: "yyyy[s][-mm[-dd]]".
+     * Initialize from a string, which may either be an ISO date in the "yyyy-mm-dd" format, or a modified ISO string
+     * where the year is followed by an "s" to indicade that decade only is known. Also supported: "yyyy[s]-mm" and
+     * "yyyy[s]". Formally, the format is: "yyyy[s][-mm[-dd]]".
      *
      * @param phenoTipsDateString a date string.
      */
@@ -153,9 +164,9 @@ public class PhenoTipsDate
         Matcher m = DATE_STRING_REGEXP.matcher(useDateString);
         if (m.find()) {
             // note: month (#4) and day (#6) groups may be null, that is supported
-            this.year  = stringToIntegerInRange(m.group(1), null, null);
+            this.year = stringToIntegerInRange(m.group(1), null, null);
             this.month = stringToIntegerInRange(m.group(4), MIN_MONTH, MAX_MONTH);
-            this.day   = stringToIntegerInRange(m.group(6), MIN_DAY, MAX_DAY);
+            this.day = stringToIntegerInRange(m.group(6), MIN_DAY, MAX_DAY);
             if (m.group(2) != null) {
                 this.rangeYears = 10;
             } else {
@@ -218,7 +229,7 @@ public class PhenoTipsDate
     /**
      * Returns some values even if they do not represent a valid date, e.g. day without a year.
      *
-     * @return JSONObject representing this date. It may be empty (but not null) if no data is available.
+     * @return JSONObject representing this date. It may be empty (but not {@code null}) if no data is available.
      */
     public JSONObject toJSON()
     {
@@ -241,11 +252,10 @@ public class PhenoTipsDate
     }
 
     /**
-     * If this object does not hold any useful information (the year isnot defined in any way, even
-     * with an up-to-decade precision) `null` is returned.
+     * If this object does not hold any useful information (the year is not defined in any way, even with an
+     * up-to-decade precision) {@code null} is returned.
      *
-     * @return Date a java Date object representing the earliest posible date this fuzzy PhenoTips
-     * date may represent.
+     * @return Date a java Date object representing the earliest possible date this fuzzy PhenoTips date may represent.
      */
     public Date toEarliestPossibleISODate()
     {
