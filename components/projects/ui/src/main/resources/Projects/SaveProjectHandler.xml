@@ -101,7 +101,7 @@
   #set ($discard = $_service.setCollaboratorsInProject($collaborators, $project))
   ##
   #set ($templateIds = [])
-  #foreach ($id in $templatesString)
+  #foreach ($id in $request.getParameterValues('templates'))
     #set ($discard = $templateIds.add($id))
   #end
   #set ($discard = $project.setTemplates($templateIds))
