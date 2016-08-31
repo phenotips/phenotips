@@ -69,6 +69,8 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
 
     private TemplatePrimaryEntityGroup templateGroup;
 
+    private CollaboratorPrimaryEntityGroup collaboratorGroup;
+
     /**
      * Basic constructor.
      *
@@ -79,6 +81,7 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
         super(projectObject);
 
         this.templateGroup = new TemplatePrimaryEntityGroup(projectObject);
+        this.collaboratorGroup = new CollaboratorPrimaryEntityGroup(projectObject);
 
         this.projectObject = projectObject;
     }
@@ -126,7 +129,7 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
     @Override
     public Collection<Collaborator> getCollaborators()
     {
-        return this.getDefaultProjectHelper().getCollaborators(projectObject);
+        return this.collaboratorGroup.getMembers();
     }
 
     @Override
@@ -149,7 +152,7 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
     @Override
     public boolean setCollaborators(Collection<Collaborator> collaborators)
     {
-        return this.getDefaultProjectHelper().setCollaborators(projectObject, collaborators);
+        return this.collaboratorGroup.setMembers(collaborators);
     }
 
     @Override
@@ -266,17 +269,6 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
         try {
             return ComponentManagerRegistry.getContextComponentManager()
                 .getInstance(UserManager.class);
-        } catch (ComponentLookupException e) {
-            // Should not happen
-        }
-        return null;
-    }
-
-    private DefaultProjectHelper getDefaultProjectHelper()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager()
-                .getInstance(DefaultProjectHelper.class);
         } catch (ComponentLookupException e) {
             // Should not happen
         }
