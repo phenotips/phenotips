@@ -501,11 +501,11 @@ var isDateAfter = function(birth_date, death_date) {
       return false;
    }
 
-   // if at least one of the dates is a fuzzy date (range.years  > 1) this is as good as we can do -
+   // if at least one of the dates is a fuzzy date (range.years  &gt; 1) this is as good as we can do -
    // at this point first possible birth year == last possible death year, but we don't know any better.
    // Since dates may be valid, we assume they are
-   if ((birth.hasOwnProperty("range") &amp;&amp; birth.range.years > 1) ||
-       (death.hasOwnProperty("range") &amp;&amp; death.range.years > 1)) {
+   if ((birth.hasOwnProperty("range") &amp;&amp; birth.range.years &gt; 1) ||
+       (death.hasOwnProperty("range") &amp;&amp; death.range.years &gt; 1)) {
      return true;
    }
 
