@@ -77,7 +77,7 @@ public class SolvedController extends AbstractSimpleController implements Initia
 
     private static final String STATUS_UNKNOWN = "";
 
-    private Map<String, String> fields = new LinkedHashMap<String, String>();
+    private Map<String, String> fields = new LinkedHashMap<>();
 
     @Inject
     private Logger logger;
@@ -115,7 +115,7 @@ public class SolvedController extends AbstractSimpleController implements Initia
     protected List<String> getProperties()
     {
         Set<String> properties = this.fields.keySet();
-        return new ArrayList<String>(properties);
+        return new ArrayList<>(properties);
     }
 
     private String parseSolvedStatus(String status)
@@ -187,7 +187,7 @@ public class SolvedController extends AbstractSimpleController implements Initia
             // no data supported by this controller is present in provided JSON
             return null;
         }
-        Map<String, String> result = new LinkedHashMap<String, String>();
+        Map<String, String> result = new LinkedHashMap<>();
 
         // since the loader always returns dictionary data, this should always be a block.
         Object jsonBlockObject = json.get(this.getJsonPropertyName());

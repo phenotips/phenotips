@@ -74,7 +74,7 @@ public class PatientEmptyObjectsRemover extends AbstractEventListener
     {
         XWikiDocument doc = (XWikiDocument) source;
 
-        Map<String, EntityReference> refs = new LinkedHashMap<String, EntityReference>();
+        Map<String, EntityReference> refs = new LinkedHashMap<>();
         refs.put(GENE_KEY, GENE_CLASS_REFERENCE);
         refs.put(VARIANT_KEY, VARIANT_CLASS_REFERENCE);
 

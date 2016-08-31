@@ -21,6 +21,7 @@ import org.phenotips.data.Consent;
 import org.phenotips.data.ConsentManager;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.util.DefaultParameterizedType;
@@ -123,39 +124,65 @@ public class PhenoTipsPatientConsentManagerTest
     private class ConsentConfigurationMocks
     {
         static final String idKey = "id";
+
         static final String labelKey = "label";
+
         static final String descriptionKey = "description";
+
         static final String requiredKey = "required";
+
         static final String fieldsKey = "fields";
+
         static final String affectsFieldsKey = "affectsFields";
 
         static final String id1 = "id1";
+
         static final String label1 = "clean label";
+
         static final String description1 = "description";
+
         final List<String> formFields1 = Arrays.asList("field1", "field2", "field3");
+
         Integer affects1 = 1;
+
         Integer req1 = 1;
+
         Boolean req1B = true;
 
         static final String id2 = "id2";
+
         static final String label2 = "non <div>clean</div> <p>label</p>";
+
         static final String label2expected = "non clean label";
+
         static final String description2 = "";
+
         final List<String> formFields2 = null;
+
         Integer affects2 = 0;
+
         Integer req2 = 0;
+
         Boolean req2B = false;
 
         static final String id3 = "id3";
+
         static final String label3 = "blah";
+
         static final String description3 = "Long description with a link [[link>>http://abc.com]]";
-        final List<String> formFields3 = new LinkedList<String>();
+
+        final List<String> formFields3 = new LinkedList<>();
+
         Integer affects3 = 1;
+
         Integer req3 = 1;
+
         Boolean req3B = true;
 
         BaseObject consentConfig1 = mock(BaseObject.class);
+
         BaseObject consentConfig2 = mock(BaseObject.class);
+
         BaseObject consentConfig3 = mock(BaseObject.class);
 
         public static final int NUM_CONSENTS = 3;
@@ -176,8 +203,8 @@ public class PhenoTipsPatientConsentManagerTest
     }
 
     /**
-     * For testing normal initialization, when there are consents configured in the system. Also tests for
-     * label strings being properly cleaned.
+     * For testing normal initialization, when there are consents configured in the system. Also tests for label strings
+     * being properly cleaned.
      */
     @SuppressWarnings("static-access")
     @Test
@@ -185,23 +212,24 @@ public class PhenoTipsPatientConsentManagerTest
     {
         ConsentConfigurationMocks mocks = this.setUpInitializationWithConfigurationMocks();
 
-        Assert.assertSame(this.mocker.getComponentUnderTest().getSystemConsents().size(), mocks.NUM_CONSENTS);
+        Assert.assertSame(this.mocker.getComponentUnderTest().getSystemConsents().size(),
+            ConsentConfigurationMocks.NUM_CONSENTS);
 
         for (Consent consent : this.mocker.getComponentUnderTest().getSystemConsents()) {
-            if (mocks.id1.equals(consent.getId())) {
-                Assert.assertSame(consent.getLabel(), mocks.label1);
-                Assert.assertSame(consent.getDescription(), mocks.description1);
+            if (ConsentConfigurationMocks.id1.equals(consent.getId())) {
+                Assert.assertSame(consent.getLabel(), ConsentConfigurationMocks.label1);
+                Assert.assertSame(consent.getDescription(), ConsentConfigurationMocks.description1);
                 Assert.assertSame(consent.isRequired(), mocks.req1B);
                 Assert.assertSame(consent.getFields().size(), mocks.formFields1.size());
-            } else if (mocks.id2.equals(consent.getId())) {
-                Assert.assertTrue(StringUtils.equals(consent.getLabel(), mocks.label2expected));
+            } else if (ConsentConfigurationMocks.id2.equals(consent.getId())) {
+                Assert.assertTrue(StringUtils.equals(consent.getLabel(), ConsentConfigurationMocks.label2expected));
                 Assert.assertSame(consent.isRequired(), mocks.req2B);
-                Assert.assertSame(consent.getDescription(), null);  // expect to get null instead of empty descriptions
+                Assert.assertSame(consent.getDescription(), null); // expect to get null instead of empty descriptions
                 Assert.assertSame(consent.getFields(), null);
-            } else if (mocks.id3.equals(consent.getId())) {
-                Assert.assertTrue(StringUtils.equals(consent.getLabel(), mocks.label3));
+            } else if (ConsentConfigurationMocks.id3.equals(consent.getId())) {
+                Assert.assertTrue(StringUtils.equals(consent.getLabel(), ConsentConfigurationMocks.label3));
                 Assert.assertSame(consent.isRequired(), mocks.req3B);
-                Assert.assertSame(consent.getDescription(), mocks.description3);
+                Assert.assertSame(consent.getDescription(), ConsentConfigurationMocks.description3);
                 Assert.assertSame(consent.getFields().size(), 0);
             } else {
                 Assert.fail("Found unexpected consent");
@@ -239,8 +267,7 @@ public class PhenoTipsPatientConsentManagerTest
             // make sure the returned set of consents matches exactly the list of granted consents:
             // no granted are missing and no extra are present
             Assert.assertTrue(consents.size() == (ConsentConfigurationMocks.NUM_CONSENTS - consentIds.size()));
-            for (Consent consent : consents)
-            {
+            for (Consent consent : consents) {
                 Assert.assertFalse(consentIds.contains(consent.getId()));
                 Assert.assertFalse(consent.isGranted());
             }
@@ -334,7 +361,7 @@ public class PhenoTipsPatientConsentManagerTest
         this.setUpSettingConsents(idsHolder, patient, patientDoc, context, wiki);
 
         List<String> granted = new LinkedList<>();
-        granted.add(consentMocks.id1);
+        granted.add(ConsentConfigurationMocks.id1);
 
         this.mocker.getComponentUnderTest().setPatientConsents(patient, granted);
 
@@ -359,7 +386,7 @@ public class PhenoTipsPatientConsentManagerTest
             .newXObject(any(EntityReference.class), any(XWikiContext.class));
 
         List<String> granted = new LinkedList<>();
-        granted.add(consentMocks.id1);
+        granted.add(ConsentConfigurationMocks.id1);
 
         this.mocker.getComponentUnderTest().setPatientConsents(patient, granted);
 
@@ -383,8 +410,8 @@ public class PhenoTipsPatientConsentManagerTest
 
         List<String> existingIds = new LinkedList<>();
         List<String> testIds = new LinkedList<>();
-        existingIds.add(consentMocks.id1);
-        existingIds.add(consentMocks.id2);
+        existingIds.add(ConsentConfigurationMocks.id1);
+        existingIds.add(ConsentConfigurationMocks.id2);
         testIds.add("id_nonexistent");
         testIds.addAll(existingIds);
 

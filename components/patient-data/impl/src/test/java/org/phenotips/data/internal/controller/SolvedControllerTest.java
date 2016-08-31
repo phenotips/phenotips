@@ -126,9 +126,9 @@ public class SolvedControllerTest
     @Test
     public void writeJSONWithSelectedFieldsConvertsSolvedStatus() throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(STATUS_KEY, "1");
-        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -159,13 +159,13 @@ public class SolvedControllerTest
     @Test
     public void writeJSONWithSelectedFieldsAddsAllValuesAndConvertedJsonKeys() throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(STATUS_KEY, "1");
         String pubmedID = "pubmed:0001";
         map.put("solved__pubmed_id", pubmedID);
         String notes = "some notes about the solved case";
         map.put("solved__notes", notes);
-        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -184,13 +184,13 @@ public class SolvedControllerTest
     @Test
     public void writeJSONWithSelectedFieldsAddsSelectedValues() throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(STATUS_KEY, "1");
         String pubmedID = "pubmed:0001";
         map.put("solved__pubmed_id", pubmedID);
         String notes = "some notes about the solved case";
         map.put("solved__notes", notes);
-        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -209,13 +209,13 @@ public class SolvedControllerTest
     @Test
     public void writeJSONWithSelectedFieldsAddsAllValuesWhenSelectedFieldsNull() throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(STATUS_KEY, "1");
         String pubmedID = "pubmed:0001";
         map.put("solved__pubmed_id", pubmedID);
         String notes = "some notes about the solved case";
         map.put("solved__notes", notes);
-        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
@@ -230,9 +230,9 @@ public class SolvedControllerTest
     @Test
     public void writeJSONAllowsForUnconvertedFields() throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put("solved_new_field", "field_value");
-        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();

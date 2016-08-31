@@ -84,7 +84,7 @@ public class MetaDataController extends AbstractSimpleController implements Pati
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
 
-            Map<String, String> result = new LinkedHashMap<String, String>();
+            Map<String, String> result = new LinkedHashMap<>();
 
             DateTimeFormatter dateFormatter = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
 

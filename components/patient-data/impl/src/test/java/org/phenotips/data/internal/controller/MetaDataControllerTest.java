@@ -212,12 +212,12 @@ public class MetaDataControllerTest
     @Test
     public void writeJSONWithSelectedFieldsAddsAllValuesAndConvertedJsonKeys() throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(DOCUMENT_NAME, this.documentReference.getName());
         map.put(CREATION_DATE, this.formatter.print(new DateTime(this.creationDate)));
         map.put(AUTHOR, this.authorReference.getName());
         map.put(DATE, this.formatter.print(new DateTime(this.date)));
-        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -237,12 +237,12 @@ public class MetaDataControllerTest
     @Test
     public void writeJSONWithSelectedFieldsAddsSelectedValues() throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(DOCUMENT_NAME, this.documentReference.getName());
         map.put(CREATION_DATE, this.formatter.print(new DateTime(this.creationDate)));
         map.put(AUTHOR, this.authorReference.getName());
         map.put(DATE, this.formatter.print(new DateTime(this.date)));
-        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -261,12 +261,12 @@ public class MetaDataControllerTest
     public void writeJSONWithSelectedFieldsAddsAllValuesWhenSelectedFieldsNull()
         throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(DOCUMENT_NAME, this.documentReference.getName());
         map.put(CREATION_DATE, this.formatter.print(new DateTime(this.creationDate)));
         map.put(AUTHOR, this.authorReference.getName());
         map.put(DATE, this.formatter.print(new DateTime(this.date)));
-        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 

@@ -147,7 +147,7 @@ public abstract class AbstractSimpleController implements PatientDataController<
             // no data supported by this controller is present in provided JSON
             return null;
         }
-        Map<String, String> result = new LinkedHashMap<String, String>();
+        Map<String, String> result = new LinkedHashMap<>();
 
         // since the loader always returns dictionary data, this should always be a block.
         Object jsonBlockObject = json.get(this.getJsonPropertyName());

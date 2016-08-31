@@ -207,7 +207,7 @@ public class LifeStatusControllerTest
     @Test
     public void saveSetsDateOfDeathUnknownWhenDeceasedAndDatesNull() throws XWikiException, ComponentLookupException
     {
-        PatientData<String> lifeStatus = new SimpleValuePatientData<String>(DATA_NAME, DECEASED);
+        PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, DECEASED);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
         doReturn(null).when(this.patient).getData("dates");
 
@@ -221,11 +221,11 @@ public class LifeStatusControllerTest
     public void saveSetsDateOfDeathUnknownWhenDeceasedAndDateOfDeathNull() throws XWikiException,
         ComponentLookupException
     {
-        PatientData<String> lifeStatus = new SimpleValuePatientData<String>(DATA_NAME, DECEASED);
+        PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, DECEASED);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
         Map<String, Date> datesMap = new LinkedHashMap<>();
         datesMap.put(PATIENT_DATEOFDEATH_FIELDNAME, null);
-        PatientData<Date> dates = new DictionaryPatientData<Date>("dates", datesMap);
+        PatientData<Date> dates = new DictionaryPatientData<>("dates", datesMap);
         doReturn(dates).when(this.patient).getData("dates");
 
         this.mocker.getComponentUnderTest().save(this.patient);
@@ -249,7 +249,7 @@ public class LifeStatusControllerTest
     @Test
     public void saveClearsDateOfDeathUnknownWhenAlive() throws XWikiException, ComponentLookupException
     {
-        PatientData<String> lifeStatus = new SimpleValuePatientData<String>(DATA_NAME, ALIVE);
+        PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, ALIVE);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
         doReturn(null).when(this.patient).getData("dates");
 
@@ -263,11 +263,11 @@ public class LifeStatusControllerTest
     public void saveClearsDateOfDeathUnknownWhenDeceasedAndDateOfDeathDefined() throws XWikiException,
         ComponentLookupException
     {
-        PatientData<String> lifeStatus = new SimpleValuePatientData<String>(DATA_NAME, DECEASED);
+        PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, DECEASED);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
         Map<String, Date> datesMap = new LinkedHashMap<>();
         datesMap.put(PATIENT_DATEOFDEATH_FIELDNAME, new Date(0));
-        PatientData<Date> dates = new DictionaryPatientData<Date>("dates", datesMap);
+        PatientData<Date> dates = new DictionaryPatientData<>("dates", datesMap);
         doReturn(dates).when(this.patient).getData("dates");
 
         this.mocker.getComponentUnderTest().save(this.patient);
@@ -279,7 +279,7 @@ public class LifeStatusControllerTest
     @Test
     public void saveIgnoresDatesWhenDatesIsNotKeyValueBased() throws XWikiException, ComponentLookupException
     {
-        PatientData<String> lifeStatus = new SimpleValuePatientData<String>(DATA_NAME, DECEASED);
+        PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, DECEASED);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
         PatientData<Date> dates = new SimpleValuePatientData<>(PATIENT_DATEOFDEATH_FIELDNAME, new Date());
         doReturn(dates).when(this.patient).getData("dates");
@@ -317,7 +317,7 @@ public class LifeStatusControllerTest
     @Test
     public void writeJSONAddsLifeStatus() throws ComponentLookupException
     {
-        doReturn(new SimpleValuePatientData<String>(DATA_NAME, ALIVE)).when(this.patient).getData(DATA_NAME);
+        doReturn(new SimpleValuePatientData<>(DATA_NAME, ALIVE)).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
@@ -328,7 +328,7 @@ public class LifeStatusControllerTest
     @Test
     public void writeJSONWithSelectedFieldsAddsLifeStatus() throws ComponentLookupException
     {
-        doReturn(new SimpleValuePatientData<String>(DATA_NAME, DECEASED)).when(this.patient).getData(DATA_NAME);
+        doReturn(new SimpleValuePatientData<>(DATA_NAME, DECEASED)).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(DATA_NAME);

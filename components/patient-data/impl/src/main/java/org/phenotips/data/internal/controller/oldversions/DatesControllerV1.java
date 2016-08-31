@@ -124,7 +124,7 @@ public class DatesControllerV1 implements PatientDataController<PhenoTipsDate>
         }
 
         DateFormat dateFormat =
-                new SimpleDateFormat(this.configurationManager.getActiveConfiguration().getISODateFormat());
+            new SimpleDateFormat(this.configurationManager.getActiveConfiguration().getISODateFormat());
 
         PatientData<PhenoTipsDate> datesData = patient.getData(DATA_NAME);
         boolean noData = (datesData == null || !datesData.isNamed());
@@ -139,7 +139,7 @@ public class DatesControllerV1 implements PatientDataController<PhenoTipsDate>
             PhenoTipsDate data = noData ? null : datesData.get(propertyName);
 
             json.put(getJSONFieldName(propertyName),
-                    ((data == null) ? "" : dateFormat.format(data.toEarliestPossibleISODate())));
+                ((data == null) ? "" : dateFormat.format(data.toEarliestPossibleISODate())));
         }
     }
 

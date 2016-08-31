@@ -196,7 +196,7 @@ public class SexControllerTest
         XWikiException exception = new XWikiException();
         doThrow(exception).when(this.xwiki).saveDocument(any(XWikiDocument.class),
             anyString(), anyBoolean(), any(XWikiContext.class));
-        doReturn(new SimpleValuePatientData<String>(DATA_NAME, SEX_MALE)).when(this.patient).getData(DATA_NAME);
+        doReturn(new SimpleValuePatientData<>(DATA_NAME, SEX_MALE)).when(this.patient).getData(DATA_NAME);
 
         this.mocker.getComponentUnderTest().save(this.patient);
 
@@ -209,25 +209,25 @@ public class SexControllerTest
     @Test
     public void saveSetsCorrectSex() throws XWikiException, ComponentLookupException
     {
-        doReturn(new SimpleValuePatientData<String>(DATA_NAME, SEX_MALE)).when(this.patient).getData(DATA_NAME);
+        doReturn(new SimpleValuePatientData<>(DATA_NAME, SEX_MALE)).when(this.patient).getData(DATA_NAME);
         this.mocker.getComponentUnderTest().save(this.patient);
         verify(this.data).setStringValue(INTERNAL_PROPERTY_NAME, SEX_MALE);
         verify(this.xwiki).saveDocument(this.doc, "Updated gender from JSON", true, this.xcontext);
 
         Mockito.reset(this.xwiki);
-        doReturn(new SimpleValuePatientData<String>(DATA_NAME, SEX_FEMALE)).when(this.patient).getData(DATA_NAME);
+        doReturn(new SimpleValuePatientData<>(DATA_NAME, SEX_FEMALE)).when(this.patient).getData(DATA_NAME);
         this.mocker.getComponentUnderTest().save(this.patient);
         verify(this.data).setStringValue(INTERNAL_PROPERTY_NAME, SEX_FEMALE);
         verify(this.xwiki).saveDocument(this.doc, "Updated gender from JSON", true, this.xcontext);
 
         Mockito.reset(this.xwiki);
-        doReturn(new SimpleValuePatientData<String>(DATA_NAME, SEX_OTHER)).when(this.patient).getData(DATA_NAME);
+        doReturn(new SimpleValuePatientData<>(DATA_NAME, SEX_OTHER)).when(this.patient).getData(DATA_NAME);
         this.mocker.getComponentUnderTest().save(this.patient);
         verify(this.data).setStringValue(INTERNAL_PROPERTY_NAME, SEX_OTHER);
         verify(this.xwiki).saveDocument(this.doc, "Updated gender from JSON", true, this.xcontext);
 
         Mockito.reset(this.xwiki);
-        doReturn(new SimpleValuePatientData<String>(DATA_NAME, SEX_UNKNOWN)).when(this.patient).getData(DATA_NAME);
+        doReturn(new SimpleValuePatientData<>(DATA_NAME, SEX_UNKNOWN)).when(this.patient).getData(DATA_NAME);
         this.mocker.getComponentUnderTest().save(this.patient);
         verify(this.data).setStringValue(INTERNAL_PROPERTY_NAME, SEX_UNKNOWN);
         verify(this.xwiki).saveDocument(this.doc, "Updated gender from JSON", true, this.xcontext);
@@ -322,7 +322,7 @@ public class SexControllerTest
         json.put(DATA_NAME, SEX_OTHER);
         result = this.mocker.getComponentUnderTest().readJSON(json);
         Assert.assertEquals(SEX_OTHER, result.getValue());
-        
+
         json = new JSONObject();
         json.put(DATA_NAME, SEX_UNKNOWN);
         result = this.mocker.getComponentUnderTest().readJSON(json);

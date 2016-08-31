@@ -79,7 +79,7 @@ public class IdentifiersController implements PatientDataController<String>
             if (data == null) {
                 return null;
             }
-            Map<String, String> result = new LinkedHashMap<String, String>();
+            Map<String, String> result = new LinkedHashMap<>();
             result.put(EXTERNAL_IDENTIFIER_PROPERTY_NAME, data.getStringValue(EXTERNAL_IDENTIFIER_PROPERTY_NAME));
             return new DictionaryPatientData<>(DATA_NAME, result);
         } catch (Exception e) {
@@ -146,9 +146,9 @@ public class IdentifiersController implements PatientDataController<String>
         }
         String externalId = json.getString(EXTERNAL_IDENTIFIER_PROPERTY_NAME);
 
-        Map<String, String> result = new LinkedHashMap<String, String>();
+        Map<String, String> result = new LinkedHashMap<>();
         result.put(EXTERNAL_IDENTIFIER_PROPERTY_NAME, externalId);
-        return new DictionaryPatientData<String>(DATA_NAME, result);
+        return new DictionaryPatientData<>(DATA_NAME, result);
     }
 
     @Override

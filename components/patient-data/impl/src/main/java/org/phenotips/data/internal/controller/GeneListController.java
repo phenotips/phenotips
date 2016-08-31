@@ -154,12 +154,12 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                 return null;
             }
 
-            List<Map<String, String>> allGenes = new LinkedList<Map<String, String>>();
+            List<Map<String, String>> allGenes = new LinkedList<>();
             for (BaseObject geneObject : geneXWikiObjects) {
                 if (geneObject == null || geneObject.getFieldList().isEmpty()) {
                     continue;
                 }
-                Map<String, String> singleGene = new LinkedHashMap<String, String>();
+                Map<String, String> singleGene = new LinkedHashMap<>();
                 for (String property : getProperties()) {
                     String value = getFieldValue(geneObject, property);
                     if (value == null) {
@@ -172,7 +172,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             if (allGenes.isEmpty()) {
                 return null;
             } else {
-                return new IndexedPatientData<Map<String, String>>(getName(), allGenes);
+                return new IndexedPatientData<>(getName(), allGenes);
             }
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen "
@@ -220,7 +220,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         json.put(getJsonPropertyName(), new JSONArray());
         JSONArray container = json.getJSONArray(getJsonPropertyName());
 
-        Map<String, String> internalToJSONkeys = new HashMap<String, String>();
+        Map<String, String> internalToJSONkeys = new HashMap<>();
         internalToJSONkeys.put(JSON_GENE_KEY, INTERNAL_GENE_KEY);
         internalToJSONkeys.put(JSON_STATUS_KEY, INTERNAL_STATUS_KEY);
         internalToJSONkeys.put(JSON_STRATEGY_KEY, INTERNAL_STRATEGY_KEY);
@@ -258,7 +258,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             return null;
         }
 
-        Map<String, List<String>> enumValues = new LinkedHashMap<String, List<String>>();
+        Map<String, List<String>> enumValues = new LinkedHashMap<>();
         enumValues.put(INTERNAL_STATUS_KEY, STATUS_VALUES);
         enumValues.put(INTERNAL_STRATEGY_KEY, STRATEGY_VALUES);
 
@@ -269,8 +269,8 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             JSONArray rejectedGenes = json.optJSONArray(JSON_REJECTEDGENES_KEY);
             JSONObject solvedGene = json.optJSONObject(JSON_SOLVED_KEY);
 
-            List<Map<String, String>> accumulatedGenes = new LinkedList<Map<String, String>>();
-            List<String> geneSymbols = new ArrayList<String>();
+            List<Map<String, String>> accumulatedGenes = new LinkedList<>();
+            List<String> geneSymbols = new ArrayList<>();
 
             parseGenesJson(genesJson, geneSymbols, accumulatedGenes, enumValues);
 
@@ -278,7 +278,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             parseRejectedGenes(rejectedGenes, geneSymbols, accumulatedGenes);
             parseSolvedGene(solvedGene, geneSymbols, accumulatedGenes);
 
-            return new IndexedPatientData<Map<String, String>>(getName(), accumulatedGenes);
+            return new IndexedPatientData<>(getName(), accumulatedGenes);
         } catch (Exception e) {
             this.logger.error("Could not load genes from JSON", e.getMessage());
         }
@@ -298,7 +298,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                     continue;
                 }
 
-                Map<String, String> singleGene = new LinkedHashMap<String, String>();
+                Map<String, String> singleGene = new LinkedHashMap<>();
                 for (String property : this.getProperties()) {
                     if (geneJson.has(property)) {
                         parseGeneProperty(property, geneJson, enumValues, singleGene);
@@ -327,7 +327,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                     || geneSymbols.contains(rejectedGeneJson.getString(JSON_GENE_KEY))) {
                     continue;
                 }
-                Map<String, String> singleGene = new LinkedHashMap<String, String>();
+                Map<String, String> singleGene = new LinkedHashMap<>();
                 singleGene.put(INTERNAL_GENE_KEY, rejectedGeneJson.getString(JSON_GENE_KEY));
                 singleGene.put(INTERNAL_STATUS_KEY, INTERNAL_REJECTED_KEY);
 
@@ -347,7 +347,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         if (solvedGene != null && solvedGene.has(JSON_GENE_KEY)
             && !StringUtils.isBlank(solvedGene.getString(JSON_GENE_KEY))
             && !geneSymbols.contains(solvedGene.getString(JSON_GENE_KEY))) {
-            Map<String, String> singleGene = new LinkedHashMap<String, String>();
+            Map<String, String> singleGene = new LinkedHashMap<>();
             singleGene.put(INTERNAL_GENE_KEY, solvedGene.getString(JSON_GENE_KEY));
             singleGene.put(INTERNAL_STATUS_KEY, INTERNAL_SOLVED_KEY);
             allGenes.add(singleGene);

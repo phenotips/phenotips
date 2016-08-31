@@ -150,14 +150,14 @@ public class DatesControllerTest
         PatientData<PhenoTipsDate> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         // Note: deathDate and examDate are dates with non-0 hours/minutes/seconds. However time is always
-        //       assumed to be 00:00:00 since we do not store time.
-        //       So need to construct the dates which are the 00:00:00 of the same day and compare with that
+        // assumed to be 00:00:00 since we do not store time.
+        // So need to construct the dates which are the 00:00:00 of the same day and compare with that
         Assert.assertEquals(getDateWithZeroTime(birthDate),
-                result.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME).toEarliestPossibleISODate());
+            result.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME).toEarliestPossibleISODate());
         Assert.assertEquals(getDateWithZeroTime(deathDate),
-                result.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME).toEarliestPossibleISODate());
+            result.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME).toEarliestPossibleISODate());
         Assert.assertEquals(getDateWithZeroTime(examDate),
-                result.get(DatesController.PATIENT_EXAMDATE_FIELDNAME).toEarliestPossibleISODate());
+            result.get(DatesController.PATIENT_EXAMDATE_FIELDNAME).toEarliestPossibleISODate());
     }
 
     @Test
@@ -171,18 +171,18 @@ public class DatesControllerTest
         PhenoTipsDate birthDate = new PhenoTipsDate(new JSONObject("{'year': 2000, 'range': {'years': 10}}"));
 
         String deathAsEnteredField =
-                DatesController.CORRESPONDING_ASENTERED_FIELDNAMES.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME);
+            DatesController.CORRESPONDING_ASENTERED_FIELDNAMES.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME);
         doReturn(deathDate.toString()).when(this.data).getStringValue(deathAsEnteredField);
         String birthAsEnteredField =
-                DatesController.CORRESPONDING_ASENTERED_FIELDNAMES.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME);
+            DatesController.CORRESPONDING_ASENTERED_FIELDNAMES.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME);
         doReturn(birthDate.toString()).when(this.data).getStringValue(birthAsEnteredField);
 
         PatientData<PhenoTipsDate> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertEquals(birthDate.toString(),
-                result.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME).toString());
+            result.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME).toString());
         Assert.assertEquals(deathDate.toString(),
-                result.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME).toString());
+            result.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME).toString());
     }
 
     @Test
@@ -195,22 +195,22 @@ public class DatesControllerTest
         PhenoTipsDate deathDate = new PhenoTipsDate(new JSONObject("{'year': 1990, 'range': {'years': 10}}"));
 
         PhenoTipsDate birthDateDeprecated = new PhenoTipsDate(
-                new JSONObject("{'decade': '1990s', 'year': '1990', 'month': '10'}"));
+            new JSONObject("{'decade': '1990s', 'year': '1990', 'month': '10'}"));
         PhenoTipsDate birthDate = new PhenoTipsDate(new JSONObject("{'year': 1990, 'month': 10}"));
 
         String deathAsEnteredField =
-                DatesController.CORRESPONDING_ASENTERED_FIELDNAMES.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME);
+            DatesController.CORRESPONDING_ASENTERED_FIELDNAMES.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME);
         doReturn(deathDateDeprecated.toString()).when(this.data).getStringValue(deathAsEnteredField);
         String birthAsEnteredField =
-                DatesController.CORRESPONDING_ASENTERED_FIELDNAMES.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME);
+            DatesController.CORRESPONDING_ASENTERED_FIELDNAMES.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME);
         doReturn(birthDateDeprecated.toString()).when(this.data).getStringValue(birthAsEnteredField);
 
         PatientData<PhenoTipsDate> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertEquals(birthDate.toString(),
-                result.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME).toString());
+            result.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME).toString());
         Assert.assertEquals(deathDate.toString(),
-                result.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME).toString());
+            result.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME).toString());
     }
 
     // Returns a Date which has the same year-month-day as the input date, but with time equal to 00:00:00
@@ -268,7 +268,7 @@ public class DatesControllerTest
         this.mocker.getComponentUnderTest().save(this.patient);
 
         String deathAsEnteredField =
-                DatesController.CORRESPONDING_ASENTERED_FIELDNAMES.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME);
+            DatesController.CORRESPONDING_ASENTERED_FIELDNAMES.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME);
         verify(this.data).setStringValue(deathAsEnteredField, "");
         verify(this.data).setDateValue(DatesController.PATIENT_DATEOFDEATH_FIELDNAME, null);
 
@@ -305,7 +305,7 @@ public class DatesControllerTest
     @Test
     public void saveAddsAllDates() throws XWikiException, ComponentLookupException
     {
-        Map<String, PhenoTipsDate> datesMap = new LinkedHashMap<String, PhenoTipsDate>();
+        Map<String, PhenoTipsDate> datesMap = new LinkedHashMap<>();
         PhenoTipsDate birthDate = new PhenoTipsDate("1990s-11-12");
         PhenoTipsDate deathDate = new PhenoTipsDate(new Date(999999999));
         PhenoTipsDate examDate = new PhenoTipsDate(new JSONObject("{'year': 1990, 'range': {'years': 10}}"));
@@ -321,17 +321,20 @@ public class DatesControllerTest
 
         // birth date and death date have "date_as_entered" companion fields, both field+companion should be set
         String deathAsEnteredField =
-                DatesController.CORRESPONDING_ASENTERED_FIELDNAMES.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME);
+            DatesController.CORRESPONDING_ASENTERED_FIELDNAMES.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME);
         verify(this.data).setStringValue(deathAsEnteredField, deathDate.toString());
-        verify(this.data).setDateValue(DatesController.PATIENT_DATEOFDEATH_FIELDNAME, deathDate.toEarliestPossibleISODate());
+        verify(this.data).setDateValue(DatesController.PATIENT_DATEOFDEATH_FIELDNAME,
+            deathDate.toEarliestPossibleISODate());
 
         String birthAsEnteredField =
-                DatesController.CORRESPONDING_ASENTERED_FIELDNAMES.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME);
+            DatesController.CORRESPONDING_ASENTERED_FIELDNAMES.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME);
         verify(this.data).setStringValue(birthAsEnteredField, birthDate.toString());
-        verify(this.data).setDateValue(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME, birthDate.toEarliestPossibleISODate());
+        verify(this.data).setDateValue(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME,
+            birthDate.toEarliestPossibleISODate());
 
         // exam date does not have a "date_as_entered" companion
-        verify(this.data).setDateValue(DatesController.PATIENT_EXAMDATE_FIELDNAME, examDate.toEarliestPossibleISODate());
+        verify(this.data).setDateValue(DatesController.PATIENT_EXAMDATE_FIELDNAME,
+            examDate.toEarliestPossibleISODate());
 
         verify(this.xWiki).saveDocument(same(this.doc), anyString(), eq(true), same(this.xWikiContext));
     }
@@ -368,11 +371,11 @@ public class DatesControllerTest
     @Test
     public void writeJSONAddsAllDates() throws ComponentLookupException
     {
-        Map<String, PhenoTipsDate> datesMap = new LinkedHashMap<String, PhenoTipsDate>();
+        Map<String, PhenoTipsDate> datesMap = new LinkedHashMap<>();
         PhenoTipsDate birthDate = new PhenoTipsDate("1990s-11-12");
         PhenoTipsDate deathDate = new PhenoTipsDate(new Date(999999999));
         PhenoTipsDate examDate = new PhenoTipsDate(
-                new JSONObject("{'year': 1990, 'month': 11, 'day': 2, 'range': {'years': 10}}"));
+            new JSONObject("{'year': 1990, 'month': 11, 'day': 2, 'range': {'years': 10}}"));
         datesMap.put(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME, birthDate);
         datesMap.put(DatesController.PATIENT_DATEOFDEATH_FIELDNAME, deathDate);
         datesMap.put(DatesController.PATIENT_EXAMDATE_FIELDNAME, examDate);
@@ -394,7 +397,7 @@ public class DatesControllerTest
     @Test
     public void writeJSONSkipsEmptyFields() throws ComponentLookupException
     {
-        Map<String, PhenoTipsDate> datesMap = new LinkedHashMap<String, PhenoTipsDate>();
+        Map<String, PhenoTipsDate> datesMap = new LinkedHashMap<>();
         PhenoTipsDate birthDate = new PhenoTipsDate("1990s-11-12");
         PhenoTipsDate examDate = new PhenoTipsDate("1980-11");
         datesMap.put(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME, birthDate);
@@ -418,7 +421,7 @@ public class DatesControllerTest
     @Test
     public void writeJSONWithSelectedFieldsAddsAllSelectedDates() throws ComponentLookupException
     {
-        Map<String, PhenoTipsDate> datesMap = new LinkedHashMap<String, PhenoTipsDate>();
+        Map<String, PhenoTipsDate> datesMap = new LinkedHashMap<>();
         PhenoTipsDate birthDate = new PhenoTipsDate("1990s-11-12");
         PhenoTipsDate deathDate = new PhenoTipsDate(new Date(999999999));
         PhenoTipsDate examDate = new PhenoTipsDate(new JSONObject("{'year': 1990, 'month': 11 }"));
@@ -436,10 +439,10 @@ public class DatesControllerTest
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
         Assert.assertEquals(birthDate.toJSON().toString(),
-                json.getJSONObject(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME).toString());
+            json.getJSONObject(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME).toString());
         Assert.assertFalse(json.has(DatesController.PATIENT_DATEOFDEATH_FIELDNAME));
         Assert.assertEquals(examDate.toJSON().toString(),
-                json.getJSONObject(DatesController.PATIENT_EXAMDATE_FIELDNAME).toString());
+            json.getJSONObject(DatesController.PATIENT_EXAMDATE_FIELDNAME).toString());
     }
 
     @Test
@@ -489,8 +492,10 @@ public class DatesControllerTest
         json2.put(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME, birthDateOldStyle.toJSON());
         json2.put(DatesController.PATIENT_DATEOFDEATH_FIELDNAME, deathDateOldStyle.toJSON());
         PatientData<PhenoTipsDate> result2 = this.mocker.getComponentUnderTest().readJSON(json2);
-        Assert.assertEquals(birthDateOldStyle.toString(), result2.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME).toString());
-        Assert.assertEquals(deathDateOldStyle.toString(), result2.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME).toString());
+        Assert.assertEquals(birthDateOldStyle.toString(),
+            result2.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME).toString());
+        Assert.assertEquals(deathDateOldStyle.toString(),
+            result2.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME).toString());
     }
 
     @Test

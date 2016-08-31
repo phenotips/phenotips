@@ -200,7 +200,7 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
                         JSONObject element = (JSONObject) elementsIterator.next();
                         String termId = element.optString(ID_NAME);
                         if (termId != null) {
-                            VocabularyTerm term = vocabularyManager.resolveTerm(termId);
+                            VocabularyTerm term = this.vocabularyManager.resolveTerm(termId);
                             propertyTerms.add(term);
                         }
                     }

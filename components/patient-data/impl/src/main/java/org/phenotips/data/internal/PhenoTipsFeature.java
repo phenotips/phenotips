@@ -126,7 +126,7 @@ public class PhenoTipsFeature extends AbstractPhenoTipsVocabularyProperty implem
         this.present = !nameMatch.lookingAt();
         this.type = nameMatch.replaceFirst("");
 
-        this.metadata = new TreeMap<String, FeatureMetadatum>();
+        this.metadata = new TreeMap<>();
         String metadataNotes = "";
         try {
             BaseObject metadataObject = findMetadataObject(doc);
@@ -174,7 +174,7 @@ public class PhenoTipsFeature extends AbstractPhenoTipsVocabularyProperty implem
             JSON_PRESENTSTATUS_YES.equalsIgnoreCase(json.optString(OBSERVED_JSON_KEY_NAME, JSON_PRESENTSTATUS_YES));
         this.type = json.optString(TYPE_JSON_KEY_NAME, "phenotype");
         this.propertyName = (this.present) ? this.type : NEGATIVE_PHENOTYPE_PREFIX + this.type;
-        this.metadata = new TreeMap<String, FeatureMetadatum>();
+        this.metadata = new TreeMap<>();
 
         if (json.has(METADATA_JSON_KEY_NAME)) {
             JSONArray jsonMetadata = json.getJSONArray(METADATA_JSON_KEY_NAME);

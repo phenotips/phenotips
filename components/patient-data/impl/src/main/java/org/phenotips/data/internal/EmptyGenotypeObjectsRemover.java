@@ -61,7 +61,7 @@ public class EmptyGenotypeObjectsRemover extends AbstractEventListener
 
     private static final String VARIANT_KEY = "cdna";
 
-    private static Map<String, EntityReference> refs = new LinkedHashMap<String, EntityReference>();
+    private static Map<String, EntityReference> refs = new LinkedHashMap<>();
 
     /**
      * Default constructor, sets up the listener name and the list of events to subscribe to.

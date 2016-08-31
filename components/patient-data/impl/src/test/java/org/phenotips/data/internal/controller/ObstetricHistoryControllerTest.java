@@ -232,12 +232,12 @@ public class ObstetricHistoryControllerTest
     @Test
     public void writeJSONWithoutSelectedFieldsTest()
     {
-        Map<String, Integer> testData = new LinkedHashMap<String, Integer>();
+        Map<String, Integer> testData = new LinkedHashMap<>();
         testData.put(GRAVIDA, AGE_NON_ZERO);
         testData.put(PARA, AGE_ZERO);
         JSONObject json = new JSONObject();
         PatientData<Integer> testObstetricHistoryData =
-            new DictionaryPatientData<Integer>("obstetric-history", testData);
+            new DictionaryPatientData<>("obstetric-history", testData);
         doReturn(testObstetricHistoryData).when(this.patient).getData(this.obstetricHistoryController.getName());
 
         this.obstetricHistoryController.writeJSON(this.patient, json);

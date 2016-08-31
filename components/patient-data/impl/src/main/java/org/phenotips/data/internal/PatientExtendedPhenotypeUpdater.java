@@ -83,8 +83,8 @@ public class PatientExtendedPhenotypeUpdater extends AbstractEventListener
     {
         @SuppressWarnings("unchecked")
         List<String> phenotypes = patientRecordObj.getListValue(baseFieldName);
-        Set<String> extendedPhenotypes = new TreeSet<String>();
-        Set<String> sortedPhenotypes = new TreeSet<String>();
+        Set<String> extendedPhenotypes = new TreeSet<>();
+        Set<String> sortedPhenotypes = new TreeSet<>();
         for (String phenotype : phenotypes) {
             sortedPhenotypes.add(phenotype);
             VocabularyTerm phenotypeTerm = this.vocabularyManager.resolveTerm(phenotype);
@@ -96,7 +96,7 @@ public class PatientExtendedPhenotypeUpdater extends AbstractEventListener
                 extendedPhenotypes.add(phenotype);
             }
         }
-        patientRecordObj.setDBStringListValue(extendedFieldName, new ArrayList<String>(extendedPhenotypes));
-        patientRecordObj.setDBStringListValue(baseFieldName, new ArrayList<String>(sortedPhenotypes));
+        patientRecordObj.setDBStringListValue(extendedFieldName, new ArrayList<>(extendedPhenotypes));
+        patientRecordObj.setDBStringListValue(baseFieldName, new ArrayList<>(sortedPhenotypes));
     }
 }

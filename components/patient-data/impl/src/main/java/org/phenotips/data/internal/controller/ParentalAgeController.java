@@ -101,7 +101,7 @@ public class ParentalAgeController implements PatientDataController<Integer>
                 result.put(property, age);
             }
             if (!result.isEmpty()) {
-                return new DictionaryPatientData<Integer>(getName(), result);
+                return new DictionaryPatientData<>(getName(), result);
             }
         } catch (Exception ex) {
             this.logger.error("Could not find requested document or some unforeseen"

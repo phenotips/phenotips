@@ -74,7 +74,7 @@ public class MedicalReportsController implements PatientDataController<String>
     public PatientData<String> load(Patient patient)
     {
         try {
-            XWikiContext context = contextProvider.get();
+            XWikiContext context = this.contextProvider.get();
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {

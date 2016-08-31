@@ -112,7 +112,7 @@ public class PhenoTipsFeatureTest
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
         when(prop.getName()).thenReturn("phenotype");
-        List<BaseObject> metas = new ArrayList<BaseObject>();
+        List<BaseObject> metas = new ArrayList<>();
 
         BaseObject meta = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
@@ -193,7 +193,7 @@ public class PhenoTipsFeatureTest
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
         when(prop.getName()).thenReturn("negative_phenotype");
-        List<BaseObject> metas = new ArrayList<BaseObject>();
+        List<BaseObject> metas = new ArrayList<>();
 
         BaseObject meta = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
@@ -274,7 +274,7 @@ public class PhenoTipsFeatureTest
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
         when(prop.getName()).thenReturn("phenotype");
-        List<BaseObject> metas = new ArrayList<BaseObject>();
+        List<BaseObject> metas = new ArrayList<>();
 
         metas.add(null);
 
@@ -303,7 +303,7 @@ public class PhenoTipsFeatureTest
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
         when(prop.getName()).thenReturn("phenotype");
-        List<BaseObject> metas = new ArrayList<BaseObject>();
+        List<BaseObject> metas = new ArrayList<>();
 
         BaseObject meta = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
@@ -330,7 +330,7 @@ public class PhenoTipsFeatureTest
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
         when(prop.getName()).thenReturn("phenotype");
-        List<BaseObject> metas = new ArrayList<BaseObject>();
+        List<BaseObject> metas = new ArrayList<>();
 
         BaseObject meta = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
@@ -357,7 +357,7 @@ public class PhenoTipsFeatureTest
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
         when(prop.getName()).thenReturn("phenotype");
-        List<BaseObject> metas = new ArrayList<BaseObject>();
+        List<BaseObject> metas = new ArrayList<>();
 
         BaseObject meta = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
@@ -388,7 +388,7 @@ public class PhenoTipsFeatureTest
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
         when(prop.getName()).thenReturn("phenotype");
-        List<BaseObject> metas = new ArrayList<BaseObject>();
+        List<BaseObject> metas = new ArrayList<>();
 
         BaseObject meta = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
@@ -454,7 +454,7 @@ public class PhenoTipsFeatureTest
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
         when(prop.getName()).thenReturn("phenotype");
-        List<BaseObject> metas = new ArrayList<BaseObject>();
+        List<BaseObject> metas = new ArrayList<>();
         BaseObject meta = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
         temp.setValue("phenotype");

@@ -198,11 +198,11 @@ public class AbstractSimpleControllerTest
         XWikiException exception = new XWikiException();
         doThrow(exception).when(this.xWiki).saveDocument(any(XWikiDocument.class),
             anyString(), anyBoolean(), any(XWikiContext.class));
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
         map.put(PROPERTY_3, "datum3");
-        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
 
         this.mocker.getComponentUnderTest().save(this.patient);
@@ -215,7 +215,7 @@ public class AbstractSimpleControllerTest
     @Test
     public void saveReturnsWithoutSavingWhenDataIsNotKeyValueBased() throws ComponentLookupException, XWikiException
     {
-        PatientData<String> patientData = new SimpleValuePatientData<String>(DATA_NAME, "datum");
+        PatientData<String> patientData = new SimpleValuePatientData<>(DATA_NAME, "datum");
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
 
         this.mocker.getComponentUnderTest().save(this.patient);
@@ -228,11 +228,11 @@ public class AbstractSimpleControllerTest
     @Test
     public void saveSetsAllFields() throws XWikiException, ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
         map.put(PROPERTY_3, "datum3");
-        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
 
         this.mocker.getComponentUnderTest().save(this.patient);
@@ -296,11 +296,11 @@ public class AbstractSimpleControllerTest
     @Test
     public void writeJSONAddsContainerWithAllValues() throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
         map.put(PROPERTY_3, "datum3");
-        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
@@ -317,11 +317,11 @@ public class AbstractSimpleControllerTest
     @Test
     public void writeJSONWithSelectedFieldsAddsContainerWithAllValues() throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
         map.put(PROPERTY_3, "datum3");
-        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -342,11 +342,11 @@ public class AbstractSimpleControllerTest
     @Test
     public void writeJSONWithSelectedFieldsAddsSelectedValues() throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
         map.put(PROPERTY_3, "datum3");
-        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -367,11 +367,11 @@ public class AbstractSimpleControllerTest
     public void writeJSONWithSelectedFieldsAddsContainerWithAllValuesWhenSelectedFieldsNull()
         throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
         map.put(PROPERTY_3, "datum3");
-        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
@@ -388,11 +388,11 @@ public class AbstractSimpleControllerTest
     @Test
     public void writeJSONDoesNotOverwriteContainer() throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
         map.put(PROPERTY_3, "datum3");
-        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();

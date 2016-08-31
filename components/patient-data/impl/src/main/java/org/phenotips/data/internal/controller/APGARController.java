@@ -85,7 +85,7 @@ public class APGARController implements PatientDataController<Integer>
                     result.put(propertyName, Integer.valueOf(value));
                 }
             }
-            return new DictionaryPatientData<Integer>(DATA_NAME, result);
+            return new DictionaryPatientData<>(DATA_NAME, result);
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen"
                 + " error has occurred during controller loading ", e.getMessage());
@@ -192,7 +192,7 @@ public class APGARController implements PatientDataController<Integer>
                     // should never happen
                 }
             }
-            return new DictionaryPatientData<Integer>(DATA_NAME, parsed);
+            return new DictionaryPatientData<>(DATA_NAME, parsed);
         }
         return null;
     }

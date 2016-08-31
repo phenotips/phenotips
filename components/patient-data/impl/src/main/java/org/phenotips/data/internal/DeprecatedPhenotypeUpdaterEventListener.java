@@ -67,7 +67,7 @@ public class DeprecatedPhenotypeUpdaterEventListener extends AbstractEventListen
     {
         super("deprecated-phenotype-updater", new PatientChangingEvent());
 
-        this.fieldsToFix = new HashSet<String>();
+        this.fieldsToFix = new HashSet<>();
         this.fieldsToFix.add("phenotype");
         this.fieldsToFix.add("extended_phenotype");
         this.fieldsToFix.add("negative_phenotype");
@@ -92,7 +92,7 @@ public class DeprecatedPhenotypeUpdaterEventListener extends AbstractEventListen
                     continue;
                 }
                 List<String> terms = currentTermList.getList();
-                Set<String> correctSet = new LinkedHashSet<String>();
+                Set<String> correctSet = new LinkedHashSet<>();
                 for (String term : terms) {
                     VocabularyTerm properTerm = this.vocabularyManager.resolveTerm(term);
                     if (properTerm != null) {
@@ -101,7 +101,7 @@ public class DeprecatedPhenotypeUpdaterEventListener extends AbstractEventListen
                         correctSet.add(term);
                     }
                 }
-                List<String> correctList = new LinkedList<String>();
+                List<String> correctList = new LinkedList<>();
                 correctList.addAll(correctSet);
                 patientObject.set(field, correctList, context);
             }

@@ -117,11 +117,11 @@ public class DatesController implements PatientDataController<PhenoTipsDate>
             if (data == null) {
                 return null;
             }
-            Map<String, PhenoTipsDate> result = new LinkedHashMap<String, PhenoTipsDate>();
+            Map<String, PhenoTipsDate> result = new LinkedHashMap<>();
             for (String propertyName : getPatientDocumentProperties()) {
                 String dateAsEntered = CORRESPONDING_ASENTERED_FIELDNAMES.containsKey(propertyName)
-                                       ? data.getStringValue(CORRESPONDING_ASENTERED_FIELDNAMES.get(propertyName))
-                                       : null;
+                    ? data.getStringValue(CORRESPONDING_ASENTERED_FIELDNAMES.get(propertyName))
+                    : null;
                 if (!StringUtils.isEmpty(dateAsEntered)) {
                     // if "date as entered" is present, use it and disregard the date field itself.
                     try {
@@ -139,7 +139,7 @@ public class DatesController implements PatientDataController<PhenoTipsDate>
                     }
                 }
             }
-            return new DictionaryPatientData<PhenoTipsDate>(DATA_NAME, result);
+            return new DictionaryPatientData<>(DATA_NAME, result);
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen"
                 + " error has occurred during controller loading [{}]", e.getMessage());
@@ -167,7 +167,7 @@ public class DatesController implements PatientDataController<PhenoTipsDate>
                     // note: `date` may be null if data is missing
                     if (CORRESPONDING_ASENTERED_FIELDNAMES.containsKey(propertyName)) {
                         data.setStringValue(CORRESPONDING_ASENTERED_FIELDNAMES.get(propertyName),
-                                            (date == null ? "" : date.toString()));
+                            (date == null ? "" : date.toString()));
                     }
                     // if date is not a valid/complete date, toEarliestPossibleISODate() will return null
                     // and date will be effectively "unset"

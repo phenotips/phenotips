@@ -258,7 +258,7 @@ public class ParentalAgeControllerTest
         testData.put(MATERNAL_AGE, AGE_NON_ZERO);
         testData.put(PATERNAL_AGE, AGE_NON_ZERO);
         PatientData<Integer> testPatientData =
-            new DictionaryPatientData<Integer>(this.parentalAgeController.getName(), testData);
+            new DictionaryPatientData<>(this.parentalAgeController.getName(), testData);
         doReturn(testPatientData).when(this.patient).getData(this.parentalAgeController.getName());
         JSONObject jsonTestData = new JSONObject();
         jsonTestData.put("prenatal_perinatal_history", testData);

@@ -67,7 +67,7 @@ public class LifeStatusController implements PatientDataController<String>
 
     private static final String DECEASED = "deceased";
 
-    private static final Set<String> ALL_LIFE_STATES = new HashSet<String>(Arrays.asList(ALIVE, DECEASED));
+    private static final Set<String> ALL_LIFE_STATES = new HashSet<>(Arrays.asList(ALIVE, DECEASED));
 
     /** Logging helper object. */
     @Inject
@@ -103,7 +103,7 @@ public class LifeStatusController implements PatientDataController<String>
                     lifeStatus = DECEASED;
                 }
             }
-            return new SimpleValuePatientData<String>(DATA_NAME, lifeStatus);
+            return new SimpleValuePatientData<>(DATA_NAME, lifeStatus);
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen"
                 + " error has occurred during controller loading ", e.getMessage());
@@ -170,7 +170,7 @@ public class LifeStatusController implements PatientDataController<String>
         if (propertyValue != null) {
             // validate - only accept listed values
             if (ALL_LIFE_STATES.contains(propertyValue)) {
-                return new SimpleValuePatientData<String>(DATA_NAME, propertyValue);
+                return new SimpleValuePatientData<>(DATA_NAME, propertyValue);
             }
         }
         return null;
