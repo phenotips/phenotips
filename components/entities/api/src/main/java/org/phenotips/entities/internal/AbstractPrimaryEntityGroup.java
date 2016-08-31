@@ -154,12 +154,24 @@ public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
             }
             obj = doc.newXObject(getMembershipClass(), getXContext());
             obj.setStringValue(getMembershipProperty(), getFullSerializer().serialize(getDocument()));
+            this.setMemberParameters(member, obj);
             getXContext().getWiki().saveDocument(doc, "Added to group " + getDocument(), true, getXContext());
             return true;
         } catch (Exception ex) {
             this.logger.warn("Failed to add member to group: {}", ex.getMessage());
         }
         return false;
+    }
+
+    /**
+     * If an extending class wants to record parameters with a member, override this.
+     *
+     * @param member that is saved
+     * @param obj object for recording parameters
+     */
+    protected void setMemberParameters(E member, BaseObject obj)
+    {
+        // do nothing as default.
     }
 
     @Override
