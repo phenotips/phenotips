@@ -127,7 +127,9 @@ public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
             q.bindValue("memberClass", getLocalSerializer().serialize(getMembershipClass()));
             q.bindValue("referenceProperty", getMembershipProperty());
             q.bindValue("selfReference", getFullSerializer().serialize(getDocument()));
-            q.bindValue("entityType", getLocalSerializer().serialize(type));
+            if (type != null) {
+                q.bindValue("entityType", getLocalSerializer().serialize(type));
+            }
             List<String> memberIds = q.execute();
             for (String memberId : memberIds) {
                 result.add(this.membersManager.get(memberId));
