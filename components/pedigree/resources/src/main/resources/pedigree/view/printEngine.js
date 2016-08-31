@@ -64,7 +64,8 @@ define([
                 var sections = [];
                 if (legendData.hasOwnProperty("colors")) {
                     legendData["colors"].hasOwnProperty("disorders")  && sections.push(generateSection(legendData["colors"]["disorders"], legendData["names"]["disorders"], "Disorders"));
-                    legendData["colors"].hasOwnProperty("genes")      && sections.push(generateSection(legendData["colors"]["genes"], null, "Genes"));
+                    legendData["colors"].hasOwnProperty("candidateGenes") && sections.push(generateSection(legendData["colors"]["candidateGenes"], null, "Candidate genes"));
+                    legendData["colors"].hasOwnProperty("causalGenes") && sections.push(generateSection(legendData["colors"]["causalGenes"], null, "Causal genes"));
                     legendData["colors"].hasOwnProperty("phenotypes") && sections.push(generateSection(legendData["colors"]["phenotypes"], null, "Phenotypes"));
                     legendData["colors"].hasOwnProperty("cancers")    && sections.push(generateSection(legendData["colors"]["cancers"], null, "Cancers"));
                 }
