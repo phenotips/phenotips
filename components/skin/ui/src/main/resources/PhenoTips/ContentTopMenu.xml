@@ -1161,18 +1161,15 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
   #set($editaction = $doc.getDefaultEditMode())
 * [[#__icon("pencil")$services.localization.render('core.menu.edit')&gt;&gt;path:$doc.getURL($editaction, $!languageparams)|| id="prActionEdit"]]
 #end## HAS EDIT
-#if ($canDelete)
-* [[#__icon("times")$services.localization.render('core.menu.delete')&gt;&gt;path:$doc.getURL('delete', $!languageparams)|| id="prActionDelete"]]
-#end## HAS DELETE
 #else## NOT IN VIEW MODE, SHOW EDIT MODE ACTIONS
 * (% class="xDropdown" %){{html clean="false"}}&lt;span class="fa fa-fw fa-check"&gt; &lt;/span&gt;&lt;label&gt;&lt;input type="submit" value="$services.localization.render('phenotips.contentTopMenu.save')" name="action_saveandcontinue"/&gt;&lt;/label&gt;{{/html}}
 ** {{html clean="false"}}&lt;label&gt;&lt;input id="tmActionSave" type="submit" value="$services.localization.render('saveandcontinue')" title="$services.localization.render('saveandcontinue')" name="action_saveandcontinue"/&gt;&lt;/label&gt;{{/html}}
 ** {{html clean="false"}}&lt;label&gt;&lt;input id="tmActionSaveAndContinue" type="submit" value="$services.localization.render('saveandview')" title="$services.localization.render('saveandview')" name="action_save"/&gt;&lt;/label&gt;{{/html}}
 * {{html clean="false"}}&lt;span class="fa fa-fw fa-ban"&gt; &lt;/span&gt;&lt;label&gt;&lt;input id="tmActionCancel" type="submit" value="$services.localization.render('phenotips.contentTopMenu.cancel')" title="$services.localization.render('phenotips.contentTopMenu.cancel.title')" name="action_cancel"/&gt;&lt;/label&gt;{{/html}}
+#end## DONE WITH EDIT MODE SPECIFIC ACTIONS
 #if ($canDelete)
 * [[#__icon("times")$services.localization.render('core.menu.delete')&gt;&gt;path:$doc.getURL('delete', $!languageparams)|| id="prActionDelete"]]
 #end## HAS DELETE
-#end## DONE WITH EDIT MODE SPECIFIC ACTIONS
 * (% class="xDropdown" %){{html clean="false"}}&lt;span class="fa fa-fw fa-list"&gt; &lt;/span&gt;&lt;span id="toc-entry"&gt;$services.localization.render('phenotips.contentTopMenu.jumpMenu')&lt;/span&gt;{{/html}}
 ##The ToC will be populated by JS
 ** ----
