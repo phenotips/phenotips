@@ -1155,7 +1155,6 @@ $xwiki.ssx.use('PhenoTips.ContentTopMenu', {'colorTheme': $colorTheme})##
 $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
 (% id="patient-record-actions" %)(((
 (% id="pr-more-actions-menu" class="menu menu-horizontal" %)(((
-#set ($canDelete = !$doc.isNew() &amp;&amp; $xwiki.hasAccessLevel('delete'))
 #if ($xcontext.action == 'view')
 #if($hasEdit &amp;&amp; !$isReadOnly)
   #set($editaction = $doc.getDefaultEditMode())
@@ -1167,6 +1166,7 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
 ** {{html clean="false"}}&lt;label&gt;&lt;input id="tmActionSaveAndContinue" type="submit" value="$services.localization.render('saveandview')" title="$services.localization.render('saveandview')" name="action_save"/&gt;&lt;/label&gt;{{/html}}
 * {{html clean="false"}}&lt;span class="fa fa-fw fa-ban"&gt; &lt;/span&gt;&lt;label&gt;&lt;input id="tmActionCancel" type="submit" value="$services.localization.render('phenotips.contentTopMenu.cancel')" title="$services.localization.render('phenotips.contentTopMenu.cancel.title')" name="action_cancel"/&gt;&lt;/label&gt;{{/html}}
 #end## DONE WITH EDIT MODE SPECIFIC ACTIONS
+#set ($canDelete = !$doc.isNew() &amp;&amp; $xwiki.hasAccessLevel('delete'))
 #if ($canDelete)
 * [[#__icon("times")$services.localization.render('core.menu.delete')&gt;&gt;path:$doc.getURL('delete', $!languageparams)|| id="prActionDelete"]]
 #end## HAS DELETE
