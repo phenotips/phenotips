@@ -7,6 +7,7 @@ var PhenoTips = (function (PhenoTips) {
       _this.projectId = projectId;
       _this.form = $('inline');
       _this.ajaxService = '/bin/get/Projects/SaveProjectHandler';
+      _this.collaboratorCount = 0;
 
       var editmode = false;
       if ($('editmode')) {
@@ -194,6 +195,10 @@ var PhenoTips = (function (PhenoTips) {
                       return;
                   }
                   event.findElement('tr').remove();
+                  _this.collaboratorCount--;
+                  if (_this.collaboratorCount == 0) {
+                      $('noContributorsWarning').removeClassName('hidden');
+                  }
                });
            }
         } else {
@@ -210,6 +215,8 @@ var PhenoTips = (function (PhenoTips) {
             row.insert(td);
         }
         list.insert(row);
+        _this.collaboratorCount++;
+        $('noContributorsWarning').addClassName('hidden');
     },
 
     _loadCollaboratorsAndTemplates : function(observers, contributors, leaders, templates) {

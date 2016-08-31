@@ -65,6 +65,9 @@ $xwiki.ssx.use('PhenoTips.ImageDisplayer')##
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.projectDescription.hint')
 : {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="10" cols="40"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
 == $services.localization.render('phenotips.projectSheet.manageCollaborators') ==
+(% class='hidden' id='noContributorsWarning' %)(((
+  {{warning}}$services.localization.render('phenotips.projectSheet.noContributors'){{/warning}}
+)))
 ##
 ## Leaders section
 ##
