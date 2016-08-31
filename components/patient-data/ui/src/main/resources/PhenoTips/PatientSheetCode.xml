@@ -1133,17 +1133,6 @@ document.observe('xwiki:dom:loaded', function()
     // -----------------------------------------------------------------
     if (typeof(PhenoTips.widgets.Suggest) != "undefined") {
 
-      // close all suggest pickers when clicking outside the picker and dialogues invoked by the picker
-      document.observe('mousedown', function(event) {
-        if (!event.findElement('.suggestItems') &amp;&amp; !event.findElement('.dialog-ontology-browser')) {
-          $$('.suggestItems').each(function(item) {
-            if (item.__targetField &amp;&amp; (item.__targetField._suggest || item.__targetField._suggestWidget)) {
-              (item.__targetField._suggest || item.__targetField._suggestWidget).clearSuggestions();
-             }
-          });
-        }
-      });
-
       var keys = Object.keys(suggestionsMapping);
       var specialClasses = Object.keys(pickerSpecialClassOptions);
       for (var i = 0; i &lt; keys.length; i++) {
