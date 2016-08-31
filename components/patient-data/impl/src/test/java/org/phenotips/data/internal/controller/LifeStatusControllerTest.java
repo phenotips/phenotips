@@ -21,6 +21,7 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PhenoTipsDate;
 import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
@@ -223,9 +224,9 @@ public class LifeStatusControllerTest
     {
         PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, DECEASED);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
-        Map<String, Date> datesMap = new LinkedHashMap<>();
+        Map<String, PhenoTipsDate> datesMap = new LinkedHashMap<>();
         datesMap.put(PATIENT_DATEOFDEATH_FIELDNAME, null);
-        PatientData<Date> dates = new DictionaryPatientData<>("dates", datesMap);
+        PatientData<PhenoTipsDate> dates = new DictionaryPatientData<>("dates", datesMap);
         doReturn(dates).when(this.patient).getData("dates");
 
         this.mocker.getComponentUnderTest().save(this.patient);
@@ -265,9 +266,9 @@ public class LifeStatusControllerTest
     {
         PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, DECEASED);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
-        Map<String, Date> datesMap = new LinkedHashMap<>();
-        datesMap.put(PATIENT_DATEOFDEATH_FIELDNAME, new Date(0));
-        PatientData<Date> dates = new DictionaryPatientData<>("dates", datesMap);
+        Map<String, PhenoTipsDate> datesMap = new LinkedHashMap<>();
+        datesMap.put(PATIENT_DATEOFDEATH_FIELDNAME, new PhenoTipsDate(new Date(0)));
+        PatientData<PhenoTipsDate> dates = new DictionaryPatientData<>("dates", datesMap);
         doReturn(dates).when(this.patient).getData("dates");
 
         this.mocker.getComponentUnderTest().save(this.patient);
@@ -281,7 +282,8 @@ public class LifeStatusControllerTest
     {
         PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, DECEASED);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
-        PatientData<Date> dates = new SimpleValuePatientData<>(PATIENT_DATEOFDEATH_FIELDNAME, new Date());
+        PatientData<PhenoTipsDate> dates =
+            new SimpleValuePatientData<>(PATIENT_DATEOFDEATH_FIELDNAME, new PhenoTipsDate(new Date()));
         doReturn(dates).when(this.patient).getData("dates");
 
         this.mocker.getComponentUnderTest().save(this.patient);

@@ -20,6 +20,7 @@ package org.phenotips.data.internal.controller;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PhenoTipsDate;
 import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
@@ -122,7 +123,7 @@ public class LifeStatusController implements PatientDataController<String>
             }
 
             PatientData<String> lifeStatus = patient.getData(DATA_NAME);
-            PatientData<Date> dates = patient.getData("dates");
+            PatientData<PhenoTipsDate> dates = patient.getData("dates");
 
             Integer deathDateUnknown = 0;
             if (lifeStatus != null && DECEASED.equals(lifeStatus.getValue())) {
