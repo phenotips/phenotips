@@ -5,6 +5,5 @@ org.phenotips.projects.access.ObserverAccessLevel
 org.phenotips.projects.internal.ProjectsRepository
 org.phenotips.projects.internal.ProjectAndTemplateAssignmentInitializer
 org.phenotips.projects.internal.ProjectAndTemplateBinder
-org.phenotips.projects.internal.DefaultProjectHelper
 org.phenotips.projects.authorization.ProjectAuthorizationModule
 org.phenotips.projects.internal.controller.ProjectsController
