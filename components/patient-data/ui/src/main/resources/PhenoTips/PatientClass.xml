@@ -637,6 +637,7 @@
       <customDisplay>{{velocity}}
 #set ($order = [
   'HP:0003577',
+  'HP:0030674',
   'HP:0011460',
   'HP:0011461',
   'HP:0003623',
