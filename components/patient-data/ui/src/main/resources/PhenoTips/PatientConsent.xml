@@ -323,7 +323,6 @@
          *        (if present) are displayed and hidden depending on the state of consent data:
          *        "#patient-consent-update" - supposedly an "update" button, hidden when any errors in consent data are present
          *        ".view-title-required-not-granted" - a block shown when a required consent is not granted (in view mode)
-         *        ".view-title-none-granted" - a block shown when no consents have been granted (in view mode)
          *        ".error_no_consent_data" - a block (supposedly with an error message) displayed when no consent data was passed to the script
          */
         init: function (consentsBlock, action, consents, displayDetails, consentChangeCallback, errorBlock)
@@ -487,12 +486,12 @@
 
           // reset
           this.classVariables.errorBlock.children('.view-title-required-not-granted').addClass('hidden');
-          this.classVariables.errorBlock.children('.view-title-none-granted').addClass('hidden');
+          this.classVariables.consentsBlock.removeClass('hidden');
 
           if (requiredNotGranted) {
             this.classVariables.errorBlock.children('.view-title-required-not-granted').removeClass('hidden');
           } else if (noneGranted) {
-            this.classVariables.errorBlock.children('.view-title-none-granted').removeClass('hidden');
+            this.classVariables.consentsBlock.addClass('hidden');
           }
         },
 
@@ -777,7 +776,7 @@
         &lt;div class='patient-id hidden'&gt;${patientId}&lt;/div&gt;
         &lt;input type="hidden" id="patient-consents-json" class="patient-consents-json" value='$escapetool.xml($jsontool.serialize($consents))'/&gt;
       {{/html}}
-      (% class='consents-title' %)(((
+      (% class='consents-title clear' %)(((
         ==== $services.localization.render('PhenoTips.PatientConsent_granted_list') ====
       )))
       (% class='consents' %)(((
@@ -795,9 +794,6 @@
       )))
       (% class='view-title-required-not-granted hidden' %)(((
         {{warning}}$services.localization.render('PhenoTips.PatientConsent_required_not_granted'){{/warning}}
-      )))
-      (% class='view-title-none-granted hidden' %)(((
-        {{warning}}$services.localization.render('PhenoTips.PatientConsent_none_granted'){{/warning}}
       )))
       (% class='error error_no_consent_data hidden' %)(((
         {{error}}$services.localization.render('PhenoTips.PatientConsent_error_no_consent_data'){{/error}}
