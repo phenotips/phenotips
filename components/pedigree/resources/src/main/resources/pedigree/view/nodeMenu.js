@@ -1065,11 +1065,9 @@ define([
 
         _setFieldValue : {
             'radio' : function (container, value) {
-                if (value != "") {
-                    var target = container.down('input[type=radio][value=' + value + ']');
-                    if (target) {
-                        target.checked = true;
-                    }
+                var target = container.down('input[type=radio][value="' + value + '"]');
+                if (target) {
+                    target.checked = true;
                 }
             },
             'checkbox' : function (container, value) {
@@ -1117,7 +1115,7 @@ define([
                 var updated = false;
                 var yearSelect = container.down('select.year');
                 if (yearSelect) {
-                    var option = yearSelect.down('option[value=' + year + ']');
+                    var option = yearSelect.down('option[value="' + year + '"]');
                     if (!option) {
                         option = new Element("option", {"value": year}).update(year.toString());
                         yearSelect.insert(option);
@@ -1129,7 +1127,7 @@ define([
                 }
                 var monthSelect = container.down('select.month');
                 if (monthSelect) {
-                    var option = monthSelect.down('option[value=' + month + ']');
+                    var option = monthSelect.down('option[value="' + month + '"]');
                     if (option && !option.selected) {
                         option.selected = true;
                         updated = true;
@@ -1137,7 +1135,7 @@ define([
                 }
                 var daySelect = container.down('select.day');
                 if (daySelect) {
-                    var option = daySelect.down('option[value=' + day + ']');
+                    var option = daySelect.down('option[value="' + day + '"]');
                     if (option && !option.selected) {
                         option.selected = true;
                         updated = true;
@@ -1224,11 +1222,9 @@ define([
                 }
             },
             'select' : function (container, value) {
-                if (value != '') {
-                    var target = container.down('select option[value=' + value + ']');
-                    if (target) {
-                        target.selected = 'selected';
-                    }
+                var target = container.down('select option[value="' + value + '"]');
+                if (target) {
+                    target.selected = 'selected';
                 }
             },
             'cancerlist': function (container, value) {

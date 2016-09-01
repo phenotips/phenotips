@@ -79,7 +79,7 @@
       &lt;/ul&gt;
     #end
     #if ($causalGeneColors &amp;&amp; $causalGeneColors.size() &gt; 0)
-      causal Genes:
+      Causal Genes:
       &lt;ul class="pedigree-legend-list" style="margin-top: .4em"&gt;
       #foreach ($color in $causalGeneColors.entrySet())
         &lt;li class="pedigree-disorder-item" style="list-style-type: none;"&gt;
