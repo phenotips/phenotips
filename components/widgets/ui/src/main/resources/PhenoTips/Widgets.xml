@@ -3953,6 +3953,12 @@ document.observe("xwiki:dom:updated", init);
       'phenotype-info' : {
         'hint'     : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.hint')",
         'service'  : "$xwiki.getURL('PhenoTips.PhenotypeInfoService', 'get')",
+        'database' : {
+          'name' : "$services.vocabularies.hpo.name",
+          'link' : "$services.vocabularies.hpo.website",
+          'citation' : "$services.vocabularies.hpo.citation",
+          'version': "$services.vocabularies.hpo.version"
+        },
         'callback' : function (helpButton, json) {
           var c = helpButton.helpBox.content;
           var elt = function(type, cssClass, content) {
@@ -4003,6 +4009,12 @@ document.observe("xwiki:dom:updated", init);
       'phenotype-qualifier-info' : {
         'hint'     : "$services.localization.render('phenotips.widgets.helpButtons.phenotypeQualifier.hint')",
         'service'  : "$xwiki.getURL('PhenoTips.PhenotypeInfoService', 'get')",
+        'database' : {
+          'name' : "$services.vocabularies.hpo.name",
+          'link' : "$services.vocabularies.hpo.website",
+          'citation' : "$services.vocabularies.hpo.citation",
+          'version': "$services.vocabularies.hpo.version"
+        },
         'callback' : function (helpButton, json) {
           var c = helpButton.helpBox.content;
           var elt = function(type, cssClass, content) {
@@ -4019,6 +4031,12 @@ document.observe("xwiki:dom:updated", init);
       'omim-disease-info' : {
         'hint' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.hint')",
         'service'  : "$xwiki.getURL('PhenoTips.OmimInfoService', 'get')",
+        'database' : {
+          'name' : "$services.vocabularies.omim.name",
+          'link' : "$services.vocabularies.omim.website",
+          'citation' : "$services.vocabularies.omim.citation",
+          'version': "$services.vocabularies.omim.version"
+        },
         'callback' : function (helpButton, json) {
           var c = helpButton.helpBox.content;
           var elt = function(type, cssClass, content) {
@@ -4063,6 +4081,12 @@ document.observe("xwiki:dom:updated", init);
       'gene-info' : {
         'hint' : "$services.localization.render('phenotips.widgets.helpButtons.gene.hint')",
         'service'  : "$xwiki.getURL('PhenoTips.GeneInfoService', 'get')",
+        'database' : {
+          'name' : "$services.vocabularies.hgnc.name",
+          'link' : "$services.vocabularies.hgnc.website",
+          'citation' : "$services.vocabularies.hgnc.citation",
+          'version': "$services.vocabularies.hgnc.version"
+        },
         'callback' : function (helpButton, json) {
           var c = helpButton.helpBox.content;
           var elt = function(type, cssClass, content) {
@@ -4219,6 +4243,21 @@ document.observe("xwiki:dom:updated", init);
           _this.helpBox.down('.temporary').remove();
           _this.helpBox.insert("$services.localization.render('phenotips.widgets.helpButtons.failedToLoad')".replace("__subject__", _this._information) + " : "+ response.statusText);
         }
+      });
+      this.addDatabaseCreditInfo();
+    },
+
+    addDatabaseCreditInfo : function () {
+      var version = "$services.localization.render('phenotips.IndexOntology.version', ['" + this._builder.database.version + "'])";
+      var citation = this._builder.database.citation.concat(". ").concat(version);
+      var credits = new Element('a', {'class' : 'reference', href : this._builder.database.link, 'target' : '_blank', 'title' : citation}).update(this._builder.database.name);
+      var creditsWrapper = new Element('div', {'class' : 'hint'}).update(credits.wrap('span', {'class' : 'reference-wrapper'}));
+      this.helpBox.insert({'top': creditsWrapper});
+
+      // Need to stop the propagation of the click to the parent element when following the database credits link,
+      // otherwise it will be selected.
+      credits.observe('click', function(event) {
+        event.stopPropagation();
       });
     }
   });

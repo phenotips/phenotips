@@ -60,6 +60,8 @@
 #end
 #if ("$!{request.ajax}" != '1')
 $xwiki.jsx.use('PhenoTips.IndexOntology')##
+$xwiki.jsx.use('PhenoTips.Widgets')##
+$xwiki.ssx.use('PhenoTips.Widgets')##
 == $services.localization.render('phenotips.indexOntology.heading') ==
 (% class="half" %)(((
 {{html wiki=false clean=false}}
@@ -67,8 +69,11 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
 &lt;form class="xform solr-admin" action='' method="post"&gt;
 &lt;dl&gt;
 &lt;dt&gt;
-&lt;label for="ontology-${ontology}-url"&gt;$services.localization.render("phenotips.IndexOntology.${ontology}")&lt;/label&gt;
-#set ($version = $services.vocabularies.get($ontology).Version)
+&lt;label style="display:inline" for="ontology-${ontology}-url"&gt;$services.localization.render("phenotips.IndexOntology.${ontology}")&lt;/label&gt;
+#set ($citation = "$services.vocabularies.get($ontology).citation")
+#set ($link = "$services.vocabularies.get($ontology).website")
+&lt;span class="fa fa-info-circle xHelpButton" title='&lt;span class="xHint"&gt;$citation, &lt;a href="$link" target="_blank"&gt;$link&lt;/a&gt;&lt;/span&gt;'&gt;&lt;/span&gt;
+#set ($version = $services.vocabularies.get($ontology).version)
 #if (!$version)
   &lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.noVersion')&lt;/span&gt;
 #else
@@ -426,6 +431,10 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
             }
         });
       }
+   });
+   // Replace the title for the information buttons with something more relevant to the context.
+   $$(".xHelpButton").each(function(elem) {
+     elem.title = "$services.localization.render('phenotips.IndexOntology.helpButtons.vocabulary.hint')";
    });
 });</code>
     </property>

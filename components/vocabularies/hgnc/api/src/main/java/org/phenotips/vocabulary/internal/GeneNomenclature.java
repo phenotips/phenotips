@@ -167,6 +167,17 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
     }
 
     @Override
+    public String getWebsite() {
+        return "http://www.genenames.org/";
+    }
+
+    @Override
+    public String getCitation() {
+        return "HGNC Database, HUGO Gene Nomenclature Committee (HGNC), EMBL Outstation - Hinxton, European"
+                + " Bioinformatics Institute, Wellcome Trust Genome Campus, Hinxton, Cambridgeshire, CB10 1SD, UK";
+    }
+
+    @Override
     public VocabularyTerm getTerm(String symbol)
     {
         String escapedSymbol = ClientUtils.escapeQueryChars(symbol);
