@@ -157,6 +157,19 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </warning_message>
+    <proband_id>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>proband_id</name>
+      <number>7</number>
+      <picker>0</picker>
+      <prettyName>Proband Identifier</prettyName>
+      <size>30</size>
+      <unmodifiable>1</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </proband_id>
   </class>
   <object>
     <name>PhenoTips.FamilyClass</name>
