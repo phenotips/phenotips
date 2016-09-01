@@ -90,7 +90,7 @@ public class TemplatePrimaryEntityGroup extends AbstractPrimaryEntityGroup<Templ
     {
         try {
             return ComponentManagerRegistry.getContextComponentManager().getInstance(TemplateRepository.class,
-                    "Study");
+                    "Template");
         } catch (ComponentLookupException e) {
             // Should not happen
         }
