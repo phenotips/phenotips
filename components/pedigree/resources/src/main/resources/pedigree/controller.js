@@ -980,16 +980,16 @@ define([
         }
 
         if (skipConfirmDialogue) {
-    		// assigning a new patient
-        	processLinkCallback(false);
-    	} else {
-    		if (linkID == "") {
+            // assigning a new patient
+            processLinkCallback(false);
+        } else {
+            if (linkID == "") {
                 var oldLinkID = editor.getNode(nodeID).getPhenotipsPatientId();
-                editor.getOkCancelDialogue().showWithCheckbox("<br><b>When you remove " + oldLinkID + " from this family:</b><br><br>" +
-                        "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
-                        "1) You will have the option to re-assign " + oldLinkID + " to another place in the pedigree<br><br>" +
-                        "2) You will have the option to leave " + oldLinkID + " unassigned and thus completely unlinked from the " + editor.getFamilyData().getFamilyId() + " family.</div>",
-                        'Remove the connections?', 'Clear data from this pedigree node', true, "Remove link", processLinkCallback, "Cancel", onCancelAssignPatient );
+                editor.getOkCancelDialogue().showWithCheckbox("<br><b>Do you want to remove the connection between this<br>patient </b>(" + editor.getGraph().getPatientDescription(nodeID, true) +
+                        ")<b> and this pedigree node?</b><br><br><br>" +
+                        "<div style='margin-left: 30px; margin-right: 30px; text-align: center'>" +
+                        "Please note that if you do not assign this patient to another pedigree<br>node this patient will be removed form this family</div><br>",
+                        'Remove the connection?', 'Clear data from this pedigree node', true, "Remove link", processLinkCallback, "Cancel", onCancelAssignPatient );
                 return;
             }
 
@@ -1002,8 +1002,8 @@ define([
                     editor.getView().unmarkAll();
                     onCancelAssignPatient();
                 }
-                editor.getOkCancelDialogue().showWithCheckbox("<br>Patient " + linkID + " is already in this pedigree. Do you want to transfer the record to the indiviudal currently selected?",
-                                                       "Re-link patient " + linkID + " to this node?",
+                editor.getOkCancelDialogue().showWithCheckbox("<br>Patient " + linkID + " is already in this pedigree. Do you want to transfer the record to the pedigree node currently selected?",
+                                                       "Re-assign patient " + linkID + " to this node?",
                                                        'Clear data from the pedigree node currently linked to this patient', true,
                                                        "OK", processLinkCallback, "Cancel", onCancel );
                 return;
@@ -1018,10 +1018,18 @@ define([
                             SaveLoadEngine._displayFamilyPedigreeInterfaceError(response.responseJSON,
                                     "Can't link to this person", "Can't link to this person: ", onCancelAssignPatient);
                         } else {
+                            var clearPropertiesMsg = "";
                             if (loadPatientProperties) {
-                                var clearPropertiesMsg = "<br><br>3) All data entered for this individual in the pedigree will be replaced by information pulled from the patient record  " + linkID + ".";
-                            } else {
-                                var clearPropertiesMsg = "";
+                                // if node has any data entered for it, warn that the data will be lost
+                                var properties = editor.getGraph().getProperties(nodeID);
+                                for (var prop in properties) {
+                                    // ignore trivial properties: "gender" and empty arrays
+                                    if (prop != "gender" && (!Array.isArray(properties[prop]) || properties[prop].length != 0)) {
+                                        // found a non-trivial property: need to warn about lost data
+                                        clearPropertiesMsg = "<br><br>3) All data entered for this individual in the pedigree will be replaced by information pulled from the patient record  " + linkID + ".";
+                                        break;
+                                    }
+                                }
                             }
 
                             var setDoNotShow = function(checkBoxStatus) {
@@ -1050,8 +1058,8 @@ define([
                             }
 
                             processLinking("Do you approve the addition of patient " + linkID + " to this family?<br>",
-                                    "1) This pedigree will be shared between all members of the family, including this patient.<br><br>"+
-                                    "2) Adding a patient to a family will automatically grant users who can modify that patient's record the same level of access to the family page." + clearPropertiesMsg);
+                                    "1) A copy of this pedigree will be placed in the electronic record of each family member.<br><br>"+
+                                    "2) This pedigree can be edited by any user with access to any member of the family." + clearPropertiesMsg);
                         }
                     } else  {
                         editor.getOkCancelDialogue().showError('Server error - unable to verify validity of patient link',

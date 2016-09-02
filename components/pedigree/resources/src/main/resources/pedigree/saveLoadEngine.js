@@ -220,7 +220,7 @@ define([
                     // 3.
                     if (patientLinks.linkedPatients.length == 0) {
                         editor.getOkCancelDialogue().showCustomized(
-                            "All patients have been unlinked form the pedigree and thus removed form the family and will no longer have a pedigree.<br><br>"+
+                            "All patients have been unlinked form the pedigree and thus removed form the family.<br><br>"+
                             "Do you want to save this pedigree and make a family with no members?",
                             "Save pedigree?", "OK", saveFunc, "Cancel", undefined);
                         return;
@@ -229,7 +229,7 @@ define([
                     // 2.
                     if (!patientLinks.patientToNodeMapping.hasOwnProperty(currentPatientId)) {
                         editor.getOkCancelDialogue().showCustomized(
-                            "Current patient has been unlinked from the pedigree and will no longer be part of the family and will have no pedigree.<br><br>" +
+                            "Current patient is not linked to the pedigree and thus not part of the family. Proceed?<br><br>" +
                             "Save pedigree?",
                             "Save pedigree?", "OK", saveFunc, "Cancel", undefined);
                         return;
@@ -409,14 +409,15 @@ define([
         var errorMessage = replyJSON.errorMessage ? replyJSON.errorMessage : "Unknown problem";
         errorMessage = "<font color='#660000'>" + errorMessage + "</font><br><br><br>";
         if (replyJSON.errorType == "familyConflict") {
-            errorMessage += "(for now it is only possible to add persons who is not in another family to a family)";
+            //errorMessage += "(for now it is only possible to add persons who is not in another family to a family)";
         }
         if (replyJSON.errorType == "pedigreeConflict") {
-            errorMessage += "(for now it is only possible to add persons without an already existing pedigree to a family)";
+            //errorMessage += "(for now it is only possible to add persons without an already existing pedigree to a family)";
         }
         if (replyJSON.errorType == "permissions") {
-            errorMessage += "(you need to have edit permissions for the patient to be able to add it to a family)";
+            //errorMessage += "(you need to have edit permissions for the patient to be able to add it to a family)";
         }
+        errorMessage = "<font color='#660000'>" + errorMessage + "</font><br><br>";
         editor.getOkCancelDialogue().showError('<br>' + messageIntro + errorMessage, title, "OK", callWhenDone );
     }
 

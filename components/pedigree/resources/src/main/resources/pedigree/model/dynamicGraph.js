@@ -77,6 +77,23 @@ define([
             return this.getProperties(id).hasOwnProperty("phenotipsId") ? this.getProperties(id).phenotipsId : "";
         },
 
+        getPatientDescription: function( id, htmlPatientLink ) {
+            var phenotipsId = this.getPhenotipsLinkID(id);
+            var space = " ";
+            if (htmlPatientLink) {
+                var space = "&nbsp;";
+                if (phenotipsId != "") {
+                    phenotipsId = "<a href='" + editor.getExternalEndpoint().getPhenotipsPatientURL(phenotipsId) + "'>" + phenotipsId + "</a>";
+                }
+            }
+            var props = this.getProperties(id);
+            var firstName = props.hasOwnProperty("fName") ? props.fName : "";
+            var lastName = props.hasOwnProperty("lName") ? props.lName : "";
+            var fullName = firstName + ((firstName != "" && lastName != "") ? space : "") + lastName;
+            var description = phenotipsId + ((phenotipsId != "" && fullName != "")? "," + space : "") + fullName;
+            return description;
+        },
+
         isValidID: function( id )
         {
           if (id < 0 || id > this.DG.GG.getMaxRealVertexId())
