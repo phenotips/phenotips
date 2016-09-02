@@ -20,6 +20,7 @@ package org.phenotips.studies.family.internal;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.data.internal.PhenoTipsPatient;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.Pedigree;
 import org.phenotips.studies.family.internal.export.PhenotipsFamilyExport;
@@ -35,11 +36,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -67,8 +67,8 @@ public class PhenotipsFamily implements Family
 
     private static PhenotipsFamilyExport familyExport;
 
-    @Inject
-    private Logger logger;
+    /** Logging helper object. */
+    private Logger logger = LoggerFactory.getLogger(PhenoTipsPatient.class);
 
     private XWikiDocument familyDocument;
 
@@ -137,6 +137,16 @@ public class PhenotipsFamily implements Family
             members.add(patient);
         }
         return members;
+    }
+
+    @Override
+    public String getProbandId()
+    {
+        Pedigree pedigree = this.getPedigree();
+        if (pedigree == null) {
+            return null;
+        }
+        return pedigree.getProbandId();
     }
 
     @Override

@@ -79,6 +79,12 @@ public interface Pedigree
     List<String> extractIds();
 
     /**
+     * @return phenotipsID of the patient which is the proband of the family, or null if
+     * pedigree has no proband or proband node is not linked to a patient record
+     */
+    String getProbandId();
+
+    /**
      * Patients are representing in a list within the structure of a pedigree. Extracts JSON objects that belong to
      * patients.
      *

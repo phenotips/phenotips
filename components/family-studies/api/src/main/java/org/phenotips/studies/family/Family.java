@@ -63,6 +63,12 @@ public interface Family
     List<String> getMembersIds();
 
     /**
+     * @return phenotipsID of the patient which is the proband of the family, or null if
+     * pedigree has no proband or proband node is not linked to a patient record
+     */
+    String getProbandId();
+
+    /**
      * @param patient check if the patient belongs to this family
      * @return true if a patient is a member of the family
      */
