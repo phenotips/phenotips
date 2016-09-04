@@ -732,10 +732,28 @@
                  }
               });
             }
-            var collaborators = _this._element.down('.collaborators');
+            var collabAccessRightsStr = _this._element.down('#collaborator-access-rights-info');
             var collaboratorsCount = formData.collaborator ? (formData.collaborator.size &amp;&amp; formData.collaborator.size() || 1) : 0;
-            if (collaborators) {
-              collaborators.replaceChild(document.createTextNode(collaboratorsCount + ' collaborator' + (collaboratorsCount != 1 ? 's' : '')), collaborators.lastChild);
+            if (collabAccessRightsStr) {
+              var collaboratorText;
+              var beginHtml = '&lt;span class="access-rights-info"&gt;&lt;span class="fa fa-group "&gt;&lt;/span&gt;&lt;span class="collaborators"&gt;';
+              var endHtml = '&lt;/span&gt;';
+              if (collaboratorsCount == 0) {
+                collaboratorText = "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.noCollaborators', ['" + beginHtml + "', '" + endHtml + "'])";
+              } else {
+                --collaboratorsCount;
+                var topCollaborator = $$('#manage-collaborators tr').map(function(item) {return item.down('select').selectedIndex + ':' + item.down('td:nth-child(2)').innerText}).max();
+                topCollaborator = topCollaborator.substring(topCollaborator.indexOf(':') + 1);
+                if (collaboratorsCount == 0) {
+                  collaboratorText = "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.oneCollaborator', ['" + beginHtml + "', '" + topCollaborator + "', '" + endHtml + "'])";
+                } else if (collaboratorsCount == 1) {
+                  collaboratorText = "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.oneOtherCollaborator', ['" + beginHtml + "', '" + topCollaborator + "', '" + collaboratorsCount + "', '" + endHtml + "'])";
+                } else {
+                  collaboratorText = "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.xOtherCollaborators', ['" + beginHtml + "', '" + topCollaborator + "', '" + collaboratorsCount + "', '" + endHtml + "'])";
+                }
+              }
+              collabAccessRightsStr.innerHTML = collaboratorText;
+              _this._updateDisplayedCollaborators(formData.collaborator, collabAccessRightsStr);
             }
             _this._dialog.closeDialog();
           },
@@ -791,6 +809,16 @@
     _updateCollaborators : function (collaborators) {
       this._collaboratorsList.update('');
       collaborators.each(this._addCollaborator.bind(this));
+    },
+    
+    /* Updates the list of collaborators that is displayed on hover */
+    _updateDisplayedCollaborators : function (collaborators, collabAccessRights) {
+      var collaboratorStr = '';
+      if (collaborators) {
+        collaborators = [].concat(collaborators); /* collaborators may be an array or a string */
+        collaboratorStr = $$('#manage-collaborators tr td:nth-child(2)').map(function(item) {return item.innerText}).join(', ');
+      } 
+      collabAccessRights.setAttribute("title", collaboratorStr);
     },
 
     /* Expected format for the collaborator object c : {id : 'string', 'type' : 'string', name : 'string', 'accessLevel' : 'string' } */
@@ -1104,6 +1132,47 @@ $xwiki.ssx.use($serviceDocName)
   #set ($visibility =  $patientAccess.visibility)
   #set ($collaborators = $patientAccess.collaborators)
   #set ($collaboratorsCount = $collaborators.size())
+  #set ($collaboratorString = '')
+  #set ($collaboratorTooltipStr = '')
+  #if ($collaboratorsCount == 0)
+    #set ($collaboratorString = $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary.noCollaborators", ["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;", "&lt;/span&gt;{{/html}}(%%)"]))
+  #elseif ($collaboratorsCount == 1)
+    #set ($firstCollaborator = $collaborators.iterator().next())
+    #set ($firstCollaboratorReference = $firstCollaborator.user)
+    #if ($firstCollaborator.isUser())
+      #set ($collaboratorName = $xwiki.getUserName("$firstCollaboratorReference", false))
+    #else
+      #set ($collaboratorName = $xwiki.getDocument($firstCollaboratorReference).plainTitle)
+    #end
+    #set ($collaboratorString = $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary.oneCollaborator", ["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;", $collaboratorName, "&lt;/span&gt;{{/html}}(%%)"]))
+    #set ($collaboratorTooltipStr = $collaboratorName)
+  #else
+    #set ($topCollaborator = $collaborators.iterator().next())
+    #set ($topCollaboratorReference = $topCollaborator.user)
+    #foreach ($collaborator in $collaborators)
+      #if ($patientAccess.getAccessLevel($topCollaborator.user).compareTo($patientAccess.getAccessLevel($collaborator.user)) &lt; 0)
+        #set ($topCollaborator = $collaborator)
+      #end
+      #if ($collaborator.isUser())
+        #set ($collaboratorTooltipStr = $collaboratorTooltipStr + $xwiki.getUserName("$collaborator.user", false) + ", ")
+      #else
+        #set ($collaboratorTooltipStr = $collaboratorTooltipStr + $xwiki.getDocument($collaborator.user).plainTitle + ", ")
+      #end
+    #end
+    #set ($collabStrLen = $collaboratorTooltipStr.length() - 2)
+    #set ($collaboratorTooltipStr = $collaboratorTooltipStr.substring(0, $collabStrLen))
+    #if ($topCollaborator.isUser())
+      #set ($topCollaboratorName = $xwiki.getUserName("$topCollaborator.user", false))
+    #else
+      #set ($topCollaboratorName = $xwiki.getDocument($topCollaborator.user).plainTitle)
+    #end
+    #set ($collaboratorsCount = $collaboratorsCount - 1)
+    #if ($collaboratorsCount == 1)
+      #set ($collaboratorString = $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary.oneOtherCollaborator", ["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;", $topCollaboratorName, $collaboratorsCount, "&lt;/span&gt;{{/html}}(%%)"]))
+    #else
+      #set ($collaboratorString = $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary.xOtherCollaborators", ["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;", $topCollaboratorName, $collaboratorsCount, "&lt;/span&gt;{{/html}}(%%)"]))
+    #end
+  #end
   #set ($owner = $patientAccess.getOwner())
   #set ($ownerReference = $owner.user)
   #if (!$ownerReference)
@@ -1137,7 +1206,7 @@ $xwiki.ssx.use($serviceDocName)
     $services.localization.render("phenotips.patientAccessRightsManagement.caseOwnerandVisibility",["(% class='access-rights-info' %)$ownerElement(%%)","(% class='access-rights-info visibility' title='$!{visibility.description}' %){{icon name='$visibility'/}}${visibility.label}(%%)"])##
     ##if ($canManage),#else and#end it is (% class="access-rights-info visibility" title="$!{visibility.description}" %){{icon name="$visibility"/}}${visibility.label}(%%)##
     #if ($canManage) ##
-      $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary",["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;",$collaboratorsCount, "&lt;/span&gt;{{/html}}(%%)"])##
+      {{html wiki='true' clean='false'}}&lt;span id="collaborator-access-rights-info" title="$collaboratorTooltipStr"&gt;$collaboratorString&lt;/span&gt;{{/html}}##
       (% class="buttonwrapper tool edit" %)[[ {{icon name="wrench" title="$services.localization.render('phenotips.patientAccessRightsManagement.modifyButtonTitle')" /}} $services.localization.render("phenotips.patientAccessRightsManagement.modifyButton")&gt;&gt;path:#||class="button"]]##
       (% class="hidden" %)((({{html wiki="true" clean="false"}}
         &lt;input type="hidden" name="serviceURL" value="$serviceDoc.getURL('get', 'outputSyntax=plain')"/&gt;
