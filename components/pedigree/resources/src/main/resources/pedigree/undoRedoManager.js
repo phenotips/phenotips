@@ -183,6 +183,9 @@ define([
          * @return {Number}
          */
         _combinableEvents: function ( event1, event2 ) {
+            if (!event1.hasOwnProperty("memo") || !event2.hasOwnProperty("memo")) {
+                return false;
+            }
             if (!event1.memo.hasOwnProperty("nodeID") || !event2.memo.hasOwnProperty("nodeID") || event1.memo.nodeID != event2.memo.nodeID)
                 return false;
             if (!event1.memo.hasOwnProperty("properties") || !event2.memo.hasOwnProperty("properties")) {

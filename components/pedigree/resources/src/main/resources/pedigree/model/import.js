@@ -1401,7 +1401,7 @@ define([
      */
     PedigreeImport.convertProperty = function(externalPropertyName, value) {
         try {
-            // suport old JSON format: "hpoTerms" instead of "features" and
+            // support old JSON format: "hpoTerms" instead of "features" and
             // "candidateGenes" instead of "genes"
 
             if (externalPropertyName.toLowerCase() == "hpoterms") {

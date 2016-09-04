@@ -45,7 +45,7 @@
   #break
 #end
 #if ("$!request.id" != '')
-  #set ($patient = $services.patients.getPatientById($request.id))
+  #set ($patient = $services.patients.get($request.id))
   #set ($docReference = $patient.document)
   #set ($isPatient = true)
 #elseif ("$!request.eid" != '')

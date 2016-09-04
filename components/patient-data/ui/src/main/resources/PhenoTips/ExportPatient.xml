@@ -53,7 +53,7 @@ $!response.setContentType('application/json')##
   #break
 #end
 #if ("$!request.id" != '')
-  #set ($patient = $services.patients.getPatientById($request.id))
+  #set ($patient = $services.patients.get($request.id))
 #elseif ("$!request.eid" != '')
   #set ($patient = $services.patients.getPatientByExternalId($request.eid))
 #end

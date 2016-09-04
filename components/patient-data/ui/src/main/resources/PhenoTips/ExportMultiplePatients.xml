@@ -59,7 +59,7 @@ $!response.setContentType('application/json')##
 {## Opening JSON object
 #set($isFirst = true)
 #foreach ($patientId in $idlist.split("[,]"))
-  #set ($patient = $services.patients.getPatientById($patientId))
+  #set ($patient = $services.patients.get($patientId))
   ##
   #if ($isFirst)
     #set($isFirst = false)

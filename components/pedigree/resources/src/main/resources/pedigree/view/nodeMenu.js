@@ -1329,11 +1329,7 @@ define([
 
                     var statusSelect = container.down('select[id="cancer_status_' + cancerName + '"]');
                     var ageSelect    = container.down('select[id="cancer_age_' + cancerName + '"]');
-<<<<<<< HEAD
                     var notesInput   = container.down('#cancer_notes_' + cancerName);
-=======
-                    var notesInput  = container.down('#cancer_notes_' + cancerName);
->>>>>>> [misc] Fixed pedigree editor node menu causing some internal prototype exceptions due to bad DOM searches
                     var enableNotesIcon = container.down("label[for=" + notesInput.id + "]");
 
                     if (!statusSelect) {

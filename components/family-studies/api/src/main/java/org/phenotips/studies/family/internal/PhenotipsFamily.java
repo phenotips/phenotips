@@ -133,7 +133,7 @@ public class PhenotipsFamily implements Family
         List<String> memberIds = this.getMembersIds();
         List<Patient> members = new ArrayList<>(memberIds.size());
         for (String memberId : memberIds) {
-            Patient patient = PhenotipsFamily.patientRepository.getPatientById(memberId);
+            Patient patient = PhenotipsFamily.patientRepository.get(memberId);
             members.add(patient);
         }
         return members;

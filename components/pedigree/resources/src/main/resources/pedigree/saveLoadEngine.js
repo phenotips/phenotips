@@ -163,12 +163,6 @@ define([
                     editor.getWorkspace().centerAroundNode(editor.getGraph().getProbandId());
                 }
 
-                // if created new family, save when loaded to generate image
-                var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
-                if (newPatientId && newPatientId != "" && familyMemberIds.length == 1 && allLinkedNodes.linkedPatients.length == 1) {
-                    editor.getSaveLoadEngine().save(true);
-                }
-
                 document.fire("pedigree:load:finish");
             };
 

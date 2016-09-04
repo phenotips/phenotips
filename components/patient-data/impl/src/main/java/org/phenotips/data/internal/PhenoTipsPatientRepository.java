@@ -33,8 +33,6 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.slf4j.Logger;
-
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -171,7 +169,7 @@ public class PhenoTipsPatientRepository extends PatientEntityManager implements 
     }
 
     @Override
-    private long getLastUsedId()
+    protected long getLastUsedId()
     {
         long crtMaxID = 0;
         try {

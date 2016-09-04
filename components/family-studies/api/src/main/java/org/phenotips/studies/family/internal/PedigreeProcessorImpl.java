@@ -17,7 +17,6 @@
  */
 package org.phenotips.studies.family.internal;
 
-import org.phenotips.configuration.RecordConfigurationManager;
 import org.phenotips.studies.family.Pedigree;
 import org.phenotips.studies.family.PedigreeProcessor;
 import org.phenotips.vocabulary.Vocabulary;
@@ -25,9 +24,6 @@ import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,7 +31,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -63,9 +58,6 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
 
     @Inject
     private Logger logger;
-
-    @Inject
-    private RecordConfigurationManager configurationManager;
 
     @Inject
     @Named("hpo")
@@ -98,24 +90,22 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
 
             List<JSONObject> patientJson = pedigree.extractPatientJSONProperties();
 
-            DateFormat useDateFormat = this.getDateFormat();
-
             for (JSONObject singlePatient : patientJson) {
-                convertedPatients.add(patientJsonToObject(singlePatient, useDateFormat));
+                convertedPatients.add(patientJsonToObject(singlePatient));
             }
         }
 
         return convertedPatients;
     }
 
-    private JSONObject patientJsonToObject(JSONObject externalPatient, DateFormat useDateFormat)
+    private JSONObject patientJsonToObject(JSONObject externalPatient)
     {
         JSONObject phenotipsPatient = new JSONObject();
 
         try {
             phenotipsPatient = exchangeIds(externalPatient, phenotipsPatient, this.logger);
             phenotipsPatient = exchangeBasicPatientData(externalPatient, phenotipsPatient);
-            phenotipsPatient = exchangeDates(externalPatient, phenotipsPatient, useDateFormat, this.logger);
+            phenotipsPatient = exchangeDates(externalPatient, phenotipsPatient, this.logger);
             phenotipsPatient = exchangePhenotypes(externalPatient, phenotipsPatient, this.hpoService, this.logger);
             phenotipsPatient = exchangeDisorders(externalPatient, phenotipsPatient, this.omimService, this.logger);
             phenotipsPatient = exchangeFamilyHistory(externalPatient, phenotipsPatient);
@@ -125,11 +115,6 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
         }
 
         return phenotipsPatient;
-    }
-
-    private DateFormat getDateFormat()
-    {
-        return new SimpleDateFormat(this.configurationManager.getActiveConfiguration().getISODateFormat());
     }
 
     private static JSONObject exchangeFamilyHistory(JSONObject pedigreePatient, JSONObject phenotipsPatientJSON)
@@ -167,27 +152,24 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
         return phenotipsPatientJSON;
     }
 
-    private static JSONObject exchangeDates(JSONObject pedigreePatient,
-        JSONObject phenotipsPatientJSON, DateFormat format, Logger logger)
+    private static JSONObject exchangeDates(JSONObject pedigreePatient, JSONObject phenotipsPatientJSON, Logger logger)
     {
         String dob = "dob";
         String dod = "dod";
         if (pedigreePatient.has(dob)) {
             try {
-                phenotipsPatientJSON.put("date_of_birth", format.format(
-                    PedigreeProcessorImpl.pedigreeDateToDate(pedigreePatient.getJSONObject(dob))
-                    ));
+                phenotipsPatientJSON.put("date_of_birth",
+                    PedigreeProcessorImpl.pedigreeDateToDate(pedigreePatient.getJSONObject(dob)));
             } catch (Exception ex) {
                 // may happen if date JSON is incorrectly formatted - more likely to happen
-                // than othe rparts of JSON since we are debating how dates should be stored
+                // than in other parts of JSON since we are debating how dates should be stored
                 logger.error("Could not convert date of birth: {}", ex.getMessage());
             }
         }
         if (pedigreePatient.has(dod)) {
             try {
-                phenotipsPatientJSON.put("date_of_death", format.format(
-                    PedigreeProcessorImpl.pedigreeDateToDate(pedigreePatient.getJSONObject(dod))
-                    ));
+                phenotipsPatientJSON.put("date_of_death",
+                    PedigreeProcessorImpl.pedigreeDateToDate(pedigreePatient.getJSONObject(dod)));
             } catch (Exception ex) {
                 logger.error("Could not convert date of death: {}", ex.getMessage());
             }
@@ -245,25 +227,12 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
     }
 
     /**
-     * Used for converting a pedigree date to a {@link Date}.
+     * Used for converting a pedigree JSON date to a PhenoTips JSON date.
      *
-     * @param pedigreeDate cannot be null. Must contain at least the decade field.
+     * @param pedigreeDate cannot be null.
      */
-    private static Date pedigreeDateToDate(JSONObject pedigreeDate)
+    private static JSONObject pedigreeDateToDate(JSONObject pedigreeDate)
     {
-        String yearString = "year";
-        String monthString = "month";
-        String dayString = "day";
-        DateTime jodaDate;
-        if (pedigreeDate.has(yearString)) {
-            Integer year = pedigreeDate.getInt(yearString);
-            Integer month = pedigreeDate.has(monthString) ? pedigreeDate.getInt(monthString) : 1;
-            Integer day = pedigreeDate.has(dayString) ? pedigreeDate.getInt(dayString) : 1;
-            jodaDate = new DateTime(year, month, day, 0, 0);
-        } else {
-            String decade = pedigreeDate.getString("decade").substring(0, 4);
-            jodaDate = new DateTime(Integer.parseInt(decade), 1, 1, 0, 0);
-        }
-        return new Date(jodaDate.getMillis());
+        return pedigreeDate;
     }
 }

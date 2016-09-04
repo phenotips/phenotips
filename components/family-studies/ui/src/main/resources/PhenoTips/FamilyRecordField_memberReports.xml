@@ -114,7 +114,6 @@
 #if (!$services.recordConfiguration.getActiveConfiguration().getEnabledFieldNames().contains('reports_history'))
   #break
 #end
-#set ($dateFormat = $services.jodatime.getDateTimeFormatterForPattern('yyyy-MM-dd'))
 #foreach ($patient in $family.members)
   #if ($patient)
     #set ($patientDoc = $xwiki.getDocument($patient.document))
@@ -126,7 +125,7 @@
       #end
       #set ($name = "$!{patient.getData('patientName').first_name} $!{patient.getData('patientName').last_name}")
       #set ($name = $name.trim())
-      #set ($dob = "$!{dateFormat.print($patient.getData('dates').date_of_birth)}")
+      #set ($dob = "$!{member.getData('dates').date_of_birth.toYYYYMMDDString()}")
       #set ($meta = "$name#if($name != '' &amp;&amp; $dob != ''), #end$dob")
       #set ($patientLabel = "$id#if ($meta != '') ($meta)#end")
       ; $patientLabel

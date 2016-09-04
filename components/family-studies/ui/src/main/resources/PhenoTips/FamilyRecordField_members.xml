@@ -111,7 +111,6 @@
       <content>{{include reference="PhenoTips.FormMacros" /}}
 
 {{velocity}}
-#set ($dateFormat = $services.jodatime.getDateTimeFormatterForPattern('yyyy-MM-dd'))
 #foreach ($member in $family.getMembers())
   #if ($member)
     #set ($id = "$!member.externalId")
@@ -120,7 +119,7 @@
     #end
     #set ($name = "$!{member.getData('patientName').first_name} $!{member.getData('patientName').last_name}")
     #set ($name = $name.trim())
-    #set ($dob = "$!{dateFormat.print($member.getData('dates').date_of_birth)}")
+    #set ($dob = "$!{member.getData('dates').date_of_birth.toYYYYMMDDString()}")
     #set ($meta = "$name#if($name != '' &amp;&amp; $dob != ''), #end$dob")
     #set ($patientLabel = "$id#if ($meta != '') ($meta)#end")
 * [[$patientLabel&gt;&gt;$member.document||rel="__blank"]]

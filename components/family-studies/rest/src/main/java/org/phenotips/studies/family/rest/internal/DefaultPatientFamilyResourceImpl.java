@@ -17,7 +17,7 @@
  */
 package org.phenotips.studies.family.rest.internal;
 
-import org.phenotips.data.rest.Relations;
+import org.phenotips.rest.Autolinker;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyTools;
 import org.phenotips.studies.family.rest.PatientFamilyResource;
@@ -27,6 +27,7 @@ import org.xwiki.rest.XWikiResource;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -52,6 +53,9 @@ public class DefaultPatientFamilyResourceImpl extends XWikiResource implements P
     @Inject
     private FamilyTools familyTools;
 
+    @Inject
+    private Provider<Autolinker> autolinker;
+
     @Override
     public Response getFamily(String id)
     {
@@ -65,9 +69,7 @@ public class DefaultPatientFamilyResourceImpl extends XWikiResource implements P
         }
 
         JSONObject json = family.toJSON();
-        JSONObject link = new JSONObject().accumulate("rel", Relations.SELF).accumulate("href",
-                this.uriInfo.getRequestUri().toString());
-        json.append("links", link);
+        json.put("links", this.autolinker.get().forResource(getClass(), this.uriInfo).build());
         return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
     }
 }

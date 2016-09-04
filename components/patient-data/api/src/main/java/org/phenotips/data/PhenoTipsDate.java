@@ -277,4 +277,30 @@ public class PhenoTipsDate
     {
         return toJSON().toString();
     }
+
+    /**
+     * Returns the best possible representation of this date in the YYYY-MM-DD format.
+     * TODO: use time format form the settings? Need more work to cover different time formats
+     *       This method replicates former hardcoded time format from FamilyRecordField_members
+     * TODO: use this for patient form as well
+     *
+     * @return This date as YYYY-MM-DD string
+     */
+    public String toYYYYMMDDString()
+    {
+        if (this.year == null) {
+            return "";
+        }
+        String result = this.year.toString();
+        if (this.rangeYears != null && this.rangeYears > 1) {
+            result += "s";
+        }
+        if (this.month != null) {
+            result = result + "-" + (this.month < 10 ? "0" : "") + this.month.toString();
+        }
+        if (this.day != null) {
+            result = result + "-" + (this.day < 10 ? "0" : "") + this.day.toString();
+        }
+        return result;
+    }
 }

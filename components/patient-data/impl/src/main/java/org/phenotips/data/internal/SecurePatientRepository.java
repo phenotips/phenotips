@@ -198,12 +198,12 @@ public class SecurePatientRepository implements PatientRepository
     @Override
     public boolean deletePatient(String id)
     {
-        if (this.access.hasAccess(Right.DELETE, this.bridge.getCurrentUserReference(),
+        if (this.access.hasAccess(this.userManager.getCurrentUser(), Right.DELETE,
             this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
             return this.internalService.deletePatient(id);
         }
         this.logger.warn("Illegal delete action requested for patient [{}] by user [{}]", id,
-            this.bridge.getCurrentUserReference());
+            this.userManager.getCurrentUser());
         throw new SecurityException("User not authorized to delete a patient");
     }
 }

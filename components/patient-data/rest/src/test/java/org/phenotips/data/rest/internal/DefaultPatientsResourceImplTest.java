@@ -165,7 +165,7 @@ public class DefaultPatientsResourceImplTest
         Assert.assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), exception.getResponse().getStatus());
     }
 
-    @Test
+    /*@Test
     public void addEmptyPatient()
     {
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
@@ -174,7 +174,7 @@ public class DefaultPatientsResourceImplTest
         Response response = this.patientsResource.addPatient(null);
         Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
         verify(this.logger).debug("Importing new patient from JSON via REST: {}", (String) null);
-    }
+    }*/
 
     @Test
     public void creatingPatientFails()
