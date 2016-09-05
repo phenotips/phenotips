@@ -171,14 +171,8 @@ public class DefaultPatientsResourceImplTest
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
             any(EntityReference.class));
         doReturn(this.patient).when(this.repository).create();
-        WebApplicationException exception = null;
-        try {
-            this.patientsResource.addPatient(null);
-        } catch (WebApplicationException ex) {
-            exception = ex;
-        }
-        Assert.assertNotNull(exception);
-        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), exception.getResponse().getStatus());
+        Response response = this.patientsResource.addPatient(null);
+        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
         verify(this.logger).debug("Importing new patient from JSON via REST: {}", (String) null);
     }
 
