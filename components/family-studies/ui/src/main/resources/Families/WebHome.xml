@@ -26,7 +26,7 @@
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
   <creationDate>1427665572000</creationDate>
-  <parent>Main.WebHome</parent>
+  <parent>data.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <date>1427665648000</date>
@@ -37,7 +37,56 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-  <content/>
+  <content>{{include reference="PhenoTips.FamilyFilters" /}}
+
+{{velocity}}
+$xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
+$xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
+{{/velocity}}
+
+{{velocity}}
+$xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
+$xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
+$xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
+$xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)##
+$xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)##
+$xwiki.ssx.use('PhenoTips.DatabaseFilters')##
+$xwiki.ssx.use('PhenoTips.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.jsx.use('PhenoTips.DBWebHomeSheet')##
+$xwiki.ssx.use('PhenoTips.DBWebHomeSheet')##
+$xwiki.jsfx.use('uicomponents/widgets/exportData.js', true)####
+$xwiki.ssfx.use('uicomponents/widgets/exportData.css', true)####
+$xwiki.ssx.use('PhenoTips.Widgets')##
+$xwiki.jsx.use('PhenoTips.Widgets')##
+$xwiki.jsx.use('XWiki.DateTimePicker')##
+$xwiki.ssx.use('XWiki.DateTimePicker')##
+$xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
+
+#set ($familyClassName = 'PhenoTips.FamilyClass')
+#set ($columns = ['doc.name', 'external_id', 'doc.creator', 'doc.creationDate', 'doc.author', 'doc.date'])
+#set ($columnsProperties = {
+  '_actions' : {'actions': ['edit', 'delete']}
+})
+#foreach ($column in $columns)
+  #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0) &amp;&amp; ($column != 'doc.creator') &amp;&amp; ($column != 'doc.author'))
+  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'view', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true}))
+#end
+#set ($discard = $columns.add('_actions'))
+##  toggle-filters
+#set ($topFilters = $doc.getRenderedContent("(% class='xform' %)((( {{html clean='false'}}&lt;span class='buttonwrapper'&gt;&lt;a class='button toggle-filters' href='#'&gt;$services.localization.render('phenotips.allData.filterButton')&lt;/a&gt;&lt;/span&gt;{{/html}}
+{{velocity}}#__filters_display('xform'){{/velocity}})))", "xwiki/2.1"))
+#set ($options = {
+  'className'         : $familyClassName,
+  'translationPrefix' : 'family.livetable.',
+  'rowCount'          : 25,
+  'maxPages'          : 10,
+  'topFilters'        : $topFilters,
+  'selectedColumn'    : 'doc.name',
+  'defaultOrder'      : 'asc',
+  'resultPage'        : 'PhenoTips.LiveTableResults'
+})
+#livetable('patients' $columns $columnsProperties $options)
+{{/velocity}}</content>
   <object>
     <name>Families.WebHome</name>
     <number>0</number>
