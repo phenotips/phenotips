@@ -53,7 +53,7 @@
       <customDisplay>{{velocity}}
 #set ($family = $services.families.getFamilyById($value))
 #if ("$family.getId()" != '')
-[[$family.getId()#if ("$family.getExternalId()" != '') ($family.getExternalId())#end&gt;&gt;path:$xwiki.getURL($family.getDocumentReference(), 'edit')||id="familyId"]]
+[[$family.getId()#if ("$family.getExternalId()" != '') ($family.getExternalId())#end&gt;&gt;path:$xwiki.getURL($family.getDocumentReference(), 'view')||id="familyId"]]
 #end
 {{/velocity}}
 </customDisplay>
