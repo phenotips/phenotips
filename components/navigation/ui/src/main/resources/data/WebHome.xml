@@ -264,6 +264,7 @@ $!value
         <value>doc.date</value>
         <value>first_name</value>
         <value>last_name</value>
+        <value>reference/PhenoTips.FamilyReferenceClass</value>
       </livetableColumns>
     </property>
     <property>
