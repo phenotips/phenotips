@@ -181,6 +181,9 @@ define([
             svgText = svgText.replace(' xlink=', ' xmlns:xlink=');
             // Safari xlink NS issue fix
             svgText = svgText.replace(/NS\d+:href/g, 'xlink:href');
+            // Remove "current patient arrow and "C" indicator, plus the proband "P" indicator
+            svgText = svgText.replace(/<[^<>]+node-arrow-text[^<>]+([^/]>\s*(<tspan(.*?)\/tspan>)\s*<\/\w+|\/)>/g, "");
+            svgText = svgText.replace(/<[^<>]+node-arrow-type-C[^<>]+([^/]><\/\w+|\/)>/g, "");
 
             background.style.display = "";
 

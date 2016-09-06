@@ -115,21 +115,24 @@ define([
 
             this._genderShape.node.setAttribute("class", "node-shape-" + this.getNode().getID());
 
-            if(this.getNode().isProband()) {
-                // add arrow to proband
-                this._genderGraphics.push(this.generateProbandArrow());
+            if (this.getNode().isProband()) {
+                // add arrow to the proband
+                //
+                // add a "P" marking to indicate that this arow is for the proband
+                // if the patient is also the current patient, hide the "P"
+                var showP = (!editor.isFamilyPage() && this.getNode().getPhenotipsPatientId() != editor.getGraph().getCurrentPatientId());
+                this._genderGraphics.push(this.generateNodePointingArrow("P", showP));
+
                 this.getGenderShape().node.setAttribute("isProband", "true");
-            }
-            if (this.getNode().getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
-                // highlight current node
-                this.getGenderShape().transform(["...s", 1.06]);
-                this.getGenderShape().attr("stroke-width", 5.5);
-                this.getGenderShape().node.setAttribute("currentPatient", "true");
-            } else if(this.getNode().isProband()) {
+
                 // slightly highlight proband when it is NOT the current node
-                this.getGenderShape().transform(["...s", 1.04]);
-                this.getGenderShape().attr("stroke-width", 2.2);
+                this.getGenderShape().transform(["...s", 1.05]);
+                this.getGenderShape().attr("stroke-width", 3.0);
+            } else if (this.getNode().getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
+                // add arrow for the current patient
+                this._genderGraphics.push(this.generateNodePointingArrow("C", true));
             }
+
             if(!editor.isReadOnlyMode() && this.getHoverBox()) {
                 this._genderGraphics.flatten().insertBefore(this.getFrontElements().flatten());
             }
@@ -141,9 +144,9 @@ define([
             }
         },
 
-        generateProbandArrow: function() {
+        generateNodePointingArrow: function(drawLetter, showLetter) {
             var icon = editor.getPaper().path(editor.getView().__probandArrowPath).attr({fill: "#595959", stroke: "none", opacity: 1});
-            icon.node.setAttribute("class", "proband-arrow-shape");
+            icon.node.setAttribute("class", "node-arrow-shape node-arrow-type-" + drawLetter);
             if (this.getNode().getAdopted() != "") {
                 var x = this.getX()-78;
                 var y = this.getY()+34;
@@ -166,6 +169,15 @@ define([
                 }
             }
             icon.transform(["t" , x, y])
+            if (drawLetter && !this._pText) {
+                var position = (drawLetter == "C") ? x-4 : x-2;
+                var letter = editor.getPaper().text(position, y+21, drawLetter).attr(PedigreeEditorParameters.attributes.probandArrowLabel);
+                letter.node.setAttribute("class", "node-arrow-text node-arrow-text-type-" + drawLetter);
+                if (!showLetter) {
+                    letter.node.setAttribute("class", "hidden");
+                }
+                icon = editor.getPaper().set(icon, letter);
+            }
             return icon;
         },
 
@@ -688,7 +700,7 @@ define([
             if (this.getNode().getPhenotipsPatientId() == "") {
                 this._linkLabel = null;
             } else {
-                this._linkLabel = editor.getPaper().text(this.getX(), this.getY(), this.getNode().getPhenotipsPatientId()).attr(PedigreeEditorParameters.attributes.label); 
+                this._linkLabel = editor.getPaper().text(this.getX(), this.getY(), this.getNode().getPhenotipsPatientId()).attr(PedigreeEditorParameters.attributes.label);
                 this._linkLabel.node.setAttribute("class","pedigree-nodePatientTextLink");
                 this._linkLabel.addGapAfter = true;
                 var patientURL = this.getNode().getPhenotipsPatientURL();
