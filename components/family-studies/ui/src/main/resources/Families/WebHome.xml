@@ -63,13 +63,13 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 
 #set ($familyClassName = 'PhenoTips.FamilyClass')
-#set ($columns = ['doc.name', 'external_id', 'doc.creator', 'doc.creationDate', 'doc.author', 'doc.date'])
+#set ($columns = ['doc.name', 'external_id', 'doc.creator', 'doc.creationDate', 'doc.author', 'doc.date', 'proband_id'])
 #set ($columnsProperties = {
   '_actions' : {'actions': ['edit', 'delete']}
 })
 #foreach ($column in $columns)
   #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0) &amp;&amp; ($column != 'doc.creator') &amp;&amp; ($column != 'doc.author'))
-  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'view', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true}))
+  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'auto', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true}))
 #end
 #set ($discard = $columns.add('_actions'))
 ##  toggle-filters
