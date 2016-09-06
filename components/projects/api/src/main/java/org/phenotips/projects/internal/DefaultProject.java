@@ -307,6 +307,7 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
         return null;
     }
 
+    @Override
     public EntityReference getType()
     {
         return Project.CLASS_REFERENCE;
