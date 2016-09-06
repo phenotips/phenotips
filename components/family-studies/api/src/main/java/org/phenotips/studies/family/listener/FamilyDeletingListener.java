@@ -24,6 +24,7 @@ import org.phenotips.studies.family.FamilyRepository;
 
 import org.xwiki.bridge.event.DocumentDeletingEvent;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
 
@@ -32,13 +33,20 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
 
 /**
- * Detects the deletion of a family (and modifies the members' records accordingly)
- * and of a patient (and modifies the family accordingly).
+ * Detects the deletion of a family (and modifies the members' records accordingly) and of a patient (and modifies the
+ * family accordingly).
  *
  * @version $Id$
  * @since 1.0RC1
@@ -53,6 +61,12 @@ public class FamilyDeletingListener implements EventListener
 
     @Inject
     private PatientRepository patientRepository;
+
+    @Inject
+    private Provider<XWikiContext> provider;
+
+    @Inject
+    private Logger logger;
 
     @Override
     public String getName()
@@ -69,29 +83,44 @@ public class FamilyDeletingListener implements EventListener
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
+        XWikiContext context = this.provider.get();
+        XWiki xwiki = context.getWiki();
         XWikiDocument document = (XWikiDocument) source;
         if (document == null) {
             return;
         }
 
         String documentId = document.getDocumentReference().getName();
-
-        Family family = this.familyRepository.getFamilyById(documentId);
-        if (family != null) {
-            // a family has been removed - unlink all patients
-            List<Patient> members = family.getMembers();
-            for (Patient patient : members) {
-                family.removeMember(patient);
-            }
-        } else {
-            // a patient has been removed - remove it from the family, if she has one
-            Patient patient = this.patientRepository.getPatientById(documentId);
-            if (patient != null) {
-                family = this.familyRepository.getFamilyForPatient(patient);
-                if (family != null) {
+        try {
+            Family family = this.familyRepository.getFamilyById(documentId);
+            if (family != null) {
+                // a family has been removed - unlink all patients
+                List<Patient> members = family.getMembers();
+                for (Patient patient : members) {
                     family.removeMember(patient);
                 }
+            } else {
+                // a patient has been removed - remove it from the family, if she has one
+                Patient patient = this.patientRepository.getPatientById(documentId);
+                if (patient == null) {
+                    return;
+                }
+                family = this.familyRepository.getFamilyForPatient(patient);
+                if (family == null) {
+                    return;
+                }
+                family.removeMember(patient);
+                // clear the proband field if and only if the deleted patient was indeed the proband
+                DocumentReference familyDocumentRef = family.getDocumentReference();
+                XWikiDocument familyDocument = xwiki.getDocument(familyDocumentRef, context);
+                BaseObject familyClassObject = familyDocument.getXObject(Family.CLASS_REFERENCE);
+                if (familyClassObject.getStringValue("proband_id").equals(patient.getDocument().toString())) {
+                    familyClassObject.setStringValue("proband_id", "");
+                    xwiki.saveDocument(familyDocument, "Proband was deleted", true, context);
+                }
             }
+        } catch (XWikiException e) {
+            this.logger.error("Failed to access the document: {}", e.getMessage(), e);
         }
     }
 }

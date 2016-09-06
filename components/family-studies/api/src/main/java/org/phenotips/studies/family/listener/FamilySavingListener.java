@@ -17,6 +17,8 @@
  */
 package org.phenotips.studies.family.listener;
 
+import org.phenotips.data.Patient;
+import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.internal.PhenotipsFamily;
 
@@ -26,6 +28,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -43,6 +46,9 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class FamilySavingListener extends AbstractEventListener
 {
+    @Inject
+    private PatientRepository patientRepository;
+
     /**
      * Default constructor, sets up the listener name and the list of events to subscribe to.
      */
@@ -64,6 +70,11 @@ public class FamilySavingListener extends AbstractEventListener
         }
         Family family = new PhenotipsFamily(document);
         String probandId = family.getProbandId();
-        familyClassObject.setStringValue("proband_id", (probandId == null) ? "" : probandId);
+        if (probandId != null) {
+            Patient patient = this.patientRepository.get(probandId);
+            familyClassObject.setStringValue("proband_id", (patient == null) ? "" : patient.getDocument().toString());
+        } else {
+            familyClassObject.setStringValue("proband_id", "");
+        }
     }
 }
