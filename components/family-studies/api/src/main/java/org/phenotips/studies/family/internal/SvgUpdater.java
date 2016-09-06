@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -32,7 +34,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class SvgUpdater
 {
-    private static final int PATIENT_ID_LENGTH = 8;
+    // matches SVG links to patients, such as href="/bin/data/P0000001"
+    private static final Pattern PATIENT_PAGE_LINK_PATTERN = Pattern.compile("href=\"[\\w\\/]*?/(P\\d+)");
 
     private static final String STROKE_ATTR_TOKEN = "stroke-width=\"";
 
@@ -97,6 +100,8 @@ public final class SvgUpdater
 
     private static List<SvgElementHolder> findAndParseAllElements(String svg, SvgElementParser parser)
     {
+        // TODO: replace by some SVG/XML library, e.g. https://xmlgraphics.apache.org/batik/
+
         List<SvgElementHolder> elementList = new LinkedList<SvgElementHolder>();
 
         try {
@@ -355,10 +360,11 @@ public final class SvgUpdater
 
         private String parsePatientIdFromLink(SvgElementHolder link)
         {
-            String token = "href=\"/bin/data/";
-            int idStart = link.content.indexOf(token) + token.length();
-            // TODO: use regexp with no fixed length set, e.g. "(P\d+)"
-            return link.content.substring(idStart, idStart + PATIENT_ID_LENGTH);
+            Matcher linkMatch = PATIENT_PAGE_LINK_PATTERN.matcher(link.content);
+            if (linkMatch.find()) {
+                return linkMatch.group(1);
+            }
+            return "";
         }
     }
 
