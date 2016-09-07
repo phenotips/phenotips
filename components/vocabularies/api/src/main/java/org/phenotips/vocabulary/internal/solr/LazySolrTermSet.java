@@ -42,17 +42,17 @@ public class LazySolrTermSet implements Set<VocabularyTerm>
     /** The loaded terms, {@code null} until it is actually needed. */
     private Collection<VocabularyTerm> terms;
 
-    /** The ontology owning all the terms in this set. Used for loading the terms. */
-    private Vocabulary ontology;
+    /** The vocabulary owning all the terms in this set. Used for loading the terms. */
+    private Vocabulary vocabulary;
 
     /**
-     * Constructor that provides the list of {@link #identifiers terms identifier} and the {@link #ontology owner
-     * ontology}.
+     * Constructor that provides the list of {@link #identifiers terms identifier} and the {@link #vocabulary owner
+     * vocabulary}.
      *
      * @param identifiers the {@link #identifiers identifiers to load}
-     * @param ontology the {@link #ontology owner ontology}
+     * @param vocabulary the {@link #vocabulary owner vocabulary}
      */
-    public LazySolrTermSet(Collection<Object> identifiers, Vocabulary ontology)
+    public LazySolrTermSet(Collection<Object> identifiers, Vocabulary vocabulary)
     {
         if (identifiers == null || identifiers.isEmpty()) {
             this.identifiers = Collections.emptySet();
@@ -63,7 +63,7 @@ public class LazySolrTermSet implements Set<VocabularyTerm>
                 this.identifiers.add(StringUtils.substringBefore(String.valueOf(id), " "));
             }
         }
-        this.ontology = ontology;
+        this.vocabulary = vocabulary;
     }
 
     @Override
@@ -163,11 +163,11 @@ public class LazySolrTermSet implements Set<VocabularyTerm>
         throw new UnsupportedOperationException();
     }
 
-    /** Loads the terms from the ontology when needed. */
+    /** Loads the terms from the vocabulary when needed. */
     private synchronized void loadTerms()
     {
         if (this.terms == null) {
-            this.terms = this.ontology.getTerms(this.identifiers);
+            this.terms = this.vocabulary.getTerms(this.identifiers);
         }
     }
 }
