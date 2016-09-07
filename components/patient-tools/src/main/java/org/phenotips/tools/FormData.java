@@ -186,7 +186,9 @@ public class FormData
     }
 
     /**
-     * @param customCategories the customCategories to set
+     * Set the categories in which non-standard positive features have been recorded in.
+     *
+     * @param customCategories a map between custom terms and their categories, may be empty but not {@code null}
      */
     public void setCustomCategories(Map<String, List<String>> customCategories)
     {
@@ -202,7 +204,9 @@ public class FormData
     }
 
     /**
-     * @param customNegativeCategories the customNegativeCategories to set
+     * Set the categories in which non-standard negative features have been recorded in.
+     *
+     * @param customCategories a map between custom terms and their categories, may be empty but not {@code null}
      */
     public void setCustomNegativeCategories(Map<String, List<String>> customNegativeCategories)
     {
