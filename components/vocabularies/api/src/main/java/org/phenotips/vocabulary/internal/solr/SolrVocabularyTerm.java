@@ -198,7 +198,7 @@ public class SolrVocabularyTerm implements VocabularyTerm
         Set<VocabularyTerm> otherCrtLevel = new HashSet<>();
         otherCrtLevel.add(other);
 
-        for (int l = 1; l <= distance && !myCrtLevel.isEmpty() && !otherCrtLevel.isEmpty(); ++l) {
+        for (int l = 1; l <= distance && (!myCrtLevel.isEmpty() || !otherCrtLevel.isEmpty()); ++l) {
             distance = Math.min(distance, processAncestorsAtDistance(l, myCrtLevel, myLevelMap, otherLevelMap));
             distance = Math.min(distance, processAncestorsAtDistance(l, otherCrtLevel, otherLevelMap, myLevelMap));
         }
