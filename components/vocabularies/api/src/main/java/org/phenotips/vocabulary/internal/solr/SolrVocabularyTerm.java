@@ -97,7 +97,7 @@ public class SolrVocabularyTerm implements VocabularyTerm
             this.removeSelfDuplicate();
             this.parents = new LazySolrTermSet(doc.getFieldValues(IS_A), ontology);
             this.ancestors = new LazySolrTermSet(doc.getFieldValues(TERM_CATEGORY), ontology);
-            Collection<Object> termSet = new HashSet<Object>();
+            Collection<Object> termSet = new HashSet<>();
             termSet.add(this.getId());
             if (doc.getFieldValues(TERM_CATEGORY) != null) {
                 termSet.addAll(doc.getFieldValues(TERM_CATEGORY));
@@ -188,14 +188,14 @@ public class SolrVocabularyTerm implements VocabularyTerm
 
         long distance = Integer.MAX_VALUE;
 
-        Map<String, Integer> myLevelMap = new HashMap<String, Integer>();
+        Map<String, Integer> myLevelMap = new HashMap<>();
         myLevelMap.put(getId(), 0);
-        Map<String, Integer> otherLevelMap = new HashMap<String, Integer>();
+        Map<String, Integer> otherLevelMap = new HashMap<>();
         otherLevelMap.put(other.getId(), 0);
 
-        Set<VocabularyTerm> myCrtLevel = new HashSet<VocabularyTerm>();
+        Set<VocabularyTerm> myCrtLevel = new HashSet<>();
         myCrtLevel.add(this);
-        Set<VocabularyTerm> otherCrtLevel = new HashSet<VocabularyTerm>();
+        Set<VocabularyTerm> otherCrtLevel = new HashSet<>();
         otherCrtLevel.add(other);
 
         for (int l = 1; l <= distance && !myCrtLevel.isEmpty() && !otherCrtLevel.isEmpty(); ++l) {
@@ -209,7 +209,7 @@ public class SolrVocabularyTerm implements VocabularyTerm
         Map<String, Integer> sourceDistanceMap, Map<String, Integer> targetDistanceMap)
     {
         long minDistance = Integer.MAX_VALUE;
-        Set<VocabularyTerm> nextLevel = new HashSet<VocabularyTerm>();
+        Set<VocabularyTerm> nextLevel = new HashSet<>();
         for (VocabularyTerm term : sourceUnprocessedAncestors) {
             for (VocabularyTerm parent : term.getParents()) {
                 if (sourceDistanceMap.containsKey(parent.getId())) {
