@@ -186,7 +186,7 @@ public class SolrVocabularyTerm implements VocabularyTerm
             return 0;
         }
 
-        long distance = Integer.MAX_VALUE;
+        long distance = Long.MAX_VALUE;
 
         Map<String, Integer> myLevelMap = new HashMap<>();
         myLevelMap.put(getId(), 0);
@@ -202,13 +202,13 @@ public class SolrVocabularyTerm implements VocabularyTerm
             distance = Math.min(distance, processAncestorsAtDistance(l, myCrtLevel, myLevelMap, otherLevelMap));
             distance = Math.min(distance, processAncestorsAtDistance(l, otherCrtLevel, otherLevelMap, myLevelMap));
         }
-        return distance == Integer.MAX_VALUE ? -1 : distance;
+        return distance == Long.MAX_VALUE ? -1 : distance;
     }
 
     private long processAncestorsAtDistance(int localDistance, Set<VocabularyTerm> sourceUnprocessedAncestors,
         Map<String, Integer> sourceDistanceMap, Map<String, Integer> targetDistanceMap)
     {
-        long minDistance = Integer.MAX_VALUE;
+        long minDistance = Long.MAX_VALUE;
         Set<VocabularyTerm> nextLevel = new HashSet<>();
         for (VocabularyTerm term : sourceUnprocessedAncestors) {
             for (VocabularyTerm parent : term.getParents()) {
