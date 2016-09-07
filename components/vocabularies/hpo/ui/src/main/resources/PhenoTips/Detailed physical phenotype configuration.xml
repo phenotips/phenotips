@@ -614,7 +614,7 @@
   {
     "type"       : "section",
     "title"      : "Delivery",
-    "categories" : ["HP:0001787"],
+    "categories" : ["HP:0001787", "HP:0001622"],
     "data"       : [
       {
         "type"  : "conditionalSubsection",

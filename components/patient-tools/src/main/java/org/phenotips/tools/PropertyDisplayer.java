@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -100,36 +101,40 @@ public class PropertyDisplayer
                 this.sections.add(generateSection(sectionTemplate, customYesSelected, customNoSelected));
             }
         }
-        Map<String, List<String>> yCustomCategories = new HashMap<>();
-        Map<String, List<String>> nCustomCategories = new HashMap<>();
-        for (String value : customYesSelected) {
+        putTermsInSections(customYesSelected, this.data.getCustomCategories(), true);
+        putTermsInSections(customNoSelected, this.data.getCustomNegativeCategories(), false);
+    }
+
+    protected void putTermsInSections(List<String> selectedTerms, Map<String, List<String>> customCategories,
+        boolean positive)
+    {
+        for (String value : selectedTerms) {
+            VocabularyTerm term = this.ontologyService.getTerm(value);
             List<String> categories = new LinkedList<>();
             categories.addAll(this.getCategoriesFromOntology(value));
-            categories.addAll(this.getCategoriesFromCustomMapping(value, data.getCustomCategories()));
+            categories.addAll(this.getCategoriesFromCustomMapping(value, customCategories));
             if (categories.isEmpty()) {
                 categories.add("HP:0000118");
             }
-            yCustomCategories.put(value, categories);
-        }
-        for (String value : customNoSelected) {
-            List<String> categories = new LinkedList<>();
-            categories.addAll(this.getCategoriesFromOntology(value));
-            categories.addAll(this.getCategoriesFromCustomMapping(value, data.getCustomNegativeCategories()));
-            if (categories.isEmpty()) {
-                categories.add("HP:0000118");
+            FormSection mostSpecificSection = null;
+            long bestDistance = Long.MAX_VALUE;
+            for (FormSection section : this.sections) {
+                Collection<String> categoriesInCommon =
+                    CollectionUtils.intersection(section.getCategories(), categories);
+                if (!categoriesInCommon.isEmpty()) {
+                    for (String categoryId : categoriesInCommon) {
+                        VocabularyTerm categoryTerm = this.ontologyService.getTerm(categoryId);
+                        long distance = categoryTerm.getDistanceTo(term);
+                        if (distance >= 0 && distance < bestDistance) {
+                            bestDistance = distance;
+                            mostSpecificSection = section;
+                        }
+                    }
+                }
             }
-            nCustomCategories.put(value, categories);
-        }
-        for (FormSection section : this.sections) {
-            List<String> yCustomFieldIDs = this.assignCustomFields(section, yCustomCategories);
-            List<String> nCustomFieldIDs = this.assignCustomFields(section, nCustomCategories);
-            for (String val : yCustomFieldIDs) {
-                section.addCustomElement(this.generateField(val, null, false, true, false));
-                yCustomCategories.remove(val);
-            }
-            for (String val : nCustomFieldIDs) {
-                section.addCustomElement(this.generateField(val, null, false, false, true));
-                nCustomCategories.remove(val);
+            if (mostSpecificSection != null) {
+                mostSpecificSection
+                    .addCustomElement(this.generateField(value, null, false, positive, !positive));
             }
         }
     }
@@ -336,25 +341,6 @@ public class PropertyDisplayer
         }
         return new FormField(id, StringUtils.defaultIfEmpty(title, hint), hint, StringUtils.defaultString(metadata),
             expandable, yesSelected, noSelected);
-    }
-
-    private List<String> assignCustomFields(FormSection section, Map<String, List<String>> customCategories)
-    {
-        List<String> assigned = new LinkedList<>();
-        if (section.getCategories().size() == 0) {
-            assigned.addAll(customCategories.keySet());
-        } else {
-            for (String value : customCategories.keySet()) {
-                List<String> categories = customCategories.get(value);
-                for (String c : categories) {
-                    if (section.getCategories().contains(c)) {
-                        assigned.add(value);
-                        break;
-                    }
-                }
-            }
-        }
-        return assigned;
     }
 
     private String getLabelFromOntology(String id)
