@@ -19,10 +19,9 @@ package org.phenotips.projects.internal;
 
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.entities.internal.AbstractPrimaryEntity;
+import org.phenotips.entities.internal.AbstractContainerPrimaryEntityGroup;
 import org.phenotips.projects.data.Project;
 import org.phenotips.templates.data.Template;
 
@@ -30,15 +29,11 @@ import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.AttachmentReference;
 import org.xwiki.model.reference.EntityReference;
-import org.xwiki.query.Query;
-import org.xwiki.query.QueryException;
-import org.xwiki.query.QueryManager;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -58,7 +53,7 @@ import com.xpn.xwiki.objects.BaseObject;
  *
  * @version $Id$
  */
-public class DefaultProject extends AbstractPrimaryEntity implements Project
+public class DefaultProject extends AbstractContainerPrimaryEntityGroup<Patient> implements Project
 {
     private static final String OPEN_FOR_CONTRIBUTION_KEY = "openProjectForContribution";
 
@@ -195,23 +190,13 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
     @Override
     public Collection<Patient> getAllPatients()
     {
-        PatientRepository patientRepository = this.getPatientRepository();
-        List<Patient> patients = new LinkedList<Patient>();
-        Collection<String> patientIds = getAllPatientIds();
-        for (String id : patientIds) {
-            Patient patient = patientRepository.get(id);
-            if (patient != null) {
-                patients.add(patient);
-            }
-        }
-        return patients;
+        return this.getMembers();
     }
 
     @Override
     public int getNumberOfPatients()
     {
-        Collection<String> patientIds = getAllPatientIds();
-        return patientIds == null ? 0 : patientIds.size();
+        return this.getAllPatients().size();
     }
 
     @Override
@@ -226,44 +211,6 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
         return this.getId().compareTo(other.getId());
     }
 
-    private Collection<String> getAllPatientIds()
-    {
-        StringBuilder querySb = new StringBuilder();
-        querySb.append(", BaseObject accessObj, StringProperty accessProp, BaseObject patientObj, LongProperty iid ");
-        querySb.append("where patientObj.name = doc.fullName ");
-        querySb.append("and doc.fullName <> 'PhenoTips.PatientTemplate' ");
-        querySb.append("and patientObj.className = 'PhenoTips.PatientClass' ");
-        querySb.append("and iid.id.id = patientObj.id and iid.id.name = 'identifier' and iid.value >= 0 ");
-        querySb.append("and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id ");
-
-        List<Project> projects = new LinkedList<Project>();
-        projects.add(this);
-        querySb.append(" and ");
-        querySb.append(this.getProjectsRepository().getProjectCondition("accessObj", "accessProp", projects));
-
-        Query query = null;
-        List<String> queryResults = null;
-        try {
-            query = this.getQueryManager().createQuery(querySb.toString(), Query.HQL);
-            queryResults = query.execute();
-        } catch (QueryException e) {
-            this.getLogger().error("Error while performing projects query: [{}] ", e.getMessage());
-        }
-
-        return queryResults;
-    }
-
-    private Logger getLogger()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager()
-                .getInstance(Logger.class);
-        } catch (ComponentLookupException e) {
-            // Should not happen
-        }
-        return null;
-    }
-
     private UserManager getUserManager()
     {
         try {
@@ -271,38 +218,6 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
                 .getInstance(UserManager.class);
         } catch (ComponentLookupException e) {
             // Should not happen
-        }
-        return null;
-    }
-
-    private ProjectsRepository getProjectsRepository()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager()
-                .getInstance(ProjectsRepository.class);
-        } catch (ComponentLookupException e) {
-            // Should not happen
-        }
-        return null;
-    }
-
-    private PatientRepository getPatientRepository()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager().getInstance(PatientRepository.class);
-        } catch (ComponentLookupException e) {
-            this.logger.error("Failed to access the patient repository: {}", e.getMessage(), e);
-        }
-        return null;
-    }
-
-    // TODO remove
-    private QueryManager getQueryManager()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager().getInstance(QueryManager.class);
-        } catch (ComponentLookupException ex) {
-            this.logger.error("Failed to access the query manager: {}", ex.getMessage(), ex);
         }
         return null;
     }
@@ -316,6 +231,18 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
     @Override
     public void updateFromJSON(JSONObject json)
     {
-        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public EntityReference getMemberType()
+    {
+        return Patient.CLASS_REFERENCE;
+    }
+
+    @Override
+    public void addPatient(Patient patient)
+    {
+        this.addMember(patient);
     }
 }
