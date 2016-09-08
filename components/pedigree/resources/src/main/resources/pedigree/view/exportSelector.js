@@ -42,27 +42,17 @@ define([
             dataSection2.insert(promptType).insert(typeListElement);
             mainDiv.insert(dataSection2);
 
-            var _addConfigOption = function (checked, name, cssClass, labelText, value) {
-                var optionWrapper = new Element('tr');
-                var input = new Element('input', {"type" : "radio", "value": value, "name": name });
-                if (checked) {
-                  input.checked = true;
-                }
-                var label = new Element('label', {'class': cssClass}).insert(input).insert(labelText);
-                optionWrapper.insert(label.wrap('td'));
-                return optionWrapper;
-              };
             var configListElementJSON = new Element('table', {"id": "jsonOptions", "style": 'display:none'});
-            configListElementJSON.insert(_addConfigOption(true,  "export-options", "import-config-label", "All data", "all"));
-            configListElementJSON.insert(_addConfigOption(false, "export-options", "import-config-label", "Remove personal information (name and age)", "nopersonal"));
-            configListElementJSON.insert(_addConfigOption(false, "export-options", "import-config-label", "Remove personal information and free-form comments", "minimal"));
+            configListElementJSON.insert(this._addConfigOption(true,  "export-options", "import-config-label", "All data", "all"));
+            configListElementJSON.insert(this._addConfigOption(false, "export-options", "import-config-label", "Remove personal information (name and age)", "nopersonal"));
+            configListElementJSON.insert(this._addConfigOption(false, "export-options", "import-config-label", "Remove personal information and free-form comments", "minimal"));
 
             var configListElementPED = new Element('table', {"id": "pedOptions"});
             var label = new Element('label', {'class': 'export-config-header'}).insert("How should person IDs be assigned in the generated file?");
             configListElementPED.insert(label.wrap('td').wrap('tr'));
-            configListElementPED.insert(_addConfigOption(true,  "ped-options", "export-subconfig-label", "Using External IDs (when available)", "external"));
-            configListElementPED.insert(_addConfigOption(false, "ped-options", "export-subconfig-label", "Generate new numeric IDs", "newid"));
-            configListElementPED.insert(_addConfigOption(false, "ped-options", "export-subconfig-label", "Using Names (when available)", "name"));
+            configListElementPED.insert(this._addConfigOption(true,  "ped-options", "export-subconfig-label", "Using External IDs (when available)", "external"));
+            configListElementPED.insert(this._addConfigOption(false, "ped-options", "export-subconfig-label", "Generate new numeric IDs", "newid"));
+            configListElementPED.insert(this._addConfigOption(false, "ped-options", "export-subconfig-label", "Using Names (when available)", "name"));
 
             var promptConfig = new Element('div', {'class': 'import-section'}).update("Options:");
             var dataSection3 = new Element('div', {'class': 'import-block'});
@@ -94,23 +84,27 @@ define([
             var exportType = $$('input:checked[type=radio][name="export-type"]')[0].value;
 
             var pedOptionsTable = $("pedOptions");
+            var pedDisorderOptions = $$('[name="ped-disorders-options"]');
             var jsonOptionsTable = $("jsonOptions");
 
             if (exportType == "ped" || exportType == "BOADICEA") {
                 pedOptionsTable.show();
                 var idgenerator = $$('input[type=radio][name="ped-options"]')[2];
-                // disable using names as IDs - not necessary for BOADICEA which suports a dedicated column for the name
+                // disable using names as IDs - not necessary for BOADICEA which supports a dedicated column for the name
                 if (exportType == "BOADICEA") {
                     if (idgenerator.checked) {
                         $$('input[type=radio][name="ped-options"]')[0].checked = true;
                     }
                     idgenerator.up().hide();
+                    pedDisorderOptions.each( function(item) {item.up('tr').hide();});
                 } else {
                     idgenerator.up().show();
+                    pedDisorderOptions.each( function(item) {item.up('tr').show();});
                 }
                 jsonOptionsTable.hide();
             } else {
                 pedOptionsTable.hide();
+                pedDisorderOptions.each( function(item) {item.up('tr').hide();});
                 jsonOptionsTable.show();
             }
         },
@@ -138,7 +132,12 @@ define([
             } else {
                 var idGenerationSetting = $$('input:checked[type=radio][name="ped-options"]')[0].value;
                 if (exportType == "ped") {
-                    var exportString = PedigreeExport.exportAsPED(editor.getGraph().DG, idGenerationSetting);
+                    var selectedDisorders = $$('input:checked[name="ped-disorders-options"]');
+                    if (selectedDisorders.indexOf("all") > -1) {
+                        var exportString = PedigreeExport.exportAsPED(editor.getGraph().DG, idGenerationSetting);
+                    } else {
+                        var exportString = PedigreeExport.exportAsPED(editor.getGraph().DG, idGenerationSetting, selectedDisorders);
+                    }
                     var fileName = patientDocument + ".ped";
                 } else if (exportType == "BOADICEA") {
                     var exportString = PedigreeExport.exportAsBOADICEA(editor.getGraph(), idGenerationSetting);
@@ -159,6 +158,40 @@ define([
          * @method show
          */
         show: function() {
+            if ($$('input[name="ped-disorders-options"]').length > 0)
+                $$('[name="ped-disorders-options"]').each( function(item) {item.up('tr').remove();});
+            var disorders = editor.getDisorderLegend().getAllNames();
+            var hasDisorders = false;
+            var disordersLength = 0;
+            for (var key in disorders) {
+                if (hasOwnProperty.call(disorders, key)) {
+                    hasDisorders = true;
+                    disordersLength++;
+                }
+            }
+            if (hasDisorders && disordersLength > 1) {
+                var configListElementPED = this.dialog.content.select('#pedOptions')[0];
+                var labelDisorderOptions = new Element('label', {'class': 'export-config-header ped-disorders-options', 'name' : 'ped-disorders-options', 'style' : 'margin-top: 0.5em;'}).insert("Which disorders should be reflected in the affected column in PED file? ");
+                configListElementPED.insert(labelDisorderOptions.wrap('td').wrap('tr'));
+                configListElementPED.insert(this._addConfigOption(true,  "ped-disorders-options", "export-subconfig-label", "All", "all", "checkbox"));
+                for (var disorder in disorders) {
+                    if (disorder == "affected") {
+                        configListElementPED.insert(this._addConfigOption(false,  "ped-disorders-options", "export-subconfig-label", "Unspecified disorder", "affected", "checkbox"));
+                    } else {
+                        configListElementPED.insert(this._addConfigOption(false,  "ped-disorders-options", "export-subconfig-label", disorders[disorder], disorder, "checkbox"));
+                    }
+                }
+                configListElementPED.on('click', 'input[type=checkbox]', function(event, element) {
+                    if (element.value == "all" && element.checked) {
+                        //check others
+                        $$('input[name="ped-disorders-options"]').each( function(item) {item.checked = true;});
+                    } else if (element.value != "all") {
+                        // uncheck all
+                        $$('input[name="ped-disorders-options"]')[0].checked = false;
+                    }
+                });
+            }
+
             this.dialog.show();
         },
 
@@ -169,6 +202,18 @@ define([
          */
         hide: function() {
             this.dialog.closeDialog();
+        },
+
+        _addConfigOption: function (checked, name, cssClass, labelText, value, type) {
+            var optionWrapper = new Element('tr');
+            var itype = type ? type : "radio";
+            var input = new Element('input', {"type" : itype, "value": value, "name": name });
+            if (checked) {
+              input.checked = true;
+            }
+            var label = new Element('label', {'class': cssClass}).insert(input).insert(labelText);
+            optionWrapper.insert(label.wrap('td'));
+            return optionWrapper;
         }
     });
     return ExportSelector;

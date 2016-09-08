@@ -139,7 +139,7 @@ define([
    *       1 unaffected
    *       2 affected
    */
-  PedigreeExport.exportAsPED = function(pedigree, idGenerationPreference)
+  PedigreeExport.exportAsPED = function(pedigree, idGenerationPreference, selectedDisorders)
   {
      var output = "";
 
@@ -179,14 +179,28 @@ define([
          output += (sex + " ");
 
          var status = -9; //missing
-         if (pedigree.GG.properties[i].hasOwnProperty("carrierStatus")) {
-             if (pedigree.GG.properties[i]["carrierStatus"] == "affected" ||
-                 pedigree.GG.properties[i]["carrierStatus"] == "carrier"  ||
-                 pedigree.GG.properties[i]["carrierStatus"] == "presymptomatic")
-                 status = 2;
-             else
-                 status = 1;
+
+         if (!selectedDisorders) {
+             if (pedigree.GG.properties[i].hasOwnProperty("carrierStatus")) {
+                 if (pedigree.GG.properties[i]["carrierStatus"] == "affected" ||
+                     pedigree.GG.properties[i]["carrierStatus"] == "carrier"  ||
+                     pedigree.GG.properties[i]["carrierStatus"] == "presymptomatic")
+                     status = 2;
+                 else
+                     status = 1;
+             }
+         } else if (pedigree.GG.properties[i].hasOwnProperty("carrierStatus") &&
+             pedigree.GG.properties[i].hasOwnProperty("disorders")) {
+
+             var nodeDisorders = pedigree.GG.properties[i]["disorders"];
+             var intersection = selectedDisorders.filter(function (item) { return nodeDisorders.indexOf(item.defaultValue) > -1;});
+             //if node is affected of a selected disorder
+             if (intersection.length > 0 && pedigree.GG.properties[i]["carrierStatus"] == "affected")
+                     status = 2;
+                 else
+                     status = 1;
          }
+
          output += status + "\n";
      }
 
