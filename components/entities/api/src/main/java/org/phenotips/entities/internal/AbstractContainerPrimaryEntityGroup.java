@@ -119,7 +119,7 @@ public abstract class AbstractContainerPrimaryEntityGroup<E extends PrimaryEntit
                 return true;
             }
             obj = this.document.newXObject(getMembershipClass(), getXContext());
-            obj.setStringValue(getMembershipProperty(), getFullSerializer().serialize(getDocument()));
+            obj.setStringValue(getMembershipProperty(), getFullSerializer().serialize(member.getDocument()));
             getXContext().getWiki().saveDocument(this.document, "Added member " + member.getDocument(), true,
                 getXContext());
             return true;
