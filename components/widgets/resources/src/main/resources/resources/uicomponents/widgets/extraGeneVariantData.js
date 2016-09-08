@@ -436,11 +436,10 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
             href : '#',
             title : "$services.localization.render('PhenoTips.GeneVariantClass.edit.hint')",
             id : 'PhenoTips.GeneVariantClass_' + variantIndex + '_edit', style :'font-size: 90%'
-          }).update(' Edit');
+          });
         var editVarientWrapper = new Element('span',
           {
-            class : 'buttonwrapper variant-moreinfo-button',
-            style : 'margin: 0'
+            class : 'buttonwrapper variant-moreinfo-button'
           }).insert(editVariantLink);
         row.insert({top : editVarientWrapper});
       });
