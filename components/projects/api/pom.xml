@@ -126,7 +126,4 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  <properties>
-  	<checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
-  </properties>
 </project>
