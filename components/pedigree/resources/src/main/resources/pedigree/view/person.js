@@ -1153,9 +1153,9 @@ define([
 
             // Disable input fields iff current user does not have edit permissions for this patient
             if (!editor.getPatientAccessPermissions(this.getPhenotipsPatientId()).hasEdit) {
-                for (prop in summary) {
-                    if (summary.hasOwnProperty(prop)) {
-                        summary[prop].disabled = true;
+                for (prop in menuData) {
+                    if (menuData.hasOwnProperty(prop)) {
+                        menuData[prop].disabled = true;
                     }
                 }
             }

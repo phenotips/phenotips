@@ -105,6 +105,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-entities-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>xwiki-locks</artifactId>
       <version>${project.version}</version>
     </dependency>

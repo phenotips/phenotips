@@ -455,7 +455,7 @@ public class PhenotipsFamily implements Family
             for (Patient patient : getMembers()) {
                 removeMember(patient);
                 if (deleteAllMembers) {
-                    if (!PhenotipsFamily.patientRepository.deletePatient(patient.getId())) {
+                    if (!PhenotipsFamily.patientRepository.delete(patient)) {
                         return false;
                     }
                 }

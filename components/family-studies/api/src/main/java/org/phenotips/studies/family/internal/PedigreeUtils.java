@@ -156,7 +156,7 @@ public class PedigreeUtils
         patientsToRemove.addAll(oldMembers);
         patientsToRemove.removeAll(newMembers);
         for (String patientId : patientsToRemove) {
-            Patient patient = this.patientRepository.getPatientById(patientId);
+            Patient patient = this.patientRepository.get(patientId);
             family.removeMember(patient);
         }
 
@@ -165,7 +165,7 @@ public class PedigreeUtils
         patientsToAdd.addAll(newMembers);
         patientsToAdd.removeAll(oldMembers);
         for (String patientId : patientsToAdd) {
-            Patient patient = this.patientRepository.getPatientById(patientId);
+            Patient patient = this.patientRepository.get(patientId);
             family.addMember(patient);
         }
 
@@ -215,7 +215,7 @@ public class PedigreeUtils
 
             for (JSONObject singlePatient : patientsJson) {
                 if (singlePatient.has(idKey)) {
-                    Patient patient = this.patientRepository.getPatientById(singlePatient.getString(idKey));
+                    Patient patient = this.patientRepository.get(singlePatient.getString(idKey));
                     if (useCurrentUser
                         && !this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument())) {
                         // skip patients the current user does not have edit rights for

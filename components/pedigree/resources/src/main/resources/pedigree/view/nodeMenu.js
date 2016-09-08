@@ -1572,6 +1572,13 @@ define([
                 container.select('select').each(function(item) {
                     item.disabled = disabled;
                 });
+                container.select('.button-container').each(function(item) {
+                    if (disabled) {
+                        item.hide();
+                    } else {
+                        item.show();
+                    }
+                });
             },
             'phenotipsid-picker' : function (container, disabled, inactive, value) {
                 if (!disabled) {

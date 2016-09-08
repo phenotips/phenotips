@@ -57,13 +57,12 @@ public class PermissionsChangeListener extends AbstractEventListener
         super("family-studies-permissions-listener", new PatientChangedEvent());
     }
 
-    // TODO: test!
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
         XWikiDocument xwikiDoc = (XWikiDocument) source;
         String documentId = xwikiDoc.getDocumentReference().getName();
-        Patient patient = this.patientRepository.getPatientById(documentId);
+        Patient patient = this.patientRepository.get(documentId);
         if (patient == null) {
             return;
         }

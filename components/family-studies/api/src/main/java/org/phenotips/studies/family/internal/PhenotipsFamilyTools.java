@@ -92,7 +92,7 @@ public class PhenotipsFamilyTools implements FamilyTools
     @Override
     public Family getFamilyForPatient(String patientId)
     {
-        Patient patient = this.patientRepository.getPatientById(patientId);
+        Patient patient = this.patientRepository.get(patientId);
         if (patient == null) {
             return null;
         }
@@ -125,7 +125,7 @@ public class PhenotipsFamilyTools implements FamilyTools
     {
         User currentUser = this.userManager.getCurrentUser();
 
-        Patient patient = this.patientRepository.getPatientById(patientId);
+        Patient patient = this.patientRepository.get(patientId);
         if (patient == null) {
             return false;
         }

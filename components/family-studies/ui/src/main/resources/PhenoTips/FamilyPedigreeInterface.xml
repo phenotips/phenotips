@@ -58,7 +58,7 @@ $response.setContentType('application/json')##
   $services.pedigrees.getFamilyAndPedigree($request.document_id).toJSON()
   ##$jsontool.serialize($services.pedigrees.getFamilyAndPedigree($request.document_id).toJSON())
 #elseif ("$!request.action" == "createpatient")
-  #set($patient = $services.patients.createNewPatient())
+  #set($patient = $services.patients.create())
   #if ($patient)
     { "newID": "$patient.getId()" }
   #else
