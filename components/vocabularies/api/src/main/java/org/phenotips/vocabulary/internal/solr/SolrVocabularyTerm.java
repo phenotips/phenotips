@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -97,7 +98,7 @@ public class SolrVocabularyTerm implements VocabularyTerm
             this.removeSelfDuplicate();
             this.parents = new LazySolrTermSet(doc.getFieldValues(IS_A), ontology);
             this.ancestors = new LazySolrTermSet(doc.getFieldValues(TERM_CATEGORY), ontology);
-            Collection<Object> termSet = new HashSet<>();
+            Collection<Object> termSet = new LinkedHashSet<>();
             termSet.add(this.getId());
             if (doc.getFieldValues(TERM_CATEGORY) != null) {
                 termSet.addAll(doc.getFieldValues(TERM_CATEGORY));

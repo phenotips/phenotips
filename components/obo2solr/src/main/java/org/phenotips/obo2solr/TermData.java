@@ -20,8 +20,10 @@ package org.phenotips.obo2solr;
 import org.phenotips.obo2solr.maps.SetMap;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 public class TermData extends SetMap<String, String>
@@ -73,32 +75,28 @@ public class TermData extends SetMap<String, String>
 
     public void expandTermCategories(Map<String, TermData> data)
     {
-        Set<String> result = new HashSet<String>();
-        Set<String> front = new HashSet<String>();
+        Set<String> result = new LinkedHashSet<>();
+        Queue<String> front = new LinkedList<>();
 
         if (this.get(TERM_CATEGORY_FIELD_NAME) == null) {
             this.put(TERM_CATEGORY_FIELD_NAME, super.getEmptyCollection());
         }
 
+        result.add(this.id);
         front.addAll(this.get(TERM_CATEGORY_FIELD_NAME));
-        Set<String> newFront = new HashSet<String>();
-        while (!front.isEmpty()) {
-            for (String nextTermId : front) {
-                if (data.get(nextTermId).get(TERM_CATEGORY_FIELD_NAME) == null) {
-                    continue;
-                }
-                for (String parentTermId : data.get(nextTermId).get(TERM_CATEGORY_FIELD_NAME)) {
-                    if (!result.contains(parentTermId)) {
-                        newFront.add(parentTermId);
-                        result.add(parentTermId);
-                    }
+        String nextTermId;
+        while ((nextTermId = front.poll()) != null) {
+            result.add(nextTermId);
+            if (data.get(nextTermId).get(PARENT_FIELD_NAME) == null) {
+                continue;
+            }
+            for (String parentTermId : data.get(nextTermId).get(PARENT_FIELD_NAME)) {
+                parentTermId = parentTermId.replaceAll(PARENT_ID_REGEX, "$1");
+                if (!result.contains(parentTermId) && !front.contains(parentTermId)) {
+                    front.add(parentTermId);
                 }
             }
-            front.clear();
-            front.addAll(newFront);
-            newFront.clear();
         }
-        result.add(this.id);
-        this.addTo(TERM_CATEGORY_FIELD_NAME, result);
+        this.put(TERM_CATEGORY_FIELD_NAME, result);
     }
 }

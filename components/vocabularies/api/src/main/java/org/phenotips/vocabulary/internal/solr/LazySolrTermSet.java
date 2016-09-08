@@ -22,8 +22,8 @@ import org.phenotips.vocabulary.VocabularyTerm;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -58,7 +58,7 @@ public class LazySolrTermSet implements Set<VocabularyTerm>
             this.identifiers = Collections.emptySet();
             this.terms = Collections.emptySet();
         } else {
-            this.identifiers = new HashSet<String>(identifiers.size());
+            this.identifiers = new LinkedHashSet<>(identifiers.size());
             for (Object id : identifiers) {
                 this.identifiers.add(StringUtils.substringBefore(String.valueOf(id), " "));
             }
