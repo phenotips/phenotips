@@ -25,6 +25,7 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -108,13 +109,13 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     @Override
     public Set<VocabularyTerm> getTerms(Collection<String> ids)
     {
-        Set<VocabularyTerm> result = new LinkedHashSet<VocabularyTerm>();
+        Map<String, VocabularyTerm> rawResult = new HashMap<>();
         StringBuilder query = new StringBuilder("id:(");
         for (String id : ids) {
             VocabularyTerm cachedTerm = this.externalServicesAccess.getTermCache().get(id);
             if (cachedTerm != null) {
                 if (cachedTerm != EMPTY_MARKER) {
-                    result.add(cachedTerm);
+                    rawResult.put(id, cachedTerm);
                 }
             } else {
                 query.append(ClientUtils.escapeQueryChars(id));
@@ -126,8 +127,14 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
         // There's at least one more term not found in the cache
         if (query.length() > 5) {
             for (SolrDocument doc : this.search(SolrQueryUtils.transformQueryToSolrParams(query.toString()))) {
-                result.add(new SolrVocabularyTerm(doc, this));
+                VocabularyTerm term = new SolrVocabularyTerm(doc, this);
+                rawResult.put(term.getId(), term);
             }
+        }
+
+        Set<VocabularyTerm> result = new LinkedHashSet<>();
+        for (String id : ids) {
+            result.add(rawResult.get(id));
         }
         return result;
     }
@@ -141,7 +148,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     @Override
     public List<VocabularyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions)
     {
-        List<VocabularyTerm> result = new LinkedList<VocabularyTerm>();
+        List<VocabularyTerm> result = new LinkedList<>();
         for (SolrDocument doc : this.search(
             SolrQueryUtils.transformQueryToSolrParams(generateLuceneQuery(fieldValues)), queryOptions)) {
             result.add(new SolrVocabularyTerm(doc, this));
