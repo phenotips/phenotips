@@ -42,16 +42,6 @@
 {{velocity}}
 $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
-{{html wiki=false clean=false}}&lt;div class="general-tools"&gt;#if($hasCreatePage)&lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;$services.localization.render('phenotips.globalHeader.createPatient')&lt;/label&gt; · #end&lt;a id="phenotips_export" class="phenotips_export_tool" title="$services.localization.render('phenotips.allData.exportExcelTitle')" href="$xwiki.getURL('PhenoTips.Export', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")"&gt;&lt;span class="fa fa-table"&gt; &lt;/span&gt;$services.localization.render('phenotips.allData.exportExcel')&lt;/a&gt; · &lt;a id="phenotips_json_export" class="phenotips_export_tool" title="$services.localization.render('phenotips.allData.exportJSONTitle')" href="$xwiki.getURL('PhenoTips.ExportJSON', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")"&gt;&lt;span class="fa fa-file-o"&gt; &lt;/span&gt;$services.localization.render('phenotips.allData.exportJSON')&lt;/a&gt;{{/html}}##
-#set ($service = $services.pushPatient)##
-#set ($configuredServers = $service.getPushTargetsWithHistory(""))##
-#set ($counter = 0)##
-#foreach ($mapEntry in $configuredServers.entrySet())##
-  #set ($serverName = $mapEntry.key.getServerID())##
-{{html wiki=false clean=false}} · &lt;a href="#" id="pushall-server-$counter" name="$serverName" title="$services.localization.render('phenotips.allData.pushTitle',[$serverName])"&gt;&lt;span class="fa fa-share"&gt; &lt;/span&gt;$services.localization.render('phenotips.allData.push', [$serverName])&lt;/a&gt;{{/html}}##
-  #set( $counter = $counter + 1 )##
-#end##
-{{html wiki=false clean=false}}&lt;/div&gt;{{/html}}##
 {{/velocity}}
 
 {{velocity}}
