@@ -18,7 +18,7 @@
 package org.phenotips.projects.internal;
 
 import org.phenotips.components.ComponentManagerRegistry;
-import org.phenotips.entities.internal.AbstractPrimaryEntityGroup;
+import org.phenotips.entities.internal.AbstractContainerPrimaryEntityGroup;
 import org.phenotips.projects.data.Project;
 import org.phenotips.templates.data.Template;
 import org.phenotips.templates.data.TemplateRepository;
@@ -35,7 +35,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 /**
  * @version $Id $
  */
-public class TemplatePrimaryEntityGroup extends AbstractPrimaryEntityGroup<Template>
+public class TemplatePrimaryEntityGroup extends AbstractContainerPrimaryEntityGroup<Template>
 {
     /**
      * public constructor.
