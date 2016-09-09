@@ -18,6 +18,7 @@
 package org.phenotips.entities.internal;
 
 import org.phenotips.entities.PrimaryEntity;
+import org.phenotips.entities.PrimaryEntityGroup;
 import org.phenotips.entities.PrimaryEntityGroupManager;
 
 import org.xwiki.model.reference.EntityReferenceSerializer;
@@ -63,7 +64,7 @@ import javax.inject.Inject;
  */
 @Unstable("New class and interface added in 1.3")
 public abstract class AbstractContainerPrimaryEntityGroupManager
-    <G extends AbstractContainerPrimaryEntityGroup<E>, E extends PrimaryEntity>
+    <G extends PrimaryEntityGroup<E>, E extends PrimaryEntity>
     extends AbstractPrimaryEntityManager<G> implements PrimaryEntityGroupManager<G, E>
 {
     @Inject
