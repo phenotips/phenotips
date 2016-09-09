@@ -2,7 +2,7 @@ org.phenotips.projects.script.ProjectsScriptService
 org.phenotips.projects.access.LeaderAccessLevel
 org.phenotips.projects.access.ContributorAccessLevel
 org.phenotips.projects.access.ObserverAccessLevel
-org.phenotips.projects.internal.ProjectsRepository
+org.phenotips.projects.internal.DefaultProjectRepository
 org.phenotips.projects.internal.ProjectAndTemplateAssignmentInitializer
 org.phenotips.projects.internal.ProjectAndTemplateBinder
 org.phenotips.projects.authorization.ProjectAuthorizationModule
