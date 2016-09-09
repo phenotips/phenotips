@@ -134,9 +134,16 @@ public class PedigreeUtils
      */
     private synchronized JSONResponse processPedigree(Family family, Pedigree pedigree, boolean useCurrentUser)
     {
-        List<String> newMembers = pedigree.extractIds();
+        List<String> oldMembers = family.getMembersIds();
 
-        JSONResponse validity = checkValidity(family, newMembers, useCurrentUser);
+        List<String> currentMembers = pedigree.extractIds();
+
+        // Add new members to family
+        List<String> patientsToAdd = new LinkedList<>();
+        patientsToAdd.addAll(currentMembers);
+        patientsToAdd.removeAll(oldMembers);
+
+        JSONResponse validity = checkValidity(family, patientsToAdd, useCurrentUser);
         if (validity.isErrorResponse()) {
             return validity;
         }
@@ -149,21 +156,15 @@ public class PedigreeUtils
 
         family.setPedigree(pedigree);
 
-        List<String> oldMembers = family.getMembersIds();
-
         // Removed members who are no longer in the family
         List<String> patientsToRemove = new LinkedList<>();
         patientsToRemove.addAll(oldMembers);
-        patientsToRemove.removeAll(newMembers);
+        patientsToRemove.removeAll(currentMembers);
         for (String patientId : patientsToRemove) {
             Patient patient = this.patientRepository.get(patientId);
             family.removeMember(patient);
         }
 
-        // Add new members to family
-        List<String> patientsToAdd = new LinkedList<>();
-        patientsToAdd.addAll(newMembers);
-        patientsToAdd.removeAll(oldMembers);
         for (String patientId : patientsToAdd) {
             Patient patient = this.patientRepository.get(patientId);
             family.addMember(patient);
