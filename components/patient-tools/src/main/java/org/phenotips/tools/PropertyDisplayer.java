@@ -110,6 +110,7 @@ public class PropertyDisplayer
     {
         for (String value : selectedTerms) {
             VocabularyTerm term = this.ontologyService.getTerm(value);
+            VocabularyTerm root = this.ontologyService.getTerm("HP:0000001");
             List<String> categories = new LinkedList<>();
             categories.addAll(this.getCategoriesFromOntology(value));
             categories.addAll(this.getCategoriesFromCustomMapping(value, customCategories));
@@ -124,7 +125,12 @@ public class PropertyDisplayer
                 if (!categoriesInCommon.isEmpty()) {
                     for (String categoryId : categoriesInCommon) {
                         VocabularyTerm categoryTerm = this.ontologyService.getTerm(categoryId);
-                        long distance = categoryTerm.getDistanceTo(term);
+                        long distance;
+                        if (term != null) {
+                            distance = categoryTerm.getDistanceTo(term);
+                        } else {
+                            distance = 1000 - categoryTerm.getDistanceTo(root);
+                        }
                         if (distance >= 0 && distance < bestDistance) {
                             bestDistance = distance;
                             mostSpecificSection = section;
