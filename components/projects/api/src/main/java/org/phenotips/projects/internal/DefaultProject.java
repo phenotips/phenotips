@@ -21,7 +21,7 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.entities.internal.AbstractContainerPrimaryEntityGroup;
+import org.phenotips.entities.internal.AbstractPrimaryEntityGroup;
 import org.phenotips.projects.data.Project;
 import org.phenotips.templates.data.Template;
 
@@ -49,11 +49,9 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
- * TODO remove class fan out style check suppressing.
- *
  * @version $Id$
  */
-public class DefaultProject extends AbstractContainerPrimaryEntityGroup<Patient> implements Project
+public class DefaultProject extends AbstractPrimaryEntityGroup<Patient> implements Project
 {
     private static final String OPEN_FOR_CONTRIBUTION_KEY = "openProjectForContribution";
 

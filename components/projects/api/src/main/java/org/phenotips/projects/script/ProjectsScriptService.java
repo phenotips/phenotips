@@ -24,8 +24,8 @@ import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.internal.DefaultCollaborator;
 import org.phenotips.projects.data.Project;
+import org.phenotips.projects.data.ProjectRepository;
 import org.phenotips.projects.internal.ProjectAndTemplateBinder;
-import org.phenotips.projects.internal.ProjectsRepository;
 import org.phenotips.templates.data.Template;
 
 import org.xwiki.component.annotation.Component;
@@ -50,14 +50,14 @@ import org.json.JSONObject;
 /**
  * @version $Id$
  */
-
 @Component
 @Named("projects")
 @Singleton
 public class ProjectsScriptService implements ScriptService
 {
     @Inject
-    private ProjectsRepository projectsRepository;
+    @Named("Project")
+    private ProjectRepository projectsRepository;
 
     @Inject
     private PatientRepository patientsRepository;
@@ -80,7 +80,7 @@ public class ProjectsScriptService implements ScriptService
      */
     public Project getProjectById(String projectId)
     {
-        return this.projectsRepository.getProjectById(projectId);
+        return this.projectsRepository.get(projectId);
     }
 
     /**
@@ -88,7 +88,8 @@ public class ProjectsScriptService implements ScriptService
      */
     public List<Project> getProjectsCurrentUserCanContributeTo()
     {
-        List<Project> projects = this.projectsRepository.getProjectsCurrentUserCanContributeTo();
+        List<Project> projects = new ArrayList<Project>();
+        projects.addAll(this.projectsRepository.getProjectsCurrentUserCanContributeTo());
         Collections.sort(projects);
         return projects;
     }
@@ -98,7 +99,8 @@ public class ProjectsScriptService implements ScriptService
      */
     public List<Project> getProjectsWithLeadingRights()
     {
-        List<Project> projects = this.projectsRepository.getProjectsWithLeadingRights();
+        List<Project> projects = new ArrayList<Project>();
+        projects.addAll(this.projectsRepository.getProjectsWithLeadingRights());
         Collections.sort(projects);
         return projects;
     }

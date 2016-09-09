@@ -24,8 +24,8 @@ import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.projects.access.ContributorAccessLevel;
 import org.phenotips.projects.access.LeaderAccessLevel;
 import org.phenotips.projects.data.Project;
+import org.phenotips.projects.data.ProjectRepository;
 import org.phenotips.projects.internal.ProjectAndTemplateBinder;
-import org.phenotips.projects.internal.ProjectsRepository;
 import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.annotation.Component;
@@ -54,7 +54,8 @@ public class ProjectAuthorizationModule implements AuthorizationModule
     private PatientRepository patientRepository;
 
     @Inject
-    private ProjectsRepository projectsRepository;
+    @Named("Project")
+    private ProjectRepository projectRepository;
 
     @Inject
     @Named("leader")
@@ -76,7 +77,7 @@ public class ProjectAuthorizationModule implements AuthorizationModule
             return this.hasAccess(user, access, patient);
         }
 
-        Project project = this.projectsRepository.getProjectById(documentName);
+        Project project = this.projectRepository.get(documentName);
         if (project != null) {
             return this.hasAccess(user, access, project);
         }
