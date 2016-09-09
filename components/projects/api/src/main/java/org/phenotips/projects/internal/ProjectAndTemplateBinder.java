@@ -20,6 +20,7 @@ package org.phenotips.projects.internal;
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.projects.data.Project;
+import org.phenotips.projects.data.ProjectRepository;
 import org.phenotips.templates.data.Template;
 import org.phenotips.templates.data.TemplateRepository;
 
@@ -30,6 +31,8 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -54,15 +57,7 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class ProjectAndTemplateBinder
 {
-    private static final String PROJECT_BINDING_FIELD = "projectReference";
-
     private static final String TEMPLATE_BINDING_FIELD = "templateReference";
-
-    private static final String PROJECTS_SEPARATOR = ";";
-
-    /** The XClass used to store collaborators in the patient record. */
-    private EntityReference projectBindingReference = new EntityReference("ProjectBindingClass", EntityType.DOCUMENT,
-        Constants.CODE_SPACE_REFERENCE);
 
     /** The XClass used to store collaborators in the patient record. */
     private EntityReference templateBindingReference = new EntityReference("TemplateBindingClass", EntityType.DOCUMENT,
@@ -78,7 +73,8 @@ public class ProjectAndTemplateBinder
     private Logger logger;
 
     @Inject
-    private ProjectsRepository projectsRepository;
+    @Named("Project")
+    private ProjectRepository projectRepository;
 
     @Inject
     @Named("Template")
@@ -87,21 +83,17 @@ public class ProjectAndTemplateBinder
     /**
      * Assigns project(s) to a patient.
      *
-     * @param projectsSelected project(s) to assign
-     * @param patient patient to assign the template to
+     * @param projectsSelected project(s) to assign - a comma separated list
+     * @param patient patient to assign projects to
      */
     public void setProjectsForPatient(String projectsSelected, Patient patient)
     {
-        List<String> projectsList = new ArrayList<String>();
         if (!StringUtils.isEmpty(projectsSelected)) {
             for (String projectId : projectsSelected.split(",")) {
-                Project p = this.projectsRepository.getProjectById(projectId);
-                projectsList.add(p.getFullName());
+                Project p = this.projectRepository.get(projectId);
+                p.addMember(patient);
             }
         }
-        String projects = StringUtils.join(projectsList, PROJECTS_SEPARATOR);
-
-        setPropertyForPatient(patient, this.projectBindingReference, PROJECT_BINDING_FIELD, projects);
     }
 
     /**
@@ -112,19 +104,11 @@ public class ProjectAndTemplateBinder
      */
     public List<Project> getProjectsForPatient(Patient patient)
     {
-        List<Project> projects = new ArrayList<Project>();
-        XWikiDocument patientXDoc = this.getPatientXWikiDocument(patient);
+        // TODO should be added to patient as well
 
-        BaseObject projectBindingObject = patientXDoc.getXObject(projectBindingReference);
-        if (projectBindingObject != null) {
-            String projectsString = projectBindingObject.getStringValue(PROJECT_BINDING_FIELD);
-            if (projectsString != null) {
-                for (String projectId : projectsString.split(PROJECTS_SEPARATOR)) {
-                    Project project = this.projectsRepository.getProjectById(projectId);
-                    projects.add(project);
-                }
-            }
-        }
+        Collection<Project> projectsForPatient = projectRepository.getGroupsForEntity(patient);
+        List<Project> projects = new ArrayList<Project>(projectsForPatient);
+        Collections.sort(projects);
         return projects;
     }
 
