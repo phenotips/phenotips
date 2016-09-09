@@ -93,6 +93,8 @@ td.variant.moreinfo td{
 }
 .variant-moreinfo-button {
   float: right;
+  position: absolute;
+  right: 0;
 }
 .variant-showmoreinfo-button {
   float: left;
@@ -102,6 +104,10 @@ td.variant.moreinfo td{
 }
 .variant-moreinfo-button-row {
   height: 30px;
+}
+.variant-moreinfo-editbutton-row {
+  padding-right: 30px;
+  position: relative;
 }
 .variant-edit-done {
   display: none;
