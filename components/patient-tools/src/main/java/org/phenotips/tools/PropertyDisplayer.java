@@ -183,9 +183,9 @@ public class PropertyDisplayer
         for (Map<String, ?> sectionTemplate : template) {
             try {
                 Object templateCategoriesUC = sectionTemplate.get("categories");
-                if (templateCategoriesUC instanceof ArrayList) {
+                if (templateCategoriesUC instanceof List) {
                     @SuppressWarnings("unchecked")
-                    ArrayList<String> templateCategories = (ArrayList<String>) templateCategoriesUC;
+                    List<String> templateCategories = (List<String>) templateCategoriesUC;
                     for (String category : templateCategories) {
                         topSectionsId.remove(category);
                     }

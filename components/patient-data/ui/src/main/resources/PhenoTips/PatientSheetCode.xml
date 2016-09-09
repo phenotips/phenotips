@@ -265,23 +265,11 @@ var enableHighlightChecked = function(element, initialization) {
 
 var restoreCategory = function (element) {
   var parentElement = element.up('.accepted-suggestions li');
-  var selector = '';
-  var ignoredCategories = this.suggest &amp;&amp; this.suggest.options &amp;&amp;
-          this.suggest.options.queryProcessor &amp;&amp; this.suggest.options.queryProcessor.restriction &amp;&amp;
-          this.suggest.options.queryProcessor.restriction.term_category;
-  if (parentElement) {
-    var originalName = parentElement.down('input[name="fieldName"]');
-    parentElement.select('.term-category input[type=hidden]').each(function (item) {
-      if (ignoredCategories &amp;&amp; ignoredCategories.indexOf(item.value) &gt;= 0) return;
-      selector += 'input.suggested[name^="' + (originalName &amp;&amp; originalName.value || element.name) + '"] + input[type=hidden][name=_category][value*="' + item.value +'"], '
-    });
-  }
-  var chapter = parentElement.up(".chapter");
-  if (chapter != undefined) {
-    var matchingCategory = chapter.down(selector);
-  } else {
-    var matchingCategory = document.documentElement.down(selector);
-  }
+  var lookIn = parentElement.up(".chapter") || $('body');
+  var matchingCategory;
+  parentElement.select('.term-category input[type=hidden]').detect(function(category) {
+    return matchingCategory = lookIn.down('input.suggested + input[type=hidden][name=_category][value*="' + category.value +'"]');
+  });
   if (matchingCategory) {
     var matchingList = matchingCategory.previous('ul.accepted-suggestions');
     if (matchingList) {
@@ -297,7 +285,7 @@ var restoreCategory = function (element) {
   } else if (!this.silent) {
     element.scrollTo();
   }
-}
+};
 
 var findPropertyField = function(name) {
   if ($('prefix'))
