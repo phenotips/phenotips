@@ -71,6 +71,9 @@ public abstract class AbstractContainerPrimaryEntityGroup<E extends PrimaryEntit
         new EntityReference("GroupMemberClass", EntityType.DOCUMENT,
             Constants.CODE_SPACE_REFERENCE);
 
+    /** The XProperty used to save the class of contained members. */
+    private static final String CLASS_XPROPERTY = "class";
+
     protected AbstractContainerPrimaryEntityGroup(XWikiDocument document)
     {
         super(document);
@@ -82,23 +85,31 @@ public abstract class AbstractContainerPrimaryEntityGroup<E extends PrimaryEntit
         Collection<E> result = new LinkedList<>();
         try {
             StringBuilder hql = new StringBuilder();
-            hql.append("select distinct binding.name from BaseObject binding, StringProperty groupReference");
+            hql.append("select distinct binding.value ")
+                .append(" from BaseObject groupReference, StringProperty binding ");
             if (type != null) {
-                hql.append(", BaseObject entity");
+                hql.append(",BaseObject entity ,StringProperty entityBinding ");
             }
-            hql.append(" where binding.className = :memberClass")
-                .append(" and groupReference.id.id = binding.id and groupReference.id.name = :referenceProperty")
-                .append(" and groupReference.value = :selfReference");
+            hql.append(" where groupReference.id.id = binding.id and ")
+                .append("       groupReference.number = entity.number and")
+                .append("       binding.id.name = :referenceProperty and ")
+                .append("       groupReference.name = :selfReference and ")
+                .append("       groupReference.className = :memberClass");
             if (type != null) {
-                hql.append(" and entity.name = binding.name and entity.className = :entityType");
+                hql.append("   and entityBinding.id.name= :classProperty ")
+                    .append("   and entityBinding.value = :entityType ")
+                    .append("   and entity.name = groupReference.name ")
+                    .append("   and entity.id.id = entityBinding.id ");
             }
 
             Query q = getQueryManager().createQuery(hql.toString(), Query.HQL);
 
-            q.bindValue("memberClass", getLocalSerializer().serialize(getMembershipClass()));
+            // FIXME
+            q.bindValue("selfReference", getFullSerializer().serialize(getDocument()).split(":")[1]);
             q.bindValue("referenceProperty", getMembershipProperty());
-            q.bindValue("selfReference", getFullSerializer().serialize(getDocument()));
+            q.bindValue("classProperty", getClassProperty());
             q.bindValue("entityType", getLocalSerializer().serialize(type));
+            q.bindValue("memberClass", getLocalSerializer().serialize(getMembershipClass()));
             List<String> memberIds = q.execute();
             for (String memberId : memberIds) {
                 result.add(this.membersManager.get(memberId));
@@ -120,6 +131,8 @@ public abstract class AbstractContainerPrimaryEntityGroup<E extends PrimaryEntit
             }
             obj = this.document.newXObject(getMembershipClass(), getXContext());
             obj.setStringValue(getMembershipProperty(), getFullSerializer().serialize(member.getDocument()));
+            obj.setStringValue(getClassProperty(), getFullSerializer().serialize(member.getType()));
+            this.setMemberParameters(member, obj);
             getXContext().getWiki().saveDocument(this.document, "Added member " + member.getDocument(), true,
                 getXContext());
             return true;
@@ -152,5 +165,10 @@ public abstract class AbstractContainerPrimaryEntityGroup<E extends PrimaryEntit
     protected EntityReference getMembershipClass()
     {
         return GROUP_MEMBER_CLASS;
+    }
+
+    protected String getClassProperty()
+    {
+        return CLASS_XPROPERTY;
     }
 }
