@@ -22,7 +22,7 @@ import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.internal.DefaultCollaborator;
-import org.phenotips.entities.internal.AbstractPrimaryEntityGroupWithParameters;
+import org.phenotips.entities.internal.AbstractContainerPrimaryEntityGroupWithParameters;
 import org.phenotips.projects.data.Project;
 
 import org.xwiki.component.manager.ComponentLookupException;
@@ -30,7 +30,6 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -43,16 +42,9 @@ import com.xpn.xwiki.objects.BaseObject;
 /**
  * @version $Id $
  */
-public class CollaboratorPrimaryEntityGroup extends AbstractPrimaryEntityGroupWithParameters<Collaborator>
+public class CollaboratorPrimaryEntityGroup extends AbstractContainerPrimaryEntityGroupWithParameters<Collaborator>
 {
-    private static final Collection<String> TYPES;
-
     private static final String ACCESS_LEVEL_PARAMETER = "accessLevel";
-
-    static {
-        String[] asArray = new String[] {"XWiki.XWikiUsers", "PhenoTips.PhenoTipsGroupClass"};
-        TYPES = Arrays.asList(asArray);
-    }
 
     /**
      * public constructor.
@@ -90,7 +82,7 @@ public class CollaboratorPrimaryEntityGroup extends AbstractPrimaryEntityGroupWi
     {
         Collection<Collaborator> result = new LinkedList<>();
 
-        Map<String, Map<String, String>> membersMap = super.getMembersMap(TYPES);
+        Map<String, Map<String, String>> membersMap = super.getMembersMap(Collaborator.CLASS_REFERENCE);
         for (String userOrGroupName : membersMap.keySet()) {
             Map<String, String> params = membersMap.get(userOrGroupName);
             String accessLevelName = params.get(ACCESS_LEVEL_PARAMETER);
