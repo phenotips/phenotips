@@ -19,10 +19,10 @@ package org.phenotips.entities.internal;
 
 import org.phenotips.entities.PrimaryEntity;
 
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -38,12 +38,10 @@ import com.xpn.xwiki.doc.XWikiDocument;
  * @since 1.3M2
  *
  */
-public abstract class AbstractPrimaryEntityGroupWithParameters<E extends PrimaryEntity>
-    extends AbstractPrimaryEntityGroup<E>
+public abstract class AbstractContainerPrimaryEntityGroupWithParameters<E extends PrimaryEntity>
+    extends AbstractContainerPrimaryEntityGroup<E>
 {
-    private static final String ENTITY_TYPE = "entityType";
-
-    protected AbstractPrimaryEntityGroupWithParameters(XWikiDocument document)
+    protected AbstractContainerPrimaryEntityGroupWithParameters(XWikiDocument document)
     {
         super(document);
     }
@@ -53,39 +51,45 @@ public abstract class AbstractPrimaryEntityGroupWithParameters<E extends Primary
      *
      * @return parameters map
      */
-    protected Map<String, Map<String, String>> getMembersMap(Collection<String> types)
+    protected Map<String, Map<String, String>> getMembersMap(EntityReference type)
     {
-        String inPhrase = this.getInPhrase(ENTITY_TYPE, types.size());
         try {
-            //HQL: select member name, parameter name, parameter value ....
-            //     where member name in (select all members of this documents)
             StringBuilder hql = new StringBuilder();
-            hql.append("select distinct binding.name, groupReference.id.name, groupReference.value ");
-            hql.append("from BaseObject binding, StringProperty groupReference, BaseObject entity ");
-            hql.append(" where binding.className = :memberClass ");
-            hql.append(" and groupReference.id.id = binding.id ");
-            hql.append(" and groupReference.id.name != :referenceProperty ");
-            hql.append(" and entity.name = binding.name ");
-            hql.append(" and entity.className ").append(inPhrase);
-            hql.append(" and binding.name in (");
+
+            hql.append("select binding.value, propertyTable.name, propertyTable.value ")
+                .append("from BaseObject groupReference, StringProperty binding, BaseObject entity, ")
+                .append("     StringProperty propertyTable  ")
+                .append("where groupReference.id.id = binding.id and ")
+                .append("      binding.id.name = :referenceProperty and  ")
+                .append("      groupReference.name = :selfReference and  ")
+                .append("      entity.name = groupReference.name and ")
+                .append("      entity.id.id = propertyTable.id and ")
+                .append("      groupReference.className = :memberClass and ")
+                .append("      groupReference.number = entity.number and ")
+                .append("      binding.value in ");
 
             // Subselect: names of all members of this document (of a certain type)
-            hql.append("select distinct binding.name ");
-            hql.append(" from BaseObject binding, StringProperty groupReference, BaseObject entity ");
-            hql.append(" where binding.className = :memberClass");
-            hql.append(" and groupReference.id.id = binding.id ");
-            hql.append(" and groupReference.id.name = :referenceProperty");
-            hql.append(" and groupReference.value = :selfReference");
-            hql.append(" and entity.className ").append(inPhrase);
-
-            hql.append(" )");
+            hql.append("(select distinct binding.value ")
+                .append(" from BaseObject groupReference, StringProperty binding, BaseObject entity, ")
+                .append("      StringProperty entityBinding ")
+                .append(" where groupReference.id.id = binding.id and ")
+                .append("       entity.name = groupReference.name and")
+                .append("       entity.id.id = entityBinding.id and")
+                .append("       groupReference.number = entity.number and")
+                .append("       binding.id.name = :referenceProperty and ")
+                .append("       groupReference.name = :selfReference and ")
+                .append("       entityBinding.id.name= :classProperty and ")
+                .append("       entityBinding.value = :entityType and ")
+                .append("       groupReference.className = :memberClass)");
 
             Query q = getQueryManager().createQuery(hql.toString(), Query.HQL);
 
+            // FIXME
+            q.bindValue("selfReference", getFullSerializer().serialize(getDocument()).split(":")[1]);
             q.bindValue("memberClass", getLocalSerializer().serialize(getMembershipClass()));
+            q.bindValue("entityType", getLocalSerializer().serialize(type));
             q.bindValue("referenceProperty", getMembershipProperty());
-            q.bindValue("selfReference", getFullSerializer().serialize(getDocument()));
-            this.bindTypesParameters(q, ENTITY_TYPE, types);
+            q.bindValue("classProperty", getClassProperty());
 
             List<Object> members = q.execute();
 
@@ -94,28 +98,6 @@ public abstract class AbstractPrimaryEntityGroupWithParameters<E extends Primary
             this.logger.warn("Failed to query members: {}", ex.getMessage());
         }
         return Collections.emptyMap();
-    }
-
-    private String getInPhrase(String paramName, int numberOfAllowedValues)
-    {
-        StringBuilder sb = new StringBuilder(" in (");
-        for (int i = 0; i < numberOfAllowedValues; i++) {
-            sb.append(":").append(paramName).append(i);
-            if (i + 1 < numberOfAllowedValues) {
-                sb.append(", ");
-            }
-        }
-        sb.append(") ");
-        return sb.toString();
-    }
-
-    private void bindTypesParameters(Query q, String paramName, Collection<String> types)
-    {
-        int i = 0;
-        for (String type : types) {
-            q.bindValue(paramName + i, type);
-            i++;
-        }
     }
 
     private Map<String, Map<String, String>> buildParametersMap(List<Object> members)

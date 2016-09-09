@@ -44,6 +44,9 @@ public interface PrimaryEntityGroup<E extends PrimaryEntity> extends PrimaryEnti
     /** The XProperty from {@link #GROUP_MEMBERSHIP_CLASS} used for referencing the group document. */
     String REFERENCE_XPROPERTY = "reference";
 
+    /** The XProperty used to save the class of contained members. */
+    String CLASS_XPROPERTY = "class";
+
     /**
      * @return a reference to an XClass that is supposed to be used by all members of this group, or {@code null} if any
      *         type of entities are allowed for this group.
