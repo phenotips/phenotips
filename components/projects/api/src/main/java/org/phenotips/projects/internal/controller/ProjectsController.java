@@ -22,8 +22,8 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.projects.data.Project;
+import org.phenotips.projects.data.ProjectRepository;
 import org.phenotips.projects.internal.ProjectAndTemplateBinder;
-import org.phenotips.projects.internal.ProjectsRepository;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -72,7 +72,8 @@ public class ProjectsController implements PatientDataController<Project>
     private ProjectAndTemplateBinder ptBinder;
 
     @Inject
-    private ProjectsRepository projectRepository;
+    @Named("Project")
+    private ProjectRepository projectRepository;
 
     @Override
     public PatientData<Project> load(Patient patient)
@@ -157,7 +158,7 @@ public class ProjectsController implements PatientDataController<Project>
         List<Project> projects = new ArrayList<>(projectsArray.length());
         for (Object o : projectsArray) {
             String projectName = (String) o;
-            Project p = this.projectRepository.getProjectById(projectName);
+            Project p = this.projectRepository.get(projectName);
             if (p == null) {
                 this.logger.error("Cannot read project {} from JSON.", projectName);
             } else {
