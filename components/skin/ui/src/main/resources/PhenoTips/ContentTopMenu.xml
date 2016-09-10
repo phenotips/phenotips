@@ -882,7 +882,7 @@
     <property>
       <code>#template("colorThemeInit.vm")
 
-#patient-record-actions {
+.content-actions {
   float: right;
   margin: 0;
   position: absolute;
@@ -891,32 +891,39 @@
   z-index: 3000;
 }
 
-#patient-record-actions .menu.menu-horizontal {
+.page-actions .menu.menu-horizontal {
+  background-color: $theme.menuBackgroundColor;
+  #css3_backgroundLinearGradient({
+    'to': 'bottom',
+    'colors': [
+      {'color': $theme.menuGradientColor, 'position': '0%'},
+      {'color': $theme.menuBackgroundColor, 'position': '50%'}
+    ]
+  })
   border: 0 none;
+  color: $theme.menuLinkColor;
   font-size: 1em;
   height: 1.833em;
   padding: 0 0 0 10px;
   text-shadow: none;
 }
-#patient-record-actions .menu.menu-horizontal a:hover {
+.page-actions .menu.menu-horizontal a:hover {
   text-decoration: none !important;
   text-shadow: 0 0 2px $theme.highlightColor;
 }
 
-#patient-record-actions .menu-horizontal &gt; ul &gt; li {
+.page-actions .menu-horizontal &gt; ul &gt; li {
   padding: 0.2em 1.3em 0.2em 0.3em;
 }
-#patient-record-actions .menu-horizontal &gt; ul {
+.page-actions .menu-horizontal &gt; ul {
   white-space: nowrap;
 }
-#patient-record-actions .menu-horizontal ul ul {
+.page-actions .menu-horizontal ul ul {
+  background: none repeat scroll 0 0 $theme.menuBackgroundColor;
+  box-shadow: 0 1px 1px $theme.borderColor;
   white-space: normal;
 }
-.menu-vertical li:empty, .menu-horizontal li li:empty {
-  min-height: 1px !important;
-}
-
-#patient-record-actions .menu-horizontal input {
+.page-actions .menu-horizontal input {
   background: transparent !important;
   /* Buttons without a border in IE don't trigger the :hover state */
   border: 1px solid transparent !important;
@@ -926,7 +933,7 @@
   font-size: inherit !important;
   font-family: inherit !important;
 }
-#patient-record-actions .menu-horizontal label:hover, #patient-record-actions .menu-horizontal label:hover input {
+.page-actions .menu-horizontal label:hover, .page-actions .menu-horizontal label:hover input {
   cursor: pointer;
   text-shadow: 0 0 2px $theme.highlightColor;
 }</code>
@@ -1074,15 +1081,6 @@
 /* Horizontal Menu */
 
 .menu.menu-horizontal {
-  background-color: $theme.menuBackgroundColor;
-  #css3_backgroundLinearGradient({
-    'to': 'bottom',
-    'colors': [
-      {'color': $theme.menuGradientColor, 'position': '0%'},
-      {'color': $theme.menuBackgroundColor, 'position': '50%'}
-    ]
-  })
-  color: $theme.menuLinkColor;
   font-size: .85em;
   height: 2em;
   padding-left: 25px;
@@ -1120,9 +1118,8 @@
 }
 
 .menu-horizontal &gt; ul ul {
-  background: none repeat scroll 0 0 $theme.menuBackgroundColor;
   border-radius: 0 0 .8em .8em;
-  box-shadow: 0 1px 1px $theme.borderColor;
+  box-shadow: 0 1px 1px $theme.textColor;
   display: none;
   margin: 0.2em 0 0 -1.3em;
   padding-bottom: .3em;
@@ -1147,6 +1144,9 @@
   left: 12em;
   margin: 0;
   top: 0;
+}
+.menu-vertical li:empty, .menu-horizontal li li:empty {
+  min-height: 1px !important;
 }
 </code>
     </property>
@@ -1245,7 +1245,7 @@
 #if ($doc.getObject('PhenoTips.PatientClass'))
 $xwiki.ssx.use('PhenoTips.ContentTopMenu', {'colorTheme': $colorTheme})##
 $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
-(% id="patient-record-actions" %)(((
+(% id="patient-record-actions" class="content-actions page-actions" %)(((
 (% id="pr-more-actions-menu" class="menu menu-horizontal" %)(((
 #if ($xcontext.action == 'view')
 #if($hasEdit &amp;&amp; !$isReadOnly)
@@ -1298,8 +1298,8 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
 #elseif ($doc.name == 'AllData' &amp;&amp; $xcontext.action == 'view')
 $xwiki.ssx.use('PhenoTips.ContentTopMenu', {'colorTheme': $colorTheme})##
 $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
-(% id="patient-record-actions" %)(((
-(% id="pr-more-actions-menu" class="menu menu-horizontal" %)(((
+(% id="patient-directory-actions" class="content-actions directory-actions" %)(((
+(% id="pd-more-actions-menu" class="menu menu-horizontal" %)(((
 #if($hasCreatePage)
 * {{html}}&lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;$services.localization.render('phenotips.globalHeader.createPatient')&lt;/label&gt;{{/html}}
 #end
