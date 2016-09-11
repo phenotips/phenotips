@@ -529,7 +529,7 @@
   margin: 0 !important;
   padding: 0 !important;
 }
-.diffDiagnosis-search .hint {
+.diffDiagnosis-search &gt; p .hint {
   padding: 0.92em;
 }
 #diffDiagnosis-search-results ul li {
