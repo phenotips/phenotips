@@ -68,6 +68,10 @@ public class PhenotipsFamilyMigrations
 
     private static final String ACCESS_PROPERTY_NAME = "access";
 
+    private static final String VIEW_RIGHT = "view";
+    private static final String EDIT_RIGHT = "view,edit";
+    private static final String FULL_RIGHT = "view,edit,delete";
+
     /** Family reference class reference. */
     public EntityReference familyReferenceClassReference = new EntityReference("FamilyReferenceClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
@@ -221,11 +225,22 @@ public class PhenotipsFamilyMigrations
     private void setPermissionsObject(XWikiDocument familyXDocument, XWikiDocument patientXDoc)
         throws XWikiException
     {
+        setRights(familyXDocument, patientXDoc, VIEW_RIGHT);
+        setRights(familyXDocument, patientXDoc, EDIT_RIGHT);
+        setRights(familyXDocument, patientXDoc, FULL_RIGHT);
+    }
+
+    /**
+     * Helper method - set permissions object properties for one access level.
+     */
+    private void setRights(XWikiDocument familyXDocument, XWikiDocument patientXDoc, String rightLevel)
+        throws XWikiException
+    {
         BaseObject permissionsObject = familyXDocument.newXObject(rightsClassReference, context);
-        String[] fullRights = familyPermissions.getEntitiesWithEditAccessAsString(patientXDoc);
-        permissionsObject.setStringValue("groups", fullRights[1]);
-        permissionsObject.setStringValue("levels", "view,edit");
-        permissionsObject.setStringValue("users", fullRights[0]);
+        String[] rightHolders = familyPermissions.getEntitiesWithAccessAsString(patientXDoc, VIEW_RIGHT);
+        permissionsObject.setStringValue("users", rightHolders[0]);
+        permissionsObject.setStringValue("groups", rightHolders[1]);
+        permissionsObject.setStringValue("levels", rightLevel);
         permissionsObject.setIntValue("allow", 1);
     }
 

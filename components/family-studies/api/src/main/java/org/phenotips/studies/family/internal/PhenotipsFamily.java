@@ -183,8 +183,6 @@ public class PhenotipsFamily implements Family
         BaseObject familyObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
         familyObject.set(FAMILY_MEMBERS_FIELD, members, context);
 
-        PhenotipsFamily.familyPermissions.setFamilyPermissionsFromPatient(this.familyDocument, patientDocument);
-
         try {
             PhenotipsFamilyRepository.setFamilyReference(patientDocument, this.familyDocument, context);
         } catch (XWikiException e) {

@@ -252,7 +252,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
 
         newFamilyDoc.setCreatorReference(currentUser == null ? null : currentUser.getProfileDocument());
 
-        PhenotipsFamilyRepository.familyPermissions.setFamilyPermissionsToCurrentUser(newFamilyDoc);
+        PhenotipsFamilyRepository.familyPermissions.setCurrentUserAsOwner(newFamilyDoc);
 
         wiki.saveDocument(newFamilyDoc, context);
 
