@@ -33,7 +33,7 @@ define([
             this.background.node.setAttribute("class", "panning-background");
 
             this.adjustSizeToScreen = this.adjustSizeToScreen.bind(this);
-            Event.observe (window, 'resize', me.adjustSizeToScreen);
+            Event.observe (this.canvas, 'resize', me.adjustSizeToScreen);
             this.generateViewControls();
 
             //Initialize pan by dragging
