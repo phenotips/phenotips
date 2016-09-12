@@ -127,8 +127,7 @@ td.variant.moreinfo td{
 .v-collapsed {
   display: none !important;
 }
-.variant.moreinfo table, .full-width{
-  width: 100%;
+.variant.moreinfo table, .full-width {
   table-layout: fixed;
   cursor: pointer;
 }
