@@ -373,7 +373,7 @@ define([
                 _this.__pan.insert(_this.__pan[direction]);
                 _this.__pan[direction].observe('click', function(event) {
                     if (direction == 'home') {
-                        _this.centerAroundNode(0);
+                        _this.centerAroundNode(editor.getGraph().getProbandId());
                     }
                     else if(direction == 'up') {
                         _this.panTo(_this.viewBoxX, _this.viewBoxY - 150);

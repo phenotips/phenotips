@@ -141,17 +141,6 @@ define([
 
                     // FIXME: load will set callbackWhenDataLoaded() to be actionStack.addSaveEvent(), effectively
                     //        a) duplicating undo states and b) doing it for read-only pedigrees
-
-                    if (editor.__justCreateNewFamily) {
-                        document.observe("pedigree:save:finish", function(event) {
-                            var newFamilyId = editor.getFamilyData().getFamilyId();
-                            var pedigreeEditorURL = editor.getExternalEndpoint().getPedigreeEditorURL(newFamilyId, true);
-                            editor.getExternalEndpoint().redirectToURL(pedigreeEditorURL + '&new_patient_id=' + editor.getExternalEndpoint().getParentDocument().id);
-                        });
-                        editor.getSaveLoadEngine().save(true); // ignore warnings
-                        return;
-                    }
-
                     callbackWhenDataLoaded && callbackWhenDataLoaded();
                 }
 
@@ -159,8 +148,18 @@ define([
                     editor.getWorkspace().adjustSizeToScreen();
                 }
 
-                if (centerAroundProband) {
+                if (centerAroundProband && !editor.__justCreateNewFamily) {
                     editor.getWorkspace().centerAroundNode(editor.getGraph().getProbandId());
+                }
+
+                if (editor.__justCreateNewFamily) {
+                    document.observe("pedigree:save:finish", function(event) {
+                        var newFamilyId = editor.getFamilyData().getFamilyId();
+                        var pedigreeEditorURL = editor.getExternalEndpoint().getPedigreeEditorURL(newFamilyId, true);
+                        editor.getExternalEndpoint().redirectToURL(pedigreeEditorURL + '&new_patient_id=' + editor.getExternalEndpoint().getParentDocument().id);
+                    });
+                    editor.getSaveLoadEngine().save(true); // ignore warnings
+                    return;
                 }
 
                 document.fire("pedigree:load:finish");
