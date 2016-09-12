@@ -61,12 +61,12 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * Migration for PhenoTips issue #2155: migrating old family studies data.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M3
  */
 @Component
-@Named("R71492PhenoTips#2155")
+@Named("R71498PhenoTips#2155")
 @Singleton
-public class R71492PhenoTips2155DataMigration extends AbstractHibernateDataMigration
+public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigration
 {
     /** Logging helper object. */
     @Inject
@@ -94,7 +94,7 @@ public class R71492PhenoTips2155DataMigration extends AbstractHibernateDataMigra
     @Override
     public XWikiDBVersion getVersion()
     {
-        return new XWikiDBVersion(71492);
+        return new XWikiDBVersion(71498);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class R71492PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
         private final List<String> allowedRelatives = Arrays.asList("parent", "child", "sibling", "twin");
 
-        private R71492PhenoTips2155DataMigration migrator = R71492PhenoTips2155DataMigration.this;
+        private R71498PhenoTips2155DataMigration migrator = R71498PhenoTips2155DataMigration.this;
 
         private EntityReference relativeClassReference = new EntityReference("RelativeClass",
             EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);

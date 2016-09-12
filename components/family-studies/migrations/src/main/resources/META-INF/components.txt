@@ -1,3 +1,4 @@
 org.phenotips.studies.family.migrations.PhenotipsFamilyMigrations
-org.phenotips.studies.family.migrations.R71292PhenoTips2154DataMigration
-org.phenotips.studies.family.migrations.R71492PhenoTips2155DataMigration
+org.phenotips.studies.family.migrations.R71497PhenoTips2154DataMigration
+org.phenotips.studies.family.migrations.R71498PhenoTips2155DataMigration
+org.phenotips.studies.family.migrations.R71496PhenoTips2339DataMigration

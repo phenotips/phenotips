@@ -53,12 +53,12 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * Migration for PhenoTips issue #2154: migrating existing pedigrees into families with one member.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M3
  */
 @Component
-@Named("R71292PhenoTips#2154")
+@Named("R71497PhenoTips#2154")
 @Singleton
-public class R71292PhenoTips2154DataMigration extends AbstractHibernateDataMigration
+public class R71497PhenoTips2154DataMigration extends AbstractHibernateDataMigration
 {
     /** Logging helper object. */
     @Inject
@@ -86,7 +86,7 @@ public class R71292PhenoTips2154DataMigration extends AbstractHibernateDataMigra
     @Override
     public XWikiDBVersion getVersion()
     {
-        return new XWikiDBVersion(71292);
+        return new XWikiDBVersion(71497);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class R71292PhenoTips2154DataMigration extends AbstractHibernateDataMigra
 
     private class MigratePedigreeCallback implements HibernateCallback<Object>
     {
-        private R71292PhenoTips2154DataMigration migrator = R71292PhenoTips2154DataMigration.this;
+        private R71497PhenoTips2154DataMigration migrator = R71497PhenoTips2154DataMigration.this;
 
         private Session session;
 
