@@ -1,7 +1,7 @@
 /**
- * The UI Element for importing pedigrees from text representationin various formats
+ * The UI Element for assigning patient to a new or existing family.
  *
- * @class ImportSelector
+ * @class FamilySelector
  */
 
 define(["pedigree/view/familySelector"], function(Legend){
