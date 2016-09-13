@@ -158,6 +158,7 @@
     }
 
     var familyInterfaceDoc = new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips');
+    var baseUrl = familyInterfaceDoc.getURL('get', 'rand='+ Math.random());
 
     // Delete Pedigree functionality for Patient Form
     if (XWiki.currentDocument.space == 'data') {
@@ -167,7 +168,7 @@
         pedigreeDelete.observe("click", function(event) {
           event.stop();
           var familyID = $('familyIdentifier').value;
-          var fullURL = familyInterfaceDoc.getURL('get', 'rand='+ Math.random()) + '&amp;action=familyinfo&amp;document_id=' + familyID;
+          var fullURL = baseUrl + '&amp;action=familyinfo&amp;document_id=' + familyID;
           new Ajax.Request(fullURL, {
             method: "POST",
             onSuccess: onFamilyDataReadyBeforeDeletion.bind(this)
@@ -176,73 +177,99 @@
       }
 
       var onFamilyDataReadyBeforeDeletion = function (response) {
-        if (response.responseJSON) {
+        if (response &amp;&amp; response.responseJSON) {
 
-          var deleteConfirm = function(deleteParameters, warningMessage) {
+          var familyMembers = response.responseJSON.family.hasOwnProperty("familyMembers") ? response.responseJSON.family.familyMembers: [];
+          var familyId = response.responseJSON.family.id;
+          var familyExternalId = response.responseJSON.family.externalId;
 
-            var sendDeleteRequest = function() {
-              var fullURL = familyInterfaceDoc.getURL('get', 'rand='+ Math.random());
-              new Ajax.Request(fullURL, {
-                method: "POST",
-                parameters: deleteParameters,
-                onSuccess: function(response) {
-                  if (response) {
-                    var pedigreeThumnail = $('pedigree-thumbnail');
-                    pedigreeThumnail.title = "$services.localization.render('phenotips.patientRecord.pedigree.draw')";
-                    pedigreeThumnail.innerHTML = pedigreeThumnail.title;
-                    pedigreeThumnail.addClassName('draw');
-                    $('familyId').up().hide();
-                    $('pedigree-buttons').hide();
-                  } else {
-                    alert("Deletion was not successful");
-                  }
-                }
-              });
-            }
+          var dialogParameters = { showCancelButton: false };
+          dialogParameters.confirmationText = "$services.localization.render('phenotips.patientRecord.pedigree.deleteWarning')";
 
-            new XWiki.widgets.ConfirmationBox(
+          var constructDialog = function(dialogParameters, canDeleteFamily) {
+            var confirmationDialog = new XWiki.widgets.ConfirmationBox(
               {
                 onYes : function() {
+                  var parameters = {"action": "removepatient", "patient_id": XWiki.currentDocument.page};
                   if ($('inline')) { //if edit mode, save before proceed
                     document.fire("xwiki:actions:save", {"continue" : true, "form" : $('inline'), 'confirmed' : true});
                     document.observe("xwiki:document:saved", function () {
-                      sendDeleteRequest();
+                      sendDeleteRequest(parameters);
                     });
                   } else {
-                    sendDeleteRequest();
+                    sendDeleteRequest(parameters);
                   }
                 },
                 onNo : function() { }
               },
-              { confirmationText: warningMessage, showCancelButton: false }
+              dialogParameters
             );
-          };
 
-          var familyMembers = response.responseJSON.family.hasOwnProperty("familyMembers") ? response.responseJSON.family.familyMembers: [];
-          if (familyMembers.length &gt; 1) {
-            // remove patient from family
-            var warningMessage = "$services.localization.render('phenotips.patientRecord.pedigree.deleteWarning')";
-            var parameters = {"action": "removepatient", "patient_id": XWiki.currentDocument.page};
-          } else {
-            // delete pedigree and family
-            var familyString = response.responseJSON.family.externalId == "" ? response.responseJSON.family.id :
-                               response.responseJSON.family.externalId + " (" + response.responseJSON.family.id + ")";
-            var warningMessage = "$services.localization.render('phenotips.patientRecord.pedigree.deleteWarning')" + "&lt;br&gt;&lt;br&gt;" +
-                                 "$services.localization.render('phenotips.patientRecord.pedigree.deleteFamilyWarning')" + " " +
-                                 familyString;
-            var parameters = {"action": "deletefamily", "removemembers": false, "family_id": response.responseJSON.family.id};
+            // if user has rights to delete family, add one more button
+            if (canDeleteFamily) {
+              var deleteFamilyButton = new Element('input', {type: 'button', 'value': '$services.localization.render('phenotips.patientRecord.pedigree.deleteFamily')', 'class' : 'button  delete-family', 'id': 'delete_family'});
+              var deletePedigreeButton = $$('input:[type=button][title="(Enter)"]')[0];
+              deletePedigreeButton.addClassName('delete-family');
+              deletePedigreeButton.up().insert({'after' : (deleteFamilyButton.wrap('span', {'class' : 'buttonwrapper'}))});
+
+              deleteFamilyButton.observe("click", function(event) {
+                event.stop();
+                confirmationDialog.closeDialog();
+                var parameters = {"action": "deletefamily", "removemembers": false, "family_id": familyId};
+                 sendDeleteRequest(parameters);
+              });
+            }
           }
 
-          // display the warning and delete if approved
-          deleteConfirm(parameters, warningMessage);
+          if (familyMembers.length &gt; 1) {
+            // remove patient from family
+            constructDialog(dialogParameters);
+          } else {
+            // if this is the last patient check if the user has delete rights to delete family
+            new Ajax.Request(baseUrl, {
+                method: "POST",
+                parameters: {'action': 'candeletefamily', 'family_id' : familyId, 'deleteallmembers' : false},
+                onSuccess: function(response) {
+                  if (response &amp;&amp; response.responseJSON) {
+                    // remove patient from family OR delete family dialog
+                    var familyString = (familyExternalId == "") ? familyId + " " : familyExternalId + " (" + familyId + ") ";
+                    dialogParameters.confirmationText = "$services.localization.render('phenotips.patientRecord.pedigree.deleteWarning')" + "&lt;br&gt;&lt;br&gt;" +
+                                                        "$services.localization.render('phenotips.patientRecord.pedigree.deleteFamilyWarning')" + " " + familyString + ". " +
+                                                        "$services.localization.render('phenotips.patientRecord.pedigree.deleteFamilyWarningQuestion')" +  "&lt;br&gt;&lt;br&gt;";
+                    dialogParameters.yesButtonText = "$services.localization.render('phenotips.patientRecord.pedigree.delete')";
+                    dialogParameters.noButtonText = "$services.localization.render('phenotips.patientRecord.deleteWarning.cancelButton')";
+                    constructDialog(dialogParameters, true);
+                  } else {
+                    constructDialog(dialogParameters);
+                  }
+                }
+            });
+          }
+
+          var sendDeleteRequest = function(parameters) {
+            new Ajax.Request(baseUrl, {
+              method: "POST",
+              parameters: parameters,
+              onSuccess: function(response) {
+                if (response) {
+                  var pedigreeThumnail = $('pedigree-thumbnail');
+                  pedigreeThumnail.title = "$services.localization.render('phenotips.patientRecord.pedigree.draw')";
+                  pedigreeThumnail.innerHTML = pedigreeThumnail.title;
+                  pedigreeThumnail.addClassName('draw');
+                  $('familyId').up().remove();
+                  $('pedigree-buttons').remove();
+                }
+              }
+            });
+          }
+
         }
       }
+
     }
 
     // Delete Family functionality for Family Page
     if (XWiki.currentDocument.space == "Families") {
-
-      var baseUrl = familyInterfaceDoc.getURL('get', 'rand='+ Math.random());
 
       // check if the user has delete rights to delete family and/or ALL patients - canDeleteFamily(familyId, deleteAllMembers)
       // if not - do not display delete option/options
@@ -251,7 +278,7 @@
               method: "POST",
               parameters: {'action': 'candeletefamily', 'family_id' : XWiki.currentDocument.page, 'deleteallmembers' : false},
               onSuccess: function(response) {
-                if (response) {
+                if (response &amp;&amp; response.responseJSON) {
                   onCanDeleteReady(response, null); 
                 } else {
                   onCanDeleteReady(null, null); 
@@ -263,7 +290,7 @@
               method: "POST",
               parameters: {'action': 'candeletefamily', 'family_id' : XWiki.currentDocument.page, 'deleteallmembers' : true},
               onSuccess: function(response) {
-                if (response) {
+                if (response &amp;&amp; response.responseJSON) {
                   onCanDeleteReady(null, response);
                 } else {
                   onCanDeleteReady(null, null);
@@ -304,11 +331,7 @@
 
           deleteEls.invoke('observe', 'click', function(event) {
             var deleteMembers = event.element().id == 'deleteFM';
-
             var membersArray = $$('#members .fieldset p');
-
-            var familyID = XWiki.currentDocument.page;
-
             var membersString = ' ';
 
             if (membersArray.length &gt; 0){
@@ -332,12 +355,9 @@
         }
 
         var onDeleteFamilyConfirm = function(deleteMembers) {
-          var baseUrl = familyInterfaceDoc.getURL('get', 'rand='+ Math.random());
-          var familyID = XWiki.currentDocument.page;
-          var parameters = {"action": "deletefamily", "removemembers": deleteMembers, "family_id": familyID};
           new Ajax.Request(baseUrl, {
             method: "POST",
-            parameters: parameters,
+            parameters: {"action": "deletefamily", "removemembers": deleteMembers, "family_id": XWiki.currentDocument.page},
             onSuccess: function(response) {
               if (response) {
                 window.self.location = window.self.location.origin;
@@ -345,6 +365,7 @@
             }
           });
         }
+
       }
     }
 
@@ -532,6 +553,10 @@
   content: '\25BC';
   font-size: .8em;
   margin-left: .5em;
+}
+.xdialog-box .button.delete-family {
+  width: inherit;
+  margin-right: 10px;
 }</code>
     </property>
     <property>
