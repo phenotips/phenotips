@@ -133,7 +133,7 @@
     #if ($request.json)
       { "id": "$item.id", "url": "$item.url", "identifier": "$item.identifier", "textSummary": "$item.textSummary" }##
     #else
-      &lt;rs id="$item.url" info="$item.info"&gt;$escapetool.xml($item.description)&lt;/rs&gt;
+      &lt;rs id="$item.url" info="$item.info"&gt;$escapetool.xml($item.textSummary)&lt;/rs&gt;
     #end
     #set ($count = $count + 1)
     #if ($count &gt;= $nb)
