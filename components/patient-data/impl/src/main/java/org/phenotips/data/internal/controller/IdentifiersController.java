@@ -23,6 +23,7 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 
@@ -39,7 +40,6 @@ import javax.inject.Singleton;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -90,27 +90,19 @@ public class IdentifiersController implements PatientDataController<String>
     }
 
     @Override
-    public void save(Patient patient)
+    public void save(Patient patient, DocumentModelBridge doc)
     {
-        try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
-            if (data == null) {
-                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
-            }
-
-            PatientData<String> identifiers = patient.<String>getData(DATA_NAME);
-            if (!identifiers.isNamed()) {
-                return;
-            }
-            String externalId = identifiers.get(EXTERNAL_IDENTIFIER_PROPERTY_NAME);
-            data.setStringValue(EXTERNAL_IDENTIFIER_PROPERTY_NAME, externalId);
-
-            XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-            context.getWiki().saveDocument(doc, "Updated identifiers from JSON", true, context);
-        } catch (Exception e) {
-            this.logger.error("Failed to save identifiers: [{}]", e.getMessage());
+        BaseObject data = ((XWikiDocument) doc).getXObject(Patient.CLASS_REFERENCE);
+        if (data == null) {
+            throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
         }
+
+        PatientData<String> identifiers = patient.<String>getData(DATA_NAME);
+        if (!identifiers.isNamed()) {
+            return;
+        }
+        String externalId = identifiers.get(EXTERNAL_IDENTIFIER_PROPERTY_NAME);
+        data.setStringValue(EXTERNAL_IDENTIFIER_PROPERTY_NAME, externalId);
     }
 
     @Override

@@ -23,6 +23,7 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.ObjectPropertyReference;
 
@@ -95,27 +96,22 @@ public class APGARController implements PatientDataController<Integer>
 
     @SuppressWarnings("unchecked")
     @Override
-    public void save(Patient patient)
+    public void save(Patient patient, DocumentModelBridge doc)
     {
-        try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            BaseObject dataHolder = doc.getXObject(Patient.CLASS_REFERENCE);
-            PatientData<Integer> data = patient.getData(getName());
-            if (data == null || dataHolder == null) {
-                return;
+        BaseObject dataHolder = ((XWikiDocument) doc).getXObject(Patient.CLASS_REFERENCE);
+        PatientData<Integer> data = patient.getData(getName());
+        if (data == null || dataHolder == null) {
+            return;
+        }
+        for (String propertyName : getProperties()) {
+            Integer value = data.get(propertyName);
+            BaseProperty<ObjectPropertyReference> field =
+                (BaseProperty<ObjectPropertyReference>) dataHolder.getField(propertyName);
+            if (value != null) {
+                field.setValue(value.toString());
+            } else {
+                field.setValue("unknown");
             }
-            for (String propertyName : getProperties()) {
-                Integer value = data.get(propertyName);
-                BaseProperty<ObjectPropertyReference> field =
-                    (BaseProperty<ObjectPropertyReference>) dataHolder.getField(propertyName);
-                if (value != null) {
-                    field.setValue(value.toString());
-                } else {
-                    field.setValue("unknown");
-                }
-            }
-        } catch (Exception ex) {
-            this.logger.error("Could not load patient document or some unknown error has occurred", ex.getMessage());
         }
     }
 

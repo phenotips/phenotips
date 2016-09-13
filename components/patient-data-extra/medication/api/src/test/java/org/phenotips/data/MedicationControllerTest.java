@@ -197,7 +197,7 @@ public class MedicationControllerTest
     public void saveWithNoDataDoesNothing() throws Exception
     {
         when(this.patient.getData(MedicationController.DATA_NAME)).thenReturn(null);
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
         Mockito.verifyZeroInteractions(this.doc);
     }
 
@@ -206,7 +206,7 @@ public class MedicationControllerTest
     {
         when(this.patient.<Medication>getData(MedicationController.DATA_NAME)).thenReturn(
             new DictionaryPatientData<>(MedicationController.DATA_NAME, Collections.<String, Medication>emptyMap()));
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
         Mockito.verifyZeroInteractions(this.doc);
     }
 
@@ -215,7 +215,7 @@ public class MedicationControllerTest
     {
         when(this.patient.getData(MedicationController.DATA_NAME))
             .thenReturn(new IndexedPatientData<>(MedicationController.DATA_NAME, Collections.emptyList()));
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
         Mockito.verify(this.doc).removeXObjects(Medication.CLASS_REFERENCE);
         Mockito.verifyNoMoreInteractions(this.doc);
     }
@@ -226,7 +226,7 @@ public class MedicationControllerTest
         setupSampleData();
         when(this.doc.newXObject(eq(Medication.CLASS_REFERENCE), any(XWikiContext.class)))
             .thenThrow(new XWikiException());
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
         Mockito.verify(this.doc).removeXObjects(Medication.CLASS_REFERENCE);
     }
 
@@ -239,7 +239,7 @@ public class MedicationControllerTest
         when(this.doc.newXObject(eq(Medication.CLASS_REFERENCE), any(XWikiContext.class)))
             .thenReturn(obj1, obj2);
 
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
 
         verify(this.doc, times(1)).removeXObjects(Medication.CLASS_REFERENCE);
 
@@ -260,8 +260,6 @@ public class MedicationControllerTest
         verify(obj2, never()).setIntValue(eq(MedicationController.DURATION_YEARS), any(Integer.class));
         verify(obj2, never()).setStringValue(Medication.EFFECT, null);
         verify(obj2).setLargeStringValue(Medication.NOTES, "note2");
-
-        verify(this.xwiki, times(1)).saveDocument(eq(this.doc), any(String.class), eq(true), eq(this.xcontext));
     }
 
     @Test

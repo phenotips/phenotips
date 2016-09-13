@@ -24,6 +24,7 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
@@ -111,24 +112,16 @@ public class ParentalAgeController implements PatientDataController<Integer>
     }
 
     @Override
-    public void save(Patient patient)
+    public void save(Patient patient, DocumentModelBridge doc)
     {
-        try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-
-            PatientData<Integer> data = patient.getData(getName());
-            if (data == null || !data.isNamed()) {
-                return;
-            }
-            XWikiContext context = this.xcontext.get();
-            BaseObject o = doc.getXObject(getXClassReference(), true, context);
-            for (String property : getProperties()) {
-                o.set(property, data.get(property), context);
-            }
-
-            context.getWiki().saveDocument(doc, "Updated parental age from JSON", true, context);
-        } catch (Exception ex) {
-            this.logger.error("Failed to save parental age: [{}]", ex.getMessage());
+        PatientData<Integer> data = patient.getData(getName());
+        if (data == null || !data.isNamed()) {
+            return;
+        }
+        XWikiContext context = this.xcontext.get();
+        BaseObject o = ((XWikiDocument) doc).getXObject(getXClassReference(), true, context);
+        for (String property : getProperties()) {
+            o.set(property, data.get(property), context);
         }
     }
 

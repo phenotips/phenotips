@@ -24,6 +24,7 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
@@ -113,34 +114,26 @@ public class AllergiesController implements PatientDataController<String>
     }
 
     @Override
-    public void save(Patient patient)
+    public void save(Patient patient, DocumentModelBridge doc)
     {
-        try {
-            PatientData<String> data = patient.getData(DATA_NAME);
-            if (data == null || !data.isIndexed()) {
-                return;
-            }
-
-            boolean nkda = false;
-            List<String> allergies = new ArrayList<>(data.size());
-            for (String allergy : data) {
-                if (NKDA.equals(allergy)) {
-                    nkda = true;
-                } else {
-                    allergies.add(allergy);
-                }
-            }
-
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            BaseObject xobject = doc.getXObject(CLASS_REFERENCE, true, this.xcontext.get());
-            xobject.setIntValue(NKDA, nkda ? 1 : 0);
-            xobject.setDBStringListValue(DATA_NAME, allergies);
-
-            this.xcontext.get().getWiki().saveDocument(doc, "Updated allergies from JSON", true, this.xcontext.get());
-        } catch (Exception ex) {
-            this.logger.error("Could not access requested document or some unforeseen error has occurred during save.",
-                ex);
+        PatientData<String> data = patient.getData(DATA_NAME);
+        if (data == null || !data.isIndexed()) {
+            return;
         }
+
+        boolean nkda = false;
+        List<String> allergies = new ArrayList<>(data.size());
+        for (String allergy : data) {
+            if (NKDA.equals(allergy)) {
+                nkda = true;
+            } else {
+                allergies.add(allergy);
+            }
+        }
+
+        BaseObject xobject = ((XWikiDocument) doc).getXObject(CLASS_REFERENCE, true, this.xcontext.get());
+        xobject.setIntValue(NKDA, nkda ? 1 : 0);
+        xobject.setDBStringListValue(DATA_NAME, allergies);
     }
 
     @Override

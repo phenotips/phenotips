@@ -23,6 +23,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
@@ -382,41 +383,33 @@ public class VariantListController extends AbstractComplexController<Map<String,
     }
 
     @Override
-    public void save(Patient patient)
+    public void save(Patient patient, DocumentModelBridge doc)
     {
-        try {
-            PatientData<Map<String, String>> variants = patient.getData(this.getName());
-            if (variants == null || !variants.isIndexed()) {
-                return;
-            }
+        PatientData<Map<String, String>> variants = patient.getData(this.getName());
+        if (variants == null || !variants.isIndexed()) {
+            return;
+        }
+        if (doc == null) {
+            throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+        }
 
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            if (doc == null) {
-                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
-            }
+        XWikiContext context = this.xcontextProvider.get();
+        ((XWikiDocument) doc).removeXObjects(VARIANT_CLASS_REFERENCE);
+        Iterator<Map<String, String>> iterator = variants.iterator();
+        while (iterator.hasNext()) {
+            try {
+                Map<String, String> variant = iterator.next();
+                BaseObject xwikiObject = ((XWikiDocument) doc).newXObject(VARIANT_CLASS_REFERENCE, context);
 
-            XWikiContext context = this.xcontextProvider.get();
-            doc.removeXObjects(VARIANT_CLASS_REFERENCE);
-            Iterator<Map<String, String>> iterator = variants.iterator();
-            while (iterator.hasNext()) {
-                try {
-                    Map<String, String> variant = iterator.next();
-                    BaseObject xwikiObject = doc.newXObject(VARIANT_CLASS_REFERENCE, context);
-
-                    for (String property : this.getProperties()) {
-                        String value = variant.get(property);
-                        if (value != null) {
-                            xwikiObject.set(property, value, context);
-                        }
+                for (String property : this.getProperties()) {
+                    String value = variant.get(property);
+                    if (value != null) {
+                        xwikiObject.set(property, value, context);
                     }
-                } catch (Exception e) {
-                    this.logger.error("Failed to save a specific variant: [{}]", e.getMessage());
                 }
+            } catch (Exception e) {
+                this.logger.error("Failed to save a specific variant: [{}]", e.getMessage());
             }
-
-            context.getWiki().saveDocument(doc, "Updated variants from JSON", true, context);
-        } catch (Exception e) {
-            this.logger.error("Failed to save variants: [{}]", e.getMessage());
         }
     }
 }

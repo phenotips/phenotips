@@ -23,6 +23,7 @@ import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.ObjectPropertyReference;
 
@@ -126,24 +127,19 @@ public class ClinicalStatusController implements PatientDataController<String>
 
     @SuppressWarnings("unchecked")
     @Override
-    public void save(Patient patient)
+    public void save(Patient patient, DocumentModelBridge doc)
     {
-        try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            BaseProperty<ObjectPropertyReference> isNormal =
-                (BaseProperty<ObjectPropertyReference>) doc.getXObject(Patient.CLASS_REFERENCE).getField(
-                    PATIENT_DOCUMENT_FIELDNAME);
-            PatientData<String> data = patient.getData(this.getName());
-            if (isNormal == null || data == null) {
-                return;
-            }
-            if (StringUtils.equals(data.getValue(), VALUE_AFFECTED)) {
-                isNormal.setValue(0);
-            } else if (StringUtils.equals(data.getValue(), VALUE_UNAFFECTED)) {
-                isNormal.setValue(1);
-            }
-        } catch (Exception e) {
-            this.logger.error("Could not load patient document or some unknown error has occurred", e.getMessage());
+        BaseProperty<ObjectPropertyReference> isNormal =
+            (BaseProperty<ObjectPropertyReference>) ((XWikiDocument) doc).getXObject(Patient.CLASS_REFERENCE).getField(
+                PATIENT_DOCUMENT_FIELDNAME);
+        PatientData<String> data = patient.getData(this.getName());
+        if (isNormal == null || data == null) {
+            return;
+        }
+        if (StringUtils.equals(data.getValue(), VALUE_AFFECTED)) {
+            isNormal.setValue(0);
+        } else if (StringUtils.equals(data.getValue(), VALUE_UNAFFECTED)) {
+            isNormal.setValue(1);
         }
     }
 

@@ -455,7 +455,7 @@ public class GeneListControllerTest
     @Test
     public void saveWithNoDataDoesNothing() throws ComponentLookupException
     {
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
         Mockito.verifyZeroInteractions(this.doc);
     }
 
@@ -463,7 +463,7 @@ public class GeneListControllerTest
     public void saveWithWrongTypeOfDataDoesNothing() throws ComponentLookupException
     {
         when(this.patient.getData(CONTROLLER_NAME)).thenReturn(new SimpleValuePatientData<Object>("a", "b"));
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
         Mockito.verifyZeroInteractions(this.doc);
     }
 
@@ -475,7 +475,7 @@ public class GeneListControllerTest
         Provider<XWikiContext> xcontextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         XWikiContext context = xcontextProvider.get();
         when(context.getWiki()).thenReturn(mock(XWiki.class));
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
         verify(this.doc).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
 
         Mockito.verifyNoMoreInteractions(this.doc);
@@ -503,7 +503,7 @@ public class GeneListControllerTest
         BaseObject o2 = mock(BaseObject.class);
         when(this.doc.newXObject(GeneListController.GENE_CLASS_REFERENCE, context)).thenReturn(o1, o2);
 
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
 
         verify(this.doc).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
         verify(o1).set("gene", "GENE1", context);

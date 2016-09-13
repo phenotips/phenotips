@@ -482,6 +482,12 @@
               <justification>Needed for synchronizing consents</justification>
             </difference>
             <difference>
+              <className>org/phenotips/data/PatientDataController</className>
+              <differenceType>7004</differenceType>
+              <method>void save(org.phenotips.data.Patient)</method>
+              <justification>Needed for save optimization</justification>
+            </difference>
+            <difference>
               <className>org/phenotips/data/push/PushServerConfigurationResponse</className>
               <differenceType>7012</differenceType>
               <method>org.json.JSONArray getConsents()</method>

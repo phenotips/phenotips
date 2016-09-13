@@ -33,8 +33,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import javax.inject.Provider;
-
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
@@ -75,8 +73,6 @@ public class AbstractSimpleControllerTest
 
     private DocumentAccessBridge documentAccessBridge;
 
-    private XWikiContext xcontext;
-
     @Mock
     protected XWiki xWiki;
 
@@ -95,9 +91,6 @@ public class AbstractSimpleControllerTest
         MockitoAnnotations.initMocks(this);
 
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-        Provider<XWikiContext> provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
-        this.xcontext = provider.get();
-        doReturn(this.xWiki).when(this.xcontext).getWiki();
 
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
         doReturn(patientDocument).when(this.patient).getDocument();
@@ -171,54 +164,12 @@ public class AbstractSimpleControllerTest
     // -----------------------------------save() tests-----------------------------------
 
     @Test
-    public void saveCatchesExceptionFromDocumentAccess() throws Exception
-    {
-        Exception exception = new Exception();
-        doThrow(exception).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
-
-        this.mocker.getComponentUnderTest().save(this.patient);
-
-        verify(this.mocker.getMockedLogger()).error("Failed to save {}: [{}]", DATA_NAME, exception.getMessage());
-    }
-
-    @Test
-    public void saveCatchesExceptionWhenPatientDoesNotHavePatientClass() throws ComponentLookupException
-    {
-        doReturn(null).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
-
-        this.mocker.getComponentUnderTest().save(this.patient);
-
-        verify(this.mocker.getMockedLogger()).error("Failed to save {}: [{}]", DATA_NAME,
-            PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
-    }
-
-    @Test
-    public void saveCatchesExceptionFromSaveDocument() throws XWikiException, ComponentLookupException
-    {
-        XWikiException exception = new XWikiException();
-        doThrow(exception).when(this.xWiki).saveDocument(any(XWikiDocument.class),
-            anyString(), anyBoolean(), any(XWikiContext.class));
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put(PROPERTY_1, "datum1");
-        map.put(PROPERTY_2, "datum2");
-        map.put(PROPERTY_3, "datum3");
-        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
-        doReturn(patientData).when(this.patient).getData(DATA_NAME);
-
-        this.mocker.getComponentUnderTest().save(this.patient);
-
-        verify(this.xWiki).saveDocument(any(XWikiDocument.class),
-            anyString(), anyBoolean(), any(XWikiContext.class));
-        verify(this.mocker.getMockedLogger()).error("Failed to save {}: [{}]", DATA_NAME, exception.getMessage());
-    }
-
-    @Test
     public void saveReturnsWithoutSavingWhenDataIsNotKeyValueBased() throws ComponentLookupException, XWikiException
     {
         PatientData<String> patientData = new SimpleValuePatientData<>(DATA_NAME, "datum");
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
 
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
 
         verify(this.data, never()).setStringValue(anyString(), anyString());
         verify(this.xWiki, never()).saveDocument(any(XWikiDocument.class),
@@ -235,9 +186,8 @@ public class AbstractSimpleControllerTest
         PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
 
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
 
-        verify(this.xWiki).saveDocument(this.doc, "Updated test from JSON", true, this.xcontext);
         verify(this.data).setStringValue(PROPERTY_1, "datum1");
         verify(this.data).setStringValue(PROPERTY_2, "datum2");
         verify(this.data).setStringValue(PROPERTY_3, "datum3");

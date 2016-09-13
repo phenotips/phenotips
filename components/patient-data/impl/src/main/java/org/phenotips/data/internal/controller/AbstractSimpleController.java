@@ -23,6 +23,7 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.bridge.DocumentModelBridge;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -32,12 +33,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -56,10 +55,6 @@ public abstract class AbstractSimpleController implements PatientDataController<
     /** Logging helper object. */
     @Inject
     private Logger logger;
-
-    /** Provides access to the current execution context. */
-    @Inject
-    private Provider<XWikiContext> contextProvider;
 
     @Override
     public PatientData<String> load(Patient patient)
@@ -84,28 +79,19 @@ public abstract class AbstractSimpleController implements PatientDataController<
     }
 
     @Override
-    public void save(Patient patient)
+    public void save(Patient patient, DocumentModelBridge doc)
     {
-        try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            BaseObject xwikiDataObject = doc.getXObject(Patient.CLASS_REFERENCE);
-            if (xwikiDataObject == null) {
-                throw new IllegalArgumentException(ERROR_MESSAGE_NO_PATIENT_CLASS);
-            }
+        BaseObject xwikiDataObject = ((XWikiDocument) doc).getXObject(Patient.CLASS_REFERENCE);
+        if (xwikiDataObject == null) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+        }
 
-            PatientData<String> data = patient.<String>getData(this.getName());
-            if (!data.isNamed()) {
-                return;
-            }
-            for (String property : this.getProperties()) {
-                xwikiDataObject.setStringValue(property, data.get(property));
-            }
-
-            XWikiContext context = this.contextProvider.get();
-            String comment = String.format("Updated %s from JSON", this.getName());
-            context.getWiki().saveDocument(doc, comment, true, context);
-        } catch (Exception e) {
-            this.logger.error("Failed to save {}: [{}]", this.getName(), e.getMessage());
+        PatientData<String> data = patient.<String>getData(this.getName());
+        if (!data.isNamed()) {
+            return;
+        }
+        for (String property : this.getProperties()) {
+            xwikiDataObject.setStringValue(property, data.get(property));
         }
     }
 

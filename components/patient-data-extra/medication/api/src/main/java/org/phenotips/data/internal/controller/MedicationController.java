@@ -24,6 +24,7 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 
 import java.util.Collection;
@@ -114,22 +115,20 @@ public class MedicationController implements PatientDataController<Medication>
     }
 
     @Override
-    public void save(Patient patient)
+    public void save(Patient patient, DocumentModelBridge doc)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-
             PatientData<Medication> data = patient.getData(DATA_NAME);
             if (data == null || !data.isIndexed()) {
                 return;
             }
-            doc.removeXObjects(Medication.CLASS_REFERENCE);
+            ((XWikiDocument) doc).removeXObjects(Medication.CLASS_REFERENCE);
             XWikiContext context = this.xcontext.get();
             for (Medication m : data) {
                 if (m == null) {
                     continue;
                 }
-                BaseObject o = doc.newXObject(Medication.CLASS_REFERENCE, context);
+                BaseObject o = ((XWikiDocument) doc).newXObject(Medication.CLASS_REFERENCE, context);
                 o.setStringValue(Medication.NAME, m.getName());
                 o.setStringValue(Medication.GENERIC_NAME, m.getGenericName());
                 o.setStringValue(Medication.DOSE, m.getDose());
@@ -143,8 +142,6 @@ public class MedicationController implements PatientDataController<Medication>
                 }
                 o.setLargeStringValue(Medication.NOTES, m.getNotes());
             }
-
-            context.getWiki().saveDocument(doc, "Updated medication data from JSON", true, context);
         } catch (Exception ex) {
             this.logger.error("Failed to save medication data: [{}]", ex.getMessage());
         }

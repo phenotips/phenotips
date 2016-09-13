@@ -25,7 +25,6 @@ import org.phenotips.data.PhenoTipsDate;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -53,10 +52,7 @@ import com.xpn.xwiki.objects.BaseObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -72,8 +68,6 @@ public class DatesControllerTest
         new MockitoComponentMockingRule<PatientDataController<PhenoTipsDate>>(DatesController.class);
 
     private DocumentAccessBridge documentAccessBridge;
-
-    private Execution execution;
 
     @Mock
     private ExecutionContext executionContext;
@@ -104,14 +98,12 @@ public class DatesControllerTest
         MockitoAnnotations.initMocks(this);
 
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-        this.execution = this.mocker.getInstance(Execution.class);
 
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
         doReturn(patientDocument).when(this.patient).getDocument();
         doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
         doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
-        doReturn(this.executionContext).when(this.execution).getContext();
         doReturn(this.xWikiContext).when(this.executionContext).getProperty("xwikicontext");
         doReturn(this.xWiki).when(this.xWikiContext).getWiki();
     }
@@ -225,34 +217,13 @@ public class DatesControllerTest
         return calendar.getTime();
     }
 
-    @Test
-    public void saveCatchesExceptionWhenPatientDoesNotHavePatientClass() throws ComponentLookupException
-    {
-        doReturn(null).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
-
-        this.mocker.getComponentUnderTest().save(this.patient);
-
-        verify(this.mocker.getMockedLogger()).error("Failed to save dates: [{}]",
-            PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
-    }
-
-    @Test
-    public void saveCatchesExceptionWhenGetDateDataReturnsNull() throws ComponentLookupException
-    {
-        doReturn(null).when(this.patient).getData(DATA_NAME);
-
-        this.mocker.getComponentUnderTest().save(this.patient);
-
-        verify(this.mocker.getMockedLogger()).error("Failed to save dates: [{}]", (String) null);
-    }
-
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void saveDoesNotContinueIfDateDataIsNotNamed() throws ComponentLookupException
     {
         doReturn(this.dateData).when(this.patient).getData(DATA_NAME);
         doReturn(false).when(this.dateData).isNamed();
 
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
 
         verify(this.data, never()).setDateValue(anyString(), any(Date.class));
     }
@@ -265,7 +236,7 @@ public class DatesControllerTest
         doReturn(true).when(this.dateData).containsKey(anyString());
         doReturn(null).when(this.dateData).get(anyString());
 
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
 
         String deathAsEnteredField =
             DatesController.CORRESPONDING_ASENTERED_FIELDNAMES.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME);
@@ -282,24 +253,9 @@ public class DatesControllerTest
         doReturn(true).when(this.dateData).isNamed();
         doReturn(false).when(this.dateData).containsKey(anyString());
 
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
 
         verifyZeroInteractions(this.data);
-    }
-
-    @Test
-    public void saveCatchesXWikiException() throws XWikiException, ComponentLookupException
-    {
-        doReturn(this.dateData).when(this.patient).getData(DATA_NAME);
-        doReturn(true).when(this.dateData).isNamed();
-        doReturn(null).when(this.dateData).get(anyString());
-        XWikiException exception = new XWikiException();
-        doThrow(exception).when(this.xWiki).saveDocument(any(XWikiDocument.class),
-            anyString(), any(Boolean.class), any(XWikiContext.class));
-
-        this.mocker.getComponentUnderTest().save(this.patient);
-
-        verify(this.mocker.getMockedLogger()).error("Failed to save dates: [{}]", exception.getMessage());
     }
 
     @Test
@@ -317,7 +273,7 @@ public class DatesControllerTest
         PatientData<PhenoTipsDate> datesData = new DictionaryPatientData<>(DATA_NAME, datesMap);
         doReturn(datesData).when(this.patient).getData(DATA_NAME);
 
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
 
         // birth date and death date have "date_as_entered" companion fields, both field+companion should be set
         String deathAsEnteredField =
@@ -335,8 +291,6 @@ public class DatesControllerTest
         // exam date does not have a "date_as_entered" companion
         verify(this.data).setDateValue(DatesController.PATIENT_EXAMDATE_FIELDNAME,
             examDate.toEarliestPossibleISODate());
-
-        verify(this.xWiki).saveDocument(same(this.doc), anyString(), eq(true), same(this.xWikiContext));
     }
 
     @Test

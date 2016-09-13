@@ -55,7 +55,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -207,10 +206,8 @@ public class ParentalAgeControllerTest
     {
         doReturn(this.patientData).when(this.patient).getData(this.parentalAgeController.getName());
         doReturn(false).when(this.patientData).isNamed();
-        this.parentalAgeController.save(this.patient);
+        this.parentalAgeController.save(this.patient, this.doc);
         verifyNoMoreInteractions(this.doc);
-        verify(this.xWikiContext.getWiki(), never()).saveDocument(this.doc,
-            "Updated parental age from JSON", true, this.xWikiContext);
     }
 
     @Test
@@ -224,12 +221,10 @@ public class ParentalAgeControllerTest
         doReturn(AGE_NON_ZERO).when(this.patientData).get(MATERNAL_AGE);
         doReturn(AGE_NON_ZERO).when(this.patientData).get(PATERNAL_AGE);
 
-        this.parentalAgeController.save(this.patient);
+        this.parentalAgeController.save(this.patient, this.doc);
 
         verify(data).set(MATERNAL_AGE, AGE_NON_ZERO, this.xWikiContext);
         verify(data).set(PATERNAL_AGE, AGE_NON_ZERO, this.xWikiContext);
-        verify(this.xWikiContext.getWiki()).saveDocument(this.doc,
-            "Updated parental age from JSON", true, this.xWikiContext);
     }
 
     @Test
@@ -238,8 +233,7 @@ public class ParentalAgeControllerTest
         Exception testException = new Exception("Test Exception");
         doThrow(testException).when(this.documentAccessBridge).getDocument(this.patientDocument);
 
-        this.parentalAgeController.save(this.patient);
-        verify(this.logger).error("Failed to save parental age: [{}]", testException.getMessage());
+        this.parentalAgeController.save(this.patient, this.doc);
     }
 
     @Test

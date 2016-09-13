@@ -24,6 +24,7 @@ import org.phenotips.data.PhenoTipsDate;
 import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 
 import java.util.Arrays;
@@ -34,14 +35,12 @@ import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.codehaus.plexus.util.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -78,10 +77,6 @@ public class LifeStatusController implements PatientDataController<String>
     @Inject
     private DocumentAccessBridge documentAccessBridge;
 
-    /** Provides access to the current execution context. */
-    @Inject
-    private Provider<XWikiContext> xcontext;
-
     @Override
     public PatientData<String> load(Patient patient)
     {
@@ -113,33 +108,26 @@ public class LifeStatusController implements PatientDataController<String>
     }
 
     @Override
-    public void save(Patient patient)
+    public void save(Patient patient, DocumentModelBridge doc)
     {
-        try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
-            if (data == null) {
-                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
-            }
-
-            PatientData<String> lifeStatus = patient.getData(DATA_NAME);
-            PatientData<PhenoTipsDate> dates = patient.getData("dates");
-
-            Integer deathDateUnknown = 0;
-            if (lifeStatus != null && DECEASED.equals(lifeStatus.getValue())) {
-                deathDateUnknown = 1;
-            }
-            // check if date_of_death is set - if it is unknown_death_date should be unset
-            if (dates != null && dates.isNamed() && dates.get(PATIENT_DATEOFDEATH_FIELDNAME) != null) {
-                deathDateUnknown = 0;
-            }
-
-            data.setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, deathDateUnknown);
-
-            this.xcontext.get().getWiki().saveDocument(doc, "Updated life status from JSON", true, this.xcontext.get());
-        } catch (Exception e) {
-            this.logger.error("Failed to save life status: [{}]", e.getMessage());
+        BaseObject data = ((XWikiDocument) doc).getXObject(Patient.CLASS_REFERENCE);
+        if (data == null) {
+            throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
         }
+
+        PatientData<String> lifeStatus = patient.getData(DATA_NAME);
+        PatientData<PhenoTipsDate> dates = patient.getData("dates");
+
+        Integer deathDateUnknown = 0;
+        if (lifeStatus != null && DECEASED.equals(lifeStatus.getValue())) {
+            deathDateUnknown = 1;
+        }
+        // check if date_of_death is set - if it is unknown_death_date should be unset
+        if (dates != null && dates.isNamed() && dates.get(PATIENT_DATEOFDEATH_FIELDNAME) != null) {
+            deathDateUnknown = 0;
+        }
+
+        data.setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, deathDateUnknown);
     }
 
     @Override

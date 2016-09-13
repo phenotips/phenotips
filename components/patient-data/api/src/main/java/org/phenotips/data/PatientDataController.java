@@ -17,6 +17,7 @@
  */
 package org.phenotips.data;
 
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
@@ -33,7 +34,7 @@ import org.json.JSONObject;
  * <p>
  * The {@link #load(Patient)} method is responsible for populating a {@link Patient} object with actual data from the
  * patient record. Data read from the record can be accessed using the {@link Patient}'s {@link Patient#getData(String)
- * custom data access method}. The {@link #save(Patient)} method is responsible for storing back into the database the
+ * custom data access method}. The {@link #save(Patient, DocumentModelBridge)} method is responsible for storing back into the database the
  * custom data.
  * </p>
  * <p>
@@ -58,8 +59,8 @@ public interface PatientDataController<T>
     String ERROR_MESSAGE_NO_PATIENT_CLASS = "The patient does not have a PatientClass";
 
     /**
-     * The error message that should be used when a controller expects data in PatientClass
-     * associated with the controller to be in a certain format and it is not.
+     * The error message that should be used when a controller expects data in PatientClass associated with the
+     * controller to be in a certain format and it is not.
      */
     String ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT = "controller data in memory is in unexpected format";
 
@@ -76,9 +77,10 @@ public interface PatientDataController<T>
      * Plays the role of a serialization function. Given a patient, saves the data that it {@link #load(Patient) loaded}
      * for this patient in the underlying document storing the patient record.
      *
-     * @param patient the patient being saved
+     * @param patient the patient object with data to be saved
+     * @param document the patient document being saved
      */
-    void save(Patient patient);
+    void save(Patient patient, DocumentModelBridge document);
 
     /**
      * Exports the data being managed by this data controller into the patient JSON export.

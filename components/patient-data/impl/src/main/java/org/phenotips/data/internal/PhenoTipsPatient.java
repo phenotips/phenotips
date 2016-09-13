@@ -418,11 +418,8 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
 
             // update features' categories objects in document
             updateCategories(doc, context);
-
-            context.getWiki().saveDocument(doc, "Updated features from JSON", true, context);
-
         } catch (Exception ex) {
-            this.logger.warn("Failed to update patient features from JSON [{}]: {}", ex.getMessage(), ex);
+            this.logger.error("Failed to update patient features from JSON [{}]: {}", ex.getMessage(), ex);
         }
     }
 
@@ -513,10 +510,9 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
                 data.set(DISORDER_PROPERTIES_OMIMID, null, context);
                 // update the values in the document (overwriting the old list, if any)
                 data.set(DISORDER_PROPERTIES_OMIMID, disorderValues, context);
-                context.getWiki().saveDocument(doc, "Updated disorders from JSON", true, context);
             }
         } catch (Exception ex) {
-            this.logger.warn("Failed to update patient disorders from JSON [{}]: {}", ex.getMessage(), ex);
+            this.logger.error("Failed to update patient disorders from JSON [{}]: {}", ex.getMessage(), ex);
         }
     }
 
@@ -529,7 +525,6 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
 
         try {
             // TODO: Check versions and throw if versions mismatch if necessary
-            // TODO: Separate updateFromJSON and saveToDB? Move to PatientRepository?
 
             XWikiContext context = getXContext();
 
@@ -546,20 +541,22 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
                     PatientData<?> patientData = serializer.readJSON(json);
                     if (patientData != null) {
                         this.extraData.put(patientData.getName(), patientData);
-                        serializer.save(this);
+                        serializer.save(this, this.document);
                         this.logger.info("Successfully updated patient form JSON using serializer [{}]",
                             serializer.getName());
                     }
                 } catch (UnsupportedOperationException ex) {
-                    this.logger.info("Unable to update patient from JSON using serializer [{}]: not supported",
+                    this.logger.debug("Unable to update patient from JSON using serializer [{}]: not supported",
                         serializer.getName());
                 } catch (Exception ex) {
-                    this.logger.warn("Failed to update patient data from JSON using serializer [{}]: {}",
+                    this.logger.error("Failed to update patient data from JSON using serializer [{}]: {}",
                         serializer.getName(), ex.getMessage(), ex);
                 }
             }
+
+            context.getWiki().saveDocument(this.document, "Updated from JSON", true, context);
         } catch (Exception ex) {
-            this.logger.warn("Failed to update patient data from JSON [{}]: {}", ex.getMessage(), ex);
+            this.logger.error("Failed to update patient data from JSON [{}]: {}", ex.getMessage(), ex);
         }
     }
 
