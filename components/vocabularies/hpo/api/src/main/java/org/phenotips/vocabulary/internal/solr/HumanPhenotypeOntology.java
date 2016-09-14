@@ -106,7 +106,7 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
     @Override
     public String getCitation() {
         return "The Human Phenotype Ontology project: linking molecular biology and disease through phenotype data."
-                + " Sebastian K\\u00f6hler, Sandra C Doelken, Christopher J. Mungall, Sebastian Bauer, Helen V. Firth,"
+                + " Sebastian K\u00f6hler, Sandra C Doelken, Christopher J. Mungall, Sebastian Bauer, Helen V. Firth,"
                 + " et al. Nucl. Acids Res. (1 January 2014) 42 (D1): D966-D974 doi:10.1093/nar/gkt1026";
     }
 

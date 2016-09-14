@@ -132,7 +132,7 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
 
     @Override
     public String getCitation() {
-        return "Online Mendelian Inheritance in Man, OMIM\\u00ae. McKusick-Nathans Institute of Genetic Medicine,"
+        return "Online Mendelian Inheritance in Man, OMIM\u00ae. McKusick-Nathans Institute of Genetic Medicine,"
                 + " Johns Hopkins University (Baltimore, MD)";
     }
 
