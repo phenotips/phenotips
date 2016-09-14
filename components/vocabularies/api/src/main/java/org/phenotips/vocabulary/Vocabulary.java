@@ -182,4 +182,18 @@ public interface Vocabulary
      * @return a version identifier, or {@code null} if the version cannot be determined
      */
     String getVersion();
+
+    /**
+     * Get the website url for the vocabulary.
+     *
+     * @return a String representation of the url for the vocabulary website.
+     */
+    String getWebsite();
+
+    /**
+     * Get the citation for the vocabulary.
+     *
+     * @return the string containing the citation for the vocabulary.
+     */
+    String getCitation();
 }

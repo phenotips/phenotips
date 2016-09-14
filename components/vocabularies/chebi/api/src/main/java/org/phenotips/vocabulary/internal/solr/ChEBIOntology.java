@@ -77,4 +77,16 @@ public class ChEBIOntology extends AbstractOBOSolrVocabulary
         result.add("ChEBI");
         return result;
     }
+
+    @Override
+    public String getWebsite() {
+        return "https://www.ebi.ac.uk/chebi/";
+    }
+
+    @Override
+    public String getCitation() {
+        return "The ChEBI reference database and ontology for biologically relevant chemistry: enhancements for"
+                + " 2013. Hastings, J., de Matos, P., Dekker, A., Ennis, M., Harsha, B., Kale, N., Muthukrishnan, V.,"
+                + " Owen, G., Turner, S., Williams, M., and Steinbeck, C. (2013). Nucleic Acids Res.";
+    }
 }

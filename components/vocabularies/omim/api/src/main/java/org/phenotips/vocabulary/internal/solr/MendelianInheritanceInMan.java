@@ -126,6 +126,17 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
     }
 
     @Override
+    public String getWebsite() {
+        return "http://www.omim.org/";
+    }
+
+    @Override
+    public String getCitation() {
+        return "Online Mendelian Inheritance in Man, OMIM\\u00ae. McKusick-Nathans Institute of Genetic Medicine,"
+                + " Johns Hopkins University (Baltimore, MD)";
+    }
+
+    @Override
     public String getDefaultSourceLocation()
     {
         return OmimSourceParser.OMIM_SOURCE_URL;

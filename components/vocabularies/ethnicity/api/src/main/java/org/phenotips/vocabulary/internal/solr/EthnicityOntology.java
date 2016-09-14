@@ -107,4 +107,14 @@ public class EthnicityOntology extends AbstractSolrVocabulary
         aliases.add("ETHNO");
         return aliases;
     }
+
+    @Override
+    public String getWebsite() {
+        return "";
+    }
+
+    @Override
+    public String getCitation() {
+        return "";
+    }
 }

@@ -390,6 +390,18 @@
               <method>java.lang.String getName()</method>
               <justification>New methods for better vocabulary identification.</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/vocabulary/Vocabulary</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getWebsite()</method>
+              <justification>New methods for better vocabulary identification; helps specify the vocabulary's website</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/vocabulary/Vocabulary</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getCitation()</method>
+              <justification>New methods for better vocabulary identification</justification>
+            </difference>
 
             <difference>
               <className>org/phenotips/data/permissions/PermissionsManager</className>
