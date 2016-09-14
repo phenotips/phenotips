@@ -80,7 +80,6 @@ public class PhenoTipsPatientConsentManagerTest
         return configDoc;
     }
 
-    @SuppressWarnings("static-access")
     private ConsentConfigurationMocks setUpInitializationWithConfigurationMocks() throws Exception
     {
         ConsentConfigurationMocks mocks = new ConsentConfigurationMocks();
@@ -91,93 +90,108 @@ public class PhenoTipsPatientConsentManagerTest
         baseObjects.add(mocks.consentConfig2);
         baseObjects.add(mocks.consentConfig3);
 
-        doReturn(mocks.id1).when(mocks.consentConfig1).getStringValue(mocks.idKey);
-        doReturn(mocks.label1).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.labelKey), anyString(),
+        doReturn(ConsentConfigurationMocks.TEST_ID1).when(mocks.consentConfig1)
+            .getStringValue(ConsentConfigurationMocks.ID_KEY);
+        doReturn(ConsentConfigurationMocks.TEST_LABEL1).when((XWikiDocument) configDoc).display(
+            Matchers.eq(ConsentConfigurationMocks.LABEL_KEY), anyString(),
             Matchers.eq(mocks.consentConfig1), any(XWikiContext.class));
-        doReturn(mocks.description1).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.descriptionKey), anyString(),
-                Matchers.eq(mocks.consentConfig1), any(XWikiContext.class));
-        doReturn(mocks.req1).when(mocks.consentConfig1).getIntValue(mocks.requiredKey);
-        doReturn(mocks.affects1).when(mocks.consentConfig1).getIntValue(mocks.affectsFieldsKey);
-        doReturn(mocks.formFields1).when(mocks.consentConfig1).getListValue(mocks.fieldsKey);
+        doReturn(ConsentConfigurationMocks.TEST_DESCRIPTION1).when((XWikiDocument) configDoc).display(
+            Matchers.eq(ConsentConfigurationMocks.DESCRIPTION_KEY), anyString(),
+            Matchers.eq(mocks.consentConfig1), any(XWikiContext.class));
+        doReturn(ConsentConfigurationMocks.TEST_REQUIRED1).when(mocks.consentConfig1)
+            .getIntValue(ConsentConfigurationMocks.REQUIRED_KEY);
+        doReturn(ConsentConfigurationMocks.TEST_AFFECTS1).when(mocks.consentConfig1)
+            .getIntValue(ConsentConfigurationMocks.AFFECTS_FIELDS_KEY);
+        doReturn(mocks.formFields1).when(mocks.consentConfig1).getListValue(ConsentConfigurationMocks.FIELDS_KEY);
 
-        doReturn(mocks.id2).when(mocks.consentConfig2).getStringValue(mocks.idKey);
-        doReturn(mocks.label2).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.labelKey), anyString(),
+        doReturn(ConsentConfigurationMocks.TEST_ID2).when(mocks.consentConfig2)
+            .getStringValue(ConsentConfigurationMocks.ID_KEY);
+        doReturn(ConsentConfigurationMocks.TEST_LABEL2).when((XWikiDocument) configDoc).display(
+            Matchers.eq(ConsentConfigurationMocks.LABEL_KEY), anyString(),
             Matchers.eq(mocks.consentConfig2), any(XWikiContext.class));
-        doReturn(mocks.description2).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.descriptionKey), anyString(),
-                Matchers.eq(mocks.consentConfig2), any(XWikiContext.class));
-        doReturn(mocks.req2).when(mocks.consentConfig2).getIntValue(mocks.requiredKey);
-        doReturn(mocks.affects2).when(mocks.consentConfig2).getIntValue(mocks.affectsFieldsKey);
-        doReturn(mocks.formFields2).when(mocks.consentConfig2).getListValue(mocks.fieldsKey);
+        doReturn(ConsentConfigurationMocks.TEST_DESCRIPTION2).when((XWikiDocument) configDoc).display(
+            Matchers.eq(ConsentConfigurationMocks.DESCRIPTION_KEY), anyString(),
+            Matchers.eq(mocks.consentConfig2), any(XWikiContext.class));
+        doReturn(ConsentConfigurationMocks.TEST_REQUIRED2).when(mocks.consentConfig2)
+            .getIntValue(ConsentConfigurationMocks.REQUIRED_KEY);
+        doReturn(ConsentConfigurationMocks.TEST_AFFECTS2).when(mocks.consentConfig2)
+            .getIntValue(ConsentConfigurationMocks.AFFECTS_FIELDS_KEY);
+        doReturn(mocks.formFields2).when(mocks.consentConfig2).getListValue(ConsentConfigurationMocks.FIELDS_KEY);
 
-        doReturn(mocks.id3).when(mocks.consentConfig3).getStringValue(mocks.idKey);
-        doReturn(mocks.label3).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.labelKey), anyString(),
+        doReturn(ConsentConfigurationMocks.TEST_ID3).when(mocks.consentConfig3)
+            .getStringValue(ConsentConfigurationMocks.ID_KEY);
+        doReturn(ConsentConfigurationMocks.TEST_LABEL3).when((XWikiDocument) configDoc).display(
+            Matchers.eq(ConsentConfigurationMocks.LABEL_KEY), anyString(),
             Matchers.eq(mocks.consentConfig3), any(XWikiContext.class));
-        doReturn(mocks.description3).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.descriptionKey), anyString(),
-                Matchers.eq(mocks.consentConfig3), any(XWikiContext.class));
-        doReturn(mocks.req3).when(mocks.consentConfig3).getIntValue(mocks.requiredKey);
-        doReturn(mocks.affects3).when(mocks.consentConfig3).getIntValue(mocks.affectsFieldsKey);
-        doReturn(mocks.formFields3).when(mocks.consentConfig3).getListValue(mocks.fieldsKey);
+        doReturn(ConsentConfigurationMocks.TEST_DESCRIPTION3).when((XWikiDocument) configDoc).display(
+            Matchers.eq(ConsentConfigurationMocks.DESCRIPTION_KEY), anyString(),
+            Matchers.eq(mocks.consentConfig3), any(XWikiContext.class));
+        doReturn(ConsentConfigurationMocks.TEST_REQUIRED3).when(mocks.consentConfig3)
+            .getIntValue(ConsentConfigurationMocks.REQUIRED_KEY);
+        doReturn(ConsentConfigurationMocks.TEST_AFFECTS3).when(mocks.consentConfig3)
+            .getIntValue(ConsentConfigurationMocks.AFFECTS_FIELDS_KEY);
+        doReturn(mocks.formFields3).when(mocks.consentConfig3).getListValue(ConsentConfigurationMocks.FIELDS_KEY);
 
         return mocks;
     }
 
     private class ConsentConfigurationMocks
     {
-        static final String idKey = "id";
+        static final String ID_KEY = "id";
 
-        static final String labelKey = "label";
+        static final String LABEL_KEY = "label";
 
-        static final String descriptionKey = "description";
+        static final String DESCRIPTION_KEY = "description";
 
-        static final String requiredKey = "required";
+        static final String REQUIRED_KEY = "required";
 
-        static final String fieldsKey = "fields";
+        static final String FIELDS_KEY = "fields";
 
-        static final String affectsFieldsKey = "affectsFields";
+        static final String AFFECTS_FIELDS_KEY = "affectsFields";
 
-        static final String id1 = "id1";
+        static final String TEST_ID1 = "id1";
 
-        static final String label1 = "clean label";
+        static final String TEST_LABEL1 = "clean label";
 
-        static final String description1 = "description";
+        static final String TEST_DESCRIPTION1 = "description";
 
         final List<String> formFields1 = Arrays.asList("field1", "field2", "field3");
 
-        Integer affects1 = 1;
+        static final int TEST_AFFECTS1 = 1;
 
-        Integer req1 = 1;
+        static final int TEST_REQUIRED1 = 1;
 
-        Boolean req1B = true;
+        static final boolean TEST_REQUIRED_BOOL = true;
 
-        static final String id2 = "id2";
+        static final String TEST_ID2 = "id2";
 
-        static final String label2 = "non <div>clean</div> <p>label</p>";
+        static final String TEST_LABEL2 = "non <div>clean</div> <p>label</p>";
 
-        static final String label2expected = "non clean label";
+        static final String TEST_LABEL2_EXPECTED = "non clean label";
 
-        static final String description2 = "";
+        static final String TEST_DESCRIPTION2 = "";
 
         final List<String> formFields2 = null;
 
-        Integer affects2 = 0;
+        static final int TEST_AFFECTS2 = 0;
 
-        Integer req2 = 0;
+        static final int TEST_REQUIRED2 = 0;
 
-        Boolean req2B = false;
+        static final boolean TEST_REQUIRED2_BOOL = false;
 
-        static final String id3 = "id3";
+        static final String TEST_ID3 = "id3";
 
-        static final String label3 = "blah";
+        static final String TEST_LABEL3 = "blah";
 
-        static final String description3 = "Long description with a link [[link>>http://abc.com]]";
+        static final String TEST_DESCRIPTION3 = "Long description with a link [[link>>http://abc.com]]";
 
         final List<String> formFields3 = new LinkedList<>();
 
-        Integer affects3 = 1;
+        static final int TEST_AFFECTS3 = 1;
 
-        Integer req3 = 1;
+        static final int TEST_REQUIRED3 = 1;
 
-        Boolean req3B = true;
+        static final boolean TEST_REQUIRED3_BOOL = true;
 
         BaseObject consentConfig1 = mock(BaseObject.class);
 
@@ -206,7 +220,6 @@ public class PhenoTipsPatientConsentManagerTest
      * For testing normal initialization, when there are consents configured in the system. Also tests for label strings
      * being properly cleaned.
      */
-    @SuppressWarnings("static-access")
     @Test
     public void testConfiguredInitialization() throws Exception
     {
@@ -216,20 +229,21 @@ public class PhenoTipsPatientConsentManagerTest
             ConsentConfigurationMocks.NUM_CONSENTS);
 
         for (Consent consent : this.mocker.getComponentUnderTest().getSystemConsents()) {
-            if (ConsentConfigurationMocks.id1.equals(consent.getId())) {
-                Assert.assertSame(consent.getLabel(), ConsentConfigurationMocks.label1);
-                Assert.assertSame(consent.getDescription(), ConsentConfigurationMocks.description1);
-                Assert.assertSame(consent.isRequired(), mocks.req1B);
+            if (ConsentConfigurationMocks.TEST_ID1.equals(consent.getId())) {
+                Assert.assertSame(consent.getLabel(), ConsentConfigurationMocks.TEST_LABEL1);
+                Assert.assertSame(consent.getDescription(), ConsentConfigurationMocks.TEST_DESCRIPTION1);
+                Assert.assertSame(consent.isRequired(), ConsentConfigurationMocks.TEST_REQUIRED_BOOL);
                 Assert.assertSame(consent.getFields().size(), mocks.formFields1.size());
-            } else if (ConsentConfigurationMocks.id2.equals(consent.getId())) {
-                Assert.assertTrue(StringUtils.equals(consent.getLabel(), ConsentConfigurationMocks.label2expected));
-                Assert.assertSame(consent.isRequired(), mocks.req2B);
+            } else if (ConsentConfigurationMocks.TEST_ID2.equals(consent.getId())) {
+                Assert
+                    .assertTrue(StringUtils.equals(consent.getLabel(), ConsentConfigurationMocks.TEST_LABEL2_EXPECTED));
+                Assert.assertSame(consent.isRequired(), ConsentConfigurationMocks.TEST_REQUIRED2_BOOL);
                 Assert.assertSame(consent.getDescription(), null); // expect to get null instead of empty descriptions
                 Assert.assertSame(consent.getFields(), null);
-            } else if (ConsentConfigurationMocks.id3.equals(consent.getId())) {
-                Assert.assertTrue(StringUtils.equals(consent.getLabel(), ConsentConfigurationMocks.label3));
-                Assert.assertSame(consent.isRequired(), mocks.req3B);
-                Assert.assertSame(consent.getDescription(), ConsentConfigurationMocks.description3);
+            } else if (ConsentConfigurationMocks.TEST_ID3.equals(consent.getId())) {
+                Assert.assertTrue(StringUtils.equals(consent.getLabel(), ConsentConfigurationMocks.TEST_LABEL3));
+                Assert.assertSame(consent.isRequired(), ConsentConfigurationMocks.TEST_REQUIRED3_BOOL);
+                Assert.assertSame(consent.getDescription(), ConsentConfigurationMocks.TEST_DESCRIPTION3);
                 Assert.assertSame(consent.getFields().size(), 0);
             } else {
                 Assert.fail("Found unexpected consent");
@@ -284,7 +298,7 @@ public class PhenoTipsPatientConsentManagerTest
     public void testLoadingConsentsFromPatient_someGranted() throws Exception
     {
         List<String> ids = new LinkedList<>();
-        ids.add(ConsentConfigurationMocks.id1);
+        ids.add(ConsentConfigurationMocks.TEST_ID1);
 
         this.testPatientConsents(ids);
     }
@@ -309,7 +323,7 @@ public class PhenoTipsPatientConsentManagerTest
         String patientId = "pid";
 
         List<String> consentIds = new LinkedList<>();
-        consentIds.add(ConsentConfigurationMocks.id1);
+        consentIds.add(ConsentConfigurationMocks.TEST_ID1);
 
         this.setUpInitializationWithConfigurationMocks();
         DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
@@ -325,9 +339,9 @@ public class PhenoTipsPatientConsentManagerTest
         doReturn(idsHolder).when((XWikiDocument) patientDoc).getXObject(any(EntityReference.class));
         doReturn(consentIds).when(idsHolder).getListValue(anyString());
 
-        Assert.assertTrue(this.mocker.getComponentUnderTest().hasConsent(patient, ConsentConfigurationMocks.id1));
-        Assert.assertFalse(this.mocker.getComponentUnderTest().hasConsent(patient, ConsentConfigurationMocks.id2));
-        Assert.assertFalse(this.mocker.getComponentUnderTest().hasConsent(patient, ConsentConfigurationMocks.id3));
+        Assert.assertTrue(this.mocker.getComponentUnderTest().hasConsent(patient, ConsentConfigurationMocks.TEST_ID1));
+        Assert.assertFalse(this.mocker.getComponentUnderTest().hasConsent(patient, ConsentConfigurationMocks.TEST_ID2));
+        Assert.assertFalse(this.mocker.getComponentUnderTest().hasConsent(patient, ConsentConfigurationMocks.TEST_ID3));
     }
 
     private void setUpSettingConsents(BaseObject idsHolder, Patient patient, DocumentModelBridge patientDoc,
@@ -347,11 +361,9 @@ public class PhenoTipsPatientConsentManagerTest
         doReturn(wiki).when(context).getWiki();
     }
 
-    @SuppressWarnings("static-access")
     @Test
     public void testSettingConsentsOnARecord_normal() throws Exception
     {
-        ConsentConfigurationMocks consentMocks = new ConsentConfigurationMocks();
         BaseObject idsHolder = mock(BaseObject.class);
         Patient patient = mock(Patient.class);
         XWikiContext context = mock(XWikiContext.class);
@@ -361,7 +373,7 @@ public class PhenoTipsPatientConsentManagerTest
         this.setUpSettingConsents(idsHolder, patient, patientDoc, context, wiki);
 
         List<String> granted = new LinkedList<>();
-        granted.add(ConsentConfigurationMocks.id1);
+        granted.add(ConsentConfigurationMocks.TEST_ID1);
 
         this.mocker.getComponentUnderTest().setPatientConsents(patient, granted);
 
@@ -369,11 +381,9 @@ public class PhenoTipsPatientConsentManagerTest
         verify(wiki, times(1)).saveDocument(eq((XWikiDocument) patientDoc), anyString(), eq(true), eq(context));
     }
 
-    @SuppressWarnings("static-access")
     @Test
     public void testSettingConsentsOnARecord_xwikiObjectDoesNotExist() throws Exception
     {
-        ConsentConfigurationMocks consentMocks = new ConsentConfigurationMocks();
         BaseObject idsHolder = mock(BaseObject.class);
         Patient patient = mock(Patient.class);
         XWikiContext context = mock(XWikiContext.class);
@@ -386,7 +396,7 @@ public class PhenoTipsPatientConsentManagerTest
             .newXObject(any(EntityReference.class), any(XWikiContext.class));
 
         List<String> granted = new LinkedList<>();
-        granted.add(ConsentConfigurationMocks.id1);
+        granted.add(ConsentConfigurationMocks.TEST_ID1);
 
         this.mocker.getComponentUnderTest().setPatientConsents(patient, granted);
 
@@ -395,11 +405,9 @@ public class PhenoTipsPatientConsentManagerTest
         verify(wiki, times(1)).saveDocument(eq((XWikiDocument) patientDoc), anyString(), eq(true), eq(context));
     }
 
-    @SuppressWarnings("static-access")
     @Test
     public void testSettingConsentsOnARecord_nonExistentConsents() throws Exception
     {
-        ConsentConfigurationMocks consentMocks = new ConsentConfigurationMocks();
         BaseObject idsHolder = mock(BaseObject.class);
         Patient patient = mock(Patient.class);
         XWikiContext context = mock(XWikiContext.class);
@@ -410,8 +418,8 @@ public class PhenoTipsPatientConsentManagerTest
 
         List<String> existingIds = new LinkedList<>();
         List<String> testIds = new LinkedList<>();
-        existingIds.add(ConsentConfigurationMocks.id1);
-        existingIds.add(ConsentConfigurationMocks.id2);
+        existingIds.add(ConsentConfigurationMocks.TEST_ID1);
+        existingIds.add(ConsentConfigurationMocks.TEST_ID2);
         testIds.add("id_nonexistent");
         testIds.addAll(existingIds);
 
