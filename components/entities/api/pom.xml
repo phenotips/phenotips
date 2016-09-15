@@ -40,11 +40,6 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-model</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-bridge</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
