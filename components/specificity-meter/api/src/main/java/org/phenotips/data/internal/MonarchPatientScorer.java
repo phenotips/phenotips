@@ -34,6 +34,7 @@ import org.xwiki.configuration.ConfigurationSource;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -170,7 +171,8 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
             RequestConfig config = RequestConfig.custom().setSocketTimeout(2000).build();
             method.setConfig(config);
             response = this.client.execute(method);
-            JSONObject score = new JSONObject(IOUtils.toString(response.getEntity().getContent()));
+            JSONObject score =
+                new JSONObject(IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
             specificity = new PatientSpecificity(score.getDouble("scaled_score"), now(), SCORER_NAME);
             this.cache.set(key, specificity);
             return specificity.getScore();

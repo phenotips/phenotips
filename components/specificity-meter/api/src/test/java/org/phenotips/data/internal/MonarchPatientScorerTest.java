@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -133,7 +134,8 @@ public class MonarchPatientScorerTest
         CapturingMatcher<HttpPost> reqCapture = new CapturingMatcher<>();
         when(this.client.execute(Matchers.argThat(reqCapture))).thenReturn(this.response);
         when(this.response.getEntity()).thenReturn(this.responseEntity);
-        when(this.responseEntity.getContent()).thenReturn(IOUtils.toInputStream("{\"scaled_score\":2}"));
+        when(this.responseEntity.getContent())
+            .thenReturn(IOUtils.toInputStream("{\"scaled_score\":2}", StandardCharsets.UTF_8));
         double score = this.mocker.getComponentUnderTest().getScore(this.patient);
         Assert.assertEquals(expectedURI, reqCapture.getLastValue().getURI());
         String content =
@@ -170,7 +172,7 @@ public class MonarchPatientScorerTest
         CapturingMatcher<HttpPost> reqCapture = new CapturingMatcher<>();
         when(this.client.execute(Matchers.argThat(reqCapture))).thenReturn(this.response);
         when(this.response.getEntity()).thenReturn(this.responseEntity);
-        when(this.responseEntity.getContent()).thenReturn(IOUtils.toInputStream(""));
+        when(this.responseEntity.getContent()).thenReturn(IOUtils.toInputStream("", StandardCharsets.UTF_8));
         double score = this.mocker.getComponentUnderTest().getScore(this.patient);
         Assert.assertEquals(expectedURI, reqCapture.getLastValue().getURI());
         Assert.assertEquals(-1.0, score, 0.0);
@@ -210,7 +212,8 @@ public class MonarchPatientScorerTest
         CapturingMatcher<HttpPost> reqCapture = new CapturingMatcher<>();
         when(this.client.execute(Matchers.argThat(reqCapture))).thenReturn(this.response);
         when(this.response.getEntity()).thenReturn(this.responseEntity);
-        when(this.responseEntity.getContent()).thenReturn(IOUtils.toInputStream("{\"scaled_score\":2}"));
+        when(this.responseEntity.getContent())
+            .thenReturn(IOUtils.toInputStream("{\"scaled_score\":2}", StandardCharsets.UTF_8));
         CapturingMatcher<PatientSpecificity> specCapture = new CapturingMatcher<>();
         Mockito.doNothing().when(this.cache).set(Matchers.eq("HP:1-HP:2"), Matchers.argThat(specCapture));
         Date d1 = new Date();
@@ -249,7 +252,7 @@ public class MonarchPatientScorerTest
         Mockito.doReturn(this.features).when(this.patient).getFeatures();
         when(this.client.execute(any(HttpUriRequest.class))).thenReturn(this.response);
         when(this.response.getEntity()).thenReturn(this.responseEntity);
-        when(this.responseEntity.getContent()).thenReturn(IOUtils.toInputStream(""));
+        when(this.responseEntity.getContent()).thenReturn(IOUtils.toInputStream("", StandardCharsets.UTF_8));
         Assert.assertNull(this.mocker.getComponentUnderTest().getSpecificity(this.patient));
     }
 
@@ -275,7 +278,8 @@ public class MonarchPatientScorerTest
         CapturingMatcher<HttpPost> reqCapture = new CapturingMatcher<>();
         when(this.client.execute(Matchers.argThat(reqCapture))).thenReturn(this.response);
         when(this.response.getEntity()).thenReturn(this.responseEntity);
-        when(this.responseEntity.getContent()).thenReturn(IOUtils.toInputStream("{\"scaled_score\":2}"));
+        when(this.responseEntity.getContent())
+            .thenReturn(IOUtils.toInputStream("{\"scaled_score\":2}", StandardCharsets.UTF_8));
         // Since the component was already initialized in setUp() with the default URL, re-initialize it
         // with the new configuration mock
         ((Initializable) this.mocker.getComponentUnderTest()).initialize();
