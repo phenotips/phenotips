@@ -98,6 +98,9 @@ public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
             for (String role : possibleRoles) {
                 try {
                     manager = cm.getInstance(PrimaryEntityManager.class, role);
+                    if (manager != null) {
+                        break;
+                    }
                 } catch (ComponentLookupException ex) {
                     // TODO Use a generic manager that can work with any type of group
                 }
