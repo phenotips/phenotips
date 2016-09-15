@@ -142,7 +142,7 @@ public class CollaboratorPrimaryEntityGroup extends AbstractContainerPrimaryEnti
             return ComponentManagerRegistry.getContextComponentManager()
                     .getInstance(PermissionsManager.class, "secure");
         } catch (ComponentLookupException ex) {
-            this.logger.error("Failed to access the query manager: {}", ex.getMessage(), ex);
+            this.logger.error("Failed to access the permission manager: {}", ex.getMessage(), ex);
         }
         return null;
     }
