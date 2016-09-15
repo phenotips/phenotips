@@ -20,6 +20,8 @@ package org.phenotips.entities.internal;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.entities.PrimaryEntity;
 
+import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.rendering.syntax.Syntax;
@@ -63,6 +65,11 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
     protected AbstractPrimaryEntity(XWikiDocument document)
     {
         this.document = document;
+    }
+
+    protected AbstractPrimaryEntity(DocumentReference reference)
+    {
+        this.document =  this.getXWikiDocument(reference);
     }
 
     @Override
@@ -166,5 +173,28 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
             this.logger.error("Unexpected exception while getting the full reference serializer: {}", ex.getMessage());
         }
         return null;
+    }
+
+    private DocumentAccessBridge getBridge()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
+        } catch (ComponentLookupException e) {
+            this.logger.error("Failed to look up DocumentAccessBridge.", e);
+        }
+        return null;
+    }
+
+    protected XWikiDocument getXWikiDocument(DocumentReference documentReference)
+    {
+        XWikiDocument xdocument;
+        try {
+            xdocument = (XWikiDocument) this.getBridge().getDocument(documentReference);
+        } catch (Exception e) {
+            this.logger.error("Could not read XWikiDocument from reference {}", documentReference.getName(),
+                    e.getMessage());
+            return null;
+        }
+        return xdocument;
     }
 }
