@@ -25,6 +25,7 @@ import org.phenotips.entities.PrimaryEntityManager;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -76,7 +77,17 @@ public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
     protected AbstractPrimaryEntityGroup(XWikiDocument document)
     {
         super(document);
+        this.membersManager = getEntityManager();
+    }
 
+    protected AbstractPrimaryEntityGroup(DocumentReference reference)
+    {
+        super(reference);
+        this.membersManager = getEntityManager();
+    }
+
+    private PrimaryEntityManager<E> getEntityManager()
+    {
         PrimaryEntityManager<E> manager = null;
         if (getMemberType() != null) {
             ComponentManager cm = ComponentManagerRegistry.getContextComponentManager();
@@ -96,7 +107,7 @@ public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
             this.logger.error("No suitable primary entity manager found for entities of type [{}] available;"
                 + " certain group operations will fail", getMemberType());
         }
-        this.membersManager = manager;
+        return manager;
     }
 
     @Override

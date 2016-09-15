@@ -23,6 +23,7 @@ import org.phenotips.entities.PrimaryEntityGroup;
 import org.phenotips.entities.PrimaryEntityManager;
 
 import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -77,6 +78,11 @@ public abstract class AbstractContainerPrimaryEntityGroup<E extends PrimaryEntit
     protected AbstractContainerPrimaryEntityGroup(XWikiDocument document)
     {
         super(document);
+    }
+
+    protected AbstractContainerPrimaryEntityGroup(DocumentReference reference)
+    {
+        super(reference);
     }
 
     @Override
