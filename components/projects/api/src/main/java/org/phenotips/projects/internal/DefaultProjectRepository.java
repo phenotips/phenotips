@@ -40,6 +40,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @version $Id$
  */
@@ -118,6 +120,23 @@ public class DefaultProjectRepository
         while (projectIterator.hasNext()) {
             Project project = projectIterator.next();
             if (project.isProjectOpenForContribution()) {
+                projects.add(project);
+            }
+        }
+        return projects;
+    }
+
+    @Override
+    public Collection<Project> getFromString(String projectsString)
+    {
+        Collection<Project> projects = new LinkedList<>();
+        if (StringUtils.isEmpty(projectsString)) {
+            return projects;
+        }
+
+        for (String projectId : projectsString.split(",")) {
+            Project project = this.get(projectId);
+            if (project != null) {
                 projects.add(project);
             }
         }
