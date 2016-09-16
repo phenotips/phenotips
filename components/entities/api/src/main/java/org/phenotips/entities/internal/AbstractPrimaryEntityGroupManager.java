@@ -67,15 +67,19 @@ public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntityG
     {
         try {
             // FIXME GROUP_MEMBERSHIP_CLASS should be replaced with a static method call
+            String bindingClassName = this.localSerializer.serialize(PrimaryEntityGroup.GROUP_MEMBERSHIP_CLASS);
+            String xwikiId = this.xcontextProvider.get().getWikiId() + ":";
+            String groupClass = this.localSerializer.serialize(getEntityXClassReference());
             Query q = this.qm.createQuery(
-                "select gdoc.fullName from Document edoc, edoc.object("
-                    + this.localSerializer.serialize(PrimaryEntityGroup.GROUP_MEMBERSHIP_CLASS)
-                    + ") as binding, Document gdoc, gdoc.object("
-                    + this.localSerializer.serialize(getEntityXClassReference())
-                    + ") as grp where gdoc.space = :gspace and binding.reference = concat('"
-                    + this.xcontextProvider.get().getWikiId()
-                    + ":', gdoc.fullName) and edoc.fullName = :name order by gdoc.fullName asc",
-                Query.XWQL);
+                ", BaseObject obj, BaseObject groupObj, StringProperty property "
+                + "where obj.id.id = property.id and "
+                + "property.value = concat('" + xwikiId + "', doc.fullName) and "
+                + "property.id.name = 'reference' and "
+                + "obj.className = '" + bindingClassName + "' and "
+                + "obj.name = :name and "
+                + "doc.space = :gspace and "
+                + "groupObj.name = doc.fullName and "
+                + "groupObj.className = '" + groupClass + "'", Query.HQL);
             q.bindValue("gspace", this.getDataSpace().getName());
             q.bindValue("name", this.localSerializer.serialize(entity.getDocument()));
             List<String> docNames = q.execute();
