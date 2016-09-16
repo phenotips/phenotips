@@ -19,9 +19,14 @@ package org.phenotips.projects.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRecordInitializer;
+import org.phenotips.projects.data.Project;
+import org.phenotips.projects.data.ProjectRepository;
+import org.phenotips.templates.data.Template;
+import org.phenotips.templates.data.TemplateRepository;
 
 import org.xwiki.component.annotation.Component;
 
+import java.util.Collection;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -47,7 +52,12 @@ public class ProjectAndTemplateAssignmentInitializer implements PatientRecordIni
     private static final String TEMPLATE_SELECTED_KEY = "templateSelected";
 
     @Inject
-    private ProjectAndTemplateBinder ptBinder;
+    @Named("Project")
+    private ProjectRepository projectRepository;
+
+    @Inject
+    @Named("Template")
+    private TemplateRepository templateRepository;
 
     @Inject
     private Provider<XWikiContext> contextProvider;
@@ -62,13 +72,17 @@ public class ProjectAndTemplateAssignmentInitializer implements PatientRecordIni
         // Projects selected
         String[] projectsSelectedValue = parameterMap.get(PROJECTS_SELECTED_KEY);
         if (projectsSelectedValue != null && projectsSelectedValue.length == 1) {
-            this.ptBinder.setProjectsForPatient(projectsSelectedValue[0], patient);
+            Collection<Project> projects = this.projectRepository.getFromString(projectsSelectedValue[0]);
+            new ProjectAndTemplatePatientDecorator(patient).setProjects(projects);
         }
 
         // Template selected
         String[] templateSelected = parameterMap.get(TEMPLATE_SELECTED_KEY);
         if (templateSelected != null && templateSelected.length == 1) {
-            this.ptBinder.setTemplateForPatient(templateSelected[0], patient);
+            Template template = this.templateRepository.get(templateSelected[0]);
+            if (template != null) {
+                new ProjectAndTemplatePatientDecorator(patient).setTemplate(template);
+            }
         }
     }
 }
