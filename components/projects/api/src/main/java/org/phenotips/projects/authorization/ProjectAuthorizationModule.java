@@ -25,7 +25,7 @@ import org.phenotips.projects.access.ContributorAccessLevel;
 import org.phenotips.projects.access.LeaderAccessLevel;
 import org.phenotips.projects.data.Project;
 import org.phenotips.projects.data.ProjectRepository;
-import org.phenotips.projects.internal.ProjectAndTemplateBinder;
+import org.phenotips.projects.internal.ProjectAndTemplatePatientDecorator;
 import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.annotation.Component;
@@ -47,9 +47,6 @@ import javax.inject.Singleton;
 @Singleton
 public class ProjectAuthorizationModule implements AuthorizationModule
 {
-    @Inject
-    private ProjectAndTemplateBinder ptBinder;
-
     @Inject
     private PatientRepository patientRepository;
 
@@ -87,7 +84,7 @@ public class ProjectAuthorizationModule implements AuthorizationModule
 
     private Boolean hasAccess(User user, Right access, Patient patient)
     {
-        Collection<Project> projects = this.ptBinder.getProjectsForPatient(patient);
+        Collection<Project> projects = new ProjectAndTemplatePatientDecorator(patient).getProjects();
         for (Project project : projects) {
 
             Collection<Collaborator> collaborators = project.getCollaborators();
