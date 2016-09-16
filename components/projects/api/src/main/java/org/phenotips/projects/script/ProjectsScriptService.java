@@ -25,8 +25,9 @@ import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.internal.DefaultCollaborator;
 import org.phenotips.projects.data.Project;
 import org.phenotips.projects.data.ProjectRepository;
-import org.phenotips.projects.internal.ProjectAndTemplateBinder;
+import org.phenotips.projects.internal.ProjectAndTemplatePatientDecorator;
 import org.phenotips.templates.data.Template;
+import org.phenotips.templates.data.TemplateRepository;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -57,13 +58,14 @@ public class ProjectsScriptService implements ScriptService
 {
     @Inject
     @Named("Project")
-    private ProjectRepository projectsRepository;
+    private ProjectRepository projectRepository;
+
+    @Inject
+    @Named("Template")
+    private TemplateRepository templateRepository;
 
     @Inject
     private PatientRepository patientsRepository;
-
-    @Inject
-    private ProjectAndTemplateBinder ptBinder;
 
     @Inject
     @Named("secure")
@@ -80,7 +82,7 @@ public class ProjectsScriptService implements ScriptService
      */
     public Project getProjectById(String projectId)
     {
-        return this.projectsRepository.get(projectId);
+        return this.projectRepository.get(projectId);
     }
 
     /**
@@ -89,7 +91,7 @@ public class ProjectsScriptService implements ScriptService
     public List<Project> getProjectsCurrentUserCanContributeTo()
     {
         List<Project> projects = new ArrayList<Project>();
-        projects.addAll(this.projectsRepository.getProjectsCurrentUserCanContributeTo());
+        projects.addAll(this.projectRepository.getProjectsCurrentUserCanContributeTo());
         Collections.sort(projects);
         return projects;
     }
@@ -100,7 +102,7 @@ public class ProjectsScriptService implements ScriptService
     public List<Project> getProjectsWithLeadingRights()
     {
         List<Project> projects = new ArrayList<Project>();
-        projects.addAll(this.projectsRepository.getProjectsWithLeadingRights());
+        projects.addAll(this.projectRepository.getProjectsWithLeadingRights());
         Collections.sort(projects);
         return projects;
     }
@@ -110,17 +112,14 @@ public class ProjectsScriptService implements ScriptService
      * them. For example, if t1,t2 are associated with p1 and t2,t3 are associated with p2, the collection returned for
      * the input "p1,p2" would contain t1,t2,t3.
      *
-     * @param projects command separated project ids
+     * @param projectsString command separated project ids
      * @return collection of templates ids.
      */
-    public Collection<Template> getTemplatesForProjects(String projects)
+    public Collection<Template> getTemplatesForProjects(String projectsString)
     {
+        Collection<Project> projects = this.projectRepository.getFromString(projectsString);
         Set<Template> templates = new HashSet<Template>();
-        for (String projectId : projects.split(",")) {
-            Project project = this.getProjectById(projectId);
-            if (project == null) {
-                continue;
-            }
+        for (Project project : projects) {
             for (Template s : project.getTemplates()) {
                 templates.add(s);
             }
@@ -141,7 +140,9 @@ public class ProjectsScriptService implements ScriptService
         if (patient == null) {
             return projects;
         }
-        projects = this.ptBinder.getProjectsForPatient(patient);
+
+        Collection<Project> projectsCollection = new ProjectAndTemplatePatientDecorator(patient).getProjects();
+        projects.addAll(projectsCollection);
         if (projects.size() > 1) {
             Collections.sort(projects);
         }
@@ -151,13 +152,14 @@ public class ProjectsScriptService implements ScriptService
     /**
      * Assigns projects to a patient.
      *
-     * @param projects colon-separated list of projects to assign
+     * @param projectString comma separated list of projects to assign
      * @param patientId id of patient
      */
-    public void setProjectsForPatient(String projects, String patientId)
+    public void setProjectsForPatient(String projectString, String patientId)
     {
+        Collection<Project> projects = this.projectRepository.getFromString(projectString);
         Patient patient = this.patientsRepository.get(patientId);
-        this.ptBinder.setProjectsForPatient(projects, patient);
+        new ProjectAndTemplatePatientDecorator(patient).setProjects(projects);
     }
 
     /**
@@ -172,7 +174,7 @@ public class ProjectsScriptService implements ScriptService
         if (patient == null) {
             return null;
         }
-        return this.ptBinder.getTemplateForPatient(patient);
+        return new ProjectAndTemplatePatientDecorator(patient).getTemplate();
     }
 
     /**
@@ -184,7 +186,8 @@ public class ProjectsScriptService implements ScriptService
     public void setTemplateForPatient(String templateId, String patientId)
     {
         Patient patient = this.patientsRepository.get(patientId);
-        this.ptBinder.setTemplateForPatient(templateId, patient);
+        Template template = this.templateRepository.get(templateId);
+        new ProjectAndTemplatePatientDecorator(patient).setTemplate(template);
     }
 
     /**
@@ -199,7 +202,7 @@ public class ProjectsScriptService implements ScriptService
     {
         List<Project> projects = this.getProjectsWithLeadingRights();
         if (projects.size() > 0) {
-            return this.projectsRepository.getProjectCondition(baseObjectTable, propertyTable, projects);
+            return this.projectRepository.getProjectCondition(baseObjectTable, propertyTable, projects);
         } else {
             return null;
         }
