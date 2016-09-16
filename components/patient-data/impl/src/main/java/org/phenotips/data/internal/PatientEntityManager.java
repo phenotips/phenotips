@@ -35,6 +35,7 @@ import javax.inject.Singleton;
  * @version $Id$
  * @since 1.0M8
  */
+@Component(roles = { PrimaryEntityManager.class })
 @Named("Patient")
 @Component(roles = {PrimaryEntityManager.class})
 @Singleton
