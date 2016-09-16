@@ -56,6 +56,14 @@ public interface ProjectRepository extends PrimaryEntityGroupManager<Project, Pa
     Collection<Project> getAllProjectsOpenForContribution();
 
     /**
+     * Receives a comma separated list of project ids and returns a collection of Project objects.
+     *
+     * @param projects comma separated list of project ids.
+     * @return a collection of Project objects
+     */
+    Collection<Project> getFromString(String projects);
+
+    /**
      * Returns a condition for an HQL patients query that selects all patients that belong to any project in
      * {@link projects}. This is used, for example, in counting the number of cases for a projects (projects would
      * contain only one project), in showing shared data for user (projects would contains all projects that current
