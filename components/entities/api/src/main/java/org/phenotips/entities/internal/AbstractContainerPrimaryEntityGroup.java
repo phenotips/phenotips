@@ -71,6 +71,9 @@ public abstract class AbstractContainerPrimaryEntityGroup<E extends PrimaryEntit
         new EntityReference("GroupMemberClass", EntityType.DOCUMENT,
             Constants.CODE_SPACE_REFERENCE);
 
+    /** The XProperty used to save the class of contained members. */
+    private static final String CLASS_XPROPERTY = "class";
+
     protected AbstractContainerPrimaryEntityGroup(XWikiDocument document)
     {
         super(document);
@@ -120,6 +123,7 @@ public abstract class AbstractContainerPrimaryEntityGroup<E extends PrimaryEntit
             }
             obj = this.document.newXObject(getMembershipClass(), getXContext());
             obj.setStringValue(getMembershipProperty(), getFullSerializer().serialize(member.getDocument()));
+            obj.setStringValue(getClassProperty(), getFullSerializer().serialize(member.getType()));
             getXContext().getWiki().saveDocument(this.document, "Added member " + member.getDocument(), true,
                 getXContext());
             return true;
@@ -152,5 +156,10 @@ public abstract class AbstractContainerPrimaryEntityGroup<E extends PrimaryEntit
     protected EntityReference getMembershipClass()
     {
         return GROUP_MEMBER_CLASS;
+    }
+
+    protected String getClassProperty()
+    {
+        return CLASS_XPROPERTY;
     }
 }
