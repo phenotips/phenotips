@@ -640,6 +640,26 @@ h1:target, h2:target, h3:target {
 }
 #xdocFooter {
   display: none;
+}
+.language-block {
+  background-color: transparent;
+}
+.language-block .rightmenu {
+  top: 10px;
+  margin-right: 10px;
+}
+.language-block .rightmenu select {
+  text-transform: uppercase;
+  padding: 0;
+  cursor: pointer;
+  font-size: 0.85em;
+  float: right;
+}
+.language-block .rightmenu a {
+  float: right;
+  cursor: default !important;
+  text-decoration: blink;
+  padding-top: 0;
 }</code>
     </property>
     <property>

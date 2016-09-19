@@ -1,0 +1,72 @@
+##################################
+##        LANGUAGE MENU
+##################################
+#if ($xwiki.isMultiLingual())
+  #set ($defaultLanguage = $!xwiki.getXWikiPreference('default_language'))
+  #set ($wikiSettingsLanguages = $!xwiki.getXWikiPreference('languages').trim().split('\s*[,| ]\s*'))
+  #set ($hasLanguagesSet = $wikiSettingsLanguages.size() > 1 || "$!wikiSettingsLanguages.get(0)" != '')
+  #set ($allangs = [])
+  #set ($discard = $allangs.add($defaultLanguage))
+  #if ($wikiSettingsLanguages.size() > 1)
+    #foreach($lang in $wikiSettingsLanguages)
+      #if ("$lang" != $defaultLanguage)
+        #set ($discard = $allangs.add($lang))
+      #end
+    #end
+  #else
+    #if ("$!wikiSettingsLanguages.get(0)" != '' && "$wikiSettingsLanguages.get(0)" != $defaultLanguage)
+      #set ($discard = $allangs.add($wikiSettingsLanguages.get(0)))
+    #end
+  #end
+  ## Get the query string as a map to preserve the values except the language (see: http://jira.xwiki.org/browse/XWIKI-11314)
+  #set($queryStringMap = {})
+  #set($discard = $queryStringMap.putAll($request.parameterMap))
+  #drawerTopItemStart($services.localization.render('languages'), 'tmLanguages')
+  #foreach($lang in $allangs)
+    #set($discard = $queryStringMap.put('language', $lang))
+    #drawerItem($!doc.getURL('view', $escapetool.url($queryStringMap)), $lang, "#displayLanguagePrettyName($lang)")
+  #end
+  #drawerTopItemStop()
+#end
+##########################################
+## Display the pretty name of a language
+##########################################
+#macro(displayLanguagePrettyName $language)
+#if ($language != '')
+#set($languageLocale = $services.localization.toLocale($language))
+$escapetool.xml($stringtool.capitalize($languageLocale.getDisplayName($languageLocale)))##
+#else
+$services.localization.render('defaultlanguage')##
+#end
+#end
+##
+#**
+ * Display an element inside the drawer.
+ *
+ * @param $url the url of the link of the element
+ * @param $shortName the 2-letter short language name
+ * @param $text the full language name
+ *#
+#macro(drawerItem $url $shortName $text)
+<option value="$url" label="$shortName" title="$text" #if ($shortName == "$!{xcontext.getLocale()}")selected="selected"#end>$shortName</option>
+#end
+#**
+ * Display the top element of a foldable drawer item.
+ *
+ * @param $text the text to display in the element
+ * @param $id (optional) the HTML id of the element
+ *#
+#macro(drawerTopItemStart $text $id)
+<div class="actionmenu language-block" id="${id}_menu">
+  <div class="rightmenu">
+    <select onchange="if (this.value) window.location.href=this.value">
+#end
+#**
+ * Close an foldable drawer item
+ *#
+#macro(drawerTopItemStop)
+    </select>
+    <a class="tme">$services.localization.render('language'): </a>
+  </div>
+</div>
+#end

@@ -41,6 +41,7 @@
     </a>
   </div> ## companylogo
   </div> ## company
+  #template("language.vm")
   <div class="clearfloats"></div>
 #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.header.bottom'))
   $services.rendering.render($uix.execute(), 'xhtml/1.0')
