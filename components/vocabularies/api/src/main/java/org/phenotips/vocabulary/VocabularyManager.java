@@ -44,6 +44,16 @@ public interface VocabularyManager
     VocabularyTerm resolveTerm(String termId);
 
     /**
+     * Retrieve a term given its owner vocabulary. The owner vocabulary's id is specified.
+     * @param vocabularyId the identifier for the owner vocabulary, for example {@code HGNC}
+     * @param termId the term identifier, in the format {@code <vocabulary prefix>:<term id>}, for example
+     *               {@code HP:0002066}
+     * @return the requested term, or {@code null} if the term doesn't exist in the vocabulary, or no matching
+     *         vocabulary is available
+     */
+    VocabularyTerm resolveTerm(String vocabularyId, String termId);
+
+    /**
      * Retrieve a vocabulary given its identifier.
      *
      * @param vocabularyId the vocabulary identifier, which is also used as a prefix in every term identifier from that
