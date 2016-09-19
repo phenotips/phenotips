@@ -32,6 +32,7 @@
   <modules>
     <module>base-war</module>
     <module>constants</module>
+    <module>utilities</module>
     <module>default-settings</module>
     <module>rest-commons</module>
     <module>widgets</module>
