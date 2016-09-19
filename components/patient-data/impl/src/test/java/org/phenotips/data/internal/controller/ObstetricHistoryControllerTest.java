@@ -54,7 +54,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -189,11 +188,9 @@ public class ObstetricHistoryControllerTest
     {
         doReturn(null).when(this.patient).getData(this.obstetricHistoryController.getName());
 
-        this.obstetricHistoryController.save(this.patient);
+        this.obstetricHistoryController.save(this.patient, this.doc);
 
         verifyNoMoreInteractions(this.data);
-        verify(this.xWikiContext.getWiki(), never()).saveDocument(this.doc,
-            "Updated obstetric history from JSON", true, this.xWikiContext);
     }
 
     @Test
@@ -212,10 +209,7 @@ public class ObstetricHistoryControllerTest
 
         doReturn(this.data).when(this.doc).getXObject(any(EntityReference.class), eq(true), eq(this.xWikiContext));
 
-        this.obstetricHistoryController.save(this.patient);
-
-        verify(this.xWikiContext.getWiki()).saveDocument(this.doc, "Updated obstetric history from JSON", true,
-            this.xWikiContext);
+        this.obstetricHistoryController.save(this.patient, this.doc);
     }
 
     @Test
@@ -224,9 +218,7 @@ public class ObstetricHistoryControllerTest
         Exception testException = new Exception("Test Exception");
         doThrow(testException).when(this.documentAccessBridge).getDocument(this.patientDocument);
 
-        this.obstetricHistoryController.save(this.patient);
-
-        verify(this.logger).error("Failed to save obstetric history: [{}]", "Test Exception");
+        this.obstetricHistoryController.save(this.patient, this.doc);
     }
 
     @Test

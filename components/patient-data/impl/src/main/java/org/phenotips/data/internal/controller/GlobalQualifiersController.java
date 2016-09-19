@@ -25,6 +25,7 @@ import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.ObjectPropertyReference;
 
@@ -113,34 +114,31 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
 
     @SuppressWarnings("unchecked")
     @Override
-    public void save(Patient patient)
+    public void save(Patient patient, DocumentModelBridge doc)
     {
-        try {
-            PatientData<List<VocabularyTerm>> data = patient.getData(this.getName());
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            BaseObject dataHolder = doc.getXObject(Patient.CLASS_REFERENCE);
-            if (data == null || dataHolder == null) {
-                return;
+
+        PatientData<List<VocabularyTerm>> data = patient.getData(this.getName());
+
+        BaseObject dataHolder = ((XWikiDocument) doc).getXObject(Patient.CLASS_REFERENCE);
+        if (data == null || dataHolder == null) {
+            return;
+        }
+        for (String propertyName : getProperties()) {
+            List<VocabularyTerm> terms = data.get(propertyName);
+            if (terms == null) {
+                continue;
             }
-            for (String propertyName : getProperties()) {
-                List<VocabularyTerm> terms = data.get(propertyName);
-                if (terms == null) {
-                    continue;
-                }
-                BaseProperty<ObjectPropertyReference> field =
-                    (BaseProperty<ObjectPropertyReference>) dataHolder.getField(propertyName);
-                if (field != null) {
-                    String fieldType = field.getClassType();
-                    if (StringUtils.equals(fieldType, "com.xpn.xwiki.objects.StringProperty")) {
-                        /* there should be only one term present; just taking the head of the list */
-                        field.setValue(terms.isEmpty() ? null : termsToXWikiFormat(terms).get(0));
-                    } else if (StringUtils.equals(fieldType, "com.xpn.xwiki.objects.DBStringListProperty")) {
-                        ((DBStringListProperty) field).setList(termsToXWikiFormat(terms));
-                    }
+            BaseProperty<ObjectPropertyReference> field =
+                (BaseProperty<ObjectPropertyReference>) dataHolder.getField(propertyName);
+            if (field != null) {
+                String fieldType = field.getClassType();
+                if (StringUtils.equals(fieldType, "com.xpn.xwiki.objects.StringProperty")) {
+                    /* there should be only one term present; just taking the head of the list */
+                    field.setValue(terms.isEmpty() ? null : termsToXWikiFormat(terms).get(0));
+                } else if (StringUtils.equals(fieldType, "com.xpn.xwiki.objects.DBStringListProperty")) {
+                    ((DBStringListProperty) field).setList(termsToXWikiFormat(terms));
                 }
             }
-        } catch (Exception ex) {
-            this.logger.error("Could not load patient document or some unknown error has occurred", ex.getMessage());
         }
     }
 

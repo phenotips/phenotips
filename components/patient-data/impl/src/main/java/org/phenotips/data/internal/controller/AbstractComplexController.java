@@ -25,6 +25,7 @@ import org.phenotips.data.VocabularyProperty;
 import org.phenotips.data.internal.AbstractPhenoTipsVocabularyProperty;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.ObjectPropertyReference;
@@ -297,38 +298,30 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     }
 
     @Override
-    public void save(Patient patient)
+    public void save(Patient patient, DocumentModelBridge doc)
     {
-        try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            BaseObject dataHolder = doc.getXObject(getXClassReference());
-            PatientData<T> data = patient.getData(this.getName());
-            if (dataHolder == null || data == null) {
-                return;
-            }
-            XWikiContext context = this.contextProvider.get();
-            for (String propertyName : getProperties()) {
-                Object propertyValue = data.get(propertyName);
-                if (isInKeySet(data, propertyName)) {
-                    if (this.getCodeFields().contains(propertyName) && this.isCodeFieldsOnly()) {
-                        @SuppressWarnings("unchecked")
-                        List<VocabularyProperty> terms = (List<VocabularyProperty>) propertyValue;
-                        List<String> listToStore = new LinkedList<>();
-                        for (VocabularyProperty term : terms) {
-                            String name = StringUtils.isNotBlank(term.getId()) ? term.getId() : term.getName();
-                            listToStore.add(name);
-                        }
-                        dataHolder.set(propertyName, listToStore, context);
-                    } else {
-                        dataHolder.set(propertyName, this.saveFormat(propertyValue), context);
+        BaseObject dataHolder = ((XWikiDocument) doc).getXObject(getXClassReference());
+        PatientData<T> data = patient.getData(this.getName());
+        if (dataHolder == null || data == null) {
+            return;
+        }
+        XWikiContext context = this.contextProvider.get();
+        for (String propertyName : getProperties()) {
+            Object propertyValue = data.get(propertyName);
+            if (isInKeySet(data, propertyName)) {
+                if (this.getCodeFields().contains(propertyName) && this.isCodeFieldsOnly()) {
+                    @SuppressWarnings("unchecked")
+                    List<VocabularyProperty> terms = (List<VocabularyProperty>) propertyValue;
+                    List<String> listToStore = new LinkedList<>();
+                    for (VocabularyProperty term : terms) {
+                        String name = StringUtils.isNotBlank(term.getId()) ? term.getId() : term.getName();
+                        listToStore.add(name);
                     }
+                    dataHolder.set(propertyName, listToStore, context);
+                } else {
+                    dataHolder.set(propertyName, this.saveFormat(propertyValue), context);
                 }
             }
-
-            context.getWiki()
-                .saveDocument(doc, String.format("Updated %s history from JSON", this.getName()), true, context);
-        } catch (Exception ex) {
-            this.logger.error("Could not save patient document or some unknown error has occurred", ex.getMessage());
         }
     }
 

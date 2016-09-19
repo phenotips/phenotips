@@ -24,8 +24,8 @@ import org.phenotips.data.PatientDataController;
 import org.phenotips.data.PhenoTipsDate;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.context.Execution;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -44,7 +44,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -61,37 +60,41 @@ public class DatesController implements PatientDataController<PhenoTipsDate>
 {
     // field names as stored in the patient document
     protected static final String PATIENT_DATEOFDEATH_FIELDNAME = "date_of_death";
+
     protected static final String PATIENT_DATEOFBIRTH_FIELDNAME = "date_of_birth";
-    protected static final String PATIENT_EXAMDATE_FIELDNAME    = "exam_date";
+
+    protected static final String PATIENT_EXAMDATE_FIELDNAME = "exam_date";
 
     // (optional) name of the "helper" field which stores the date as entered by the user (as temporarily? used by PT)
     protected static final Map<String, String> CORRESPONDING_ASENTERED_FIELDNAMES =
         Collections.unmodifiableMap(MapUtils.putAll(new HashMap<String, String>(), new String[][] {
-            {PATIENT_DATEOFDEATH_FIELDNAME, "date_of_death_entered"},
-            {PATIENT_DATEOFBIRTH_FIELDNAME, "date_of_birth_entered"}
+            { PATIENT_DATEOFDEATH_FIELDNAME, "date_of_death_entered" },
+            { PATIENT_DATEOFBIRTH_FIELDNAME, "date_of_birth_entered" }
         }));
 
     // field names as used in imported/exported JSON (same as above as of right now, but potentially different)
     protected static final String JSON_DATEOFDEATH_FIELDNAME = PATIENT_DATEOFDEATH_FIELDNAME;
+
     protected static final String JSON_DATEOFBIRTH_FIELDNAME = PATIENT_DATEOFBIRTH_FIELDNAME;
-    protected static final String JSON_EXAMDATE_FIELDNAME    = PATIENT_EXAMDATE_FIELDNAME;
+
+    protected static final String JSON_EXAMDATE_FIELDNAME = PATIENT_EXAMDATE_FIELDNAME;
 
     // 1-to-1 mapping between PT and JSON field names. The reverse is computed from the same mapping.
     // Only the fields listed here will ever be read from the document by the controller.
     protected static final Map<String, String> PHENOTIPS_TO_JSON_FIELDNAMES =
         Collections.unmodifiableMap(MapUtils.putAll(new LinkedHashMap<String, String>(), new String[][] {
-            {PATIENT_DATEOFDEATH_FIELDNAME, JSON_DATEOFDEATH_FIELDNAME},
-            {PATIENT_DATEOFBIRTH_FIELDNAME, JSON_DATEOFBIRTH_FIELDNAME},
-            {PATIENT_EXAMDATE_FIELDNAME, JSON_EXAMDATE_FIELDNAME}
+            { PATIENT_DATEOFDEATH_FIELDNAME, JSON_DATEOFDEATH_FIELDNAME },
+            { PATIENT_DATEOFBIRTH_FIELDNAME, JSON_DATEOFBIRTH_FIELDNAME },
+            { PATIENT_EXAMDATE_FIELDNAME, JSON_EXAMDATE_FIELDNAME }
         }));
 
     // controlling/enabling field name - should be present in selectedFieldNames as passed to writeJSON()/readJSON()
     // in order to include the corresponding data in the export or use it during import
     protected static final Map<String, String> CONTROLLING_FIELDNAMES =
         Collections.unmodifiableMap(MapUtils.putAll(new HashMap<String, String>(), new String[][] {
-            {PATIENT_DATEOFDEATH_FIELDNAME, PATIENT_DATEOFDEATH_FIELDNAME},
-            {PATIENT_DATEOFBIRTH_FIELDNAME, PATIENT_DATEOFBIRTH_FIELDNAME},
-            {PATIENT_EXAMDATE_FIELDNAME, PATIENT_EXAMDATE_FIELDNAME}
+            { PATIENT_DATEOFDEATH_FIELDNAME, PATIENT_DATEOFDEATH_FIELDNAME },
+            { PATIENT_DATEOFBIRTH_FIELDNAME, PATIENT_DATEOFBIRTH_FIELDNAME },
+            { PATIENT_EXAMDATE_FIELDNAME, PATIENT_EXAMDATE_FIELDNAME }
         }));
 
     protected static final String DATA_NAME = "dates";
@@ -103,10 +106,6 @@ public class DatesController implements PatientDataController<PhenoTipsDate>
     /** Provides access to the underlying data storage. */
     @Inject
     private DocumentAccessBridge documentAccessBridge;
-
-    /** Provides access to the current execution context. */
-    @Inject
-    private Execution execution;
 
     @Override
     public PatientData<PhenoTipsDate> load(Patient patient)
@@ -148,37 +147,29 @@ public class DatesController implements PatientDataController<PhenoTipsDate>
     }
 
     @Override
-    public void save(Patient patient)
+    public void save(Patient patient, DocumentModelBridge doc)
     {
-        try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
-            if (data == null) {
-                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
-            }
+        BaseObject data = ((XWikiDocument) doc).getXObject(Patient.CLASS_REFERENCE);
+        if (data == null) {
+            throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+        }
 
-            PatientData<PhenoTipsDate> dates = patient.getData(DATA_NAME);
-            if (!dates.isNamed()) {
-                throw new IllegalArgumentException(ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT);
-            }
-            for (String propertyName : this.getPatientDocumentProperties()) {
-                if (dates.containsKey(propertyName)) {
-                    PhenoTipsDate date = dates.get(propertyName);
-                    // note: `date` may be null if data is missing
-                    if (CORRESPONDING_ASENTERED_FIELDNAMES.containsKey(propertyName)) {
-                        data.setStringValue(CORRESPONDING_ASENTERED_FIELDNAMES.get(propertyName),
-                            (date == null ? "" : date.toString()));
-                    }
-                    // if date is not a valid/complete date, toEarliestPossibleISODate() will return null
-                    // and date will be effectively "unset"
-                    data.setDateValue(propertyName, (date == null ? null : date.toEarliestPossibleISODate()));
+        PatientData<PhenoTipsDate> dates = patient.getData(DATA_NAME);
+        if (!dates.isNamed()) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT);
+        }
+        for (String propertyName : this.getPatientDocumentProperties()) {
+            if (dates.containsKey(propertyName)) {
+                PhenoTipsDate date = dates.get(propertyName);
+                // note: `date` may be null if data is missing
+                if (CORRESPONDING_ASENTERED_FIELDNAMES.containsKey(propertyName)) {
+                    data.setStringValue(CORRESPONDING_ASENTERED_FIELDNAMES.get(propertyName),
+                        (date == null ? "" : date.toString()));
                 }
+                // if date is not a valid/complete date, toEarliestPossibleISODate() will return null
+                // and date will be effectively "unset"
+                data.setDateValue(propertyName, (date == null ? null : date.toEarliestPossibleISODate()));
             }
-
-            XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-            context.getWiki().saveDocument(doc, "Updated dates from JSON", true, context);
-        } catch (Exception e) {
-            this.logger.error("Failed to save dates: [{}]", e.getMessage());
         }
     }
 
@@ -224,17 +215,17 @@ public class DatesController implements PatientDataController<PhenoTipsDate>
         // an string representing a JSON object supporting "fuzzy" and incomplete dates.
         //
         // For now the following formats are supported for all dates in the incoming JSON:
-        //  1) an object with {"decade", "year", "month", "day"} fields
-        //  2) a date string, in either
-        //    a) ISO format (e.g. 2001-01-23 or 1999-03)
-        //    b) ISO with missing trailing parts (e.g. 1999-11)
-        //    c) ISO with a decades instead of a year (e.g. 1990s-11-21 or 1990s-01)
+        // 1) an object with {"decade", "year", "month", "day"} fields
+        // 2) a date string, in either
+        // a) ISO format (e.g. 2001-01-23 or 1999-03)
+        // b) ISO with missing trailing parts (e.g. 1999-11)
+        // c) ISO with a decades instead of a year (e.g. 1990s-11-21 or 1990s-01)
         //
-        //  In the first case (an object with separate year-month-etc fields) the "date as entered" (if present)
-        //  will be set to exactly the imported value, but the date-as-ISO string will be set to:
-        //   1) in case of a valid exact date - the corresponding ISO string
-        //   2) in case of a fuzzy date with only a decade or a missing month/day - to the earliest possible date
-        //   3) in case of an incomplete date without a year - will not be set
+        // In the first case (an object with separate year-month-etc fields) the "date as entered" (if present)
+        // will be set to exactly the imported value, but the date-as-ISO string will be set to:
+        // 1) in case of a valid exact date - the corresponding ISO string
+        // 2) in case of a fuzzy date with only a decade or a missing month/day - to the earliest possible date
+        // 3) in case of an incomplete date without a year - will not be set
 
         // TODO: review once internal date format is changed
 

@@ -24,6 +24,7 @@ import org.phenotips.data.PatientDataController;
 import org.phenotips.data.PatientSpecificity;
 import org.phenotips.data.PatientSpecificityService;
 
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -88,7 +89,7 @@ public class SpecificityController implements PatientDataController<Object>, Ini
     }
 
     @Override
-    public void save(Patient patient)
+    public void save(Patient patient, DocumentModelBridge doc)
     {
         // Nothing to save, the score is always computed
     }

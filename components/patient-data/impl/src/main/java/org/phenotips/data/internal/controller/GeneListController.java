@@ -23,6 +23,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
@@ -379,40 +380,33 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     }
 
     @Override
-    public void save(Patient patient)
+    public void save(Patient patient, DocumentModelBridge doc)
     {
-        try {
-            PatientData<Map<String, String>> genes = patient.getData(this.getName());
-            if (genes == null || !genes.isIndexed()) {
-                return;
-            }
+        PatientData<Map<String, String>> genes = patient.getData(this.getName());
+        if (genes == null || !genes.isIndexed()) {
+            return;
+        }
 
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            if (doc == null) {
-                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
-            }
+        if (doc == null) {
+            throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+        }
 
-            XWikiContext context = this.xcontextProvider.get();
-            doc.removeXObjects(GENE_CLASS_REFERENCE);
-            Iterator<Map<String, String>> iterator = genes.iterator();
-            while (iterator.hasNext()) {
-                try {
-                    Map<String, String> gene = iterator.next();
-                    BaseObject xwikiObject = doc.newXObject(GENE_CLASS_REFERENCE, context);
-                    for (String property : this.getProperties()) {
-                        String value = gene.get(property);
-                        if (value != null) {
-                            xwikiObject.set(property, value, context);
-                        }
+        XWikiContext context = this.xcontextProvider.get();
+        ((XWikiDocument) doc).removeXObjects(GENE_CLASS_REFERENCE);
+        Iterator<Map<String, String>> iterator = genes.iterator();
+        while (iterator.hasNext()) {
+            try {
+                Map<String, String> gene = iterator.next();
+                BaseObject xwikiObject = ((XWikiDocument) doc).newXObject(GENE_CLASS_REFERENCE, context);
+                for (String property : this.getProperties()) {
+                    String value = gene.get(property);
+                    if (value != null) {
+                        xwikiObject.set(property, value, context);
                     }
-                } catch (Exception e) {
-                    this.logger.error("Failed to save a specific gene: [{}]", e.getMessage());
                 }
+            } catch (Exception e) {
+                this.logger.error("Failed to save a specific gene: [{}]", e.getMessage());
             }
-
-            context.getWiki().saveDocument(doc, "Updated genes from JSON", true, context);
-        } catch (Exception e) {
-            this.logger.error("Failed to save genes: [{}]", e.getMessage());
         }
     }
 }

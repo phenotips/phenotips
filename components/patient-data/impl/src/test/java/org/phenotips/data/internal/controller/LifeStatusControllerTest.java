@@ -35,8 +35,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import javax.inject.Provider;
-
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
@@ -52,8 +50,6 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -105,10 +101,6 @@ public class LifeStatusControllerTest
         doReturn(patientDocument).when(this.patient).getDocument();
         doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
         doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
-
-        Provider<XWikiContext> provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
-        this.xcontext = provider.get();
-        doReturn(this.xwiki).when(this.xcontext).getWiki();
     }
 
     @Test
@@ -170,52 +162,15 @@ public class LifeStatusControllerTest
     }
 
     @Test
-    public void saveCatchesExceptionFromDocumentAccess() throws Exception
-    {
-        doThrow(Exception.class).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
-
-        this.mocker.getComponentUnderTest().save(this.patient);
-
-        verify(this.mocker.getMockedLogger()).error("Failed to save life status: [{}]", (String) null);
-    }
-
-    @Test
-    public void saveCatchesExceptionWhenPatientDoesNotHavePatientClass() throws ComponentLookupException
-    {
-        doReturn(null).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
-
-        this.mocker.getComponentUnderTest().save(this.patient);
-
-        verify(this.mocker.getMockedLogger()).error("Failed to save life status: [{}]",
-            PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
-    }
-
-    @Test
-    public void saveCatchesExceptionFromSaveDocument() throws XWikiException, ComponentLookupException
-    {
-        XWikiException exception = new XWikiException();
-        doThrow(exception).when(this.xwiki).saveDocument(any(XWikiDocument.class), anyString(), anyBoolean(),
-            any(XWikiContext.class));
-        doReturn(null).when(this.patient).getData(DATA_NAME);
-        doReturn(null).when(this.patient).getData("dates");
-
-        this.mocker.getComponentUnderTest().save(this.patient);
-
-        verify(this.xwiki).saveDocument(any(XWikiDocument.class), anyString(), anyBoolean(), any(XWikiContext.class));
-        verify(this.mocker.getMockedLogger()).error("Failed to save life status: [{}]", exception.getMessage());
-    }
-
-    @Test
     public void saveSetsDateOfDeathUnknownWhenDeceasedAndDatesNull() throws XWikiException, ComponentLookupException
     {
         PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, DECEASED);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
         doReturn(null).when(this.patient).getData("dates");
 
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
 
         verify(this.data).setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, 1);
-        verify(this.xwiki).saveDocument(this.doc, "Updated life status from JSON", true, this.xcontext);
     }
 
     @Test
@@ -229,10 +184,9 @@ public class LifeStatusControllerTest
         PatientData<PhenoTipsDate> dates = new DictionaryPatientData<>("dates", datesMap);
         doReturn(dates).when(this.patient).getData("dates");
 
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
 
         verify(this.data).setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, 1);
-        verify(this.xwiki).saveDocument(this.doc, "Updated life status from JSON", true, this.xcontext);
     }
 
     @Test
@@ -241,10 +195,9 @@ public class LifeStatusControllerTest
         doReturn(null).when(this.patient).getData(DATA_NAME);
         doReturn(null).when(this.patient).getData("dates");
 
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
 
         verify(this.data).setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, 0);
-        verify(this.xwiki).saveDocument(this.doc, "Updated life status from JSON", true, this.xcontext);
     }
 
     @Test
@@ -254,10 +207,9 @@ public class LifeStatusControllerTest
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
         doReturn(null).when(this.patient).getData("dates");
 
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
 
         verify(this.data).setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, 0);
-        verify(this.xwiki).saveDocument(this.doc, "Updated life status from JSON", true, this.xcontext);
     }
 
     @Test
@@ -271,10 +223,9 @@ public class LifeStatusControllerTest
         PatientData<PhenoTipsDate> dates = new DictionaryPatientData<>("dates", datesMap);
         doReturn(dates).when(this.patient).getData("dates");
 
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
 
         verify(this.data).setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, 0);
-        verify(this.xwiki).saveDocument(this.doc, "Updated life status from JSON", true, this.xcontext);
     }
 
     @Test
@@ -286,10 +237,9 @@ public class LifeStatusControllerTest
             new SimpleValuePatientData<>(PATIENT_DATEOFDEATH_FIELDNAME, new PhenoTipsDate(new Date()));
         doReturn(dates).when(this.patient).getData("dates");
 
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
 
         verify(this.data).setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, 1);
-        verify(this.xwiki).saveDocument(this.doc, "Updated life status from JSON", true, this.xcontext);
     }
 
     @Test

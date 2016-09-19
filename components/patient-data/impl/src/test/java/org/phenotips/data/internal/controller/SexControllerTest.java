@@ -24,7 +24,6 @@ import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -48,8 +47,6 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -65,8 +62,6 @@ public class SexControllerTest
         new MockitoComponentMockingRule<PatientDataController<String>>(SexController.class);
 
     private DocumentAccessBridge documentAccessBridge;
-
-    private Execution execution;
 
     @Mock
     private ExecutionContext executionContext;
@@ -104,14 +99,12 @@ public class SexControllerTest
         MockitoAnnotations.initMocks(this);
 
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-        this.execution = this.mocker.getInstance(Execution.class);
 
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
         doReturn(patientDocument).when(this.patient).getDocument();
         doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
         doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
-        doReturn(this.executionContext).when(this.execution).getContext();
         doReturn(this.xcontext).when(this.executionContext).getProperty("xwikicontext");
         doReturn(this.xwiki).when(this.xcontext).getWiki();
     }
@@ -123,7 +116,6 @@ public class SexControllerTest
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        verify(this.mocker.getMockedLogger()).error("Failed to load patient gender: [{}]", (String) null);
         Assert.assertNull(result);
     }
 
@@ -170,73 +162,31 @@ public class SexControllerTest
     }
 
     @Test
-    public void saveCatchesExceptionFromDocumentAccess() throws Exception
-    {
-        doThrow(Exception.class).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
-
-        this.mocker.getComponentUnderTest().save(this.patient);
-
-        verify(this.mocker.getMockedLogger()).error("Failed to save patient gender: [{}]", (String) null);
-    }
-
-    @Test
-    public void saveCatchesExceptionWhenPatientDoesNotHavePatientClass() throws ComponentLookupException
-    {
-        doReturn(null).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
-
-        this.mocker.getComponentUnderTest().save(this.patient);
-
-        verify(this.mocker.getMockedLogger()).error("Failed to save patient gender: [{}]",
-            PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
-    }
-
-    @Test
-    public void saveCatchesExceptionFromSaveDocument() throws XWikiException, ComponentLookupException
-    {
-        XWikiException exception = new XWikiException();
-        doThrow(exception).when(this.xwiki).saveDocument(any(XWikiDocument.class),
-            anyString(), anyBoolean(), any(XWikiContext.class));
-        doReturn(new SimpleValuePatientData<>(DATA_NAME, SEX_MALE)).when(this.patient).getData(DATA_NAME);
-
-        this.mocker.getComponentUnderTest().save(this.patient);
-
-        verify(this.xwiki).saveDocument(any(XWikiDocument.class),
-            anyString(), anyBoolean(), any(XWikiContext.class));
-        verify(this.mocker.getMockedLogger()).error("Failed to save patient gender: [{}]",
-            exception.getMessage());
-    }
-
-    @Test
     public void saveSetsCorrectSex() throws XWikiException, ComponentLookupException
     {
         doReturn(new SimpleValuePatientData<>(DATA_NAME, SEX_MALE)).when(this.patient).getData(DATA_NAME);
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
         verify(this.data).setStringValue(INTERNAL_PROPERTY_NAME, SEX_MALE);
-        verify(this.xwiki).saveDocument(this.doc, "Updated gender from JSON", true, this.xcontext);
 
         Mockito.reset(this.xwiki);
         doReturn(new SimpleValuePatientData<>(DATA_NAME, SEX_FEMALE)).when(this.patient).getData(DATA_NAME);
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
         verify(this.data).setStringValue(INTERNAL_PROPERTY_NAME, SEX_FEMALE);
-        verify(this.xwiki).saveDocument(this.doc, "Updated gender from JSON", true, this.xcontext);
 
         Mockito.reset(this.xwiki);
         doReturn(new SimpleValuePatientData<>(DATA_NAME, SEX_OTHER)).when(this.patient).getData(DATA_NAME);
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
         verify(this.data).setStringValue(INTERNAL_PROPERTY_NAME, SEX_OTHER);
-        verify(this.xwiki).saveDocument(this.doc, "Updated gender from JSON", true, this.xcontext);
 
         Mockito.reset(this.xwiki);
         doReturn(new SimpleValuePatientData<>(DATA_NAME, SEX_UNKNOWN)).when(this.patient).getData(DATA_NAME);
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
         verify(this.data).setStringValue(INTERNAL_PROPERTY_NAME, SEX_UNKNOWN);
-        verify(this.xwiki).saveDocument(this.doc, "Updated gender from JSON", true, this.xcontext);
 
         Mockito.reset(this.xwiki);
         doReturn(new SimpleValuePatientData<String>(DATA_NAME, null)).when(this.patient).getData(DATA_NAME);
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
         verify(this.data).setStringValue(INTERNAL_PROPERTY_NAME, null);
-        verify(this.xwiki).saveDocument(this.doc, "Updated gender from JSON", true, this.xcontext);
     }
 
     @Test

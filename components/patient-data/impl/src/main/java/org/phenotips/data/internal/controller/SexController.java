@@ -23,8 +23,8 @@ import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.context.Execution;
 
 import java.util.Collection;
 
@@ -36,7 +36,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -71,10 +70,6 @@ public class SexController implements PatientDataController<String>
     @Inject
     private DocumentAccessBridge documentAccessBridge;
 
-    /** Provides access to the current execution context. */
-    @Inject
-    private Execution execution;
-
     private String parseGender(String gender)
     {
         return (StringUtils.equals(SEX_FEMALE, gender)
@@ -100,24 +95,16 @@ public class SexController implements PatientDataController<String>
     }
 
     @Override
-    public void save(Patient patient)
+    public void save(Patient patient, DocumentModelBridge doc)
     {
-        try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
-            if (data == null) {
-                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
-            }
-
-            String gender = patient.<String>getData(DATA_NAME).getValue();
-
-            data.setStringValue(INTERNAL_PROPERTY_NAME, gender);
-
-            XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-            context.getWiki().saveDocument(doc, "Updated gender from JSON", true, context);
-        } catch (Exception e) {
-            this.logger.error("Failed to save patient gender: [{}]", e.getMessage());
+        BaseObject data = ((XWikiDocument) doc).getXObject(Patient.CLASS_REFERENCE);
+        if (data == null) {
+            throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
         }
+
+        String gender = patient.<String>getData(DATA_NAME).getValue();
+
+        data.setStringValue(INTERNAL_PROPERTY_NAME, gender);
     }
 
     @Override
