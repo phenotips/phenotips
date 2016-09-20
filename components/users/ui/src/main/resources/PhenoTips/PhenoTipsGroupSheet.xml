@@ -62,11 +62,6 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.groups.publicInfo')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.groups.publicInfoHint')
 : $doc.display('public_sections')
-#if ($xwiki.exists('PhenoTips.TemplateClass'))
-; {{html}}&lt;label&gt;$services.localization.render('phenotips.groups.Templates')&lt;/label&gt;{{/html}}
-: (% class="xHint" %)$services.localization.render('phenotips.groups.TemplatesHint')
-: $doc.display('templates')
-#end
 
 )))
 (% class="xform" %)(((
