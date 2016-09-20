@@ -68,4 +68,10 @@ public class DefaultTemplate extends AbstractPrimaryEntity implements Template
     {
         // TODO Auto-generated method stub
     }
+
+    @Override
+    public int compareTo(Template other)
+    {
+        return this.getId().compareTo(other.getId());
+    }
 }

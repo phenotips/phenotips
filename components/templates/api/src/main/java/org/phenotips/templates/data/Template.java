@@ -26,7 +26,7 @@ import org.xwiki.model.reference.EntityReference;
 /**
  * @version $Id$
  */
-public interface Template extends PrimaryEntity
+public interface Template extends PrimaryEntity, Comparable<Template>
 {
     /** The XClass used for storing project data. */
     EntityReference CLASS_REFERENCE = new EntityReference("TemplateClass", EntityType.DOCUMENT,

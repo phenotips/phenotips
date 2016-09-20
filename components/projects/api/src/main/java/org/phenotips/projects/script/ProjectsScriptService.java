@@ -38,8 +38,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -118,12 +118,13 @@ public class ProjectsScriptService implements ScriptService
     public Collection<Template> getTemplatesForProjects(String projectsString)
     {
         Collection<Project> projects = this.projectRepository.getFromString(projectsString);
-        Set<Template> templates = new HashSet<Template>();
+        List<Template> templates = new LinkedList<>();
         for (Project project : projects) {
             for (Template s : project.getTemplates()) {
                 templates.add(s);
             }
         }
+        Collections.sort(templates);
         return templates;
     }
 
