@@ -144,9 +144,7 @@ public class ProjectsScriptService implements ScriptService
 
         Collection<Project> projectsCollection = new ProjectAndTemplatePatientDecorator(patient).getProjects();
         projects.addAll(projectsCollection);
-        if (projects.size() > 1) {
-            Collections.sort(projects);
-        }
+        Collections.sort(projects);
         return projects;
     }
 
