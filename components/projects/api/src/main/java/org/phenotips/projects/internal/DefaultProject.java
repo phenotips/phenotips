@@ -60,9 +60,9 @@ public class DefaultProject extends AbstractPrimaryEntityGroup<Patient> implemen
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(DefaultProject.class);
 
-    private TemplatePrimaryEntityGroup templateGroup;
+    private TemplateInProjectGroup templateGroup;
 
-    private CollaboratorPrimaryEntityGroup collaboratorGroup;
+    private CollaboratorInProjectGroup collaboratorGroup;
 
     /**
      * Basic constructor.
@@ -73,8 +73,8 @@ public class DefaultProject extends AbstractPrimaryEntityGroup<Patient> implemen
     {
         super(projectObject);
 
-        this.templateGroup = new TemplatePrimaryEntityGroup(projectObject);
-        this.collaboratorGroup = new CollaboratorPrimaryEntityGroup(projectObject);
+        this.templateGroup = new TemplateInProjectGroup(projectObject);
+        this.collaboratorGroup = new CollaboratorInProjectGroup(projectObject);
 
         this.projectObject = projectObject;
     }
