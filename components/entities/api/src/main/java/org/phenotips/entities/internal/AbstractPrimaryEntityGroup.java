@@ -107,7 +107,7 @@ public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
             }
         }
         if (manager == null) {
-            this.logger.error("No suitable primary entity manager found for entities of type [{}] available;"
+            this.logger.info("No suitable primary entity manager found for entities of type [{}] available;"
                 + " certain group operations will fail", getMemberType());
         }
         return manager;
