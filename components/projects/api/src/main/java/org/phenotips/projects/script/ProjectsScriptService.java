@@ -26,6 +26,8 @@ import org.phenotips.data.permissions.internal.DefaultCollaborator;
 import org.phenotips.projects.data.Project;
 import org.phenotips.projects.data.ProjectRepository;
 import org.phenotips.projects.internal.ProjectAndTemplatePatientDecorator;
+import org.phenotips.projects.internal.TemplateInProjectGroup;
+import org.phenotips.projects.internal.TemplateInProjectGroupManager;
 import org.phenotips.templates.data.Template;
 import org.phenotips.templates.data.TemplateRepository;
 
@@ -66,6 +68,10 @@ public class ProjectsScriptService implements ScriptService
 
     @Inject
     private PatientRepository patientsRepository;
+
+    @Inject
+    @Named("Project")
+    private TemplateInProjectGroupManager templateInProjectGroupManager;
 
     @Inject
     @Named("secure")
@@ -234,5 +240,38 @@ public class ProjectsScriptService implements ScriptService
         }
 
         project.setCollaborators(collaborators);
+    }
+
+    /**
+     * Returns number of projects that a given template is associated with.
+     *
+     * @param templateId id of template
+     * @return number of projects
+     */
+    public int getNumberOfProjectsForTemplates(String templateId)
+    {
+        return this.getProjectsForTemplate(templateId).size();
+    }
+
+    /**
+     * Returns a collection of projects that a given template is associated with.
+     *
+     * @param templateId id of template
+     * @return a collection of projects
+     */
+    public Collection<Project> getProjectsForTemplate(String templateId)
+    {
+        List<Project> projects = new LinkedList<>();
+
+        Template template = this.templateRepository.get(templateId);
+        Collection<TemplateInProjectGroup> templateInProjects =
+                templateInProjectGroupManager.getGroupsForEntity(template);
+        for (TemplateInProjectGroup tip : templateInProjects) {
+            Project project = tip.getProject();
+            projects.add(project);
+        }
+
+        Collections.sort(projects);
+        return projects;
     }
 }
