@@ -20,6 +20,7 @@ package org.phenotips.projects.internal;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.entities.internal.AbstractContainerPrimaryEntityGroup;
 import org.phenotips.projects.data.Project;
+import org.phenotips.projects.data.ProjectRepository;
 import org.phenotips.templates.data.Template;
 import org.phenotips.templates.data.TemplateRepository;
 
@@ -33,18 +34,23 @@ import org.json.JSONObject;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
+ * This is a representation of the property of a project as a container for groups. Since a project implementation can
+ * only extend one class, it contains a member of type {@link TemplateInProjectGroup} to manage containing templates.
+ *
+ * See also {@link CollaboratorInProjectGroup}.
+ *
  * @version $Id $
  */
-public class TemplatePrimaryEntityGroup extends AbstractContainerPrimaryEntityGroup<Template>
+public class TemplateInProjectGroup extends AbstractContainerPrimaryEntityGroup<Template>
 {
     /**
      * public constructor.
      *
-     * @param document project's document
+     * @param projectDocument project's document
      */
-    protected TemplatePrimaryEntityGroup(XWikiDocument document)
+    public TemplateInProjectGroup(XWikiDocument projectDocument)
     {
-        super(document);
+        super(projectDocument);
     }
 
     /**
@@ -86,11 +92,30 @@ public class TemplatePrimaryEntityGroup extends AbstractContainerPrimaryEntityGr
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @return the project that this class represents
+     */
+    public Project getProject()
+    {
+        return this.getProjectRepository().get(this.document.getDocumentReference());
+    }
+
     private TemplateRepository getTemplateRepository()
     {
         try {
             return ComponentManagerRegistry.getContextComponentManager().getInstance(TemplateRepository.class,
                     "Template");
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
+    private ProjectRepository getProjectRepository()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(ProjectRepository.class,
+                    "Project");
         } catch (ComponentLookupException e) {
             // Should not happen
         }

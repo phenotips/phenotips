@@ -40,9 +40,11 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
+ * See  {@link TemplateInProjectGroup}.
+ *
  * @version $Id $
  */
-public class CollaboratorPrimaryEntityGroup extends AbstractContainerPrimaryEntityGroupWithParameters<Collaborator>
+public class CollaboratorInProjectGroup extends AbstractContainerPrimaryEntityGroupWithParameters<Collaborator>
 {
     private static final String ACCESS_LEVEL_PARAMETER = "accessLevel";
 
@@ -51,7 +53,7 @@ public class CollaboratorPrimaryEntityGroup extends AbstractContainerPrimaryEnti
      *
      * @param document project's document
      */
-    protected CollaboratorPrimaryEntityGroup(XWikiDocument document)
+    protected CollaboratorInProjectGroup(XWikiDocument document)
     {
         // There is no manager for Collaborator.
         super(document);
