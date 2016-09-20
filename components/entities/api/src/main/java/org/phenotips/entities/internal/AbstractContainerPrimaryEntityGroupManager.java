@@ -75,15 +75,21 @@ public abstract class AbstractContainerPrimaryEntityGroupManager
     {
         try {
             // FIXME GROUP_MEMBER_CLASS should be replaced with a static method call
+            String bindingClassName = this.localSerializer.serialize(
+                    AbstractContainerPrimaryEntityGroup.GROUP_MEMBER_CLASS);
+            String groupClass = this.localSerializer.serialize(getEntityXClassReference());
             Query q = this.qm.createQuery(
-                "select gdoc.fullName from Document gdoc, gdoc.object("
-                    + this.localSerializer.serialize(AbstractContainerPrimaryEntityGroup.GROUP_MEMBER_CLASS)
-                    + ") as binding, gdoc.object("
-                    + this.localSerializer.serialize(getEntityXClassReference())
-                    + ") as grp where gdoc.space = :gspace and binding.reference = :name order by gdoc.fullName asc",
-                Query.XWQL);
+                ", BaseObject obj, BaseObject groupObj, StringProperty property "
+                + "where obj.id.id = property.id and "
+                + "groupObj.name = doc.fullName and "
+                + "groupObj.name = obj.name and "
+                + "groupObj.className = '" + groupClass + "' and "
+                + "property.id.name = 'reference' and "
+                + "property.value = :referenceValue and "
+                + "obj.className = '" + bindingClassName + "' and "
+                + "doc.space = :gspace", Query.HQL);
             q.bindValue("gspace", this.getDataSpace().getName());
-            q.bindValue("name", this.defaultSerializer.serialize(entity.getDocument()));
+            q.bindValue("referenceValue", this.defaultSerializer.serialize(entity.getDocument()));
             List<String> docNames = q.execute();
             Collection<G> result = new ArrayList<>(docNames.size());
             for (String docName : docNames) {
