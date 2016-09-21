@@ -17,25 +17,16 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.entities.PrimaryEntity;
 import org.phenotips.entities.internal.AbstractPrimaryEntity;
 
-import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.xpn.xwiki.doc.XWikiDocument;
-
-public abstract class AbstractCollaboratorPrimaryEntity implements Collaborator
+public abstract class AbstractCollaboratorPrimaryEntity extends AbstractPrimaryEntity implements Collaborator
 {
     /** The key used in the JSON serialization for the {@link #getAccessLevel()}. */
     public static final String JSON_KEY_ACCESS_LEVEL = "accessLevel";
@@ -44,39 +35,12 @@ public abstract class AbstractCollaboratorPrimaryEntity implements Collaborator
 
     protected final AccessLevel access;
 
-    private PrimaryEntity collaboratorAsPrimaryEntity;
-
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
     public AbstractCollaboratorPrimaryEntity(EntityReference user, AccessLevel access)
     {
+        super((DocumentReference)user);
+
         this.user = user;
         this.access = access;
-
-        DocumentReferenceResolver<EntityReference> referenceResolver = this.getReferenceResolver();
-        DocumentAccessBridge bridge = this.getBridge();
-        DocumentReference document = referenceResolver.resolve(user);
-        XWikiDocument xwikiDoc = null;
-        try {
-            xwikiDoc = (XWikiDocument) bridge.getDocument(document);
-        } catch (Exception e) {
-            this.logger.error("Failed to create collaboratorAsPrimaryEntity.", e);
-        }
-
-        this.collaboratorAsPrimaryEntity = new AbstractPrimaryEntity(xwikiDoc)
-        {
-            @Override
-            public EntityReference getType()
-            {
-                return this.getType();
-            }
-
-            @Override
-            public void updateFromJSON(JSONObject json)
-            {
-                this.updateFromJSON(json);
-            }
-        };
     }
 
     @Override
@@ -98,33 +62,9 @@ public abstract class AbstractCollaboratorPrimaryEntity implements Collaborator
     }
 
     @Override
-    public DocumentReference getDocument()
-    {
-        return this.collaboratorAsPrimaryEntity.getDocument();
-    }
-
-    @Override
-    public String getId()
-    {
-        return this.collaboratorAsPrimaryEntity.getId();
-    }
-
-    @Override
-    public String getName()
-    {
-        return this.collaboratorAsPrimaryEntity.getName();
-    }
-
-    @Override
-    public String getDescription()
-    {
-        return this.collaboratorAsPrimaryEntity.getDescription();
-    }
-
-    @Override
     public JSONObject toJSON()
     {
-        JSONObject json = this.collaboratorAsPrimaryEntity.toJSON();
+        JSONObject json = super.toJSON();
         json.put(JSON_KEY_ACCESS_LEVEL, this.getAccessLevel());
         return json;
     }
@@ -133,26 +73,5 @@ public abstract class AbstractCollaboratorPrimaryEntity implements Collaborator
     public void updateFromJSON(JSONObject json)
     {
         // TODO
-    }
-
-    private DocumentReferenceResolver<EntityReference> getReferenceResolver()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager().getInstance(
-                    DocumentReferenceResolver.TYPE_REFERENCE, "current");
-        } catch (ComponentLookupException e) {
-            this.logger.error("Failed to look up DocumentReferenceResolver<EntityReference>.", e);
-        }
-        return null;
-    }
-
-    private DocumentAccessBridge getBridge()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
-        } catch (ComponentLookupException e) {
-            this.logger.error("Failed to look up DocumentAccessBridge.", e);
-        }
-        return null;
     }
 }
