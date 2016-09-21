@@ -209,6 +209,12 @@ public class PatientSpecificityScriptService implements ScriptService
         }
 
         @Override
+        public String getFullName()
+        {
+            return null;
+        }
+
+        @Override
         public String getDescription()
         {
             return null;
