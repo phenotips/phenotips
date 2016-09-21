@@ -28,7 +28,7 @@ import org.xwiki.stability.Unstable;
  * @since 1.3M2
  */
 @Unstable("New API introduced in 1.3")
-public interface PrimaryEntityProperty<E extends PrimaryEntity> extends PrimaryEntity
+public interface PrimaryEntityProperty<E extends PrimaryEntity> extends PrimaryEntityGroup<E>
 {
     /**
      * Returns the property, if exists.
