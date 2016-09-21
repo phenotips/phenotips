@@ -46,13 +46,6 @@ public interface Project extends Comparable<Project>, PrimaryEntityGroup<Patient
         new EntityReference("ProjectTemplate", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /**
-     * Returns the full name of project.
-     *
-     * @return the full name of the project
-     */
-    String getFullName();
-
-    /**
      * Returns the logo image link of the project.
      *
      * @return the image URL of the project
