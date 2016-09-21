@@ -698,6 +698,9 @@ div.infomessage {
 }</code>
     </property>
     <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
       <name/>
     </property>
     <property>
@@ -823,80 +826,37 @@ div.infomessage {
     </class>
     <property>
       <code>{{velocity output="false"}}
-#set ($templateClassName = 'PhenoTips.TemplateClass')
-#set ($templateTemplateName = 'PhenoTips.TemplateTemplate')
-#set ($templatesHome = 'Templates.WebHome')
-$xwiki.ssx.use($templateClassName, {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})
-$xwiki.jsx.use($templateClassName)
-#set ($orders = {
-  'name' : 'asc',
-  'members' : 'desc',
-  'cases' : 'desc'
-})
-#set ($defaultOrder = 'name')
-#set ($order = "$!xcontext.macro.params.orderby")
-#if (!$orders.get($order))
-  #set($order = $defaultOrder)
-#end
-
-#set ($query = $services.query.xwql("from doc.object(${templateClassName}) as std where doc.fullName &lt;&gt; :template").bindValue('template', $templateTemplateName))
-#set ($templateDocs = $xwiki.wrapDocs($query.execute()))
-#set ($templateData = [])
-
-#set ($filterby = "$!{xcontext.macro.params.filterby}")
-#set ($filterval = "$!{xcontext.macro.params.filterval}")
-#foreach ($templateDoc in $templateDocs)
-  #set ($templateObj = $templateDoc.getObject($templateClassName))
-  #set ($filterbyprop = $templateObj.getProperty($filterby))
-  #set ($isFilterActive = ($filterby != '' &amp;&amp; ("$!filterbyprop" != '' || $filterby == 'group')))
-  #if ($filterby == '' || "$!filterbyprop" != '' &amp;&amp; ($filterbyprop.value == $filterval || $filterbyprop.value.contains($filterval)) || $filterby == 'group' &amp;&amp; $!xwiki.getDocument($filterval).getObject('PhenoTips.PhenoTipsGroupClass').getProperty('templates').value.contains($services.model.serialize($templateDoc.documentReference, 'local')))
-    #set ($discard = $templateData.add({
-      'doc' : $templateDoc,
-      'obj' : $templateObj,
-      'doc.fullName' : $templateDoc.fullName,
-      'name' : $templateDoc.title,
-      'description' : $templateDoc.content,
-      'groups' : $services.query.xwql('from doc.object(PhenoTips.PhenoTipsGroupClass) as g where :template member of g.templates').bindValue('template', $services.model.serialize($templateDoc.documentReference, 'local')).count(),
-      'cases' : $services.query.xwql('from doc.object(PhenoTips.PatientClass) as p, doc.object(PhenoTips.TemplateBindingClass) as o where o.templateReference = :template').bindValue('template', $services.model.serialize($templateDoc.documentReference, 'default')).count()
-    }))
-  #end
-#end
-#set ($templateSortedData = $sorttool.sort($templateData, ["${order}:${orders.get($order)}"]))
+$xwiki.ssx.use('PhenoTips.TemplateClass', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})
+$xwiki.jsx.use('PhenoTips.TemplateClass')
 
 #set ($max = $mathtool.toInteger($xcontext.macro.params.max))
-#if (!($max &amp;&amp; $max &gt; 0 &amp;&amp; $max &lt; $templateSortedData.size()))
-  #set ($max = $templateSortedData.size())
+#if (!$max)
+  #set ($max = -1)
 #end
+#set ($templates = $services.templates.getAll($max))
 {{/velocity}}
 
 {{velocity}}
 (% id="templates-directory" %)
-#if ($templateSortedData.size() == 0)
-  #if ($isFilterActive)
-
-    {{info}}$services.localization.render('phenotips.templateClass.filter.noMatches'){{/info}}
-
-  #else
-
-    {{info}}$services.localization.render('phenotips.templateClass.noneDefined')#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[$services.localization.render('phenotips.templateClass.manage')&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=templates')}]]#end{{/info}}
-
-  #end
+#if ($templateData.size() == 0)
+  {{info}}$services.localization.render('phenotips.templateClass.noneDefined')#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[$services.localization.render('phenotips.templateClass.manage')&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=templates')}]]#end{{/info}}
 #else
-  #foreach ($templateDatum in $templateSortedData)
-    #if ($foreach.index &lt; $max)##
-      |(% class="name" %) [[$templateDatum.get('name')&gt;&gt;$templateDatum.get('doc.fullName')]]##
-      \\(% class="members"%)$services.localization.render('phenotips.templateClass.group', [$templateDatum.get('groups')])(%%)##
-      \\(% class="patients"%)$services.localization.render('phenotips.templateClass.case', [$templateDatum.get('cases')])(%%)##
-      #if ($xcontext.macro.params.fullinfo == 'true')|##
-        #if ($templateDatum.description.trim() != '')(% class="desc" %) ((($templateDatum.description.trim())))#end
-      #end
-      #if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|##
-        (% class="tools" %) (((##
-        [[{{icon name="pencil" title="$services.localization.render('phenotips.templateClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($templateDatum.get('doc.fullName'), 'edit')||class="tool edit"]]##
-        [[{{icon name="times" title="$services.localization.render('phenotips.templateClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($templateDatum.get('doc.fullName'), 'delete')||class="tool delete"]]##
-        )))
-      #end\\
+  #foreach ($t in $templates)
+    #set ($numberOfProjects = $services.projects.getNumberOfProjectsForTemplate($t))
+    #set ($numberOfPatients = $services.projects.getNumberOfPatientsForTemplate($t))
+    ##
+    |(% class="name" %) [[$t.name&gt;&gt;$t.fullName]]##
+    \\(% class="members"%)$services.localization.render('phenotips.templateClass.project', [$numberOfProjects])(%%)##
+    \\(% class="patients"%)$services.localization.render('phenotips.templateClass.case', [$numberOfPatients])(%%)##
+    #if ($xcontext.macro.params.fullinfo == 'true')|##
+      #if ($templateDatum.description.trim() != '')(% class="desc" %) ((($t.description.trim())))#end
     #end
+    #if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|##
+      (% class="tools" %) (((##
+      [[{{icon name="pencil" title="$services.localization.render('phenotips.templateClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($t.fullName, 'edit')||class="tool edit"]]##
+      [[{{icon name="times" title="$services.localization.render('phenotips.templateClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($t.fullName, 'delete')||class="tool delete"]]##
+      )))
+    #end\\
   #end
 #end
 {{/velocity}}</code>
@@ -1060,72 +1020,6 @@ $xwiki.jsx.use($templateClassName)
   </object>
   <object>
     <name>PhenoTips.TemplateClass</name>
-    <number>2</number>
-    <className>XWiki.WikiMacroParameterClass</className>
-    <guid>e2ae620c-d2d4-41e9-987b-358e1e407952</guid>
-    <class>
-      <name>XWiki.WikiMacroParameterClass</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <defaultValue>
-        <disabled>0</disabled>
-        <name>defaultValue</name>
-        <number>4</number>
-        <prettyName>Parameter default value</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </defaultValue>
-      <description>
-        <disabled>0</disabled>
-        <name>description</name>
-        <number>2</number>
-        <prettyName>Parameter description</prettyName>
-        <rows>5</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </description>
-      <mandatory>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>mandatory</name>
-        <number>3</number>
-        <prettyName>Parameter mandatory</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </mandatory>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Parameter name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-    </class>
-    <property>
-      <defaultValue>name</defaultValue>
-    </property>
-    <property>
-      <description>How to sort the templates. Supported values: name, groups. Default: name.</description>
-    </property>
-    <property>
-      <mandatory>0</mandatory>
-    </property>
-    <property>
-      <name>orderby</name>
-    </property>
-  </object>
-  <object>
-    <name>PhenoTips.TemplateClass</name>
     <number>3</number>
     <className>XWiki.WikiMacroParameterClass</className>
     <guid>2f1871f7-5e6e-4f21-80fd-efe40023d0ea</guid>
@@ -1188,138 +1082,6 @@ $xwiki.jsx.use($templateClassName)
     </property>
     <property>
       <name>max</name>
-    </property>
-  </object>
-  <object>
-    <name>PhenoTips.TemplateClass</name>
-    <number>4</number>
-    <className>XWiki.WikiMacroParameterClass</className>
-    <guid>db8e9923-7a1b-4b86-b713-61fa96df6c6b</guid>
-    <class>
-      <name>XWiki.WikiMacroParameterClass</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <defaultValue>
-        <disabled>0</disabled>
-        <name>defaultValue</name>
-        <number>4</number>
-        <prettyName>Parameter default value</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </defaultValue>
-      <description>
-        <disabled>0</disabled>
-        <name>description</name>
-        <number>2</number>
-        <prettyName>Parameter description</prettyName>
-        <rows>5</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </description>
-      <mandatory>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>mandatory</name>
-        <number>3</number>
-        <prettyName>Parameter mandatory</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </mandatory>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Parameter name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-    </class>
-    <property>
-      <defaultValue/>
-    </property>
-    <property>
-      <description/>
-    </property>
-    <property>
-      <mandatory>0</mandatory>
-    </property>
-    <property>
-      <name>filterby</name>
-    </property>
-  </object>
-  <object>
-    <name>PhenoTips.TemplateClass</name>
-    <number>5</number>
-    <className>XWiki.WikiMacroParameterClass</className>
-    <guid>3f684849-c614-4ccd-a708-a09391593483</guid>
-    <class>
-      <name>XWiki.WikiMacroParameterClass</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <defaultValue>
-        <disabled>0</disabled>
-        <name>defaultValue</name>
-        <number>4</number>
-        <prettyName>Parameter default value</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </defaultValue>
-      <description>
-        <disabled>0</disabled>
-        <name>description</name>
-        <number>2</number>
-        <prettyName>Parameter description</prettyName>
-        <rows>5</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </description>
-      <mandatory>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>mandatory</name>
-        <number>3</number>
-        <prettyName>Parameter mandatory</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </mandatory>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Parameter name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-    </class>
-    <property>
-      <defaultValue/>
-    </property>
-    <property>
-      <description/>
-    </property>
-    <property>
-      <mandatory>0</mandatory>
-    </property>
-    <property>
-      <name>filterval</name>
     </property>
   </object>
 </xwikidoc>
