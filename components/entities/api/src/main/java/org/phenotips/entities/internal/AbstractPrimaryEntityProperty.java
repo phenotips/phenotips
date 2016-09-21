@@ -63,11 +63,9 @@ public abstract class AbstractPrimaryEntityProperty<E extends PrimaryEntity>
     @Override
     public boolean set(E property)
     {
-        if (property == null) {
-            return false;
-        }
-        if (!this.remove()) {
-            return false;
+        boolean removed = this.remove();
+        if (property == null || !removed) {
+            return removed;
         }
         return addMember(property);
     }
