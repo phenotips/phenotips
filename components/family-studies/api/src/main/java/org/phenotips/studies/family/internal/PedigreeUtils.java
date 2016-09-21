@@ -117,12 +117,12 @@ public class PedigreeUtils
         Pedigree pedigree = new DefaultPedigree(json, image);
         // saving into a new family
         if (familyId == null || familyId.length() == 0) {
-            return processPedigree(this.familyRepository.createFamily(), pedigree, useCurrentUser);
+            return processPedigree(this.familyRepository.createFamily(), pedigree, useCurrentUser, true);
         }
         // saving into existing family
         Family family = this.familyRepository.getFamilyById(familyId);
         if (family != null) {
-            return processPedigree(family, pedigree, useCurrentUser);
+            return processPedigree(family, pedigree, useCurrentUser, false);
         }
         return new InvalidFamilyIdResponse();
     }
@@ -132,7 +132,8 @@ public class PedigreeUtils
      * @param pedigree not null
      * @return
      */
-    private synchronized JSONResponse processPedigree(Family family, Pedigree pedigree, boolean useCurrentUser)
+    private synchronized JSONResponse processPedigree(Family family, Pedigree pedigree, boolean useCurrentUser,
+        boolean updateIDFromProband)
     {
         List<String> oldMembers = family.getMembersIds();
 
@@ -155,6 +156,11 @@ public class PedigreeUtils
         }
 
         family.setPedigree(pedigree);
+
+        if (updateIDFromProband) {
+            // default family identifier to proband last name
+            this.updateFamilyExternalId(family);
+        }
 
         // Removed members who are no longer in the family
         List<String> patientsToRemove = new LinkedList<>();
@@ -243,6 +249,20 @@ public class PedigreeUtils
         }
 
         return null;
+    }
+
+    private void updateFamilyExternalId(Family family)
+    {
+        String probandId = family.getProbandId();
+        if (probandId != null) {
+            Patient patient = this.patientRepository.get(probandId);
+            if (patient != null) {
+                String lastName = patient.<String>getData("patientName").get("last_name");
+                if (!lastName.isEmpty()) {
+                    family.setExternalId(lastName);
+                }
+            }
+        }
     }
 
 }

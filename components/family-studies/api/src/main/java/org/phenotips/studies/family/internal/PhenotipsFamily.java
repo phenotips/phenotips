@@ -465,4 +465,12 @@ public class PhenotipsFamily implements Family
         }
         return true;
     }
+
+    @Override
+    public void setExternalId(String externalId)
+    {
+        XWikiContext context = getXContext();
+        BaseObject familyObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
+        familyObject.set("external_id", externalId, context);
+    }
 }

@@ -63,8 +63,8 @@ public interface Family
     List<String> getMembersIds();
 
     /**
-     * @return phenotipsID of the patient which is the proband of the family, or null if
-     * pedigree has no proband or proband node is not linked to a patient record
+     * @return phenotipsID of the patient which is the proband of the family, or null if pedigree has no proband or
+     *         proband node is not linked to a patient record
      */
     String getProbandId();
 
@@ -148,4 +148,11 @@ public interface Family
      * @return true if successful
      */
     boolean deleteFamily(boolean deleteAllMembers);
+
+    /**
+     * Sets external Id to the family document.
+     *
+     * @param externalId to be set for the family document
+     */
+    void setExternalId(String externalId);
 }
