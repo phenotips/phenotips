@@ -71,6 +71,13 @@ public interface PrimaryEntity
     String getName();
 
     /**
+     * Returns the full name of the entity.
+     *
+     * @return a string
+     */
+    String getFullName();
+
+    /**
      * Returns a longer, user-friendly description for the entity, if any.
      *
      * @return a string, may be empty
