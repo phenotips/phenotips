@@ -23,7 +23,11 @@ import org.phenotips.templates.data.TemplateRepository;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -70,10 +74,32 @@ public class TemplatesScriptService implements ScriptService
     }
 
     /**
-     * @return an iterator over the all templates
+     * Returns a sorted collection of templates. If {@link numberOfResults>0} the collection will contain not more than
+     * that number of results. Otherwise, it will contain all templates.
+     *
+     * @param numberOfResults maximal number of results
+     * @return a collection of templates
      */
-    public Iterator<Template> getAll()
+    public Collection<Template> getAll(int numberOfResults)
     {
-        return this.templateRepository.getAll();
+        Iterator<Template> iterator = this.templateRepository.getAll();
+        List<Template> templates = new LinkedList<>();
+
+        boolean moreTemplates = iterator.hasNext();
+        int size = 0;
+        while (moreTemplates) {
+            templates.add(iterator.next());
+            size++;
+
+            if (size >= numberOfResults && numberOfResults > 0) {
+                moreTemplates = false;
+            }
+            if (!iterator.hasNext()) {
+                moreTemplates = false;
+            }
+        }
+
+        Collections.sort(templates);
+        return templates;
     }
 }
