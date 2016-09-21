@@ -245,25 +245,24 @@ public class ProjectsScriptService implements ScriptService
     /**
      * Returns number of projects that a given template is associated with.
      *
-     * @param templateId id of template
+     * @param template template
      * @return number of projects
      */
-    public int getNumberOfProjectsForTemplates(String templateId)
+    public int getNumberOfProjectsForTemplate(Template template)
     {
-        return this.getProjectsForTemplate(templateId).size();
+        return this.getProjectsForTemplate(template).size();
     }
 
     /**
      * Returns a collection of projects that a given template is associated with.
      *
-     * @param templateId id of template
+     * @param template template
      * @return a collection of projects
      */
-    public Collection<Project> getProjectsForTemplate(String templateId)
+    public Collection<Project> getProjectsForTemplate(Template template)
     {
         List<Project> projects = new LinkedList<>();
 
-        Template template = this.templateRepository.get(templateId);
         Collection<TemplateInProjectGroup> templateInProjects =
                 templateInProjectGroupManager.getGroupsForEntity(template);
         for (TemplateInProjectGroup tip : templateInProjects) {
