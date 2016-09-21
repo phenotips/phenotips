@@ -80,12 +80,6 @@ public class DefaultProject extends AbstractPrimaryEntityGroup<Patient> implemen
     }
 
     @Override
-    public String getFullName()
-    {
-        return this.getDocument().toString();
-    }
-
-    @Override
     public String getImage()
     {
         String avatarURL = "";
