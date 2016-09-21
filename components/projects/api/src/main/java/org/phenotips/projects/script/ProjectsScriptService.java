@@ -273,4 +273,16 @@ public class ProjectsScriptService implements ScriptService
         Collections.sort(projects);
         return projects;
     }
+
+    /**
+     * Returns the number of patients who have a given template assigned to them.
+     *
+     * @param template template
+     * @return number of patient who have a given template assigned to them
+     */
+    public int getNumberOfPatientsForTemplate(Template template)
+    {
+        // TODO
+        return 0;
+    }
 }
