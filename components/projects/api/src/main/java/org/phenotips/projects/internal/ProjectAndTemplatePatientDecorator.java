@@ -23,6 +23,7 @@ import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.entities.PrimaryEntityProperty;
+import org.phenotips.entities.internal.AbstractPrimaryEntity;
 import org.phenotips.entities.internal.AbstractPrimaryEntityProperty;
 import org.phenotips.projects.data.Project;
 import org.phenotips.projects.data.ProjectRepository;
@@ -45,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  *
  */
-public class ProjectAndTemplatePatientDecorator implements Patient
+public class ProjectAndTemplatePatientDecorator extends AbstractPrimaryEntity implements Patient
 {
     protected Patient patient;
 
@@ -87,6 +88,8 @@ public class ProjectAndTemplatePatientDecorator implements Patient
      */
     public ProjectAndTemplatePatientDecorator(Patient patient)
     {
+        super(patient.getDocument());
+
         this.patient = patient;
         templateProperty = new TemplateProperty(patient);
     }
