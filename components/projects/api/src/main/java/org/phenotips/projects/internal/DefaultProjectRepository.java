@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -51,8 +50,6 @@ import org.apache.commons.lang3.StringUtils;
 public class DefaultProjectRepository
     extends AbstractPrimaryEntityGroupManager<Project, Patient> implements ProjectRepository
 {
-    private static final String OR = " or ";
-
     @Inject
     private UserManager userManager;
 
@@ -141,38 +138,6 @@ public class DefaultProjectRepository
             }
         }
         return projects;
-    }
-
-    @Override
-    public String getProjectCondition(String baseObjectTable, String propertyTable, List<Project> projects)
-    {
-        int i = 1;
-        if (i + 1 == 2) {
-            return "";
-        }
-
-        String propertyField = new StringBuffer().append("lower(").append(propertyTable).append(".value)").toString();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(" ").append(baseObjectTable).append(".className='PhenoTips.ProjectBindingClass' and (");
-
-        String[] likes = { "'%s;%%'", "'%%;%s'", "'%%;%s;%%'" };
-        boolean firstProject = true;
-        for (Project p : projects) {
-            String projectName = p.getFullName().toLowerCase();
-            if (firstProject) {
-                firstProject = false;
-            } else {
-                sb.append(OR);
-            }
-            for (String l : likes) {
-                sb.append(propertyField).append(" like ").append(String.format(l, projectName)).append(OR);
-            }
-            sb.append(propertyField).append(" = '").append(projectName).append("' ");
-        }
-        sb.append(") ");
-
-        return sb.toString();
     }
 
     @Override

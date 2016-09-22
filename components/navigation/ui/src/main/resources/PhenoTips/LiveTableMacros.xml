@@ -702,7 +702,7 @@ $!displayValue
     #set ($publicVisibilityPatients = "(accessObj.className = 'PhenoTips.VisibilityClass' and accessProp.value in ('public', 'open'))")
     #set ($filterWhere = "${filterWhere} and (${ownerCondition} or ${collaboratorCondition} or ${publicVisibilityPatients}")
     ##
-    #set ($projectsCondition = $services.projects.getProjectConditionForCurrentUser('accessObj', 'accessProp'))
+    #set ($projectsCondition = $services.projects.getProjectConditionForCurrentUser('accessObj'))
     #if (${projectsCondition})
       #set ($filterWhere = "${filterWhere} or ${projectsCondition}")
     #end
