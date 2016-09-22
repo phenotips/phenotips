@@ -62,15 +62,17 @@ public class TemplatesScriptService implements ScriptService
      */
     public int getNumberOfTemplates()
     {
-        // TODO: will change in AbstractPrimaryEntityManager
+        return getAll().size();
+    }
 
-        int count = 0;
-        Iterator<Template> iterator = this.templateRepository.getAll();
-        while (iterator.hasNext()) {
-            iterator.next();
-            count++;
-        }
-        return count;
+    /**
+     * Returns a sorted collection of all templates.
+     *
+     * @return a collection of templates
+     */
+    public Collection<Template> getAll()
+    {
+        return getAll(-1);
     }
 
     /**
