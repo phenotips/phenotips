@@ -25,6 +25,7 @@ import org.phenotips.projects.data.Project;
 import org.phenotips.projects.data.ProjectRepository;
 import org.phenotips.projects.internal.ProjectAndTemplatePatientDecorator;
 
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ public class ProjectsController implements PatientDataController<Project>
     }
 
     @Override
-    public void save(Patient patient)
+    public void save(Patient patient, DocumentModelBridge document)
     {
         // No need to do anything. Entities implementation saves projects.
     }
