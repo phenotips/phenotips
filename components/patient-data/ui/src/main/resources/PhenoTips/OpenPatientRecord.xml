@@ -53,7 +53,7 @@
       #if ($patientClass.get($property).type == 'DateClass' &amp;&amp; "$!value" != '')
         ## Dates are expected in the standard format, regardless of the format used to display them in PhenoTips
         #set ($value = $services.jodatime.getDateTimeFormatterForPattern('yyyy-M-d').parseDateTime($value).toDate())
-      #elseif ($property == 'gender' &amp;&amp; $value != 'M' &amp;&amp; $value != 'F')
+      #elseif ($property == 'gender' &amp;&amp; $value != 'M' &amp;&amp; $value != 'F' &amp;&amp; $value != 'O' &amp;&amp; $value != 'U')
         ## Unknown values should be ignored
         #set ($value = '')
       #end
