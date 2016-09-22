@@ -197,20 +197,37 @@ public class ProjectsScriptService implements ScriptService
 
     /**
      * Returns a condition for an HQL patients query that selects all patients that belong to any project in
-     * {@link projects}.
+     * the projects current user is a leader in.
      *
-     * @param baseObjectTable name of BaseObject in query
-     * @param propertyTable name of StringProperty in query
+     * @param objectTable name of BaseObject in query
      * @return HQL condition
      */
-    public String getProjectConditionForCurrentUser(String baseObjectTable, String propertyTable)
+    public String getProjectConditionForCurrentUser(String objectTable)
     {
-        List<Project> projects = this.getProjectsWithLeadingRights();
-        if (projects.size() > 0) {
-            return this.projectRepository.getProjectCondition(baseObjectTable, propertyTable, projects);
-        } else {
+        Collection<Project> projects = this.getProjectsWithLeadingRights();
+        Collection<Patient> patients = new LinkedList<>();
+        for (Project p : projects) {
+            patients.addAll(p.getAllPatients());
+        }
+        if (patients.size() == 0) {
             return null;
         }
+
+        StringBuilder sb = new StringBuilder()
+            .append(" ").append(objectTable).append(".name in (");
+
+        String apostrophe = "'";
+        boolean firstPatient = true;
+        for (Patient p : patients) {
+            if (firstPatient) {
+                firstPatient = false;
+            } else {
+                sb.append(",");
+            }
+            sb.append(apostrophe).append(p.getId()).append(apostrophe);
+        }
+        sb.append(") ");
+        return sb.toString();
     }
 
     /**
