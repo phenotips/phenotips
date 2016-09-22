@@ -53,7 +53,7 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
       #if ($xwiki.exists('PhenoTips.CreatePatientRecordForm'))
          $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
          $xwiki.ssx.use('PhenoTips.CreatePatientRecordForm')##
-         &lt;input type="hidden" id="numberOfTemplates" value="$templatesNum" /&gt;
+         &lt;input type="hidden" id="numberOfTemplates" value="$services.templates.getNumberOfTemplates()" /&gt;
       #end
       ##
       ## Extensions displayed before the content
@@ -511,10 +511,10 @@ document.observe("xwiki:dom:loaded", function() {
       <cache>long</cache>
     </property>
     <property>
-      <code>.tp-assignment-config {
+      <code>.pt-assignment-config {
   float: left;
 }
-.tp-assignment-config a.button {
+.pt-assignment-config a.button {
   font-size: 1em;
   font-weight: normal;
   text-transform: none;
@@ -615,7 +615,7 @@ $xwiki.ssx.use('PhenoTips.CreatePatientRecordForm')
 {{/velocity}}
 
 {{velocity}}
-(% class="tp-assignment-config" %)
+(% class="pt-assignment-config" %)
 #set ($projectsNum = $services.projects.getProjectsCurrentUserCanContributeTo().size())
 #set ($templatesNum = $services.templates.getNumberOfTemplates())
 #if ($xcontext.action != 'export' &amp;&amp; $templatesNum + $projectsNum &gt; 0)
