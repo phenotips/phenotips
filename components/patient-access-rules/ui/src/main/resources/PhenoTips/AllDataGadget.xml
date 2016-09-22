@@ -131,7 +131,7 @@
 #set ($query = "${query} and accessProp.id.id = accessObj.id ")
 #set ($notInMyDataCondition = " not exists (from BaseObject ownerObj, StringProperty ownerProp where ownerObj.className = 'PhenoTips.OwnerClass' and ownerObj.name = doc.fullName and ownerProp.id.id = ownerObj.id and ownerProp.value = '$escapetool.sql($xcontext.userReference.toString())') ")
 #set ($collaboratorCondition = "accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ${groupsAndSelf} ")
-#set ($projectsCondition = $services.projects.getProjectConditionForCurrentUser('accessObj', 'accessProp'))
+#set ($projectsCondition = $services.projects.getProjectConditionForCurrentUser('accessObj'))
 #set ($groupsCondition = " accessObj.className = 'PhenoTips.OwnerClass' and accessProp.value in ${groups} ")
 #set ($sharedDataCondition = "and ${notInMyDataCondition} and ( ")
 #set ($sharedDataCondition = "${sharedDataCondition} (${collaboratorCondition}) ")

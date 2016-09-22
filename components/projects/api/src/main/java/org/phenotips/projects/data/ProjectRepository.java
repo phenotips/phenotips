@@ -24,7 +24,6 @@ import org.phenotips.projects.access.ProjectAccessLevel;
 import org.xwiki.component.annotation.Role;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * @version $Id$
@@ -62,17 +61,4 @@ public interface ProjectRepository extends PrimaryEntityGroupManager<Project, Pa
      * @return a collection of Project objects
      */
     Collection<Project> getFromString(String projects);
-
-    /**
-     * Returns a condition for an HQL patients query that selects all patients that belong to any project in
-     * {@link projects}. This is used, for example, in counting the number of cases for a projects (projects would
-     * contain only one project), in showing shared data for user (projects would contains all projects that current
-     * user is a contributor in).
-     *
-     * @param baseObjectTable name of BaseObject in query
-     * @param propertyTable name of StringProperty in query
-     * @param projects list of projects to show patients for
-     * @return HQL condition
-     */
-    String getProjectCondition(String baseObjectTable, String propertyTable, List<Project> projects);
 }
