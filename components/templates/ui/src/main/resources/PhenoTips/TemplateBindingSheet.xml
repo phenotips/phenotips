@@ -58,7 +58,7 @@
     (%%)
   #end
 #end
-#if ($templates.hasNext())
+#if ($templates.size()>0)
   (% class="xHint" %)$services.localization.render('phenotips.templateBindingSheet.selectTemplate')(%%)
   #if ($doc.getObject('PhenoTips.TemplateBindingClass'))
     : $doc.getObject('PhenoTips.TemplateBindingClass').templateReference
