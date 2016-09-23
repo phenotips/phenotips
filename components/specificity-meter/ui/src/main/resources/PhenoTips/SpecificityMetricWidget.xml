@@ -237,7 +237,7 @@
       var value = this._crtValue * 5;
       this.meterDisplay.title = this.levels[Math.round(value)] + " (" + value.toPrecision(3) + "/5)";
       this.meterDisplay.update(new Element('div', {'id' : "specificity-meter-value", "style" : "width: " + Math.round(v * 100) + "%;"}));
-      if (oldValue != this._crtValue) {
+      if (oldValue !== undefined &amp;&amp; oldValue != this._crtValue) {
         var eventData = {"value": this._crtValue, "level": this.levels[Math.round(value)]};
         document.fire("phenotips:specificity-meter:change", eventData);
       }
