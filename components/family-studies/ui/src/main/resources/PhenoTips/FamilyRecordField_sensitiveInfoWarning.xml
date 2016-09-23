@@ -113,21 +113,23 @@
 {{include reference="PhenoTips.FormMacros" /}}
 
 {{velocity}}
-#__hasBooleanDataToDisplay('warning' $showWarning)
-#__hasDataToDisplay('warning_message', $showWarningMessage)
-#if ($showWarningMessage || $showWarning)
-  (% class="controlled-group complete-hide exclude" %)(((
-    #if ($showWarningMessage)
-      (% class="controller" %) (((
-        #__form_entry('warning')
+#if($xcontext.action == 'edit' || $doc.display('warning_message') != '')
+  #__hasBooleanDataToDisplay('warning' $showWarning)
+  #__hasDataToDisplay('warning_message', $showWarningMessage)
+  #if ($showWarningMessage || $showWarning)
+    (% class="controlled-group complete-hide exclude" %)(((
+      #if ($showWarningMessage &amp;&amp; $xcontext.action == 'edit')
+        (% class="controller" %) (((
+          #__form_entry('warning')
+        )))
+      #end
+      #if ($showWarning)
+        (% class="controlled" %)(((
+          #__form_entry('warning_message')
       )))
-    #end
-    #if ($showWarning)
-      (% class="controlled" %)(((
-        #__form_entry('warning_message')
-      )))
-    #end
-  )))
+      #end
+    )))
+  #end
 #end
 {{/velocity}}</content>
     </property>

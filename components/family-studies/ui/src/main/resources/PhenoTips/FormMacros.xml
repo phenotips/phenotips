@@ -58,16 +58,21 @@
 #end
 
 #macro(__form_field $propName)
-#if($xcontext.action == 'edit' || ($doc.display($propName) != ''))${doc.display($propName).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}#{else}-#{end}##
+(% class="displayed-value"%)${doc.display($propName).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}##
 #end
 
 #macro (__form_entry $propName)
 (((
 #if ($class.get($propName).type == "BooleanClass")
-#if ($xcontext.action == 'edit')#__form_field($propName)#end#if ($obj.getValue($propName) == 1 || $xcontext.action == 'edit')#__form_label($propName)#end
+  #if ($xcontext.action == 'edit')
+    #__form_field($propName)
+  #end
+  #if ($obj.getValue($propName) == 1 || $xcontext.action == 'edit')
+    #__form_label($propName)
+  #end
 #else
-#__form_label($propName)
-#__form_field($propName)
+  #__form_label($propName)
+  #__form_field($propName)
 #end
 )))
 #end

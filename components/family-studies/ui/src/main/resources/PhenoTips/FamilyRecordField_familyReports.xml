@@ -111,12 +111,14 @@
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-$xwiki.ssx.use('PhenoTips.FamilyRecordField_familyReports')##
-(% class="report_upload"%)((()))
-#__hasDataToDisplay('reports' $showReportsHistory)
-#if ($xcontext.action != 'export' &amp;&amp; $showReportsHistory)
-  $doc.display('reports')
-(% class="clearfloats" %)((()))
+#if($xcontext.action == 'edit' || $doc.display('reports') != '')
+  $xwiki.ssx.use('PhenoTips.FamilyRecordField_familyReports')##
+  (% class="report_upload"%)((()))
+  #__hasDataToDisplay('reports' $showReportsHistory)
+  #if ($xcontext.action != 'export' &amp;&amp; $showReportsHistory)
+    $doc.display('reports')
+  (% class="clearfloats" %)((()))
+  #end
 #end
 {{/velocity}}</content>
     </property>
