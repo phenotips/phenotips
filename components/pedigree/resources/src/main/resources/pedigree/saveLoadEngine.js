@@ -92,8 +92,9 @@ define([
             var _this = this;
 
             var finalizeCreation = function(loadedPatientData) {
-                var familyMemberIds = Object.keys(loadedPatientData);
+
                 if (loadedPatientData !== null) {
+                    var familyMemberIds = Object.keys(loadedPatientData);
 
                     var allLinkedNodes = editor.getGraph().getAllPatientLinks();
 
