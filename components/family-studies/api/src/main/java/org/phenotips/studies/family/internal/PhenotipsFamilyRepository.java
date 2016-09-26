@@ -32,7 +32,6 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.users.User;
-import org.xwiki.users.UserManager;
 
 import java.util.List;
 
@@ -54,8 +53,9 @@ import com.xpn.xwiki.objects.BaseObject;
  * Provides utility methods for working with family documents and patients.
  *
  * @version $Id$
+ * @since 1.4
  */
-@Component
+@Component(roles = FamilyRepository.class)
 @Singleton
 public class PhenotipsFamilyRepository implements FamilyRepository
 {
@@ -81,9 +81,6 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     private static QueryManager qm;
 
     @Inject
-    private static UserManager userManager;
-
-    @Inject
     @Named("current")
     private static DocumentReferenceResolver<String> referenceResolver;
 
@@ -96,11 +93,11 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     private static PhenotipsFamilyPermissions familyPermissions;
 
     @Override
-    public Family createFamily()
+    public Family createFamily(User creator)
     {
         XWikiDocument newFamilyDocument = null;
         try {
-            newFamilyDocument = this.createFamilyDocument();
+            newFamilyDocument = this.createFamilyDocument(creator);
         } catch (Exception e) {
             PhenotipsFamilyRepository.logger.error("Could not create a new family document: {}", e.getMessage());
         }
@@ -223,7 +220,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     /*
      * Creates a new document for the family. Only handles XWiki side and no PhenotipsFamily is created.
      */
-    private synchronized XWikiDocument createFamilyDocument()
+    private synchronized XWikiDocument createFamilyDocument(User creator)
         throws IllegalArgumentException, QueryException, XWikiException
     {
         XWikiContext context = PhenotipsFamilyRepository.provider.get();
@@ -243,14 +240,18 @@ public class PhenotipsFamilyRepository implements FamilyRepository
             PhenotipsFamilyRepository.entityReferenceResolver.resolve(FAMILY_TEMPLATE), context);
 
         // Adding additional values to family
-        User currentUser = PhenotipsFamilyRepository.userManager.getCurrentUser();
         BaseObject ownerObject = newFamilyDoc.newXObject(Owner.CLASS_REFERENCE, context);
-        ownerObject.set("owner", currentUser == null ? "" : currentUser.getId(), context);
+        ownerObject.set("owner", creator == null ? "" : creator.getId(), context);
 
         BaseObject familyObject = newFamilyDoc.getXObject(Family.CLASS_REFERENCE);
         familyObject.set("identifier", nextId, context);
 
-        newFamilyDoc.setCreatorReference(currentUser == null ? null : currentUser.getProfileDocument());
+        if (creator != null) {
+            DocumentReference creatorRef = creator.getProfileDocument();
+            newFamilyDoc.setCreatorReference(creatorRef);
+            newFamilyDoc.setAuthorReference(creatorRef);
+            newFamilyDoc.setContentAuthorReference(creatorRef);
+        }
 
         PhenotipsFamilyRepository.familyPermissions.setCurrentUserAsOwner(newFamilyDoc);
 
@@ -293,4 +294,5 @@ public class PhenotipsFamilyRepository implements FamilyRepository
         XWiki wiki = context.getWiki();
         return wiki.getDocument(docRef, context);
     }
+
 }

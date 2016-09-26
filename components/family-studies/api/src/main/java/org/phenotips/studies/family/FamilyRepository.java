@@ -20,6 +20,7 @@ package org.phenotips.studies.family;
 import org.phenotips.data.Patient;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.users.User;
 
 /**
  * Utility methods for manipulating families. No access right checks are performed.
@@ -43,9 +44,10 @@ public interface FamilyRepository
     Family getFamilyById(String id);
 
     /**
-     * Creates a new empty family.
+     * Creates a new empty family (owned by the given entity).
      *
+     * @param creator an entity (a user or a group) which will be set as the owner for the created {@link Family family}
      * @return new Family object
      */
-    Family createFamily();
+    Family createFamily(User creator);
 }

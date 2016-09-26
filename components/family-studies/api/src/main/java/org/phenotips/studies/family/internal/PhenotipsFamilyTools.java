@@ -26,16 +26,20 @@ import org.phenotips.studies.family.FamilyTools;
 import org.phenotips.studies.family.Pedigree;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Default implementation of various famly tools.
- * All methods assume actions are performed by current user and do corresponding permision checks.
+ * Default implementation of various family tools. All methods assume actions are performed by current user and do
+ * corresponding permission checks.
  *
  * @version $Id$
  * @since 1.4
@@ -56,10 +60,24 @@ public class PhenotipsFamilyTools implements FamilyTools
     @Inject
     private UserManager userManager;
 
+    /** Used for checking access rights. */
+    @Inject
+    private AuthorizationService access;
+
+    /** Fills in missing reference fields with those from the current context document to create a full reference. */
+    @Inject
+    @Named("current")
+    private EntityReferenceResolver<EntityReference> currentResolver;
+
     @Override
     public Family createFamily()
     {
-        return this.familyRepository.createFamily();
+        User creator = this.userManager.getCurrentUser();
+        if (this.access.hasAccess(creator, Right.EDIT,
+            this.currentResolver.resolve(Family.DATA_SPACE, EntityType.SPACE))) {
+            return this.familyRepository.createFamily(creator);
+        }
+        throw new SecurityException("User not authorized to create new families");
     }
 
     @Override
@@ -97,7 +115,7 @@ public class PhenotipsFamilyTools implements FamilyTools
             return null;
         }
         if (!this.authorizationService.hasAccess(
-                this.userManager.getCurrentUser(), Right.VIEW, patient.getDocument())) {
+            this.userManager.getCurrentUser(), Right.VIEW, patient.getDocument())) {
             return null;
         }
         Family family = this.familyRepository.getFamilyForPatient(patient);

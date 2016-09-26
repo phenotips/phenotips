@@ -45,9 +45,11 @@ import javax.inject.Singleton;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import net.sf.json.JSON;
+
 /**
  * Script service for working with families. All methods assume actions are performed by current user and do
- * corresponding permision checks.
+ * corresponding permission checks.
  *
  * @version $Id$
  * @since 1.2RC1
@@ -129,7 +131,7 @@ public class PedigreeScriptService implements ScriptService
         }
         // else: if family == null mewans linking to new family, which will be creatd by current user and thus
         // current user will have edit rights
-        return this.pedigreeUtils.canPatientBeAddedToFamily(family, patientToLinkId, true);
+        return this.pedigreeUtils.canPatientBeAddedToFamily(family, patientToLinkId);
     }
 
     /**
@@ -146,7 +148,7 @@ public class PedigreeScriptService implements ScriptService
     {
         try {
             JSONObject pedigreeJSON = new JSONObject(json);
-            return this.pedigreeUtils.savePedigree(familyId, pedigreeJSON, image, true);
+            return this.pedigreeUtils.savePedigree(familyId, pedigreeJSON, image);
         } catch (JSONException ex) {
             return new InvalidInputJSONResponse(json);
         }

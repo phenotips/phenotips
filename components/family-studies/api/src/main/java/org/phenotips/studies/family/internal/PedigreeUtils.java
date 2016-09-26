@@ -21,7 +21,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
-import org.phenotips.studies.family.FamilyRepository;
+import org.phenotips.studies.family.FamilyTools;
 import org.phenotips.studies.family.Pedigree;
 import org.phenotips.studies.family.PedigreeProcessor;
 import org.phenotips.studies.family.script.JSONResponse;
@@ -31,7 +31,6 @@ import org.phenotips.studies.family.script.response.InternalErrorResponse;
 import org.phenotips.studies.family.script.response.InvalidFamilyIdResponse;
 import org.phenotips.studies.family.script.response.InvalidPatientIdResponse;
 import org.phenotips.studies.family.script.response.NotEnoughPermissionsOnFamilyResponse;
-import org.phenotips.studies.family.script.response.NotEnoughPermissionsOnPatientResponse;
 import org.phenotips.studies.family.script.response.OKJSONResponse;
 import org.phenotips.studies.family.script.response.PatientContainedMultipleTimesInPedigreeResponse;
 import org.phenotips.studies.family.script.response.ValidLinkJSONResponse;
@@ -41,7 +40,6 @@ import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -64,9 +62,6 @@ public class PedigreeUtils
     private PatientRepository patientRepository;
 
     @Inject
-    private FamilyRepository familyRepository;
-
-    @Inject
     private AuthorizationService authorizationService;
 
     @Inject
@@ -75,26 +70,23 @@ public class PedigreeUtils
     @Inject
     private PedigreeProcessor pedigreeConverter;
 
+    @Inject
+    private FamilyTools familyTools;
+
     /**
      * Checks if a patient can be linked to a family. The id of the patient to link is patientItLinkId.
      *
      * @param family a valid family object
      * @param patientToLinkId id of a patient to link to family
-     * @param useCurrentUser if true, permission checks for the current user are performed
      * @return JSONResponse see {@link JSONResponse}
      */
-    public JSONResponse canPatientBeAddedToFamily(Family family, String patientToLinkId, boolean useCurrentUser)
+    public JSONResponse canPatientBeAddedToFamily(Family family, String patientToLinkId)
     {
         Patient patient = this.patientRepository.getPatientById(patientToLinkId);
         if (patient == null) {
             return new InvalidPatientIdResponse(patientToLinkId);
         }
-        if (useCurrentUser
-            && !this.authorizationService.hasAccess(
-                this.userManager.getCurrentUser(), Right.EDIT, patient.getDocument())) {
-            return new NotEnoughPermissionsOnPatientResponse(Arrays.asList(patientToLinkId), Right.EDIT);
-        }
-        Family familyForLinkedPatient = familyRepository.getFamilyForPatient(patient);
+        Family familyForLinkedPatient = this.familyTools.getFamilyForPatient(patientToLinkId);
         if (familyForLinkedPatient != null) {
             if (family == null || !familyForLinkedPatient.getId().equals(family.getId())) {
                 return new AlreadyHasFamilyResponse(patientToLinkId, familyForLinkedPatient.getId());
@@ -109,20 +101,19 @@ public class PedigreeUtils
      * @param familyId phenotips family id
      * @param json (data) part of the pedigree JSON
      * @param image svg part of the pedigree JSON
-     * @param useCurrentUser if true, checks will be made to make sure current user has enough permissions
      * @return {@link JSONResponse} with one of many possible statuses
      */
-    public JSONResponse savePedigree(String familyId, JSONObject json, String image, boolean useCurrentUser)
+    public JSONResponse savePedigree(String familyId, JSONObject json, String image)
     {
         Pedigree pedigree = new DefaultPedigree(json, image);
         // saving into a new family
         if (familyId == null || familyId.length() == 0) {
-            return processPedigree(this.familyRepository.createFamily(), pedigree, useCurrentUser, true);
+            return processPedigree(this.familyTools.createFamily(), pedigree, true);
         }
         // saving into existing family
-        Family family = this.familyRepository.getFamilyById(familyId);
+        Family family = this.familyTools.getFamilyById(familyId);
         if (family != null) {
-            return processPedigree(family, pedigree, useCurrentUser, false);
+            return processPedigree(family, pedigree, false);
         }
         return new InvalidFamilyIdResponse();
     }
@@ -132,8 +123,7 @@ public class PedigreeUtils
      * @param pedigree not null
      * @return
      */
-    private synchronized JSONResponse processPedigree(Family family, Pedigree pedigree, boolean useCurrentUser,
-        boolean updateIDFromProband)
+    private synchronized JSONResponse processPedigree(Family family, Pedigree pedigree, boolean updateIDFromProband)
     {
         List<String> oldMembers = family.getMembersIds();
 
@@ -144,13 +134,13 @@ public class PedigreeUtils
         patientsToAdd.addAll(currentMembers);
         patientsToAdd.removeAll(oldMembers);
 
-        JSONResponse validity = checkValidity(family, patientsToAdd, useCurrentUser);
+        JSONResponse validity = checkValidity(family, patientsToAdd);
         if (validity.isErrorResponse()) {
             return validity;
         }
 
         // Update patient data from pedigree's JSON
-        JSONResponse result = this.updatePatientsFromJson(pedigree, useCurrentUser);
+        JSONResponse result = this.updatePatientsFromJson(pedigree);
         if (result.isErrorResponse()) {
             return result;
         }
@@ -181,10 +171,10 @@ public class PedigreeUtils
         return new FamilyInfoJSONResponse(family);
     }
 
-    private JSONResponse checkValidity(Family family, List<String> newMembers, boolean useCurrentUser)
+    private JSONResponse checkValidity(Family family, List<String> newMembers)
     {
         // Checks that current user has edit permissions on family
-        if (useCurrentUser && !this.authorizationService.hasAccess(
+        if (!this.authorizationService.hasAccess(
             this.userManager.getCurrentUser(), Right.EDIT, family.getDocumentReference()))
         {
             return new NotEnoughPermissionsOnFamilyResponse();
@@ -204,7 +194,7 @@ public class PedigreeUtils
         // Check if every member of updatedMembers can be added to the family
         if (newMembers != null) {
             for (String patientId : newMembers) {
-                JSONResponse response = canPatientBeAddedToFamily(family, patientId, useCurrentUser);
+                JSONResponse response = canPatientBeAddedToFamily(family, patientId);
                 if (response.isErrorResponse()) {
                     return response;
                 }
@@ -213,7 +203,7 @@ public class PedigreeUtils
         return new OKJSONResponse();
     }
 
-    private JSONResponse updatePatientsFromJson(Pedigree pedigree, boolean useCurrentUser)
+    private JSONResponse updatePatientsFromJson(Pedigree pedigree)
     {
         User currentUser = this.userManager.getCurrentUser();
         String idKey = "id";
@@ -223,8 +213,7 @@ public class PedigreeUtils
             for (JSONObject singlePatient : patientsJson) {
                 if (singlePatient.has(idKey)) {
                     Patient patient = this.patientRepository.get(singlePatient.getString(idKey));
-                    if (useCurrentUser
-                        && !this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument())) {
+                    if (!this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument())) {
                         // skip patients the current user does not have edit rights for
                         continue;
                     }

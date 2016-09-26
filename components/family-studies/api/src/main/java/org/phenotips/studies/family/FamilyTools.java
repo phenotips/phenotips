@@ -21,7 +21,7 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.security.authorization.Right;
 
 /**
- * Utility methods for manipulating families using the persmissions of the current user.
+ * Utility methods for manipulating families using the permissions of the current user.
  *
  * @version $Id$
  * @since 1.4
@@ -40,14 +40,14 @@ public interface FamilyTools
      * Returns family object, or null if doesn't exist or current user has no rights.
      *
      * @param familyId a PhenotTips family ID
-     * @return Family object of the family with the given id, or null if familyId is not valid or
-     * current user does not have permissions to view the family.
+     * @return Family object of the family with the given id, or null if familyId is not valid or current user does not
+     *         have permissions to view the family.
      */
     Family getFamilyById(String familyId);
 
     /**
-     * Returns family pedigree.
-     * Essentially this is a shortcut for getFamilyById().getPedigree() with a check that family is not null.
+     * Returns family pedigree. Essentially this is a shortcut for getFamilyById().getPedigree() with a check that
+     * family is not null.
      *
      * @param familyId must be a valid family id
      * @return pedigree object or null if no such family, no pedigree or no view rights for the family.
@@ -58,8 +58,8 @@ public interface FamilyTools
      * Returns a family ID the patient belongs to.
      *
      * @param patientId id of the patient
-     * @return Id of the, or null if patient does not belong to the family or current user
-     * has no view rights for the patient.
+     * @return Id of the, or null if patient does not belong to the family or current user has no view rights for the
+     *         patient.
      */
     Family getFamilyForPatient(String patientId);
 
@@ -67,8 +67,8 @@ public interface FamilyTools
      * Returns patient's pedigree, which is the pedigree of a family that patient belongs to.
      *
      * @param patientId id of the patient
-     * @return Id of the, or null if patient does not belong to the family or current user
-     * has no view rights for the patient.
+     * @return Id of the, or null if patient does not belong to the family or current user has no view rights for the
+     *         patient.
      */
     Pedigree getPedigreeForPatient(String patientId);
 
@@ -76,8 +76,8 @@ public interface FamilyTools
      * Removes a patient from the family, modifying the both the family and patient records to reflect the change.
      *
      * @param patientId of the patient to delete
-     * @return true if patient was removed. false if not, for example, if the patient is not associated with a
-     * family, or if current use rhas no delete rights
+     * @return true if patient was removed. false if not, for example, if the patient is not associated with a family,
+     *         or if current user has no delete rights
      */
     boolean removeMember(String patientId);
 
@@ -86,7 +86,7 @@ public interface FamilyTools
      *
      * @param familyId of the family to delete
      * @param deleteAllMembers indicator whether to delete all family member documents as well
-     * @return true if successful; false if deletion failed or curent user has not enough rights
+     * @return true if successful; false if deletion failed or current user has not enough rights
      */
     boolean deleteFamily(String familyId, boolean deleteAllMembers);
 
@@ -94,7 +94,7 @@ public interface FamilyTools
      * Checks if the current user can delete the family (or the family and all the members).
      *
      * @param familyId of the family to delete
-     * @param deleteAllMembers indicator whether to check delete permisions on all family member documents as well
+     * @param deleteAllMembers indicator whether to check delete permissions on all family member documents as well
      * @return true if successful
      */
     boolean currentUserCanDeleteFamily(String familyId, boolean deleteAllMembers);
@@ -102,7 +102,7 @@ public interface FamilyTools
     /**
      * Checks if the current user has the given right (VIEW/EDIUT/DELETE) for the given family.
      *
-     * @param family The famly to check access rights for
+     * @param family The family to check access rights for
      * @param right The right to check for
      * @return true if the right is given, false otherwise (or if family is null)
      */

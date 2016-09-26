@@ -18,7 +18,7 @@
 package org.phenotips.studies.family.rest.internal;
 
 import org.phenotips.studies.family.Family;
-import org.phenotips.studies.family.FamilyRepository;
+import org.phenotips.studies.family.FamilyTools;
 import org.phenotips.studies.family.rest.FamiliesResource;
 
 import org.xwiki.component.annotation.Component;
@@ -68,13 +68,11 @@ import org.slf4j.Logger;
 public class DefaultFamiliesResourceImpl extends XWikiResource implements FamiliesResource
 {
     private static final String METADATA_FIELD_NAME = "metadata";
+
     private static final String DATA_FIELD_NAME = "data";
 
     @Inject
     private Logger logger;
-
-    @Inject
-    private FamilyRepository repository;
 
     @Inject
     private QueryManager queries;
@@ -84,6 +82,9 @@ public class DefaultFamiliesResourceImpl extends XWikiResource implements Famili
 
     @Inject
     private UserManager users;
+
+    @Inject
+    private FamilyTools familyTools;
 
     /** Fills in missing reference fields with those from the current context document to create a full reference. */
     @Inject
@@ -117,7 +118,7 @@ public class DefaultFamiliesResourceImpl extends XWikiResource implements Famili
             throw new WebApplicationException(Status.BAD_REQUEST);
         }
         try {
-            Family family = this.repository.createFamily();
+            Family family = this.familyTools.createFamily();
             // TODO: update from JSON
 
             URI targetURI =
@@ -208,7 +209,7 @@ public class DefaultFamiliesResourceImpl extends XWikiResource implements Famili
 
     private JSONObject getFullFamilyJSON(String familyID, Object[] summaryData, UriInfo uriInfo)
     {
-        Family family = repository.getFamilyById(familyID);
+        Family family = this.familyTools.getFamilyById(familyID);
         JSONObject familyJSON = family.toJSON();
         addMetadata(familyJSON, summaryData);
         return familyJSON;
