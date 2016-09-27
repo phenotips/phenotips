@@ -115,8 +115,13 @@
       <version>${xwiki.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <properties>
-    <coverage.instructionRatio>0</coverage.instructionRatio>
+    <coverage.instructionRatio>0.06</coverage.instructionRatio>
   </properties>
 </project>
