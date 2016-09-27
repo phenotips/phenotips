@@ -911,10 +911,20 @@ document.observe('xwiki:dom:loaded', function()
              if (forceUpdate) {
                 this._silentRemove(inputElt.value, type);
              }
+             var group = this._getGroup(sectionId);
              var exists = this._find(inputElt.value, type);
-             if (!exists) {
-               var group = this._getGroup(sectionId);
+             var existsDifferentGroup = false;
+             if (exists) {
+               var existsGroup = exists.up('.summary-group');
+               existsDifferentGroup = group != existsGroup;
+             }
+
+             if (!exists || existsDifferentGroup) {
                if (!group) {return;}
+               if (existsDifferentGroup) {
+                 // The section id of the `exists` variable should ideally be passed into `_silentRemove`.
+                 this._silentRemove(inputElt.value, type)
+               }
                var isCustomEntry = !inputElt.value.startsWith("HP:");
                var newItem = new Element('div', {'class' : 'summary-item' + (isCustomEntry ? ' custom-entry': '')}).update(
                   new Element('label', {'class' : type}).insert({
