@@ -79,6 +79,10 @@ define([
             return this._getBaseFamilyInterfaceURL() + "&action=familyinfo";
         },
 
+        getFamilyRemoveURL: function() {
+            return this._getBaseFamilyInterfaceURL() + "&action=removefamily";
+        },
+
         getFamilyCheckLinkURL: function() {
             return this._getBaseFamilyInterfaceURL() + "&action=checklink";
         },

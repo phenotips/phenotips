@@ -114,7 +114,7 @@ define([], function(){
           if (bottomRightButton) {
               this._buttons[buttonID].setStyle({"marginLeft": "-200px", "marginRight": "10px", "float": "right"});
           } else {
-              this._buttons[buttonID].setStyle({"marginLeft": "0px", "marginRight": "0px", "float": "none"});
+              this._buttons[buttonID].setStyle({"marginLeft": (buttonID == 0 ? "0px" : "10px"), "marginRight": "0px", "float": "none"});
           }
       }
   });

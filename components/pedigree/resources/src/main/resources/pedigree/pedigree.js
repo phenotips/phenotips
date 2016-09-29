@@ -36,8 +36,7 @@ define([
         "pedigree/view/saveLoadIndicator",
         "pedigree/view/templateSelector",
         "pedigree/view/tabbedSelector",
-        "pedigree/view/printDialog",
-        "pedigree/view/familySelector",
+        "pedigree/view/printDialog"
     ],
     function(
         PedigreeExtensionManager,
@@ -69,8 +68,7 @@ define([
         SaveLoadIndicator,
         TemplateSelector,
         TabbedSelector,
-        PrintDialog,
-        FamilySelector
+        PrintDialog
 ){
 
     var PedigreeEditor = Class.create({
@@ -132,12 +130,12 @@ define([
             this._versionUpdater = new VersionUpdater();
             this._saveLoadEngine = new SaveLoadEngine();
             this._familyData = new FamilyData();
-            this._familySelector = new FamilySelector();
             this._patientDataLoader = new PatientDataLoader();
 
             var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
             if (newPatientId && newPatientId != ""){
                 this.getPatientLegend().addCase(newPatientId, 'new');
+                this._unsavedNewPatient = true;
             }
 
             // load global pedigree preferences before a specific pedigree is loaded, since
@@ -217,7 +215,7 @@ define([
 
             var saveButton = $('action-save');
             saveButton && saveButton.on("click", function(event) {
-                editor.getSaveLoadEngine().save();
+                editor.checkAndSaveOrQuit(false /* user doesnot want to quit */);
             });
 
             var onLeavePageFunc = function() {
@@ -225,33 +223,18 @@ define([
                     return "All changes will be lost when navigating away from this page.";
                 }
             };
-            window.onbeforeunload = onLeavePageFunc;
+            if (!editor.isReadOnlyMode()) {
+                window.onbeforeunload = onLeavePageFunc;
+            }
 
             var onCloseButtonClickFunc = function(event) {
-                var redirectOnQuit  = function() { editor.getExternalEndpoint().redirectToURL(editor.getExternalEndpoint().getParentDocument().returnURL); };
-                var dontQuitFunc    = function() { window.onbeforeunload = onLeavePageFunc; };
-                var quitFunc        = function() { redirectOnQuit(); };
-                var saveAndQuitFunc = function() { editor._afterSaveFunc = quitFunc;
-                                                   editor.getSaveLoadEngine().save(); }
-
                 if (editor.isReadOnlyMode()) {
-                    quitFunc();
+                    this.closePedigree();
                 } else {
-                    window.onbeforeunload = undefined;
-
-                    if (editor.getUndoRedoManager().hasUnsavedChanges()) {
-                        editor.getOkCancelDialogue().showCustomized( 'There are unsaved changes, do you want to save the pedigree before closing the pedigree editor?',
-                                                                     'Save before closing?',
-                                                                     "Save", saveAndQuitFunc,
-                                                                     "Don't save", quitFunc,
-                                                                     "Don't close", dontQuitFunc, true );
-                    } else {
-                        quitFunc();
-                    }
+                    editor.checkAndSaveOrQuit(true /* user wanted to quit */);
                 }
             };
             var closeButton = $('action-close');
-            this._afterSaveFunc = null;
             closeButton && (closeButton.onclick = onCloseButtonClickFunc);
 
             var renumberButton = $('action-number');
@@ -268,6 +251,141 @@ define([
             });
 
             //this.startAutoSave(30);
+        },
+
+        /**
+         * Closes pedigree editor and navigates to the proper page (patient of family, view or edit mode)
+         * depending on where the editor was called from
+         *
+         * @method closePedigree
+         */
+        closePedigree: function() {
+            if (!editor.isReadOnlyMode()) {
+                window.onbeforeunload = undefined;
+            }
+            editor.getExternalEndpoint().redirectToURL(editor.getExternalEndpoint().getParentDocument().returnURL);
+        },
+
+        /**
+         * Either offers to save the pedigree when the user wants to quit (with unsaved changes), or to keep
+         * editing if saving would result in a possibly unintended pedigree (with missing patients).
+         *
+         * The checks are combined to avoid having two dialogues one after the other (in case of quit
+         * with unsaved changes AND unintended pedigree: first, "save?", then "save will result
+         * in strange pedigree, proceed?")
+         *
+         * @method checkAndSaveOrQuit
+         */
+        checkAndSaveOrQuit: function(userWantsToQuit) {
+
+            var patientLinks = editor.getGraph().getAllPatientLinks();
+            var currentPatientId = editor.getGraph().getCurrentPatientId();
+
+            var noPatientsAreLinked = !editor.isFamilyPage() && (patientLinks.linkedPatients.length == 0);
+            var currentPatientIsNotLinked = !editor.isFamilyPage() && !patientLinks.patientToNodeMapping.hasOwnProperty(currentPatientId);
+            var unsavedChanges = editor.getUndoRedoManager().hasUnsavedChanges();
+
+            if (!unsavedChanges && this._unsavedNewPatient) {
+                // we want the explicit message that the current patient is unlinked
+                noPatientsAreLinked = false;
+            }
+
+            var noPatientsLinkedMessage = "There are no patients linked to this pedigree and thus family has no members.<br><br>";
+            var currentPatientUnlinkedMessage = "Current patient is not linked to the pedigree and thus not part of the family.<br><br>";
+
+            //-----------------
+            var saveWithChecks = function(quitAfterSave) {
+
+                var saveAndQuitFunc = function() {
+                    editor.getSaveLoadEngine().save(editor.closePedigree);
+                }
+                var saveAndKeepEditingFunc = function() {
+                    var onSuccessfulSave = function() {
+                        editor._unsavedNewPatient = false;
+                    };
+                    editor.getSaveLoadEngine().save(onSuccessfulSave);
+                }
+                var removeFamily = function() {
+                    var removed = false;
+                    new Ajax.Request(editor.getExternalEndpoint().getFamilyRemoveURL(), {
+                        method: "POST",
+                        onSuccess: function(response) {
+                            if (response.responseJSON && response.responseJSON.hasOwnProperty("success")) {
+                                if (response.responseJSON.success) {
+                                    removed = true;
+                                    editor.closePedigree();
+                                }
+                            }
+                        },
+                        onComplete: function() {
+                            if (!removed) {
+                                console.log("Remove failed");
+                                editor.getOkCancelDialogue().showError("Family removal failed", "Family removal failed", "OK", undefined);
+                            }
+                        },
+                        parameters: {"family_id": editor.getFamilyData().getFamilyId() }
+                    });
+                }
+
+                if (noPatientsAreLinked) {
+                    if (quitAfterSave) {
+                        editor.getOkCancelDialogue().showCustomized(noPatientsLinkedMessage +
+                                "Do you want to remove the family or keep the family with no members?",
+                                "Keep the family with no members?",
+                                " Keep the family ", saveAndQuitFunc,
+                                " Remove the family ", removeFamily,
+                                " Keep editing pedigree ", undefined, true );
+                    } else {
+                        editor.getOkCancelDialogue().showCustomized(noPatientsLinkedMessage +
+                                "Do you want to save this pedigree and get a family with no members?",
+                                "Save with no members?",
+                                "Keep editing pedigree", undefined,
+                                "Save and get a family with no members", saveAndKeepEditingFunc);
+                    }
+                } else if (currentPatientIsNotLinked) {
+                    if (quitAfterSave) {
+                        editor.getOkCancelDialogue().showCustomized(currentPatientUnlinkedMessage +
+                                "Do you want to remove current patient form the family?",
+                                "Remove current patient from the family?",
+                                "Keep editing pedigree", undefined,
+                                "Close pedigree and remove current patient form the family", saveAndQuitFunc);
+                    } else {
+                        editor.getOkCancelDialogue().showCustomized(currentPatientUnlinkedMessage +
+                                "Do you want to save the pedigree and remove current patient form the family?",
+                                "Proceed with save?",
+                                "Keep editing pedigree", undefined, true,
+                                "Save pedigree with current patient excluded form the family", saveAndKeepEditingFunc);
+                    }
+                } else {
+                    if (quitAfterSave) {
+                        saveAndQuitFunc();
+                    } else {
+                        saveAndKeepEditingFunc();
+                    }
+                }
+            }
+            //-----------------
+
+            if (userWantsToQuit) {
+                if (unsavedChanges) {
+                    var saveAndQuitFunc = function() {
+                        saveWithChecks(true);
+                    };
+                    editor.getOkCancelDialogue().showCustomized('There are unsaved changes, do you want to save the pedigree before closing the pedigree editor?',
+                            'Save before closing?',
+                            " Save and quit ", saveAndQuitFunc,
+                            " Don't save and quit ", editor.closePedigree,
+                            " Keep editing pedigree ", undefined, true );
+                } else {
+                    if (this._unsavedNewPatient) {
+                        saveWithChecks(true);
+                    } else {
+                        editor.closePedigree();
+                    }
+                }
+            } else {
+                saveWithChecks(false);
+            }
         },
 
         /**
@@ -368,14 +486,6 @@ define([
          */
         getUndoRedoManager: function() {
             return this._actionStack;
-        },
-
-        /**
-         * The action which should happen after pedigree is saved
-         * (normally null, close the editor when "save on quit")
-         */
-        getAfterSaveAction: function() {
-            return this._afterSaveFunc;
         },
 
         /**
@@ -541,14 +651,6 @@ define([
          */
         getSaveLoadEngine: function() {
             return this._saveLoadEngine;
-        },
-
-        /**
-         * @method getFamilySelector
-         * @return {FamilySelector}
-         */
-        getFamilySelector: function() {
-            return this._familySelector;
         },
 
         /**
@@ -718,7 +820,7 @@ define([
          * @method initializeSave
          */
         startAutoSave: function(intervalInSeconds) {
-            setInterval(function(){editor.getSaveLoadEngine().save()}, intervalInSeconds*1000);
+            setInterval(function(){editor.getSaveLoadEngine().save(false)}, intervalInSeconds*1000);
         }
     });
 

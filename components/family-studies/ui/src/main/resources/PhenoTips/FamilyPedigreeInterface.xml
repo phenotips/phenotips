@@ -89,6 +89,17 @@ $response.setContentType('application/json')##
   #set($familyId = $request.get("family_id"))
   #set($deleteallmembers = $request.get("deleteallmembers"))
   $services.families.canDeleteFamily($familyId, $deleteallmembers)
+#elseif ("$!request.action" == "createfamily")
+  #set($family = $services.families.createFamily())
+  #if ($family)
+    { "newFamilyID": "$family.getId()" }
+  #else
+    { "error": "failed to create a new family" }
+  #end
+#elseif ("$!request.action" == "removefamily")
+  #set($familyId = $request.get("family_id"))
+  #set($success = $services.families.deleteFamily($familyId, false))
+  { "success": $success }
 #else
   Unknown action
 #end{{/velocity}}</content>

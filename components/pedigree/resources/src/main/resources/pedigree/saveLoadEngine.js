@@ -149,18 +149,8 @@ define([
                     editor.getWorkspace().adjustSizeToScreen();
                 }
 
-                if (centerAroundProband && !editor.__justCreateNewFamily) {
+                if (centerAroundProband) {
                     editor.getWorkspace().centerAroundNode(editor.getGraph().getProbandId());
-                }
-
-                if (editor.__justCreateNewFamily) {
-                    document.observe("pedigree:save:finish", function(event) {
-                        var newFamilyId = editor.getFamilyData().getFamilyId();
-                        var pedigreeEditorURL = editor.getExternalEndpoint().getPedigreeEditorURL(newFamilyId, true);
-                        editor.getExternalEndpoint().redirectToURL(pedigreeEditorURL + '&new_patient_id=' + editor.getExternalEndpoint().getParentDocument().id);
-                    });
-                    editor.getSaveLoadEngine().save(true); // ignore warnings
-                    return;
                 }
 
                 document.fire("pedigree:load:finish");
@@ -179,7 +169,7 @@ define([
             }
         },
 
-        save: function(ignoreWarnings) {
+        save: function(callAfterSuccessfulSave, callAfterFailedSave) {
             if (this._saveInProgress) {
                 return;   // Don't send parallel save requests
             }
@@ -187,49 +177,6 @@ define([
             editor.getView().unmarkAll();
 
             var me = this;
-
-            if (!editor.isFamilyPage()) {
-                // we can save any kind of pedigree to a family page, but we want to
-                //  1) disallow save if a new family has to be created and current patient is not part of it
-                //  2) warn if the current patient is no longer a member of the family
-                //  3) warn if the last patient has been unlinked form the family
-
-                var currentPatientId = editor.getGraph().getCurrentPatientId();
-
-                var patientLinks = editor.getGraph().getAllPatientLinks();
-
-                // 1. No current family yet
-                if (editor.getFamilyData().getFamilyId() === null) {
-                    if (!patientLinks.patientToNodeMapping.hasOwnProperty(currentPatientId)) {
-                        editor.getOkCancelDialogue().showError(
-                            "Can't save and create a family - current patient is not assigned to a node in pedigree and will not have a pedigree as a result.",
-                            "Can't save pedigree", "OK", undefined );
-                        return;
-                    }
-                } else if (!ignoreWarnings) {
-                    var saveFunc = function() {
-                        me.save(true); // ignore warnings
-                    }
-
-                    // 3.
-                    if (patientLinks.linkedPatients.length == 0) {
-                        editor.getOkCancelDialogue().showCustomized(
-                            "All patients have been unlinked form the pedigree and thus removed form the family.<br><br>"+
-                            "Do you want to save this pedigree and make a family with no members?",
-                            "Save pedigree?", "OK", saveFunc, "Cancel", undefined);
-                        return;
-                    }
-
-                    // 2.
-                    if (!patientLinks.patientToNodeMapping.hasOwnProperty(currentPatientId)) {
-                        editor.getOkCancelDialogue().showCustomized(
-                            "Current patient is not linked to the pedigree and thus not part of the family. Proceed?<br><br>" +
-                            "Save pedigree?",
-                            "Save pedigree?", "OK", saveFunc, "Cancel", undefined);
-                        return;
-                    }
-                }
-            }
 
             me._notSaved = true;
 
@@ -278,9 +225,10 @@ define([
                     Helpers.enableMouseclicks(saveButton);
                     // Re-enable user-interaction
                     document.fire("pedigree:load:finish");
-                    if (!me._notSaved) {
-                        var actionAfterSave = editor.getAfterSaveAction();
-                        actionAfterSave && actionAfterSave();
+                    if (me._notSaved) {
+                        callAfterFailedSave && callAfterFailedSave();
+                    } else {
+                        callAfterSuccessfulSave && callAfterSuccessfulSave();
                     }
                 },
                 // 0 is returned for network failures, except on IE which converts it to a strange large number (12031)
@@ -350,7 +298,10 @@ define([
                 },
                 onComplete: function() {
                     if (!loaded) {
-                        editor.getFamilySelector().show();
+                        console.log("No family data");
+                        SaveLoadEngine._displayFamilyPedigreeInterfaceError(
+                                {"errorMessage": "Family data is not available, pedigree can not be edited"},
+                                "Error loading family data", "");
                     }
                 },
                 parameters: {"document_id": familyOrPatientId }

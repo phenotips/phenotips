@@ -131,13 +131,24 @@
       <code>(function() {
   var init = function() {
 
+    if (PhenoTips.widgets.FamilySelector) {
+      // only needed and available on patient page
+      this.familySelector = new PhenoTips.widgets.FamilySelector();
+    }
+    _this = this;
+
     // Save before opening the pedigree
     // TODO: check if there is anything to save
     var pedigreeTrigger = $$('.pedigree-edit-trigger');
     var openPedigreeEditor = function() {
+      document.stopObserving("xwiki:document:saved", openPedigreeEditor);
       var familyLink = $('familyId');
-      if (XWiki.currentDocument.space == 'data' &amp;&amp; familyLink) {
-        window.self.location = XWiki.currentDocument.getURL('cancel', 'xredirect=' + encodeURIComponent(familyLink.href + '?sheet=PhenoTips.PedigreeEditor&amp;patient_id=' + XWiki.currentDocument.page + '&amp;action=' + XWiki.contextaction));
+      if (XWiki.currentDocument.space == 'data') {
+        if (familyLink) {
+          window.self.location = XWiki.currentDocument.getURL('cancel', 'xredirect=' + encodeURIComponent(familyLink.href + '?sheet=PhenoTips.PedigreeEditor&amp;patient_id=' + XWiki.currentDocument.page + '&amp;action=' + XWiki.contextaction));
+        } else {
+          _this.familySelector.show();
+        }
       } else {
         window.self.location.search = '?sheet=PhenoTips.PedigreeEditor&amp;action=' + XWiki.contextaction;
       }
@@ -147,9 +158,7 @@
        pedigreeTrigger.invoke('observe', 'click', function(event) {
         if ($('inline')) { //if edit mode
           event.stop();
-          document.observe("xwiki:document:saved", function () {
-            openPedigreeEditor();
-          });
+          document.observe("xwiki:document:saved", openPedigreeEditor);
           document.fire("xwiki:actions:save", {"continue" : true, "form" : $('inline')});
         } else {
           openPedigreeEditor();
@@ -647,6 +656,10 @@
 {{include reference="PhenoTips.PedigreeMacros" /}}
 
 {{velocity}}
+
+$xwiki.ssx.use('PhenoTips.FamilySelector')##
+$xwiki.jsx.use('PhenoTips.FamilySelector')##
+
 #if ($xcontext.action != 'export')
   #set ($canEditP = $hasEdit &amp;&amp; !$isReadOnly)
   ##

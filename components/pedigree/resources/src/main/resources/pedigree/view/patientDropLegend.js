@@ -107,9 +107,7 @@ define([
                 var listElement = this._generateElement(this._notLinkedPatients[patientID]);
                 if (type == 'new') {
                     this._list_new.insert(listElement);
-                    // if called from familySelector, then assigning a new patient to an existing family
                     this.assignNewPatientId = patientID;
-                    this.assignToFamilyId = editor.getFamilySelector().familyID;
                     $('list_new').show();
                 } else {
                     this._list_unlinked.insert(listElement);

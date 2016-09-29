@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>FamilySelector</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>PhenoTips.WebHome</parent>
+  <creationDate>1475113772000</creationDate>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1475126273000</date>
+  <contentUpdateDate>1475113800000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content/>
+  <object>
+    <name>PhenoTips.FamilySelector</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>f5bd75e9-ba10-4a51-899e-26b987c8c66c</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function(PhenoTips) {
+  // Start PhenoTips augmentation
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+
+  widgets.FamilySelector = Class.create({
+
+        initialize: function() {
+            console.log("init");
+            this.selected = null;
+
+            var _this = this;
+
+            this.familySearch = new XWiki.Document('FamilySearch', 'PhenoTips');
+            this.familySearchUrl = this.familySearch.getURL('get', 'outputSyntax=plain&amp;rand='+ Math.random());
+
+            var mainDiv = new Element('div', {'class': 'family-selector'});
+
+            // create radio buttons for selection
+            var createLabel = new Element('label', {'class' : 'create-family-label'});
+            var assignLabel = new Element('label', {'class' : 'assign-family-label'});
+
+            this.createFamily =  new Element('input', {'type' : 'radio', 'id': 'pedigreeInputCreateFamily', 'name' : 'select-family', 'value' : 'create'});
+            this.assignFamily =  new Element('input', {'type' : 'radio', 'id': 'pedigreeInputAssignFamily', 'name' : 'select-family', 'value' : 'assign'});
+            this.createFamily.observe('click', this._onOptionSelected.bind(this) );
+            this.assignFamily.observe('click', this._onOptionSelected.bind(this) );
+
+            createLabel.insert(this.createFamily).insert("Create a new family");
+            assignLabel.insert(this.assignFamily).insert("$services.localization.render('phenotips.UIXField.family_membership.add')");
+            var ul = new Element('ul');
+            ul.insert(createLabel.wrap('li', {'class' : 'left-aligned'})).insert(assignLabel.wrap('li', {'class' : 'left-aligned'}));
+            mainDiv.insert(ul);
+
+            // input field that will suggest families upon typing
+            var searchBox = new Element('div', {'class': 'half-width'});
+            this.searchInput = new Element('input', {'type': 'text', 'id' : 'family-search-input', 'class' : 'family-search-input', 'placeholder' : 'Enter a family name'});
+            searchBox.insert(this.searchInput).insert(new Element('span', {'class' : 'clear'}).wrap('div', {'class': 'add-to-family-wrapper'}));
+            mainDiv.insert(searchBox);
+
+            var changeEvents = ['propertychange','change','click','keyup','input','paste'];
+            changeEvents.each(function(event) {
+                _this.searchInput.observe(event, _this._onManualInput.bind(_this));
+            });
+
+            this.searchInput._suggest = new PhenoTips.widgets.Suggest(this.searchInput, {
+                script: this.familySearchUrl + "&amp;json=true&amp;",
+                varname: "input",
+                noresults: "No matching terms",
+                resultsParameter: "matchedFamilies",
+                json: true,
+                resultId: "id",
+                resultValue: "textSummary",
+                enableHierarchy: false,
+                fadeOnClear: false,
+                timeout: 30000,
+                parentContainer: $$('.pedigree-family-chooser')[0]
+            });
+
+            this.searchInput.addClassName('initialized');
+            this.searchInput.observe("focus", function (event) {
+                $('pedigreeInputAssignFamily').click();
+            });
+
+            this._onClickOutsideSuggest = this._onClickOutsideSuggest.bindAsEventListener(this);
+            this._onSuggestionSelected = this._onSuggestionSelected.bindAsEventListener(this);
+
+            document.observe("ms:suggest:containerCreated", function(event) {
+                if (event.memo &amp;&amp; event.memo.suggest === _this.searchInput._suggest) {
+                    _this.searchInput._suggest.container.setStyle({'z-index': 100015});
+                }
+            });
+
+            var buttons = new Element('div', {'class' : 'buttons family-selector-buttons', 'style' : 'margin-top: 10px;'});
+            this.okButton = new Element('input', {'type': 'button', 'name' : 'ok', 'value' : ' OK ', 'class' : 'button family-selector-button-cancel'});
+            this.quitButton = new Element('input', {'type': 'button', 'name' : 'quit', 'value' : ' Cancel ', 'class' : 'button secondary family-selector-button-cancel'});
+            buttons.insert(this.okButton.wrap('span', {'class' : 'buttonwrapper'}));
+            buttons.insert(this.quitButton.wrap('span', {'class' : 'buttonwrapper'}));
+            mainDiv.insert(buttons);
+
+            this.okButton.disable();
+
+            this.okButton.observe('click', this._onSelectOK.bind(this) );
+            this.quitButton.observe('click', this._onSelectCancel.bind(this) );
+
+            this.dialog = new PhenoTips.widgets.ModalPopup(mainDiv, {'close': {'method': null, 'keys': []} }, {'extraClassName' : "pedigree-family-chooser", title: 'Assign patient to a family', 'displayCloseButton' : false});
+        },
+
+        _onManualInput: function() {
+            this.selectedID = null;
+            this._verifyFamilyID();
+        },
+
+        getSelectedFamilyID: function() {
+            // return either the value (family ID) selected from the search results list (may be different form
+            // the displayed value, which may include family name or description), or the displayed value itself
+            // (treated as famly ID) if nothing was selected from the search results
+            return (this.selectedID != null) ? this.selectedID : $('family-search-input').value;
+        },
+
+        _verifyFamilyID: function() {
+            var familyID = this.getSelectedFamilyID();
+            if (familyID == null || familyID == '' || !familyID.match(/^FAM\d+$/i)) {
+                this.okButton.disable();
+            } else {
+                this.okButton.enable();
+            }
+        },
+
+        _onOptionSelected: function() {
+            this.selected = $$('input:checked[type=radio][name="select-family"]')[0].value;
+            if (this.selected == "assign") {
+                $('family-search-input').enable();
+                this._verifyFamilyID();
+            } else {
+                $('family-search-input').disable();
+                this.okButton.enable();
+            }
+        },
+
+        /**
+         * Displays the family selector
+         *
+         * @method show
+         */
+        show: function() {
+            this.selectedID = null;
+            this.createFamily.checked = true;
+            this.dialog.show();
+            $('family-search-input').value = "";
+            this._onOptionSelected();
+
+            document.observe('mousedown', this._onClickOutsideSuggest);
+            document.observe("ms:suggest:selected", this._onSuggestionSelected);
+        },
+
+        hide: function() {
+            this.dialog.closeDialog();
+            document.stopObserving("ms:suggest:selected", this._onSuggestionSelected);
+            document.stopObserving('mousedown', this._onClickOutsideSuggest);
+        },
+
+        _onClickOutsideSuggest: function (event) {
+            if (!event.findElement('.suggestItems')) {
+                this._hideSuggestPicker();
+            }
+        },
+
+        _hideSuggestPicker: function() {
+            this.searchInput._suggest.clearSuggestions();
+        },
+
+        _onSuggestionSelected: function(event) {
+            if (event.memo &amp;&amp; event.memo.suggest === this.searchInput._suggest) {
+              this.selectedID = event.memo.id;
+              console.log("Family selected, ID: " + this.selectedID);
+              this.okButton.enable();
+            }
+        },
+
+        /**
+         * Closes family selection dialogue
+         */
+        _onSelectCancel: function() {
+            this.hide();
+        },
+
+        /**
+         * Removes the family selector
+         *
+         * @method hide
+         */
+        _onSelectOK: function() {
+
+            var familyID = this.getSelectedFamilyID();
+
+            if (this.selected == null) {
+                 return;
+            } else if (this.selected == 'create') {
+
+                this.hide();
+                console.log("creating new family");
+
+                this._createNewFamily();
+
+            } else if (this.selected == 'assign' &amp;&amp; familyID != null &amp;&amp; familyID != '') {
+
+                this.hide();
+                console.log("redirecting to family " + familyID);
+
+                var pedigreeEditorURL = this._getPedigreeEditorURL(familyID) + '&amp;new_patient_id=' + XWiki.currentDocument.page;
+                this._redirectToURL(pedigreeEditorURL);
+          }
+        },
+
+        _getPedigreeEditorURL: function(familyId) {
+             var familyURL = new XWiki.Document(familyId, 'Families').getURL("edit");
+             familyURL += '?sheet=PhenoTips.PedigreeEditor';
+             familyURL += "&amp;action=" + (XWiki.contextaction ? XWiki.contextaction : "edit");
+             return familyURL;
+        },
+
+        _redirectToURL: function(targetURL){
+            window.self.location = XWiki.currentDocument.getURL('cancel', 'xredirect=' + encodeURIComponent(targetURL));
+        },
+
+        _createNewFamily: function() {
+
+            console.log("Requesting family creations...");
+
+            var familyPedigreeInterface = new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips');
+            var familyPedigreeInterfaceURL = familyPedigreeInterface.getURL('get', 'rand='+ Math.random());
+            var familyCreateURL = familyPedigreeInterfaceURL + "&amp;action=createfamily";
+
+            var _created = false;
+            var _this = this;
+            new Ajax.Request(familyCreateURL, {
+                method: "GET",
+                onCreate: function() {
+                },
+                onSuccess: function(response) {
+                    if (response.responseJSON) {
+                        if (!response.responseJSON.hasOwnProperty("error") &amp;&amp; response.responseJSON.hasOwnProperty("newFamilyID")) {
+                            _created = true;
+                            var familyID = response.responseJSON.newFamilyID;
+                            var pedigreeEditorURL = _this._getPedigreeEditorURL(familyID) + '&amp;new_patient_id=' + XWiki.currentDocument.page;
+                            _this._redirectToURL(pedigreeEditorURL);
+                        }
+                    }
+                },
+                onComplete: function() {
+                    if (!_created) {
+                        console.log("Family was not created");
+                        alert("Failed to create new family");
+                    }
+                },
+                parameters: {}
+            });
+
+        }
+  });
+
+  // End PhenoTips augmentation.
+  return PhenoTips;
+}(PhenoTips || {}));</code>
+    </property>
+    <property>
+      <name>Family selector dialogue</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.FamilySelector</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>b01c913e-d81c-4992-adb7-e40430812dfe</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>.family-selector ul {
+  list-style-type: none;
+  margin-left: 5px;
+}
+.family-selector ul li.left-aligned {
+  display: inline-block;
+  width: 100%;
+  position: relative;
+  text-align: left;
+  margin-bottom: 5px;
+}
+.family-selector div.half-width {
+  width: 50%;
+  margin-left: 25px;
+  float: none;
+}
+.family-selector-buttons {
+  text-align: center;
+  margin-top: 15px;
+}
+.family-selector-button-ok {
+  min-width: 140px;
+}
+.family-selector-button-cancel {
+  margin-left: 10px;
+  min-width: 140px;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name>Family selector CSS</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+</xwikidoc>
