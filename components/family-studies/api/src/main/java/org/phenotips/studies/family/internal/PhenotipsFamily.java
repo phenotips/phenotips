@@ -276,6 +276,18 @@ public class PhenotipsFamily implements Family
 
     private boolean saveFamilyDocument(String documentHistoryComment, String logActionDescription, XWikiContext context)
     {
+        BaseObject familyClassObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
+        if (familyClassObject != null) {
+            String probandId = this.getProbandId();
+            if (probandId != null) {
+                Patient patient = PhenotipsFamily.patientRepository.get(probandId);
+                familyClassObject.setStringValue("proband_id", (patient == null) ? "" : patient.getDocument()
+                    .toString());
+            } else {
+                familyClassObject.setStringValue("proband_id", "");
+            }
+        }
+
         try {
             context.getWiki().saveDocument(this.familyDocument, documentHistoryComment, context);
         } catch (XWikiException e) {
@@ -420,19 +432,13 @@ public class PhenotipsFamily implements Family
         }
 
         XWikiContext context = getXContext();
-        XWiki wiki = context.getWiki();
 
         BaseObject pedigreeObject = this.familyDocument.getXObject(Pedigree.CLASS_REFERENCE);
         pedigreeObject.set(Pedigree.IMAGE, pedigree.getImage(null), context);
         pedigreeObject.set(Pedigree.DATA, pedigree.getData().toString(), context);
 
-        if (saveXwikiDocument) {
-            try {
-                wiki.saveDocument(this.familyDocument, "updated pedigree", context);
-            } catch (XWikiException e) {
-                this.logger.error("Error saving pedigree for family [{}]: {}", this.getId(), e.getMessage());
-                return false;
-            }
+        if (saveXwikiDocument && !saveFamilyDocument("updated pedigree", "", context)) {
+            return false;
         }
 
         return true;

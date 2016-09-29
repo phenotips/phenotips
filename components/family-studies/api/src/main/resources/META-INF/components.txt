@@ -11,4 +11,3 @@ org.phenotips.studies.family.internal.FamilyMembersLockModule
 org.phenotips.studies.family.internal.PatientFamilyLockModule
 org.phenotips.studies.family.internal.export.PhenotipsFamilyExport
 org.phenotips.studies.family.listener.FamilyDeletingListener
-org.phenotips.studies.family.listener.FamilySavingListener
