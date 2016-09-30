@@ -52,7 +52,7 @@
       <classname>PhenoTips.FamilyClass</classname>
       <customDisplay>{{velocity}}
 #set ($family = $services.families.getFamilyById($value))
-#if ("$family.getId()" != '')
+#if ("$!family.getId()" != '')
 [[$family.getId()#if ("$family.getExternalId()" != '') ($family.getExternalId())#end&gt;&gt;path:$xwiki.getURL($family.getDocumentReference(), 'view')||id="familyId"]]
 #end
 {{/velocity}}
