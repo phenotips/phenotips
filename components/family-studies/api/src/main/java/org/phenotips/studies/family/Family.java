@@ -29,7 +29,13 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
+import com.xpn.xwiki.doc.XWikiDocument;
+
 /**
+ * TODO: refactor on top of Entities model.
+ *
+ * Split/re-arrange functionality between Family (Entity), FamilyRepository (EntityManager) and EntityGroupManager.
+ *
  * @version $Id$
  * @since 1.4
  */
@@ -46,6 +52,11 @@ public interface Family
      * @return family id
      */
     String getId();
+
+    /**
+     * @return the copy o family document held in memory by this Family instance.
+     */
+    XWikiDocument getDocument();
 
     /**
      * @return reference to family document
@@ -73,18 +84,6 @@ public interface Family
      * @return true if a patient is a member of the family
      */
     boolean isMember(Patient patient);
-
-    /**
-     * @param patient to add to family
-     * @return true if addition was successful
-     */
-    boolean addMember(Patient patient);
-
-    /**
-     * @param patient to remove from family
-     * @return true if removal was successful
-     */
-    boolean removeMember(Patient patient);
 
     /**
      * Generates a JSON data structure that describes the family and its members.
@@ -125,34 +124,4 @@ public interface Family
      * @return Pedigree associated with the family.
      */
     Pedigree getPedigree();
-
-    /**
-     * Sets the pedigree for the family, and saves.
-     *
-     * @param pedigree to set
-     * @return true if successful
-     */
-    boolean setPedigree(Pedigree pedigree);
-
-    /**
-     * For every family member, read users and groups that has edit access on the patient, then gives edit access on the
-     * family for any such user and group. After performing this method, if p is a member of the family, and x has edit
-     * access on p, x has edit access of the family.
-     */
-    void updatePermissions();
-
-    /**
-     * Deletes the family.
-     *
-     * @param deleteAllMembers if true, also removes all member patients documents
-     * @return true if successful
-     */
-    boolean deleteFamily(boolean deleteAllMembers);
-
-    /**
-     * Sets external Id to the family document.
-     *
-     * @param externalId to be set for the family document
-     */
-    void setExternalId(String externalId);
 }

@@ -24,6 +24,7 @@ import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.FamilyTools;
 import org.phenotips.studies.family.Pedigree;
+import org.phenotips.studies.family.exceptions.PTException;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
@@ -152,29 +153,34 @@ public class PhenotipsFamilyTools implements FamilyTools
         }
 
         Family family = this.familyRepository.getFamilyForPatient(patient);
-        if (family == null) {
-            return false;
-        }
-        if (!currentUserHasAccessRight(family, Right.EDIT)) {
+        if (family == null || !currentUserHasAccessRight(family, Right.EDIT)) {
             return false;
         }
 
-        family.removeMember(patient);
+        try {
+            this.familyRepository.removeMember(family, patient, currentUser);
+        } catch (PTException ex) {
+            return false;
+        }
+
         return true;
     }
 
     @Override
     public boolean deleteFamily(String familyId, boolean deleteAllMembers)
     {
-        if (!currentUserCanDeleteFamily(familyId, deleteAllMembers)) {
-            return false;
-        }
         Family family = this.familyRepository.getFamilyById(familyId);
         if (family == null) {
-            // should not happen if canDeleteFamily(), but check for consistency and in case of race conditions
             return false;
         }
-        return family.deleteFamily(deleteAllMembers);
+        // the access rights checks are done in familyRepository.deleteFamily()
+        return this.familyRepository.deleteFamily(family, this.userManager.getCurrentUser(), deleteAllMembers);
+    }
+
+    @Override
+    public boolean forceRemoveAllMembers(Family family)
+    {
+        return this.familyRepository.forceRemoveAllMembers(family, this.userManager.getCurrentUser());
     }
 
     @Override
@@ -184,19 +190,8 @@ public class PhenotipsFamilyTools implements FamilyTools
         if (family == null) {
             return false;
         }
-        if (!currentUserHasAccessRight(family, Right.DELETE)) {
-            return false;
-        }
-        if (deleteAllMembers) {
-            // check permissions
-            User currentUser = this.userManager.getCurrentUser();
-            for (Patient patient : family.getMembers()) {
-                if (!this.authorizationService.hasAccess(currentUser, Right.DELETE, patient.getDocument())) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return this.familyRepository.canDeleteFamily(
+                family, this.userManager.getCurrentUser(), deleteAllMembers, false);
     }
 
     @Override
@@ -210,5 +205,18 @@ public class PhenotipsFamilyTools implements FamilyTools
             return false;
         }
         return true;
+    }
+
+    @Override
+    public void setPedigree(Family family, Pedigree pedigree) throws PTException
+    {
+        this.familyRepository.setPedigree(family, pedigree, this.userManager.getCurrentUser());
+    }
+
+    @Override
+    public boolean canAddToFamily(Family family, Patient patient, boolean throwException) throws PTException
+    {
+        return this.familyRepository.canAddToFamily(family, patient,
+                this.userManager.getCurrentUser(), throwException);
     }
 }

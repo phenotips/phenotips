@@ -23,8 +23,6 @@ import org.phenotips.studies.family.Family;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
-import org.xwiki.users.User;
-import org.xwiki.users.UserManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +32,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
@@ -75,26 +72,7 @@ public class PhenotipsFamilyPermissions
     private static final String ALLOW = "allow";
 
     @Inject
-    private Provider<XWikiContext> provider;
-
-    @Inject
-    private UserManager userManager;
-
-    @Inject
     private Logger logger;
-
-    /**
-     * Grants owner permissions to current user.
-     *
-     * @param familyDoc family to give permissions on
-     */
-    public void setCurrentUserAsOwner(XWikiDocument familyDoc)
-    {
-        User currentUser = this.userManager.getCurrentUser();
-        XWikiContext context = this.provider.get();
-
-        this.setOwnerPermissionsForUser(currentUser.getId(), familyDoc, context);
-    }
 
     /**
      * Returns all the users and groups that have the given right for the patient as array of two strings.
@@ -168,22 +146,26 @@ public class PhenotipsFamilyPermissions
      *
      * The user who is the owner of the family always has full access to the family.
      *
+     * Note that the document is not saved to disk, changes are only made for the provided Family object and
+     * its in-memory copy of the corresponding XWiki document.
+     *
      * @param family to update permissions
-     * @param familyDocument document of family to update permissions
+     * @param context XWiki context to be used. The documnt will not be saved to disk, only changes in
+     *        memory for the family document given will be made
      */
-    public void updatePermissions(Family family, XWikiDocument familyDocument)
+    public void updatePermissions(Family family, XWikiContext context)
     {
-        XWikiContext context = this.provider.get();
         XWiki wiki = context.getWiki();
 
         List<Patient> members = family.getMembers();
 
-        this.updatePermissionsForOneRightLevel(VIEW_RIGHTS, members, familyDocument, wiki, context);
+        this.updatePermissionsForOneRightLevel(VIEW_RIGHTS, members, family.getDocument(), wiki, context);
         // setting view-edit rights after view rights makes sure if a user has edit rights on one patient
         // and view rights on another the user still gets edit permissions for the family
-        this.updatePermissionsForOneRightLevel(VIEWEDIT_RIGHTS, members, familyDocument, wiki, context);
+        this.updatePermissionsForOneRightLevel(VIEWEDIT_RIGHTS, members, family.getDocument(), wiki, context);
 
-        this.setOwnerPermissionsForUser(familyDocument.getCreatorReference().toString(), familyDocument, context);
+        this.setOwnerPermissionsForUser(
+                family.getDocument().getCreatorReference().toString(), family.getDocument(), context);
     }
 
     private void setOwnerPermissionsForUser(String user, XWikiDocument familyDocument, XWikiContext context)
@@ -264,5 +246,4 @@ public class PhenotipsFamilyPermissions
         }
         return null;
     }
-
 }

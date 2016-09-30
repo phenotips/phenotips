@@ -85,6 +85,12 @@ public interface Pedigree
     String getProbandId();
 
     /**
+     * @return last name of the proband patient IFF it is linked to a PhenoTips patient, or null if
+     * pedigree has no proband or proband node is not linked to a patient record, or last name is not set
+     */
+    String getProbandPatientLastName();
+
+    /**
      * Patients are representing in a list within the structure of a pedigree. Extracts JSON objects that belong to
      * patients.
      *

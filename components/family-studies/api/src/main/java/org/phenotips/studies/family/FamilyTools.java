@@ -17,10 +17,16 @@
  */
 package org.phenotips.studies.family;
 
+import org.phenotips.data.Patient;
+import org.phenotips.studies.family.exceptions.PTException;
+
 import org.xwiki.component.annotation.Role;
 import org.xwiki.security.authorization.Right;
 
 /**
+ * TODO: instead of interface make a SecureFamilyRepository extending FamilyRepository
+ *       (similar to PatientRepository/SecurepatientRepository)
+ *
  * Utility methods for manipulating families using the permissions of the current user.
  *
  * @version $Id$
@@ -83,12 +89,25 @@ public interface FamilyTools
 
     /**
      * Delete family, modifying the both the family and patient records to reflect the change.
+     * For the patients which current user can not edit, uses admin user.
      *
      * @param familyId of the family to delete
      * @param deleteAllMembers indicator whether to delete all family member documents as well
      * @return true if successful; false if deletion failed or current user has not enough rights
      */
     boolean deleteFamily(String familyId, boolean deleteAllMembers);
+
+    /**
+     * Similar to deleteFamily, but does not delete the family document (unlinkes all
+     * patients from the family).
+     *
+     * It is supposed to be used in the event handler for xwiki remove action, when the document
+     * will be removed by the framework itself.
+     *
+     * @param family the family
+     * @return true if successful
+     */
+    boolean forceRemoveAllMembers(Family family);
 
     /**
      * Checks if the current user can delete the family (or the family and all the members).
@@ -107,4 +126,28 @@ public interface FamilyTools
      * @return true if the right is given, false otherwise (or if family is null)
      */
     boolean currentUserHasAccessRight(Family family, Right right);
+
+    /**
+     * Checks of the given user can add the given patient to the given family.
+     *
+     * @param family the family
+     * @param patient patient to check
+     * @param throwException when true, an exception with details is thrown additionis not possible
+     * @return true if given user has enough rights to add the patient to the family, and if the patient
+     *         is not in another family already
+     * @throws PTException when throwException is true and the return value would be false. The exception
+     *         may help the caller deduct the reason the addition can not be performed
+     */
+    boolean canAddToFamily(Family family, Patient patient, boolean throwException) throws PTException;
+
+    /**
+     * Sets the pedigree for the family, and updates all the corresponding other documents.
+     *
+     * TODO: it is questionable where this method should be located, given new entities API.
+     *
+     * @param family the family
+     * @param pedigree to set
+     * @throws PTException when the family could not be correctly and fully updated using the given pedigree
+     */
+    void setPedigree(Family family, Pedigree pedigree) throws PTException;
 }

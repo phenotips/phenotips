@@ -20,7 +20,7 @@ package org.phenotips.studies.family.listener;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
-import org.phenotips.studies.family.FamilyRepository;
+import org.phenotips.studies.family.FamilyTools;
 
 import org.xwiki.bridge.event.DocumentDeletingEvent;
 import org.xwiki.component.annotation.Component;
@@ -57,7 +57,7 @@ import com.xpn.xwiki.objects.BaseObject;
 public class FamilyDeletingListener implements EventListener
 {
     @Inject
-    private FamilyRepository familyRepository;
+    private FamilyTools familyTools;
 
     @Inject
     private PatientRepository patientRepository;
@@ -92,24 +92,21 @@ public class FamilyDeletingListener implements EventListener
 
         String documentId = document.getDocumentReference().getName();
         try {
-            Family family = this.familyRepository.getFamilyById(documentId);
+            Family family = this.familyTools.getFamilyById(documentId);
             if (family != null) {
-                // a family has been removed - unlink all patients
-                List<Patient> members = family.getMembers();
-                for (Patient patient : members) {
-                    family.removeMember(patient);
-                }
+                this.familyTools.forceRemoveAllMembers(family);
             } else {
                 // a patient has been removed - remove it from the family, if she has one
-                Patient patient = this.patientRepository.getPatientById(documentId);
+                Patient patient = this.patientRepository.get(documentId);
                 if (patient == null) {
                     return;
                 }
-                family = this.familyRepository.getFamilyForPatient(patient);
+                family = this.familyTools.getFamilyForPatient(documentId);
                 if (family == null) {
                     return;
                 }
-                family.removeMember(patient);
+                this.familyTools.removeMember(documentId);
+
                 // clear the proband field if and only if the deleted patient was indeed the proband
                 DocumentReference familyDocumentRef = family.getDocumentReference();
                 XWikiDocument familyDocument = xwiki.getDocument(familyDocumentRef, context);

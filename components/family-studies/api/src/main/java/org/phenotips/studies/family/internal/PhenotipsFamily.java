@@ -41,7 +41,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -57,13 +56,12 @@ import com.xpn.xwiki.objects.StringProperty;
  */
 public class PhenotipsFamily implements Family
 {
+    /** Field name in the family document which holds the list of member patients. */
+    public static final String FAMILY_MEMBERS_FIELD = "members";
+
     private static final String WARNING = "warning";
 
-    private static final String FAMILY_MEMBERS_FIELD = "members";
-
     private static PatientRepository patientRepository;
-
-    private static PhenotipsFamilyPermissions familyPermissions;
 
     private static PhenotipsFamilyExport familyExport;
 
@@ -76,11 +74,8 @@ public class PhenotipsFamily implements Family
         try {
             PhenotipsFamily.patientRepository =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(PatientRepository.class);
-            PhenotipsFamily.familyPermissions =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(PhenotipsFamilyPermissions.class);
             PhenotipsFamily.familyExport =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(PhenotipsFamilyExport.class);
-
         } catch (ComponentLookupException e) {
             e.printStackTrace();
         }
@@ -98,6 +93,12 @@ public class PhenotipsFamily implements Family
     public String getId()
     {
         return this.familyDocument.getDocumentReference().getName();
+    }
+
+    @Override
+    public XWikiDocument getDocument()
+    {
+        return this.familyDocument;
     }
 
     @Override
@@ -149,154 +150,7 @@ public class PhenotipsFamily implements Family
         return pedigree.getProbandId();
     }
 
-    @Override
-    public synchronized boolean addMember(Patient patient)
-    {
-        if (patient == null) {
-            this.logger.error("Can not add NULL patient to family [{}]", this.getId());
-            return false;
-        }
 
-        String patientId = patient.getId();
-
-        XWikiContext context = getXContext();
-        XWiki wiki = context.getWiki();
-        DocumentReference patientReference = patient.getDocument();
-        XWikiDocument patientDocument;
-        try {
-            patientDocument = wiki.getDocument(patientReference, context);
-        } catch (XWikiException e) {
-            this.logger.error("Could not add patient [{}] to family. Error getting patient document: [{}]",
-                patientId, e.getMessage());
-            return false;
-        }
-        String patientAsString = patientReference.getName();
-
-        // Add member to Xwiki family
-        List<String> members = getMembersIds();
-        if (!members.contains(patientAsString)) {
-            members.add(patientAsString);
-        } else {
-            this.logger.info("Patient [{}] already a member of the same family, not adding", patientId);
-            return false;
-        }
-        BaseObject familyObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
-        familyObject.set(FAMILY_MEMBERS_FIELD, members, context);
-
-        try {
-            PhenotipsFamilyRepository.setFamilyReference(patientDocument, this.familyDocument, context);
-        } catch (XWikiException e) {
-            this.logger.error("Could not add patient [{}] to family. Error setting family reference: [{}]",
-                patientId, e.getMessage());
-            return false;
-        }
-
-        this.updatePermissions();
-
-        if (!savePatientDocument(patientDocument, "added to family " + this.getId(), "adding to a family", context)
-            || !saveFamilyDocument("added " + patientId + " to the family", "adding patient " + patientId, context)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public synchronized boolean removeMember(Patient patient)
-    {
-        if (patient == null) {
-            return false;
-        }
-
-        String patientId = patient.getId();
-
-        XWikiContext context = getXContext();
-        XWiki wiki = context.getWiki();
-        XWikiDocument patientDocument;
-        try {
-            patientDocument = wiki.getDocument(patient.getDocument(), context);
-        } catch (XWikiException e) {
-            this.logger.error("Error getting patient document. Patient id: [{}], error: [{}]",
-                patientId, e.getMessage());
-            return false;
-        }
-
-        // Remove family reference from patient
-        boolean removed = PhenotipsFamilyRepository.removeFamilyReference(patientDocument);
-        if (!removed) {
-            this.logger.info("Family reference not removed from patient. Returning from removeMember()");
-            return false;
-        }
-
-        // Remove patient from family's members list
-        List<String> members = getMembersIds();
-        String patientAsString = patient.getDocument().getName();
-        if (!members.contains(patientAsString)) {
-            this.logger.error("Patient has family reference but family doesn't have patient as member. "
-                + "patientId: [{}], familyId: [{}]", patientId, this.getId());
-        } else {
-            members.remove(patientAsString);
-        }
-        BaseObject familyObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
-        familyObject.set(FAMILY_MEMBERS_FIELD, members, context);
-
-        this.updatePermissions();
-
-        // Remove patient from the pedigree
-        Pedigree pedigree = getPedigree();
-        if (pedigree != null) {
-            pedigree.removeLink(patientId);
-            if (!setPedigreeObject(pedigree, false)) {
-                this.logger.error("Could not remove patient [{}] from pedigree for family [{}]",
-                    patientId, this.getId());
-                return false;
-            }
-        }
-
-        if (!savePatientDocument(patientDocument, "removed from family", "removing from family", context)
-            || !saveFamilyDocument("removed " + patientId + " from the family", "removing a family member", context)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean savePatientDocument(XWikiDocument patientDocument, String documentHistoryComment,
-        String logActionDescription, XWikiContext context)
-    {
-        try {
-            context.getWiki().saveDocument(patientDocument, documentHistoryComment, context);
-        } catch (XWikiException e) {
-            this.logger.error("Error saving patient [{}] document after {}: [{}]",
-                patientDocument.getId(), logActionDescription, e.getMessage());
-            return false;
-        }
-        return true;
-    }
-
-    private boolean saveFamilyDocument(String documentHistoryComment, String logActionDescription, XWikiContext context)
-    {
-        BaseObject familyClassObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
-        if (familyClassObject != null) {
-            String probandId = this.getProbandId();
-            if (probandId != null) {
-                Patient patient = PhenotipsFamily.patientRepository.get(probandId);
-                familyClassObject.setStringValue("proband_id", (patient == null) ? "" : patient.getDocument()
-                    .toString());
-            } else {
-                familyClassObject.setStringValue("proband_id", "");
-            }
-        }
-
-        try {
-            context.getWiki().saveDocument(this.familyDocument, documentHistoryComment, context);
-        } catch (XWikiException e) {
-            this.logger.error("Error saving family [{}] document after {}: [{}]",
-                this.getId(), logActionDescription, e.getMessage());
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public boolean isMember(Patient patient)
@@ -416,67 +270,5 @@ public class PhenotipsFamily implements Family
             }
         }
         return null;
-    }
-
-    @Override
-    public boolean setPedigree(Pedigree pedigree)
-    {
-        return setPedigreeObject(pedigree, true);
-    }
-
-    private boolean setPedigreeObject(Pedigree pedigree, boolean saveXwikiDocument)
-    {
-        if (pedigree == null) {
-            this.logger.error("Can not set NULL pedigree for family [{}]", this.getId());
-            return false;
-        }
-
-        XWikiContext context = getXContext();
-
-        BaseObject pedigreeObject = this.familyDocument.getXObject(Pedigree.CLASS_REFERENCE);
-        pedigreeObject.set(Pedigree.IMAGE, pedigree.getImage(null), context);
-        pedigreeObject.set(Pedigree.DATA, pedigree.getData().toString(), context);
-
-        if (saveXwikiDocument && !saveFamilyDocument("updated pedigree", "", context)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public void updatePermissions()
-    {
-        PhenotipsFamily.familyPermissions.updatePermissions(this, this.familyDocument);
-    }
-
-    @Override
-    public synchronized boolean deleteFamily(boolean deleteAllMembers)
-    {
-        XWikiContext context = getXContext();
-        XWiki xwiki = context.getWiki();
-        try {
-            for (Patient patient : getMembers()) {
-                removeMember(patient);
-                if (deleteAllMembers) {
-                    if (!PhenotipsFamily.patientRepository.delete(patient)) {
-                        return false;
-                    }
-                }
-            }
-            xwiki.deleteDocument(xwiki.getDocument(this.familyDocument, context), context);
-        } catch (XWikiException ex) {
-            this.logger.error("Failed to delete family document [{}]: {}", this.getId(), ex.getMessage());
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public void setExternalId(String externalId)
-    {
-        XWikiContext context = getXContext();
-        BaseObject familyObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
-        familyObject.set("external_id", externalId, context);
     }
 }
