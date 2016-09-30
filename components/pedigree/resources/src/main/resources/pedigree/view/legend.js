@@ -85,6 +85,12 @@ define([
             this._legendInfo.hide();
         },
 
+        setObjectColor: function(id, color) {
+            this._objectColors[id] = color;
+            // set the last assigned color for the object
+            this.addPreferredColor(id, color);
+        },
+
         /**
          * Retrieve the color associated with the given object
          *
@@ -118,7 +124,7 @@ define([
 
         /**
          * Set the preferred color for object with the given id. No check is performed to make
-         * sure colors are unique.
+         * sure colors are unique or that object is present in the legend.
          */
         addPreferredColor: function(id, color) {
             this._preferredColors[id] = color;

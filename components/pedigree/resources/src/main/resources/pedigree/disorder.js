@@ -52,13 +52,16 @@ define([
         },
 
         onDataReady : function(response) {
+            this._name = this._disorderID;
             try {
                 var parsed = JSON.parse(response.responseText);
                 //console.log(Helpers.stringifyObject(parsed));
-                console.log("LOADED DISORDER: disorder id = " + this._disorderID + ", name = " + parsed.rows[0].name);
-                this._name = parsed.rows[0].name;
+                if (parsed.hasOwnProperty("rows") && parsed.rows.length > 0) {
+                    console.log("LOADED DISORDER: disorder id = " + this._disorderID + ", name = " + parsed.rows[0].name);
+                    this._name = parsed.rows[0].name;
+                }
             } catch (err) {
-                console.log("[LOAD DISORDER] Error: " +  err);
+                console.log("[LOAD DISORDER] Parse error: " +  err);
             }
         }
     });

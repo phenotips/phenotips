@@ -46,7 +46,7 @@
         _generateElement: function($super, geneID, name) {
             if (!this._objectColors.hasOwnProperty(geneID)) {
                 var color = this._generateColor(geneID);
-                this._objectColors[geneID] = color;
+                this.setObjectColor(geneID, color);
                 document.fire('gene:color', {'id' : geneID, "color": color, "prefix": this.prefix});
             }
 
