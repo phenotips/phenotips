@@ -311,7 +311,7 @@
         <version>2.53.1</version>
         <scope>test</scope>
       </dependency>
-      <!-- Use a more recent version of Jackson, the latest compatible with the version of restlet in use -->
+      <!-- Use a more recent version of Jackson 1.x, the latest compatible with the version of restlet in use -->
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
         <artifactId>jackson-core-asl</artifactId>
@@ -322,6 +322,23 @@
         <artifactId>jackson-mapper-asl</artifactId>
         <version>1.9.13</version>
       </dependency>
+      <!-- Use a more recent version of Jackson 2.x -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>2.8.3</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.8.3</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>2.8.3</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
