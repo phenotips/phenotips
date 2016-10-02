@@ -37,7 +37,31 @@ define([], function(){
       },
 
       /**
-       * Displays the template selector
+       * Same as show but also displays a checkbox with the given title and cals the
+       * onOK and onCancel functions with the boolean value indicating if the checkbox was pressed or not
+       *
+       * @method show
+       */
+      showWithCheckbox: function(message, title, checkboxText, defaultState, okButtonText, onOKFunction, cancelButtonText, onCancelFunction) {
+          // add checkbox
+          var message = message + '<br><input ' + (defaultState ? 'checked ' : '') + 'type="checkbox" id ="okcancelcheckbox" value="checked">' +
+                                  '<label class="field-no-user-select" for="okcancelcheckbox">' + checkboxText + '</label>';
+          var onOK = function() {
+              // read checkbox state & clal original onOK with the state as the parameter
+              var checkbox = $$('input[type=checkbox][id="okcancelcheckbox"]');
+              var state = checkbox ? checkbox[0].checked : defaultState;
+              onOKFunction(state);
+          }
+          var onCancel = function() {
+              var checkbox = $$('input[type=checkbox][id="okcancelcheckbox"]');
+              var state = checkbox ? checkbox[0].checked : defaultState;
+              onCancelFunction(state);
+          }
+          this.showCustomized(message, title, okButtonText, onOK, cancelButtonText, onCancelFunction);
+      },
+
+      /**
+       * Displays the dialogue
        *
        * @method show
        */
@@ -59,11 +83,19 @@ define([], function(){
           this._configButton(2, button3title, on3Function, bottomRight);
           this._promptBody.update(message);
           this.dialog.show();
-          this.dialog.dialogBox.down("div.msdialog-title").update(title);  // this.dialog.dialogBox is available only after show() 
+          this.dialog.dialogBox.down("div.msdialog-title").update(title);  // this.dialog.dialogBox is available only after show()
       },
 
       /**
-       * Removes the the template selector
+       * Displays a dialogue with a red error icon and only one button
+       */
+      showError: function(message, title, buttonTitle, onOKFunction) {
+          this.showCustomized(message, title, buttonTitle, onOKFunction);
+          this.dialog.dialogBox.down("div.msdialog-title").update("<img src='/resources/icons/silk/error.png' height='13'>&nbsp;&nbsp;" + title);
+      },
+
+      /**
+       * Hides the dialogue
        *
        * @method hide
        */
@@ -80,9 +112,9 @@ define([], function(){
               this._onButtonActions[buttonID] = actionFunction;
           }
           if (bottomRightButton) {
-              this._buttons[buttonID].setStyle({"marginLeft": "-200px", "marginRight": "10px", "float": "right"}); 
+              this._buttons[buttonID].setStyle({"marginLeft": "-200px", "marginRight": "10px", "float": "right"});
           } else {
-              this._buttons[buttonID].setStyle({"marginLeft": "0px", "marginRight": "0px", "float": "none"}); 
+              this._buttons[buttonID].setStyle({"marginLeft": (buttonID == 0 ? "0px" : "10px"), "marginRight": "0px", "float": "none"});
           }
       }
   });

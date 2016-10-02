@@ -69,7 +69,7 @@ define([
     }
 
     HPOTerm.getServiceURL = function() {
-        return new XWiki.Document('SolrService', 'PhenoTips').getURL("get") + "?";
+        return editor.getExternalEndpoint().getSolrServiceURL() + "?";
     }
     return HPOTerm;
 });

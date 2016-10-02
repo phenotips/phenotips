@@ -19,20 +19,21 @@ define([
         "pedigree/view/abstractPerson",
         "pedigree/view/childlessBehavior",
         "pedigree/view/childlessBehaviorVisuals",
-        "pedigree/view/personVisuals"
+        "pedigree/view/personVisuals",
+        "pedigree/hpoTerm"
     ], function(
         PedigreeDate,
         Helpers,
         AbstractPerson,
         ChildlessBehavior,
         ChildlessBehaviorVisuals,
-        PersonVisuals
+        PersonVisuals,
+        HPOTerm
     ){
     var Person = Class.create(AbstractPerson, {
 
         initialize: function($super, x, y, id, properties) {
             //var timer = new Helpers.Timer();
-            this._isProband = (id == 0);
             !this._type && (this._type = "Person");
             this._setDefault();
             var gender = properties.hasOwnProperty("gender") ? properties['gender'] : "U";
@@ -95,7 +96,15 @@ define([
          * @return {Boolean}
          */
         isProband: function() {
-            return this._isProband;
+            return (this.getID() == editor.getGraph().getProbandId());
+        },
+
+        /**
+         * Redraws gender shape with or without proband indicators
+         */
+        redrawProbandStatus: function() {
+            this.getGraphics().setGenderGraphics();
+            this.getGraphics().getHoverBox().regenerateButtons();
         },
 
         /**
@@ -111,6 +120,17 @@ define([
         },
 
         /**
+         * Returns the URL of the PhenoTips patient represented by this node.
+         *
+         * @method getPhenotipsPatientURL
+         * @return {String}
+         */
+        getPhenotipsPatientURL: function()
+        {
+            return editor.getExternalEndpoint().getPhenotipsPatientURL(this.getPhenotipsPatientId());
+        },
+
+        /**
          * Replaces (or sets) the id of the PhenoTips patient represented by this node
          * with the given id, and updates the label.
          *
@@ -121,7 +141,23 @@ define([
          */
         setPhenotipsPatientId: function(phenotipsId)
         {
+            if (phenotipsId == this._phenotipsId) {
+                return;
+            }
+
+            if (this._phenotipsId != "") {
+                // fire patient this._phenotipsId is no longer in family
+                var event = {"phenotipsID": this._phenotipsId, "gender": this.getGender(), "firstName":  this._firstName, "lastName": this._lastName, "externalID": this._externalID};
+                document.fire("pedigree:patient:unlinked", event);
+            } else {
+                document.fire("pedigree:patient:linked", {"phenotipsID": phenotipsId});
+            }
+
             this._phenotipsId = phenotipsId;
+
+            this.getGraphics().setGenderGraphics();
+            this.getGraphics().getHoverBox().regenerateButtons();
+            this.getGraphics().updateLinkLabel();
         },
 
         /**
@@ -361,6 +397,9 @@ define([
          * @param {String} newStatus "alive", "deceased", "stillborn", "unborn", "aborted" or "miscarriage"
          */
         setLifeStatus: function(newStatus) {
+            if (newStatus == this._lifeStatus) {
+                return;
+            }
             if(this._isValidLifeStatus(newStatus)) {
                 var oldStatus = this._lifeStatus;
 
@@ -374,6 +413,9 @@ define([
                     this.setBirthDate("");
                     this.setAdopted("");
                     this.setChildlessStatus(null);
+                }
+                if (this.isProband()) {
+                    this.getGraphics().setGenderGraphics();
                 }
                 this.getGraphics().updateLifeStatusShapes(oldStatus);
                 this.getGraphics().getHoverBox().regenerateHandles();
@@ -685,17 +727,6 @@ define([
         },
 
         /**
-         * Returns a list of phenotypes of this person, with non-scrambled IDs
-         *
-         * @method getHPOForExport
-         * @return {Array} List of human-readable versions of HPO IDs
-         */
-        getHPOForExport: function() {
-            var exportHPOs = this._hpo.slice(0);
-            return exportHPOs;
-        },
-
-        /**
          * Adds HPO term to the list of this node's phenotypes and updates the Legend.
          *
          * @method addHPO
@@ -961,6 +992,7 @@ define([
             var extensionParameters = { "node": this };
             editor.getExtensionManager().callExtensions("personNodeRemoved", extensionParameters);
 
+            this.setPhenotipsPatientId("");
             this.setDisorders([]);  // remove disorders form the legend
             this.setHPO([]);
             this.setCandidateGenes([]);
@@ -1011,12 +1043,13 @@ define([
             var onceAlive = editor.getGraph().hasRelationships(this.getID());
             var inactiveStates = onceAlive ? ['unborn','aborted','miscarriage','stillborn'] : false;
             var disabledStates = false;
-            if (this.isProband()) {
-                disabledStates = ['alive','deceased','unborn','aborted','miscarriage','stillborn']; // all possible
+            // disallow states not suported by PhenoTips
+            if (this.getPhenotipsPatientId() != "") {
+                disabledStates = ['unborn','aborted','miscarriage','stillborn'];
                 Helpers.removeFirstOccurrenceByValue(disabledStates,this.getLifeStatus())
             }
 
-            var disabledGenders = this.isProband() ? [] : false;
+            var disabledGenders = false;
             var inactiveGenders = false;
             var genderSet = editor.getGraph().getPossibleGenders(this.getID());
             for (gender in genderSet) {
@@ -1025,9 +1058,6 @@ define([
                         if (!inactiveGenders)
                             inactiveGenders = [];
                         inactiveGenders.push(gender);
-                    }
-                    if (this.isProband() && gender != this.getGender()) {
-                        disabledGenders.push(gender);
                     }
             }
 
@@ -1087,21 +1117,21 @@ define([
 
             var menuData = {
                 identifier:    {value : this.getID()},
-                first_name:    {value : this.getFirstName(), disabled: this.isProband()},
-                last_name:     {value : this.getLastName(), disabled: this.isProband()},
+                first_name:    {value : this.getFirstName(), disabled: false},
+                last_name:     {value : this.getLastName(), disabled: false},
                 last_name_birth: {value: this.getLastNameAtBirth()}, //, inactive: (this.getGender() != 'F')},
-                external_id:   {value : this.getExternalID(), disabled: this.isProband()},
+                external_id:   {value : this.getExternalID(), disabled: false},
                 gender:        {value : this.getGender(), inactive: inactiveGenders, disabled: disabledGenders},
-                date_of_birth: {value : this.getBirthDate(), inactive: this.isFetus(), disabled: this.isProband()},
+                date_of_birth: {value : this.getBirthDate(), inactive: this.isFetus(), disabled: false},
                 carrier:       {value : this.getCarrierStatus(), disabled: inactiveCarriers},
-                disorders:     {value : disorders, disabled: this.isProband()},
+                disorders:     {value : disorders, disabled: false},
                 ethnicity:     {value : this.getEthnicities()},
-                candidate_genes: {value : this.getCandidateGenes(), disabled: this.isProband()},
-                causal_genes:    {value : this.getCausalGenes(), disabled: this.isProband()},
+                candidate_genes: {value : this.getCandidateGenes(), disabled: false},
+                causal_genes:    {value : this.getCausalGenes(), disabled: false},
                 rejected_genes:  {value : rejectedGeneList, disabled: true, inactive: (rejectedGeneList.length == 0)},
                 adopted:       {value : this.getAdopted(), inactive: cantChangeAdopted},
                 state:         {value : this.getLifeStatus(), inactive: inactiveStates, disabled: disabledStates},
-                date_of_death: {value : this.getDeathDate(), inactive: this.isFetus(), disabled: this.isProband()},
+                date_of_death: {value : this.getDeathDate(), inactive: this.isFetus(), disabled: false},
                 commentsClinical:{value : this.getComments(), inactive: false},
                 commentsPersonal:{value : this.getComments(), inactive: false},  // so far the same set of comments is displayed on all tabs
                 commentsCancers: {value : this.getComments(), inactive: false},
@@ -1111,14 +1141,24 @@ define([
                 placeholder:   {value : false, inactive: true },
                 monozygotic:   {value : this.getMonozygotic(), inactive: inactiveMonozygothic, disabled: disableMonozygothic },
                 evaluated:     {value : this.getEvaluated() },
-                hpo_positive:  {value : hpoTerms, disabled: this.isProband() },
+                hpo_positive:  {value : hpoTerms, disabled: false },
                 nocontact:     {value : this.getLostContact(), inactive: inactiveLostContact },
                 cancers:       {value : this.getCancers() },
-                phenotipsid:   {value : this.getPhenotipsPatientId() }
+                phenotipsid:   {value : this.getPhenotipsPatientId() },
+                setproband:    {value : "allow", inactive: this.isProband() }
             };
 
             var extensionParameters = { "menuData": menuData, "node": this };
             menuData = editor.getExtensionManager().callExtensions("personGetNodeMenuData", extensionParameters).extendedData.menuData;
+
+            // Disable input fields iff current user does not have edit permissions for this patient
+            if (!editor.getPatientAccessPermissions(this.getPhenotipsPatientId()).hasEdit) {
+                for (prop in menuData) {
+                    if (menuData.hasOwnProperty(prop)) {
+                        menuData[prop].disabled = true;
+                    }
+                }
+            }
 
             return menuData;
         },
@@ -1131,7 +1171,12 @@ define([
          * @return {Object} with all node properties
          */
         getProperties: function($super) {
-            // note: properties equivalent to default are not set
+            // note1: once new properties are added need to update
+            //        getNodePropertiesNotStoredInPatientProfile() as well
+            //
+            //
+            // note2: properties equivalent to default are not set
+
             var info = $super();
             if (this.getPhenotipsPatientId() != "")
                 info['phenotipsId'] = this.getPhenotipsPatientId();
@@ -1161,8 +1206,12 @@ define([
                 info['disorders'] = this.getDisordersForExport();
             if (!Helpers.isObjectEmpty(this.getCancers()))
                 info['cancers'] = this.getCancers();
-            if (this.getHPO().length > 0)
-                info['hpoTerms'] = this.getHPOForExport();
+
+            // convert HPO data to PhenoTips feature format
+            // (which stores features and non-standard features separately)
+            var phenotipsFeatures = this.getPhenotipsFormattedFeatures();
+            info['features']             = phenotipsFeatures.features;
+            info['nonstandard_features'] = phenotipsFeatures.nonstandard_features;
 
             // convert pedigree genes to PhenoTips gene format
             info['genes'] = this.getPhenotipsFormattedGenes();
@@ -1189,6 +1238,94 @@ define([
          },
 
          /**
+          * Updates stored features as read from patient JSON to include
+          * features manually added and exclude features explicitly removed.
+          * Returns an array of features in Phenotips patient JSON format.
+          *
+          * 1) One complication is that pedigree only supports positive phenotypes,
+          *    so in the following case:
+          *  OLD:
+          *     [ A: observed, B: observed, C: not observed, D: not observed, Z: not a phenotype ]
+          *
+          *  NEW:
+          *     [ A, C, E ]    // all assumed ot be observed
+          *
+          *  The resulting set of features should be:
+          *     [ A: observed, C: observed, D: not observed, E: observed, Z: not a phenotype ]
+          *
+          *  ...since B is assumed to have been removed, C and E added, and D and Z left as is.
+          *
+          *  2) Any qualifiers that A or D or Z above had should be preserved; new features are assumed
+          *  to have no qualifiers since UI does not support them (yet). C is assumd ot have no qualifiers
+          *  as well since old qualifiers applied to the "non observed" version of the feature.
+          *
+          *  3) Another complication is that PhenoTips stores "standard" (with an HPPO id) and
+          *     custom (user-entered) features separately
+          */
+         getPhenotipsFormattedFeatures: function() {
+             var newFeatures = [];
+             var newNonStdFeatures = [];
+
+             var hpo = Helpers.toObjectWithTrue(this.getHPO());
+
+             // go over all old features and transfer:
+             //  1) those which are non-phenotypes (transfer completely as is)
+             //  2) those which are still observed (keep qualifiers)
+             //  3) those which were not observed and still are not (keep qualifiers)
+             for (var i = 0; i < this.features.length; i++) {
+                 if ( (this.features[i].type != "phenotype") ||
+                      (this.features[i].observed === "yes" && hpo.hasOwnProperty(this.features[i].id)) ||
+                      (this.features[i].observed === "no"  && !hpo.hasOwnProperty(this.features[i].id))
+                    ) {
+                     newFeatures.push(this.features[i]);
+                 }
+             }
+
+             // go over all old non-std-features and do the same as above
+             for (var i = 0; i < this.nonStandardFeatures.length; i++) {
+                 if ( (this.nonStandardFeatures[i].type != "phenotype") ||
+                      (this.nonStandardFeatures[i].observed === "yes" && hpo.hasOwnProperty(this.nonStandardFeatures[i].label)) ||
+                      (this.nonStandardFeatures[i].observed === "no"  && !hpo.hasOwnProperty(this.nonStandardFeatures[i].label))
+                    ) {
+                     newNonStdFeatures.push(this.nonStandardFeatures[i]);
+                 }
+             }
+
+             var toObjectWithTrueByField = function(arrayOfObjects, objectFiledName) {
+                 var arrayOfFieldValues = [];
+                 for (var i = 0; i < arrayOfObjects.length; i++) {
+                     arrayOfFieldValues.push(arrayOfObjects[i][objectFiledName]);
+                 }
+                 return Helpers.toObjectWithTrue(arrayOfFieldValues);
+             };
+             var featureHash       = toObjectWithTrueByField(newFeatures, "id");
+             var nonStdFeatureHash = toObjectWithTrueByField(newNonStdFeatures, "label");
+
+             // go over all observed features and add them to either newFeatures or newNonStdFeatures
+             // (if not already there) - with no qualifiers
+             for (var i = 0; i < this.getHPO().length; i++) {
+                 var term = this.getHPO()[i];
+                 if (HPOTerm.isValidID(term)) {
+                     // this is supposed to be a standard term
+                     if (!featureHash.hasOwnProperty(term)) {
+                         newFeatures.push( { "id": term,
+                                             "observed": "yes",
+                                             "type": "phenotype",
+                                             "label": editor.getHPOLegend().getTerm(term).getName() } );
+                     }
+                 } else {
+                     if (!newNonStdFeatures.hasOwnProperty(term)) {
+                         newNonStdFeatures.push( { "observed": "yes",
+                                                   "type": "phenotype",
+                                                   "label": term } );
+                     }
+                 }
+             }
+
+             return {"features": newFeatures, "nonstandard_features": newNonStdFeatures};
+         },
+
+         /**
           * Converts internal representation of genes (object of gene_name -> gene_properties)
           * into a PhenoTips compatible representation (an array of objects).
           *
@@ -1208,6 +1345,20 @@ define([
          },
 
          /**
+          * These properties are related to pedigree structure, but not to PhenoTips patient.
+          *
+          * Used to decide whichproperties to keep when the link to PhenoTips patient is removed
+          */
+         getPatientIndependentProperties: function() {
+             // TODO: review the set of properties retained
+             return  { "gender"        : this.getGender(),
+                       "adoptedStatus" : this.getAdopted(),
+                       "twinGroup"     : this._twinGroup,
+                       "monozygotic"   : this._monozygotic,
+                       "nodeNumber"    : this.getPedNumber() };
+         },
+
+         /**
           * Applies the properties found in info to this node.
           *
           * @method assignProperties
@@ -1215,39 +1366,116 @@ define([
           * @return {Boolean} True if info was successfully assigned
           */
          assignProperties: function($super, info) {
-            this._setDefault();
-
             if($super(info)) {
-                if(info.phenotipsId && this.getPhenotipsPatientId() != info.phenotipsId) {
-                    this.setPhenotipsPatientId(info.phenotipsId);
+                // setGenderGraphics() and drawLabels() methods may be slow yet may be
+                // called myultiple times while properties are set as part of property update procedure.
+                // (e.g. setFirstname(), setComments(), etc. set labels, and setAdopted() calls setGenderGraphics.
+                // This speedup disables the methods while initial properties are set and it is later execute once after
+                // all properties have been set and labels have been generated
+                this._speedup_NOREDRAW = true;
+                this._speedup_NEEDTOCALL = {};
+
+                if(info.phenotipsId) {
+                    if (this.getPhenotipsPatientId() != info.phenotipsId) {
+                        this.setPhenotipsPatientId(info.phenotipsId);
+                    }
+                } else {
+                    this.setPhenotipsPatientId("");
                 }
-                if(info.fName && this.getFirstName() != info.fName) {
-                    this.setFirstName(info.fName);
+
+                if(info.fName) {
+                    if (this.getFirstName() != info.fName) {
+                        this.setFirstName(info.fName);
+                    }
+                } else {
+                    this.setFirstName("");
                 }
-                if(info.lName && this.getLastName() != info.lName) {
-                    this.setLastName(info.lName);
+                if(info.lName) {
+                    if (this.getLastName() != info.lName) {
+                        this.setLastName(info.lName);
+                    }
+                } else {
+                    this.setLastName("");
                 }
-                if(info.lNameAtB && this.getLastNameAtBirth() != info.lNameAtB) {
-                    this.setLastNameAtBirth(info.lNameAtB);
+                if(info.lNameAtB) {
+                    if (this.getLastNameAtBirth() != info.lNameAtB) {
+                        this.setLastNameAtBirth(info.lNameAtB);
+                    }
+                } else {
+                    this.setLastNameAtBirth("");
                 }
-                if (info.externalID && this.getExternalID() != info.externalID) {
-                    this.setExternalID(info.externalID);
+                if (info.externalID) {
+                    if (this.getExternalID() != info.externalID) {
+                        this.setExternalID(info.externalID);
+                    }
+                } else {
+                    this.setExternalID("");
                 }
-                if(info.dob && this.getBirthDate() != info.dob) {
-                    this.setBirthDate(info.dob);
+                if(info.dob) {
+                    if (this.getBirthDate() != info.dob) {
+                        this.setBirthDate(info.dob);
+                    }
+                } else {
+                    this.setBirthDate(null);
+                }
+                if(info.dod) {
+                    if (this.getDeathDate() != info.dod) {
+                        this.setDeathDate(info.dod);
+                    }
+                } else {
+                    this.setDeathDate(null);
                 }
                 if(info.disorders) {
-                    this.setDisorders(info.disorders);
+                    var disordersCopy = info.disorders.slice();
+                    this.setDisorders(disordersCopy);
+                } else {
+                    this.setDisorders([]);
                 }
                 if(info.cancers) {
-                    this.setCancers(info.cancers);
+                    var cancersCopy = Helpers.cloneObject(info.cancers);
+                    this.setCancers(cancersCopy);
+                } else {
+                    this.setCancers({});
                 }
-                if(info.hpoTerms) {
-                    this.setHPO(info.hpoTerms);
+
+                // save original feature data
+                this.features = info.hasOwnProperty("features")? info.features.slice(0) : [];
+                this.nonStandardFeatures = info.hasOwnProperty("nonstandard_features") ? info.nonstandard_features.slice(0) : [];
+
+                var hpoTerms = [];
+                if (info.features) {
+                    // "features":
+                    //    [
+                    //     {"id":"HP:0000175","observed":"yes","label":"Cleft palate","type":"phenotype", "qualifiers":[{"id":"HP:0003577","label":"Congenital onset","type":"age_of_onset"}]},
+                    //     {"id":"HP:0000204","observed":"no","label":"Cleft upper lip","type":"phenotype"}
+                    //    ]
+                    for (var i = 0; i < info.features.length; i++) {
+                        if (info.features[i].observed === "yes" && info.features[i].type == "phenotype") {
+                            hpoTerms.push(info.features[i].id);
+                        }
+                    }
                 }
+                if (info.nonstandard_features) {
+                    // "nonstandard_features":
+                    //    [
+                    //     {"observed":"no","label":"xxx","type":"phenotype"},
+                    //     {"observed":"yes","label":"zzz","type":"phenotype"}
+                    //    ]
+                    for (var i = 0; i < info.nonstandard_features.length; i++) {
+                        if (info.nonstandard_features[i].observed === "yes" && info.nonstandard_features[i].type == "phenotype") {
+                            hpoTerms.push(info.nonstandard_features[i].label);
+                        }
+                    }
+                }
+                this.setHPO(hpoTerms);
+
                 if(info.ethnicities) {
-                    this.setEthnicities(info.ethnicities);
+                    var ethnicitiesCopy = info.ethnicities.slice();
+                    this.setEthnicities(ethnicitiesCopy);
+                } else {
+                    this.setEthnicities([]);
                 }
+
                 this._genes = {};
                 if(info.genes) {
                     // genes: [ {gene: 'JADE3', status: 'candidate', comments: 'abc'},
@@ -1258,45 +1486,94 @@ define([
                         this._addGene(pedigreeGene.gene, pedigreeGene.status, pedigreeGene);
                     }
                     // setGenes() works on a nodeMenu specific format, and can't be used
-                    // to set genes from the full format, so ned ot manually call redraw
-                    // TODO: fix, make nodeMenu accept full format
+                    // to set genes from the full format, so need to manually call redraw
+                    // TODO: fix, make nodeMenu and setGenes() accept full format
                     this.getGraphics().updateDisorderShapes();
                 }
-                if(info.hasOwnProperty("adoptedStatus") && this.getAdopted() != info.adoptedStatus) {
-                    this.setAdopted(info.adoptedStatus);
+
+                if(info.hasOwnProperty("adoptedStatus")) {
+                    if (this.getAdopted() != info.adoptedStatus) {
+                        this.setAdopted(info.adoptedStatus);
+                    }
+                } else {
+                    this.setAdopted("");
                 }
-                if(info.hasOwnProperty("lifeStatus") && this.getLifeStatus() != info.lifeStatus) {
-                    this.setLifeStatus(info.lifeStatus);
+                if(info.hasOwnProperty("lifeStatus")) {
+                    if (this.getLifeStatus() != info.lifeStatus) {
+                        this.setLifeStatus(info.lifeStatus);
+                    }
+                } else {
+                    this.setLifeStatus('alive');
                 }
-                if(info.dod && this.getDeathDate() != info.dod) {
-                    this.setDeathDate(info.dod);
+                if(info.gestationAge) {
+                    if (this.getGestationAge() != info.gestationAge) {
+                        this.setGestationAge(info.gestationAge);
+                    }
+                } else {
+                    this.setGestationAge("");
                 }
-                if(info.gestationAge && this.getGestationAge() != info.gestationAge) {
-                    this.setGestationAge(info.gestationAge);
+                if(info.childlessStatus) {
+                    if (this.getChildlessStatus() != info.childlessStatus) {
+                        this.setChildlessStatus(info.childlessStatus);
+                    }
+                } else {
+                    this.setChildlessStatus(null);
                 }
-                if(info.childlessStatus && this.getChildlessStatus() != info.childlessStatus) {
-                    this.setChildlessStatus(info.childlessStatus);
+                if(info.childlessReason) {
+                    if (this.getChildlessReason() != info.childlessReason) {
+                        this.setChildlessReason(info.childlessReason);
+                    }
+                } else {
+                    this.setChildlessReason("");
                 }
-                if(info.childlessReason && this.getChildlessReason() != info.childlessReason) {
-                    this.setChildlessReason(info.childlessReason);
+                if(info.hasOwnProperty("twinGroup")) {
+                    if (this._twinGroup != info.twinGroup) {
+                        this.setTwinGroup(info.twinGroup);
+                    }
+                } else {
+                    this.setTwinGroup(null);
                 }
-                if(info.hasOwnProperty("twinGroup") && this._twinGroup != info.twinGroup) {
-                    this.setTwinGroup(info.twinGroup);
+                if(info.hasOwnProperty("monozygotic")) {
+                    if (this._monozygotic != info.monozygotic) {
+                        this.setMonozygotic(info.monozygotic);
+                    }
+                } else {
+                    this.setMonozygotic(false);
                 }
-                if(info.hasOwnProperty("monozygotic") && this._monozygotic != info.monozygotic) {
-                    this.setMonozygotic(info.monozygotic);
+                if(info.hasOwnProperty("evaluated")) {
+                    if (this._evaluated != info.evaluated) {
+                        this.setEvaluated(info.evaluated);
+                    }
+                } else {
+                    this.setEvaluated(false);
                 }
-                if(info.hasOwnProperty("evaluated") && this._evaluated != info.evaluated) {
-                    this.setEvaluated(info.evaluated);
+                if(info.hasOwnProperty("carrierStatus")) {
+                    if (this._carrierStatus != info.carrierStatus) {
+                        this.setCarrierStatus(info.carrierStatus);
+                    }
+                } else {
+                    this.setCarrierStatus("");
                 }
-                if(info.hasOwnProperty("carrierStatus") && this._carrierStatus != info.carrierStatus) {
-                    this.setCarrierStatus(info.carrierStatus);
+                if (info.hasOwnProperty("nodeNumber")) {
+                    if (this.getPedNumber() != info.nodeNumber) {
+                        this.setPedNumber(info.nodeNumber);
+                    }
+                } else {
+                    this.setPedNumber("");
                 }
-                if (info.hasOwnProperty("nodeNumber") && this.getPedNumber() != info.nodeNumber) {
-                    this.setPedNumber(info.nodeNumber);
+                if (info.hasOwnProperty("lostContact")) {
+                    if (this.getLostContact() != info.lostContact) {
+                        this.setLostContact(info.lostContact);
+                    }
+                } else {
+                    this.setLostContact(false);
                 }
-                if (info.hasOwnProperty("lostContact") && this.getLostContact() != info.lostContact) {
-                    this.setLostContact(info.lostContact);
+
+                this._speedup_NOREDRAW = false;
+                for (var method in this._speedup_NEEDTOCALL) {
+                    if (this._speedup_NEEDTOCALL.hasOwnProperty(method)) {
+                        this.getGraphics()[method]();
+                    }
                 }
 
                 var extensionParameters = { "modelData": info, "node": this };

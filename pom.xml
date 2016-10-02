@@ -511,6 +511,12 @@
               <justification>Needed for synchronizing consents</justification>
             </difference>
             <difference>
+              <className>org/phenotips/data/PatientRepository</className>
+              <differenceType>7012</differenceType>
+              <method>boolean deletePatient(java.lang.String)</method>
+              <justification>Delete patient functionality for script services accessibility.</justification>
+            </difference>
+            <difference>
               <className>org/phenotips/data/PatientDataController</className>
               <differenceType>7004</differenceType>
               <method>void save(org.phenotips.data.Patient)</method>

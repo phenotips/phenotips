@@ -1,0 +1,60 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+ */
+package org.phenotips.studies.family.rest;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+/**
+ * Root resource for working with patient records.
+ *
+ * @version $Id$
+ * @since 1.4
+ */
+@Path("/families")
+public interface FamiliesResource
+{
+    /**
+     * Import a new family from its JSON representation.
+     *
+     * @param json the JSON representation of the new family to add
+     * @return the location of the newly created family if the operation was successful, or an error report otherwise
+     */
+    @Consumes(MediaType.APPLICATION_JSON)
+    @POST
+    Response addFamily(String json);
+
+    /**
+     * @param start for large result set paging, the index of the first patient to display in the returned page
+     * @param number for large result set paging, how many patients to display in the returned page
+     * @param fullJSON when true, complete family JSON is returned. When false, only a subset of data
+     * needed for all-data-tables is returned.
+     * @return a list of family records
+     */
+    @GET
+    Response listFamilies(
+        @QueryParam("start") @DefaultValue("0") Integer start,
+        @QueryParam("number") @DefaultValue("30") Integer number,
+        @QueryParam("full_json") @DefaultValue("false") Boolean fullJSON);
+}

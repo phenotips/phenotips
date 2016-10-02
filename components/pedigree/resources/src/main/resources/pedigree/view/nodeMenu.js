@@ -191,7 +191,7 @@ define([
                 if (!item.hasClassName('initialized')) {
                     // Create the Suggest.
                     item._suggest = new PhenoTips.widgets.Suggest(item, {
-                        script: Disorder.getOMIMServiceURL() + "&",
+                        script: editor.getExternalEndpoint().getOMIMServiceURL() + "&",
                         queryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
                             'name' : {'wordBoost': 20, 'phraseBoost': 40},
                             'nameSpell' : {'wordBoost': 50, 'phraseBoost': 100, 'stubBoost': 20},
@@ -238,7 +238,7 @@ define([
             // ethnicities
             this.form.select('input.suggest-ethnicity').each(function(item) {
                 if (!item.hasClassName('initialized')) {
-                    var ethnicityServiceURL = new XWiki.Document('EthnicitySearch', 'PhenoTips').getURL("get", "outputSyntax=plain")
+                    var ethnicityServiceURL = editor.getExternalEndpoint().getEthnicitySearchURL();
                     //console.log("Ethnicity URL: " + ethnicityServiceURL);
                     item._suggest = new PhenoTips.widgets.Suggest(item, {
                         script: ethnicityServiceURL + "&json=true&",
@@ -278,7 +278,7 @@ define([
             // genes
             this.form.select('input.suggest-genes').each(function(item) {
                 if (!item.hasClassName('initialized')) {
-                    var geneServiceURL = new XWiki.Document('GeneNameService', 'PhenoTips').getURL("get", "outputSyntax=plain")
+                    var geneServiceURL = editor.getExternalEndpoint().getGeneNameServiceURL();
                     //console.log("GeneService URL: " + geneServiceURL);
                     item._suggest = new PhenoTips.widgets.Suggest(item, {
                         script: geneServiceURL + "&json=true&",
@@ -363,21 +363,23 @@ define([
             // patient selector
             this.form.select('input.suggest-patients').each(function(item) {
                 if (!item.hasClassName('initialized')) {
-                    var patientSuggestURL = new XWiki.Document('SuggestPatientsService', 'PhenoTips').getURL("get", "outputSyntax=plain") + "&permission=edit&";
-                    console.log("PatientSuggest URL: " + patientSuggestURL);
+                    var patientSuggestURL = editor.getExternalEndpoint().getPatientSuggestServiceURL() +
+                       "&permission=edit&json=true&nb=12&markFamilyAssociation=true&";
+                    //console.log("PatientSuggest URL: " + patientSuggestURL);
                     item._suggest = new PhenoTips.widgets.Suggest(item, {
                         script: patientSuggestURL,
                         varname: "input",
                         noresults: "No matching patients",
-                        json: false,
-                        resultsParameter : "rs",
-                        resultId : "id",
-                        resultValue : "name",
-                        resultInfo : "info",
+                        json: true,
+                        width: 337,
+                        resultsParameter: "matchedPatients",
+                        resultId: "id",
+                        resultValue: "textSummary",
+                        resultInfo: {},
                         enableHierarchy: false,
-                        fadeOnClear : false,
-                        timeout : 30000,
-                        parentContainer : $('body')
+                        fadeOnClear: false,
+                        timeout: 30000,
+                        parentContainer: $('body')
                     });
                     item.addClassName('initialized');
                     document.observe('ms:suggest:containerCreated', function(event) {
@@ -422,7 +424,11 @@ define([
                     if (_this._updating) return; // otherwise a field change triggers an update which triggers field change etc
                     var target = _this.targetNode;
                     if (!target) return;
-                    _this.fieldMap[field.name].crtValue = field._getValue && field._getValue()[0];
+                    if (event.hasOwnProperty("memo") && event.memo.hasOwnProperty("useValue")) {
+                        _this.fieldMap[field.name].crtValue = event.memo.useValue;
+                    } else {
+                        _this.fieldMap[field.name].crtValue = field._getValue && field._getValue()[0];
+                    }
                     var method = _this.fieldMap[field.name]['function'];
 
                     if (target.getSummary()[field.name].value == _this.fieldMap[field.name].crtValue) {
@@ -432,13 +438,16 @@ define([
                     if (method.indexOf("set") == 0 && typeof(target[method]) == 'function') {
                         var properties = {};
                         properties[method] = _this.fieldMap[field.name].crtValue;
-                        var event = { "nodeID": target.getID(), "properties": properties };
-                        document.fire("pedigree:node:setproperty", event);
+                        var fireEvent = { "nodeID": target.getID(), "properties": properties };
+                        document.fire("pedigree:node:setproperty", fireEvent);
                     } else {
                         var properties = {};
                         properties[method] = _this.fieldMap[field.name].crtValue;
-                        var event = { "nodeID": target.getID(), "modifications": properties };
-                        document.fire("pedigree:node:modify", event);
+                        var fireEvent = { "nodeID": target.getID(), "modifications": properties };
+                        if (event.memo.hasOwnProperty("useValue") && event.memo.hasOwnProperty("eventDetails")) {
+                            fireEvent["details"] = event.memo.eventDetails;
+                        }
+                        document.fire("pedigree:node:modify", fireEvent);
                     }
                     field.fire('pedigree:change');
                 });
@@ -651,25 +660,70 @@ define([
             },
             'phenotipsid-picker' : function (data) {
                 var result = this._generateEmptyField(data);
+                var patientNewLinkContainer = new Element('div', { 'class': 'patient-newlink-container'});
                 var patientPicker = new Element('input', {type: 'text', 'class': 'suggest multi suggest-patients', name: data.name});
-                result.insert(patientPicker);
-                patientPicker._getValue = function() {
-                    var results = [];
-                    var container = this.up('.field-box');
-                    if (container) {
-                        container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
-                        results.push(item.next('.value') && item.next('.value').firstChild.nodeValue || item.value);
-                        });
+                var newPatientButton = new Element('span', {'class': 'patient-menu-button patient-create-button'}).update("Create new");
+                newPatientButton.observe('click', function(event) {
+                    var setDoNotShow = function(checkBoxStatus) {
+                	    if (checkBoxStatus) {
+                	        editor.getPreferencesManager().setConfigurationOption("user", "hideShareConsentDialog", true);
+                		}
+                    };
+
+                    var _onPatientCreated = function(response) {
+                	    if (response.responseJSON && response.responseJSON.hasOwnProperty("newID")) {
+                	        console.log("Created new patient: " + Helpers.stringifyObject(response.responseJSON));
+                	        Event.fire(patientPicker, 'custom:selection:changed', { "useValue": response.responseJSON.newID, "eventDetails": {"loadPatientProperties": false, "skipConfirmDialogue" : true} });
+                	        _this.reposition();
+                	    } else {
+                            alert("Patient creation failed");
+                		}
+                	}
+
+                    var processCreatePatient = function() {
+                	    var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
+                	    document.fire("pedigree:load:start");
+                	    new Ajax.Request(createPatientURL, {
+                		    method: "GET",
+                		    onSuccess: _onPatientCreated,
+                		    onComplete: function() { document.fire("pedigree:load:finish"); }
+                	    });
                     }
-                    return [results];
-                }.bind(patientPicker);
-                // Forward the 'custom:selection:changed' to the input
+
+                    var processLinking = function(topMessage, notesMessage) {
+                        editor.getOkCancelDialogue().showWithCheckbox("<br><b>" + topMessage + "</b><br>" +
+                	        "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
+                		    notesMessage + "</div>",
+                		    "Add patient to the family?",
+                		    "Do not show this warning again<br>", false,
+                		    "Confirm", function(checkBoxStatus) { setDoNotShow(checkBoxStatus); processCreatePatient() },
+                		    "Cancel",  function(checkBoxStatus) { setDoNotShow(checkBoxStatus); });
+                    }
+
+                    processLinking("When you create a new patient and add to this family:<br>",
+                		    "1) A copy of this pedigree will be placed in the electronic record of each family member.<br><br>"+
+                		    "2) This pedigree can be edited by any user with access to any member of the family.");
+
+                    _this.reposition();
+                });
+                patientNewLinkContainer.insert(patientPicker).insert("&nbsp;&nbsp;&nbsp;or").insert(newPatientButton);
+                result.insert(patientNewLinkContainer);
+
+                var patientLinkContainer = new Element('div', { 'class': 'patient-link-container'});
+                var patientLink = new Element('a', {'class': 'patient-link-url', 'target': "_blank", name: data.name + "_link"});
+                var removeLink = new Element('span', {'class': 'patient-menu-button patient-link-remove'});
+                removeLink.observe('click', function(event) {
+                    Event.fire(patientPicker, 'custom:selection:changed', { "useValue": "" });
+                    _this.reposition();
+                });
+                removeLink.insert("Unlink patient record");
+                patientLinkContainer.insert(patientLink).insert(removeLink);
+                result.insert(patientLinkContainer);
                 var _this = this;
-                document.observe('custom:selection:changed', function(event) {
-                    if (event.memo && event.memo.fieldName == data.name && event.memo.trigger && event.findElement() != event.memo.trigger && !event.memo.trigger._silent) {
-                        Event.fire(event.memo.trigger, 'custom:selection:changed');
-                        _this.reposition();
-                    }
+                patientPicker.observe('ms:suggest:selected', function(event) {
+                     //Event.fire(patientPicker, 'custom:selection:changed', { "useValue": { "phenotipsid": event.memo.id } });
+                    Event.fire(patientPicker, 'custom:selection:changed', { "useValue": event.memo.id });
+                    _this.reposition();
                 });
                 this._attachFieldEventListeners(patientPicker, ['custom:selection:changed']);
                 return result;
@@ -697,6 +751,27 @@ define([
                     }
                 });
                 this._attachFieldEventListeners(genePicker, ['custom:selection:changed']);
+                return result;
+            },
+            'button' : function (data ) {
+                var result = this._generateEmptyField(data);
+                var buttonContainer = new Element('div', { 'class': 'button-container'});
+                var classes = 'patient-menu-button patient-generic-button';
+                if (data.buttoncss) {
+                    classes += " " + data.buttoncss;
+                }
+                var button = new Element('span', {'class': classes}).update(data.label);
+                // using nameHolder below is a workaround: existing code uses field.name ot get the name -
+                // but DIVs and SPANs can't have "name" attribute
+                var nameHolder = new Element('input', {'type': 'hidden', 'name': data.name});
+                var _this = this;
+                button.observe('click', function(event) {
+                        Event.fire(nameHolder, 'custom:selection:changed', { "useValue": "" });
+                        _this.reposition();
+                    });
+                this._attachFieldEventListeners(nameHolder, ['custom:selection:changed']);
+                buttonContainer.update(button).insert(nameHolder);;
+                result.down('label').update(buttonContainer);
                 return result;
             },
             'select' : function (data) {
@@ -981,7 +1056,10 @@ define([
             if (!event.findElement('.suggestItems')) {
                 this.hideSuggestPicker();
             }
-            if (!event.findElement('.menu-box') && !event.findElement('.suggestItems')) {
+            if (!event.findElement('.menu-box')
+                && !event.findElement('.suggestItems')
+                && !event.findElement('.ok-cancel-dialogue')
+                && !event.findElement('.msdialog-screen')) {
                 this.hide();
             }
         },
@@ -1055,10 +1133,10 @@ define([
             Object.keys(this.fieldMap).each(function (name) {
                 _this.fieldMap[name].crtValue = data && data[name] && typeof(data[name].value) != "undefined" ? data[name].value : _this.fieldMap[name].crtValue || _this.fieldMap[name]["default"];
                 _this.fieldMap[name].inactive = (data && data[name] && (typeof(data[name].inactive) == 'boolean' || typeof(data[name].inactive) == 'object')) ? data[name].inactive : _this.fieldMap[name].inactive;
-                _this.fieldMap[name].disabled = (data && data[name] && (typeof(data[name].disabled) == 'boolean' || typeof(data[name].disabled) == 'object')) ? data[name].disabled : _this.fieldMap[name].disabled;
+                _this.fieldMap[name].disabled = (data && data[name] && (typeof(data[name].disabled) == 'boolean' || typeof(data[name].disabled) == 'object')) ? data[name].disabled : false;
                 _this._setFieldValue[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].crtValue);
                 _this._setFieldInactive[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].inactive);
-                _this._setFieldDisabled[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].disabled);
+                _this._setFieldDisabled[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].disabled, _this.fieldMap[name].inactive, _this.fieldMap[name].crtValue);
                 //_this._updatedDependency(_this.fieldMap[name].element, _this.fieldMap[name].element);
             });
         },
@@ -1080,8 +1158,8 @@ define([
                 var target = container.down('input[type=text]');
                 if (target) {
                     target.value = value;
+                    this._restoreCursorPositionIfNecessary(target);
                 }
-                this._restoreCursorPositionIfNecessary(target);
             },
             'textarea' : function (container, value) {
                 var target = container.down('textarea');
@@ -1207,19 +1285,35 @@ define([
                     target._silent = false;
                 }
             },
-            'phenotipsid-picker' : function (container, values) {
+            'phenotipsid-picker' : function (container, value) {
                 var _this = this;
-                var target = container.down('input[type=text].suggest-genes');
-                if (target && target._suggestPicker) {
-                    target._silent = true;
-                    target._suggestPicker.clearAcceptedList();
-                    if (values) {
-                        values.each(function(v) {
-                            target._suggestPicker.addItem(v, v, '');
-                        })
+
+                var suggestContainer = container.down('div.patient-newlink-container');
+                var suggestInput     = container.down('input[type=text].suggest-patients');
+
+                var linkContainer = container.down('div.patient-link-container');
+                var link          = container.down('a.patient-link-url');
+                var linkRemove    = container.down('span.patient-link-remove');
+
+                suggestInput.value = "";
+
+                if (value == "") {
+                    linkContainer.hide();
+                    suggestContainer.show();
+                } else {
+                    suggestContainer.hide();
+                    link.href = editor.getExternalEndpoint().getPhenotipsPatientURL(value);
+                    link.innerHTML = value;
+                    linkContainer.show();
+                    if (_this.targetNode.getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
+                        linkRemove.hide();
+                    } else {
+                        linkRemove.show();
                     }
-                    target._silent = false;
                 }
+            },
+            'button' : function (container, value) {
+                // does not depend on input data, nothing to set
             },
             'select' : function (container, value) {
                 var target = container.down('select option[value="' + value + '"]');
@@ -1350,6 +1444,9 @@ define([
             'text' : function (container, inactive) {
                 this._toggleFieldVisibility(container, inactive);
             },
+            'button' : function (container, inactive) {
+                this._toggleFieldVisibility(container, inactive);
+            },
             'textarea' : function (container, inactive) {
                 this._toggleFieldVisibility(container, inactive);
             },
@@ -1416,14 +1513,26 @@ define([
                     target.disabled = disabled;
                 }
             },
+            'button' : function (container, disabled, inactive) {
+                if (disabled) {
+                    this._toggleFieldVisibility(container, disabled);
+                } else {
+                    if (!inactive) {
+                        this._toggleFieldVisibility(container, disabled);
+                    }
+                }
+            },
             'text' : function (container, disabled) {
                 var target = container.down('input[type=text]');
                 if (target) {
                     target.disabled = disabled;
                 }
             },
-            'textarea' : function (container, inactive) {
-                // FIXME: Not implemented
+            'textarea' : function (container, disabled) {
+                var target = container.down('textarea');
+                if (target) {
+                    target.disabled = disabled;
+                }
             },
             'date-picker' : function (container, disabled) {
                 Element.select(container,'select').forEach(function(element) {
@@ -1434,7 +1543,7 @@ define([
                         element.addClassName('disabled-select');
                         element.addClassName('no-mouse-interaction');
                     } else {
-                        // emove IE-specific workaround handler
+                        // remove IE-specific workaround handler
                         Helpers.enableMouseclicks(element);
                         element.removeClassName('disabled-select');
                         element.removeClassName('no-mouse-interaction');
@@ -1444,8 +1553,8 @@ define([
             'disease-picker' : function (container, disabled) {
                 this.__disableEnableSuggestModification(container, disabled);
             },
-            'ethnicity-picker' : function (container, inactive) {
-                // FIXME: Not implemented
+            'ethnicity-picker' : function (container, disabled) {
+                this.__disableEnableSuggestModification(container, disabled);
             },
             'hpo-picker' : function (container, disabled) {
                 this.__disableEnableSuggestModification(container, disabled);
@@ -1453,16 +1562,37 @@ define([
             'gene-picker' : function (container, disabled) {
                 this.__disableEnableSuggestModification(container, disabled);
             },
-            'phenotipsid-picker' : function (container, inactive) {
-                // FIXME: Not implemented
+            'select' : function (container, disabled) {
+                var target = container.down('select');
+                if (target) {
+                    target.disabled = disabled;
+                }
             },
-            'select' : function (container, inactive) {
-                // FIXME: Not implemented
+            'cancerlist' : function (container, disabled) {
+                container.select('select').each(function(item) {
+                    item.disabled = disabled;
+                });
+                container.select('.button-container').each(function(item) {
+                    if (disabled) {
+                        item.hide();
+                    } else {
+                        item.show();
+                    }
+                });
             },
-            'cancerlist' : function (container, inactive) {
-                // FIXME: Not implemented
+            'phenotipsid-picker' : function (container, disabled, inactive, value) {
+                if (!disabled) {
+                    this._toggleFieldVisibility(container, disabled);
+                } else {
+                    if (value == "") {
+                        this._toggleFieldVisibility(container, disabled);
+                    }
+                }
+                container.select('span').each(function(item) {
+                    item.style.display = disabled ? "none" : "inherit";
+                });
             },
-            'hidden' : function (container, inactive) {
+            'hidden' : function (container, disabled) {
                 // FIXME: Not implemented
             }
         },

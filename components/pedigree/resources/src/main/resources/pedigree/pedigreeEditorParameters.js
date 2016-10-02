@@ -90,6 +90,7 @@ define([], function(){
         orbHue : .53,
         phShape: {fill: "white","fill-opacity": 0, "stroke": 'black', "stroke-dasharray": "- "},
         dragMeLabel: {'font-size': 14, 'font-family': 'Tahoma'},
+        probandArrowLabel: {'font-size': 17, 'font-weight': 'bold', 'font-family': 'Arial', 'fill': '#595959'},
         pedNumberLabel: {'font-size': 19, 'font-family': 'Serif'},
         descendantGroupLabel: {'font-size': 21, 'font-family': 'Tahoma'},
         label: {'font-size': 20, 'font-family': 'Arial'},

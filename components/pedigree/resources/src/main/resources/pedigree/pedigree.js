@@ -8,11 +8,13 @@
  */
 define([
         "pedigree/extensionManager",
+        "pedigree/externalEndpoints",
         "pedigree/undoRedoManager",
         "pedigree/controller",
         "pedigree/pedigreeEditorParameters",
         "pedigree/preferencesManager",
-        "pedigree/probandDataLoader",
+        "pedigree/familyData",
+        "pedigree/patientDataLoader",
         "pedigree/saveLoadEngine",
         "pedigree/versionUpdater",
         "pedigree/view",
@@ -25,6 +27,7 @@ define([
         "pedigree/view/candidateGeneLegend",
         "pedigree/view/causalGeneLegend",
         "pedigree/view/hpoLegend",
+        "pedigree/view/patientDropLegend",
         "pedigree/view/importSelector",
         "pedigree/view/cancersLegend",
         "pedigree/view/nodeMenu",
@@ -32,15 +35,18 @@ define([
         "pedigree/view/okCancelDialogue",
         "pedigree/view/saveLoadIndicator",
         "pedigree/view/templateSelector",
+        "pedigree/view/tabbedSelector",
         "pedigree/view/printDialog"
     ],
     function(
         PedigreeExtensionManager,
+        ExternalEndpointsManager,
         UndoRedoManager,
         Controller,
         PedigreeEditorParameters,
         PreferencesManager,
-        ProbandDataLoader,
+        FamilyData,
+        PatientDataLoader,
         SaveLoadEngine,
         VersionUpdater,
         View,
@@ -53,6 +59,7 @@ define([
         CandidateGeneLegend,
         CausalGeneLegend,
         HPOLegend,
+        PatientDropLegend,
         ImportSelector,
         CancerLegend,
         NodeMenu,
@@ -60,15 +67,19 @@ define([
         OkCancelDialogue,
         SaveLoadIndicator,
         TemplateSelector,
+        TabbedSelector,
         PrintDialog
 ){
 
     var PedigreeEditor = Class.create({
         initialize: function() {
+            this.INTERNALJSON_VERSION = "1.0";
+
             //this.DEBUG_MODE = true;
             window.editor = this;
 
             this._extensionManager = new PedigreeExtensionManager();
+            this._externalEndpointManager = new ExternalEndpointsManager();
 
             // Available options:
             //
@@ -107,6 +118,7 @@ define([
             this._causalGeneLegend = new CausalGeneLegend();
             this._hpoLegend = new HPOLegend();
             this._cancerLegend = new CancerLegend();
+            this._patientLegend = new PatientDropLegend();
             this._nodetypeSelectionBubble = new NodetypeSelectionBubble(false);
             this._siblingSelectionBubble  = new NodetypeSelectionBubble(true);
             this._okCancelDialogue = new OkCancelDialogue();
@@ -114,12 +126,21 @@ define([
             this._view = new View();
 
             this._actionStack = new UndoRedoManager();
-            this._templateSelector = new TemplateSelector();
             this._saveLoadIndicator = new SaveLoadIndicator();
             this._versionUpdater = new VersionUpdater();
             this._saveLoadEngine = new SaveLoadEngine();
-            this._probandData = new ProbandDataLoader();
+            this._familyData = new FamilyData();
+            this._patientDataLoader = new PatientDataLoader();
 
+            var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
+            if (newPatientId && newPatientId != ""){
+                this.getPatientLegend().addCase(newPatientId, 'new');
+                this._unsavedNewPatient = true;
+            }
+
+            // load global pedigree preferences before a specific pedigree is loaded, since
+            // preferences may affect the way it is rendered. Once preferences are loaded the
+            // provided function will get execute and will load/render the rest of the pedigree.
             this._preferencesManager.load( function() {
                     Helpers.copyProperties(PedigreeEditorParameters.styles.blackAndWhite, PedigreeEditorParameters.attributes);
                     // set up constants which depend on preferences
@@ -131,16 +152,26 @@ define([
                         Helpers.copyProperties(PedigreeEditorParameters.lineStyles.regularLines, PedigreeEditorParameters.attributes);
                     }
 
-                    // load proband data and load the graph after proband data is available
-                    this._probandData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
+                    var _importSelector = new ImportSelector();
+                    var _templateSelector = new TemplateSelector();
+                    this._templateImportSelector = new TabbedSelector("Select a pedigree template or import a pedigree",
+                                                                      [_templateSelector, _importSelector]);
 
                     // generate various dialogues after preferences have been loaded
                     this._nodeMenu = this.generateNodeMenu();
                     this._nodeGroupMenu = this.generateNodeGroupMenu();
                     this._partnershipMenu = this.generatePartnershipMenu();
-                    this._importSelector = new ImportSelector();
                     this._exportSelector = new ExportSelector();
                     this._printDialog = new PrintDialog();
+
+                    // finally, load the pedigree
+                    var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
+                    if (newPatientId && newPatientId != ""){
+                        this._saveLoadEngine.load(XWiki.currentDocument.page);
+                    } else {
+                        var documentId = editor.getGraph().getCurrentPatientId();
+                        this._saveLoadEngine.load(documentId);
+                    }
                 }.bind(this) );
 
             this._controller = new Controller();
@@ -164,18 +195,14 @@ define([
                 document.fire("pedigree:graph:clear");
             });
 
-            var saveButton = $('action-save');
-            saveButton && saveButton.on("click", function(event) {
-                editor.getSaveLoadEngine().save();
-            });
-
+            var replacePedigreeWarning = "Existing pedigree will be replaced by the selected one";
             var templatesButton = $('action-templates');
             templatesButton && templatesButton.on("click", function(event) {
-                editor.getTemplateSelector().show();
+                editor.getTemplateImportSelector().show(0 /* tab 0 - templates */, true /* allow cancel */, replacePedigreeWarning, "box warningmessage");
             });
             var importButton = $('action-import');
             importButton && importButton.on("click", function(event) {
-                editor.getImportSelector().show();
+                editor.getTemplateImportSelector().show(1 /* tab1 - import */, true /* allow cancel */, replacePedigreeWarning, "box warningmessage");
             });
             var exportButton = $('action-export');
             exportButton && exportButton.on("click", function(event) {
@@ -186,37 +213,28 @@ define([
                 editor.getPrintDialog().show();
             });
 
+            var saveButton = $('action-save');
+            saveButton && saveButton.on("click", function(event) {
+                editor.checkAndSaveOrQuit(false /* user doesnot want to quit */);
+            });
+
             var onLeavePageFunc = function() {
                 if (!editor.isReadOnlyMode() && editor.getUndoRedoManager().hasUnsavedChanges()) {
                     return "All changes will be lost when navigating away from this page.";
                 }
             };
-            window.onbeforeunload = onLeavePageFunc;
+            if (!editor.isReadOnlyMode()) {
+                window.onbeforeunload = onLeavePageFunc;
+            }
 
             var onCloseButtonClickFunc = function(event) {
-                var dontQuitFunc    = function() { window.onbeforeunload = onLeavePageFunc; };
-                var quitFunc        = function() { window.location=XWiki.currentDocument.getURL(XWiki.contextaction); };
-                var saveAndQuitFunc = function() { editor._afterSaveFunc = quitFunc;
-                                                   editor.getSaveLoadEngine().save(); }
-
                 if (editor.isReadOnlyMode()) {
-                    quitFunc();
+                    this.closePedigree();
                 } else {
-                    window.onbeforeunload = undefined;
-
-                    if (editor.getUndoRedoManager().hasUnsavedChanges()) {
-                        editor.getOkCancelDialogue().showCustomized( 'There are unsaved changes, do you want to save the pedigree before closing the pedigree editor?',
-                                                                     'Save before closing?',
-                                                                     "Save", saveAndQuitFunc,
-                                                                     "Don't save", quitFunc,
-                                                                     "Don't close", dontQuitFunc, true );
-                    } else {
-                        quitFunc();
-                    }
+                    editor.checkAndSaveOrQuit(true /* user wanted to quit */);
                 }
             };
             var closeButton = $('action-close');
-            this._afterSaveFunc = null;
             closeButton && (closeButton.onclick = onCloseButtonClickFunc);
 
             var renumberButton = $('action-number');
@@ -236,6 +254,141 @@ define([
         },
 
         /**
+         * Closes pedigree editor and navigates to the proper page (patient of family, view or edit mode)
+         * depending on where the editor was called from
+         *
+         * @method closePedigree
+         */
+        closePedigree: function() {
+            if (!editor.isReadOnlyMode()) {
+                window.onbeforeunload = undefined;
+            }
+            editor.getExternalEndpoint().redirectToURL(editor.getExternalEndpoint().getParentDocument().returnURL);
+        },
+
+        /**
+         * Either offers to save the pedigree when the user wants to quit (with unsaved changes), or to keep
+         * editing if saving would result in a possibly unintended pedigree (with missing patients).
+         *
+         * The checks are combined to avoid having two dialogues one after the other (in case of quit
+         * with unsaved changes AND unintended pedigree: first, "save?", then "save will result
+         * in strange pedigree, proceed?")
+         *
+         * @method checkAndSaveOrQuit
+         */
+        checkAndSaveOrQuit: function(userWantsToQuit) {
+
+            var patientLinks = editor.getGraph().getAllPatientLinks();
+            var currentPatientId = editor.getGraph().getCurrentPatientId();
+
+            var noPatientsAreLinked = !editor.isFamilyPage() && (patientLinks.linkedPatients.length == 0);
+            var currentPatientIsNotLinked = !editor.isFamilyPage() && !patientLinks.patientToNodeMapping.hasOwnProperty(currentPatientId);
+            var unsavedChanges = editor.getUndoRedoManager().hasUnsavedChanges();
+
+            if (!unsavedChanges && this._unsavedNewPatient) {
+                // we want the explicit message that the current patient is unlinked
+                noPatientsAreLinked = false;
+            }
+
+            var noPatientsLinkedMessage = "There are no patients linked to this pedigree and thus family has no members.<br><br>";
+            var currentPatientUnlinkedMessage = "Current patient is not linked to the pedigree and thus not part of the family.<br><br>";
+
+            //-----------------
+            var saveWithChecks = function(quitAfterSave) {
+
+                var saveAndQuitFunc = function() {
+                    editor.getSaveLoadEngine().save(editor.closePedigree);
+                }
+                var saveAndKeepEditingFunc = function() {
+                    var onSuccessfulSave = function() {
+                        editor._unsavedNewPatient = false;
+                    };
+                    editor.getSaveLoadEngine().save(onSuccessfulSave);
+                }
+                var removeFamily = function() {
+                    var removed = false;
+                    new Ajax.Request(editor.getExternalEndpoint().getFamilyRemoveURL(), {
+                        method: "POST",
+                        onSuccess: function(response) {
+                            if (response.responseJSON && response.responseJSON.hasOwnProperty("success")) {
+                                if (response.responseJSON.success) {
+                                    removed = true;
+                                    editor.closePedigree();
+                                }
+                            }
+                        },
+                        onComplete: function() {
+                            if (!removed) {
+                                console.log("Remove failed");
+                                editor.getOkCancelDialogue().showError("Family removal failed", "Family removal failed", "OK", undefined);
+                            }
+                        },
+                        parameters: {"family_id": editor.getFamilyData().getFamilyId() }
+                    });
+                }
+
+                if (noPatientsAreLinked) {
+                    if (quitAfterSave) {
+                        editor.getOkCancelDialogue().showCustomized(noPatientsLinkedMessage +
+                                "Do you want to remove the family or keep the family with no members?",
+                                "Keep the family with no members?",
+                                " Keep the family ", saveAndQuitFunc,
+                                " Remove the family ", removeFamily,
+                                " Keep editing pedigree ", undefined, true );
+                    } else {
+                        editor.getOkCancelDialogue().showCustomized(noPatientsLinkedMessage +
+                                "Do you want to save this pedigree and get a family with no members?",
+                                "Save with no members?",
+                                "Keep editing pedigree", undefined,
+                                "Save and get a family with no members", saveAndKeepEditingFunc);
+                    }
+                } else if (currentPatientIsNotLinked) {
+                    if (quitAfterSave) {
+                        editor.getOkCancelDialogue().showCustomized(currentPatientUnlinkedMessage +
+                                "Do you want to remove current patient form the family?",
+                                "Remove current patient from the family?",
+                                "Keep editing pedigree", undefined,
+                                "Close pedigree and remove current patient form the family", saveAndQuitFunc);
+                    } else {
+                        editor.getOkCancelDialogue().showCustomized(currentPatientUnlinkedMessage +
+                                "Do you want to save the pedigree and remove current patient form the family?",
+                                "Proceed with save?",
+                                "Keep editing pedigree", undefined, true,
+                                "Save pedigree with current patient excluded form the family", saveAndKeepEditingFunc);
+                    }
+                } else {
+                    if (quitAfterSave) {
+                        saveAndQuitFunc();
+                    } else {
+                        saveAndKeepEditingFunc();
+                    }
+                }
+            }
+            //-----------------
+
+            if (userWantsToQuit) {
+                if (unsavedChanges) {
+                    var saveAndQuitFunc = function() {
+                        saveWithChecks(true);
+                    };
+                    editor.getOkCancelDialogue().showCustomized('There are unsaved changes, do you want to save the pedigree before closing the pedigree editor?',
+                            'Save before closing?',
+                            " Save and quit ", saveAndQuitFunc,
+                            " Don't save and quit ", editor.closePedigree,
+                            " Keep editing pedigree ", undefined, true );
+                } else {
+                    if (this._unsavedNewPatient) {
+                        saveWithChecks(true);
+                    } else {
+                        editor.closePedigree();
+                    }
+                }
+            } else {
+                saveWithChecks(false);
+            }
+        },
+
+        /**
          * @method getExtensionManager
          * @return {PedigreeExtensionManager}
          */
@@ -244,11 +397,45 @@ define([
         },
 
         /**
+         * Returns the version of the internal JSON represenations which will be saved to PhenpoTips patient record
+         */
+        getInternalJSONVersion: function() {
+            return this.INTERNALJSON_VERSION;
+        },
+
+        /**
+         * Returns a class managing external connections for pedigree editor, e.g. load/save URLs etc.
+         *
+         * @method getPreferencesManager
+         * @return {ExternalEndpointsManager}
+         */
+        getExternalEndpoint: function() {
+            return this._externalEndpointManager;
+        },
+
+        /**
          * @method getPreferencesManager
          * @return {PreferencesManager}
          */
         getPreferencesManager: function() {
             return this._preferencesManager;
+        },
+
+        /**
+         * @method getPatientDataLoader
+         * @return {PatientDataLoader}
+         */
+        getPatientDataLoader: function() {
+            return this._patientDataLoader;
+        },
+
+        /**
+         * Returns false if pedigree is not defined
+         *
+         * @method pedigreeExists
+         */
+        pedigreeExists: function() {
+            return this.getGraph().getMaxNodeId() >= 0;
         },
 
         /**
@@ -299,14 +486,6 @@ define([
          */
         getUndoRedoManager: function() {
             return this._actionStack;
-        },
-
-        /**
-         * The action which should happen after pedigree is saved
-         * (normally null, close the editor when "save on quit")
-         */
-        getAfterSaveAction: function() {
-            return this._afterSaveFunc;
         },
 
         /**
@@ -420,6 +599,14 @@ define([
         },
 
         /**
+         * @method getPatientLegend
+         * @return {Legend} Responsible for managing and displaying legend for patients that are unassigned to a family
+         */
+        getPatientLegend: function() {
+            return this._patientLegend;
+        },
+
+        /**
          * @method isReadOnlyMode
          * @return {Boolean} True iff pedigree drawn should be read only with no handles
          *                   (read-only mode is used for IE8 as well as for template display and
@@ -467,27 +654,58 @@ define([
         },
 
         /**
-         * @method getProbandDataFromPhenotips
-         * @return {firstName: "...", lastName: "..."}
+         * @return {FamilyData} containign information about the current family, as of last load.
          */
-        getProbandDataFromPhenotips: function() {
-            return this._probandData.probandData;
+        getFamilyData: function() {
+            return this._familyData;
         },
 
         /**
-         * @method getTemplateSelector
+         * True iff current pedigree belongs toa family page, not a patient
+         * @method isFamilyPage
+         * @return {boolean}
+         */
+        isFamilyPage: function() {
+            return this.getFamilyData().isFamilyPage();
+        },
+
+        /**
+         * Returns the list of {id: "...", name: "...", identifier: "..."} of all the patients which
+         * were part of this patient's family at the time pedigree was last (re-)loaded
+         * @method getFamilyMembersBeforeChanges
+         * @return {Object}
+         */
+        getFamilyMembersBeforeChanges: function() {
+            return this.getFamilyData().getAllFamilyMembersList();
+        },
+
+        /**
+         * Returns iff the given patient is a member of the current family
+         */
+        isFamilyMember: function(patientID) {
+            return this.getFamilyData().isFamilyMember(patientID);
+        },
+
+        /**
+         * Returns permission object which as "hasEdit" and "hasView" fields.
+         * @method getPatientAccessPermissions
+         * @return {Object}
+         */
+        getPatientAccessPermissions: function(patientID) {
+            var permissions = (this.getFamilyData().isFamilyMember(patientID))
+                              ? this.getFamilyData().getPatientAccessPermissions(patientID) : null;
+            if (permissions == null) {
+                permissions = { "hasEdit": true, "hasView": true };
+            }
+            return permissions;
+        },
+
+        /**
+         * @method getTemplateImportSelector
          * @return {TemplateSelector}
          */
-        getTemplateSelector: function() {
-            return this._templateSelector
-        },
-
-        /**
-         * @method getImportSelector
-         * @return {ImportSelector}
-         */
-        getImportSelector: function() {
-            return this._importSelector
+        getTemplateImportSelector: function() {
+            return this._templateImportSelector;
         },
 
         /**
@@ -495,7 +713,7 @@ define([
          * @return {ExportSelector}
          */
         getExportSelector: function() {
-            return this._exportSelector
+            return this._exportSelector;
         },
 
         /**
@@ -513,9 +731,13 @@ define([
          * @method isAnyMenuVisible
          */
         isAnyMenuVisible: function() {
-            if (this.getNodeMenu().isVisible() || this.getNodeGroupMenu().isVisible() || this.getPartnershipMenu().isVisible()) {
-                return;
+            if (this.isReadOnlyMode()) {
+                return false;
             }
+            if (this.getNodeMenu().isVisible() || this.getNodeGroupMenu().isVisible() || this.getPartnershipMenu().isVisible()) {
+                return true;
+            }
+            return false;
         },
 
         /**
@@ -527,6 +749,7 @@ define([
         generateNodeMenu: function() {
             if (this.isReadOnlyMode()) return null;
             var disabledFields = this.getPreferencesManager().getConfigurationOption("disabledFields");
+
             var personMenuFields = NodeMenuFields.getPersonNodeMenuFields(disabledFields);
             return new NodeMenu(personMenuFields, "person-node-menu");
         },
@@ -597,7 +820,7 @@ define([
          * @method initializeSave
          */
         startAutoSave: function(intervalInSeconds) {
-            setInterval(function(){editor.getSaveLoadEngine().save()}, intervalInSeconds*1000);
+            setInterval(function(){editor.getSaveLoadEngine().save(false)}, intervalInSeconds*1000);
         }
     });
 

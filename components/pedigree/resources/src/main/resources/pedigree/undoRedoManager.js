@@ -20,7 +20,7 @@ define([
         hasUnsavedChanges: function() {
             var state = this._getCurrentState();
             if (state == null) {
-                return true;
+                return false;
             }
             if (this._savedState == state.serializedState) {
                 return false;
@@ -61,7 +61,8 @@ define([
                 memo["noUndoRedo"] = true;  // so that this event is not added to the undo/redo stack again
                 document.fire( nextState.eventToGetToThisState.eventName, memo );
             } else {
-                editor.getSaveLoadEngine().createGraphFromSerializedData( nextState.serializedState, true /* do not re-add to undo/redo stack */ );
+                editor.getSaveLoadEngine().createGraphFromSerializedData( nextState.serializedState, true /* do not re-add to undo/redo stack */,
+                                                                          false /* do not center around proband */, null /* no callback */, "redo" );
             }
             document.fire("pedigree:historychange", null);
         },
@@ -86,7 +87,8 @@ define([
                 document.fire( currentState.eventToUndo.eventName, memo );
             } else {
                 // no easy way - have to recreate the graph from serialization
-                editor.getSaveLoadEngine().createGraphFromSerializedData( prevState.serializedState, true /* do not re-add to undo/redo stack */);
+                editor.getSaveLoadEngine().createGraphFromSerializedData( prevState.serializedState, true /* do not re-add to undo/redo stack */,
+                                                                          false /* do not center around proband */, null /* no callback */, "undo");
             }
             document.fire("pedigree:historychange", null);
         },
@@ -181,8 +183,14 @@ define([
          * @return {Number}
          */
         _combinableEvents: function ( event1, event2 ) {
+            if (!event1.hasOwnProperty("memo") || !event2.hasOwnProperty("memo")) {
+                return false;
+            }
             if (!event1.memo.hasOwnProperty("nodeID") || !event2.memo.hasOwnProperty("nodeID") || event1.memo.nodeID != event2.memo.nodeID)
                 return false;
+            if (!event1.memo.hasOwnProperty("properties") || !event2.memo.hasOwnProperty("properties")) {
+                return false;
+            }
             if (event1.memo.properties.hasOwnProperty("setFirstName") &&
                 event2.memo.properties.hasOwnProperty("setFirstName") )
                 return true;

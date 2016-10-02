@@ -78,8 +78,9 @@ define([
             if (options.includePatientInfo) {
                 patientInfoHeight = 30;
                 var proband = editor.getNode(0);
-                if (options.anonimize.removePII || (!proband.getFirstName() && !proband.getLastName())) {
-                    patientInfoHTML = "Patient " + XWiki.currentDocument.page;
+                if (options.anonymize.removePII || (!proband.getFirstName() && !proband.getLastName())) {
+                    patientInfoHTML = editor.getExternalEndpoint().getParentDocument().type + " " +
+                                      editor.getExternalEndpoint().getParentDocument().id;
                 } else {
                     // TODO: update to correct proband/family when fmaly studies are merged in
                     var space = (proband.getFirstName() && proband.getLastName()) ? " " : "";
@@ -101,7 +102,7 @@ define([
                 }
             }
 
-            var svg = editor.getWorkspace().getSVGCopy(options.anonimize);
+            var svg = editor.getWorkspace().getSVGCopy(options.anonymize);
 
             //console.log("BBOX: " + stringifyObject(svg.getBBox()));
 

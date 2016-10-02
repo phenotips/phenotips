@@ -39,6 +39,7 @@
     <module>skin</module>
     <module>navigation</module>
     <module>export</module>
+    <module>family-studies</module>
     <module>obo2solr</module>
     <module>entities</module>
     <module>solr-access-service</module>
@@ -60,5 +61,6 @@
     <module>diagnosis-suggestion</module>
     <module>pedigree</module>
     <module>record-locking</module>
+    <module>xwiki-locks</module>
   </modules>
 </project>

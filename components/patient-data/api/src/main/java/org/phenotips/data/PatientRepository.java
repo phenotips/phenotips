@@ -87,4 +87,16 @@ public interface PatientRepository extends PrimaryEntityManager<Patient>
      */
     @Deprecated
     Patient createNewPatient(DocumentReference creator);
+
+    /**
+     * Delete a patient record, identified by its internal PhenoTips identifier. If the indicated patient record doesn't
+     * exist, or if the user sending the request doesn't have the right to delete the target patient record, no change
+     * is performed and an error is returned.
+     *
+     * @param id the patient's internal identifier, see {@link org.phenotips.data.Patient#getId()}
+     * @return true if successful
+     * @deprecated use {@link #delete()} instead
+     */
+    @Deprecated
+    boolean deletePatient(String id);
 }

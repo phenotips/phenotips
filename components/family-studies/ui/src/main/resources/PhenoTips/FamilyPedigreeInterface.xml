@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>FamilyPedigreeInterface</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1426733142000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1426735073000</date>
+  <contentUpdateDate>1426735073000</contentUpdateDate>
+  <version>1.1</version>
+  <title>FamilyPedigreeInterface</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity}}
+$response.setContentType('application/json')##
+{{html wiki="false" clean="false"}}
+##
+## List of actions:
+## { familyinfo, createpatient,  checklink, save, removepatient, deletefamily, candeletefamily }
+##
+##
+#if ("$!request.action" == '')
+  Action was not specified
+  #break
+#end
+##
+#if ("$!request.action" == "familyinfo")
+  #if ("$!request.document_id" == '')
+    DOCUMENT_ID (patient or family) was not specified
+    #break
+  #end
+  $services.pedigrees.getFamilyAndPedigree($request.document_id).toJSON()
+  ##$jsontool.serialize($services.pedigrees.getFamilyAndPedigree($request.document_id).toJSON())
+#elseif ("$!request.action" == "createpatient")
+  #set($patient = $services.patients.create())
+  #if ($patient)
+    { "newID": "$patient.getId()" }
+  #else
+    { "newID": null }
+  #end
+#elseif ("$!request.action" == "checklink")
+  #if ("$!request.patient_to_link_id" != '')
+    $services.pedigrees.canPatientBeLinked($request.family_id, $request.patient_to_link_id).toJSON()
+    ##$jsontool.serialize($services.pedigrees.canPatientBeLinked($request.family_id, $request.patient_to_link_id).toJSON())
+  #else
+    PATIENT_TO_LINK_ID was not specified for action CHECKLINK
+  #end
+#elseif ("$!request.action" == "save")
+  #if ("$!request.json" != '')
+    $services.pedigrees.savePedigree($request.family_id, $request.json, $request.image).toJSON()
+    ##$jsontool.serialize($services.pedigrees.savePedigree($request.family_id, $request.json, $request.image).toJSON())
+  #else
+    JSON was not specified for action SAVE
+  #end
+#elseif ("$!request.action" == "removepatient")
+  #set($patientId = $request.get("patient_id"))
+  #set($discard = $services.families.removeMember($patientId))
+#elseif ("$!request.action" == "deletefamily")
+  #set($familyId = $request.get("family_id"))
+  #set($removemembers = $request.get("removemembers"))
+  $services.families.deleteFamily($familyId, $removemembers))
+#elseif ("$!request.action" == "candeletefamily")
+  #set($familyId = $request.get("family_id"))
+  #set($deleteallmembers = $request.get("deleteallmembers"))
+  $services.families.canDeleteFamily($familyId, $deleteallmembers)
+#elseif ("$!request.action" == "createfamily")
+  #set($family = $services.families.createFamily())
+  #if ($family)
+    { "newFamilyID": "$family.getId()" }
+  #else
+    { "error": "failed to create a new family" }
+  #end
+#elseif ("$!request.action" == "removefamily")
+  #set($familyId = $request.get("family_id"))
+  #set($success = $services.families.deleteFamily($familyId, false))
+  { "success": $success }
+#else
+  Unknown action
+#end{{/velocity}}</content>
+</xwikidoc>

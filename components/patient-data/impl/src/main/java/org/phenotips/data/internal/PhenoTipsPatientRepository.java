@@ -148,6 +148,17 @@ public class PhenoTipsPatientRepository extends PatientEntityManager implements 
     }
 
     @Override
+    public boolean deletePatient(String id)
+    {
+        Patient patient = this.getPatientById(id);
+        if (patient == null) {
+            this.logger.warn("Can't delete patient record with id [{}], no such patient", id);
+            return false;
+        }
+        return this.delete(patient);
+    }
+
+    @Override
     protected long getLastUsedId()
     {
         long crtMaxID = 0;

@@ -47,6 +47,11 @@ $!response.setContentType('application/json')##
 #else
   {{html wiki="false" clean="false"}}
 #end
+#if ("$!request.id" == '' &amp;&amp; "$!request.eid" != '')
+  $response.setStatus(404)
+  {"error" : "Patient identifier is not specified."}
+  #break
+#end
 #if ("$!request.id" != '')
   #set ($patient = $services.patients.get($request.id))
 #elseif ("$!request.eid" != '')
@@ -54,25 +59,12 @@ $!response.setContentType('application/json')##
 #end
 #if ("$!patient.id" == '')
   $response.setStatus(404)
-  {"error" : "Identifier not found."}
+  {"error" : "Patient not found."}
   #break
 #end
-#if ("$!{request.data}" == 'pedigree')
-  #set ($pedigreeObj  = $!xwiki.getDocument($patient.getDocument()).getObject('PhenoTips.PedigreeClass'))
-  #if ($pedigreeObj)
-    #set ($pedigreeData = $pedigreeObj.getProperty('data'))
-    #if ($pedigreeData)
-      #set ($pedigreeJSON = $pedigreeObj.getProperty('data').value)
-      $pedigreeJSON
-    #else
-      ## no pedigree
-    #end
-  #else
-    ## no pedigree
-  #end
-#else
-  $jsontool.serialize($patient.toJSON())
-#end
+##
+$jsontool.serialize($patient.toJSON())
+##
 #if ("$!{request.outputSyntax}" == 'plain')
   {{/content}}
 #else

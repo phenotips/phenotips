@@ -80,6 +80,11 @@ define([
                  }
              }
          }
+
+         if (editor.getGraph().getProbandId() == i) {
+             person["proband"] = true;
+         }
+
          exportObj.push(person);
      }
 
@@ -134,7 +139,7 @@ define([
    *       1 unaffected
    *       2 affected
    */
-  PedigreeExport.exportAsPED = function(pedigree, idGenerationPreference)
+  PedigreeExport.exportAsPED = function(pedigree, idGenerationPreference, selectedDisorders)
   {
      var output = "";
 
@@ -174,14 +179,28 @@ define([
          output += (sex + " ");
 
          var status = -9; //missing
-         if (pedigree.GG.properties[i].hasOwnProperty("carrierStatus")) {
-             if (pedigree.GG.properties[i]["carrierStatus"] == "affected" ||
-                 pedigree.GG.properties[i]["carrierStatus"] == "carrier"  ||
-                 pedigree.GG.properties[i]["carrierStatus"] == "presymptomatic")
-                 status = 2;
-             else
-                 status = 1;
+
+         if (!selectedDisorders) {
+             if (pedigree.GG.properties[i].hasOwnProperty("carrierStatus")) {
+                 if (pedigree.GG.properties[i]["carrierStatus"] == "affected" ||
+                     pedigree.GG.properties[i]["carrierStatus"] == "carrier"  ||
+                     pedigree.GG.properties[i]["carrierStatus"] == "presymptomatic")
+                     status = 2;
+                 else
+                     status = 1;
+             }
+         } else if (pedigree.GG.properties[i].hasOwnProperty("carrierStatus") &&
+             pedigree.GG.properties[i].hasOwnProperty("disorders")) {
+
+             var nodeDisorders = pedigree.GG.properties[i]["disorders"];
+             var intersection = selectedDisorders.filter(function (item) { return nodeDisorders.indexOf(item.defaultValue) > -1;});
+             //if node is affected of a selected disorder
+             if (intersection.length > 0 && pedigree.GG.properties[i]["carrierStatus"] == "affected")
+                     status = 2;
+                 else
+                     status = 1;
          }
+
          output += status + "\n";
      }
 
@@ -249,7 +268,7 @@ define([
 
          var name = pedigree.GG.properties[i].hasOwnProperty("fName") ? pedigree.GG.properties[i]["fName"].substring(0,8).replace(/[^A-Za-z0-9]/g, '') : id;
 
-         var proband = (i == 0) ? "1" : "0";
+         var proband = (i == editor.getGraph().getProbandId()) ? "1" : "0";
 
          output += familyID + "\t" + name + "\t" + proband + "\t" + id + "\t";
 
@@ -478,7 +497,8 @@ define([
           "externalID":    "externalId",
           "gender":        "sex",
           "numPersons":    "numPersons",
-          "hpoTerms":      "hpoTerms",
+          "features":      "features",
+          "nonstandard_features": "nonstandard_features",
           "genes":         "genes",
           "lostContact":   "lostContact",
           "nodeNumber":    "nodeNumber",

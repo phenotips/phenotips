@@ -128,7 +128,7 @@
       <parameters>title=$services.localization.render('phenotips.UIXField.miscarriages')
 enabled=true
 required=
-order=9
+order=12
 fields=miscarriages</parameters>
     </property>
     <property>

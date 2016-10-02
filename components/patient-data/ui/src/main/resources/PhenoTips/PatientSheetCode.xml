@@ -3711,7 +3711,8 @@ hr {
 
 /** ----------------------------------------------------------- */
 /** Default style fixes **/
-.space-data #mainContentArea, .space-data #mainEditArea {
+.space-data #mainContentArea, .space-data #mainEditArea,
+.space-Families #mainContentArea, .space-Families #mainEditArea {
     background-color: #F9F9F9;
     border: 0 none;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
@@ -3719,19 +3720,23 @@ hr {
     padding: 0.5em 10px;
     text-shadow: 1px 1px 0 #FFFFFF;
 }
-.space-data .bottombuttons {
+.space-data .bottombuttons, 
+.space-Families .bottombuttons {
    margin: 3em -10px -3em;
 }
-.space-data #document-head {
+.space-data #document-head,
+.space-Families #document-head {
   margin: -2.9em -11px 0;
 }
-.space-data #document-head #document-title {
+.space-data #document-head #document-title,
+.space-Families #document-head #document-title {
   display: inline-block;
   line-height: 0;
   vertical-align: bottom;
 }
 
-.space-data #document-head h1 {
+.space-data #document-head h1,
+.space-Families #document-head h1 {
   border: 0 none;
   border-bottom: 0 none;
   background-color: $theme.menuBackgroundColor;
@@ -3754,7 +3759,8 @@ hr {
   text-transform: uppercase;
 }
 
-.space-data #document-head #document-authors {
+.space-data #document-head #document-authors,
+.space-Families #document-head #document-authors {
   background-color: $theme.menuBackgroundColor;
   #css3_backgroundLinearGradient({
     'to': 'bottom',

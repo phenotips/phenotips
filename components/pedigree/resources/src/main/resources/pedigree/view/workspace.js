@@ -33,7 +33,7 @@ define([
             this.background.node.setAttribute("class", "panning-background");
 
             this.adjustSizeToScreen = this.adjustSizeToScreen.bind(this);
-            Event.observe (window, 'resize', me.adjustSizeToScreen);
+            Event.observe (this.canvas, 'resize', me.adjustSizeToScreen);
             this.generateViewControls();
 
             //Initialize pan by dragging
@@ -54,6 +54,13 @@ define([
                 }
                 var deltax = me.viewBoxX - dx/me.zoomCoefficient;
                 var deltay = me.viewBoxY - dy/me.zoomCoefficient;
+
+                if (isNaN(deltax)) {
+                    deltax = 0;
+                }
+                if (isNaN(deltay)) {
+                    deltay = 0;
+                }
 
                 me.getPaper().setViewBox(deltax, deltay, me.width/me.zoomCoefficient, me.height/me.zoomCoefficient);
                 me.background.ox = deltax;
@@ -117,10 +124,10 @@ define([
          *                  elements such as handles, invisible interactive layers, etc. removed.
          *
          * @method getSVGCopy
-         * @param {Object} anonimizeSettings a set of anonimization properties, currently "removePII" and "removeComments"
+         * @param {Object} anonymizeSettings a set of anonymization properties, currently "removePII" and "removeComments"
          * @return {Object} SVGWrapper object.
          */
-        getSVGCopy: function(anonimizeSettings) {
+        getSVGCopy: function(anonymizeSettings) {
             editor.getView().unmarkAll();
 
             var image = $('canvas');
@@ -128,7 +135,7 @@ define([
             var background = image.getElementsByClassName('panning-background')[0];
             background.style.display = "none";
 
-            editor.getView().setAnonimizeStatus(anonimizeSettings);
+            editor.getView().setAnonymizeStatus(anonymizeSettings);
 
             var _bbox = image.down().getBBox();
             var bbox = {};
@@ -147,7 +154,7 @@ define([
                           .replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + (bbox.width) + "\" height=\"" + (bbox.height) +
                           "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns=\"http://www.w3.org/2000/svg\"");
 
-            editor.getView().setAnonimizeStatus({});
+            editor.getView().setAnonymizeStatus({});
 
             // set display:block
             svgText = svgText.replace(/(<svg[^<>]+style=")/g, "$1display:block; ");
@@ -174,6 +181,9 @@ define([
             svgText = svgText.replace(' xlink=', ' xmlns:xlink=');
             // Safari xlink NS issue fix
             svgText = svgText.replace(/NS\d+:href/g, 'xlink:href');
+            // Remove "current patient arrow and "C" indicator, plus the proband "P" indicator
+            svgText = svgText.replace(/<[^<>]+node-arrow-text[^<>]+([^/]>\s*(<tspan(.*?)\/tspan>)\s*<\/\w+|\/)>/g, "");
+            svgText = svgText.replace(/<[^<>]+node-arrow-type-C[^<>]+([^/]><\/\w+|\/)>/g, "");
 
             background.style.display = "";
 
@@ -261,31 +271,27 @@ define([
                 }];
             } else {
                 menuItems = [{
-                    name : 'input',
-                    items: [
-                        { key : 'templates', label : 'Templates', icon : 'copy'},
-                        { key : 'import',    label : 'Import', icon : 'upload'}
-                    ]
-                  }, {
                     name : 'edit',
                     items: [
                         { key : 'undo',   label : 'Undo', icon : 'undo'},
                         { key : 'redo',   label : 'Redo', icon : 'repeat'},
-                        { key : 'layout', label : 'Automatic layout', icon : 'sitemap'},
-                        //{ key : 'number', label : 'Renumber', icon : 'sort-numeric-asc'}
-                        { key : 'more', label : 'More...', icon : 'caret-down', callback: hideShowSubmenu} //sort-desc
+                        { key : 'layout', label : 'Automatic layout', icon : 'sitemap'}
                     ]
                   }, {
                     name : 'print',
                     items: [
                         { key : 'print',  label : 'Print', icon : 'print'},
                     ]
+                  },{
+                      name : 'more',
+                      items: [
+                          { key : 'more', label : 'More...', icon : 'caret-down', callback: hideShowSubmenu} //sort-desc
+                    ]
                   }, {
                     name : 'output',
                     items: [
                         { key : 'save',      label : 'Save', icon : 'check'},
                         { key : 'export',    label : 'Export', icon : 'download'},
-                        //{ key : 'print',     label : 'Print', icon : 'print'},
                         { key : 'close',     label : 'Close', icon : 'sign-out'}
                     ]
                 }];
@@ -301,7 +307,9 @@ define([
                   }, {
                     name : 'other',
                     items: [
-                        { key : 'clear',  label : 'Clear', icon : 'times-circle'},
+                        //{ key : 'clear',  label : 'Clear', icon : 'times-circle'},
+                        { key : 'templates', label : 'Templates', icon : 'copy'},
+                        { key : 'import',    label : 'Import', icon : 'upload'}
                     ]
                   }];
             }
@@ -357,7 +365,7 @@ define([
             var _this = this;
             this.__controls = new Element('div', {'class' : 'view-controls'});
             // Pan controls
-            this.__pan = new Element('div', {'class' : 'view-controls-pan', title : 'Pan'});
+            this.__pan = new Element('div', {'class' : 'view-controls-pan field-no-user-select', title : 'Pan'});
             this.__controls.insert(this.__pan);
             ['up', 'right', 'down', 'left', 'home'].each(function (direction) {
                 var faIconClass = (direction == 'home') ? "fa-user" : "fa-arrow-" + direction;
@@ -365,7 +373,7 @@ define([
                 _this.__pan.insert(_this.__pan[direction]);
                 _this.__pan[direction].observe('click', function(event) {
                     if (direction == 'home') {
-                        _this.centerAroundNode(0);
+                        _this.centerAroundNode(editor.getGraph().getProbandId());
                     }
                     else if(direction == 'up') {
                         _this.panTo(_this.viewBoxX, _this.viewBoxY - 150);
@@ -383,13 +391,13 @@ define([
             });
             // Zoom controls
             var trackLength = 200;
-            this.__zoom = new Element('div', {'class' : 'view-controls-zoom', title : 'Zoom'});
+            this.__zoom = new Element('div', {'class' : 'view-controls-zoom field-no-user-select', title : 'Zoom'});
             this.__controls.insert(this.__zoom);
-            this.__zoom.track  = new Element('div', {'class' : 'zoom-track'});
-            this.__zoom.handle = new Element('div', {'class' : 'zoom-handle', title : 'Drag to zoom'});
-            this.__zoom['in']  = new Element('div', {'class' : 'zoom-button zoom-in fa fa-fw fa-search-plus', title : 'Zoom in'});
-            this.__zoom['out'] = new Element('div', {'class' : 'zoom-button zoom-out fa fa-fw fa-search-minus', title : 'Zoom out'});
-            this.__zoom.label  = new Element('div', {'class' : 'zoom-crt-value'});
+            this.__zoom.track  = new Element('div', {'class' : 'field-no-user-select zoom-track'});
+            this.__zoom.handle = new Element('div', {'class' : 'field-no-user-select zoom-handle', title : 'Drag to zoom'});
+            this.__zoom['in']  = new Element('div', {'class' : 'field-no-user-select zoom-button zoom-in fa fa-fw fa-search-plus', title : 'Zoom in'});
+            this.__zoom['out'] = new Element('div', {'class' : 'field-no-user-select zoom-button zoom-out fa fa-fw fa-search-minus', title : 'Zoom out'});
+            this.__zoom.label  = new Element('div', {'class' : 'field-no-user-select zoom-crt-value'});
             this.__zoom.insert(this.__zoom['in']);
             this.__zoom.insert(this.__zoom.track);
             this.__zoom.track.insert(this.__zoom.handle);
@@ -593,6 +601,14 @@ define([
          * @param {Number} nodeID The id of the node
          */
         centerAroundNode: function(nodeID, instant, xCenterShift, yCenterShift) {
+            if (nodeID < 0) {
+                // no proband - find any person node to center around
+                for (nodeID = 0; nodeID <= editor.getGraph().getMaxNodeId(); nodeID++) {
+                    if (editor.getGraph().isPerson(nodeID)) {
+                        break;
+                    }
+                }
+            }
             var node = editor.getNode(nodeID);
             if(node) {
                 var x = node.getX(),

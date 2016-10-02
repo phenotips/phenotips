@@ -277,7 +277,7 @@
     this.fld.observe("blur", function(event){
       // Make sure any running request will be dropped after the input field has been left
       this.latestRequest++;
-
+      this.fld.removeClassName("loading");
     }.bind(this));
   },
 
@@ -435,6 +435,10 @@
    */
   doAjaxRequests: function (requestId)
   {
+    if (requestId &lt; this.latestRequest) {
+      return;
+    }
+
     if (this.fld.value.length &lt; this.options.minchars) {
       return;
     }
@@ -1830,8 +1834,18 @@ widgets.ModalPopup = Class.create({
         this.dialogBox.setStyle({"bottom": ".5em"});
         break;
       default:
-        // TODO: smart alignment according to the actual height
-        this.dialogBox.setStyle({"top": "35%"});
+        var targetPercentage = 35;
+        var targetPosition = targetPercentage + "%";
+        try {
+          // if parent element is longer than the screen (e.g. patient form) make sure dialog pops up within the
+          // area currently visible by the user, which can be achieved by absolute positioning
+          if (this.dialogBox.parentElement.clientHeight > window.innerHeight) {
+              targetPosition = Math.floor(window.pageYOffset + window.innerHeight * targetPercentage / 100) + "px";
+          }
+        } catch (err) {
+          // something went wrong, maybe parent element is undefined
+        }
+        this.dialogBox.setStyle({"top": targetPosition});
         break;
     }
     this.dialogBox.setStyle({"left": "", "right" : ""});

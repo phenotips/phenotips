@@ -115,6 +115,8 @@
 {{velocity}}
 #set ($targetClassName = 'PhenoTips.RelativeClass')
 #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
+  {{error}}This component is deprecated. Please specify relevant family relationships in the pedigree.{{/error}}
+
   (% class="clear relatives-info" %)(((
     === $services.localization.render('phenotips.UIXField.family.heading') ===
     #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true, 'mode' : $xcontext.action})
@@ -123,16 +125,16 @@
 {{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.section.family-info</extensionPointId>
+      <extensionPointId>org.phenotips.patientSheet.section.none</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.field.family_study</name>
+      <name>org.phenotips.patientSheet.field.family_study.DEPRECATED</name>
     </property>
     <property>
       <parameters>title=$services.localization.render('phenotips.UIXField.family')
 enabled=true
 required=
-order=1
+order=4
 fields=relative_type,relative_of
 pt_class=PhenoTips.RelativeClass
 pt_class_usage=multiple
