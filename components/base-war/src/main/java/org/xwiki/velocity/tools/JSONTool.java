@@ -113,9 +113,9 @@ public class JSONTool
      * @return the parsed JSON, either a {@link net.sf.json.JSONObject} or a {@link net.sf.json.JSONArray}, or
      *         {@code null} if the argument is not a valid JSON
      * @since 5.2M1
+     * @deprecated use {@link #parseToJSONArray(String)}} or {@link #parseToJSONObject(String)} instead
      */
-    // FIXME: directly returning in a public API the object of a dead library, not very nice for something introduced in
-    // 5.2...
+    @Deprecated
     public JSON parse(String json)
     {
         try {
@@ -123,6 +123,46 @@ public class JSONTool
         } catch (JSONException ex) {
             this.logger.info("Tried to parse invalid JSON: [{}], exception was: {}", StringUtils.abbreviate(json, 32),
                 ex.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Parse a serialized JSON into a real JSONObject. Only valid strings can be parsed, and doesn't support
+     * JSONP. If the argument is not valid JSON, then {@code null} is returned.
+     *
+     * @param json the string to parse, must be valid JSON
+     * @return the parsed JSON, that is a either a {@link org.json.JSONObject}, or {@code null} if the argument is not
+     * a valid JSON
+     * @since 1.3M4
+     */
+    public JSONObject parseToJSONObject(String json)
+    {
+        try {
+            return new JSONObject(json);
+        } catch (org.json.JSONException ex) {
+            this.logger.info("Tried to parse invalid JSON: [{}], exception was: {}",
+                    StringUtils.abbreviate(json, 32), ex.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Parse a serialized JSON into a real JSONArray. Only valid strings can be parsed, and doesn't support
+     * JSONP. If the argument is not valid JSON, then {@code null} is returned.
+     *
+     * @param json the string to parse, must be valid JSON
+     * @return the parsed JSON, that is a either a {@link org.json.JSONArray}, or {@code null} if the argument is not
+     * a valid JSON
+     * @since 1.3M4
+     */
+    public JSONArray parseToJSONArray(String json)
+    {
+        try {
+            return new JSONArray(json);
+        } catch (org.json.JSONException ex) {
+            this.logger.info("Tried to parse invalid JSON: [{}], exception was: {}",
+                    StringUtils.abbreviate(json, 32), ex.getMessage());
             return null;
         }
     }
