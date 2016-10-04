@@ -38,6 +38,8 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity output=false}}
+$xwiki.ssx.use('PhenoTips.Widgets', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.jsx.use('PhenoTips.Widgets')##
 #set ($displayerName = 'PhenoTips.ImageDisplayer')
 #set ($displayer = $xwiki.getDocument($displayerName))
 #set($options = {
@@ -56,10 +58,13 @@
   #set ($property = "$!{name}")
   #set ($propValue = $value)
   #set ($fieldName = "$!{prefix}$!{name}")
+  #set ($options.mode = "$!type")
+  #set ($qString = "doc=$!escapetool.url($!{targetDoc.fullName})&amp;property=$!{property}&amp;classname=$!escapetool.url($!{object.xWikiClass.name})&amp;object=$!{object.number}")
 #elseif ("$!{request.doc}" != '' &amp;&amp; "$!{request.classname}" != '' &amp;&amp; "$!{request.object}" != '' &amp;&amp; "$!{request.property}" != '')
   ## In external mode
   #set ($targetDoc = $xwiki.getDocument("$!{request.doc}"))
   #set ($property = "$!{request.property}")
+  #set ($xclass = $xwiki.getClass("$!{request.classname}"))
   #set ($object = $targetDoc.getObject("$!{request.classname}", $mathtool.toInteger("$!{request.object}")))
   #set ($propValue = $object.getProperty("$!{request.property}").value)
   #if ("$!{propValue.size()}" == '')
@@ -74,8 +79,9 @@
   #if ("$!{request.manage}" != '')
     #set($options.manage = true)
   #end
+  #set ($qString = "doc=$!escapetool.url($!{targetDoc.fullName})&amp;property=$!{request.property}&amp;classname=$!escapetool.url($!{xclass.name})&amp;object=$!{request.object}")
 #end
-#if ($object.getxWikiClass().get($property).getProperty('multiSelect').value != 1)
+#if ($xclass.get($property).getProperty('multiSelect').value != 1)
   #set($options.inputType = 'radio')
   #if ("$!{value}" == '')
     #set ($propValue = [])
@@ -84,15 +90,14 @@
   #end
 #end
 ## TODO: This is a workaround. Find a better way to specify accepted file formats.
-#set($options.html5Filter = "$!{object.getxWikiClass().get($property).getProperty('validationRegExp').value}")
-#set($formats = "$!{object.getxWikiClass().get($property).getProperty('validationMessage').value}")
+#set($options.html5Filter = "$!{xclass.get($property).getProperty('validationRegExp').value}")
+#set($formats = "$!{xclass.get($property).getProperty('validationMessage').value}")
 #if ($formats != '')
-  #set ($options.filter = $formats.split('\\s*[,| ]\\s*'))
+  #set ($options.filter = $formats.split('\s*[,| ]\s*'))
   #if (!$options.html5Filter.contains('image'))
     #set ($options.isImage = false)
   #end
 #end
-#set ($qString = "doc=$!escapetool.url($!{targetDoc.fullName})&amp;property=$!{property}&amp;classname=$!escapetool.url($!{object.xWikiClass.name})&amp;object=${object.number}")
 
 #if ($options.filter &amp;&amp; $options.filter.size() &gt; 0)
   #foreach($item in $options.filter)
@@ -107,12 +112,12 @@
 
 #macro (__displaySelectableAttachment $attachment $targetDocument $selection)
   {{html wiki=true clean=false}}&lt;div class="attachment-item #if($options.isImage) image #else #__getExtension(${attachment.filename})#{end}#if($selection.contains(${attachment.filename})) selected#{end}"&gt;
-  &lt;label for='${fieldName}_${attachment.filename}' title='${attachment.filename}'&gt;
-  {{html wiki=false clean=false}}&lt;input id='${fieldName}_${attachment.filename}' type='${options.inputType}' name='${fieldName}' value='${attachment.filename}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;{{/html}}${attachment.filename} &lt;span class="size"&gt;(#dynamicsize($attachment.filesize))&lt;/span&gt;&lt;/label&gt;##
+  &lt;label for='${fieldName}_${escapetool.xml($attachment.filename)}' title='${escapetool.xml($attachment.filename)}'&gt;
+  {{html wiki=false clean=false}}&lt;input id='${fieldName}_${escapetool.xml($attachment.filename)}' type='${options.inputType}' name='${fieldName}' value='${escapetool.xml($attachment.filename)}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;{{/html}}${escapetool.xml($attachment.filename)} &lt;span class="size"&gt;(#dynamicsize($attachment.filesize))&lt;/span&gt;&lt;/label&gt;##
   #if ($options.manage)
   &lt;a class='action delete fa fa-times-circle fa-lg fa-fw' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($xcontext.action, $request.queryString))}")" title="$services.localization.render('phenotips.imageDisplayer.delete')"&gt;&lt;/a&gt;##
   #end
-  #if($options.isImage)(% class="attachment-preview" %)((([[image:${targetDoc.fullName}@${attachment.filename}||title="${attachment.filename}"]])))#else##
+  #if($options.isImage)(% class="attachment-preview" %)((([[image:${services.rendering.escape($targetDoc.fullName, $doc.syntax)}@${services.rendering.escape($attachment.filename, $doc.syntax)}||title="${services.rendering.escape($attachment.filename, $doc.syntax)}"]])))#else##
  &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="$services.localization.render('phenotips.imageDisplayer.openImage', [$!{attachment.filename}])"&gt; [open]&lt;/a&gt;#end##
   &lt;/div&gt;{{/html}}##
 #end
@@ -165,9 +170,9 @@
   #foreach ($name in  $selection)
     #if ("$!{targetDocument.getAttachment(${name})}" != '')
       #if ($options.isImage)
-        #set ($content = "$!{content}[[image:${targetDocument.fullName}@${name}||style=""max-width:100%""]]${util.newline}")
+        #set ($content = "$!{content}[[image:${services.rendering.escape($targetDocument.fullName, $doc.syntax)}@${services.rendering.escape($name, $doc.syntax)}||style=""max-width:100%""]]${util.newline}")
       #else
-        #set ($content = "$!{content}[[attach:${targetDocument.fullName}@${name}||class='attachment-link #__getExtension($name)']]${util.newline}")
+        #set ($content = "$!{content}[[attach:${services.rendering.escape($targetDocument.fullName, $doc.syntax)}@${services.rendering.escape($name, $doc.syntax)}||class='attachment-link #__getExtension($name)']]${util.newline}")
       #end
     #end
   #end
@@ -1210,6 +1215,9 @@ $content
 }</code>
     </property>
     <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
       <name>Image selector ui</name>
     </property>
     <property>
@@ -1371,6 +1379,9 @@ $content
   border-radius:4px;
   box-shadow: 0 0 5px #ccc;
 }</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
     </property>
     <property>
       <name>HTML5 file upload UI</name>
