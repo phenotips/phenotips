@@ -55,6 +55,11 @@ public interface PrimaryEntity
      */
     DocumentReference getDocument();
 
+    // TODO:
+    // 1. rename getDocument()->getDocumentReference()
+    // 2. add getDocument() to return the xDocument
+    // 3. change every call to old getDocument() that used DocumentReference to obtain xDocument.
+
     /**
      * Returns the internal identifier of the entity.
      *
