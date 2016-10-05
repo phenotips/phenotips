@@ -138,6 +138,9 @@
   display: inline;
   font-family: inherit;
 }
+.fa.fa-fw {
+  display: inline-block;
+}
 .fa:before {
   display: inline-block;
   font-family: FontAwesome;
