@@ -832,13 +832,16 @@
     </class>
     <property>
       <content>{{velocity}}
-#macro (__icon $name){{html clean="false"}}&lt;span class="fa fa-fw fa-${name}"&gt; &lt;/span&gt;{{/html}}#end
-#if ($doc.getObject('PhenoTips.FamilyClass'))
-  #set ($colorTheme = $xwiki.getUserPreference('colorTheme'))
-  #if ("$!colorTheme" != '')
+#set ($colorTheme = $xwiki.getUserPreference('colorTheme'))
+#if ("$!colorTheme" != '')
   ## Make sure we use an absolute reference (see XWIKI-9672)
-    #set ($colorTheme = $services.model.resolveDocument($colorTheme, $doc.documentReference))
-  #end
+  #set ($colorTheme = $services.model.resolveDocument($colorTheme, $doc.documentReference))
+#end
+##
+#macro (__icon $name){{html clean="false"}}&lt;span class="fa fa-fw fa-${name}"&gt; &lt;/span&gt;{{/html}}#end
+##
+##
+#if ($doc.getObject('PhenoTips.FamilyClass'))
   $xwiki.ssx.use('PhenoTips.FamilyContentTopMenu', {'colorTheme': $colorTheme})##
   $xwiki.jsx.use('PhenoTips.FamilyContentTopMenu')##
 (% id="record-actions" %)(((
@@ -910,6 +913,16 @@
   #end
 )))## menu
 )))## container
+#else## NO FAMILY OBJECT
+#if($hasCreatePage)
+$xwiki.ssx.use('PhenoTips.FamilyContentTopMenu', {'colorTheme': $colorTheme})##
+$xwiki.jsx.use('PhenoTips.FamilyContentTopMenu')##
+(% id="record-actions" %)(((
+(% id="pr-more-actions-menu" class="menu menu-horizontal" %)(((
+* [[{{icon name="plus-circle"/}}{{translation key="phenotips.homepage.myFamily.createFamily"/}}&gt;&gt;Families.Create]]
+)))
+)))
+#end## CAN CREATE
 #end{{/velocity}}</content>
     </property>
     <property>
