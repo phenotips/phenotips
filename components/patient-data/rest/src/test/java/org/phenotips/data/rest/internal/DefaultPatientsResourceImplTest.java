@@ -53,6 +53,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
@@ -190,6 +191,29 @@ public class DefaultPatientsResourceImplTest
     }
 
     @Test
+    public void creatingOneOfThePatientsFails() {
+        JSONArray json = new JSONArray("[{}, {}, {}]");
+        Exception exception = new NullPointerException();
+        doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
+            any(EntityReference.class));
+        doThrow(exception).when(this.repository).create();
+        Response response = this.patientsResource.addPatient(json.toString());
+        Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        verify(this.logger).error("Could not process patient creation request: {}", exception.getMessage(), exception);
+    }
+
+    @Test
+    public void addPatientsAsJSONEmptyArray() {
+        JSONArray json = new JSONArray();
+        doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
+            any(EntityReference.class));
+        doReturn(this.patient).when(this.repository).create();
+        Response response = this.patientsResource.addPatient(json.toString());
+        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        verify(this.logger).debug("Importing new patient from JSON via REST: {}", "[]");
+    }
+
+    @Test
     public void addPatientAsJSON()
     {
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
@@ -199,6 +223,17 @@ public class DefaultPatientsResourceImplTest
         Response response = this.patientsResource.addPatient(jsonPatient.toString());
         Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
         verify(this.logger).debug("Importing new patient from JSON via REST: {}", jsonPatient.toString());
+    }
+
+    @Test
+    public void addPatientsAsJSON() {
+        doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
+            any(EntityReference.class));
+        doReturn(this.patient).when(this.repository).create();
+        JSONArray jsonPatients = new JSONArray().put(new JSONObject()).put(new JSONObject()).put(new JSONObject());
+        Response response = this.patientsResource.addPatient(jsonPatients.toString());
+        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        verify(this.logger).debug("Importing new patient from JSON via REST: {}", jsonPatients.toString());
     }
 
     @Test

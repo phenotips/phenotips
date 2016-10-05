@@ -52,6 +52,8 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
@@ -93,32 +95,91 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
     private Provider<Autolinker> autolinker;
 
     @Override
-    public Response addPatient(String json)
-    {
+    public final Response addPatient(final String json) {
         this.logger.debug("Importing new patient from JSON via REST: {}", json);
 
-        User currentUser = this.users.getCurrentUser();
+        final User currentUser = this.users.getCurrentUser();
         if (!this.access.hasAccess(Right.EDIT, currentUser == null ? null : currentUser.getProfileDocument(),
             this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
             throw new WebApplicationException(Status.UNAUTHORIZED);
         }
+
         try {
-            Patient patient = this.repository.create();
+            final Response response;
             if (json != null) {
-                try {
-                    patient.updateFromJSON(new JSONObject(json));
-                } catch (Exception ex) {
-                    throw new WebApplicationException(Status.BAD_REQUEST);
-                }
+                response = json.startsWith("[") ? addPatients(json) : addOnePatient(json);
+            } else {
+                response = buildResponse(this.repository.create());
             }
-            URI targetURI =
-                UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(PatientResource.class).build(patient.getId());
-            ResponseBuilder response = Response.created(targetURI);
-            return response.build();
+            return response;
         } catch (Exception ex) {
             this.logger.error("Could not process patient creation request: {}", ex.getMessage(), ex);
             return Response.status(Status.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Import new patients from their representation as a JSON array.
+     *
+     * @param json the JSON representation of the new patients to be created
+     * @return the location of the page displaying all patient data
+     * @throws WebApplicationException if a {@link JSONArray} object cannot be created or one of the patient objects
+     * is null
+     * @throws NullPointerException if the patient was not created
+     */
+    private Response addPatients(final String json) {
+        final JSONArray jsonArray;
+        try {
+            jsonArray = new JSONArray(json);
+        } catch (JSONException ex) {
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
+
+        final int jsonArrayLength = jsonArray.length();
+        for (int i = 0; i < jsonArrayLength; i++) {
+            JSONObject jsonObject = jsonArray.optJSONObject(i);
+            if (jsonObject == null) {
+                logger.warn("One of the members of the patient JSONArray is null.");
+                continue;
+            }
+            Patient patient = this.repository.create();
+            patient.updateFromJSON(jsonObject);
+        }
+        final URI targetURI = UriBuilder.fromUri(this.uriInfo.getBaseUri()).build();
+        final ResponseBuilder response = Response.created(targetURI);
+        return response.build();
+    }
+
+    /**
+     * Import a new patient from its JSON representation.
+     *
+     * @param json the JSON representation of the new patient
+     * @return the location of the newly created patient, if successful
+     * @throws WebApplicationException if a {@link JSONObject} cannot be created
+     * @throws NullPointerException if the patient was not created
+     */
+    private Response addOnePatient(final String json) {
+        final Patient patient = this.repository.create();
+        try {
+            patient.updateFromJSON(new JSONObject(json));
+            return buildResponse(patient);
+        } catch (Exception ex) {
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Creates a response upon successful creation of a {@link Patient}.
+     * @param patient the successfully created patient
+     * @return the response for a successfully created patient
+     */
+    private Response buildResponse(final Patient patient) {
+        final URI targetURI = UriBuilder
+                .fromUri(this.uriInfo.getBaseUri())
+                .path(PatientResource.class)
+                .build(patient.getId());
+        final ResponseBuilder response = Response.created(targetURI);
+        return response.build();
     }
 
     @Override
