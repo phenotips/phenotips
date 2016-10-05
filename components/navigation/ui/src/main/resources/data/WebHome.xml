@@ -80,8 +80,8 @@ $xwiki.ssfx.use('uicomponents/container/columns.css', {'forceSkinAction' : true,
         <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit' || $xcontext.action == 'admin')
 {{html wiki=false clean=false}}
-&lt;select name="$prefix$name" id="$prefix$iname"&gt;
-#foreach ($val in ['MM/dd/yyyy', 'dd/MM/yyyy', 'yyyy-MM-dd', 'MM/yyyy', 'MMMM yyyy'])
+&lt;select name="$prefix$name" id="$prefix$name"&gt;
+#foreach ($val in ['MM/dd/yyyy', 'dd/MM/yyyy', 'yyyy-MM-dd', 'MM/yyyy', 'MMMM yyyy', 'yyyy'])
   &lt;option #if ($val == $value) selected="selected"#end value="$val"&gt;$val $services.localization.render('phenotips.DBConfigurationClass.dateExample',[$xwiki.formatDate($util.date, $val)])&lt;/option&gt;
 #end
 &lt;/select&gt;
@@ -92,7 +92,7 @@ $!value
 {{/velocity}}</customDisplay>
         <disabled>0</disabled>
         <name>dateOfBirthFormat</name>
-        <number>5</number>
+        <number>2</number>
         <picker>0</picker>
         <prettyName>Date of birth format</prettyName>
         <size>30</size>
@@ -108,7 +108,7 @@ $!value
         <displayFormType>checkbox</displayFormType>
         <displayType/>
         <name>enableImperialUnitSystem</name>
-        <number>6</number>
+        <number>3</number>
         <prettyName>Enable imperial unit system for entering measurements</prettyName>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
@@ -117,13 +117,13 @@ $!value
       </enableImperialUnitSystem>
       <livetableColumns>
         <cache>0</cache>
-        <customDisplay>//{{translation key="phenotips.DBConfigurationClass.metaInfo" /}}//
+        <customDisplay>**{{translation key="phenotips.DBConfigurationClass.metaInfo" /}}**
 
 {{velocity output=false}}
 #set ($docFields = ['doc.name', 'doc.creator', 'doc.author', 'doc.creationDate', 'doc.date'])
 #macro(__xclass__displayLivetableColOption $option $value)
   &lt;li&gt;
-    &lt;label for="${prefix}${name}_${sectionId}"&gt;
+    &lt;label&gt;
     &lt;input type="checkbox" name="${prefix}${name}" id="${prefix}${name}_${option}" value="$option"#if ($value.contains($option)) checked="checked"#end/&gt;
     $services.localization.render("patient.livetable.${option}")
     &lt;/label&gt;
@@ -139,14 +139,12 @@ $!value
 &lt;/ul&gt;
 {{/html}}{{/velocity}}
 
-//{{translation key="phenotips.DBConfigurationClass.patientInfo" /}}//
-
 {{include reference="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
         <disabled>0</disabled>
         <displayType>input</displayType>
         <multiSelect>1</multiSelect>
         <name>livetableColumns</name>
-        <number>8</number>
+        <number>5</number>
         <picker>0</picker>
         <prettyName>Livetable columns</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -164,7 +162,7 @@ $!value
         <customDisplay/>
         <disabled>0</disabled>
         <name>livetableRows</name>
-        <number>10</number>
+        <number>8</number>
         <numberType>integer</numberType>
         <prettyName>Number of rows to display by default</prettyName>
         <size>30</size>
@@ -177,9 +175,13 @@ $!value
         <customDisplay>{{velocity}}
 #if ($type == 'edit')
 {{html clean="false"}}
-&lt;select name="${prefix}${name}"&gt;
+&lt;select name="${prefix}${name}" id="${prefix}${name}"&gt;
 #foreach($column in $object.getProperty('livetableColumns').value)
-  &lt;option value="$escapetool.xml($column)"#if ($column == $value) selected="selected"#{end}&gt;$services.localization.render("patient.livetable.${column}")&lt;/option&gt;
+  #set ($fieldClass = $stringtool.substringAfter($column, '/'))
+  #if ($fieldClass == '')
+    #set ($fieldClass = 'PhenoTips.PatientClass')
+  #end
+  &lt;option value="$escapetool.xml($column)"#if ($column == $value) selected="selected"#{end}&gt;#if ($services.localization.get("patient.livetable.${stringtool.substringBefore($column, '/')}"))$services.localization.render("patient.livetable.${stringtool.substringBefore($column, '/')}")#else$xwiki.getClass($fieldClass).get($stringtool.substringBefore($column, '/')).translatedPrettyName#end&lt;/option&gt;
 #end
 &lt;/select&gt;
 {{/html}}
@@ -189,7 +191,7 @@ $!value
 {{/velocity}}</customDisplay>
         <disabled>0</disabled>
         <name>livetableSortColumn</name>
-        <number>9</number>
+        <number>7</number>
         <picker>0</picker>
         <prettyName>Column to sort by default</prettyName>
         <size>30</size>
@@ -209,7 +211,7 @@ $!value
         <displayType>radio</displayType>
         <multiSelect>0</multiSelect>
         <name>measurementUnitSystem</name>
-        <number>7</number>
+        <number>4</number>
         <picker>0</picker>
         <prettyName>Default unit system for entering measurements, when "Imperial unit system" is enabled</prettyName>
         <relationalStorage>0</relationalStorage>
@@ -232,7 +234,7 @@ $!value
         <idField>doc.fullName</idField>
         <multiSelect>0</multiSelect>
         <name>phenotypeMapping</name>
-        <number>4</number>
+        <number>1</number>
         <picker>0</picker>
         <prettyName>Phenotype configuration document</prettyName>
         <relationalStorage>0</relationalStorage>
