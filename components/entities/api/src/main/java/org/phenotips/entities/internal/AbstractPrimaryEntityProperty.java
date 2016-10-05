@@ -20,38 +20,33 @@ package org.phenotips.entities.internal;
 import org.phenotips.entities.PrimaryEntity;
 import org.phenotips.entities.PrimaryEntityProperty;
 
-import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.xpn.xwiki.doc.XWikiDocument;
-
 /**
  * Base class for implementing PrimaryEntityProperty. The implementation is done as a container of one object.
  *
+ * @param <G> the type of entity with the property
  * @param <E> the type of entity of the property
  * @version $Id$
  * @since 1.3M2
  */
-public abstract class AbstractPrimaryEntityProperty<E extends PrimaryEntity>
-    extends AbstractContainerPrimaryEntityGroup<E>
-    implements PrimaryEntityProperty<E>
+public abstract class AbstractPrimaryEntityProperty<G extends PrimaryEntity, E extends PrimaryEntity>
+    extends AbstractContainerPrimaryEntityGroup<G, E>
+    implements PrimaryEntityProperty<G, E>
 {
-    protected AbstractPrimaryEntityProperty(XWikiDocument document)
+    protected AbstractPrimaryEntityProperty(
+            EntityReference groupEntityReference, EntityReference memberEntityReference)
     {
-        super(document);
-    }
-
-    protected AbstractPrimaryEntityProperty(DocumentReference reference)
-    {
-        super(reference);
+        super(groupEntityReference, memberEntityReference);
     }
 
     @Override
-    public E get()
+    public E get(G group)
     {
-        Collection<E> members = this.getMembers();
+        Collection<E> members = this.getMembers(group);
         Iterator<E> iterator = members.iterator();
         if (iterator.hasNext()) {
             return iterator.next();
@@ -61,23 +56,29 @@ public abstract class AbstractPrimaryEntityProperty<E extends PrimaryEntity>
     }
 
     @Override
-    public boolean set(E property)
+    public boolean set(G group, E property)
     {
-        boolean removed = this.remove();
+        boolean removed = this.remove(group);
         if (property == null || !removed) {
             return removed;
         }
-        return addMember(property);
+        return addMember(group, property);
     }
 
     @Override
-    public boolean remove()
+    public boolean remove(G group)
     {
-        E property = this.get();
+        E property = this.get(group);
         if (property == null) {
             return true;
         } else {
-            return this.removeMember(property);
+            return this.removeMember(group, property);
         }
+    }
+
+    @Override
+    public Collection<G> getGroupsForProperty(E property)
+    {
+        return super.getGroupsForMember(property);
     }
 }
