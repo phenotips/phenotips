@@ -23,11 +23,10 @@ import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.internal.DefaultCollaborator;
+import org.phenotips.entities.PrimaryEntityGroupManager;
+import org.phenotips.entities.PrimaryEntityProperty;
 import org.phenotips.projects.data.Project;
 import org.phenotips.projects.data.ProjectRepository;
-import org.phenotips.projects.internal.ProjectAndTemplatePatientDecorator;
-import org.phenotips.projects.internal.TemplateInProjectGroup;
-import org.phenotips.projects.internal.TemplateInProjectGroupManager;
 import org.phenotips.templates.data.Template;
 import org.phenotips.templates.data.TemplateRepository;
 
@@ -42,6 +41,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -70,8 +70,16 @@ public class ProjectsScriptService implements ScriptService
     private PatientRepository patientsRepository;
 
     @Inject
-    @Named("Project")
-    private TemplateInProjectGroupManager templateInProjectGroupManager;
+    @Named("Project:Template")
+    private PrimaryEntityGroupManager<Project, Template> templatesInProject;
+
+    @Inject
+    @Named("Project:Patient")
+    private PrimaryEntityGroupManager<Project, Patient> patientsInProject;
+
+    @Inject
+    @Named("Patient:Template")
+    private PrimaryEntityProperty<Patient, Template> templateInPatient;
 
     @Inject
     @Named("secure")
@@ -124,14 +132,14 @@ public class ProjectsScriptService implements ScriptService
     public Collection<Template> getTemplatesForProjects(String projectsString)
     {
         Collection<Project> projects = this.projectRepository.getFromString(projectsString);
-        List<Template> templates = new LinkedList<>();
+        Set<Template> templates = new HashSet<>();
         for (Project project : projects) {
-            for (Template s : project.getTemplates()) {
-                templates.add(s);
-            }
+            templates.addAll(project.getTemplates());
         }
-        Collections.sort(templates);
-        return templates;
+
+        List<Template> templatesList = new ArrayList<>(templates);
+        Collections.sort(templatesList);
+        return templatesList;
     }
 
     /**
@@ -148,7 +156,7 @@ public class ProjectsScriptService implements ScriptService
             return projects;
         }
 
-        Collection<Project> projectsCollection = new ProjectAndTemplatePatientDecorator(patient).getProjects();
+        Collection<Project> projectsCollection = this.patientsInProject.getGroupsForMember(patient);
         projects.addAll(projectsCollection);
         Collections.sort(projects);
         return projects;
@@ -164,7 +172,9 @@ public class ProjectsScriptService implements ScriptService
     {
         Collection<Project> projects = this.projectRepository.getFromString(projectString);
         Patient patient = this.patientsRepository.get(patientId);
-        new ProjectAndTemplatePatientDecorator(patient).setProjects(projects);
+
+        this.patientsInProject.removeFromAllGroups(patient);
+        this.patientsInProject.addToAllGroups(patient, projects);
     }
 
     /**
@@ -179,7 +189,7 @@ public class ProjectsScriptService implements ScriptService
         if (patient == null) {
             return null;
         }
-        return new ProjectAndTemplatePatientDecorator(patient).getTemplate();
+        return this.templateInPatient.get(patient);
     }
 
     /**
@@ -192,7 +202,7 @@ public class ProjectsScriptService implements ScriptService
     {
         Patient patient = this.patientsRepository.get(patientId);
         Template template = this.templateRepository.get(templateId);
-        new ProjectAndTemplatePatientDecorator(patient).setTemplate(template);
+        this.templateInPatient.set(patient, template);
     }
 
     /**
@@ -207,7 +217,8 @@ public class ProjectsScriptService implements ScriptService
         Collection<Project> projects = this.getProjectsWithLeadingRights();
         Collection<Patient> patients = new LinkedList<>();
         for (Project p : projects) {
-            patients.addAll(p.getAllPatients());
+            Collection<Patient> members = this.patientsInProject.getMembers(p);
+            patients.addAll(members);
         }
         if (patients.size() == 0) {
             return null;
@@ -278,15 +289,7 @@ public class ProjectsScriptService implements ScriptService
      */
     public Collection<Project> getProjectsForTemplate(Template template)
     {
-        List<Project> projects = new LinkedList<>();
-
-        Collection<TemplateInProjectGroup> templateInProjects =
-                templateInProjectGroupManager.getGroupsForEntity(template);
-        for (TemplateInProjectGroup tip : templateInProjects) {
-            Project project = tip.getProject();
-            projects.add(project);
-        }
-
+        List<Project> projects = new ArrayList<>(this.templatesInProject.getGroupsForMember(template));
         Collections.sort(projects);
         return projects;
     }
@@ -299,7 +302,6 @@ public class ProjectsScriptService implements ScriptService
      */
     public int getNumberOfPatientsForTemplate(Template template)
     {
-        // TODO
-        return 0;
+        return this.templateInPatient.getGroupsForProperty(template).size();
     }
 }

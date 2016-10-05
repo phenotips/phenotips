@@ -21,7 +21,7 @@ import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.entities.PrimaryEntityGroup;
+import org.phenotips.entities.PrimaryEntity;
 import org.phenotips.templates.data.Template;
 
 import org.xwiki.model.EntityType;
@@ -32,7 +32,7 @@ import java.util.Collection;
 /**
  * @version $Id$
  */
-public interface Project extends Comparable<Project>, PrimaryEntityGroup<Patient>
+public interface Project extends Comparable<Project>, PrimaryEntity
 {
     /** The XClass used for storing project data. */
     EntityReference CLASS_REFERENCE = new EntityReference("ProjectClass", EntityType.DOCUMENT,
@@ -64,13 +64,14 @@ public interface Project extends Comparable<Project>, PrimaryEntityGroup<Patient
      * Add patient to project.
      *
      * @param patient to add to project
+     * @return true if successful
      */
-    void addPatient(Patient patient);
+    boolean addPatient(Patient patient);
 
     /**
      * @return a collection of all patients who are assigned to the project.
      */
-    Collection<Patient> getAllPatients();
+    Collection<Patient> getPatients();
 
     /**
      * Returns the number of patients that are assigned to the project.
