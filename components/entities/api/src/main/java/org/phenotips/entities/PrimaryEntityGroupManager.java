@@ -35,7 +35,7 @@ import java.util.Collection;
  */
 @Unstable("New API introduced in 1.3")
 @Role
-public interface PrimaryEntityGroup<G extends PrimaryEntity, E extends PrimaryEntity>
+public interface PrimaryEntityGroupManager<G extends PrimaryEntity, E extends PrimaryEntity>
 {
     /** The XProperty used for referencing the group document. */
     String REFERENCE_XPROPERTY = "reference";
