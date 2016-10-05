@@ -6,7 +6,7 @@ var PhenoTips = (function (PhenoTips) {
       _this = this;
       _this.projectId = projectId;
       _this.form = $('inline');
-      _this.ajaxService = '/bin/get/Projects/SaveProjectHandler';
+      _this.ajaxService = '/bin/get/PhenoTips/SaveProjectHandler';
       _this.collaboratorCount = 0;
 
       var editmode = false;
