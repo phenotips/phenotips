@@ -59,6 +59,7 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
   #set ($propValue = $value)
   #set ($fieldName = "$!{prefix}$!{name}")
   #set ($options.mode = "$!type")
+  #set ($xclass = $object.getxWikiClass())
   #set ($qString = "doc=$!escapetool.url($!{targetDoc.fullName})&amp;property=$!{property}&amp;classname=$!escapetool.url($!{object.xWikiClass.name})&amp;object=$!{object.number}")
 #elseif ("$!{request.doc}" != '' &amp;&amp; "$!{request.classname}" != '' &amp;&amp; "$!{request.object}" != '' &amp;&amp; "$!{request.property}" != '')
   ## In external mode
