@@ -17,9 +17,9 @@
  */
 package org.phenotips.projects.internal;
 
-import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.entities.internal.AbstractPrimaryEntityGroupManager;
+import org.phenotips.entities.PrimaryEntityManager;
+import org.phenotips.entities.internal.AbstractPrimaryEntityManager;
 import org.phenotips.projects.access.ProjectAccessLevel;
 import org.phenotips.projects.data.Project;
 import org.phenotips.projects.data.ProjectRepository;
@@ -44,11 +44,11 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * @version $Id$
  */
-@Component
+@Component(roles = {PrimaryEntityManager.class, ProjectRepository.class})
 @Named("Project")
 @Singleton
 public class DefaultProjectRepository
-    extends AbstractPrimaryEntityGroupManager<Project, Patient> implements ProjectRepository
+    extends AbstractPrimaryEntityManager<Project> implements ProjectRepository
 {
     @Inject
     private UserManager userManager;
