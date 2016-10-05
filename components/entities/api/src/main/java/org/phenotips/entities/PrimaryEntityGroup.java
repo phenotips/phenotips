@@ -17,70 +17,115 @@
  */
 package org.phenotips.entities;
 
-import org.phenotips.Constants;
-
-import org.xwiki.model.EntityType;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
 import java.util.Collection;
 
 /**
- * A group of {@link PrimaryEntity primary entities}, which in turn is another type of entity. For example, a Project is
- * also a collection of patient records, and a Workgroup is a collection of both users and patient records.
+ * The property of a group containing members, both of type {@link PrimaryEntity}. For example, a Project is a group
+ * of patients.
  *
+ * @param <G> the type of the group containing the members
  * @param <E> the type of entities belonging to this group; if more than one type of entities can be part of the group,
  *            then a generic {@code PrimaryEntity} should be used instead
  * @version $Id$
  * @since 1.3M2
  */
 @Unstable("New API introduced in 1.3")
-public interface PrimaryEntityGroup<E extends PrimaryEntity> extends PrimaryEntity
+@Role
+public interface PrimaryEntityGroup<G extends PrimaryEntity, E extends PrimaryEntity>
 {
-    /** The XClass used for storing membership information by default. */
-    EntityReference GROUP_MEMBERSHIP_CLASS = new EntityReference("EntityBindingClass", EntityType.DOCUMENT,
-        Constants.CODE_SPACE_REFERENCE);
-
-    /** The XProperty from {@link #GROUP_MEMBERSHIP_CLASS} used for referencing the group document. */
+    /** The XProperty used for referencing the group document. */
     String REFERENCE_XPROPERTY = "reference";
 
     /**
-     * @return a reference to an XClass that is supposed to be used by all members of this group, or {@code null} if any
-     *         type of entities are allowed for this group.
-     */
-    EntityReference getMemberType();
-
-    /**
-     * Lists all the members (entities) that are part of this group.
+     * Adds a new member to a group.
      *
-     * @return a collection of Entities, may be empty
-     */
-    Collection<E> getMembers();
-
-    /**
-     * Lists all the members (entities) of a given type that are part of this group.
-     *
-     * @param type a reference to an XClass to filter members by; if {@code null}, all members are returned, regardless
-     *            of type
-     * @return a collection of Entities, may be empty
-     */
-    Collection<E> getMembersOfType(EntityReference type);
-
-    /**
-     * Adds a new member to the group.
-     *
+     * @param group to add member to
      * @param member the member to add to the group
      * @return {@code true} if the member was successfully added, or was already a member, {@code false} if the
      *         operation failed
      */
-    boolean addMember(E member);
+    boolean addMember(G group, E member);
+
+    /**
+     * Add all members in a collection to a group.
+     *
+     * @param group to add members too
+     * @param members the members to add to the group
+     * @return {@code true} if the members were successfully added, {@code false} if the operation failed
+     */
+    boolean addAllMembers(G group, Collection<E> members);
+
+    /**
+     * Add all members with given ids in a collection to a group.
+     *
+     * @param group to add members too
+     * @param memberIds ids of the members to add to the group
+     * @return {@code true} if the members were successfully added, {@code false} if the operation failed
+     */
+    boolean addAllMembersById(G group, Collection<String> memberIds);
 
     /**
      * Removes a member from the group.
      *
+     * @param group to remove member from
      * @param member the member to remove from the group
      * @return {@code true} if the member was successfully removed, or if it wasn't a member, {@code false} if the
      *         operation failed
      */
-    boolean removeMember(E member);
+    boolean removeMember(G group, E member);
+
+    /**
+     * Removes all members from a group.
+     *
+     * @param group to remove members from
+     * @return true if successul
+     */
+    boolean removeAllMembers(G group);
+
+    /**
+     * Removed the member {@code member} from all the groups it is a member of.
+     *
+     * @param member to remove from the groups
+     * @return true if successful
+     */
+    boolean removeFromAllGroups(E member);
+
+    /**
+     * Add the member {@code member} to all the groups in {@code groups}.
+     *
+     * @param member to add to the groups
+     * @param groups a collection of groups to add the member to
+     * @return true if successful
+     */
+    boolean addToAllGroups(E member, Collection<G> groups);
+
+    /**
+     * Lists all the members (entities) that are part of a group.
+     *
+     * @param group to get members from
+     * @return a collection of Entities, may be empty
+     */
+    Collection<E> getMembers(G group);
+
+    /**
+     * Lists all the members (entities) of a given type that are part of a group.
+     *
+     * @param group to get members from
+     * @param type a reference to an XClass to filter members by; if {@code null}, all members are returned, regardless
+     *            of type
+     * @return a collection of Entities, may be empty
+     */
+    Collection<E> getMembersOfType(G group, EntityReference type);
+
+    /**
+     * Retrieves groups that have the specified entity as their member, in a random order.
+     *
+     * @param member the member of the returned groups
+     * @return a collection of groups, may be empty
+     */
+    Collection<G> getGroupsForMember(E member);
 }
