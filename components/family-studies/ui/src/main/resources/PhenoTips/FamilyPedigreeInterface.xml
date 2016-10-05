@@ -102,5 +102,9 @@ $response.setContentType('application/json')##
   { "success": $success }
 #else
   Unknown action
-#end{{/velocity}}</content>
+#end
+#if ($request.xredirect)
+$response.sendRedirect($request.xredirect)
+#end
+{{/velocity}}</content>
 </xwikidoc>

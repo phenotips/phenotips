@@ -119,11 +119,12 @@
     </property>
     <property>
       <code>document.observe('xwiki:dom:loaded', function() {
-  var deleteTool = $('prActionDelete');
-  if (!deleteTool) {
-    return false;
-  }
-  deleteTool.observe('click', function(clickEvent) {
+  var warningMessage = {
+    'delete-family': "$services.localization.render('phenotips.patientRecord.pedigree.deleteFPWarning')",
+    'delete-family-unlink': "$services.localization.render('phenotips.patientRecord.pedigree.deleteFPWarning')",
+    'delete-family-members': "$services.localization.render('phenotips.patientRecord.pedigree.deleteFMWarning')"
+  };
+  $$('.delete-family').invoke('observe', 'click', function(clickEvent) {
     clickEvent.stop();
     var item = clickEvent.element();
     item.blur();
@@ -131,7 +132,9 @@
       // Do nothing if the button was already clicked and it's waiting for a response from the server.
       return;
     } else {
-      var url = item.readAttribute('href') + "?confirm=1&amp;form_token=" + $$('meta[name=form_token]')[0].content + (Prototype.Browser.Opera ? "" : "&amp;ajax=1");
+      var members = item.down('input[type="hidden"]');
+      if (members) members = members.value;
+      var url = item.readAttribute('href') + "&amp;confirm=1" + (Prototype.Browser.Opera ? "" : "&amp;ajax=1");
       new XWiki.widgets.ConfirmedAjaxRequest(
         /* Ajax request URL */
         url,
@@ -152,7 +155,7 @@
         },
         /* Interaction parameters */
         {
-          confirmationText: "$services.localization.render('core.recyclebin.confirm')"
+          confirmationText: (warningMessage[item.id] || "$services.localization.render('core.recyclebin.confirm')") + (members || '')
         }
       );
     }
@@ -843,18 +846,42 @@
   #if ($xcontext.action == 'view')
     #if($hasEdit &amp;&amp; !$isReadOnly)
       #set($editaction = $doc.getDefaultEditMode())
-* [[#__icon("pencil")$services.localization.render('core.menu.edit')&gt;&gt;path:$doc.getURL($editaction, $!languageparams)|| id="prActionEdit"]]
-#end## HAS EDIT
-    #set ($canDelete = !$doc.isNew() &amp;&amp; $xwiki.hasAccessLevel('delete'))
-    #if ($canDelete)
-* [[#__icon("times")$services.localization.render('core.menu.delete')&gt;&gt;path:$doc.getURL('delete', $!languageparams)|| id="prActionDelete"]]
-#end## HAS DELETE
+* [[#__icon("pencil")$services.localization.render('core.menu.edit')&gt;&gt;path:$doc.getURL($editaction, $!languageparams)|| id="frActionEdit"]]
+    #end## HAS EDIT
   #else## NOT IN VIEW MODE, SHOW EDIT MODE ACTIONS
 * (% class="xDropdown" %){{html clean="false"}}&lt;span class="fa fa-fw fa-check"&gt; &lt;/span&gt;&lt;label&gt;&lt;input type="submit" value="$services.localization.render('phenotips.contentTopMenu.save')" name="action_saveandcontinue"/&gt;&lt;/label&gt;{{/html}}
 ** {{html clean="false"}}&lt;label&gt;&lt;input id="tmActionSave" type="submit" value="$services.localization.render('saveandcontinue')" title="$services.localization.render('saveandcontinue')" name="action_saveandcontinue"/&gt;&lt;/label&gt;{{/html}}
 ** {{html clean="false"}}&lt;label&gt;&lt;input id="tmActionSaveAndContinue" type="submit" value="$services.localization.render('saveandview')" title="$services.localization.render('saveandview')" name="action_save"/&gt;&lt;/label&gt;{{/html}}
 * {{html clean="false"}}&lt;span class="fa fa-fw fa-ban"&gt; &lt;/span&gt;&lt;label&gt;&lt;input id="tmActionCancel" type="submit" value="$services.localization.render('phenotips.contentTopMenu.cancel')" title="$services.localization.render('phenotips.contentTopMenu.cancel.title')" name="action_cancel"/&gt;&lt;/label&gt;{{/html}}
-#end## DONE WITH EDIT MODE SPECIFIC ACTIONS
+  #end## DONE WITH EDIT MODE SPECIFIC ACTIONS
+## DELETE MENU
+#set ($canDeleteFamily = $services.families.canDeleteFamily($doc.name, 1))
+#set ($canDeleteDoc = $services.families.canDeleteFamily($doc.name, 0))
+#if ($canDeleteDoc)
+#set ($family = $services.families.getFamilyById($doc.name))
+#set ($membersList = '&lt;ul&gt;')
+#foreach ($member in $family.getMembers())
+  #if ($member)
+    #set ($id = "$!member.externalId")
+    #if ($id == '')
+      #set ($id = $member.id)
+    #end
+    #set ($name = "$!{member.getData('patientName').first_name} $!{member.getData('patientName').last_name}")
+    #set ($name = $name.trim())
+    #set ($dob = "$!{member.getData('dates').date_of_birth.toYYYYMMDDString()}")
+    #set ($meta = "$name#if($name != '' &amp;&amp; $dob != ''), #end$dob")
+    #set ($patientLabel = "$id#if ($meta != '') ($meta)#end")
+    #set ($membersList = "$!{membersList}${util.newline}&lt;li&gt;&lt;a href=""${xwiki.getDocument($member.document).getURL()}"" target=""_blank""&gt;$patientLabel&lt;/a&gt;&lt;/li&gt;")
+  #end
+#end
+#set ($membersList = "$!{membersList}${util.newline}&lt;/ul&gt;")
+#set ($membersMemo = "{{html clean='false' wiki='true'}}&lt;input type=""hidden"" value=""$!escapetool.xml($!{membersList})""/&gt;{{/html}}")
+* #if ($canDeleteFamily)(% class="xDropdown" %)#end[[#__icon("times")$services.localization.render('core.menu.delete')$!{membersMemo}&gt;&gt;path:$doc.getURL('delete', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($xwiki.getURL($doc.space.concat('.WebHome')))}$!languageparams")|| class="delete-family" id="delete-family"]]
+#if ($canDeleteFamily)
+** [[Delete family and unlink members$!{membersMemo}&gt;&gt;path:$doc.getURL('delete', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($xwiki.getURL($doc.space.concat('.WebHome')))}$!languageparams")|| class="delete-family" id="delete-family-unlink"]]
+** [[Delete family and all members$!{membersMemo}&gt;&gt;path:$xwiki.getDocument('PhenoTips.FamilyPedigreeInterface').getURL('get', "xredirect=$!{escapetool.url($xwiki.getURL($doc.space.concat('.WebHome')))}&amp;family_id=${doc.name}&amp;action=deletefamily&amp;removemembers=1&amp;form_token=$!{services.csrf.getToken()}$!languageparams")|| class="delete-family" id="delete-family-members"]]
+#end
+#end## DELETE MENU
 * (% class="xDropdown" %)#__icon("cog") $services.localization.render('phenotips.contentTopMenu.moreActionsMenu')
   #if ($xcontext.action != 'view' || $viewer != 'content')
 ** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.viewMode')&gt;&gt;$doc.fullName|| title="$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.viewMode.title')" target="_blank"]]
