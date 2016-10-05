@@ -15,76 +15,69 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.projects.internal;
+package org.phenotips.projects.groupManagers;
 
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.internal.DefaultCollaborator;
+import org.phenotips.entities.PrimaryEntityGroupManager;
 import org.phenotips.entities.internal.AbstractContainerPrimaryEntityGroupWithParameters;
 import org.phenotips.projects.data.Project;
 
+import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.model.reference.EntityReference;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.json.JSONObject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
- * See  {@link TemplateInProjectGroup}.
- *
- * @version $Id $
+ * @version $Id$
  */
-public class CollaboratorInProjectGroup extends AbstractContainerPrimaryEntityGroupWithParameters<Collaborator>
+@Component
+@Named("Project:Collaborator")
+@Singleton
+public class CollaboratorsInProjectManager
+    extends AbstractContainerPrimaryEntityGroupWithParameters<Project, Collaborator>
+    implements PrimaryEntityGroupManager<Project, Collaborator>
 {
+    /** Type instance for lookup. */
+    public static final ParameterizedType TYPE = new DefaultParameterizedType(null, PrimaryEntityGroupManager.class,
+            Project.class, Collaborator.class);
+
     private static final String ACCESS_LEVEL_PARAMETER = "accessLevel";
 
     /**
-     * public constructor.
-     *
-     * @param document project's document
+     * Public constructor.
      */
-    protected CollaboratorInProjectGroup(XWikiDocument document)
+    public CollaboratorsInProjectManager()
     {
-        // There is no manager for Collaborator.
-        super(document);
-    }
-
-    /**
-     * Replaces collaborators with a new collection.
-     *
-     * @param collaborators a collection of collaborators
-     * @return true if successful
-     */
-    public boolean setMembers(Collection<Collaborator> collaborators)
-    {
-        Collection<Collaborator> existingCollaborators = this.getMembers();
-        for (Collaborator c : existingCollaborators) {
-            this.removeMember(c);
-        }
-
-        for (Collaborator c : collaborators) {
-            this.addMember(c);
-        }
-
-        return true;
+        super(Project.CLASS_REFERENCE, Collaborator.CLASS_REFERENCE);
     }
 
     @Override
-    public Collection<Collaborator> getMembers()
+    protected void setMemberParameters(Collaborator c, BaseObject obj)
+    {
+        obj.setStringValue(ACCESS_LEVEL_PARAMETER, c.getAccessLevel().getName());
+    }
+
+    @Override
+    public Collection<Collaborator> getMembers(Project project)
     {
         Collection<Collaborator> result = new LinkedList<>();
 
-        Map<String, Map<String, String>> membersMap = super.getMembersMap(Collaborator.CLASS_REFERENCE);
+        Map<String, Map<String, String>> membersMap = super.getMembersMap(project, Collaborator.CLASS_REFERENCE);
         for (String userOrGroupName : membersMap.keySet()) {
             Map<String, String> params = membersMap.get(userOrGroupName);
             String accessLevelName = params.get(ACCESS_LEVEL_PARAMETER);
@@ -103,37 +96,13 @@ public class CollaboratorInProjectGroup extends AbstractContainerPrimaryEntityGr
         return result;
     }
 
-    @Override
-    protected void setMemberParameters(Collaborator c, BaseObject obj)
-    {
-        obj.setStringValue(ACCESS_LEVEL_PARAMETER, c.getAccessLevel().getName());
-    }
-
-    @Override
-    public EntityReference getMemberType()
-    {
-        return Collaborator.CLASS_REFERENCE;
-    }
-
-    @Override
-    public EntityReference getType()
-    {
-        return Project.CLASS_REFERENCE;
-    }
-
-    @Override
-    public void updateFromJSON(JSONObject json)
-    {
-        throw new UnsupportedOperationException();
-    }
-
     private DocumentReferenceResolver<String> getStringResolver()
     {
         try {
             return ComponentManagerRegistry.getContextComponentManager()
                     .getInstance(DocumentReferenceResolver.TYPE_STRING);
         } catch (ComponentLookupException ex) {
-            this.logger.error("Failed to access the query manager: {}", ex.getMessage(), ex);
+            this.logger.error("Failed to access the document reference resolver: {}", ex.getMessage(), ex);
         }
         return null;
     }
