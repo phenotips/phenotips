@@ -34,7 +34,7 @@ import java.util.Collection;
 @Unstable("New API introduced in 1.3")
 @Role
 public interface PrimaryEntityProperty<G extends PrimaryEntity, E extends PrimaryEntity>
-    extends PrimaryEntityGroup<G, E>
+    extends PrimaryEntityGroupManager<G, E>
 {
     /**
      * Returns the property, if exists.
