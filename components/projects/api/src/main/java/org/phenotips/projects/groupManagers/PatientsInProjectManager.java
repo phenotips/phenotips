@@ -15,30 +15,40 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.projects.internal;
+package org.phenotips.projects.groupManagers;
 
-import org.phenotips.entities.internal.AbstractContainerPrimaryEntityGroupManager;
+import org.phenotips.data.Patient;
+import org.phenotips.entities.PrimaryEntityGroupManager;
+import org.phenotips.entities.internal.AbstractPrimaryEntityGroup;
 import org.phenotips.projects.data.Project;
-import org.phenotips.templates.data.Template;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.reference.EntityReference;
+import org.xwiki.component.util.DefaultParameterizedType;
+
+import java.lang.reflect.ParameterizedType;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * @version $Id $
+ * @version $Id$
  */
-@Component(roles = TemplateInProjectGroupManager.class)
-@Named("Project")
+@Component
+@Named("Project:Patient")
 @Singleton
-public class TemplateInProjectGroupManager
-    extends AbstractContainerPrimaryEntityGroupManager<TemplateInProjectGroup, Template>
+public class PatientsInProjectManager
+    extends AbstractPrimaryEntityGroup<Project, Patient>
+    implements PrimaryEntityGroupManager<Project, Patient>
 {
-    @Override
-    public EntityReference getDataSpace()
+    /** Type instance for lookup. */
+    public static final ParameterizedType TYPE = new DefaultParameterizedType(null, PrimaryEntityGroupManager.class,
+            Project.class, Patient.class);
+
+    /**
+     * Public constructor.
+     */
+    public PatientsInProjectManager()
     {
-        return Project.DEFAULT_DATA_SPACE;
+        super(Project.CLASS_REFERENCE, Patient.CLASS_REFERENCE);
     }
 }

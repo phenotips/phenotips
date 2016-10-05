@@ -19,6 +19,8 @@ package org.phenotips.projects.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRecordInitializer;
+import org.phenotips.entities.PrimaryEntityGroupManager;
+import org.phenotips.entities.PrimaryEntityProperty;
 import org.phenotips.projects.data.Project;
 import org.phenotips.projects.data.ProjectRepository;
 import org.phenotips.templates.data.Template;
@@ -60,6 +62,14 @@ public class ProjectAndTemplateAssignmentInitializer implements PatientRecordIni
     private TemplateRepository templateRepository;
 
     @Inject
+    @Named("Project:Patient")
+    private PrimaryEntityGroupManager<Project, Patient> patientsInProject;
+
+    @Inject
+    @Named("Patient:Template")
+    private PrimaryEntityProperty<Patient, Template> templateInPatient;
+
+    @Inject
     private Provider<XWikiContext> contextProvider;
 
     @Override
@@ -73,7 +83,9 @@ public class ProjectAndTemplateAssignmentInitializer implements PatientRecordIni
         String[] projectsSelectedValue = parameterMap.get(PROJECTS_SELECTED_KEY);
         if (projectsSelectedValue != null && projectsSelectedValue.length == 1) {
             Collection<Project> projects = this.projectRepository.getFromString(projectsSelectedValue[0]);
-            new ProjectAndTemplatePatientDecorator(patient).setProjects(projects);
+
+            this.patientsInProject.removeFromAllGroups(patient);
+            this.patientsInProject.addToAllGroups(patient, projects);
         }
 
         // Template selected
@@ -81,7 +93,7 @@ public class ProjectAndTemplateAssignmentInitializer implements PatientRecordIni
         if (templateSelected != null && templateSelected.length == 1) {
             Template template = this.templateRepository.get(templateSelected[0]);
             if (template != null) {
-                new ProjectAndTemplatePatientDecorator(patient).setTemplate(template);
+                this.templateInPatient.set(patient, template);
             }
         }
     }

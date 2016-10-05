@@ -21,8 +21,12 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.entities.internal.AbstractPrimaryEntityGroup;
+import org.phenotips.entities.PrimaryEntityGroupManager;
+import org.phenotips.entities.internal.AbstractPrimaryEntity;
 import org.phenotips.projects.data.Project;
+import org.phenotips.projects.groupManagers.CollaboratorsInProjectManager;
+import org.phenotips.projects.groupManagers.PatientsInProjectManager;
+import org.phenotips.projects.groupManagers.TemplatesInProjectManager;
 import org.phenotips.templates.data.Template;
 
 import org.xwiki.bridge.DocumentAccessBridge;
@@ -51,7 +55,7 @@ import com.xpn.xwiki.objects.BaseObject;
 /**
  * @version $Id$
  */
-public class DefaultProject extends AbstractPrimaryEntityGroup<Patient> implements Project
+public class DefaultProject extends AbstractPrimaryEntity implements Project
 {
     private static final String OPEN_FOR_CONTRIBUTION_KEY = "openProjectForContribution";
 
@@ -59,10 +63,6 @@ public class DefaultProject extends AbstractPrimaryEntityGroup<Patient> implemen
 
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(DefaultProject.class);
-
-    private TemplateInProjectGroup templateGroup;
-
-    private CollaboratorInProjectGroup collaboratorGroup;
 
     /**
      * Basic constructor.
@@ -72,9 +72,6 @@ public class DefaultProject extends AbstractPrimaryEntityGroup<Patient> implemen
     public DefaultProject(XWikiDocument projectObject)
     {
         super(projectObject);
-
-        this.templateGroup = new TemplateInProjectGroup(projectObject);
-        this.collaboratorGroup = new CollaboratorInProjectGroup(projectObject);
 
         this.projectObject = projectObject;
     }
@@ -104,6 +101,24 @@ public class DefaultProject extends AbstractPrimaryEntityGroup<Patient> implemen
     }
 
     @Override
+    public boolean addPatient(Patient patient)
+    {
+        return getPatientsInProjectManager().addMember(this, patient);
+    }
+
+    @Override
+    public Collection<Patient> getPatients()
+    {
+        return getPatientsInProjectManager().getMembers(this);
+    }
+
+    @Override
+    public int getNumberOfPatients()
+    {
+        return this.getPatients().size();
+    }
+
+    @Override
     public int getNumberOfCollaboratorsUsers()
     {
         Set<String> usersList = new HashSet<String>();
@@ -116,7 +131,28 @@ public class DefaultProject extends AbstractPrimaryEntityGroup<Patient> implemen
     @Override
     public Collection<Collaborator> getCollaborators()
     {
-        return this.collaboratorGroup.getMembers();
+        return this.getCollaboratorsInProjectManager().getMembers(this);
+    }
+
+    @Override
+    public boolean setCollaborators(Collection<Collaborator> collaborators)
+    {
+        boolean success = this.getCollaboratorsInProjectManager().removeAllMembers(this);
+        success = this.getCollaboratorsInProjectManager().addAllMembers(this, collaborators) && success;
+        return success;
+    }
+
+    @Override
+    public Collection<Template> getTemplates()
+    {
+        return this.getTemplatesInProjectManager().getMembers(this);
+    }
+
+    @Override
+    public boolean setTemplates(Collection<String> templateIds)
+    {
+        boolean success = this.getTemplatesInProjectManager().removeAllMembers(this);
+        return this.getTemplatesInProjectManager().addAllMembersById(this, templateIds) && success;
     }
 
     @Override
@@ -134,24 +170,6 @@ public class DefaultProject extends AbstractPrimaryEntityGroup<Patient> implemen
             }
         }
         return highestAccessLevel;
-    }
-
-    @Override
-    public boolean setCollaborators(Collection<Collaborator> collaborators)
-    {
-        return this.collaboratorGroup.setMembers(collaborators);
-    }
-
-    @Override
-    public Collection<Template> getTemplates()
-    {
-        return this.templateGroup.getMembers();
-    }
-
-    @Override
-    public boolean setTemplates(Collection<String> templateIds)
-    {
-        return this.templateGroup.setMembers(templateIds);
     }
 
     @Override
@@ -180,18 +198,6 @@ public class DefaultProject extends AbstractPrimaryEntityGroup<Patient> implemen
     }
 
     @Override
-    public Collection<Patient> getAllPatients()
-    {
-        return this.getMembers();
-    }
-
-    @Override
-    public int getNumberOfPatients()
-    {
-        return this.getAllPatients().size();
-    }
-
-    @Override
     public String toString()
     {
         return getFullName();
@@ -201,17 +207,6 @@ public class DefaultProject extends AbstractPrimaryEntityGroup<Patient> implemen
     public int compareTo(Project other)
     {
         return this.getId().compareTo(other.getId());
-    }
-
-    private UserManager getUserManager()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager()
-                .getInstance(UserManager.class);
-        } catch (ComponentLookupException e) {
-            // Should not happen
-        }
-        return null;
     }
 
     @Override
@@ -226,15 +221,46 @@ public class DefaultProject extends AbstractPrimaryEntityGroup<Patient> implemen
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public EntityReference getMemberType()
+    private PrimaryEntityGroupManager<Project, Patient> getPatientsInProjectManager()
     {
-        return Patient.CLASS_REFERENCE;
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(
+                    PatientsInProjectManager.TYPE, "Project:Patient");
+        } catch (ComponentLookupException e) {
+            this.logger.error("Unexpected exception while getting patientsInProjectManager: {}", e.getMessage());
+        }
+        return null;
     }
 
-    @Override
-    public void addPatient(Patient patient)
+    private PrimaryEntityGroupManager<Project, Template> getTemplatesInProjectManager()
     {
-        this.addMember(patient);
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(
+                    TemplatesInProjectManager.TYPE, "Project:Template");
+        } catch (ComponentLookupException e) {
+            this.logger.error("Unexpected exception while getting templatesInProjectManager: {}", e.getMessage());
+        }
+        return null;
+    }
+
+    private PrimaryEntityGroupManager<Project, Collaborator> getCollaboratorsInProjectManager()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(
+                    CollaboratorsInProjectManager.TYPE, "Project:Collaborator");
+        } catch (ComponentLookupException e) {
+            this.logger.error("Unexpected exception while getting collaboratorsInProjectManager: {}", e.getMessage());
+        }
+        return null;
+    }
+
+    private UserManager getUserManager()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(UserManager.class);
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
     }
 }

@@ -21,9 +21,9 @@ import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.entities.PrimaryEntityGroupManager;
 import org.phenotips.projects.data.Project;
 import org.phenotips.projects.data.ProjectRepository;
-import org.phenotips.projects.internal.ProjectAndTemplatePatientDecorator;
 
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
@@ -61,10 +61,14 @@ public class ProjectsController implements PatientDataController<Project>
     @Named("Project")
     private ProjectRepository projectRepository;
 
+    @Inject
+    @Named("Project:Patient")
+    private PrimaryEntityGroupManager<Project, Patient> patientsInProject;
+
     @Override
     public PatientData<Project> load(Patient patient)
     {
-        Collection<Project> projectsCollection = new ProjectAndTemplatePatientDecorator(patient).getProjects();
+        Collection<Project> projectsCollection = this.patientsInProject.getGroupsForMember(patient);
         List<Project> projects = new LinkedList<>(projectsCollection);
         return new IndexedPatientData<>(DATA_NAME, projects);
     }

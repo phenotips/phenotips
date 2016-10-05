@@ -21,11 +21,11 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.entities.PrimaryEntityGroupManager;
 import org.phenotips.projects.access.ContributorAccessLevel;
 import org.phenotips.projects.access.LeaderAccessLevel;
 import org.phenotips.projects.data.Project;
 import org.phenotips.projects.data.ProjectRepository;
-import org.phenotips.projects.internal.ProjectAndTemplatePatientDecorator;
 import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.annotation.Component;
@@ -58,6 +58,10 @@ public class ProjectAuthorizationModule implements AuthorizationModule
     @Named("leader")
     private AccessLevel leaderAccessLevel;
 
+    @Inject
+    @Named("Project:Patient")
+    private PrimaryEntityGroupManager<Project, Patient> patientsInProject;
+
     @Override
     public int getPriority()
     {
@@ -84,7 +88,7 @@ public class ProjectAuthorizationModule implements AuthorizationModule
 
     private Boolean hasAccess(User user, Right access, Patient patient)
     {
-        Collection<Project> projects = new ProjectAndTemplatePatientDecorator(patient).getProjects();
+        Collection<Project> projects = this.patientsInProject.getGroupsForMember(patient);
         for (Project project : projects) {
 
             Collection<Collaborator> collaborators = project.getCollaborators();

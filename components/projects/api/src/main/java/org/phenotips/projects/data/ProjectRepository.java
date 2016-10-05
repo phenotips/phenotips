@@ -17,8 +17,7 @@
  */
 package org.phenotips.projects.data;
 
-import org.phenotips.data.Patient;
-import org.phenotips.entities.PrimaryEntityGroupManager;
+import org.phenotips.entities.PrimaryEntityManager;
 import org.phenotips.projects.access.ProjectAccessLevel;
 
 import org.xwiki.component.annotation.Role;
@@ -29,7 +28,7 @@ import java.util.Collection;
  * @version $Id$
  */
 @Role
-public interface ProjectRepository extends PrimaryEntityGroupManager<Project, Patient>
+public interface ProjectRepository extends PrimaryEntityManager<Project>
 {
     /**
      * Returns a collection of all projects that the current user has one of {@link accessLevels} to.
