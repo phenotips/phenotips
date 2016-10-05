@@ -195,7 +195,7 @@
       <use>always</use>
     </property>
   </object>
-    <object>
+  <object>
     <name>PhenoTips.Skin</name>
     <number>1</number>
     <className>XWiki.JavaScriptExtension</className>
@@ -647,6 +647,385 @@ h1:target, h2:target, h3:target {
     </property>
     <property>
       <name>PhenoTips skin</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>always</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
+    <number>1</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>29367086-f32d-4f95-9b54-81b4756758c4</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+
+/* General Styles */
+
+.menu-horizontal ul {
+  list-style-type: none;
+  margin: auto;
+}
+
+.menu-horizontal ul * {
+  line-height: normal;
+}
+
+.menu-horizontal li {
+  cursor: default;
+  line-height: 16px;
+  min-height: 16px;
+}
+
+.menu-horizontal img {
+  vertical-align: middle;
+}
+
+/* Horizontal separator */
+.menu-horizontal li li:empty {
+  border-top: 1px solid $theme.borderColor;
+  line-height: 1px;
+  min-height: auto;
+  padding: 0;
+}
+
+/* Horizontal Menu */
+
+.menu.menu-horizontal {
+  font-size: .85em;
+  height: 2em;
+  padding-left: 25px;
+}
+
+.menu-horizontal li {
+  padding: 0.2em 1.3em;
+}
+
+.menu-horizontal li li:empty {
+  border-top: 1px solid $theme.textSecondaryColor;
+  margin: .5em 1em;
+}
+
+/* Vertical separator */
+.menu-horizontal &gt; ul &gt; li:empty {
+  border-left: 1px solid $theme.textSecondaryColor;
+  margin: 0 .5em;
+  padding: 0;
+  vertical-align: middle;
+}
+
+.menu-horizontal li a, .menu-horizontal li a:visited {
+  color: inherit;
+}
+
+.menu-horizontal &gt; ul &gt; li {
+  display: inline-block;
+}
+
+.menu-horizontal &gt; ul &gt; li &gt; .xDropdown:after {
+  content: '\25BC';
+  font-size: .8em;
+  margin-left: .5em;
+}
+
+.menu-horizontal &gt; ul ul {
+  background-color: $theme.pageContentBackgroundColor;
+  border-radius: 0 0 .8em .8em;
+  box-shadow: 0 1px 1px $theme.textColor;
+  display: none;
+  margin: 0.2em 0 0 -1.3em;
+  padding-bottom: .3em;
+  position: absolute;
+  z-index: 1000;
+}
+
+.menu-horizontal li:hover &gt; ul {
+  display: block;
+}
+
+/* The only way to have a menu with more than 2 levels without JavaScript is to use a fixed width. */
+.menu-horizontal.fixedWidth li li {
+  position: relative;
+}
+
+.menu-horizontal.fixedWidth ul ul {
+  width: 12em;
+}
+
+.menu-horizontal.fixedWidth ul ul ul {
+  left: 12em;
+  margin: 0;
+  top: 0;
+}
+.menu-vertical li:empty, .menu-horizontal li li:empty {
+  min-height: 1px !important;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name>Custom menus</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>always</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
+    <number>2</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>1e025e2b-fad6-418a-a85a-a8da06e20cb7</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template("colorThemeInit.vm")
+
+.content-actions {
+  float: right;
+  margin: 0;
+  position: absolute;
+  right: 0px;
+  top: 0;
+  z-index: 3000;
+}
+
+.page-actions .menu.menu-horizontal {
+  background-color: $theme.menuBackgroundColor;
+  #css3_backgroundLinearGradient({
+    'to': 'bottom',
+    'colors': [
+      {'color': $theme.menuGradientColor, 'position': '0%'},
+      {'color': $theme.menuBackgroundColor, 'position': '50%'}
+    ]
+  })
+  border: 0 none;
+  color: $theme.menuLinkColor;
+  font-size: 1em;
+  height: 1.833em;
+  padding: 0 0 0 10px;
+  text-shadow: none;
+}
+.page-actions .menu.menu-horizontal a:hover {
+  text-decoration: none !important;
+  text-shadow: 0 0 2px $theme.highlightColor;
+}
+
+.page-actions .menu-horizontal &gt; ul &gt; li {
+  padding: 0.2em 1.3em 0.2em 0.3em;
+}
+.page-actions .menu-horizontal &gt; ul {
+  white-space: nowrap;
+}
+.page-actions .menu-horizontal ul ul {
+  background: none repeat scroll 0 0 $theme.menuBackgroundColor;
+  box-shadow: 0 1px 1px $theme.borderColor;
+  white-space: normal;
+}
+.page-actions .menu-horizontal input {
+  background: transparent !important;
+  /* Buttons without a border in IE don't trigger the :hover state */
+  border: 1px solid transparent !important;
+  color: inherit !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: inherit !important;
+  font-family: inherit !important;
+}
+.page-actions .menu-horizontal label:hover, .page-actions .menu-horizontal label:hover input {
+  cursor: pointer;
+  text-shadow: 0 0 2px $theme.highlightColor;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name>Page content menu</name>
     </property>
     <property>
       <parse>1</parse>
