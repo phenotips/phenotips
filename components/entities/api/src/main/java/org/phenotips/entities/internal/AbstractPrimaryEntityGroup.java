@@ -20,7 +20,7 @@ package org.phenotips.entities.internal;
 import org.phenotips.Constants;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.entities.PrimaryEntity;
-import org.phenotips.entities.PrimaryEntityGroup;
+import org.phenotips.entities.PrimaryEntityGroupManager;
 import org.phenotips.entities.PrimaryEntityManager;
 
 import org.xwiki.bridge.DocumentAccessBridge;
@@ -80,7 +80,7 @@ import com.xpn.xwiki.objects.BaseObject;
  */
 @Unstable("New class and interface added in 1.3")
 public abstract class AbstractPrimaryEntityGroup<G extends PrimaryEntity, E extends PrimaryEntity>
-    implements PrimaryEntityGroup<G, E>
+    implements PrimaryEntityGroupManager<G, E>
 {
     /** The XClass used for storing membership information by default. */
     protected static final EntityReference GROUP_MEMBERSHIP_CLASS =
