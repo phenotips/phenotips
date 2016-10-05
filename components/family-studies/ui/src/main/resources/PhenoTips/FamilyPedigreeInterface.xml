@@ -82,9 +82,14 @@ $response.setContentType('application/json')##
   #set($patientId = $request.get("patient_id"))
   #set($discard = $services.families.removeMember($patientId))
 #elseif ("$!request.action" == "deletefamily")
-  #set($familyId = $request.get("family_id"))
-  #set($removemembers = $request.get("removemembers"))
-  $services.families.deleteFamily($familyId, $removemembers))
+  #if ($services.csrf.isTokenValid($request.form_token))
+    #set($familyId = $request.get("family_id"))
+    #set($removemembers = $request.get("removemembers"))
+    $services.families.deleteFamily($familyId, $removemembers))
+  #else
+    $response.setStatus(400)
+    Unauthorized action: invalid token
+  #end
 #elseif ("$!request.action" == "candeletefamily")
   #set($familyId = $request.get("family_id"))
   #set($deleteallmembers = $request.get("deleteallmembers"))
