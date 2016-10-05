@@ -59,10 +59,12 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
   #set ($propValue = $value)
   #set ($fieldName = "$!{prefix}$!{name}")
   #set ($options.mode = "$!type")
+  #set ($qString = "doc=$!escapetool.url($!{targetDoc.fullName})&amp;property=$!{property}&amp;classname=$!escapetool.url($!{object.xWikiClass.name})&amp;object=$!{object.number}")
 #elseif ("$!{request.doc}" != '' &amp;&amp; "$!{request.classname}" != '' &amp;&amp; "$!{request.object}" != '' &amp;&amp; "$!{request.property}" != '')
   ## In external mode
   #set ($targetDoc = $xwiki.getDocument("$!{request.doc}"))
   #set ($property = "$!{request.property}")
+  #set ($xclass = $xwiki.getClass("$!{request.classname}"))
   #set ($object = $targetDoc.getObject("$!{request.classname}", $mathtool.toInteger("$!{request.object}")))
   #set ($propValue = $object.getProperty("$!{request.property}").value)
   #if ("$!{propValue.size()}" == '')
@@ -77,8 +79,9 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
   #if ("$!{request.manage}" != '')
     #set($options.manage = true)
   #end
+  #set ($qString = "doc=$!escapetool.url($!{targetDoc.fullName})&amp;property=$!{request.property}&amp;classname=$!escapetool.url($!{xclass.name})&amp;object=$!{request.object}")
 #end
-#if ($object.getxWikiClass().get($property).getProperty('multiSelect').value != 1)
+#if ($xclass.get($property).getProperty('multiSelect').value != 1)
   #set($options.inputType = 'radio')
   #if ("$!{value}" == '')
     #set ($propValue = [])
@@ -87,15 +90,14 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
   #end
 #end
 ## TODO: This is a workaround. Find a better way to specify accepted file formats.
-#set($options.html5Filter = "$!{object.getxWikiClass().get($property).getProperty('validationRegExp').value}")
-#set($formats = "$!{object.getxWikiClass().get($property).getProperty('validationMessage').value}")
+#set($options.html5Filter = "$!{xclass.get($property).getProperty('validationRegExp').value}")
+#set($formats = "$!{xclass.get($property).getProperty('validationMessage').value}")
 #if ($formats != '')
   #set ($options.filter = $formats.split('\s*[,| ]\s*'))
   #if (!$options.html5Filter.contains('image'))
     #set ($options.isImage = false)
   #end
 #end
-#set ($qString = "doc=$!escapetool.url($!{targetDoc.fullName})&amp;property=$!{property}&amp;classname=$!escapetool.url($!{object.xWikiClass.name})&amp;object=${object.number}")
 
 #if ($options.filter &amp;&amp; $options.filter.size() &gt; 0)
   #foreach($item in $options.filter)
@@ -1213,6 +1215,9 @@ $content
 }</code>
     </property>
     <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
       <name>Image selector ui</name>
     </property>
     <property>
@@ -1374,6 +1379,9 @@ $content
   border-radius:4px;
   box-shadow: 0 0 5px #ccc;
 }</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
     </property>
     <property>
       <name>HTML5 file upload UI</name>
