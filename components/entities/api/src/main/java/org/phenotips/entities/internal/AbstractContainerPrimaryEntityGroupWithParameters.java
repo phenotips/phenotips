@@ -28,22 +28,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.xpn.xwiki.doc.XWikiDocument;
-
 /**
  * Extending AbstractPrimaryEntityGroup to save and retrieve members with parameters.
+ * @param <G> see super
  * @param <E> see super
  *
  * @version $Id$
  * @since 1.3M2
  *
  */
-public abstract class AbstractContainerPrimaryEntityGroupWithParameters<E extends PrimaryEntity>
-    extends AbstractContainerPrimaryEntityGroup<E>
+public abstract class AbstractContainerPrimaryEntityGroupWithParameters
+    <G extends PrimaryEntity, E extends PrimaryEntity>
+    extends AbstractContainerPrimaryEntityGroup<G, E>
 {
-    protected AbstractContainerPrimaryEntityGroupWithParameters(XWikiDocument document)
+    protected AbstractContainerPrimaryEntityGroupWithParameters(
+            EntityReference groupEntityReference, EntityReference memberEntityReference)
     {
-        super(document);
+        super(groupEntityReference, memberEntityReference);
     }
 
     /**
@@ -51,7 +52,7 @@ public abstract class AbstractContainerPrimaryEntityGroupWithParameters<E extend
      *
      * @return parameters map
      */
-    protected Map<String, Map<String, String>> getMembersMap(EntityReference type)
+    protected Map<String, Map<String, String>> getMembersMap(G group, EntityReference type)
     {
         try {
             StringBuilder hql = new StringBuilder();
@@ -85,11 +86,11 @@ public abstract class AbstractContainerPrimaryEntityGroupWithParameters<E extend
             Query q = getQueryManager().createQuery(hql.toString(), Query.HQL);
 
             // FIXME
-            q.bindValue("selfReference", getFullSerializer().serialize(getDocument()).split(":")[1]);
-            q.bindValue("memberClass", getLocalSerializer().serialize(getMembershipClass()));
+            q.bindValue("selfReference", getFullSerializer().serialize(group.getDocument()).split(":")[1]);
+            q.bindValue("memberClass", getLocalSerializer().serialize(GROUP_MEMBER_CLASS));
             q.bindValue("entityType", getLocalSerializer().serialize(type));
             q.bindValue("referenceProperty", getMembershipProperty());
-            q.bindValue("classProperty", getClassProperty());
+            q.bindValue("classProperty", CLASS_XPROPERTY);
 
             List<Object> members = q.execute();
 
