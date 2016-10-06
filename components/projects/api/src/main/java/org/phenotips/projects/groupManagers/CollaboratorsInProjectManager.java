@@ -23,7 +23,7 @@ import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.internal.DefaultCollaborator;
 import org.phenotips.entities.PrimaryEntityGroupManager;
-import org.phenotips.entities.internal.AbstractContainerPrimaryEntityGroupWithParameters;
+import org.phenotips.entities.internal.AbstractInternalPrimaryEntityGroupManager;
 import org.phenotips.projects.data.Project;
 
 import org.xwiki.component.annotation.Component;
@@ -49,7 +49,7 @@ import com.xpn.xwiki.objects.BaseObject;
 @Named("Project:Collaborator")
 @Singleton
 public class CollaboratorsInProjectManager
-    extends AbstractContainerPrimaryEntityGroupWithParameters<Project, Collaborator>
+    extends AbstractInternalPrimaryEntityGroupManager<Project, Collaborator>
     implements PrimaryEntityGroupManager<Project, Collaborator>
 {
     /** Type instance for lookup. */
