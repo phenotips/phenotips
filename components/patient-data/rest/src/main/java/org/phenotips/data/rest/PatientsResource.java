@@ -54,7 +54,7 @@ public interface PatientsResource
     @Consumes(MediaType.APPLICATION_JSON)
     @POST
     @RequiredAccess("edit")
-    Response addPatient(String json);
+    Response add(String json);
 
     /**
      * @param start for large result set paging, the index of the first patient to display in the returned page

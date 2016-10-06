@@ -95,7 +95,7 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
     private Provider<Autolinker> autolinker;
 
     @Override
-    public final Response addPatient(final String json) {
+    public final Response add(final String json) {
         this.logger.debug("Importing new patient from JSON via REST: {}", json);
 
         final User currentUser = this.users.getCurrentUser();
@@ -107,7 +107,7 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
         try {
             final Response response;
             if (json != null) {
-                response = json.startsWith("[") ? addPatients(json) : addOnePatient(json);
+                response = json.startsWith("[") ? addPatients(json) : addPatient(json);
             } else {
                 response = buildResponse(this.repository.create());
             }
@@ -158,7 +158,7 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
      * @throws WebApplicationException if a {@link JSONObject} cannot be created
      * @throws NullPointerException if the patient was not created
      */
-    private Response addOnePatient(final String json) {
+    private Response addPatient(final String json) {
         final Patient patient = this.repository.create();
         try {
             patient.updateFromJSON(new JSONObject(json));

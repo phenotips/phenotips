@@ -158,7 +158,7 @@ public class DefaultPatientsResourceImplTest
         doReturn(false).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
             any(EntityReference.class));
         try {
-            this.patientsResource.addPatient("");
+            this.patientsResource.add("");
         } catch (WebApplicationException ex) {
             exception = ex;
         }
@@ -172,7 +172,7 @@ public class DefaultPatientsResourceImplTest
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
             any(EntityReference.class));
         doReturn(this.patient).when(this.repository).create();
-        Response response = this.patientsResource.addPatient(null);
+        Response response = this.patientsResource.add(null);
         Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
         verify(this.logger).debug("Importing new patient from JSON via REST: {}", (String) null);
     }*/
@@ -185,7 +185,7 @@ public class DefaultPatientsResourceImplTest
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
             any(EntityReference.class));
         doThrow(exception).when(this.repository).create();
-        Response response = this.patientsResource.addPatient(json.toString());
+        Response response = this.patientsResource.add(json.toString());
         Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
         verify(this.logger).error("Could not process patient creation request: {}", exception.getMessage(), exception);
     }
@@ -197,7 +197,7 @@ public class DefaultPatientsResourceImplTest
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
             any(EntityReference.class));
         doThrow(exception).when(this.repository).create();
-        Response response = this.patientsResource.addPatient(json.toString());
+        Response response = this.patientsResource.add(json.toString());
         Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
         verify(this.logger).error("Could not process patient creation request: {}", exception.getMessage(), exception);
     }
@@ -208,7 +208,7 @@ public class DefaultPatientsResourceImplTest
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
             any(EntityReference.class));
         doReturn(this.patient).when(this.repository).create();
-        Response response = this.patientsResource.addPatient(json.toString());
+        Response response = this.patientsResource.add(json.toString());
         Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
         verify(this.logger).debug("Importing new patient from JSON via REST: {}", "[]");
     }
@@ -220,7 +220,7 @@ public class DefaultPatientsResourceImplTest
             any(EntityReference.class));
         doReturn(this.patient).when(this.repository).create();
         JSONObject jsonPatient = new JSONObject();
-        Response response = this.patientsResource.addPatient(jsonPatient.toString());
+        Response response = this.patientsResource.add(jsonPatient.toString());
         Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
         verify(this.logger).debug("Importing new patient from JSON via REST: {}", jsonPatient.toString());
     }
@@ -231,7 +231,7 @@ public class DefaultPatientsResourceImplTest
             any(EntityReference.class));
         doReturn(this.patient).when(this.repository).create();
         JSONArray jsonPatients = new JSONArray().put(new JSONObject()).put(new JSONObject()).put(new JSONObject());
-        Response response = this.patientsResource.addPatient(jsonPatients.toString());
+        Response response = this.patientsResource.add(jsonPatients.toString());
         Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
         verify(this.logger).debug("Importing new patient from JSON via REST: {}", jsonPatients.toString());
     }
