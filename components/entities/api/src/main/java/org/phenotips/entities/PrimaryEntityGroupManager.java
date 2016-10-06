@@ -40,6 +40,9 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntity, E extends Pr
     /** The XProperty used for referencing the group document. */
     String REFERENCE_XPROPERTY = "reference";
 
+    /** The XProperty used to save the class of contained members. */
+    String CLASS_XPROPERTY = "class";
+
     /**
      * Adds a new member to a group.
      *
