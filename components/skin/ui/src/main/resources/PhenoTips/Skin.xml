@@ -482,7 +482,7 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   white-space: nowrap;
 }
 #phenotips-globalTools .menu.menu-horizontal ul ul {
-  background-color: $theme.pageHeaderBackgroundColor;
+  background-color: $theme.menuBackgroundColor;
 }
 #phenotips-globalTools .menu.menu-horizontal .xDropdown + ul &gt; li .fa {
   visibility: hidden;
