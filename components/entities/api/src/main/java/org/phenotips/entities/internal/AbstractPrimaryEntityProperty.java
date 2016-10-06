@@ -34,7 +34,7 @@ import java.util.Iterator;
  * @since 1.3M2
  */
 public abstract class AbstractPrimaryEntityProperty<G extends PrimaryEntity, E extends PrimaryEntity>
-    extends AbstractContainerPrimaryEntityGroup<G, E>
+    extends AbstractInternalPrimaryEntityGroupManager<G, E>
     implements PrimaryEntityProperty<G, E>
 {
     protected AbstractPrimaryEntityProperty(
