@@ -19,7 +19,7 @@ package org.phenotips.projects.groupManagers;
 
 import org.phenotips.data.Patient;
 import org.phenotips.entities.PrimaryEntityGroupManager;
-import org.phenotips.entities.internal.AbstractPrimaryEntityGroup;
+import org.phenotips.entities.internal.AbstractExternalPrimaryEntityGroupManager;
 import org.phenotips.projects.data.Project;
 
 import org.xwiki.component.annotation.Component;
@@ -37,7 +37,7 @@ import javax.inject.Singleton;
 @Named("Project:Patient")
 @Singleton
 public class PatientsInProjectManager
-    extends AbstractPrimaryEntityGroup<Project, Patient>
+    extends AbstractExternalPrimaryEntityGroupManager<Project, Patient>
     implements PrimaryEntityGroupManager<Project, Patient>
 {
     /** Type instance for lookup. */

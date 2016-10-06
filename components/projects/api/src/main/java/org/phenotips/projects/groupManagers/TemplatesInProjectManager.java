@@ -18,7 +18,7 @@
 package org.phenotips.projects.groupManagers;
 
 import org.phenotips.entities.PrimaryEntityGroupManager;
-import org.phenotips.entities.internal.AbstractContainerPrimaryEntityGroup;
+import org.phenotips.entities.internal.AbstractInternalPrimaryEntityGroupManager;
 import org.phenotips.projects.data.Project;
 import org.phenotips.templates.data.Template;
 
@@ -37,7 +37,7 @@ import javax.inject.Singleton;
 @Named("Project:Template")
 @Singleton
 public class TemplatesInProjectManager
-    extends AbstractContainerPrimaryEntityGroup<Project, Template>
+    extends AbstractInternalPrimaryEntityGroupManager<Project, Template>
     implements PrimaryEntityGroupManager<Project, Template>
 {
     /** Type instance for lookup. */
