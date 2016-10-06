@@ -460,7 +460,7 @@
 ##
 #if ($doc.getObject('PhenoTips.FamilyClass'))
   $xwiki.jsx.use('PhenoTips.FamilyContentTopMenu')##
-(% id="record-actions" %)(((
+(% id="record-actions" class="content-actions page-actions" %)(((
 (% id="pr-more-actions-menu" class="menu menu-horizontal" %)(((
   #if ($xcontext.action == 'view')
     #if($hasEdit &amp;&amp; !$isReadOnly)
