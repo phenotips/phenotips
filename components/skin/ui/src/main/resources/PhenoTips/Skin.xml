@@ -451,7 +451,11 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   background-color: rgba(255, 255, 255, 0.1);
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
   color: $theme.menuLinkColor;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5)
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+  z-index: 6000;
+}
+#phenotips-mainmenu .menu-horizontal, #phenotips-globalTools .menu-horizontal {
+  font-size: 0.9em;
 }
 #phenotips-mainmenu .topmenuentry {
   background-image: none;
@@ -460,20 +464,32 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
 #phenotips-mainmenu a, #phenotips-globalTools a {
   display: inline-block;
   float: none;
+  text-transform: none !important;
+  font-weight: normal !important;
+  font-size: .9em;
 }
 #phenotips-globalTools .search input {
   height: 1.7em;
   margin-left: 0;
   margin-right: 5px;
   margin-top: 0.05em;
-  min-height: 22px;
+  min-height: 20px;
   padding: 0 3px;
   width: 20em;
 }
 
 #phenotips-globalTools label {
-  margin-left: 2em;
   white-space: nowrap;
+}
+#phenotips-globalTools .menu.menu-horizontal ul ul {
+  background-color: $theme.pageHeaderBackgroundColor;
+}
+#phenotips-globalTools .menu.menu-horizontal .xDropdown + ul &gt; li .fa {
+  visibility: hidden;
+  display: none;
+}
+#phenotips-globalTools .menu.menu-horizontal .xDropdown + ul {
+  margin-left: 0;
 }
 
 #create-patient-record {
@@ -483,11 +499,10 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   color: $theme.menuLinkColor;
   cursor: pointer;
   display: inline-block;
-  font: 700 0.8em/1.8em sans-serif;
+  font: 400 0.9em/1.8em sans-serif;
   height: 1.8em;
   padding: 2px 0 0;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
-  text-transform: uppercase;
   white-space: nowrap;
   width: auto;
 }
@@ -554,6 +569,7 @@ input.button:disabled, .buttonwrapper button:disabled, input.button:disabled:hov
 }
 #patient-creation-form {
   position: relative;
+  display: inline-block;
 }
 .xwiki-livetable-pagination #patient-creation-form {
   float: left;
