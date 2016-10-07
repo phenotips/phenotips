@@ -144,6 +144,7 @@
       #set ($discard = $response.setStatus(400))## unable to do the update
       $services.localization.render('phenotips.patientAccessRightsManagement.updateError')
     #end
+    $_service.fireRightsUpdateEvent($patient)
   #end## Patient exists and user/level parameters match
 #end
 {{/velocity}}</content>

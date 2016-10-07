@@ -623,6 +623,12 @@
               <method>org.xwiki.security.authorization.Right getGrantedRight()</method>
               <justification>New API method bringing XWiki Rights into PhenoTips Permissions.</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/data/permissions/PermissionsManager</className>
+              <differenceType>7012</differenceType>
+              <method>void fireRightsUpdateEvent(java.lang.String)</method>
+              <justification>New way of notifying listeners that permissions on an entity have changed.</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

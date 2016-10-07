@@ -18,6 +18,7 @@
 package org.phenotips.data.permissions.rest.internal;
 
 import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.OwnerResource;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
@@ -72,6 +73,9 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
 
     @Inject
     private Provider<Autolinker> autolinker;
+
+    @Inject
+    private PermissionsManager manager;
 
     @Override
     public OwnerRepresentation getOwner(String patientId)
@@ -141,6 +145,7 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
 
+        this.manager.fireRightsUpdateEvent(patientId);
         return Response.ok().build();
     }
 }

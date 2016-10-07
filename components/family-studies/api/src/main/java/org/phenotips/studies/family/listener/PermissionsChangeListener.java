@@ -19,7 +19,7 @@ package org.phenotips.studies.family.listener;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
-import org.phenotips.data.events.PatientChangedEvent;
+import org.phenotips.data.permissions.events.PatientRightsUpdatedEvent;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 
@@ -31,7 +31,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import com.xpn.xwiki.doc.XWikiDocument;
+import org.slf4j.Logger;
 
 /**
  * When a patient record's permissions are changed, if that patient belongs to a family,
@@ -51,18 +51,23 @@ public class PermissionsChangeListener extends AbstractEventListener
     @Inject
     private PatientRepository patientRepository;
 
+    @Inject
+    private Logger logger;
+
     /** Default constructor, sets up the listener name and the list of events to subscribe to. */
     public PermissionsChangeListener()
     {
-        super("family-studies-permissions-listener", new PatientChangedEvent());
+        super("family-studies-patient-permissions-listener", new PatientRightsUpdatedEvent());
     }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        XWikiDocument xwikiDoc = (XWikiDocument) source;
-        String documentId = xwikiDoc.getDocumentReference().getName();
-        Patient patient = this.patientRepository.get(documentId);
+        String patientId = ((PatientRightsUpdatedEvent) event).getPatientId();
+
+        this.logger.debug("Updating familypermissions for patient [{}]", patientId);
+
+        Patient patient = this.patientRepository.get(patientId);
         if (patient == null) {
             return;
         }
@@ -70,6 +75,6 @@ public class PermissionsChangeListener extends AbstractEventListener
         if (family == null) {
             return;
         }
-        family.updatePermissions();
+        familyRepository.updateFamilyPermissions(family);
     }
 }

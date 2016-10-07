@@ -135,6 +135,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         for (Map.Entry<EntityReference, AccessLevel> e : internalCollaborators.entrySet()) {
             patientAccess.addCollaborator(e.getKey(), e.getValue());
         }
+        this.manager.fireRightsUpdateEvent(patientId);
         return Response.ok().build();
     }
 
@@ -172,6 +173,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
                 new StubCollaborator(collaboratorReference, this.manager.resolveAccessLevel(collaborator.getLevel())));
         }
         patientAccess.updateCollaborators(internalCollaborators.values());
+        this.manager.fireRightsUpdateEvent(patientId);
         return Response.ok().build();
     }
 

@@ -88,4 +88,12 @@ public interface PermissionsManager
      * @since 1.3M2
      */
     Iterator<Patient> filterByVisibility(Iterator<Patient> patients, Visibility requiredVisibility);
+
+    /**
+     * Fires a right update event to notify interested parties that some permissions have changed.
+     * The ide ais to fire only one event after a bunch of updates have been performed
+     *
+     * @param targetPatient
+     */
+    void fireRightsUpdateEvent(String patientId);
 }

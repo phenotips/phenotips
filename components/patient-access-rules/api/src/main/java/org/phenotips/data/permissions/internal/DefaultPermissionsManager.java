@@ -23,10 +23,12 @@ import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsConfiguration;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
+import org.phenotips.data.permissions.events.PatientRightsUpdatedEvent;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.observation.ObservationManager;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -51,6 +53,9 @@ public class DefaultPermissionsManager implements PermissionsManager
 {
     @Inject
     private Logger logger;
+
+    @Inject
+    private ObservationManager observationManager;
 
     @Inject
     @Named("context")
@@ -181,5 +186,10 @@ public class DefaultPermissionsManager implements PermissionsManager
             this.logger.error("Mandatory component [PatientAccessHelper] missing: {}", ex.getMessage(), ex);
         }
         return null;
+    }
+
+    public void fireRightsUpdateEvent(String patientId)
+    {
+        this.observationManager.notify(new PatientRightsUpdatedEvent(patientId), null);
     }
 }

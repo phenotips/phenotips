@@ -145,6 +145,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
 
+        this.manager.fireRightsUpdateEvent(patientId);
         return Response.ok().build();
     }
 
@@ -181,6 +182,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         PatientAccess patientAccess = patientAccessContext.getPatientAccess();
         EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorId);
         patientAccess.addCollaborator(collaboratorReference, this.manager.resolveAccessLevel(accessLevelName));
+        this.manager.fireRightsUpdateEvent(patientId);
         return Response.ok().build();
     }
 }

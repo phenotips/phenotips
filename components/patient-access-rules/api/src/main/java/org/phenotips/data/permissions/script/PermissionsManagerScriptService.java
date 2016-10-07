@@ -96,4 +96,9 @@ public class PermissionsManagerScriptService implements ScriptService
     {
         return this.manager.getPatientAccess(targetPatient);
     }
+
+    public void fireRightsUpdateEvent(Patient targetPatient)
+    {
+        this.manager.fireRightsUpdateEvent(targetPatient.getId());
+    }
 }

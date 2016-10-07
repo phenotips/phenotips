@@ -22,7 +22,6 @@ import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
-
 import org.xwiki.component.annotation.Component;
 
 import java.util.Collection;
@@ -99,5 +98,11 @@ public class SecurePermissionsManager implements PermissionsManager
     public Iterator<Patient> filterByVisibility(Iterator<Patient> patients, Visibility requiredVisibility)
     {
         return this.internalService.filterByVisibility(patients, requiredVisibility);
+    }
+
+    @Override
+    public void fireRightsUpdateEvent(String patientId)
+    {
+        this.internalService.fireRightsUpdateEvent(patientId);
     }
 }
