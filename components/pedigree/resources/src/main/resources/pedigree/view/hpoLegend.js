@@ -41,6 +41,16 @@ define([
         },
 
         /**
+         * Returns a name of a phenotype
+         *
+         * @param {String|Number} HPOTerm ID
+         * @return {String} associated phenotype name taken from the HPO database
+         */
+        getName: function($super, hpoID) {
+            return this.getTerm(hpoID).getName();
+        },
+
+        /**
          * Retrieve the color associated with the given object
          *
          * @method getObjectColor

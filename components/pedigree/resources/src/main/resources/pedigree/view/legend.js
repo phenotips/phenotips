@@ -116,6 +116,29 @@ define([
         },
 
         /**
+         * Returns a map of abnormalities
+         */
+        getAllNames: function() {
+            var result = {};
+            for (var abnormality in this._affectedNodes) {
+                if (this._affectedNodes.hasOwnProperty(abnormality)) {
+                    result[abnormality] = this.getName(abnormality);
+                }
+            }
+            return result;
+        },
+
+        /**
+         * Returns an abnormality name
+         *
+         * @param {String|Number} id ID of the abnormality
+         * @return {String} associated name for the abnormality, displayed on affected nodes in the pedigree and in the legend
+         */
+        getName: function(id) {
+            return id;
+        },
+
+        /**
          * Sets all preferred colors at once
          */
         setAllPreferredColors: function(allColors) {

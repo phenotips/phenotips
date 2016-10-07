@@ -81,7 +81,7 @@ define([
             })
 
             var closeShortcut = ['Esc'];
-            this.dialog = new PhenoTips.widgets.ModalPopup(mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-import-chooser", title: "Pedigree export", displayCloseButton: true});
+            this.dialog = new PhenoTips.widgets.ModalPopup(mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-import-chooser", title: "Pedigree export", displayCloseButton: false, verticalPosition: "top"});
         },
 
         /*
@@ -91,7 +91,7 @@ define([
             var exportType = $$('input:checked[type=radio][name="export-type"]')[0].value;
 
             var pedOptionsTable = $("pedOptions");
-            var pedDisorderOptions = $$('[name="ped-disorders-options"]');
+            var pedSpecialOptions = $$('.ped-special-options');
             var jsonOptionsTable = $("jsonOptions");
             var imageOptionsTable = $("imageOptions");
 
@@ -104,16 +104,17 @@ define([
                         $$('input[type=radio][name="ped-options"]')[0].checked = true;
                     }
                     idgenerator.up().hide();
-                    pedDisorderOptions.each( function(item) {item.up('tr').hide();});
+                    pedSpecialOptions.each( function(item) {item.hide();});
                 } else {
                     idgenerator.up().show();
-                    pedDisorderOptions.each( function(item) {item.up('tr').show();});
+                    pedSpecialOptions.each( function(item) {item.show();});
                 }
                 jsonOptionsTable.hide();
                 imageOptionsTable.hide();
             } else {
                 pedOptionsTable.hide();
-                pedDisorderOptions.each( function(item) {item.up('tr').hide();});
+                pedSpecialOptions.each( function(item) {item.hide();});
+
                 if (exportType == "simpleJSON") {
                     jsonOptionsTable.show();
                     imageOptionsTable.hide();
@@ -125,12 +126,10 @@ define([
         },
 
         _onExportStarted: function() {
-            this.hide();
-
             var patientDocument = XWiki.currentDocument.page + "_pedigree";
 
             var exportType = $$('input:checked[type=radio][name="export-type"]')[0].value;
-            //console.log("Import type: " + exportType);
+            //console.log("Export type: " + exportType);
 
             if (exportType == "image") {
                 var imageType = $$('input:checked[type=radio][name="image-options"]')[0].value;
@@ -197,11 +196,18 @@ define([
             } else {
                 var idGenerationSetting = $$('input:checked[type=radio][name="ped-options"]')[0].value;
                 if (exportType == "ped") {
-                    var selectedDisorders = $$('input:checked[name="ped-disorders-options"]');
-                    if (selectedDisorders.indexOf("all") > -1) {
-                        var exportString = PedigreeExport.exportAsPED(editor.getGraph().DG, idGenerationSetting);
+                    var selectedOptions = $$('.ped-special-options input:checked');
+                    if (selectedOptions.length > 0) {
+                        var selectedMap = {};
+                        selectedOptions.each( function(item) {
+                            if (!selectedMap.hasOwnProperty(item.name)){
+                                selectedMap[item.name] = [];
+                            }
+                            selectedMap[item.name].push(item.value);
+                        });
+                        var exportString = PedigreeExport.exportAsPED(editor.getGraph().DG, idGenerationSetting, selectedMap);
                     } else {
-                        var exportString = PedigreeExport.exportAsPED(editor.getGraph().DG, idGenerationSetting, selectedDisorders);
+                        var exportString = PedigreeExport.exportAsPED(editor.getGraph().DG, idGenerationSetting);
                     }
                     var fileName = patientDocument + ".ped";
                 } else if (exportType == "BOADICEA") {
@@ -219,62 +225,56 @@ define([
                     FileSaver.saveSVGFile(exportString, fileName);
                 }
             }
+
+            this.hide();
         },
 
         /**
-         * Displays the template selector
+         * Displays the export selector dialog
          *
          * @method show
          */
         show: function() {
-            if ($$('input[name="ped-disorders-options"]').length > 0)
-                $$('[name="ped-disorders-options"]').each( function(item) {item.up('tr').remove();});
             var disorders = editor.getDisorderLegend().getAllNames();
-            var hasDisorders = false;
-            var disordersLength = 0;
-            for (var key in disorders) {
-                if (hasOwnProperty.call(disorders, key)) {
-                    hasDisorders = true;
-                    disordersLength++;
-                }
-            }
-            if (hasDisorders && disordersLength > 1) {
-                var configListElementPED = this.dialog.content.select('#pedOptions')[0];
-                var labelDisorderOptions = new Element('label', {'class': 'export-config-header ped-disorders-options', 'name' : 'ped-disorders-options', 'style' : 'margin-top: 0.5em;'}).insert("Which disorders should be reflected in the affected column in PED file? ");
-                configListElementPED.insert(labelDisorderOptions.wrap('td').wrap('tr'));
-                configListElementPED.insert(this._addConfigOption(true,  "ped-disorders-options", "export-subconfig-label", "All", "all", "checkbox"));
-                for (var disorder in disorders) {
-                    if (disorder == "affected") {
-                        configListElementPED.insert(this._addConfigOption(false,  "ped-disorders-options", "export-subconfig-label", "Unspecified disorder", "affected", "checkbox"));
-                    } else {
-                        configListElementPED.insert(this._addConfigOption(false,  "ped-disorders-options", "export-subconfig-label", disorders[disorder], disorder, "checkbox"));
-                    }
-                }
-                configListElementPED.on('click', 'input[type=checkbox]', function(event, element) {
-                    if (element.value == "all" && element.checked) {
-                        //check others
-                        $$('input[name="ped-disorders-options"]').each( function(item) {item.checked = true;});
-                    } else if (element.value != "all") {
-                        // uncheck all
-                        $$('input[name="ped-disorders-options"]')[0].checked = false;
-                    }
-                });
+            var hpos = editor.getHPOLegend().getAllNames();
+            var cancers = editor.getCancerLegend().getAllNames();
+            var candidateGenes = editor.getCandidateGeneLegend().getAllNames();
+            var causalGenes = editor.getCausalGeneLegend().getAllNames();
+
+            var pedContainer = this.dialog.content.select('#pedOptions')[0];
+
+            var hasDisorders = Object.keys(disorders).length > 0;
+            var hasPhenotypes = Object.keys(hpos).length > 0;
+            var hasCancers = Object.keys(cancers).length > 0;
+            var hasCandidateGenes = Object.keys(candidateGenes).length > 0;
+            var hasCausalGenes = Object.keys(causalGenes).length > 0;
+
+            if (hasDisorders || hasPhenotypes || hasCancers || hasCandidateGenes || hasCausalGenes) {
+                var label = new Element('label', {'class': 'export-config-header ped-header'}).insert("Which of the following should be reflected in the affected column in PED file? ");
+                pedContainer.insert(label.wrap('td').wrap('tr', {'class' : "ped-special-options"}));
+
+                hasDisorders && this._addPedOption("disorders", disorders, pedContainer);
+                hasPhenotypes && this._addPedOption("phenotypes", hpos, pedContainer);
+                hasCancers && this._addPedOption("cancers", cancers, pedContainer);
+                hasCandidateGenes && this._addPedOption("candidateGenes", candidateGenes, pedContainer, "candidate genes");
+                hasCausalGenes && this._addPedOption("causalGenes", causalGenes, pedContainer, "confirmed causal genes");
             }
 
             this.dialog.show();
         },
 
         /**
-         * Removes the the template selector
+         * Removes the export selector dialog
          *
          * @method hide
          */
         hide: function() {
+            $$('.ped-special-options').each( function(item) {item.remove();});
             this.dialog.closeDialog();
         },
 
-        _addConfigOption: function (checked, name, cssClass, labelText, value, type) {
-            var optionWrapper = new Element('tr');
+        _addConfigOption: function (checked, name, cssClass, labelText, value, type, isPedSpecialOption) {
+            var optionWrapper = new Element('tr', {'class' : (isPedSpecialOption) ? "ped-special-options" : ""});
             var itype = type ? type : "radio";
             var input = new Element('input', {"type" : itype, "value": value, "name": name });
             if (checked) {
@@ -283,7 +283,36 @@ define([
             var label = new Element('label', {'class': cssClass}).insert(input).insert(labelText);
             optionWrapper.insert(label.wrap('td'));
             return optionWrapper;
+        },
+
+        _addPedOption: function (type, data, pedContainer, labelText) {
+            var cssClass = "ped-" + type + "-options";
+            var text = (labelText) ? labelText : type;
+            var label = new Element('label', {'class': 'export-config-header ' + cssClass, 'name' : cssClass}).insert(text + ":");
+            pedContainer.insert(label.wrap('td').wrap('tr', {'class' : "ped-special-options"}));
+
+            // adding "All" checkbox
+            if (Object.keys(data).length > 1) {
+                pedContainer.insert(this._addConfigOption((type == "disorders"), cssClass, "export-subconfig-label", "All", "all", "checkbox", true));
+                pedContainer.on('click', 'input[type=checkbox][name="' + cssClass + '"]', function(event, element) {
+                    if (element.value == "all") {
+                        $$('input[name="' + cssClass + '"]').each( function(item) {item.checked = element.checked;});
+                    } else {
+                        // uncheck checkbox for "All"
+                        $$('input[name="' + cssClass + '"]')[0].checked = false;
+                    }
+                });
+            }
+
+            for (var item in data) {
+                if (type == "disorders" && item == "affected") {
+                    pedContainer.insert(this._addConfigOption((type == "disorders"), cssClass, "export-subconfig-label ped-option", "Unspecified disorder", "affected", "checkbox", true));
+                } else {
+                    pedContainer.insert(this._addConfigOption((type == "disorders"), cssClass, "export-subconfig-label ped-option", data[item], item, "checkbox", true));
+                }
+            }
         }
+
     });
     return ExportSelector;
 });

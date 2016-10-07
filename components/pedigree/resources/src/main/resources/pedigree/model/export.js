@@ -139,7 +139,7 @@ define([
    *       1 unaffected
    *       2 affected
    */
-  PedigreeExport.exportAsPED = function(pedigree, idGenerationPreference, selectedDisorders)
+  PedigreeExport.exportAsPED = function(pedigree, idGenerationPreference, selectedMap)
   {
      var output = "";
 
@@ -180,7 +180,7 @@ define([
 
          var status = -9; //missing
 
-         if (!selectedDisorders) {
+         if (!selectedMap) {
              if (pedigree.GG.properties[i].hasOwnProperty("carrierStatus")) {
                  if (pedigree.GG.properties[i]["carrierStatus"] == "affected" ||
                      pedigree.GG.properties[i]["carrierStatus"] == "carrier"  ||
@@ -189,17 +189,74 @@ define([
                  else
                      status = 1;
              }
-         } else if (pedigree.GG.properties[i].hasOwnProperty("carrierStatus") &&
-             pedigree.GG.properties[i].hasOwnProperty("disorders")) {
+         } else {
+            for (var key in selectedMap) {
+                switch (key) {
+                    case "ped-disorders-options":
+                        if (pedigree.GG.properties[i].hasOwnProperty("disorders") && pedigree.GG.properties[i].hasOwnProperty("carrierStatus")){
+                            var nodeDisorders = pedigree.GG.properties[i]["disorders"];
+                            var intersection = selectedMap[key].filter(function (item) { return nodeDisorders.indexOf(item) > -1;});
+                            //if node is affected of selected disorders
+                            if (intersection.length > 0 && pedigree.GG.properties[i]["carrierStatus"] == "affected")
+                                status = 2;
+                            else
+                                status = 1;
+                        }
+                        break;
+                    case "ped-phenotypes-options":
+                        if (pedigree.GG.properties[i].hasOwnProperty("features")) {
+                            var nodeFeatures = pedigree.GG.properties[i]["features"];
+                            var features = [];
+                            nodeFeatures.each( function(item) {features.push(item.id);});
+                            var intersection = selectedMap[key].filter(function (item) { return features.indexOf(item) > -1;});
+                            //if node is affected of selected phenotypes
+                            if (intersection.length > 0)
+                                status = 2;
+                            else
+                                status = 1;
+                        }
+                        break;
+                    case "ped-candidateGenes-options":
+                    case "ped-causalGenes-options":
+                        if (pedigree.GG.properties[i].hasOwnProperty("genes")) {
+                            var nodeGenes = pedigree.GG.properties[i]["genes"];
+                            var genes = {"candidate":[], "solved":[]};
+                            nodeGenes.each( function(item) { genes[item.status].push(item.gene);});
+                            if (key == "ped-candidateGenes-options")
+                                var intersection = selectedMap[key].filter(function (item) {
+                                        return genes["candidate"].indexOf(item) > -1;
+                                });
+                            if (key == "ped-causalGenes-options")
+                               var intersection = selectedMap[key].filter(function (item) {
+                                        return genes["solved"].indexOf(item) > -1;
+                               });
+                            //if node is affected of selected genes
+                            if (intersection.length > 0)
+                                status = 2;
+                            else
+                                status = 1;
+                        }
+                        break;
+                    case "ped-cancers-options":
+                        if (pedigree.GG.properties[i].hasOwnProperty("cancers")) {
+                            var nodeCancers = pedigree.GG.properties[i]["cancers"];
+                            var intersection = selectedMap[key].filter(function (item) {
+                                    return nodeCancers.hasOwnProperty(item) && nodeCancers[item].affected;
+                            });
+                            //if node is affected of selected cancers
+                            if (intersection.length > 0)
+                                status = 2;
+                            else
+                                status = 1;
+                        }
+                        break;
+                }
+                //breaking out of looping through selected options for export as the node is affected
+                if (status == 2)
+                    break;
+            }
 
-             var nodeDisorders = pedigree.GG.properties[i]["disorders"];
-             var intersection = selectedDisorders.filter(function (item) { return nodeDisorders.indexOf(item.defaultValue) > -1;});
-             //if node is affected of a selected disorder
-             if (intersection.length > 0 && pedigree.GG.properties[i]["carrierStatus"] == "affected")
-                     status = 2;
-                 else
-                     status = 1;
-         }
+         } //end if (!selectedMap)
 
          output += status + "\n";
      }
