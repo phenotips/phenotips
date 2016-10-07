@@ -21,14 +21,28 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
-import org.phenotips.studies.family.FamilyRepository;
-import org.phenotips.studies.family.internal.PedigreeUtils;
+import org.phenotips.studies.family.FamilyTools;
+import org.phenotips.studies.family.Pedigree;
+import org.phenotips.studies.family.exceptions.PTException;
+import org.phenotips.studies.family.exceptions.PTInvalidFamilyIdException;
+import org.phenotips.studies.family.exceptions.PTInvalidPatientIdException;
+import org.phenotips.studies.family.exceptions.PTNotEnoughPermissionsOnFamilyException;
+import org.phenotips.studies.family.exceptions.PTNotEnoughPermissionsOnPatientException;
+import org.phenotips.studies.family.exceptions.PTPatientAlreadyInAnotherFamilyException;
+import org.phenotips.studies.family.exceptions.PTPatientNotInFamilyException;
+import org.phenotips.studies.family.exceptions.PTPedigreeContainesSamePatientMultipleTimesException;
+import org.phenotips.studies.family.internal.DefaultPedigree;
+import org.phenotips.studies.family.script.response.AlreadyHasFamilyResponse;
 import org.phenotips.studies.family.script.response.FamilyInfoJSONResponse;
+import org.phenotips.studies.family.script.response.InternalErrorResponse;
 import org.phenotips.studies.family.script.response.InvalidFamilyIdResponse;
 import org.phenotips.studies.family.script.response.InvalidInputJSONResponse;
+import org.phenotips.studies.family.script.response.InvalidPatientIdResponse;
 import org.phenotips.studies.family.script.response.NotEnoughPermissionsOnFamilyResponse;
 import org.phenotips.studies.family.script.response.NotEnoughPermissionsOnPatientResponse;
+import org.phenotips.studies.family.script.response.PatientContainedMultipleTimesInPedigreeResponse;
 import org.phenotips.studies.family.script.response.PatientHasNoFamilyResponse;
+import org.phenotips.studies.family.script.response.ValidLinkJSONResponse;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
@@ -37,6 +51,8 @@ import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -44,6 +60,7 @@ import javax.inject.Singleton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 import net.sf.json.JSON;
 
@@ -60,19 +77,19 @@ import net.sf.json.JSON;
 public class PedigreeScriptService implements ScriptService
 {
     @Inject
-    private FamilyRepository familyRepository;
-
-    @Inject
     private PatientRepository patientRepository;
-
-    @Inject
-    private PedigreeUtils pedigreeUtils;
 
     @Inject
     private AuthorizationService authorizationService;
 
     @Inject
     private UserManager userManager;
+
+    @Inject
+    private FamilyTools familyTools;
+
+    @Inject
+    private Logger logger;
 
     /**
      * Gets a family id or patient id. If the id is a patient id, finds the patient's family and returns a family
@@ -83,32 +100,35 @@ public class PedigreeScriptService implements ScriptService
      */
     public JSONResponse getFamilyAndPedigree(String documentId)
     {
-        Family family = null;
+        try {
+            Family family = null;
 
-        User currentUser = this.userManager.getCurrentUser();
+            User currentUser = this.userManager.getCurrentUser();
 
-        Patient patient = this.patientRepository.getPatientById(documentId);
-        if (patient != null) {
-            if (!this.authorizationService.hasAccess(currentUser, Right.VIEW, patient.getDocument())) {
-                return new NotEnoughPermissionsOnPatientResponse(Arrays.asList(documentId), Right.VIEW);
+            Patient patient = this.patientRepository.get(documentId);
+            if (patient != null) {
+                if (!this.authorizationService.hasAccess(currentUser, Right.VIEW, patient.getDocument())) {
+                    return new NotEnoughPermissionsOnPatientResponse(Arrays.asList(documentId), Right.VIEW);
+                }
+                // id belonged to a patient. Get patient's family
+                family = this.familyTools.getFamilyForPatient(documentId);
+                if (family == null) {
+                    return new PatientHasNoFamilyResponse();
+                }
+            } else {
+                // id is not a patient's id. Check if it is a family id
+                family = this.familyTools.getFamilyById(documentId);
+                if (family == null) {
+                    return new InvalidFamilyIdResponse();
+                }
             }
-            // id belonged to a patient. Get patient's family
-            family = this.familyRepository.getFamilyForPatient(patient);
-            if (family == null) {
-                return new PatientHasNoFamilyResponse();
+            if (!this.authorizationService.hasAccess(currentUser, Right.VIEW, family.getDocumentReference())) {
+                return new NotEnoughPermissionsOnFamilyResponse();
             }
-        } else {
-            // id is not a patient's id. Check if it is a family id
-            family = this.familyRepository.getFamilyById(documentId);
-            if (family == null) {
-                return new InvalidFamilyIdResponse();
-            }
+            return new FamilyInfoJSONResponse(family);
+        } catch (Exception ex) {
+            return this.convertExceptionIntoJSONResponse(ex);
         }
-        if (!this.authorizationService.hasAccess(currentUser, Right.VIEW, family.getDocumentReference())) {
-            return new NotEnoughPermissionsOnFamilyResponse();
-        }
-
-        return new FamilyInfoJSONResponse(family);
     }
 
     /**
@@ -122,16 +142,17 @@ public class PedigreeScriptService implements ScriptService
      */
     public JSONResponse canPatientBeLinked(String familyId, String patientToLinkId)
     {
-        Family family = this.familyRepository.getFamilyById(familyId);
-        if (family != null) {
-            if (!this.authorizationService.hasAccess(
-                this.userManager.getCurrentUser(), Right.EDIT, family.getDocumentReference())) {
-                return new NotEnoughPermissionsOnFamilyResponse();
-            }
+        try {
+            Family family = this.familyTools.getFamilyById(familyId);
+            Patient patient = this.patientRepository.get(patientToLinkId);
+
+            // an exception will be thrown in case of any errors
+            this.familyTools.canAddToFamily(family, patient, true);
+
+            return new ValidLinkJSONResponse();
+        } catch (Exception ex) {
+            return this.convertExceptionIntoJSONResponse(ex);
         }
-        // else: if family == null mewans linking to new family, which will be creatd by current user and thus
-        // current user will have edit rights
-        return this.pedigreeUtils.canPatientBeAddedToFamily(family, patientToLinkId);
     }
 
     /**
@@ -140,17 +161,66 @@ public class PedigreeScriptService implements ScriptService
      * @param familyId Phenotips family id. If null, a new family is created.
      * @param json part of the pedigree data
      * @param image svg part of the pedigree data
-     * @return {@link JSON} with 'error' field set to {@link false} if everything is ok, or {@link false} if a known
+     * @return {@link JSON} with 'error' field set to {@link false} if everything is ok, or {@link true} if an
      *         error has occurred. In case the linking is invalid, the JSON will also contain 'errorMessage' and
-     *         'errorType'
+     *         'errorType'. In case of success JSONResponse will be of FamilyInfoJSONResponse type
      */
     public JSONResponse savePedigree(String familyId, String json, String image)
     {
         try {
-            JSONObject pedigreeJSON = new JSONObject(json);
-            return this.pedigreeUtils.savePedigree(familyId, pedigreeJSON, image);
-        } catch (JSONException ex) {
-            return new InvalidInputJSONResponse(json);
+            Family family = this.familyTools.getFamilyById(familyId);
+
+            JSONObject pedigreeJSON;
+            try {
+                pedigreeJSON = new JSONObject(json);
+            } catch (JSONException ex) {
+                return new InvalidInputJSONResponse(json);
+            }
+
+            Pedigree pedigree = new DefaultPedigree(pedigreeJSON, image);
+
+            this.familyTools.setPedigree(family, pedigree);
+
+            return new FamilyInfoJSONResponse(family);
+        } catch (Exception ex) {
+            return this.convertExceptionIntoJSONResponse(ex);
         }
+    }
+
+    private JSONResponse convertExceptionIntoJSONResponse(Exception ex)
+    {
+        if (ex instanceof PTException) {
+
+            if (ex instanceof PTInvalidFamilyIdException) {
+                return new InvalidFamilyIdResponse();
+            }
+            if (ex instanceof PTInvalidPatientIdException) {
+                return new InvalidPatientIdResponse(((PTInvalidPatientIdException) ex).getWrongId());
+            }
+            if (ex instanceof PTPatientNotInFamilyException) {
+                return new PatientHasNoFamilyResponse();
+            }
+            if (ex instanceof PTPedigreeContainesSamePatientMultipleTimesException) {
+                return new PatientContainedMultipleTimesInPedigreeResponse(
+                        ((PTPedigreeContainesSamePatientMultipleTimesException) ex).getPatientId());
+            }
+            if (ex instanceof PTNotEnoughPermissionsOnFamilyException) {
+                return new NotEnoughPermissionsOnFamilyResponse();
+            }
+            if (ex instanceof PTNotEnoughPermissionsOnPatientException) {
+                List<String> patientIdList = new LinkedList<String>();
+                patientIdList.add(((PTNotEnoughPermissionsOnPatientException) ex).getDocumentId());
+                return new NotEnoughPermissionsOnPatientResponse(patientIdList,
+                        ((PTNotEnoughPermissionsOnPatientException) ex).getMissingPermission());
+            }
+            if (ex instanceof PTPatientAlreadyInAnotherFamilyException) {
+                String patientId = ((PTPatientAlreadyInAnotherFamilyException) ex).getPatientId();
+                String otherFamilyID = ((PTPatientAlreadyInAnotherFamilyException) ex).getOtherFamilyId();
+                return new AlreadyHasFamilyResponse(patientId, otherFamilyID);
+            }
+        }
+        // for all other exceptions there are no custom JSON responses
+        this.logger.error("Error in PedigreeScriptService: []", ex);
+        return new InternalErrorResponse(ex.getMessage());
     }
 }

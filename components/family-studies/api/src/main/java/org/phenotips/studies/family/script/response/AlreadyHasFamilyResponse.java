@@ -28,27 +28,27 @@ public class AlreadyHasFamilyResponse extends AbstractJSONResponse
 {
     private String patientId;
 
-    private String familyId;
+    private String otherFamilyId;
 
     /**
      * Default constructor, takes no parameters.
      *
      * @param patientId Id of the patient which already belongs ot another family
-     * @param familyId Id of the family that patient already belongs to.
+     * @param otherFamilyId Id of the family that patient already belongs to.
      */
-    public AlreadyHasFamilyResponse(String patientId, String familyId)
+    public AlreadyHasFamilyResponse(String patientId, String otherFamilyId)
     {
         this.patientId = patientId;
-        this.familyId = familyId;
+        this.otherFamilyId = otherFamilyId;
     }
 
     @Override
     public JSONObject toJSON()
     {
         JSONObject reply = baseErrorJSON(
-            getErrorMessage(PedigreeScriptServiceErrorMessage.ALREADY_HAS_FAMILY, this.patientId, this.familyId));
+            getErrorMessage(PedigreeScriptServiceErrorMessage.ALREADY_HAS_FAMILY, this.patientId, this.otherFamilyId));
         reply.put("patientId", this.patientId);
-        reply.put("familyId", this.familyId);
+        reply.put("familyId", this.otherFamilyId);
         return reply;
     }
 
