@@ -2027,56 +2027,42 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
     &lt;ul&gt;
       #set ($createEntries = [])
       #foreach ($e in $services.uix.getExtensions('phenotips.globalTools.create.entries', {'sortByParameter' : 'order'}))
-        #set ($entryText = $services.rendering.render($e.execute(), 'xhtml/1.0'))
+        #set ($entryText = $services.rendering.render($e.execute(), 'xhtml/1.0').replaceAll('^&lt;p&gt;|&lt;/p&gt;$', ''))
         #if ("$!entryText" != '')
           #set ($discard = $createEntries.add($entryText))
         #end
       #end
 
-      #if ($createEntries.size() &gt; 0)
-        &lt;li class=""&gt;&lt;span class="xDropdown"&gt;&lt;span class="fa fa-plus-circle fa-fw"&gt; &lt;/span&gt;Create&lt;/span&gt;
+      #if ($createEntries.size() &gt; 1)
+        &lt;li&gt;&lt;span class="xDropdown"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;$services.localization.render('phenotips.globalTools.create')&lt;/span&gt;
           &lt;ul&gt;
-            #if ($xwiki.hasAccessLevel('edit', "data.$!{reservedDocumentName}"))
-              &lt;li&gt;
-{{/html}}
-
-{{include reference="PhenoTips.CreatePatientRecordForm" /}}
-
-{{html clean=false}}
-              &lt;/li&gt;
-            #end
             #foreach ($e in $createEntries)
               &lt;li&gt;${e}&lt;/li&gt;
             #end
           &lt;/ul&gt;
         &lt;/li&gt;
-      #elseif ($xwiki.hasAccessLevel('edit', "data.$!{reservedDocumentName}"))
-      &lt;li class=""&gt;&lt;span class="fa fa-plus-circle fa-fw"&gt; &lt;/span&gt;{{/html}}
-
-{{include reference="PhenoTips.CreatePatientRecordForm" /}}
-
-{{html clean=false}}&lt;/li&gt;
+      #elseif ($createEntries.size() == 1)
+      &lt;li&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;${createEntries.get(0)}&lt;/li&gt;
       #end
       #set ($browseEntries = [])
       #foreach ($e in $services.uix.getExtensions('phenotips.globalTools.browse.entries', {'sortByParameter' : 'order'}))
-        #set ($entryText = $services.rendering.render($e.execute(), 'xhtml/1.0'))
+        #set ($entryText = $services.rendering.render($e.execute(), 'xhtml/1.0').replaceAll('^&lt;p&gt;|&lt;/p&gt;$', ''))
         #if ("$!entryText" != '')
           #set ($discard = $browseEntries.add($entryText))
         #end
       #end
-      #if ($browseEntries.size() &gt; 0)
-        &lt;li class=""&gt;&lt;span class="xDropdown"&gt;&lt;span class="fa fa-folder-open fa-fw"&gt; &lt;/span&gt;Browse&lt;/span&gt;
+      #if ($browseEntries.size() &gt; 1)
+        &lt;li&gt;&lt;span class="xDropdown"&gt;&lt;span class="fa fa-folder-open"&gt; &lt;/span&gt;$services.localization.render('phenotips.globalTools.browse')&lt;/span&gt;
           &lt;ul&gt;
-            &lt;li&gt;&lt;a href="$xwiki.getURL('data.AllData')"&gt;Patients&lt;/a&gt;&lt;/li&gt;
             #foreach ($e in $browseEntries)
               &lt;li&gt;${e}&lt;/li&gt;
             #end
           &lt;/ul&gt;
         &lt;/li&gt;
-      #else
-        &lt;li class=""&gt;&lt;span class="fa fa-folder-open"&gt; &lt;/span&gt;&lt;a id="browse-all-patients" href="$xwiki.getURL('data.AllData')"&gt;$services.localization.render('phenotips.globalHeader.allData')&lt;/a&gt;&lt;/li&gt;
+      #elseif ($browseEntries.size() == 1)
+        &lt;li&gt;&lt;span class="fa fa-folder-open"&gt; &lt;/span&gt;${browseEntries.get(0)}&lt;/li&gt;
       #end
-      &lt;li class=""&gt;&lt;div class="search"&gt;
+      &lt;li&gt;&lt;div class="search"&gt;
       #if ($displayQuickSearch &amp;&amp; ($xwiki.exists('Main.Search') || $xwiki.exists('Main.WebSearch')))
         &lt;div class="globalsearch"&gt;&lt;input type="hidden" name="space" value="data"/&gt;
           &lt;label for="headerglobalsearchinput"&gt;&lt;span class="fa fa-search"&gt; &lt;/span&gt;&lt;/label&gt;&lt;input class="globalsearchinput" id="headerglobalsearchinput" type="text" name="text" placeholder="$services.localization.render('phenotips.globalHeader.search.placeholder')" size="20"/&gt;

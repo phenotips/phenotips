@@ -298,56 +298,42 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
     &lt;ul&gt;
       #set ($createEntries = [])
       #foreach ($e in $services.uix.getExtensions('phenotips.globalTools.create.entries', {'sortByParameter' : 'order'}))
-        #set ($entryText = $services.rendering.render($e.execute(), 'xhtml/1.0'))
+        #set ($entryText = $services.rendering.render($e.execute(), 'xhtml/1.0').replaceAll('^&lt;p&gt;|&lt;/p&gt;$', ''))
         #if ("$!entryText" != '')
           #set ($discard = $createEntries.add($entryText))
         #end
       #end
 
-      #if ($createEntries.size() &gt; 0)
-        &lt;li class=""&gt;&lt;span class="xDropdown"&gt;&lt;span class="fa fa-plus-circle fa-fw"&gt; &lt;/span&gt;Create&lt;/span&gt;
+      #if ($createEntries.size() &gt; 1)
+        &lt;li&gt;&lt;span class="xDropdown"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;$services.localization.render('phenotips.globalTools.create')&lt;/span&gt;
           &lt;ul&gt;
-            #if ($xwiki.hasAccessLevel('edit', "data.$!{reservedDocumentName}"))
-              &lt;li&gt;
-{{/html}}
-
-{{include reference="PhenoTips.CreatePatientRecordForm" /}}
-
-{{html clean=false}}
-              &lt;/li&gt;
-            #end
             #foreach ($e in $createEntries)
               &lt;li&gt;${e}&lt;/li&gt;
             #end
           &lt;/ul&gt;
         &lt;/li&gt;
-      #elseif ($xwiki.hasAccessLevel('edit', "data.$!{reservedDocumentName}"))
-      &lt;li class=""&gt;&lt;span class="fa fa-plus-circle fa-fw"&gt; &lt;/span&gt;{{/html}}
-
-{{include reference="PhenoTips.CreatePatientRecordForm" /}}
-
-{{html clean=false}}&lt;/li&gt;
+      #elseif ($createEntries.size() == 1)
+      &lt;li&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;${createEntries.get(0)}&lt;/li&gt;
       #end
       #set ($browseEntries = [])
       #foreach ($e in $services.uix.getExtensions('phenotips.globalTools.browse.entries', {'sortByParameter' : 'order'}))
-        #set ($entryText = $services.rendering.render($e.execute(), 'xhtml/1.0'))
+        #set ($entryText = $services.rendering.render($e.execute(), 'xhtml/1.0').replaceAll('^&lt;p&gt;|&lt;/p&gt;$', ''))
         #if ("$!entryText" != '')
           #set ($discard = $browseEntries.add($entryText))
         #end
       #end
-      #if ($browseEntries.size() &gt; 0)
-        &lt;li class=""&gt;&lt;span class="xDropdown"&gt;&lt;span class="fa fa-folder-open fa-fw"&gt; &lt;/span&gt;Browse&lt;/span&gt;
+      #if ($browseEntries.size() &gt; 1)
+        &lt;li&gt;&lt;span class="xDropdown"&gt;&lt;span class="fa fa-folder-open"&gt; &lt;/span&gt;$services.localization.render('phenotips.globalTools.browse')&lt;/span&gt;
           &lt;ul&gt;
-            &lt;li&gt;&lt;a href="$xwiki.getURL('data.AllData')"&gt;Patients&lt;/a&gt;&lt;/li&gt;
             #foreach ($e in $browseEntries)
               &lt;li&gt;${e}&lt;/li&gt;
             #end
           &lt;/ul&gt;
         &lt;/li&gt;
-      #else
-        &lt;li class=""&gt;&lt;span class="fa fa-folder-open"&gt; &lt;/span&gt;&lt;a id="browse-all-patients" href="$xwiki.getURL('data.AllData')"&gt;$services.localization.render('phenotips.globalHeader.allData')&lt;/a&gt;&lt;/li&gt;
+      #elseif ($browseEntries.size() == 1)
+        &lt;li&gt;&lt;span class="fa fa-folder-open"&gt; &lt;/span&gt;${browseEntries.get(0)}&lt;/li&gt;
       #end
-      &lt;li class=""&gt;&lt;div class="search"&gt;
+      &lt;li&gt;&lt;div class="search"&gt;
       #if ($displayQuickSearch &amp;&amp; ($xwiki.exists('Main.Search') || $xwiki.exists('Main.WebSearch')))
         &lt;div class="globalsearch"&gt;&lt;input type="hidden" name="space" value="data"/&gt;
           &lt;label for="headerglobalsearchinput"&gt;&lt;span class="fa fa-search"&gt; &lt;/span&gt;&lt;/label&gt;&lt;input class="globalsearchinput" id="headerglobalsearchinput" type="text" name="text" placeholder="$services.localization.render('phenotips.globalHeader.search.placeholder')" size="20"/&gt;
@@ -554,7 +540,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
     <name>Families.WebHome</name>
     <number>4</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>92869f55-432b-47a1-8ca2-57be5cbdc4b4</guid>
+    <guid>7c8ea060-55f1-4673-a9d3-5f7d93cd01f3</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -620,101 +606,16 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
       </scope>
     </class>
     <property>
-      <content>{{velocity}}#if ($xwiki.hasAccessLevel('edit', "Families.$!{reservedDocumentName}"))[[$services.localization.render('phenotips.globalHeader.createFamily')&gt;&gt;Families.Create]]#end{{/velocity}}</content>
-    </property>
-    <property>
-      <extensionPointId>phenotips.globalTools.create.entries</extensionPointId>
-    </property>
-    <property>
-      <name>phenotips.families.menu.createFamily</name>
-    </property>
-    <property>
-      <parameters>order=100</parameters>
-    </property>
-    <property>
-      <scope>wiki</scope>
-    </property>
-  </object>
-  <object>
-    <name>Families.WebHome</name>
-    <number>5</number>
-    <className>XWiki.UIExtensionClass</className>
-    <guid>39379f77-85ea-44d9-91e5-f65feb182e3a</guid>
-    <class>
-      <name>XWiki.UIExtensionClass</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <content>
-        <disabled>0</disabled>
-        <name>content</name>
-        <number>3</number>
-        <prettyName>Extension Content</prettyName>
-        <rows>10</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </content>
-      <extensionPointId>
-        <disabled>0</disabled>
-        <name>extensionPointId</name>
-        <number>1</number>
-        <prettyName>Extension Point ID</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </extensionPointId>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>2</number>
-        <prettyName>Extension ID</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parameters>
-        <disabled>0</disabled>
-        <name>parameters</name>
-        <number>4</number>
-        <prettyName>Extension Parameters</prettyName>
-        <rows>10</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </parameters>
-      <scope>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>scope</name>
-        <number>5</number>
-        <prettyName>Extension Scope</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>wiki=Current Wiki|user=Current User|global=Global</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </scope>
-    </class>
-    <property>
-      <content>{{velocity}}[[$services.localization.render('phenotips.globalHeader.browseFamilies')&gt;&gt;Families.WebHome]]{{/velocity}}</content>
+      <content>{{velocity}}[[$services.localization.render('phenotips.globalTools.browse.families')&gt;&gt;Families.WebHome]]{{/velocity}}</content>
     </property>
     <property>
       <extensionPointId>phenotips.globalTools.browse.entries</extensionPointId>
     </property>
     <property>
-      <name>phenotips.families.menu.BrowseFamilies</name>
+      <name>phenotips.globalTools.browse.families</name>
     </property>
     <property>
-      <parameters>order=100</parameters>
+      <parameters>order=10</parameters>
     </property>
     <property>
       <scope>wiki</scope>

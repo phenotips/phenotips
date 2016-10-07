@@ -447,6 +447,10 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
 .actionmenu {
   height: 1.8em;
 }
+/** Bug in Colibri: a custom font is used instead of the one used everywhere else. */
+.actionmenu a, .actionmenu a:visited {
+  font-family: inherit;
+}
 #phenotips-mainmenu, #phenotips-globalTools {
   background-color: rgba(255, 255, 255, 0.1);
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
@@ -455,7 +459,7 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   z-index: 6000;
 }
 #phenotips-mainmenu .menu-horizontal, #phenotips-globalTools .menu-horizontal {
-  font-size: 0.9em;
+  font-size: 1em;
 }
 #phenotips-mainmenu .topmenuentry {
   background-image: none;
@@ -466,10 +470,9 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   float: none;
   text-transform: none !important;
   font-weight: normal !important;
-  font-size: .9em;
+  font-size: 1em;
 }
 #phenotips-globalTools .search input {
-  height: 1.7em;
   margin-left: 0;
   margin-right: 5px;
   margin-top: 0.05em;
@@ -484,10 +487,6 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
 #phenotips-globalTools .menu.menu-horizontal ul ul {
   background-color: $theme.menuBackgroundColor;
 }
-#phenotips-globalTools .menu.menu-horizontal .xDropdown + ul &gt; li .fa {
-  visibility: hidden;
-  display: none;
-}
 #phenotips-globalTools .menu.menu-horizontal .xDropdown + ul {
   margin-left: 0;
 }
@@ -499,8 +498,8 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   color: $theme.menuLinkColor;
   cursor: pointer;
   display: inline-block;
-  font: 400 0.9em/1.8em sans-serif;
-  height: 1.8em;
+  font-family: inherit;
+  font-size: 1em;
   padding: 2px 0 0;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
   white-space: nowrap;
