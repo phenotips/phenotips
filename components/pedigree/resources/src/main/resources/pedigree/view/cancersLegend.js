@@ -27,11 +27,15 @@ define([
                                    "Lung": "#008080",      // teal
                                    "Brain": "#F5DEB3",     // (?) wheat
                                    "Oesophagus": "#BC8F8F", // (?) rosybrown
-                                   "Thyroid": "#FFFF00"     // yellow
+                                   "Thyroid" : "#FFFF00",  // yellow
+                                   "Liver" : "#770000",    // dark red
+                                   "Cervix": "#FFCCCC",    // light pink
+                                   "Myeloma" : "#FF0000",  // red 1
+                                   "Leukemia" : "#888888"  // gray
                                  };
             this._cancerLabels = { "Breast": "Breast cancer",
                                    "Ovarian": "Ovarian cancer",
-                                   "Colon": "Colon cancer",
+                                   "Colon": "Colorectal cancer",
                                    "Uterus": "Uterus cancer",
                                    "Prostate": "Prostate cancer",
                                    "Pancreatic": "Pancreatic cancer",
@@ -41,7 +45,11 @@ define([
                                    "Lung": "Lung cancer",
                                    "Brain": "Brain cancer",
                                    "Oesophagus": "Oesophagus cancer",
-                                   "Thyroid": "Thyroid cancer"
+                                   "Thyroid" : "Thyroid cancer",
+                                   "Liver" : "Liver cancer",
+                                   "Cervix": "Cervical cancer",
+                                   "Myeloma" : "Myeloma",
+                                   "Leukemia" : "Leukemia"
                                  };
             $super('Cancers', true);
         },
