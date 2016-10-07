@@ -648,7 +648,7 @@ h1:target, h2:target, h3:target {
 .main {
   padding-bottom: 0;
 }
-.gadget label[for=create-patient-record], .gadget label[for=create-fam] {
+.gadget label[for=create-patient-record], .gadget .extra {
   color: $theme.linkColor;
   cursor: pointer;
   float: right;
