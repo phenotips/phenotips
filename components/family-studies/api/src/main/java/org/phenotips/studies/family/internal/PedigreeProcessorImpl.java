@@ -105,6 +105,7 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
         try {
             phenotipsPatient = exchangeIds(externalPatient, phenotipsPatient, this.logger);
             phenotipsPatient = exchangeBasicPatientData(externalPatient, phenotipsPatient);
+            phenotipsPatient = exchangeLifeStatus(externalPatient, phenotipsPatient);
             phenotipsPatient = exchangeDates(externalPatient, phenotipsPatient, this.logger);
             phenotipsPatient = exchangePhenotypes(externalPatient, phenotipsPatient, this.hpoService, this.logger);
             phenotipsPatient = exchangeDisorders(externalPatient, phenotipsPatient, this.omimService, this.logger);
@@ -149,6 +150,19 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
 
         phenotipsPatientJSON.put("sex", pedigreePatient.opt("gender"));
         phenotipsPatientJSON.put("patient_name", name);
+        return phenotipsPatientJSON;
+    }
+
+    private static JSONObject exchangeLifeStatus(JSONObject pedigreePatient, JSONObject phenotipsPatientJSON)
+    {
+        String pedigreeLifeStatus = pedigreePatient.optString("lifeStatus", "");
+
+        String lifeStatus = "alive";
+        if (!StringUtils.equalsIgnoreCase(pedigreeLifeStatus, "alive")) {
+            lifeStatus = "deceased";
+        }
+
+        phenotipsPatientJSON.put("life_status", lifeStatus);
         return phenotipsPatientJSON;
     }
 

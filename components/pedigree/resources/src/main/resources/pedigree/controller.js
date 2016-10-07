@@ -613,6 +613,13 @@ define([
                                     editor.getGraph().setProperties( nodeID, node.getProperties() );
                                 }
 
+                                // remove life statuses not supported by PhenoTips - all loinked nodes should either
+                                // be "alive" or "deceased"
+                                if (Helpers.arrayContains(["stillborn", "unborn", "aborted","miscarriage"],node.getLifeStatus())) {
+                                    node.setLifeStatus("deceased");
+                                    editor.getGraph().setProperties( nodeID, node.getProperties() );
+                                }
+
                                 var changeSet = editor.getGraph().updateYPositioning();
                                 editor.getView().applyChanges(changeSet, true);
 
