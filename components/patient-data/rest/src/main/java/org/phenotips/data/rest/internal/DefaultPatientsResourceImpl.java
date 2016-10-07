@@ -95,7 +95,8 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
     private Provider<Autolinker> autolinker;
 
     @Override
-    public final Response add(final String json) {
+    public Response add(final String json)
+    {
         this.logger.debug("Importing new patient from JSON via REST: {}", json);
 
         final User currentUser = this.users.getCurrentUser();
@@ -109,7 +110,7 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
             if (json != null) {
                 response = json.startsWith("[") ? addPatients(json) : addPatient(json);
             } else {
-                response = buildResponse(this.repository.create());
+                response = buildCreatedResponse(this.repository.create());
             }
             return response;
         } catch (Exception ex) {
@@ -122,31 +123,37 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
      * Import new patients from their representation as a JSON array.
      *
      * @param json the JSON representation of the new patients to be created
-     * @return the location of the page displaying all patient data
+     * @return a response containing locations of the newly created patients in its body, if successful
      * @throws WebApplicationException if a {@link JSONArray} object cannot be created or one of the patient objects
      * is null
      * @throws NullPointerException if the patient was not created
      */
-    private Response addPatients(final String json) {
-        final JSONArray jsonArray;
+    private Response addPatients(final String json)
+    {
+        final JSONArray patientsData;
+        final JSONArray createdPatientUri = new JSONArray();
         try {
-            jsonArray = new JSONArray(json);
+            patientsData = new JSONArray(json);
         } catch (JSONException ex) {
             throw new WebApplicationException(Status.BAD_REQUEST);
         }
 
-        final int jsonArrayLength = jsonArray.length();
+        final int jsonArrayLength = patientsData.length();
         for (int i = 0; i < jsonArrayLength; i++) {
-            JSONObject jsonObject = jsonArray.optJSONObject(i);
+            JSONObject jsonObject = patientsData.optJSONObject(i);
             if (jsonObject == null) {
                 logger.warn("One of the members of the patient JSONArray is null.");
                 continue;
             }
             Patient patient = this.repository.create();
             patient.updateFromJSON(jsonObject);
+            final URI targetURI = UriBuilder.fromUri(this.uriInfo.getBaseUri())
+                .path(PatientResource.class)
+                .build(patient.getId());
+            createdPatientUri.put(targetURI);
         }
-        final URI targetURI = UriBuilder.fromUri(this.uriInfo.getBaseUri()).build();
-        final ResponseBuilder response = Response.created(targetURI);
+        final ResponseBuilder response = Response.created(null);
+        response.entity(createdPatientUri.toString());
         return response.build();
     }
 
@@ -158,22 +165,27 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
      * @throws WebApplicationException if a {@link JSONObject} cannot be created
      * @throws NullPointerException if the patient was not created
      */
-    private Response addPatient(final String json) {
-        final Patient patient = this.repository.create();
+    private Response addPatient(final String json)
+    {
+        JSONObject jsonObject;
         try {
-            patient.updateFromJSON(new JSONObject(json));
-            return buildResponse(patient);
+            jsonObject = new JSONObject(json);
         } catch (Exception ex) {
             throw new WebApplicationException(Status.BAD_REQUEST);
         }
+        final Patient patient = this.repository.create();
+        patient.updateFromJSON(jsonObject);
+        return buildCreatedResponse(patient);
     }
 
     /**
      * Creates a response upon successful creation of a {@link Patient}.
+     *
      * @param patient the successfully created patient
      * @return the response for a successfully created patient
      */
-    private Response buildResponse(final Patient patient) {
+    private Response buildCreatedResponse(final Patient patient)
+    {
         final URI targetURI = UriBuilder
                 .fromUri(this.uriInfo.getBaseUri())
                 .path(PatientResource.class)
