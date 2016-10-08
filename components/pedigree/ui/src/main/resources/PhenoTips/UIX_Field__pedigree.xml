@@ -495,7 +495,7 @@
   border-width: 1px;
   border-color: #636b75;
   margin-top: 10px;
-  cursor: pointer;
+  cursor: default;
   display: inline-block;
 }
 .pedigree-box.draw {
@@ -566,6 +566,9 @@
 .xdialog-box .button.delete-family {
   width: inherit;
   margin-right: 10px;
+}
+.pedigree-edit-trigger {
+  cursor: pointer;
 }</code>
     </property>
     <property>
@@ -720,7 +723,7 @@ $xwiki.jsx.use('PhenoTips.FamilySelector')##
     #end
     (% class="pedigree-wrapper" %)((({{html clean="false"}}
     &lt;input type="hidden" id="familyIdentifier" value="$!{family.getId()}" /&gt;
-    &lt;div style="display:inline-block;" id="pedigree-thumbnail" class="pedigree-box ${pClass} #if($canEditP) pedigree-edit-trigger #end" title="${pAction}" &gt;${pContent}&lt;/div&gt;
+    &lt;div id="pedigree-thumbnail" class="pedigree-box ${pClass} #if($canEditP)pedigree-edit-trigger#end" title="${pAction}" &gt;${pContent}&lt;/div&gt;
  ##
     #if ("$!image" != '')
       &lt;div class="pedigree-buttons" id="pedigree-buttons"&gt;
