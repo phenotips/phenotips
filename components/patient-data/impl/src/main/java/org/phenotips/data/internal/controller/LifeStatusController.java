@@ -122,9 +122,12 @@ public class LifeStatusController implements PatientDataController<String>
         if (lifeStatus != null && DECEASED.equals(lifeStatus.getValue())) {
             deathDateUnknown = 1;
         }
-        // check if date_of_death is set - if it is unknown_death_date should be unset
-        if (dates != null && dates.isNamed() && dates.get(PATIENT_DATEOFDEATH_FIELDNAME) != null) {
-            deathDateUnknown = 0;
+        if (dates != null && dates.isNamed()) {
+            PhenoTipsDate deathDate = dates.get(PATIENT_DATEOFDEATH_FIELDNAME);
+            // check if date_of_death is set - if it is unknown_death_date should be unset
+            if (deathDate != null && deathDate.isSet()) {
+                deathDateUnknown = 0;
+            }
         }
 
         data.setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, deathDateUnknown);

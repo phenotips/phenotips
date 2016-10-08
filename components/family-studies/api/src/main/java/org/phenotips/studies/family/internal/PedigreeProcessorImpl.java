@@ -155,7 +155,7 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
 
     private static JSONObject exchangeLifeStatus(JSONObject pedigreePatient, JSONObject phenotipsPatientJSON)
     {
-        String pedigreeLifeStatus = pedigreePatient.optString("lifeStatus", "");
+        String pedigreeLifeStatus = pedigreePatient.optString("lifeStatus", "alive");
 
         String lifeStatus = "alive";
         if (!StringUtils.equalsIgnoreCase(pedigreeLifeStatus, "alive")) {
