@@ -303,4 +303,14 @@ public class PhenoTipsDate
         }
         return result;
     }
+
+    /**
+     * Checks if the date is not empty.
+     *
+     * @return true if the date is not empty
+     */
+    public boolean isSet()
+    {
+        return !(this.year == null && this.month == null && this.day == null && this.rangeYears == null);
+    }
 }
