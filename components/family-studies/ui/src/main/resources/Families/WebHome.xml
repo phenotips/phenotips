@@ -606,7 +606,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
       </scope>
     </class>
     <property>
-      <content>{{velocity}}[[$services.localization.render('phenotips.globalTools.browse.families')&gt;&gt;Families.WebHome]]{{/velocity}}</content>
+      <content>{{velocity}}#if ($xwiki.hasAccessLevel('view', 'Families.WebHome'))[[$services.localization.render('phenotips.globalTools.browse.families')&gt;&gt;Families.WebHome]]#end{{/velocity}}</content>
     </property>
     <property>
       <extensionPointId>phenotips.globalTools.browse.entries</extensionPointId>
