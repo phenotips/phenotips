@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -109,7 +110,14 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
                     }
                     Files.copy(in, dest.toPath().resolve(vocabularyName + file), StandardCopyOption.REPLACE_EXISTING);
                 }
-                container.reload(vocabularyName);
+                if (solrCore != null) {
+                    container.reload(vocabularyName);
+                } else {
+                    // container.create will fail if core.properties is already there, so we temporarily delete it
+                    // FIXME We should first read the properties file as a map and pass it to container.create
+                    Files.delete(dest.toPath().resolve(vocabularyName + "/core.properties"));
+                    container.create(vocabularyName, Collections.<String, String>emptyMap());
+                }
             }
 
             this.core = new EmbeddedSolrServer(container, vocabularyName);
