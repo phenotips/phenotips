@@ -22,7 +22,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
+    <artifactId>phenotips-utilities</artifactId>
     <version>1.3-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-platform-svg</artifactId>
