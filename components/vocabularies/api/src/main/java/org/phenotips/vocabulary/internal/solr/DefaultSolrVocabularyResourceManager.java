@@ -115,9 +115,9 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
             this.core = new EmbeddedSolrServer(container, vocabularyName);
             this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
         } catch (final CacheException ex) {
-            throw new InitializationException("Cannot create cache: " + ex.getMessage());
+            throw new InitializationException("Cannot create cache: " + ex.getMessage(), ex);
         } catch (IOException ex) {
-            throw new InitializationException("Invalid Solr resource: ", ex);
+            throw new InitializationException("Invalid Solr resource: " + ex.getMessage(), ex);
         }
     }
 
