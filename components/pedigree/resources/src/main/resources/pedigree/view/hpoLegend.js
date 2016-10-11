@@ -16,7 +16,7 @@ define([
     var HPOLegend = Class.create( Legend, {
 
         initialize: function($super) {
-            $super("Phenotypes", true);
+            $super("Phenotypes", "phenotypes", true);
 
             this._termCache = {};
         },
@@ -87,9 +87,9 @@ define([
          * @param {Person} Person node
          * @param {String|Number} id ID of the phenotype being dropped
          */
-        _onDropObject: function(node, hpoID) {
-            if (node.isPersonGroup()) {
-                return;
+        _onDropObject: function($super, node, hpoID) {
+            if (!$super(node, hpoID)) {
+                return false;
             }
             var currentHPO = node.getHPO().slice(0);
             if (currentHPO.indexOf(hpoID) == -1) {

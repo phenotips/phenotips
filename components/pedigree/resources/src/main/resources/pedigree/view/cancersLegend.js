@@ -51,7 +51,7 @@ define([
                                    "Myeloma" : "Myeloma",
                                    "Leukemia" : "Leukemia"
                                  };
-            $super('Cancers', true);
+            $super('Cancers', 'cancers', true);
         },
 
         _getPrefix: function(id) {
@@ -97,9 +97,9 @@ define([
          * @param {Person} Person node
          * @param {String} id ID of the cancer being dropped
          */
-        _onDropObject: function(node, cancerID) {
-            if (node.isPersonGroup()) {
-                return;
+        _onDropObject: function($super, node, cancerID) {
+            if (!$super(node, cancerID)) {
+                return false;
             }
             var currentCancers = Helpers.cloneObject(node.getCancers());
             // only if the node does not have this cancer yet (either "not tested" or "unaffected")

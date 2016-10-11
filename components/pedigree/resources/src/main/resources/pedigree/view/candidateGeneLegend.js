@@ -8,7 +8,7 @@
     var CandidateGeneLegend = Class.create( GeneLegend, {
 
         initialize: function($super) {
-            $super('Candidate Genes',
+            $super('Candidate Genes', 'genes',
                    "candidate",
                    ['#81a270', '#c4e8c4', '#56a270', '#b3b16f', '#4a775a', '#65caa3'], // green palette
                    "getCandidateGenes",

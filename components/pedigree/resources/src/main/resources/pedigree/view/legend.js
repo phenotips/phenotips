@@ -12,7 +12,7 @@ define([
     ){
     var Legend = Class.create( {
 
-        initialize: function(title, allowDrop) {
+        initialize: function(title, droppableName, allowDrop, dropOnGroupNodes) {
             this._affectedNodes  = {};     // for each object: the list of affected person nodes
 
             this._objectColors = {};       // for each object: the corresponding object color
@@ -47,6 +47,8 @@ define([
             this._legendBox.hide();
             legendContainer.insert(this._legendBox);
 
+            this._droppableName = droppableName;
+
             var legendTitle= new Element('h2', {'class' : 'legend-title'}).update(title);
             this._legendBox.insert(legendTitle);
 
@@ -59,6 +61,8 @@ define([
             Element.observe(this._legendBox, 'mouseout', function() {
                 $$('.menu-box').invoke('setOpacity', 1);
             });
+
+            this._dropOnGroupNodes = dropOnGroupNodes;
 
             if (allowDrop) {
                 Droppables.add(editor.getWorkspace().canvas, {accept:  'drop-'+this._getPrefix(),
@@ -368,12 +372,12 @@ define([
             }
         },
 
-         _unhighlightAfterDrag: function() {
+        _unhighlightAfterDrag: function() {
             if (this._previousHighightedNode) {
                 this._previousHighightedNode.getGraphics().getHoverBox().setHighlighted(false);
                 this._previousHighightedNode = null;
              }
-         },
+        },
 
         /**
          * Callback for dragging an object from the legend onto nodes
@@ -383,17 +387,25 @@ define([
          * @param {String|Number} id ID of the object
          */
         _onDropObject: function(node, objectID) {
-            throw "drop functionality is not defined";
+            if (!this._dropOnGroupNodes && node.isPersonGroup()) {
+                this._onFailedDrag(node, "Can't drop onto this node: group nodes do not support " + this._droppableName, "Can't drag to this node");
+                return false;
+            }
+            if (!editor.getPatientAccessPermissions(node.getPhenotipsPatientId()).hasEdit) {
+                this._onFailedDrag(node, "You do not have edit right for this patient", "Can't drag to this patient");
+                return false;
+            }
+            return true;
         },
 
         /*
-        * IDs are used as part of HTML IDs in the Legend box, which breaks when IDs contain some non-alphanumeric symbols.
-        * For that purpose these symbols in IDs are converted in memory (but not in the stored pedigree) to a numeric value.
-        *
-        * @method _hashID
-        * @param {id} ID string to be converted
-        * @return {int} Hashed integer representation of input string
-        */
+         * IDs are used as part of HTML IDs in the Legend box, which breaks when IDs contain some non-alphanumeric symbols.
+         * For that purpose these symbols in IDs are converted in memory (but not in the stored pedigree) to a numeric value.
+         *
+         * @method _hashID
+         * @param {id} ID string to be converted
+         * @return {int} Hashed integer representation of input string
+         */
         _hashID : function(s){
           s.toLowerCase();
           if (!Array.prototype.reduce) {

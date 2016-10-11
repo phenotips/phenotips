@@ -268,8 +268,8 @@ define([
                 var updateMenuWithDiscardedChanges = function() {
                     editor.getNodeMenu().update();
                 }
-                editor.getOkCancelDialogue().showError("Can't save changes - you do not have edit rights for this patient",
-                                                       "Can't save changes", "OK", updateMenuWithDiscardedChanges);
+                editor.getOkCancelDialogue().showError("Can't apply changes - you do not have edit rights for this patient",
+                                                       "Can't apply changes", "OK", updateMenuWithDiscardedChanges);
                 return;
             }
 
