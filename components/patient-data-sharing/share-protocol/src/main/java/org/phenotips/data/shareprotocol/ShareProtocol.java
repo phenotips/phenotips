@@ -72,6 +72,12 @@ public class ShareProtocol
     // But we may explicitly disallow pushing to a known old version which is known to be incompatible
     public static final List<String> OLD_INCOPMATIBLE_VERSIONS = Arrays.asList();
 
+    // list of protocol versions that the current client can regress to.
+    // Those are listed explicitly because there is no way to tell if a version is old or new
+    // unless it is explicitly listed
+    public static final List<String> COMPATIBLE_OLD_SERVER_PROTOCOL_VERSIONS =
+            Arrays.asList(VERSION_1, VERSION_1_1);
+
     //=========================================================================
 
     // Every POST request should include the following parameters:

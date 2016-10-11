@@ -641,6 +641,12 @@
               <method>void fireRightsUpdateEvent(java.lang.String)</method>
               <justification>New way of notifying listeners that permissions on an entity have changed.</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/data/push/PushServerResponse</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getServerProtocolVersion()</method>
+              <justification>Improved handling of older push server protocol versions.</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
