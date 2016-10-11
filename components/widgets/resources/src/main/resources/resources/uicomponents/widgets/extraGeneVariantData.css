@@ -11,6 +11,9 @@
 .extradata-list td.counter {
   width: 3em;
 }
+.extradata-list td.gene {
+  padding-bottom: 1em;
+}
 .variant-row-count.variant, .extradata-list td.gene, .variant.variant-default-input {
   text-align: left;
 }
@@ -79,6 +82,8 @@
 }
 .gene-table td.variant.moreinfo {
   position: relative;
+  min-height: 2.5em;
+  width: 60%;
 }
 .gene-table td.variant.moreinfo input[type="button"]{
   float: right;
