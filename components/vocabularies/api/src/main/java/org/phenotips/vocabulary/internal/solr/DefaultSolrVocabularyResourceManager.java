@@ -126,6 +126,10 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
             throw new InitializationException("Cannot create cache: " + ex.getMessage(), ex);
         } catch (IOException ex) {
             throw new InitializationException("Invalid Solr resource: " + ex.getMessage(), ex);
+        } finally {
+            if (solrCore != null) {
+                solrCore.close();
+            }
         }
     }
 
