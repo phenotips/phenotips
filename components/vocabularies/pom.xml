@@ -40,4 +40,24 @@
     <module>chebi</module>
     <module>ethnicity</module>
   </modules>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>${basedir}/src/main/resources</directory>
+        <!-- Filter solrcore.properties -->
+        <filtering>true</filtering>
+        <includes>
+          <include>**/solrcore.properties</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${basedir}/src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>**/solrcore.properties</exclude>
+        </excludes>
+      </resource>
+    </resources>
+  </build>
 </project>

@@ -30,7 +30,7 @@
 
   <properties>
     <!-- More tests should be added when the Solr core becomes a component -->
-    <coverage.instructionRatio>0.25</coverage.instructionRatio>
+    <coverage.instructionRatio>0.23</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -52,6 +52,11 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-bridge</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-extension-distribution</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
