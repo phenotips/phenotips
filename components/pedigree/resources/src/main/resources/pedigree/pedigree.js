@@ -345,16 +345,16 @@ define([
                 } else if (currentPatientIsNotLinked) {
                     if (quitAfterSave) {
                         editor.getOkCancelDialogue().showCustomized(currentPatientUnlinkedMessage +
-                                "Do you want to remove current patient form the family?",
+                                "Do you want to remove current patient from the family?",
                                 "Remove current patient from the family?",
                                 "Keep editing pedigree", undefined,
-                                "Close pedigree and remove current patient form the family", saveAndQuitFunc);
+                                "Close pedigree and remove current patient from the family", saveAndQuitFunc);
                     } else {
                         editor.getOkCancelDialogue().showCustomized(currentPatientUnlinkedMessage +
-                                "Do you want to save the pedigree and remove current patient form the family?",
+                                "Do you want to save the pedigree and remove current patient from the family?",
                                 "Proceed with save?",
                                 "Keep editing pedigree", undefined, true,
-                                "Save pedigree with current patient excluded form the family", saveAndKeepEditingFunc);
+                                "Save pedigree with current patient excluded from the family", saveAndKeepEditingFunc);
                     }
                 } else {
                     if (quitAfterSave) {

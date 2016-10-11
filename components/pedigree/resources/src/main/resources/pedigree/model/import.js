@@ -634,7 +634,7 @@ define([
      *  2) "Unable to import pedigree"
      *
      * The method is a wrapper around the internal vlaidate method, which may throw many exceptions
-     * which change form version to version
+     * which change from version to version
      *
      * ===============================================================================================
      */

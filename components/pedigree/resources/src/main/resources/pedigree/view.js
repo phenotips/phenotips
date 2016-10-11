@@ -304,7 +304,7 @@ define([
 
             var intersections = this._lineSet.addLine( owner, x1, y1, x2, y2 );
 
-            // sort intersections by distance form the start
+            // sort intersections by distance from the start
             var compareDistanceToStart = function( p1, p2 ) {
                     var dist1 = (x1-p1.x)*(x1-p1.x) + (y1-p1.y)*(y1-p1.y);
                     var dist2 = (x1-p2.x)*(x1-p2.x) + (y1-p2.y)*(y1-p2.y);

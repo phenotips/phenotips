@@ -116,7 +116,7 @@ define([
 
         moveVertexToOrder: function ( rank, oldOrder, newOrder ) {
             // changes vertex order within the same rank. Insertion happens right before the node currently occupying the newOrder position
-            // (i.e. changing order form 3 to 4 does nothing, as before position 4 is still position 3)
+            // (i.e. changing order from 3 to 4 does nothing, as before position 4 is still position 3)
             var shiftAmount = (newOrder <= oldOrder) ? (newOrder - oldOrder) : (newOrder - oldOrder - 1);
             this.move( rank, oldOrder, shiftAmount );
         },

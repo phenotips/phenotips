@@ -91,7 +91,7 @@ define([
                     
                     // partner handle
                     var vertPosForPartnerHandles = y;
-                    //static part (going left form the node)
+                    //static part (going left from the node)
                     var path = [["M", x, vertPosForPartnerHandles],["L", x - PedigreeEditorParameters.attributes.personHandleBreakX, vertPosForPartnerHandles]];
                     editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(nodeShapes);
                     this.generateHandle('partnerR', x - PedigreeEditorParameters.attributes.personHandleBreakX + 2, vertPosForPartnerHandles, x - PedigreeEditorParameters.attributes.personHandleLength, vertPosForPartnerHandles,

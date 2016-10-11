@@ -261,7 +261,7 @@ define([
             // Note: we can't blank all patient properties here, since some are pedigree-specific
             // and not available in patient document and should be preserved in saved pedigree JSON
 
-            // Fields which are loaded form the patient document are:
+            // Fields which are loaded from the patient document are:
             // - first_name
             // - last_name
             // - sex
@@ -1494,7 +1494,7 @@ define([
                 //        moved.push(rel);
                 //}
 
-                // TODO: if this is one of only two twins remove twinGroupID form the remainin twin as it is no longer a twin
+                // TODO: if this is one of only two twins remove twinGroupID from the remainin twin as it is no longer a twin
 
                 this.DG.GG.remove(v);
                 //console.log("order before: " + Helpers.stringifyObject(this.DG.order));
@@ -2152,7 +2152,7 @@ define([
             // Note: newVOrder is expected to be a number between two existing orders, or higher than all, or lower than all
 
             // counts how many existing edges a new edge from given rank&order to given rank&order would cross
-            // if order is an integer, it is assumed it goes form an existing vertex
+            // if order is an integer, it is assumed it goes from an existing vertex
             // if order is inbetween two integers, it is assumed it is the position used for a new-to-be-inserted vertex
 
             // for simplicity (to know if we need to check outEdges or inEdges) get the edge in the correct direction
@@ -2926,7 +2926,7 @@ define([
 
                     //console.log("inserting " + newNodeId + " (->" + firstOnPath + "), rightSide: " + insertToTheRight + " (pos[relNode]: " + this.DG.positions[relNode] + ", pos[parent]: " + this.DG.positions[parent]);
 
-                    var parentOrder = this.DG.order.vOrder[parent]; // may have changed form what it was before due to insertions
+                    var parentOrder = this.DG.order.vOrder[parent]; // may have changed from what it was before due to insertions
 
                     var newOrder = insertToTheRight ? parentOrder + 1 : parentOrder;
                     if (insertToTheRight) {
@@ -3810,7 +3810,7 @@ define([
             // which case that node is added to the queue and then the following heuristic is applied:
             //  while queue is not empty:
             //
-            //  - pop a node form the queue and move it right just enough to have the desired spacing between the node
+            //  - pop a node from the queue and move it right just enough to have the desired spacing between the node
             //    and it's left neighbour. Check which nodes were affected because of this move:
             //    nodes to the right, parents & children. Shift those affected accordingly (see below) and add them to the queue.
             //
