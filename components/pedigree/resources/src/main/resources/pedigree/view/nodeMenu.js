@@ -975,11 +975,8 @@ define([
                 var _this = this;
                 noneButton.observe('click', function(event) {
                     for (var i = 0; i < cancersUIElements.length; i++) {
-                        // clear age if previous value was not "unaffected". If it is "unaffected"
-                        // already it will get overwritten by current age if age is known, or stay as it currently is otherwise
-                        if (cancersUIElements[i].status.value != "unaffected") {
-                            cancersUIElements[i].age.value = "";
-                        }
+                        // clear age. It will get overwritten by current age if age is known
+                        cancersUIElements[i].age.value = "";
                         cancersUIElements[i].status.value = "unaffected";
                         cancersUIElements[i].enableNotes();
                         cancersUIElements[i].age.enable();
