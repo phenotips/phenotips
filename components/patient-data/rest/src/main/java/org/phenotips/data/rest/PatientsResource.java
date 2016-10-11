@@ -46,15 +46,16 @@ import javax.ws.rs.core.Response;
 public interface PatientsResource
 {
     /**
-     * Import a new patient from its JSON representation.
+     * Import one or more patients from their JSON representation.
      *
-     * @param json the JSON representation of the new patient to add
-     * @return the location of the newly created patient if the operation was successful, or an error report otherwise
+     * @param json the JSON representation of the new patient(s) to add
+     * @return the location of the newly created patient if one patient was created and the operation was successful,
+     * null upon successful creation of several patients, and an error report otherwise
      */
     @Consumes(MediaType.APPLICATION_JSON)
     @POST
     @RequiredAccess("edit")
-    Response addPatient(String json);
+    Response add(String json);
 
     /**
      * @param start for large result set paging, the index of the first patient to display in the returned page

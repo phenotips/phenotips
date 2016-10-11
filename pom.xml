@@ -618,6 +618,18 @@
               <justification>Moved the functionality into a different module</justification>
             </difference>
             <difference>
+              <className>org/phenotips/data/rest/PatientsResource</className>
+              <differenceType>7012</differenceType>
+              <method>javax.ws.rs.core.Response add(java.lang.String)</method>
+              <justification>The method can now add one patient or many patients, renamed from addPatient</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/rest/PatientsResource</className>
+              <differenceType>7002</differenceType>
+              <method>javax.ws.rs.core.Response addPatient(java.lang.String)</method>
+              <justification>The method can now add one patient or many patients, renamed to add</justification>
+            </difference>
+            <difference>
               <className>org/phenotips/data/permissions/AccessLevel</className>
               <differenceType>7012</differenceType>
               <method>org.xwiki.security.authorization.Right getGrantedRight()</method>
