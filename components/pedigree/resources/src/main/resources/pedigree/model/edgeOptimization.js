@@ -300,7 +300,7 @@ define([
                 if (this.minLevels && value < this.minLevels[edge])
                     value = this.minLevels[edge];
                 newAssignemnt[edge] = value;
-                value++; // for next age to be different form this one
+                value++; // for next age to be different from this one
             }
 
             //console.log("[asearch] CompID[" + componentID + "]: Initial assignment:   " + Helpers.stringifyObject(initLevels)    + ", score: " + this.componentScoreFunc(initLevels, componentID));
@@ -314,7 +314,7 @@ define([
             //               + normalize after the change (e.g. remove unused levels + shift to make smallest used levle to be level #1)
 
             // 1. pick random edge
-            // 2. pick new random level for the edge (different form the old value)
+            // 2. pick new random level for the edge (different from the old value)
             // 3. while (value is forbidden or unchanged) increment value (if new>old) or decrement value (if new<old)
 
             //console.log("computeNeighbour - current: " + Helpers.stringifyObject(currentState));
@@ -350,7 +350,7 @@ define([
             }
             while (isAboveAll && isBelowAll);  // if both above all and below all no sense to play with the edge; need to pick another edge
 
-            // pick new random level for the edge (different form the old value)
+            // pick new random level for the edge (different from the old value)
             var newLevel;
             do {
                 // note: new level will be in the range = [0...maxUsedLevel+1]

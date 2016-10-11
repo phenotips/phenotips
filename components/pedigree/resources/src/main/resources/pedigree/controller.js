@@ -995,7 +995,7 @@ define([
                 editor.getOkCancelDialogue().showWithCheckbox("<br><b>Do you want to remove the connection between this<br>patient </b>(" + editor.getGraph().getPatientDescription(nodeID, true) +
                         ")<b> and this pedigree node?</b><br><br><br>" +
                         "<div style='margin-left: 30px; margin-right: 30px; text-align: center'>" +
-                        "Please note that if you do not assign this patient to another pedigree<br>node this patient will be removed form this family</div><br>",
+                        "Please note that if you do not assign this patient to another pedigree<br>node this patient will be removed from this family</div><br>",
                         'Remove the connection?', 'Clear data from this pedigree node', true, "Remove link", processLinkCallback, "Cancel", onCancelAssignPatient );
                 return;
             }

@@ -407,7 +407,7 @@ define([
             // Scriptaculous slider
             // see also http://madrobby.github.com/scriptaculous/slider/
             //
-            // Here a non-linear scale is used: slider positions form [0 to 0.9] correspond to
+            // Here a non-linear scale is used: slider positions from [0 to 0.9] correspond to
             // zoom coefficients from 1.25x to 0.25x, and zoom positions from (0.9 to 1]
             // correspond to single deepest zoom level 0.15x
             this.zoomSlider = new Control.Slider(this.__zoom.handle, this.__zoom.track, {
