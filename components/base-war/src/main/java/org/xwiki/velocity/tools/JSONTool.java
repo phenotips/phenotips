@@ -132,8 +132,7 @@ public class JSONTool
      * JSONP. If the argument is not valid JSON, then {@code null} is returned.
      *
      * @param json the string to parse, must be valid JSON
-     * @return the parsed JSON, that is a either a {@link org.json.JSONObject}, or {@code null} if the argument is not
-     * a valid JSON
+     * @return the parsed JSON Object, or {@code null} if the argument is not a valid JSON
      * @since 1.3M4
      */
     public JSONObject parseToJSONObject(String json)
@@ -152,8 +151,7 @@ public class JSONTool
      * JSONP. If the argument is not valid JSON, then {@code null} is returned.
      *
      * @param json the string to parse, must be valid JSON
-     * @return the parsed JSON, that is a either a {@link org.json.JSONArray}, or {@code null} if the argument is not
-     * a valid JSON
+     * @return the parsed JSON Array, or {@code null} if the argument is not a valid JSON array
      * @since 1.3M4
      */
     public JSONArray parseToJSONArray(String json)
