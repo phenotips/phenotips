@@ -32,6 +32,13 @@ import org.xwiki.stability.Unstable;
 public interface PushServerResponse
 {
     /**
+     * Returns the protocol version used by the server in the response.
+     *
+     * @return protocol version.
+     */
+    String getServerProtocolVersion();
+
+    /**
      * Returns the status of the requested action.
      *
      * @return {@code true} iff all of the following was true:

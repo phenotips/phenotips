@@ -16,7 +16,7 @@ define([
     var DisorderLegend = Class.create( Legend, {
 
         initialize: function($super) {
-            $super('Disorders', true);
+            $super('Disorders', "disorders", true, true /* allow drop on group nodes */);
 
             this._disorderCache = {};
         },
@@ -107,7 +107,10 @@ define([
          * @param {Person} Person node
          * @param {String|Number} id ID of the disorder being dropped
          */
-        _onDropObject: function(node, disorderID) {
+        _onDropObject: function($super, node, disorderID) {
+            if (!$super(node, disorderID)) {
+                return false;
+            }
             var currentDisorders = node.getDisorders().slice(0);
             if (currentDisorders.indexOf(disorderID) == -1) {   // only if the node does not have this disorder yet
                 currentDisorders.push(disorderID);

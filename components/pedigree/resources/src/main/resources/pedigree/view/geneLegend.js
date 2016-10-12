@@ -11,12 +11,12 @@
               Helpers) {
     var GeneLegend = Class.create( Legend, {
 
-        initialize: function($super, title, prefix, palette, getOperation, setOperation) {
+        initialize: function($super, title, droppableName, prefix, palette, getOperation, setOperation) {
             this.prefix = prefix;
             this.prefColors = palette;
             this.setOperation = setOperation; // for drag and drop
             this.getOperation = getOperation; // for drag and drop
-            $super(title, true);
+            $super(title, droppableName, true);
         },
 
         _getPrefix: function(id) {
@@ -60,9 +60,9 @@
          * @param {Person} Person node
          * @param {String|Number} id ID of the gene being dropped
          */
-        _onDropObject: function(node, geneID) {
-            if (node.isPersonGroup()) {
-                return;
+        _onDropObject: function($super, node, geneID) {
+            if (!$super(node, geneID)) {
+                return false;
             }
             var currentGenes = node[this.getOperation]();
             // TODO: check if indexof STILL MAKES SENSE

@@ -155,12 +155,11 @@ public class DefaultPushPatientData implements PushPatientData
     }
 
     private List<NameValuePair> generateRequestData(String actionName, String userName, String password,
-        String userToken)
+        String userToken, String protocolVersion)
     {
         List<NameValuePair> result = new LinkedList<>();
         result.add(new BasicNameValuePair(XWIKI_RAW_OUTPUT_KEY, XWIKI_RAW_OUTPUT_VALUE));
-        result.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_PROTOCOLVER,
-            ShareProtocol.CURRENT_PUSH_PROTOCOL_VERSION));
+        result.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_PROTOCOLVER, protocolVersion));
         result.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_ACTION, actionName));
         result.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_USERNAME, userName));
         if (StringUtils.isNotBlank(userToken)) {
@@ -196,13 +195,48 @@ public class DefaultPushPatientData implements PushPatientData
     public PushServerConfigurationResponse getRemoteConfiguration(String remoteServerIdentifier, String userName,
         String password, String userToken)
     {
+        // try to connect to server using current push protocol version
+        PushServerConfigurationResponse serverResponse = this.sendRemoteConfigurationRequest(
+                remoteServerIdentifier, userName, password, userToken, ShareProtocol.CURRENT_PUSH_PROTOCOL_VERSION);
+        if (serverResponse == null) {
+            return null;
+        }
+
+        // compatibility check: if selected server is using a no longer supported push protocol version
+        // a corresponding error should be returned
+        String serverProtocolVersion = serverResponse.getServerProtocolVersion();
+        if (serverProtocolVersion == null
+            || ShareProtocol.OLD_INCOPMATIBLE_VERSIONS.contains(serverProtocolVersion)) {
+            return new UnsupportedOldServerProtocolResponse();
+        }
+
+        if (serverResponse.isServerDoesNotAcceptClientProtocolVersion()
+            && ShareProtocol.COMPATIBLE_OLD_SERVER_PROTOCOL_VERSIONS.contains(serverProtocolVersion))
+        {
+            // server does not accept our initial protocol version, and it is one of the older supported verisons
+            // => fall back to the same version that server uses - and retry the connection
+            serverResponse = this.sendRemoteConfigurationRequest(
+                    remoteServerIdentifier, userName, password, userToken, serverProtocolVersion);
+        }
+
+        // store the last known version of push protocol used by the server, so that without client code
+        // worrying about that a proper serializer (when possible) is used when pushing data to that server
+        protocolVersionsCache.put(remoteServerIdentifier, serverProtocolVersion);
+
+        return serverResponse;
+    }
+
+    private PushServerConfigurationResponse sendRemoteConfigurationRequest(String remoteServerIdentifier, String userName,
+        String password, String userToken, String useProtocolVersion)
+    {
         this.logger.debug("===> Getting server configuration for: [{}]", remoteServerIdentifier);
 
         HttpPost method = null;
 
         try {
             method = generateRequest(remoteServerIdentifier,
-                generateRequestData(ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_INFO, userName, password, userToken));
+                generateRequestData(ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_INFO,
+                        userName, password, userToken, useProtocolVersion));
             if (method == null) {
                 return null;
             }
@@ -213,6 +247,8 @@ public class DefaultPushPatientData implements PushPatientData
 
                 String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
 
+                this.logger.debug("===> Push server response: [{}]", response);
+
                 // Can't be valid JSON with less than 2 characters: most likely empty response from an un-accepting
                 // server
                 if (response.length() < 2) {
@@ -221,18 +257,6 @@ public class DefaultPushPatientData implements PushPatientData
 
                 try {
                     JSONObject responseJSON = new JSONObject(response);
-
-                    // compatibility check: if selected server is using a no longer supported push protocol version
-                    // a corresponding error should be returned
-                    String protocolVersion = responseJSON.optString(
-                            ShareProtocol.SERVER_JSON_KEY_NAME_PROTOCOLVER, "unknown");
-                    if (ShareProtocol.OLD_INCOPMATIBLE_VERSIONS.contains(protocolVersion)) {
-                        return new UnsupportedOldServerProtocolResponse();
-                    }
-
-                    // store the last known version of push protocol for the server, so that without client code
-                    // worrying about that a proper serializer is used when pushing data to that server
-                    protocolVersionsCache.put(remoteServerIdentifier, protocolVersion);
 
                     return new DefaultPushServerConfigurationResponse(responseJSON);
                 } catch (Exception ex) {
@@ -262,8 +286,11 @@ public class DefaultPushPatientData implements PushPatientData
         HttpPost method = null;
 
         try {
+            String serverProtocolVersion = this.getProtocolVersionForPushingToServer(remoteServerIdentifier);
+
             List<NameValuePair> data =
-                generateRequestData(ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_PUSH, userName, password, userToken);
+                generateRequestData(ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_PUSH, userName, password, userToken,
+                        serverProtocolVersion);
             if (exportFields != null) {
                 // Version information is required in the JSON; when exportFields is null everything is included anyway
                 exportFields.add(VersionsController.getEnablingFieldName());
@@ -274,7 +301,6 @@ public class DefaultPushPatientData implements PushPatientData
             // if the target server is known to support only old versions of push protocol, replace
             // those fields which are not compatible with compatible alternatives (to trigger old serializers)
             if (protocolVersionsCache.containsKey(remoteServerIdentifier)) {
-                String serverProtocolVersion = protocolVersionsCache.get(remoteServerIdentifier);
                 if (ShareProtocol.INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS.containsKey(serverProtocolVersion)) {
                     this.logger.warn("Using old serializers for protocol version [{}] to push data to server [{}]",
                             serverProtocolVersion, remoteServerIdentifier);
@@ -341,7 +367,8 @@ public class DefaultPushPatientData implements PushPatientData
 
         try {
             List<NameValuePair> data =
-                generateRequestData(ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_GETID, userName, password, userToken);
+                generateRequestData(ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_GETID, userName, password, userToken,
+                        this.getProtocolVersionForPushingToServer(remoteServerIdentifier));
             data.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_GUID, remoteGUID));
 
             method = generateRequest(remoteServerIdentifier, data);
@@ -367,5 +394,12 @@ public class DefaultPushPatientData implements PushPatientData
             }
         }
         return null;
+    }
+
+    private String getProtocolVersionForPushingToServer(String remoteServerIdentifier)
+    {
+        return protocolVersionsCache.containsKey(remoteServerIdentifier)
+               ? protocolVersionsCache.get(remoteServerIdentifier)
+               : ShareProtocol.CURRENT_PUSH_PROTOCOL_VERSION;
     }
 }
