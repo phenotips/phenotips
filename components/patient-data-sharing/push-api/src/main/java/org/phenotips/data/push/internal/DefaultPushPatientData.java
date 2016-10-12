@@ -206,7 +206,7 @@ public class DefaultPushPatientData implements PushPatientData
         // a corresponding error should be returned
         String serverProtocolVersion = serverResponse.getServerProtocolVersion();
         if (serverProtocolVersion == null
-            || ShareProtocol.OLD_INCOPMATIBLE_VERSIONS.contains(serverProtocolVersion)) {
+            || ShareProtocol.OLD_INCOMPATIBLE_VERSIONS.contains(serverProtocolVersion)) {
             return new UnsupportedOldServerProtocolResponse();
         }
 

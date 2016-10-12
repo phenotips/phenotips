@@ -70,7 +70,7 @@ public class ShareProtocol
     // list of old push protocol versions which are explicitly not supported. The idea is that clients are
     // allowed to push to servers running unknown versions of push protocol (e.g. future not-yet-known versions).
     // But we may explicitly disallow pushing to a known old version which is known to be incompatible
-    public static final List<String> OLD_INCOPMATIBLE_VERSIONS = Arrays.asList();
+    public static final List<String> OLD_INCOMPATIBLE_VERSIONS = Arrays.asList();
 
     // list of protocol versions that the current client can regress to.
     // Those are listed explicitly because there is no way to tell if a version is old or new
