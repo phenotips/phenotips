@@ -160,11 +160,13 @@ define([
                         onSuccess: function(response) {
                             if (response.responseJSON && response.responseJSON.url) {
                                 $('body').insert('<iframe width="0" height="0" src="' + response.responseJSON.url + '"></iframe>');
+                            } else {
+                                response.request.options.onFailure({"errorMessage" : ""});
                             }
                         },
                         onFailure : function(response) {
                             var errorMessage = '';
-                            if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
+                            if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */ || response.errorMessage == '' /* no JSON or no JSON.url returned*/) {
                                 errorMessage = 'Server not responding';
                             } else if (response.getHeader('Content-Type').match(/^\s*text\/plain/)) {
                                 // Regard the body of plain text responses as custom status messages.
