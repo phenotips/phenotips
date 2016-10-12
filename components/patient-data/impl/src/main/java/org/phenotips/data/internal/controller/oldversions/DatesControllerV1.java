@@ -143,7 +143,7 @@ public class DatesControllerV1 implements PatientDataController<PhenoTipsDate>
             PhenoTipsDate data = noData ? null : datesData.get(propertyName);
 
             json.put(getJSONFieldName(propertyName),
-                ((data == null) ? "" : dateFormat.format(data.toEarliestPossibleISODate())));
+                ((data == null || !data.isSet()) ? "" : dateFormat.format(data.toEarliestPossibleISODate())));
         }
     }
 
