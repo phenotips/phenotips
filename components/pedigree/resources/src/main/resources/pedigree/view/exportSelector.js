@@ -177,6 +177,12 @@ define([
                             var d = new PhenoTips.widgets.ModalPopup(content, '', {'titleColor' : '#000'});
                             d.show();
                         },
+                        on1223 : function(response) {
+                            response.request.options.onSuccess(response);
+                        },
+                        on0 : function(response) {
+                            response.request.options.onFailure(response);
+                        },
                         parameters: {"image": exportString}
                     });
                 } else {
