@@ -40,6 +40,22 @@
   <content>{{include reference="PhenoTips.PedigreeMacros" /}}
 
 {{velocity}}
+#if ("$!request.action" == 'export')
+  {{html wiki="false" clean="false"}}
+  $response.setContentType('application/json')##
+  #if ("$!request.image" == '')
+    $response.setStatus(404)##
+    {"error" : "$services.localization.render('phenotips.PedigreeImageService.noPedigreeImage')"}
+    #break
+  #end
+  #set ($pedigreeRasterUrl = $services.svg.rasterizeToTemporaryResource($request.image))
+  #if ("$!request.getParameter('force-download')" == '1')
+    #set ($discard = $pedigreeRasterUrl.getParameters().put('force-download', '1'))
+  #end
+  {"url": "$pedigreeRasterUrl.serialize()"}
+  {{/html}}
+  #break
+#end
 #if ($xcontext.action != 'get')
   **Usage**: //http[s]:~/~/&lt;hostname&gt;[:&lt;port&gt;]/&lt;appname&gt;/bin/get/PhenoTips/PedigreeImageService?[e]id=&lt;identifier&gt;[&amp;format=raster]//
   #break

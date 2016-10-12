@@ -40,6 +40,8 @@ define([
 
             this.pedigreeInterface = new XWiki.Document('PedigreeInterface', 'PhenoTips');
 
+            this.pedigreeImageService = new XWiki.Document('PedigreeImageService', 'PhenoTips');
+
             // TODO: IE caches AJAX requests, so adding a random part to "load" URL to break that cache;
             //       investigate if this is still the case with new caching policy in PhenoTips
         },
@@ -140,6 +142,10 @@ define([
 
         getPedigreePreferencesURL: function() {
             return this.pedigreeInterface.getURL('get', 'action=getPreferences');
+        },
+
+        getPedigreeImageExportServiceURL: function() {
+            return this.pedigreeImageService.getURL('get','action=export&force-download=1');
         },
 
         redirectToURL: function(targetURL){

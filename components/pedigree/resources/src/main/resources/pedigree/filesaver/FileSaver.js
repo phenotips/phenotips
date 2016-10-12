@@ -238,12 +238,12 @@ define([
   // with an attribute `content` that corresponds to the window
 
   var saveTextAs = saveTextAs
-  || (function (textContent, fileName, charset) {
+  || (function (textContent, fileName, type) {
       fileName = fileName || 'pedigree.txt';
-      charset = charset || 'utf-8';
       textContent = (textContent || '').replace(/\r?\n/g, "\r\n");
+      type = type || "text/plain;charset=utf-8";
       if (saveAs && Blob) {
-          var blob = new Blob([textContent], { type: "text/plain;charset=" + charset });
+          var blob = new Blob([textContent], { type: type });
           saveAs(blob, fileName);
           return true;
       } else {//IE9-
@@ -279,9 +279,19 @@ define([
       }
   })
 
+  var saveTextFile = function (textContent, fileName) {
+	  saveTextAs(textContent, fileName, "text/plain;charset=utf-8");
+  }
+
+  var saveSVGFile = function (textContent, fileName) {
+	  saveTextAs(textContent, fileName, "data:image/svg+xml;charset=utf-8");
+  }
+
   var FileSaver = {};
   FileSaver.saveAs = saveAs;
   FileSaver.saveTextAs = saveTextAs;
+  FileSaver.saveTextFile = saveTextFile;
+  FileSaver.saveSVGFile = saveSVGFile;
 
   return FileSaver;
 });

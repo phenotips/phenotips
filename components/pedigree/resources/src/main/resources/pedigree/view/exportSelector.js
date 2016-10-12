@@ -32,6 +32,7 @@ define([
             typeListElement.insert(_addTypeOption(true,  "PED", "ped"));
             typeListElement.insert(_addTypeOption(false, "BOADICEA", "BOADICEA"));
             typeListElement.insert(_addTypeOption(false, "Simple JSON", "simpleJSON"));
+            typeListElement.insert(_addTypeOption(false, "Image", "image"));
             //TODO: typeListElement.insert(_addTypeOption(false, "Phenotips Pedigree JSON", "phenotipsJSON"));
 
             var fileDownload = new Element('a', {"id": 'downloadLink', "style": 'display:none'});
@@ -54,9 +55,15 @@ define([
             configListElementPED.insert(this._addConfigOption(false, "ped-options", "export-subconfig-label", "Generate new numeric IDs", "newid"));
             configListElementPED.insert(this._addConfigOption(false, "ped-options", "export-subconfig-label", "Using Names (when available)", "name"));
 
+            var configListElementImage = new Element('table', {"id": "imageOptions", "style": 'display:none'});
+            var label = new Element('label', {'class': 'export-config-header'}).insert("Select type of generated pedigree image");
+            configListElementImage.insert(label.wrap('td').wrap('tr'));
+            configListElementImage.insert(this._addConfigOption(true,  "image-options", "export-subconfig-label", "Raster image (PNG)", "png"));
+            configListElementImage.insert(this._addConfigOption(false, "image-options", "export-subconfig-label", "Scalable image (SVG)", "svg"));
+
             var promptConfig = new Element('div', {'class': 'import-section'}).update("Options:");
             var dataSection3 = new Element('div', {'class': 'import-block'});
-            dataSection3.insert(promptConfig).insert(configListElementJSON).insert(configListElementPED);
+            dataSection3.insert(promptConfig).insert(configListElementJSON).insert(configListElementPED).insert(configListElementImage);
             mainDiv.insert(dataSection3);
 
             var buttons = new Element('div', {'class' : 'buttons import-block-bottom'});
@@ -86,6 +93,7 @@ define([
             var pedOptionsTable = $("pedOptions");
             var pedDisorderOptions = $$('[name="ped-disorders-options"]');
             var jsonOptionsTable = $("jsonOptions");
+            var imageOptionsTable = $("imageOptions");
 
             if (exportType == "ped" || exportType == "BOADICEA") {
                 pedOptionsTable.show();
@@ -102,20 +110,20 @@ define([
                     pedDisorderOptions.each( function(item) {item.up('tr').show();});
                 }
                 jsonOptionsTable.hide();
+                imageOptionsTable.hide();
             } else {
                 pedOptionsTable.hide();
                 pedDisorderOptions.each( function(item) {item.up('tr').hide();});
-                jsonOptionsTable.show();
+                if (exportType == "simpleJSON") {
+                    jsonOptionsTable.show();
+                    imageOptionsTable.hide();
+                } else {
+                    jsonOptionsTable.hide();
+                    imageOptionsTable.show();
+                }
             }
         },
 
-        /**
-         * Loads the template once it has been selected
-         *
-         * @param event
-         * @param pictureBox
-         * @private
-         */
         _onExportStarted: function() {
             this.hide();
 
@@ -124,7 +132,58 @@ define([
             var exportType = $$('input:checked[type=radio][name="export-type"]')[0].value;
             //console.log("Import type: " + exportType);
 
-            if (exportType == "simpleJSON") {
+            if (exportType == "image") {
+                var imageType = $$('input:checked[type=radio][name="image-options"]')[0].value;
+
+                var _bbox = $('canvas').down().getBBox();
+                //set white background
+                var svgEl = $$("#canvas svg")[0];
+                var background = $$('.panning-background')[0];
+                svgEl.insertBefore(new Element('rect', {"id": "white-bbox-background",
+                                                        "width": _bbox.width,
+                                                        "height": _bbox.height,
+                                                        "x": _bbox.x,
+                                                        "y": _bbox.y,
+                                                        "fill": "white"}),
+                                   svgEl.firstChild
+                );
+
+                var svg = editor.getWorkspace().getSVGCopy();
+                var exportString = svg.getSVGText();
+                $('white-bbox-background').remove();
+
+                if (imageType == "png") {
+                    // generate PNG image on the back end
+                    var pedigreeImageExportServiceURL = editor.getExternalEndpoint().getPedigreeImageExportServiceURL();
+                    new Ajax.Request(pedigreeImageExportServiceURL, {
+                        method: 'POST',
+                        onSuccess: function(response) {
+                            if (response.responseJSON && response.responseJSON.url) {
+                                window.open(response.responseJSON.url);
+                            }
+                        },
+                        onFailure : function(response) {
+                            var errorMessage = '';
+                            if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
+                                  errorMessage = 'Server not responding';
+                              } else if (response.getHeader('Content-Type').match(/^\s*text\/plain/)) {
+                                  // Regard the body of plain text responses as custom status messages.
+                                  errorMessage = response.responseText;
+                              } else if (response.responseJSON && response.responseJSON.error) {
+                                  errorMessage = response.responseJSON.error;
+                            }
+                            var content = new Element('div', {'class' : 'box errormessage'});
+                            content.insert(new Element('p').update("Pedigree image export failed: " + errorMessage));
+                            var d = new PhenoTips.widgets.ModalPopup(content, '', {'titleColor' : '#000'});
+                            d.show();
+                        },
+                        parameters: {"image": exportString}
+                    });
+                } else {
+                     var fileName = patientDocument + ".svg";
+                }
+
+            } else if (exportType == "simpleJSON") {
                 var privacySetting = $$('input:checked[type=radio][name="export-options"]')[0].value;
                 var exportString = PedigreeExport.exportAsSimpleJSON(editor.getGraph().DG, privacySetting);
                 var fileName = patientDocument + ".json";
@@ -148,7 +207,11 @@ define([
 
             console.log("Export data: >>" + exportString + "<<");
             if (exportString != "") {
-                FileSaver.saveTextAs(exportString, fileName);
+                if (exportType != "image") {
+                    FileSaver.saveTextFile(exportString, fileName);
+                } else if (exportType == "image" && imageType == "svg") {
+                    FileSaver.saveSVGFile(exportString, fileName);
+                }
             }
         },
 
