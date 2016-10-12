@@ -298,8 +298,13 @@ define([
                     if (element.value == "all") {
                         $$('input[name="' + cssClass + '"]').each( function(item) {item.checked = element.checked;});
                     } else {
-                        // uncheck checkbox for "All"
-                        $$('input[name="' + cssClass + '"]')[0].checked = false;
+
+                        // either uncheck checkbox for "All" if some sub-items are unchcked, or check it if all
+                        // subitems became checked
+                        var unchecked = false;
+                        $$('input[name="' + cssClass + '"]').each( function(item) {if (item.value != "all" && !item.checked) { unchecked = true; };});
+
+                        $$('input[name="' + cssClass + '"]')[0].checked = !unchecked;
                     }
                 });
             }
