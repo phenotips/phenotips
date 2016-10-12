@@ -159,7 +159,7 @@ define([
                         method: 'POST',
                         onSuccess: function(response) {
                             if (response.responseJSON && response.responseJSON.url) {
-                                window.open(response.responseJSON.url);
+                                $('body').insert('<iframe width="0" height="0" src="' + response.responseJSON.url + '"></iframe>');
                             }
                         },
                         onFailure : function(response) {
