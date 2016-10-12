@@ -685,8 +685,11 @@ define([
 
           var id = nextUnusedID++;
           if (idGenerationPreference == "external" && pedigree.GG.properties[i].hasOwnProperty("externalID")) {
-              nextUnusedID--;
-              id = pedigree.GG.properties[i]["externalID"].replace(/\s/g, '_');
+              var modifiedExternalID = pedigree.GG.properties[i]["externalID"].replace(/\s/g, '_');
+              if (modifiedExternalID.length > 0) {
+                  nextUnusedID--;
+                  id = modifiedExternalID;
+              }
           } else if (idGenerationPreference == "name" && pedigree.GG.properties[i].hasOwnProperty("fName")) {
               nextUnusedID--;
               id = pedigree.GG.properties[i]["fName"].replace(/\s/g, '_');

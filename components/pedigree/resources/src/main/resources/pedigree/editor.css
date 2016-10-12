@@ -423,6 +423,9 @@
   height: 28em;
 }
 
+.print-preview-selector {
+  display: inline-block;
+}
 .import-selector {
   display: inline-block;
   padding: 15px !important;
@@ -499,7 +502,7 @@
   text-transform: none;
 }
 .ped-special-options .export-subconfig-label {
-  margin-left: 4.5em;
+  margin-left: 5em;
 }
 .import-mark-label1 {
   float: left;

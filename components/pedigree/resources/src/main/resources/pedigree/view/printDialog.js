@@ -25,7 +25,7 @@ define([
             this._printPageSet = {};
             this._printEngine = new PrintEngine();
 
-            var mainDiv = new Element('div', {'class': 'import-selector field-no-user-select cursor-normal'});
+            var mainDiv = new Element('div', {'class': 'print-preview-selector field-no-user-select cursor-normal'});
 
             var previewHeader = new Element('div', {'class': 'print-preview-header'}).update("Print preview:<br>(each block indicates a separate printed page; click on a page to exclude/include the page from print job)");
             this.previewContainer = new Element("div", {"id": "preview", "class": "preview-container"});
