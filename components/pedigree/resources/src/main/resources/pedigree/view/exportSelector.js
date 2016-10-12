@@ -165,12 +165,12 @@ define([
                         onFailure : function(response) {
                             var errorMessage = '';
                             if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-                                  errorMessage = 'Server not responding';
-                              } else if (response.getHeader('Content-Type').match(/^\s*text\/plain/)) {
-                                  // Regard the body of plain text responses as custom status messages.
-                                  errorMessage = response.responseText;
-                              } else if (response.responseJSON && response.responseJSON.error) {
-                                  errorMessage = response.responseJSON.error;
+                                errorMessage = 'Server not responding';
+                            } else if (response.getHeader('Content-Type').match(/^\s*text\/plain/)) {
+                                // Regard the body of plain text responses as custom status messages.
+                                errorMessage = response.responseText;
+                            } else if (response.responseJSON && response.responseJSON.error) {
+                                errorMessage = response.responseJSON.error;
                             }
                             var content = new Element('div', {'class' : 'box errormessage'});
                             content.insert(new Element('p').update("Pedigree image export failed: " + errorMessage));
