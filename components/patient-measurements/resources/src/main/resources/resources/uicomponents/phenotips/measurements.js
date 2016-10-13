@@ -659,6 +659,8 @@ var PhenoTips = (function(PhenoTips) {
     initialize: function($super, el, parent) {
       $super(el, parent);
 
+      // Read the configuration which specifies whether phenotypes should be automatically selected for abnormal measurements
+      this.detectPhenotypes = $('detect-phenotype-from-measurements') && ($('detect-phenotype-from-measurements').value == '1');
       // Track requests to the measurement evaluation service
       this.lastRequestID = 0;
 
@@ -716,7 +718,7 @@ var PhenoTips = (function(PhenoTips) {
           onSuccess: (function(resp) {
             if (requestID < this.lastRequestID) {return;}
             this._renderPercentileSd(pctlEl, resp.responseJSON);
-            if (eventType != 'input' && eventType != 'phenotips:measurement-updated') {
+            if (this.detectPhenotypes && eventType != 'input' && eventType != 'phenotips:measurement-updated') {
               this._selectAssocPhenotypes(resp.responseJSON['associated-terms']);
             }
           }).bind(this),
