@@ -103,6 +103,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
       &lt;dt&gt;&lt;label for="${configObj.getxWikiClass().name}_${configObj.number}_enableImperialUnitSystem"&gt;${doc.display("enableImperialUnitSystem", "edit", $configObj).replaceAll('\{\{/?html.*?}}', '')} ${configObj.getxWikiClass().get('enableImperialUnitSystem').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
       &lt;dt&gt;&lt;label for="${configObj.getxWikiClass().name}_${configObj.number}_measurementUnitSystem"&gt;${configObj.getxWikiClass().get('measurementUnitSystem').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
       &lt;dd&gt;${doc.display("measurementUnitSystem", "edit", $configObj).replaceAll('\{\{/?html.*?}}', '')}&lt;/dd&gt;
+      &lt;dt&gt;&lt;label for="${configObj.getxWikiClass().name}_${configObj.number}_detectPhenotype"&gt;${doc.display("detectPhenotype", "edit", $configObj).replaceAll('\{\{/?html.*?}}', '')} ${configObj.getxWikiClass().get('detectPhenotype').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
     &lt;/dl&gt;
   &lt;/fieldset&gt;
 
