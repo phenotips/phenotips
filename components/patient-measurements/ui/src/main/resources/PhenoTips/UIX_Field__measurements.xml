@@ -333,6 +333,7 @@ $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
   #end
   (% id="measurements" class="$!measurementUnitInfo"%)(((
     #if ($xcontext.action == 'edit')
+      {{html clean=false}}&lt;input type="hidden" id="detect-phenotype-from-measurements" value='$xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.MeasurementsConfigurationClass').getProperty('detectPhenotype').value'/&gt;{{/html}}
       #measurementSet()
     #end
     #foreach ($measurementSet in $measurementSets)
