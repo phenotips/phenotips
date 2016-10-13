@@ -276,6 +276,20 @@ $!value
         <values/>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </default>
+      <detectPhenotype>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>detectPhenotype</name>
+        <number>6</number>
+        <prettyName>Automatically select phenotypes associated with abnormal measurements</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </detectPhenotype>
       <enableImperialUnitSystem>
         <customDisplay/>
         <defaultValue/>
@@ -369,6 +383,9 @@ $!value
         <value>bmi</value>
         <value>hc</value>
       </default>
+    </property>
+    <property>
+      <detectPhenotype>1</detectPhenotype>
     </property>
     <property>
       <enableImperialUnitSystem>0</enableImperialUnitSystem>
