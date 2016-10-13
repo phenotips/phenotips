@@ -32,7 +32,7 @@
   <date>1425711017000</date>
   <contentUpdateDate>1425327202000</contentUpdateDate>
   <version>1.1</version>
-  <title>Date of death</title>
+  <title>$services.localization.render('phenotips.UIXField.dateOfDeath')</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
@@ -140,7 +140,7 @@
       <name>org.phenotips.patientSheet.field.date_of_death</name>
     </property>
     <property>
-      <parameters>title=Date of death
+      <parameters>title=$services.localization.render('phenotips.UIXField.dateOfDeath')
 enabled=true
 required=
 order=6
