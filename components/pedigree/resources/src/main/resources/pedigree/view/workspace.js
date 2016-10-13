@@ -159,17 +159,18 @@ define([
             // set display:block
             svgText = svgText.replace(/(<svg[^<>]+style=")/g, "$1display:block; ");
             // remove invisible elements to slim down svg
-            svgText = svgText.replace(/<[^<>]+display: ?none;[^<>]+([^/]><\/\w+|\/)>/g, "");
+            svgText = svgText.replace(/<[^<>]+display: ?none;[^<>]*([^/]><\/\w+|\/)>/g, "");
+            svgText = svgText.replace(/<text[^<>]+?class="hidden"[^<>]*>(.*?)<\/text>/g, "");
             // remove elements with opacity==0 to slim down svg
-            svgText = svgText.replace(/<[^<>]+[" ]opacity: ?0;[^<>]+([^/]><\/\w+|\/)>/g, "");
+            svgText = svgText.replace(/<[^<>]+[" ]opacity: ?0;[^<>]*([^/]><\/\w+|\/)>/g, "");
             // remove partnership clickable circles
-            svgText = svgText.replace(/<circle [^<>]+pedigree-partnership-circle[^<>]+([^/]><\/\w+|\/)>/g, "");
+            svgText = svgText.replace(/<circle [^<>]+?pedigree-partnership-circle[^<>]*([^/]><\/\w+|\/)>/g, "");
             // remove titles of the handles
-            svgText = svgText.replace(/<a [^<>]*xlink:title=[^<>]+([^/]><\/\w+|\/)>/g, "");
+            svgText = svgText.replace(/<a [^<>]*?xlink:title=[^<>]*([^/]><\/\w+|\/)>/g, "");
             // remove hoverboxes
-            svgText = svgText.replace(/<[^<>]+pedigree-hoverbox[^<>]+([^/]><\/\w+|\/)>/g, "");
+            svgText = svgText.replace(/<[^<>]+?pedigree-hoverbox[^<>]*([^/]><\/\w+|\/)>/g, "");
             // remove node shadows
-            svgText = svgText.replace(/<[^<>]+pedigree-node-shadow[^<>]+([^/]><\/\w+|\/)>/g, "");
+            svgText = svgText.replace(/<[^<>]+?pedigree-node-shadow[^<>]*([^/]><\/\w+|\/)>/g, "");
             // remove gradient definitions (only used for handles),
             // or they confuse the browser after used and discarded for print preview
             svgText = svgText.replace(/<linearGradient.*<\/linearGradient>/g, "");
@@ -182,8 +183,8 @@ define([
             // Safari xlink NS issue fix
             svgText = svgText.replace(/NS\d+:href/g, 'xlink:href');
             // Remove "current patient arrow and "C" indicator, plus the proband "P" indicator
-            svgText = svgText.replace(/<[^<>]+node-arrow-text[^<>]+([^/]>\s*(<tspan(.*?)\/tspan>)\s*<\/\w+|\/)>/g, "");
-            svgText = svgText.replace(/<[^<>]+node-arrow-type-C[^<>]+([^/]><\/\w+|\/)>/g, "");
+            svgText = svgText.replace(/<[^<>]+?node-arrow-text[^<>]*([^/]>\s*(<tspan(.*?)\/tspan>)\s*<\/\w+|\/)>/g, "");
+            svgText = svgText.replace(/<[^<>]+?node-arrow-type-C[^<>]*([^/]><\/\w+|\/)>/g, "");
 
             background.style.display = "";
 

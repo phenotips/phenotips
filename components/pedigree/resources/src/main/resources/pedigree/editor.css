@@ -423,6 +423,9 @@
   height: 28em;
 }
 
+.print-preview-selector {
+  display: inline-block;
+}
 .import-selector {
   display: inline-block;
   padding: 15px !important;
@@ -485,6 +488,21 @@
   float: left;
   margin: 0 1em 0 3.5em;
   text-align: left;
+}
+.export-subconfig-label.ped-option {
+  font-style: italic;
+}
+.ped-special-options .export-config-header {
+  margin-top: 0.5em;
+  margin-left: 4em;
+  text-transform: capitalize;
+}
+.ped-special-options .export-config-header.ped-header{
+  margin: 0.7em 1em 0 2.95em;
+  text-transform: none;
+}
+.ped-special-options .export-subconfig-label {
+  margin-left: 5em;
 }
 .import-mark-label1 {
   float: left;

@@ -41,16 +41,13 @@ define([
         },
 
         /**
-         * Returns a map disorderID -> disorderName
+         * Returns disorder name
+         *
+         * @param {Number|String} ID for this disorder
+         * @return {String} associated disorder name taken from the OMIM database
          */
-        getAllNames: function() {
-            var result = {};
-            for (var disorderID in this._affectedNodes) {
-                if (this._affectedNodes.hasOwnProperty(disorderID)) {
-                    result[disorderID] = this.getDisorder(disorderID).getName();
-                }
-            }
-            return result;
+        getName: function($super, disorderID) {
+            return this.getDisorder(disorderID).getName();
         },
 
         /**
@@ -126,7 +123,7 @@ define([
         /**
          * Generates a CSS color.
          * Has preference for some predefined colors that can be distinguished in gray-scale
-         * and are distint from gene colors.
+         * and are distinct from gene colors.
          *
          * @method generateColor
          * @return {String} CSS color

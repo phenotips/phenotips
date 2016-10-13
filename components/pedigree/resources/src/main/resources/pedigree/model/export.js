@@ -138,8 +138,11 @@ define([
    *       0 missing
    *       1 unaffected
    *       2 affected
+   *
+   *   NOTE: see PedigreeExport._computeDisorderStatusForPED() below for detailed explanation of
+   *         when "-9" is used and when "1" is used for unaffected nodes
    */
-  PedigreeExport.exportAsPED = function(pedigree, idGenerationPreference, selectedDisorders)
+  PedigreeExport.exportAsPED = function(pedigree, idGenerationPreference, selectedMap)
   {
      var output = "";
 
@@ -178,33 +181,136 @@ define([
          }
          output += (sex + " ");
 
-         var status = -9; //missing
-
-         if (!selectedDisorders) {
-             if (pedigree.GG.properties[i].hasOwnProperty("carrierStatus")) {
-                 if (pedigree.GG.properties[i]["carrierStatus"] == "affected" ||
-                     pedigree.GG.properties[i]["carrierStatus"] == "carrier"  ||
-                     pedigree.GG.properties[i]["carrierStatus"] == "presymptomatic")
-                     status = 2;
-                 else
-                     status = 1;
-             }
-         } else if (pedigree.GG.properties[i].hasOwnProperty("carrierStatus") &&
-             pedigree.GG.properties[i].hasOwnProperty("disorders")) {
-
-             var nodeDisorders = pedigree.GG.properties[i]["disorders"];
-             var intersection = selectedDisorders.filter(function (item) { return nodeDisorders.indexOf(item.defaultValue) > -1;});
-             //if node is affected of a selected disorder
-             if (intersection.length > 0 && pedigree.GG.properties[i]["carrierStatus"] == "affected")
-                     status = 2;
-                 else
-                     status = 1;
-         }
+         var status = PedigreeExport._computeDisorderStatusForPED(selectedMap, pedigree.GG.properties[i]);
 
          output += status + "\n";
      }
 
      return output;
+  }
+
+  PedigreeExport._computeDisorderStatusForPED = function(selectedMap, nodeProperties)
+  {
+      if (!selectedMap) {
+          return -9;
+      }
+      //
+      // status == "2" means "affected by one or more of the selected abnormalities"
+      //               (even if some other abnormallities are explicitly selected as "unaffected")
+      //
+      // status == "1" only for nodes which have a phenotype explicitly selected as "not present" or
+      //               a cancer explicitly selected as "unaffected"
+      //               AND
+      //               only if "phenotypes" and/or "cancers" are the only type of abnormality selected
+      //               for export. If both "phenotypes" and "cancers" are selected, code "1" is never used.
+      //
+      //               (the reason is it becomes amboiguous what "unaffected" means when multiuple abnormalities
+      //               are selected, since with the current datamodel for most abnormalities it is hard to
+      //               distinguish "missing data" from "not affected")
+      //
+      // status == "-9" is used in all other cases (for all other abnormalities, including disorders,
+      //                and including phenotypes when both phenotypes and some other abnormalities are selected.
+      //
+
+      var useStatus1 = !selectedMap.hasOwnProperty("ped-disorders-options") &&
+                       !selectedMap.hasOwnProperty("ped-candidateGenes-options") &&
+                       !selectedMap.hasOwnProperty("ped-causalGenes-options");
+      useStatus1 = useStatus1 && (!selectedMap.hasOwnProperty("ped-phenotypes-options") ||
+                                  !selectedMap.hasOwnProperty("ped-cancers-options"));
+
+      var listsIntersect = function(list1, list2) {
+          var intersection = list1.filter(function (item) { return list2.indexOf(item) > -1;});
+          return (intersection.length > 0);
+      };
+
+      var listIsASubsetOf = function(subset, superset) {
+          return subset.every(function (val) { return superset.indexOf(val) >= 0; });
+      };
+
+      for (var type in selectedMap) {
+          switch (type) {
+              case "ped-disorders-options":
+                  if (nodeProperties.hasOwnProperty("disorders")) {
+                      var nodeDisorders = nodeProperties["disorders"];
+                      if (listsIntersect(selectedMap[type], nodeDisorders)) {
+                          return 2; // affected
+                      }
+                  }
+                  break;
+
+              case "ped-candidateGenes-options":
+              case "ped-causalGenes-options":
+                  if (nodeProperties.hasOwnProperty("genes")) {
+                      var nodeGenes = nodeProperties["genes"];
+                      var genes = [];
+                      nodeGenes.each( function(item) {
+                          if ((type == "ped-candidateGenes-options") && (item.status == "candidate")) {
+                              genes.push(item.gene);
+                          } else
+                          if ((type == "ped-causalGenes-options") && (item.status == "solved")) {
+                              genes.push(item.gene);
+                          }
+                      });
+                      if (listsIntersect(selectedMap[type], genes)) {
+                          return 2; // affected
+                      }
+                  }
+                  break;
+
+              case "ped-phenotypes-options":
+                  if (nodeProperties.hasOwnProperty("features")) {
+                      var nodeFeatures = nodeProperties["features"];
+
+                      var presentFeatures = [];
+                      var absentFeatures = [];   //features explicitly absent
+                      nodeFeatures.each( function(item) {
+                          if (item.observed == "yes") {
+                              presentFeatures.push(item.id);
+                          } else {
+                              absentFeatures.push(item.id);
+                          }
+                      });
+
+                      // if at least one of the present features is in the selected list, mark as affected
+                      if (listsIntersect(selectedMap[type], presentFeatures)) {
+                          return 2;
+                      }
+                      // if not explicitly affected AND all of the selected features are explicitly not present
+                      // AND useStatus1 => return 1
+                      if (useStatus1 && listIsASubsetOf(selectedMap[type], absentFeatures)) {
+                          return 1;  // explicitly unaffected
+                      }
+                  }
+                  break;
+
+              case "ped-cancers-options":
+                  if (nodeProperties.hasOwnProperty("cancers")) {
+                      var nodeCancers = nodeProperties["cancers"];
+
+                      var affectedCancers = [];
+                      var unaffectedCancers = [];
+                      nodeCancers.each( function(item) {
+                          if (item.affected) {
+                              affectedCancers.push(item.id);
+                          } else {
+                              unaffectedCancers.push(item.id);
+                          }
+                      });
+
+                      // if at least one of the present cancers is in the selected list, mark as affected
+                      if (listsIntersect(selectedMap[type], affectedCancers)) {
+                          return 2;
+                      }
+                      // if not explicitly affected AND all of the selected cancers are explicitly not present
+                      // AND useStatus1 => return 1
+                      if (useStatus1 && listIsASubsetOf(selectedMap[type], unaffectedCancers)) {
+                          return 1;  // explicitly unaffected
+                      }
+                  }
+                  break;
+          }
+      }
+      return -9; // missing
   }
 
   //===============================================================================================
@@ -579,8 +685,11 @@ define([
 
           var id = nextUnusedID++;
           if (idGenerationPreference == "external" && pedigree.GG.properties[i].hasOwnProperty("externalID")) {
-              nextUnusedID--;
-              id = pedigree.GG.properties[i]["externalID"].replace(/\s/g, '_');
+              var modifiedExternalID = pedigree.GG.properties[i]["externalID"].replace(/\s/g, '_');
+              if (modifiedExternalID.length > 0) {
+                  nextUnusedID--;
+                  id = modifiedExternalID;
+              }
           } else if (idGenerationPreference == "name" && pedigree.GG.properties[i].hasOwnProperty("fName")) {
               nextUnusedID--;
               id = pedigree.GG.properties[i]["fName"].replace(/\s/g, '_');
