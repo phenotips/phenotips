@@ -95,7 +95,7 @@ public interface PatientRepository extends PrimaryEntityManager<Patient>
      *
      * @param id the patient's internal identifier, see {@link org.phenotips.data.Patient#getId()}
      * @return true if successful
-     * @deprecated use {@link #delete()} instead
+     * @deprecated use {@link #delete} instead
      */
     @Deprecated
     boolean deletePatient(String id);
