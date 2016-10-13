@@ -185,7 +185,7 @@ define([
                         on0 : function(response) {
                             response.request.options.onFailure(response);
                         },
-                        parameters: {"image": exportString}
+                        parameters: {"image": exportString, "filename": patientDocument + ".png"}
                     });
                 } else {
                      var fileName = patientDocument + ".svg";

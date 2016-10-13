@@ -51,6 +51,9 @@
   #set ($pedigreeRasterUrl = $services.svg.rasterizeToTemporaryResource($request.image))
   #if ("$!request.getParameter('force-download')" == '1')
     #set ($discard = $pedigreeRasterUrl.getParameters().put('force-download', '1'))
+    #if ("$!request.getParameter('filename')" != '')
+      #set ($discard = $pedigreeRasterUrl.getParameters().put('force-filename', "$!request.getParameter('filename')"))
+    #end
   #end
   {"url": "$pedigreeRasterUrl.serialize()"}
   {{/html}}
