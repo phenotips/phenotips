@@ -90,7 +90,7 @@ public class PhenotipsFamilyPermissions
     {
         String[] entityList = new String[2];
 
-        // samity check - if given right is not contained in the full rights means it is a wrong accessString
+        // sanity check - if given right is not contained in the full rights means it is a wrong accessString
         if (VIEWEDITDELETE_RIGHTS.contains(rightName)) {
             int i = 0;
             for (Set<String> category : this.getEntitiesWithAccess(patientDoc, rightName)) {
