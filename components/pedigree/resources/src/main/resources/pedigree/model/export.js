@@ -199,10 +199,10 @@ define([
       //               (even if some other abnormallities are explicitly selected as "unaffected")
       //
       // status == "1" only for nodes which have a phenotype explicitly selected as "not present" or
-      //               a cancer explicitly selected as "unaffected"
+      //               a cancer explicitly selected as "unaffected" or a gene is explicitly selected as "rejected"
       //               AND
-      //               only if "phenotypes" and/or "cancers" are the only type of abnormality selected
-      //               for export. If both "phenotypes" and "cancers" are selected, code "1" is never used.
+      //               only if one type of abnormality is selected, e.g. only "phenotypes" or only "cancers"
+      //               or only genes (e.g. if both "phenotypes" and "cancers" are selected, code "1" is never used).
       //
       //               (the reason is it becomes amboiguous what "unaffected" means when multiuple abnormalities
       //               are selected, since with the current datamodel for most abnormalities it is hard to
@@ -212,11 +212,19 @@ define([
       //                and including phenotypes when both phenotypes and some other abnormalities are selected.
       //
 
-      var useStatus1 = !selectedMap.hasOwnProperty("ped-disorders-options") &&
-                       !selectedMap.hasOwnProperty("ped-candidateGenes-options") &&
-                       !selectedMap.hasOwnProperty("ped-causalGenes-options");
-      useStatus1 = useStatus1 && (!selectedMap.hasOwnProperty("ped-phenotypes-options") ||
-                                  !selectedMap.hasOwnProperty("ped-cancers-options"));
+      var disordersSelected     = selectedMap.hasOwnProperty("ped-disorders-options");
+      var phenotypesSelected    = selectedMap.hasOwnProperty("ped-phenotypes-options");
+      var cancersSelected       = selectedMap.hasOwnProperty("ped-cancers-options");
+      var candidateGeneSelected = selectedMap.hasOwnProperty("ped-candidateGenes-options");
+      var causalGeneSelected    = selectedMap.hasOwnProperty("ped-causalGenes-options");
+      var genesSelected         = candidateGeneSelected || causalGeneSelected;
+
+      var atMostOneSelected = function(a, b, c) {
+          return a ? (!b && !c) : (!b || !c);
+      }
+
+      var useStatus1 = !disordersSelected &&
+                       atMostOneSelected(genesSelected, phenotypesSelected, cancersSelected);
 
       var listsIntersect = function(list1, list2) {
           var intersection = list1.filter(function (item) { return list2.indexOf(item) > -1;});
@@ -227,93 +235,114 @@ define([
           return subset.every(function (val) { return superset.indexOf(val) >= 0; });
       };
 
-      for (var type in selectedMap) {
-          switch (type) {
-              case "ped-disorders-options":
-                  if (nodeProperties.hasOwnProperty("disorders")) {
-                      var nodeDisorders = nodeProperties["disorders"];
-                      if (listsIntersect(selectedMap[type], nodeDisorders)) {
-                          return 2; // affected
-                      }
-                  }
-                  break;
-
-              case "ped-candidateGenes-options":
-              case "ped-causalGenes-options":
-                  if (nodeProperties.hasOwnProperty("genes")) {
-                      var nodeGenes = nodeProperties["genes"];
-                      var genes = [];
-                      nodeGenes.each( function(item) {
-                          if ((type == "ped-candidateGenes-options") && (item.status == "candidate")) {
-                              genes.push(item.gene);
-                          } else
-                          if ((type == "ped-causalGenes-options") && (item.status == "solved")) {
-                              genes.push(item.gene);
-                          }
-                      });
-                      if (listsIntersect(selectedMap[type], genes)) {
-                          return 2; // affected
-                      }
-                  }
-                  break;
-
-              case "ped-phenotypes-options":
-                  if (nodeProperties.hasOwnProperty("features")) {
-                      var nodeFeatures = nodeProperties["features"];
-
-                      var presentFeatures = [];
-                      var absentFeatures = [];   //features explicitly absent
-                      nodeFeatures.each( function(item) {
-                          if (item.observed == "yes") {
-                              presentFeatures.push(item.id);
-                          } else {
-                              absentFeatures.push(item.id);
-                          }
-                      });
-
-                      // if at least one of the present features is in the selected list, mark as affected
-                      if (listsIntersect(selectedMap[type], presentFeatures)) {
-                          return 2;
-                      }
-                      // if not explicitly affected AND all of the selected features are explicitly not present
-                      // AND useStatus1 => return 1
-                      if (useStatus1 && listIsASubsetOf(selectedMap[type], absentFeatures)) {
-                          return 1;  // explicitly unaffected
-                      }
-                  }
-                  break;
-
-              case "ped-cancers-options":
-                  if (nodeProperties.hasOwnProperty("cancers")) {
-                      var nodeCancers = nodeProperties["cancers"];
-
-                      var affectedCancers = [];
-                      var unaffectedCancers = [];
-                      for (var cancerID in nodeCancers) {
-                          if (nodeCancers.hasOwnProperty(cancerID)) {
-                              var cancer = nodeCancers[cancerID];
-                              if (cancer.affected) {
-                                  affectedCancers.push(cancerID);
-                              } else {
-                                  unaffectedCancers.push(cancerID);
-                              }
-                          }
-                      }
-
-                      // if at least one of the present cancers is in the selected list, mark as affected
-                      if (listsIntersect(selectedMap[type], affectedCancers)) {
-                          return 2;
-                      }
-                      // if not explicitly affected AND all of the selected cancers are explicitly not present
-                      // AND useStatus1 => return 1
-                      if (useStatus1 && listIsASubsetOf(selectedMap[type], unaffectedCancers)) {
-                          return 1;  // explicitly unaffected
-                      }
-                  }
-                  break;
+      if (disordersSelected) {
+          if (nodeProperties.hasOwnProperty("disorders")) {
+              var nodeDisorders = nodeProperties["disorders"];
+              if (listsIntersect(selectedMap["ped-disorders-options"], nodeDisorders)) {
+                  return 2; // affected
+              }
           }
       }
-      return -9; // missing
+
+      if (genesSelected) {
+          if (nodeProperties.hasOwnProperty("genes")) {
+              var nodeGenes = nodeProperties["genes"];
+              var candidateGenes = [];
+              var solvedGenes    = [];
+              var negativeGenes = [];
+              nodeGenes.each( function(item) {
+                  if (candidateGeneSelected && (item.status == "candidate")) {
+                      candidateGenes.push(item.gene);
+                  } else
+                  if (causalGeneSelected && (item.status == "solved")) {
+                      solvedGenes.push(item.gene);
+                  }
+                  if (item.status == "rejected") {
+                      negativeGenes.push(item.gene);
+                  }
+              });
+              // if at least one of the possible genes is in the selected list, mark as affected
+              if (candidateGeneSelected && listsIntersect(selectedMap["ped-candidateGenes-options"], candidateGenes)) {
+                  return 2; // affected
+              }
+              if (causalGeneSelected && listsIntersect(selectedMap["ped-causalGenes-options"], solvedGenes)) {
+                  return 2; // affected
+              }
+              // if not explicitly affected AND all of the selected genes are explicitly not present
+              // AND useStatus1 => return 1
+              if (useStatus1) {
+                  var allSelectedAreNegative = true;
+                  if (candidateGeneSelected && !listIsASubsetOf(selectedMap["ped-candidateGenes-options"], negativeGenes)) {
+                      allSelectedAreNegative = false;
+                  }
+                  if (causalGeneSelected && !listIsASubsetOf(selectedMap["ped-causalGenes-options"], negativeGenes)) {
+                      allSelectedAreNegative = false;
+                  }
+                  if (allSelectedAreNegative) {
+                      return 1; // explicitly unaffected
+                  }
+                  // else: none are affecting, but some of the selected genes are not reported in any status for
+                  //       this node => use the default "missing" status
+              }
+          }
+      }
+
+      if (phenotypesSelected) {
+          if (nodeProperties.hasOwnProperty("features")) {
+              var nodeFeatures = nodeProperties["features"];
+
+              var presentFeatures = [];
+              var absentFeatures = [];   //features explicitly absent
+              nodeFeatures.each( function(item) {
+                  if (item.observed == "yes") {
+                      presentFeatures.push(item.id);
+                  } else {
+                      absentFeatures.push(item.id);
+                  }
+              });
+
+              // if at least one of the present features is in the selected list, mark as affected
+              if (listsIntersect(selectedMap["ped-phenotypes-options"], presentFeatures)) {
+                  return 2;
+              }
+              // if not explicitly affected AND all of the selected features are explicitly not present
+              // AND useStatus1 => return 1
+              if (useStatus1 && listIsASubsetOf(selectedMap["ped-phenotypes-options"], absentFeatures)) {
+                  return 1;  // explicitly unaffected
+              }
+          }
+      }
+
+      if (cancersSelected) {
+          if (nodeProperties.hasOwnProperty("cancers")) {
+              var nodeCancers = nodeProperties["cancers"];
+
+              var affectedCancers = [];
+              var unaffectedCancers = [];
+              for (var cancerID in nodeCancers) {
+                  if (nodeCancers.hasOwnProperty(cancerID)) {
+                      var cancer = nodeCancers[cancerID];
+                      if (cancer.affected) {
+                          affectedCancers.push(cancerID);
+                      } else {
+                          unaffectedCancers.push(cancerID);
+                      }
+                  }
+              }
+
+              // if at least one of the present cancers is in the selected list, mark as affected
+              if (listsIntersect(selectedMap["ped-cancers-options"], affectedCancers)) {
+                  return 2;
+              }
+              // if not explicitly affected AND all of the selected cancers are explicitly not present
+              // AND useStatus1 => return 1
+              if (useStatus1 && listIsASubsetOf(selectedMap["ped-cancers-options"], unaffectedCancers)) {
+                  return 1;  // explicitly unaffected
+              }
+          }
+      }
+
+      return -9; // default: "missing"
   }
 
   //===============================================================================================
