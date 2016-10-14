@@ -730,11 +730,11 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
   (% class="controlled-group complete-hide" %)(((
   (% class="fieldset unaffected controller exclude" %)(((
   #if ($xcontext.action == 'edit')
-    $doc.display('unaffected') #__label('unaffected' '' "$class.get('unaffected').prettyName")
+    $doc.display('unaffected') #__label('unaffected' '' "$class.get('unaffected').translatedPrettyName")
 
     (% class="hint controlled" %)$services.localization.render('phenotips.UIXField.phenotype.selectPhenotypes')(%%) {{icon name="question-circle" cssClass="xHelpButton controlled" title="$services.localization.render("PhenoTips.PatientClass_select_phenotypes_hint").replace('"', '~~~"')"/}}
   #else
-    #if ($showUnaffected)$class.get('unaffected').prettyName#end
+    #if ($showUnaffected)$class.get('unaffected').translatedPrettyName#end
   #end
   )))
   (% class="controlled" %) (((

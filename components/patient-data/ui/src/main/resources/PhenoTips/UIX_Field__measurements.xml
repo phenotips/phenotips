@@ -143,9 +143,9 @@
       #set ($o = $obj.obj)
       #foreach($prop in $dataClass.properties)
         #if ($prop.name == 'date' || $prop.name == 'age')
-          |= ${prop.prettyName}: |=(% colspan="2" %) $doc.display($prop.getName(), $o)
+          |= ${prop.translatedPrettyName}: |=(% colspan="2" %) $doc.display($prop.getName(), $o)
         #elseif (!$prop.name.endsWith('_evaluation') &amp;&amp; "$!o.getProperty($prop.getName()).value" != '')
-          |= ${prop.prettyName}: | $doc.display($prop.getName(), $o) | $!doc.display("${prop.getName()}_evaluation", $o)
+          |= ${prop.translatedPrettyName}: | $doc.display($prop.getName(), $o) | $!doc.display("${prop.getName()}_evaluation", $o)
         #end
       #end
     #end## foreach object

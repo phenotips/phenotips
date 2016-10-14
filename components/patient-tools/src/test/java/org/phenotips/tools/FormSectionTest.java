@@ -17,15 +17,26 @@
  */
 package org.phenotips.tools;
 
+import org.phenotips.components.ComponentManagerRegistry;
+import org.phenotips.translation.TranslationManager;
+
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
+
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.inject.Provider;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class FormSectionTest
 {
@@ -42,13 +53,30 @@ public class FormSectionTest
     String propertyName = "phenotype";
 
     @Before
-    public void setUp()
+    public void setUp() throws ComponentLookupException, NoSuchFieldException, IllegalArgumentException,
+        IllegalAccessException
     {
         List<String> categories = new LinkedList<String>();
         this.testFormSection = new FormSection(this.title, this.propertyName, categories);
         this.testFormField = mock(FormField.class);
         this.testFormGroup = mock(FormGroup.class);
         this.fieldNames = new String[] { "phenotype", "negative_phenotype" };
+        Field field = ReflectionUtils.getField(ComponentManagerRegistry.class, "cmProvider");
+        boolean isAccessible = field.isAccessible();
+        try {
+            field.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            Provider<ComponentManager> cmp = mock(Provider.class);
+            field.set(null, cmp);
+            ComponentManager cm = mock(ComponentManager.class);
+            when(cmp.get()).thenReturn(cm);
+            TranslationManager tm = mock(TranslationManager.class);
+            when(cm.getInstance(TranslationManager.class)).thenReturn(tm);
+            when(tm.translate("Phenotips.FormSection.suggestTermPlaceholder")).thenReturn(
+                "enter free text and choose among suggested vocabulary terms");
+        } finally {
+            field.setAccessible(isAccessible);
+        }
     }
 
     @Test
@@ -74,14 +102,16 @@ public class FormSectionTest
         Assert.assertEquals("", this.testFormSection.display(DisplayMode.View, this.fieldNames));
 
         this.testFormSection.addCustomElement(this.testFormField);
-        String expectedCustomDisplay = "<div class='phenotype-group' style='" + "display:none"
-            + "'><h3 id='Htitle'><span>" + this.title
-            + "</span></h3><div class='phenotype-main predefined-entries'></div>"
-            + "<div class='phenotype-other custom-entries'><div class=\"custom-display-data\">null</div>"
-            + "<label for='phenotype_0." + "\\d+" + "' class='label-other label-other-phenotype'>Other</label>"
-            + "<input type='text' name='phenotype' class='suggested multi suggest-hpo generateYesNo accept-value'"
-            + " value='' size='16' id='phenotype_0." + "\\d+" + "' placeholder='enter free text and choose among "
-            + "suggested ontology terms'/><input type='hidden' value='' name='_category'/></div></div>";
+        String expectedCustomDisplay =
+            "<div class='phenotype-group' style='" + "display:none"
+                + "'><h3 id='Htitle'><span>" + this.title
+                + "</span></h3><div class='phenotype-main predefined-entries'></div>"
+                + "<div class='phenotype-other custom-entries'><div class=\"custom-display-data\">null</div>"
+                + "<label for='phenotype_0." + "\\d+" + "' class='label-other label-other-phenotype'>Other</label>"
+                + "<input type='text' name='phenotype' class='suggested multi suggest-hpo generateYesNo accept-value'"
+                + " value='' size='16' id='phenotype_0." + "\\d+"
+                + "' placeholder='enter free text and choose among suggested vocabulary terms'/>"
+                + "<input type='hidden' value='' name='_category'/></div></div>";
 
         String customDisplayResult = this.testFormSection.display(DisplayMode.Edit, this.fieldNames);
         Assert.assertTrue(customDisplayResult.matches(expectedCustomDisplay));
@@ -93,9 +123,10 @@ public class FormSectionTest
                 + "<div class=\"custom-display-data\">null</div><label for='phenotype_0." + "\\d+"
                 + "' class='label-other "
                 + "label-other-phenotype'>Other</label><input type='text' name='phenotype' class='suggested multi suggest-hpo "
-                + "generateYesNo accept-value' value='' size='16' id='phenotype_0." + "\\d+"
-                + "' placeholder='enter free "
-                + "text and choose among suggested ontology terms'/><input type='hidden' value='' name='_category'/></div>"
+                + "generateYesNo accept-value' value='' size='16' id='phenotype_0."
+                + "\\d+"
+                + "' placeholder='enter free text and choose among suggested vocabulary terms'/>"
+                + "<input type='hidden' value='' name='_category'/></div>"
                 + "</div>";
         String displayResult = this.testFormSection.display(DisplayMode.Edit, this.fieldNames);
         Assert.assertTrue(displayResult.matches(expectedDisplay));

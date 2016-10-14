@@ -117,7 +117,7 @@
   #if ($xcontext.action == 'edit')
     (% class="controlled-group complete-hide" %)(((
       (% class="controller" %)(((
-        $doc.display('proband') #__label('proband' 'section' "$class.get('proband').prettyName")
+        $doc.display('proband') #__label('proband' 'section' "$class.get('proband').translatedPrettyName")
       )))
       (% class="controlled" %)(((
         #__displayFormatted('2-col' 'family_of' '' '' '')
@@ -125,7 +125,7 @@
     )))
   #else
     #if ($showProband)
-      $class.get('proband').prettyName
+      $class.get('proband').translatedPrettyName
     #else
       #__displayFormatted('2-col' 'family_of' '' '' '')
     #end
