@@ -289,13 +289,16 @@ define([
 
                       var affectedCancers = [];
                       var unaffectedCancers = [];
-                      nodeCancers.each( function(item) {
-                          if (item.affected) {
-                              affectedCancers.push(item.id);
-                          } else {
-                              unaffectedCancers.push(item.id);
+                      for (var cancerID in nodeCancers) {
+                          if (nodeCancers.hasOwnProperty(cancerID)) {
+                              var cancer = nodeCancers[cancerID];
+                              if (cancer.affected) {
+                                  affectedCancers.push(cancerID);
+                              } else {
+                                  unaffectedCancers.push(cancerID);
+                              }
                           }
-                      });
+                      }
 
                       // if at least one of the present cancers is in the selected list, mark as affected
                       if (listsIntersect(selectedMap[type], affectedCancers)) {
