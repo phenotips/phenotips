@@ -125,28 +125,29 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         @Override
         public Object doInHibernate(Session hSession) throws HibernateException, XWikiException
         {
-            session = hSession;
-            context = getXWikiContext();
-            XWiki xwiki = context.getWiki();
+            this.session = hSession;
+            this.context = getXWikiContext();
+            XWiki xwiki = this.context.getWiki();
 
             // Select all patients
             Query q =
-                session.createQuery("select distinct o.name from BaseObject o where o.className = '"
-                    + migrator.serializer.serialize(Patient.CLASS_REFERENCE)
+                this.session.createQuery("select distinct o.name from BaseObject o where o.className = '"
+                    + this.migrator.serializer.serialize(Patient.CLASS_REFERENCE)
                     + "' and o.name <> 'PhenoTips.PatientTemplate'");
 
             @SuppressWarnings("unchecked")
             List<String> documents = q.list();
 
-            migrator.logger.debug("Found {} patient documents", documents.size());
+            this.migrator.logger.debug("Found {} patient documents", documents.size());
 
             for (String docName : documents) {
-                XWikiDocument patientXDocument = xwiki.getDocument(migrator.resolver.resolve(docName), context);
+                XWikiDocument patientXDocument =
+                    xwiki.getDocument(this.migrator.resolver.resolve(docName), this.context);
                 if (patientXDocument == null) {
                     continue;
                 }
 
-                List<BaseObject> relativeXObjects = patientXDocument.getXObjects(relativeClassReference);
+                List<BaseObject> relativeXObjects = patientXDocument.getXObjects(this.relativeClassReference);
                 Map<String, XWikiDocument> relativesDocList = getRelativesDocList(relativeXObjects, xwiki);
                 if (relativesDocList == null || relativesDocList.isEmpty()) {
                     continue;
@@ -159,22 +160,22 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                     processPatientWithRelatives(patientXDocument, patientFamilyRef, relativesFamilyRef,
                         relativesDocList, xwiki);
                 if (familyXDocument == null) {
-                    migrator.logger.debug("Could not create a family. Patient Id: {}.", docName);
+                    this.migrator.logger.debug("Could not create a family. Patient Id: {}.", docName);
                     continue;
                 }
-                patientXDocument.setComment(migrator.getDescription());
+                patientXDocument.setComment(this.migrator.getDescription());
                 patientXDocument.setMinorEdit(true);
-                familyXDocument.setComment(migrator.getDescription());
+                familyXDocument.setComment(this.migrator.getDescription());
                 try {
-                    session.clear();
-                    ((XWikiHibernateStore) getStore()).saveXWikiDoc(patientXDocument, context, false);
-                    ((XWikiHibernateStore) getStore()).saveXWikiDoc(familyXDocument, context, false);
-                    session.flush();
+                    this.session.clear();
+                    ((XWikiHibernateStore) getStore()).saveXWikiDoc(patientXDocument, this.context, false);
+                    ((XWikiHibernateStore) getStore()).saveXWikiDoc(familyXDocument, this.context, false);
+                    this.session.flush();
                 } catch (DataMigrationException e) {
                     // We're in the middle of a migration, we're not expecting another migration
                 } finally {
-                    context.getWiki().flushCache(context);
-                    migrator.logger.debug("Updated [{}]", docName);
+                    this.context.getWiki().flushCache(this.context);
+                    this.migrator.logger.debug("Updated [{}]", docName);
                 }
             }
 
@@ -194,23 +195,23 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         {
             XWikiDocument familyXDocument = null;
             if (relativesFamilyRef == null || patientFamilyRef != null && !"".equals(relativesFamilyRef)) {
-                migrator.logger.debug("More than one family exists for patient and relatives. Patient Id: {}.",
+                this.migrator.logger.debug("More than one family exists for patient and relatives. Patient Id: {}.",
                     patientXDocument.getId());
             }
             // If patient has a family
             if (patientFamilyRef != null) {
                 // set family references for all relatives
                 setAllFamilyRefs(patientXDocument, patientFamilyRef, relativesDocList, xwiki);
-                familyXDocument = xwiki.getDocument(migrator.resolver.resolve(patientFamilyRef), context);
+                familyXDocument = xwiki.getDocument(this.migrator.resolver.resolve(patientFamilyRef), this.context);
                 // TODO --- update the family pedigree object only for allowed types of relatives---
 
                 // If one relative has a family
             } else if (!"".equals(relativesFamilyRef)) {
                 // set relative family reference to patient doc
-                migrator.familyMigrations.setFamilyReference(patientXDocument, relativesFamilyRef, context);
+                this.migrator.familyMigrations.setFamilyReference(patientXDocument, relativesFamilyRef, this.context);
                 // set family references for all relatives docs
                 setAllFamilyRefs(patientXDocument, relativesFamilyRef, relativesDocList, xwiki);
-                familyXDocument = xwiki.getDocument(migrator.resolver.resolve(relativesFamilyRef), context);
+                familyXDocument = xwiki.getDocument(this.migrator.resolver.resolve(relativesFamilyRef), this.context);
                 // TODO --- update the family pedigree object only for allowed types of relatives---
 
                 // If no one has a family yet
@@ -218,11 +219,11 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 try {
                     familyXDocument = this.createFamilyWithPedigree(patientXDocument, relativesDocList);
                 } catch (Exception e) {
-                    migrator.logger.error("Could not create a new family document: {}", e.getMessage());
+                    this.migrator.logger.error("Could not create a new family document: {}", e.getMessage());
                 }
                 String familyDocumentRef = familyXDocument.getDocumentReference().toString();
                 // set new family reference to patient doc
-                migrator.familyMigrations.setFamilyReference(patientXDocument, familyDocumentRef, context);
+                this.migrator.familyMigrations.setFamilyReference(patientXDocument, familyDocumentRef, this.context);
                 // set family references for all relatives docs
                 setAllFamilyRefs(patientXDocument, familyDocumentRef, relativesDocList, xwiki);
             }
@@ -251,18 +252,18 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
             // TODO *****Do we need any check here at all?*****
             if (pedigreeData.length() == 0) {
-                migrator.logger.debug("Can not create pedigree. Patient Id: {}.", patientXDocument.getId());
+                this.migrator.logger.debug("Can not create pedigree. Patient Id: {}.", patientXDocument.getId());
                 return null;
             }
 
             String patientId = patientXDocument.getDocumentReference().getName();
-            JSONObject procesedData = migrator.familyMigrations.processPedigree(pedigreeData, patientId);
+            JSONObject procesedData = this.migrator.familyMigrations.processPedigree(pedigreeData, patientId);
 
-            migrator.logger.debug("Creating new family for patient {}.", patientXDocument.getId());
+            this.migrator.logger.debug("Creating new family for patient {}.", patientXDocument.getId());
             XWikiDocument newFamilyXDocument = null;
             newFamilyXDocument =
-                migrator.familyMigrations.createFamilyDocument(patientXDocument, procesedData,
-                    pedigreeImage.toString(), context, session);
+                this.migrator.familyMigrations.createFamilyDocument(patientXDocument, procesedData,
+                    pedigreeImage.toString(), this.context, this.session);
 
             return newFamilyXDocument;
         }
@@ -275,20 +276,21 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         private void setAllFamilyRefs(XWikiDocument patientXDocument, String famReference,
             Map<String, XWikiDocument> relativesDocList, XWiki xwiki) throws XWikiException
         {
-            List<String> membersRefsList = new LinkedList<String>();
+            List<String> membersRefsList = new LinkedList<>();
             membersRefsList.add(patientXDocument.getDocumentReference().getName());
 
             for (String relativeType : relativesDocList.keySet()) {
                 // set the family reference to a relative doc
-                migrator.familyMigrations.setFamilyReference(relativesDocList.get(relativeType), famReference,
-                    context);
+                this.migrator.familyMigrations.setFamilyReference(relativesDocList.get(relativeType), famReference,
+                    this.context);
                 membersRefsList.add(relativesDocList.get(relativeType).getDocumentReference().getName());
             }
             // add all relatives to family doc as members
-            XWikiDocument familyXDocument = xwiki.getDocument(migrator.resolver.resolve(famReference), context);
+            XWikiDocument familyXDocument =
+                xwiki.getDocument(this.migrator.resolver.resolve(famReference), this.context);
             BaseObject familyObject = familyXDocument.getXObject(Family.CLASS_REFERENCE);
             if (familyObject == null) {
-                familyObject = familyXDocument.newXObject(Family.CLASS_REFERENCE, context);
+                familyObject = familyXDocument.newXObject(Family.CLASS_REFERENCE, this.context);
             }
             familyObject.setStringListValue("members", membersRefsList);
         }
@@ -298,7 +300,8 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
          */
         private String getPatientsFamily(XWikiDocument patientXDocument)
         {
-            BaseObject pointer = patientXDocument.getXObject(migrator.familyMigrations.familyReferenceClassReference);
+            BaseObject pointer =
+                patientXDocument.getXObject(this.migrator.familyMigrations.familyReferenceClassReference);
             if (pointer == null) {
                 return null;
             }
@@ -337,9 +340,9 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         private XWikiDocument getRelativeDoc(String relativeDoc, XWiki xwiki)
             throws XWikiException
         {
-            Query rq = session.createQuery("select distinct o.name from BaseObject o,"
+            Query rq = this.session.createQuery("select distinct o.name from BaseObject o,"
                 + " StringProperty p where o.className = '"
-                + migrator.serializer.serialize(Patient.CLASS_REFERENCE)
+                + this.migrator.serializer.serialize(Patient.CLASS_REFERENCE)
                 + "' and p.id.id = o.id and p.id.name = 'external_id' "
                 + "and o.name <> 'PhenoTips.PatientTemplate' and p.value = '"
                 + relativeDoc + "'");
@@ -353,7 +356,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
             String relativeDocName = relativeDocuments.get(0);
             XWikiDocument relativeXDocument =
-                xwiki.getDocument(migrator.resolver.resolve(relativeDocName), context);
+                xwiki.getDocument(this.migrator.resolver.resolve(relativeDocName), this.context);
             return relativeXDocument;
         }
 
@@ -366,7 +369,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             if (relativeXObjects == null || relativeXObjects.isEmpty()) {
                 return null;
             }
-            Map<String, XWikiDocument> relativesDocMap = new HashMap<String, XWikiDocument>();
+            Map<String, XWikiDocument> relativesDocMap = new HashMap<>();
             for (BaseObject object : relativeXObjects) {
                 StringProperty relativeTypeProperty = null;
                 StringProperty relativeOfProperty = null;

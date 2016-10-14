@@ -28,11 +28,12 @@ import org.xwiki.security.authorization.Right;
 public class PTNotEnoughPermissionsException extends PTException
 {
     private final Right missingRight;
+
     private final String documentId;
 
     /**
-     * @param missingRight the right that was required to perform an operation
-     *        but which the requesting user does not posess
+     * @param missingRight the right that was required to perform an operation but which the requesting user does not
+     *            posess
      * @param documentId the id of the document that the user had no right for
      */
     public PTNotEnoughPermissionsException(Right missingRight, String documentId)
@@ -47,7 +48,7 @@ public class PTNotEnoughPermissionsException extends PTException
      */
     public Right getMissingPermission()
     {
-        return missingRight;
+        return this.missingRight;
     }
 
     /**

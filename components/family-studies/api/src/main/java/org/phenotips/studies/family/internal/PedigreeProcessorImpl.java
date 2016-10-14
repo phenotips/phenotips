@@ -45,15 +45,19 @@ import org.slf4j.Logger;
 public class PedigreeProcessorImpl implements PedigreeProcessor
 {
     private static final String PATIENT_JSON_KEY_FEATURES = "features";
+
     private static final String PEDIGREE_JSON_KEY_FEATURES = PATIENT_JSON_KEY_FEATURES;
 
     private static final String PATIENT_JSON_KEY_NON_STANDARD_FEATURES = "nonstandard_features";
+
     private static final String PEDIGREE_JSON_KEY_NON_STANDARD_FEATURES = PATIENT_JSON_KEY_NON_STANDARD_FEATURES;
 
     private static final String PATIENT_JSON_KEY_GENES = "genes";
+
     private static final String PEDIGREE_JSON_KEY_GENES = PATIENT_JSON_KEY_GENES;
 
     private static final String PATIENT_JSON_KEY_FAMILY_HISTORY = "family_history";
+
     private static final String PEDIGREE_JSON_KEY_FAMILY_HISTORY = PATIENT_JSON_KEY_FAMILY_HISTORY;
 
     @Inject
@@ -83,8 +87,7 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
 
             String versionKey = "JSON_version";
             if (data.has(versionKey)
-                && !StringUtils.equalsIgnoreCase(data.getString(versionKey), "1.0"))
-            {
+                && !StringUtils.equalsIgnoreCase(data.getString(versionKey), "1.0")) {
                 this.logger.warn("The version of the pedigree JSON differs from the expected.");
             }
 
@@ -121,7 +124,7 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
     private static JSONObject exchangeFamilyHistory(JSONObject pedigreePatient, JSONObject phenotipsPatientJSON)
     {
         phenotipsPatientJSON.put(PATIENT_JSON_KEY_FAMILY_HISTORY,
-                                 pedigreePatient.opt(PEDIGREE_JSON_KEY_FAMILY_HISTORY));
+            pedigreePatient.opt(PEDIGREE_JSON_KEY_FAMILY_HISTORY));
         return phenotipsPatientJSON;
     }
 

@@ -32,9 +32,8 @@ import org.json.JSONObject;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * TODO: refactor on top of Entities model.
- *
- * Split/re-arrange functionality between Family (Entity), FamilyRepository (EntityManager) and EntityGroupManager.
+ * TODO: refactor on top of Entities model. Split/re-arrange functionality between Family (Entity), FamilyRepository
+ * (EntityManager) and EntityGroupManager.
  *
  * @version $Id$
  * @since 1.4

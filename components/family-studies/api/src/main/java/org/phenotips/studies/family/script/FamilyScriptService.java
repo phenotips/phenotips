@@ -54,55 +54,55 @@ public class FamilyScriptService implements ScriptService
      */
     public Family createFamily()
     {
-        return familyTools.createFamily();
+        return this.familyTools.createFamily();
     }
 
     /**
      * Returns family object, or null if doesn't exist or current user has no rights.
      *
      * @param familyId a PhenotTips family ID
-     * @return Family object of the family with the given id, or null if familyId is not valid or
-     * current user does not have permissions to view the family.
+     * @return Family object of the family with the given id, or null if familyId is not valid or current user does not
+     *         have permissions to view the family.
      */
     public Family getFamilyById(String familyId)
     {
-        return familyTools.getFamilyById(familyId);
+        return this.familyTools.getFamilyById(familyId);
     }
 
     /**
-     * Returns family pedigree.
-     * Essentially this is a shortcut for getFamilyById().getPedigree() with a check that family is not null.
+     * Returns family pedigree. Essentially this is a shortcut for getFamilyById().getPedigree() with a check that
+     * family is not null.
      *
      * @param familyId must be a valid family id
      * @return pedigree object or null if no such family, no pedigree or no view rights for the family.
      */
     public Pedigree getPedigreeForFamily(String familyId)
     {
-        return familyTools.getPedigreeForFamily(familyId);
+        return this.familyTools.getPedigreeForFamily(familyId);
     }
 
     /**
      * Returns a family ID the patient belongs to.
      *
      * @param patientId id of the patient
-     * @return Id of the, or null if patient does not belong to the family or current user
-     * has no view rights for the patient.
+     * @return Id of the, or null if patient does not belong to the family or current user has no view rights for the
+     *         patient.
      */
     public Family getFamilyForPatient(String patientId)
     {
-        return familyTools.getFamilyForPatient(patientId);
+        return this.familyTools.getFamilyForPatient(patientId);
     }
 
     /**
      * Returns patient's pedigree, which is the pedigree of a family that patient belongs to.
      *
      * @param patientId id of the patient
-     * @return Id of the, or null if patient does not belong to the family or current user
-     * has no view rights for the patient.
+     * @return Id of the, or null if patient does not belong to the family or current user has no view rights for the
+     *         patient.
      */
     public Pedigree getPedigreeForPatient(String patientId)
     {
-        return familyTools.getPedigreeForPatient(patientId);
+        return this.familyTools.getPedigreeForPatient(patientId);
     }
 
     /**
@@ -123,12 +123,12 @@ public class FamilyScriptService implements ScriptService
      * Removes a patient from the family, modifying the both the family and patient records to reflect the change.
      *
      * @param patientId of the patient to delete
-     * @return true if patient was removed. false if not, for example, if the patient is not associated with a
-     * family, or if current use rhas no delete rights
+     * @return true if patient was removed. false if not, for example, if the patient is not associated with a family,
+     *         or if current use rhas no delete rights
      */
     public boolean removeMember(String patientId)
     {
-        return familyTools.removeMember(patientId);
+        return this.familyTools.removeMember(patientId);
     }
 
     /**
@@ -140,7 +140,7 @@ public class FamilyScriptService implements ScriptService
      */
     public boolean deleteFamily(String familyId, boolean deleteAllMembers)
     {
-        return familyTools.deleteFamily(familyId, deleteAllMembers);
+        return this.familyTools.deleteFamily(familyId, deleteAllMembers);
     }
 
     /**
@@ -152,6 +152,6 @@ public class FamilyScriptService implements ScriptService
      */
     public boolean canDeleteFamily(String familyId, boolean deleteAllMembers)
     {
-        return familyTools.currentUserCanDeleteFamily(familyId, deleteAllMembers);
+        return this.familyTools.currentUserCanDeleteFamily(familyId, deleteAllMembers);
     }
 }

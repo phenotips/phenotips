@@ -161,9 +161,9 @@ public class PedigreeScriptService implements ScriptService
      * @param familyId Phenotips family id. If null, a new family is created.
      * @param json part of the pedigree data
      * @param image svg part of the pedigree data
-     * @return {@link JSON} with 'error' field set to {@link false} if everything is ok, or {@link true} if an
-     *         error has occurred. In case the linking is invalid, the JSON will also contain 'errorMessage' and
-     *         'errorType'. In case of success JSONResponse will be of FamilyInfoJSONResponse type
+     * @return {@link JSON} with 'error' field set to {@link false} if everything is ok, or {@link true} if an error has
+     *         occurred. In case the linking is invalid, the JSON will also contain 'errorMessage' and 'errorType'. In
+     *         case of success JSONResponse will be of FamilyInfoJSONResponse type
      */
     public JSONResponse savePedigree(String familyId, String json, String image)
     {
@@ -202,16 +202,16 @@ public class PedigreeScriptService implements ScriptService
             }
             if (ex instanceof PTPedigreeContainesSamePatientMultipleTimesException) {
                 return new PatientContainedMultipleTimesInPedigreeResponse(
-                        ((PTPedigreeContainesSamePatientMultipleTimesException) ex).getPatientId());
+                    ((PTPedigreeContainesSamePatientMultipleTimesException) ex).getPatientId());
             }
             if (ex instanceof PTNotEnoughPermissionsOnFamilyException) {
                 return new NotEnoughPermissionsOnFamilyResponse();
             }
             if (ex instanceof PTNotEnoughPermissionsOnPatientException) {
-                List<String> patientIdList = new LinkedList<String>();
+                List<String> patientIdList = new LinkedList<>();
                 patientIdList.add(((PTNotEnoughPermissionsOnPatientException) ex).getDocumentId());
                 return new NotEnoughPermissionsOnPatientResponse(patientIdList,
-                        ((PTNotEnoughPermissionsOnPatientException) ex).getMissingPermission());
+                    ((PTNotEnoughPermissionsOnPatientException) ex).getMissingPermission());
             }
             if (ex instanceof PTPatientAlreadyInAnotherFamilyException) {
                 String patientId = ((PTPatientAlreadyInAnotherFamilyException) ex).getPatientId();

@@ -106,53 +106,54 @@ public class R71497PhenoTips2154DataMigration extends AbstractHibernateDataMigra
         @Override
         public Object doInHibernate(Session hSession) throws HibernateException, XWikiException
         {
-            session = hSession;
-            context = getXWikiContext();
-            XWiki xwiki = context.getWiki();
+            this.session = hSession;
+            this.context = getXWikiContext();
+            XWiki xwiki = this.context.getWiki();
 
             // Select all patients
             Query q =
-                session.createQuery("select distinct o.name from BaseObject o where o.className = '"
-                    + migrator.serializer.serialize(Patient.CLASS_REFERENCE)
+                this.session.createQuery("select distinct o.name from BaseObject o where o.className = '"
+                    + this.migrator.serializer.serialize(Patient.CLASS_REFERENCE)
                     + "' and o.name <> 'PhenoTips.PatientTemplate'");
 
             @SuppressWarnings("unchecked")
             List<String> documents = q.list();
 
-            migrator.logger.debug("Found {} patient documents", documents.size());
+            this.migrator.logger.debug("Found {} patient documents", documents.size());
 
             for (String docName : documents) {
 
-                XWikiDocument patientXDocument = xwiki.getDocument(migrator.resolver.resolve(docName), context);
+                XWikiDocument patientXDocument =
+                    xwiki.getDocument(this.migrator.resolver.resolve(docName), this.context);
                 if (patientXDocument == null) {
                     continue;
                 }
 
                 XWikiDocument newFamilyXDocument = this.importPedigreeToFamily(patientXDocument);
                 if (newFamilyXDocument == null) {
-                    migrator.logger.error("Could not create a family. Patient Id: {}.", docName);
+                    this.migrator.logger.error("Could not create a family. Patient Id: {}.", docName);
                     continue;
                 }
 
                 String familyDocumentRef = newFamilyXDocument.getDocumentReference().toString();
 
-                migrator.familyMigrations.setFamilyReference(patientXDocument, familyDocumentRef, context);
+                this.migrator.familyMigrations.setFamilyReference(patientXDocument, familyDocumentRef, this.context);
                 patientXDocument.removeXObject(patientXDocument.getXObject(Pedigree.CLASS_REFERENCE));
-                patientXDocument.setComment(migrator.getDescription());
+                patientXDocument.setComment(this.migrator.getDescription());
                 patientXDocument.setMinorEdit(true);
 
-                newFamilyXDocument.setComment(migrator.getDescription());
+                newFamilyXDocument.setComment(this.migrator.getDescription());
 
                 try {
-                    session.clear();
-                    ((XWikiHibernateStore) getStore()).saveXWikiDoc(patientXDocument, context, false);
-                    ((XWikiHibernateStore) getStore()).saveXWikiDoc(newFamilyXDocument, context, false);
-                    session.flush();
+                    this.session.clear();
+                    ((XWikiHibernateStore) getStore()).saveXWikiDoc(patientXDocument, this.context, false);
+                    ((XWikiHibernateStore) getStore()).saveXWikiDoc(newFamilyXDocument, this.context, false);
+                    this.session.flush();
                 } catch (DataMigrationException e) {
                     // We're in the middle of a migration, we're not expecting another migration
                 } finally {
-                    xwiki.flushCache(context);
-                    migrator.logger.debug("Updated [{}]", docName);
+                    xwiki.flushCache(this.context);
+                    this.migrator.logger.debug("Updated [{}]", docName);
                 }
             }
 
@@ -167,7 +168,7 @@ public class R71497PhenoTips2154DataMigration extends AbstractHibernateDataMigra
         {
             BaseObject pedigreeXObject = patientXDocument.getXObject(Pedigree.CLASS_REFERENCE);
             if (pedigreeXObject == null) {
-                migrator.logger.debug("Patient does not have pedigree. Patient Id: {}.", patientXDocument.getId());
+                this.migrator.logger.debug("Patient does not have pedigree. Patient Id: {}.", patientXDocument.getId());
                 return null;
             }
 
@@ -178,23 +179,25 @@ public class R71497PhenoTips2154DataMigration extends AbstractHibernateDataMigra
             String imageText = image.toText();
 
             if (StringUtils.isEmpty(dataText) || StringUtils.isEmpty(imageText)) {
-                migrator.logger.debug(
+                this.migrator.logger.debug(
                     "Patient does not have pedigree data or pedigree image properties. Patient Id: {}.",
                     patientXDocument.getId());
                 return null;
             }
 
             String patientId = patientXDocument.getDocumentReference().getName();
-            JSONObject procesedData = migrator.familyMigrations.processPedigree(new JSONObject(dataText), patientId);
+            JSONObject procesedData =
+                this.migrator.familyMigrations.processPedigree(new JSONObject(dataText), patientId);
 
-            migrator.logger.debug("Creating new family for patient {}.", patientXDocument.getId());
+            this.migrator.logger.debug("Creating new family for patient {}.", patientXDocument.getId());
             XWikiDocument newFamilyXDocument = null;
             try {
                 newFamilyXDocument =
-                    migrator.familyMigrations.createFamilyDocument(patientXDocument, procesedData, imageText, context,
-                        session);
+                    this.migrator.familyMigrations.createFamilyDocument(patientXDocument, procesedData, imageText,
+                        this.context,
+                        this.session);
             } catch (Exception e) {
-                migrator.logger.error("Could not create a new family document: {}", e.getMessage());
+                this.migrator.logger.error("Could not create a new family document: {}", e.getMessage());
             }
 
             return newFamilyXDocument;

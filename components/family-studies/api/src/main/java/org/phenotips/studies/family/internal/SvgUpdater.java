@@ -50,6 +50,7 @@ public final class SvgUpdater
 
     /**
      * Sets svg width to the given value. If value <= 0 it is ignored and the same svg is returned.
+     *
      * @param svg a string representing an svg
      * @param width target width in pixels
      * @return svg with width changed
@@ -65,6 +66,7 @@ public final class SvgUpdater
 
     /**
      * Sets svg height to the given value. If value <= 0 it is ignored and the same svg is returned.
+     *
      * @param svg a string representing an svg
      * @param height target height in pixels
      * @return svg with height changed
@@ -102,7 +104,7 @@ public final class SvgUpdater
     {
         // TODO: replace by some SVG/XML library, e.g. https://xmlgraphics.apache.org/batik/
 
-        List<SvgElementHolder> elementList = new LinkedList<SvgElementHolder>();
+        List<SvgElementHolder> elementList = new LinkedList<>();
 
         try {
             String remainingSvg = svg;
@@ -268,8 +270,8 @@ public final class SvgUpdater
         if (element.content.contains(STROKE_ATTR_TOKEN)) {
             int tokenStart = element.content.indexOf(STROKE_ATTR_TOKEN);
             int tokenEnd = element.content.indexOf('"', tokenStart + STROKE_ATTR_TOKEN.length());
-            element.content = element.content.substring(0, tokenStart + STROKE_ATTR_TOKEN.length()) + width + element
-                .content.substring(tokenEnd);
+            element.content = element.content.substring(0, tokenStart + STROKE_ATTR_TOKEN.length()) + width
+                + element.content.substring(tokenEnd);
         } else {
             int closingBracketPos = element.content.indexOf('>');
             element.content = element.content.substring(0, closingBracketPos) + " " + STROKE_ATTR_TOKEN + width + '"'
@@ -342,10 +344,10 @@ public final class SvgUpdater
         @Override
         public boolean testHolder(SvgElementHolder holder)
         {
-            if (filterPatientId == null) {
+            if (this.filterPatientId == null) {
                 return true;
             }
-            return filterPatientId.equalsIgnoreCase(holder.patientId);
+            return this.filterPatientId.equalsIgnoreCase(holder.patientId);
         }
 
         @Override
@@ -521,8 +523,8 @@ public final class SvgUpdater
         /**
          * Gets a node id from any string (usually SVG id or class attributes).
          *
-         * @return -1 if {@link SvgElementHolder#nodeIdTokenStart} is -1 or if fails to find a numeric node id. Otherwise
-         *         returns the node id
+         * @return -1 if {@link SvgElementHolder#nodeIdTokenStart} is -1 or if fails to find a numeric node id.
+         *         Otherwise returns the node id
          */
         private String parseNodeIdFromElement(SvgElementHolder element, String tokenStartString)
         {

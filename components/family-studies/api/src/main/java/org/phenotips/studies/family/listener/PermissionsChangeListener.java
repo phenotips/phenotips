@@ -34,8 +34,8 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 
 /**
- * When a patient record's permissions are changed, if that patient belongs to a family,
- * the family's permissions should change also.
+ * When a patient record's permissions are changed, if that patient belongs to a family, the family's permissions should
+ * change also.
  *
  * @version $Id$
  * @since 1.0M
@@ -75,6 +75,6 @@ public class PermissionsChangeListener extends AbstractEventListener
         if (family == null) {
             return;
         }
-        familyRepository.updateFamilyPermissions(family);
+        this.familyRepository.updateFamilyPermissions(family);
     }
 }

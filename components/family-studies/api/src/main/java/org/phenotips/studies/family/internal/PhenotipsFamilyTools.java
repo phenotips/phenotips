@@ -191,7 +191,7 @@ public class PhenotipsFamilyTools implements FamilyTools
             return false;
         }
         return this.familyRepository.canDeleteFamily(
-                family, this.userManager.getCurrentUser(), deleteAllMembers, false);
+            family, this.userManager.getCurrentUser(), deleteAllMembers, false);
     }
 
     @Override
@@ -217,6 +217,6 @@ public class PhenotipsFamilyTools implements FamilyTools
     public boolean canAddToFamily(Family family, Patient patient, boolean throwException) throws PTException
     {
         return this.familyRepository.canAddToFamily(family, patient,
-                this.userManager.getCurrentUser(), throwException);
+            this.userManager.getCurrentUser(), throwException);
     }
 }

@@ -28,8 +28,8 @@ import org.xwiki.security.authorization.Right;
 public class PTNotEnoughPermissionsOnPatientException extends PTNotEnoughPermissionsException
 {
     /**
-     * @param missingRight the right that was required to perform an operation
-     *        but which the requesting user does not posess
+     * @param missingRight the right that was required to perform an operation but which the requesting user does not
+     *            posess
      * @param patientId the id of the patient that the user had no right for
      */
     public PTNotEnoughPermissionsOnPatientException(Right missingRight, String patientId)

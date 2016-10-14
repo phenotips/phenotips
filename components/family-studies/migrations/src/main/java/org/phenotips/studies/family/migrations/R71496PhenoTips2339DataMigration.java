@@ -55,10 +55,10 @@ import com.xpn.xwiki.store.migration.XWikiDBVersion;
 import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 
 /**
- * Migration for PhenoTips issue PT-2339: support for negative phenotypes and phenotype details in pedigree editor.
- * In the past, pedigree editor could have ignored negative phenotypes and phenotype details, since they never
- * propagated back to PhenoTips. Now that they do pedigree should support the same data as PT, so that no data
- * is lost when data is moved form PT to pedigree and then back to PT.
+ * Migration for PhenoTips issue PT-2339: support for negative phenotypes and phenotype details in pedigree editor. In
+ * the past, pedigree editor could have ignored negative phenotypes and phenotype details, since they never propagated
+ * back to PhenoTips. Now that they do pedigree should support the same data as PT, so that no data is lost when data is
+ * moved form PT to pedigree and then back to PT.
  *
  * @version $Id$
  * @since 1.3M3
@@ -73,22 +73,31 @@ public class R71496PhenoTips2339DataMigration extends AbstractHibernateDataMigra
      * Pedigree XClass that holds pedigree data (image, structure, etc).
      */
     private static final EntityReference PEDIGREE_CLASS_REFERENCE =
-            new EntityReference("PedigreeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+        new EntityReference("PedigreeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     private static final String PEDIGREECLASS_JSONDATA_KEY = "data";
 
     private static final String PEDIGREE_GRAPH_KEY = "GG";
+
     private static final String PEDIGREE_PROPERTIES_STRING = "prop";
+
     private static final String PEDIGREE_OLD_PHENOTYPE_FIELD = "hpoTerms";
+
     private static final String PEDIGREE_NEW_PHENOTYPE_FIELD = "features";
+
     private static final String PEDIGREE_NEW_PHENOTYPE_NONSTD_FIELD = "nonstandard_features";
 
     private static final String PEDIGREE_PHENOTYPE_ID_FIELD = "id";
+
     private static final String PEDIGREE_PHENOTYPE_LABEL_FIELD = "label";
+
     private static final String PEDIGREE_PHENOTYPE_OBSERVED_FIELD = "observed";
+
     // all phenotypes in old versions are assumed to be observed
     private static final String PEDIGREE_PHENOTYPE_OBSERVED_YES_VALUE = "yes";
+
     private static final String PEDIGREE_PHENOTYPE_TYPE_FIELD = "type";
+
     private static final String PEDIGREE_PHENOTYPE_TYPE_VALUE = "phenotype";
 
     private static final Pattern HPO_STANDARD_TERM_PATTERN = Pattern.compile("^HP:(\\d+)$");
@@ -212,11 +221,11 @@ public class R71496PhenoTips2339DataMigration extends AbstractHibernateDataMigra
             if (phenotypes != null) {
 
                 // convert from e.g.
-                //      "hpoTerms":["HP:0004315", "HP:0002045", "custom name"]
+                // "hpoTerms":["HP:0004315", "HP:0002045", "custom name"]
                 // to
-                //      "features": [ {"id":"HP:0004315","observed":"yes","type":"phenotype"},
-                //                    {"id":"HP:0002045","observed":"yes","type":"phenotype"} ]
-                //      "nonstandard_features": [ {"observed":"yes","type":"phenotype","label":"custom name"} ]
+                // "features": [ {"id":"HP:0004315","observed":"yes","type":"phenotype"},
+                // {"id":"HP:0002045","observed":"yes","type":"phenotype"} ]
+                // "nonstandard_features": [ {"observed":"yes","type":"phenotype","label":"custom name"} ]
 
                 JSONArray newPhenotypes = new JSONArray();
                 JSONArray newNonstandardPhenotypes = new JSONArray();

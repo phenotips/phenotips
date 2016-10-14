@@ -26,6 +26,7 @@ package org.phenotips.studies.family.exceptions;
 public class PTPatientAlreadyInAnotherFamilyException extends PTFamilyException
 {
     private final String patientId;
+
     private final String otherFamilyId;
 
     /**

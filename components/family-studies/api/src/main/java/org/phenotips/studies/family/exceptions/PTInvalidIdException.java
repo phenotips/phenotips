@@ -28,9 +28,8 @@ public class PTInvalidIdException extends PTException
     private final String invalidId;
 
     /**
-     * @param invalidId the id that was invalid in one way or another
-     *        (e.g. an id of a non-existing entity, or an id of an existing entity
-     *        but when another kind of entity was expected)
+     * @param invalidId the id that was invalid in one way or another (e.g. an id of a non-existing entity, or an id of
+     *            an existing entity but when another kind of entity was expected)
      */
     public PTInvalidIdException(String invalidId)
     {

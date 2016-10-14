@@ -28,8 +28,8 @@ import org.xwiki.security.authorization.Right;
 public class PTNotEnoughPermissionsOnFamilyException extends PTNotEnoughPermissionsException
 {
     /**
-     * @param missingRight the right that was required to perform an operation
-     *        but which the requesting user does not posess
+     * @param missingRight the right that was required to perform an operation but which the requesting user does not
+     *            posess
      * @param familyId the id of the family that the user had no right for
      */
     public PTNotEnoughPermissionsOnFamilyException(Right missingRight, String familyId)

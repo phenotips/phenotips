@@ -112,7 +112,7 @@ public class PhenotipsFamily implements Family
     {
         BaseObject familyObject = this.familyDocument.getXObject(CLASS_REFERENCE);
         if (familyObject == null) {
-            return new LinkedList<String>();
+            return new LinkedList<>();
         }
 
         ListProperty xwikiRelativesList;
@@ -149,8 +149,6 @@ public class PhenotipsFamily implements Family
         }
         return pedigree.getProbandId();
     }
-
-
 
     @Override
     public boolean isMember(Patient patient)

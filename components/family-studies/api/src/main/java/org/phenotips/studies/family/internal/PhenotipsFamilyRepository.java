@@ -146,7 +146,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
             for (Patient patient : family.getMembers()) {
                 if (!this.patientRepository.delete(patient)) {
                     this.logger.error("Failed to delete patient [{}] - deletion of family [{}] aborted",
-                            patient.getId(), family.getId());
+                        patient.getId(), family.getId());
                     return false;
                 }
             }
@@ -200,9 +200,9 @@ public class PhenotipsFamilyRepository implements FamilyRepository
 
     @Override
     /**
-     * Returns a Family object for patient.
-     * If there's an XWiki family document but no PhenotipsFamily object associated with it in the cache,
-     * a new PhenotipsFamily object will be created.
+     * Returns a Family object for patient. If there's an XWiki family document but no PhenotipsFamily object associated
+     * with it in the cache, a new PhenotipsFamily object will be created.
+     *
      * @param patient for which to look for a family
      * @return Family if there's an XWiki family document, otherwise null
      */
@@ -239,8 +239,8 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     }
 
     /**
-     * This method may be called either as a standalone invocation, or internally as part of family pedigree
-     * update. The latter invocation may add multiple patients (a "batch update")
+     * This method may be called either as a standalone invocation, or internally as part of family pedigree update. The
+     * latter invocation may add multiple patients (a "batch update")
      *
      * @param family
      * @param patient
@@ -308,7 +308,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     }
 
     private void removeMember(Family family, Patient patient, User updatingUser, boolean batchUpdate)
-            throws PTException
+        throws PTException
     {
         if (family == null) {
             throw new PTInvalidFamilyIdException(null);
@@ -332,7 +332,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
         List<String> members = family.getMembersIds();
         if (!members.contains(patientLinkString(patient))) {
             this.logger.error("Can't remove patient [{}] from framily [{}]: patient not a member of the family",
-                    patientId, family.getId());
+                patientId, family.getId());
             throw new PTPatientNotInFamilyException(patientId);
         }
 
@@ -384,7 +384,8 @@ public class PhenotipsFamilyRepository implements FamilyRepository
         this.updateFamilyPermissions(family, context, true);
     }
 
-    private void updateFamilyPermissions(Family family, XWikiContext context, boolean saveXwikiDocument) {
+    private void updateFamilyPermissions(Family family, XWikiContext context, boolean saveXwikiDocument)
+    {
         this.familyPermissions.updatePermissions(family, context);
         if (saveXwikiDocument) {
             this.saveFamilyDocument(family, "updated permissions", context);
@@ -393,7 +394,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
 
     @Override
     public boolean canAddToFamily(Family family, Patient patient, User updatingUser, boolean throwException)
-            throws PTException
+        throws PTException
     {
         try {
             if (family == null) {
@@ -420,7 +421,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
 
     @Override
     public boolean canDeleteFamily(Family family, User updatingUser,
-            boolean deleteAllMembers, boolean throwException) throws PTException
+        boolean deleteAllMembers, boolean throwException) throws PTException
     {
         try {
             if (family == null) {
@@ -466,7 +467,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     }
 
     private void checkIfPatientCanBeRemovedFromFamily(Family family, Patient patient, User updatingUser)
-            throws PTException
+        throws PTException
     {
         // check rights
         if (!this.authorizationService.hasAccess(updatingUser, Right.EDIT, family.getDocumentReference())) {
@@ -481,7 +482,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     public synchronized void setPedigree(Family family, Pedigree pedigree, User updatingUser) throws PTException
     {
         // note: whenever available, internal versions of helper methods are used which modify the
-        //       family document but do not save it to disk
+        // family document but do not save it to disk
         List<String> oldMembers = family.getMembersIds();
 
         List<String> currentMembers = pedigree.extractIds();
@@ -538,8 +539,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     private void checkValidity(Family family, List<String> newMembers, User updatingUser) throws PTException
     {
         // Checks that current user has edit permissions on family
-        if (!this.authorizationService.hasAccess(updatingUser, Right.EDIT, family.getDocumentReference()))
-        {
+        if (!this.authorizationService.hasAccess(updatingUser, Right.EDIT, family.getDocumentReference())) {
             throw new PTNotEnoughPermissionsOnFamilyException(Right.EDIT, family.getId());
         }
 
@@ -619,13 +619,14 @@ public class PhenotipsFamilyRepository implements FamilyRepository
         return true;
     }
 
-    private void setFamilyExternalId(String externalId, Family family, XWikiContext context) {
+    private void setFamilyExternalId(String externalId, Family family, XWikiContext context)
+    {
         BaseObject familyObject = family.getDocument().getXObject(Family.CLASS_REFERENCE);
         familyObject.set("external_id", externalId, context);
     }
 
     private boolean savePatientDocument(XWikiDocument patientDocument, String documentHistoryComment,
-            XWikiContext context)
+        XWikiContext context)
     {
         try {
             context.getWiki().saveDocument(patientDocument, documentHistoryComment, context);
@@ -729,7 +730,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
             return true;
         } catch (Exception ex) {
             this.logger.error("Could not add patient [{}] to family. Error setting family reference: []",
-                    patientDoc.getId(), ex);
+                patientDoc.getId(), ex);
             return false;
         }
     }
@@ -750,7 +751,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
             return true;
         } catch (Exception ex) {
             this.logger.error("Could not remove patient [{}] from family. Error removing family reference: []",
-                    patientDoc.getId(), ex);
+                patientDoc.getId(), ex);
             return false;
         }
     }

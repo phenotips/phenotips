@@ -69,7 +69,9 @@ public class PhenotipsFamilyMigrations
     private static final String ACCESS_PROPERTY_NAME = "access";
 
     private static final String VIEW_RIGHT = "view";
+
     private static final String EDIT_RIGHT = "view,edit";
+
     private static final String FULL_RIGHT = "view,edit,delete";
 
     /** Family reference class reference. */
@@ -110,13 +112,13 @@ public class PhenotipsFamilyMigrations
     public XWikiDocument createFamilyDocument(XWikiDocument patientXDoc, JSONObject pedigreeData, String pedigreeImage,
         XWikiContext xcontext, Session hsession) throws QueryException, XWikiException, Exception
     {
-        context = xcontext;
-        session = hsession;
+        this.context = xcontext;
+        this.session = hsession;
         long nextId = getLastUsedId() + 1;
         String nextStringId = String.format("%s%07d", FAMILY_PREFIX, nextId);
 
         EntityReference newFamilyRef = new EntityReference(nextStringId, EntityType.DOCUMENT, Family.DATA_SPACE);
-        XWikiDocument newFamilyXDocument = context.getWiki().getDocument(newFamilyRef, context);
+        XWikiDocument newFamilyXDocument = this.context.getWiki().getDocument(newFamilyRef, this.context);
         if (!newFamilyXDocument.isNew()) {
             throw new IllegalArgumentException("The new family id was already taken.");
         }
@@ -131,7 +133,7 @@ public class PhenotipsFamilyMigrations
         newFamilyXDocument.setAuthorReference(patientXDoc.getAuthorReference());
         newFamilyXDocument.setCreatorReference(patientXDoc.getCreatorReference());
         newFamilyXDocument.setContentAuthorReference(patientXDoc.getContentAuthorReference());
-        newFamilyXDocument.setParentReference(familyParentReference);
+        newFamilyXDocument.setParentReference(this.familyParentReference);
 
         return newFamilyXDocument;
     }
@@ -147,10 +149,10 @@ public class PhenotipsFamilyMigrations
     public void setFamilyReference(XWikiDocument patientDoc, String documentReference, XWikiContext xcontext)
         throws XWikiException
     {
-        context = xcontext;
-        BaseObject pointer = patientDoc.getXObject(familyReferenceClassReference);
+        this.context = xcontext;
+        BaseObject pointer = patientDoc.getXObject(this.familyReferenceClassReference);
         if (pointer == null) {
-            pointer = patientDoc.newXObject(familyReferenceClassReference, context);
+            pointer = patientDoc.newXObject(this.familyReferenceClassReference, this.context);
         }
         pointer.setStringValue("reference", documentReference);
     }
@@ -189,7 +191,7 @@ public class PhenotipsFamilyMigrations
      */
     private void setOwner(XWikiDocument familyXDocument, XWikiDocument patientXDoc) throws XWikiException
     {
-        BaseObject owner = familyXDocument.newXObject(Owner.CLASS_REFERENCE, context);
+        BaseObject owner = familyXDocument.newXObject(Owner.CLASS_REFERENCE, this.context);
         owner.setStringValue(Owner.PROPERTY_NAME, this.getOwner(patientXDoc));
     }
 
@@ -199,7 +201,7 @@ public class PhenotipsFamilyMigrations
     private void setFamilyObject(XWikiDocument familyXDocument, XWikiDocument patientXDoc, long id)
         throws XWikiException
     {
-        BaseObject familyObject = familyXDocument.newXObject(Family.CLASS_REFERENCE, context);
+        BaseObject familyObject = familyXDocument.newXObject(Family.CLASS_REFERENCE, this.context);
         familyObject.setLongValue("identifier", id);
         familyObject.setStringListValue("members", Arrays.asList(patientXDoc.getDocumentReference().getName()));
         familyObject.setStringValue("external_id",
@@ -214,9 +216,9 @@ public class PhenotipsFamilyMigrations
     private void setPedigreeObject(XWikiDocument familyXDocument, JSONObject data, String pedigreeImage)
         throws XWikiException
     {
-        BaseObject pedigreeObject = familyXDocument.newXObject(Pedigree.CLASS_REFERENCE, context);
-        pedigreeObject.set(Pedigree.IMAGE, pedigreeImage, context);
-        pedigreeObject.set(Pedigree.DATA, data.toString(), context);
+        BaseObject pedigreeObject = familyXDocument.newXObject(Pedigree.CLASS_REFERENCE, this.context);
+        pedigreeObject.set(Pedigree.IMAGE, pedigreeImage, this.context);
+        pedigreeObject.set(Pedigree.DATA, data.toString(), this.context);
     }
 
     /**
@@ -236,8 +238,8 @@ public class PhenotipsFamilyMigrations
     private void setRights(XWikiDocument familyXDocument, XWikiDocument patientXDoc, String rightLevel)
         throws XWikiException
     {
-        BaseObject permissionsObject = familyXDocument.newXObject(rightsClassReference, context);
-        String[] rightHolders = familyPermissions.getEntitiesWithAccessAsString(patientXDoc, VIEW_RIGHT);
+        BaseObject permissionsObject = familyXDocument.newXObject(this.rightsClassReference, this.context);
+        String[] rightHolders = this.familyPermissions.getEntitiesWithAccessAsString(patientXDoc, VIEW_RIGHT);
         permissionsObject.setStringValue("users", rightHolders[0]);
         permissionsObject.setStringValue("groups", rightHolders[1]);
         permissionsObject.setStringValue("levels", rightLevel);
@@ -250,7 +252,7 @@ public class PhenotipsFamilyMigrations
     private void setVisibilityObject(XWikiDocument familyXDocument, XWikiDocument patientXDoc)
         throws XWikiException
     {
-        BaseObject visibilityObject = familyXDocument.newXObject(Visibility.CLASS_REFERENCE, context);
+        BaseObject visibilityObject = familyXDocument.newXObject(Visibility.CLASS_REFERENCE, this.context);
         visibilityObject.setStringValue(VISIBILITY_PROPERTY_NAME,
             this.getPropertyValue(patientXDoc, Visibility.CLASS_REFERENCE, VISIBILITY_PROPERTY_NAME, ""));
     }
@@ -275,7 +277,7 @@ public class PhenotipsFamilyMigrations
             }
 
             BaseObject collaboratorObject =
-                familyXDocument.newXObject(Collaborator.CLASS_REFERENCE, context);
+                familyXDocument.newXObject(Collaborator.CLASS_REFERENCE, this.context);
             collaboratorObject.setStringValue(COLLABORATOR_PROPERTY_NAME, collaboratorName);
             collaboratorObject.setStringValue(ACCESS_PROPERTY_NAME, accessName);
         }

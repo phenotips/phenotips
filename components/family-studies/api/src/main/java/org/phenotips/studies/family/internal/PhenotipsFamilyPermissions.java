@@ -58,7 +58,9 @@ public class PhenotipsFamilyPermissions
         new EntityReference("XWikiRights", EntityType.DOCUMENT, new EntityReference("XWiki", EntityType.SPACE));
 
     private static final String VIEW_RIGHTS = "view";
+
     private static final String VIEWEDIT_RIGHTS = "view,edit";
+
     private static final String VIEWEDITDELETE_RIGHTS = "view,edit,delete";
 
     private static final String RIGHTS_USERS_FIELD = "users";
@@ -75,13 +77,13 @@ public class PhenotipsFamilyPermissions
     private Logger logger;
 
     /**
-     * Returns all the users and groups that have the given right for the patient as array of two strings.
-     * First string in returned array contains all the users that has this right for the patient,
-     * second string contains all the groups that has the right.
+     * Returns all the users and groups that have the given right for the patient as array of two strings. First string
+     * in returned array contains all the users that has this right for the patient, second string contains all the
+     * groups that has the right.
      *
      * @param patientDoc patient to read permissions from
-     * @param rightName a permission name ('view','edit' or 'delete'), if entity's permissions
-     *        include this permission the entity is included in the result
+     * @param rightName a permission name ('view','edit' or 'delete'), if entity's permissions include this permission
+     *            the entity is included in the result
      * @return array of entity names
      */
     public String[] getEntitiesWithAccessAsString(XWikiDocument patientDoc, String rightName)
@@ -138,20 +140,15 @@ public class PhenotipsFamilyPermissions
     }
 
     /**
-     * For every family member, read users and groups that have either view or edit edit access on the patient,
-     * then gives the sam elevel of access on the family for those users and groups.
-     *
-     * After performing this method, if p is a member of the family, and x has level y access on p, x has
-     * level y access on the family.
-     *
-     * The user who is the owner of the family always has full access to the family.
-     *
-     * Note that the document is not saved to disk, changes are only made for the provided Family object and
-     * its in-memory copy of the corresponding XWiki document.
+     * For every family member, read users and groups that have either view or edit edit access on the patient, then
+     * gives the sam elevel of access on the family for those users and groups. After performing this method, if p is a
+     * member of the family, and x has level y access on p, x has level y access on the family. The user who is the
+     * owner of the family always has full access to the family. Note that the document is not saved to disk, changes
+     * are only made for the provided Family object and its in-memory copy of the corresponding XWiki document.
      *
      * @param family to update permissions
-     * @param context XWiki context to be used. The documnt will not be saved to disk, only changes in
-     *        memory for the family document given will be made
+     * @param context XWiki context to be used. The documnt will not be saved to disk, only changes in memory for the
+     *            family document given will be made
      */
     public void updatePermissions(Family family, XWikiContext context)
     {
@@ -165,7 +162,7 @@ public class PhenotipsFamilyPermissions
         this.updatePermissionsForOneRightLevel(VIEWEDIT_RIGHTS, members, family.getDocument(), wiki, context);
 
         this.setOwnerPermissionsForUser(
-                family.getDocument().getCreatorReference().toString(), family.getDocument(), context);
+            family.getDocument().getCreatorReference().toString(), family.getDocument(), context);
     }
 
     private void setOwnerPermissionsForUser(String user, XWikiDocument familyDocument, XWikiContext context)
@@ -178,7 +175,7 @@ public class PhenotipsFamilyPermissions
     }
 
     private void updatePermissionsForOneRightLevel(String rightsLevel,
-            List<Patient> members, XWikiDocument familyDocument, XWiki wiki, XWikiContext context)
+        List<Patient> members, XWikiDocument familyDocument, XWiki wiki, XWikiContext context)
     {
         BaseObject rightsObject = getOrCreateRightsObject(familyDocument, rightsLevel, context);
         if (rightsObject == null) {

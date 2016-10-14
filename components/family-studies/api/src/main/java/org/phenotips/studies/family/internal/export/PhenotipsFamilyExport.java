@@ -126,7 +126,7 @@ public class PhenotipsFamilyExport
      */
     public String searchFamilies(String input, int resultsLimit, String requiredPermissions, boolean returnAsJSON)
     {
-        List<FamilySearchResult> resultsList = new LinkedList<FamilySearchResult>();
+        List<FamilySearchResult> resultsList = new LinkedList<>();
         queryFamilies(input, requiredPermissions, resultsLimit, resultsList);
         queryPatients(input, requiredPermissions, resultsLimit, resultsList);
         return formatResults(resultsList, returnAsJSON);
@@ -209,8 +209,7 @@ public class PhenotipsFamilyExport
 
             Right right = Right.toRight(requiredPermissions);
             if (!this.authorizationService.hasAccess(
-                this.userManager.getCurrentUser(), right, family.getDocumentReference()))
-            {
+                this.userManager.getCurrentUser(), right, family.getDocumentReference())) {
                 continue;
             }
 
@@ -229,8 +228,7 @@ public class PhenotipsFamilyExport
 
         boolean usePatientName = this.configuration.getActiveConfiguration().getEnabledFieldNames()
             .contains(FIRST_NAME);
-        if (usePatientName)
-        {
+        if (usePatientName) {
             querySb.append(" or lower(patient.first_name) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
             querySb.append(" or lower(patient.last_name) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
         }

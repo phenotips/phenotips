@@ -24,10 +24,9 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.security.authorization.Right;
 
 /**
- * TODO: instead of interface make a SecureFamilyRepository extending FamilyRepository
- *       (similar to PatientRepository/SecurepatientRepository)
- *
- * Utility methods for manipulating families using the permissions of the current user.
+ * TODO: instead of interface make a SecureFamilyRepository extending FamilyRepository (similar to
+ * PatientRepository/SecurepatientRepository) Utility methods for manipulating families using the permissions of the
+ * current user.
  *
  * @version $Id$
  * @since 1.4
@@ -88,8 +87,8 @@ public interface FamilyTools
     boolean removeMember(String patientId);
 
     /**
-     * Delete family, modifying the both the family and patient records to reflect the change.
-     * For the patients which current user can not edit, uses admin user.
+     * Delete family, modifying the both the family and patient records to reflect the change. For the patients which
+     * current user can not edit, uses admin user.
      *
      * @param familyId of the family to delete
      * @param deleteAllMembers indicator whether to delete all family member documents as well
@@ -98,11 +97,9 @@ public interface FamilyTools
     boolean deleteFamily(String familyId, boolean deleteAllMembers);
 
     /**
-     * Similar to deleteFamily, but does not delete the family document (unlinkes all
-     * patients from the family).
-     *
-     * It is supposed to be used in the event handler for xwiki remove action, when the document
-     * will be removed by the framework itself.
+     * Similar to deleteFamily, but does not delete the family document (unlinkes all patients from the family). It is
+     * supposed to be used in the event handler for xwiki remove action, when the document will be removed by the
+     * framework itself.
      *
      * @param family the family
      * @return true if successful
@@ -133,17 +130,16 @@ public interface FamilyTools
      * @param family the family
      * @param patient patient to check
      * @param throwException when true, an exception with details is thrown additionis not possible
-     * @return true if given user has enough rights to add the patient to the family, and if the patient
-     *         is not in another family already
-     * @throws PTException when throwException is true and the return value would be false. The exception
-     *         may help the caller deduct the reason the addition can not be performed
+     * @return true if given user has enough rights to add the patient to the family, and if the patient is not in
+     *         another family already
+     * @throws PTException when throwException is true and the return value would be false. The exception may help the
+     *             caller deduct the reason the addition can not be performed
      */
     boolean canAddToFamily(Family family, Patient patient, boolean throwException) throws PTException;
 
     /**
-     * Sets the pedigree for the family, and updates all the corresponding other documents.
-     *
-     * TODO: it is questionable where this method should be located, given new entities API.
+     * Sets the pedigree for the family, and updates all the corresponding other documents. TODO: it is questionable
+     * where this method should be located, given new entities API.
      *
      * @param family the family
      * @param pedigree to set
