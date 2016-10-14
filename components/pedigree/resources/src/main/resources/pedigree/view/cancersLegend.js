@@ -68,8 +68,18 @@ define([
             return clist;
         },
 
+        /**
+         * Returns cancer name
+         *
+         * @param {Number|String} ID for this cancer
+         * @return {String} associated cancer name
+         */
+        getName: function($super, cancerID) {
+            return this._cancerLabels.hasOwnProperty(cancerID)? this._cancerLabels[cancerID] : cancerID;
+        },
+
         addCase: function($super, id, name, nodeID) {
-            var name = this._cancerLabels.hasOwnProperty(name)? this._cancerLabels[name] : name;
+            var name = this.getName(name);
             $super(id, name, nodeID);
         },
 

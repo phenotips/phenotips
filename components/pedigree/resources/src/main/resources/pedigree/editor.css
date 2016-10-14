@@ -1040,7 +1040,7 @@
   margin: 1.4em 0 0;
 }
 .cancer_field td {
-  padding: .2em;
+  padding: .1em .2em .1em .2em;
 }
 .cancer_textarea td {
   padding: .3em 0 .2em .2em;
