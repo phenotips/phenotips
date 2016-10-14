@@ -12,7 +12,7 @@ else
   unzip -q -d /var/lib/phenotips/next/solr /var/lib/phenotips/next/solr-config*.jar
   mv -t /var/lib/phenotips/data/solr/ /var/lib/phenotips/next/solr/solr.xml
   rm -rf /var/lib/phenotips/data/solr/hpo/ /var/lib/phenotips/data/solr/omim/ /var/lib/phenotips/data/solr/ethnicity/ /var/lib/phenotips/data/solr/hgnc/ /var/lib/phenotips/data/solr/chebi/
-  mv -t /var/lib/phenotips/data/solr/ /var/lib/phenotips/next/solr/hpo/ /var/lib/phenotips/next/solr/omim/ /var/lib/phenotips/next/solr/ethnicity /var/lib/phenotips/next/solr/hgnc /var/lib/phenotips/next/solr/chebi
+  mv -t /var/lib/phenotips/data/solr/ /var/lib/phenotips/next/solr/hpo/ /var/lib/phenotips/next/solr/omim/ /var/lib/phenotips/next/solr/ethnicity /var/lib/phenotips/next/solr/hgnc
   if [[ -d /var/lib/phenotips/data/solr/patients/ ]]
   then
     rm -rf /var/lib/phenotips/data/solr/patients/conf/
