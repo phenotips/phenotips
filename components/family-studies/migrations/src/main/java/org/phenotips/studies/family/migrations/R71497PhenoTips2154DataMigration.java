@@ -111,10 +111,14 @@ public class R71497PhenoTips2154DataMigration extends AbstractHibernateDataMigra
             XWiki xwiki = this.context.getWiki();
 
             // Select all patients
-            Query q =
-                this.session.createQuery("select distinct o.name from BaseObject o where o.className = '"
-                    + this.migrator.serializer.serialize(Patient.CLASS_REFERENCE)
-                    + "' and o.name <> 'PhenoTips.PatientTemplate'");
+            Query q = this.session.createQuery(
+                "select distinct patObj.name from BaseObject patObj, BaseObject pedObj, LargeStringProperty pdata"
+                    + " where patObj.className = :patclass and patObj.name <> :template"
+                    + " and pedObj.name = patObj.name and pedObj.className = :pedclass"
+                    + " and pdata.id.id = pedObj.id and pdata.id.name = 'data' and pdata.value <> ''");
+            q.setString("patclass", this.migrator.serializer.serialize(Patient.CLASS_REFERENCE));
+            q.setString("template", "PhenoTips.PatientTemplate");
+            q.setString("pedclass", this.migrator.serializer.serialize(Pedigree.CLASS_REFERENCE));
 
             @SuppressWarnings("unchecked")
             List<String> documents = q.list();

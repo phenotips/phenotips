@@ -131,9 +131,11 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
             // Select all patients
             Query q =
-                this.session.createQuery("select distinct o.name from BaseObject o where o.className = '"
-                    + this.migrator.serializer.serialize(Patient.CLASS_REFERENCE)
-                    + "' and o.name <> 'PhenoTips.PatientTemplate'");
+                this.session.createQuery("select distinct o.name from BaseObject o, BaseObject ro where"
+                    + " o.className = :patclass and o.name <> 'PhenoTips.PatientTemplate'"
+                    + " and ro.name = o.name and ro.className = :relclass");
+            q.setString("patclass", this.migrator.serializer.serialize(Patient.CLASS_REFERENCE));
+            q.setString("relclass", this.migrator.serializer.serialize(this.relativeClassReference));
 
             @SuppressWarnings("unchecked")
             List<String> documents = q.list();
