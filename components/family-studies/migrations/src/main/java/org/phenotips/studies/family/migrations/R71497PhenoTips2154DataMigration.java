@@ -171,7 +171,7 @@ public class R71497PhenoTips2154DataMigration extends AbstractHibernateDataMigra
         private XWikiDocument importPedigreeToFamily(XWikiDocument patientXDocument) throws XWikiException
         {
             BaseObject pedigreeXObject = patientXDocument.getXObject(Pedigree.CLASS_REFERENCE);
-            if (pedigreeXObject == null) {
+            if (pedigreeXObject == null || pedigreeXObject.get("data") == null) {
                 this.migrator.logger.debug("Patient does not have pedigree. Patient Id: {}.", patientXDocument.getId());
                 return null;
             }

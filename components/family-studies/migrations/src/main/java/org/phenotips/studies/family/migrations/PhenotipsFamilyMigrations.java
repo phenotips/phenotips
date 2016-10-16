@@ -300,7 +300,7 @@ public class PhenotipsFamilyMigrations
         if (StringUtils.isNotBlank(owner)) {
             return owner;
         }
-        if (StringUtils.isNotBlank(patientDoc.getCreatorReference().getName())) {
+        if (patientDoc.getCreatorReference() != null) {
             return this.serializer.serialize(patientDoc.getCreatorReference());
         }
         return owner;

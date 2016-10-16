@@ -22,10 +22,10 @@ import org.phenotips.studies.family.Family;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -110,33 +110,41 @@ public class PhenotipsFamilyPermissions
         Collection<BaseObject> rightsObjects = patientDoc.getXObjects(RIGHTS_CLASS);
         Set<String> users = new HashSet<>();
         Set<String> groups = new HashSet<>();
-        for (BaseObject rights : rightsObjects) {
-            String rightsString = ((BaseStringProperty) rights.getField(RIGHTS_LEVELS_FIELD)).getValue();
-            if (rightsString.contains(accessString)) {
-                BaseStringProperty userAccessObject = (BaseStringProperty) rights.getField(RIGHTS_USERS_FIELD);
-                BaseStringProperty groupAccessObject = (BaseStringProperty) rights.getField(RIGHTS_GROUPS_FIELD);
-                if (userAccessObject != null) {
-                    String[] usersAccess = userAccessObject.getValue().split(COMMA);
-                    for (String user : Arrays.asList(usersAccess)) {
-                        if (StringUtils.isNotEmpty(user)) {
-                            users.add(user);
-                        }
-                    }
-                }
-                if (groupAccessObject != null) {
-                    String[] groupsAccess = groupAccessObject.getValue().split(COMMA);
-                    for (String group : Arrays.asList(groupsAccess)) {
-                        if (StringUtils.isNotEmpty(group)) {
-                            groups.add(group);
-                        }
-                    }
-                }
-            }
-        }
         List<Set<String>> fullRights = new ArrayList<>();
         fullRights.add(users);
         fullRights.add(groups);
+        if (rightsObjects == null) {
+            return fullRights;
+        }
+        for (BaseObject rights : rightsObjects) {
+            if (rights == null) {
+                continue;
+            }
+            String rightsString = rights.getStringValue(RIGHTS_LEVELS_FIELD);
+            if (rightsString.contains(accessString)) {
+                extractReferences((BaseStringProperty) rights.getField(RIGHTS_USERS_FIELD), users);
+                extractReferences((BaseStringProperty) rights.getField(RIGHTS_GROUPS_FIELD), groups);
+            }
+        }
         return fullRights;
+    }
+
+    /**
+     * Extract a list of users or groups from an XProperty, and append the outcome to a specified set.
+     *
+     * @param xproperty the XWiki property from which to get the values; may be {@code null}
+     * @param target the container where to add the extracted users/groups
+     */
+    private void extractReferences(BaseStringProperty xproperty, Collection<String> target)
+    {
+        if (xproperty != null) {
+            String[] references = xproperty.getValue().split(COMMA);
+            for (String reference : references) {
+                if (StringUtils.isNotBlank(reference)) {
+                    target.add(reference);
+                }
+            }
+        }
     }
 
     /**
@@ -161,8 +169,9 @@ public class PhenotipsFamilyPermissions
         // and view rights on another the user still gets edit permissions for the family
         this.updatePermissionsForOneRightLevel(VIEWEDIT_RIGHTS, members, family.getDocument(), wiki, context);
 
-        this.setOwnerPermissionsForUser(
-            family.getDocument().getCreatorReference().toString(), family.getDocument(), context);
+        DocumentReference creatorReference = family.getDocument().getCreatorReference();
+        this.setOwnerPermissionsForUser(creatorReference == null ? "" : creatorReference.toString(),
+            family.getDocument(), context);
     }
 
     private void setOwnerPermissionsForUser(String user, XWikiDocument familyDocument, XWikiContext context)

@@ -50,7 +50,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.StringProperty;
 import com.xpn.xwiki.store.XWikiHibernateBaseStore.HibernateCallback;
 import com.xpn.xwiki.store.XWikiHibernateStore;
 import com.xpn.xwiki.store.migration.DataMigrationException;
@@ -373,14 +372,12 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             }
             Map<String, XWikiDocument> relativesDocMap = new HashMap<>();
             for (BaseObject object : relativeXObjects) {
-                StringProperty relativeTypeProperty = null;
-                StringProperty relativeOfProperty = null;
+                if (object == null) {
+                    continue;
+                }
 
-                relativeTypeProperty = (StringProperty) object.get(RELATIVE_PROPERTY_NAME);
-                relativeOfProperty = (StringProperty) object.get(RELATIVEOF_PROPERTY_NAME);
-
-                String relativeType = relativeTypeProperty.getValue();
-                String relativeOf = relativeOfProperty.getValue();
+                String relativeType = object.getStringValue(RELATIVE_PROPERTY_NAME);
+                String relativeOf = object.getStringValue(RELATIVEOF_PROPERTY_NAME);
 
                 if (StringUtils.isBlank(relativeType) || StringUtils.isBlank(relativeOf)) {
                     continue;
