@@ -94,6 +94,9 @@ public class PatientVocabularyVersionRecorder extends AbstractEventListener
                 boolean skip = false;
                 if (existingVersionObjects != null) {
                     for (BaseObject existingVersionObject : existingVersionObjects) {
+                        if (existingVersionObject == null) {
+                            continue;
+                        }
                         String name = existingVersionObject.getStringValue(NAME_FIELD);
                         if (StringUtils.equalsIgnoreCase(name, versionType.getKey())) {
                             existingVersionObject.set(VERSION_FIELD, versionType.getValue(), context);
