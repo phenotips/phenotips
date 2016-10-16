@@ -195,7 +195,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             XWikiException
         {
             XWikiDocument familyXDocument = null;
-            if (relativesFamilyRef == null || patientFamilyRef != null && !"".equals(relativesFamilyRef)) {
+            if (relativesFamilyRef == null || patientFamilyRef != null && StringUtils.isNotBlank(relativesFamilyRef)) {
                 this.migrator.logger.debug("More than one family exists for patient and relatives. Patient Id: {}.",
                     patientXDocument.getId());
             }
@@ -207,7 +207,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 // TODO --- update the family pedigree object only for allowed types of relatives---
 
                 // If one relative has a family
-            } else if (!"".equals(relativesFamilyRef)) {
+            } else if (StringUtils.isNotBlank(relativesFamilyRef)) {
                 // set relative family reference to patient doc
                 this.migrator.familyMigrations.setFamilyReference(patientXDocument, relativesFamilyRef, this.context);
                 // set family references for all relatives docs
