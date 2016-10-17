@@ -82,9 +82,9 @@
 #macro (__display $propName)
 (% class="displayed-value"%)(((
 #if ("$!class.get($propName).getValue('contenttype')" == 'PureText' &amp;&amp; $xcontext.action != 'edit')
-  #if($xcontext.action == 'edit' || ($doc.display($propName) != ''))${doc.display($propName).replaceFirst('^(\{\{html clean="false" wiki="false"}})?', '{{content syntax="plain/1.0"}}').replaceFirst('(\{\{/html}})?$', '{{/content}}')}#{else}-#{end}
+  #if($doc.display($propName) != '')${doc.display($propName).replaceFirst('^(\{\{html clean="false" wiki="false"}})?', '{{content syntax="plain/1.0"}}').replaceFirst('(\{\{/html}})?$', '{{/content}}')}#{else}-#{end}
 #else
-  #if($xcontext.action == 'edit' || ($doc.display($propName) != ''))${doc.display($propName).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}#{else}-#{end}
+  #if($xcontext.action == 'edit' || $doc.display($propName) != '')${doc.display($propName).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}#{else}-#{end}
 #end
 
 )))##
