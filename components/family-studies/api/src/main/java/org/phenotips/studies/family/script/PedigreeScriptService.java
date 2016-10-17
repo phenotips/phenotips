@@ -62,8 +62,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import net.sf.json.JSON;
-
 /**
  * Script service for working with families. All methods assume actions are performed by current user and do
  * corresponding permission checks.
@@ -161,9 +159,9 @@ public class PedigreeScriptService implements ScriptService
      * @param familyId Phenotips family id. If null, a new family is created.
      * @param json part of the pedigree data
      * @param image svg part of the pedigree data
-     * @return {@link JSON} with 'error' field set to {@link false} if everything is ok, or {@link true} if an error has
-     *         occurred. In case the linking is invalid, the JSON will also contain 'errorMessage' and 'errorType'. In
-     *         case of success JSONResponse will be of FamilyInfoJSONResponse type
+     * @return {@link JSONResponse} with 'error' field set to {@code false} if everything is ok, or {@code true} if an
+     *         error has occurred. In case the linking is invalid, the JSON will also contain {@code errorMessage} and
+     *         {@code errorType}. In case of success JSONResponse will be of {@link FamilyInfoJSONResponse} type
      */
     public JSONResponse savePedigree(String familyId, String json, String image)
     {

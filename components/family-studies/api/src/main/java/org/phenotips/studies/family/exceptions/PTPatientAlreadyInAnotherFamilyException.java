@@ -21,16 +21,18 @@ package org.phenotips.studies.family.exceptions;
  * TODO: redesign, move to another package.
  *
  * @version $Id$
- * @since 1.4
+ * @since 1.3M3
  */
 public class PTPatientAlreadyInAnotherFamilyException extends PTFamilyException
 {
+    private static final long serialVersionUID = -6689894127252246242L;
+
     private final String patientId;
 
     private final String otherFamilyId;
 
     /**
-     * TODO: accept a list of <patient, family> pairs?
+     * TODO: accept a list of {@code <patient, family>} pairs?
      *
      * @param patientId the patient
      * @param otherFamilyId the id o fthe other family the patient already belongs to

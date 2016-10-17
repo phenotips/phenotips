@@ -41,7 +41,7 @@ public interface FamilyResource
      * indicated familyt record doesn't exist, or if the user sending the request doesn't have the right to view the
      * target family record, an error is returned.
      *
-     * @param id the family's internal identifier, see {@link org.phenotips.data.Family#getId()}
+     * @param id the family's internal identifier, see {@link org.phenotips.studies.family.Family#getId()}
      * @return the JSON representation of the requested family, or a status message in case of error
      */
     @GET
@@ -49,15 +49,15 @@ public interface FamilyResource
 
     /**
      * Delete a family record, identified by its internal PhenoTips identifier. If the indicated family record doesn't
-     * exist, or if the user sending the request doesn't have the right to delete the target family record, no change
-     * is performed and an error is returned.
+     * exist, or if the user sending the request doesn't have the right to delete the target family record, no change is
+     * performed and an error is returned.
      *
-     * @param id the family's internal identifier, see {@link org.phenotips.data.Family#getId()}
-     * @param deleteMembers when true, all family members will be deleted as well.
+     * @param id the family's internal identifier, see {@link org.phenotips.studies.family.Family#getId()}
+     * @param deleteMembers when {@code true}, all family members will be deleted as well.
      * @return a status message
      */
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
     Response deleteFamily(@PathParam("id") String id,
-            @QueryParam("delete_all_members") @DefaultValue("false") Boolean deleteMembers);
+        @QueryParam("delete_all_members") @DefaultValue("false") Boolean deleteMembers);
 }
