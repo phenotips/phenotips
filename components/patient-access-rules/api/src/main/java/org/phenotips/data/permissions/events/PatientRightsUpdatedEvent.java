@@ -17,16 +17,18 @@
  */
 package org.phenotips.data.permissions.events;
 
-import org.apache.commons.lang3.StringUtils;
+import org.phenotips.data.Patient;
 
 import org.xwiki.observation.event.Event;
 import org.xwiki.stability.Unstable;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
- * An event that is fired every time patient prmissions are updated.
+ * An event that is fired every time patient permissions are updated.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M3
  */
 @Unstable
 public class PatientRightsUpdatedEvent implements Event
@@ -37,9 +39,7 @@ public class PatientRightsUpdatedEvent implements Event
     /**
      * Constructor initializing the required fields.
      *
-     * @param eventType the type of this event
-     * @param family the affected family
-     * @param author the user performing this action
+     * @param patientId the {@link Patient#getId() identifier} of the affected patient
      */
     public PatientRightsUpdatedEvent(String patientId)
     {
@@ -57,7 +57,7 @@ public class PatientRightsUpdatedEvent implements Event
     {
         if (otherEvent instanceof PatientRightsUpdatedEvent) {
             PatientRightsUpdatedEvent otherRightsUpdateEvent = (PatientRightsUpdatedEvent) otherEvent;
-            if (patientId != null && !StringUtils.equals(otherRightsUpdateEvent.getPatientId(), this.patientId)) {
+            if (this.patientId != null && !StringUtils.equals(otherRightsUpdateEvent.getPatientId(), this.patientId)) {
                 return false;
             }
             return true;
@@ -65,6 +65,12 @@ public class PatientRightsUpdatedEvent implements Event
         return false;
     }
 
+    /**
+     * Returns the {@link Patient#getId() identifier} of the patient being updated.
+     *
+     * @return the {@link Patient#getId() identifier} of the affected patient, or {@code null} if this isn't an actual
+     *         event on a patient
+     */
     public String getPatientId()
     {
         return this.patientId;
