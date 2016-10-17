@@ -152,7 +152,7 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 |(% class="row-count" %)$geneNumber##
 #foreach($prop in $geneObj.xWikiClass.properties)##
 |(% class="$prop.translatedPrettyName gene gene-$geneObjNumber #if ($prop.name == 'gene')mandatory#end"##
-#if ($foreach.index == 0 || $foreach.index == 3) colspan="2" #end %)$doc.display($prop.name, $options.mode, $geneObj)##
+#if ($foreach.index == 0 || $foreach.index == 3) colspan="2" #end %)#if ("$!prop.getValue('contenttype')" == 'PureText' && $xcontext.action != 'edit')${services.rendering.escape($doc.display($prop.name, $options.mode, $geneObj).replaceFirst('^(\{\{html clean="false" wiki="false"}})?', '').replaceFirst('(\{\{/html}})?$', ''), 'xwiki/2.1')}#else$doc.display($prop.name, $options.mode, $geneObj)#end##
 #end
 #if ($options.mode == 'edit')
 |(% class="gene delete-gene-button-$geneObjNumber" %)#__gene__deleteWithVariants__tool($geneObj $variantClass.name)##
