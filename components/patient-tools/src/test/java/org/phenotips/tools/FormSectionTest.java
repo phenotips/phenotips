@@ -74,6 +74,8 @@ public class FormSectionTest
             when(cm.getInstance(TranslationManager.class)).thenReturn(tm);
             when(tm.translate("Phenotips.FormSection.suggestTermPlaceholder")).thenReturn(
                 "enter free text and choose among suggested vocabulary terms");
+            when(tm.translate("Phenotips.FormSection.otherLabel")).thenReturn(
+                "Other");
         } finally {
             field.setAccessible(isAccessible);
         }

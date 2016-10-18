@@ -1429,7 +1429,7 @@
       </url>
     </class>
     <property>
-      <description>PhenomeCentral is a repository for secure data sharing targeted to clinicians and scientists working in the rare disorder community. PhenomeCentral encourages global scientific collaboration while respecting the privacy of patients profiled in this centralized database.</description>
+      <description>$services.localization.render('phenotips.push.phenomecentral.description')</description>
     </property>
     <property>
       <name>PhenomeCentral</name>
@@ -3034,10 +3034,10 @@ In order to activate your account, please follow this link:
 ${host}${xwiki.getURL('XWiki.AccountValidation', 'view', "validkey=${validkey}&amp;xwikiname=${xwikiname}")}</validation_email_content>
     </property>
     <property>
-      <version>&lt;a href="http://phenotips.org"&gt;PhenoTips&lt;/a&gt; version $!{services.distribution.distributionExtension.id.version}</version>
+      <version>&lt;a href="http://phenotips.org"&gt;PhenoTips&lt;/a&gt; $services.localization.render('phenotips.defaultSettings.version') $!{services.distribution.distributionExtension.id.version}</version>
     </property>
     <property>
-      <webcopyright>Reproducing or distributing this clinical information without permission from the institution that owns it is strictly forbidden.</webcopyright>
+      <webcopyright>$services.localization.render('phenotips.defaultSettings.webcopyright')</webcopyright>
     </property>
     <property>
       <xwiki.title.mandatory>0</xwiki.title.mandatory>

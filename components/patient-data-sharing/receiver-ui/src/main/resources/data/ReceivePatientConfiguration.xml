@@ -61,14 +61,14 @@ $xwiki.ssx.use($displayDocumentName)##
   #__extradata_displayLastEntry($request.dataClassName $options)
 #else
 {{html clean="false"}}
-&lt;h2&gt;Receive configuration&lt;/h2&gt;
+&lt;h2&gt;$services.localization.render('phenotips.receivePatientConfiguration.receiveHeader')&lt;/h2&gt;
 &lt;form action="${preferencesDoc.getURL('save')}" method="post"&gt;
 &lt;div class="hidden"&gt;
     &lt;input type="hidden" name="form_token" value="${escapetool.xml($services.csrf.token)}" /&gt;
     &lt;input type="hidden" name="classname" value="${mainConfigurationClassname}" /&gt;
     &lt;input type="hidden" name="xredirect" value="${escapetool.xml($doc.getURL($xcontext.action, $request.queryString))}" /&gt;
   &lt;/div&gt;
-  Allow pushes from servers not listed below: ##
+  $services.localization.render('phenotips.receivePatientConfiguration.allowPushes') ##
 {{/html}}##
     #set ($targetObj = $doc.getObject($mainConfigurationClassname))
     #if (!$targetObj)
@@ -79,17 +79,17 @@ $xwiki.ssx.use($displayDocumentName)##
     ##
   #if ($services.consentauthorizer.consentsGloballyEnabled())
     {{html clean="false"}}
-    Accept data from old clients that cannot push consent information: ##
+    $services.localization.render('phenotips.receivePatientConfiguration.acceptData') ##
     {{/html}}##
     $doc.display("AllowNoConsentsFromOldClients", "edit", $targetObj)
   #end
   ##
 {{html clean="false"}}
 &lt;div class="buttons"&gt;
-    &lt;input class="button" type="submit" value="Save" /&gt;
+    &lt;input class="button" type="submit" value="$services.localization.render('phenotips.receivePatientConfiguration.save')" /&gt;
   &lt;/div&gt;
 &lt;/form&gt;
-&lt;h2&gt;Approved source servers&lt;/h2&gt;
+&lt;h2&gt;$services.localization.render('phenotips.receivePatientConfiguration.approvedHeader')&lt;/h2&gt;
 &lt;form action="${preferencesDoc.getURL('save')}" method="post"&gt;
 &lt;div class="hidden"&gt;
     &lt;input type="hidden" name="form_token" value="${escapetool.xml($services.csrf.token)}" /&gt;
@@ -100,7 +100,7 @@ $xwiki.ssx.use($displayDocumentName)##
   #__extradata_displayTable($serverConfigurationClassname, {'counter' : false, 'labels' : false, 'mode' : 'edit', 'addedDisplaySheet' : $displayDocumentName})
 {{html clean="false"}}
   &lt;div class="buttons"&gt;
-    &lt;input class="button" type="submit" value="Save changes" /&gt;
+    &lt;input class="button" type="submit" value="$services.localization.render('phenotips.receivePatientConfiguration.saveChanges')" /&gt;
   &lt;/div&gt;
 &lt;/form&gt;
 {{/html}}

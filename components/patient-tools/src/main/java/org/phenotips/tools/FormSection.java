@@ -78,7 +78,7 @@ public class FormSection extends FormGroup
         // section, which has the selection summary
         if (this.elements.isEmpty()
             && (this.customElements.elements.isEmpty()
-                || ("phenotype".equals(this.propertyName) && DisplayMode.Edit.equals(mode)))) {
+            || ("phenotype".equals(this.propertyName) && DisplayMode.Edit.equals(mode)))) {
             display = "display:none";
         }
         return String.format("<div class='%s-group%s' style='" + display + "'><h3 id='H%s'><span>%s</span></h3>"
@@ -100,16 +100,17 @@ public class FormSection extends FormGroup
         String result = "";
         String id = fieldNames[YES] + "_" + Math.random();
         String displayedLabel = "Other";
-        result += String.format("<label for='%s' class='label-other label-other-%s'>%s</label>", id, fieldNames[YES],
-            displayedLabel);
         String placeholder = "enter free text and choose among suggested vocabulary terms";
         try {
             TranslationManager tm =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(TranslationManager.class);
+            displayedLabel = tm.translate("Phenotips.FormSection.otherLabel");
             placeholder = tm.translate("Phenotips.FormSection.suggestTermPlaceholder");
         } catch (ComponentLookupException ex) {
             // Will not happen, and if it does, it doesn't matter, placeholder is not that critical
         }
+        result += String.format("<label for='%s' class='label-other label-other-%s'>%s</label>", id, fieldNames[YES],
+            displayedLabel);
         result += String.format("<input type='text' name='%s' class='suggested multi suggest-hpo %s accept-value'"
             + " value='' size='16' id='%s' placeholder='%s'/>", fieldNames[YES],
             (fieldNames[NO] == null ? "generateCheckboxes" : "generateYesNo"), id, placeholder);

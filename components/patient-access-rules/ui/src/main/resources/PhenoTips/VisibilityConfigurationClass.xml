@@ -312,7 +312,7 @@ $xwiki.jsx.use('PhenoTips.VisibilityConfigurationClass')##
       <displayInSection>access</displayInSection>
     </property>
     <property>
-      <heading>Disabled visibility levels</heading>
+      <heading>$services.localization.render('phenotips.visibilityConfiguration.menuHeading')</heading>
     </property>
     <property>
       <iconAttachment/>

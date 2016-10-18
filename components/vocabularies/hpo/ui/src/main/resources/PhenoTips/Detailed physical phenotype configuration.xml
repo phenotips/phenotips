@@ -710,7 +710,7 @@
       </description>
     </class>
     <property>
-      <description>A thorough set of physical abnormalities affecting specific body parts. Includes several neurological signs.</description>
+      <description>$services.localization.render('phenotips.detailedPhenotypeConfig.description')</description>
     </property>
   </object>
 </xwikidoc>

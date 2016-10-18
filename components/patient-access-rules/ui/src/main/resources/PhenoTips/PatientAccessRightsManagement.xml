@@ -391,7 +391,7 @@
       <displayInSection>access</displayInSection>
     </property>
     <property>
-      <heading>Default visibility</heading>
+      <heading>$services.localization.render('phenotips.patientAccessRightsManagement.menuHeading')</heading>
     </property>
     <property>
       <iconAttachment/>
