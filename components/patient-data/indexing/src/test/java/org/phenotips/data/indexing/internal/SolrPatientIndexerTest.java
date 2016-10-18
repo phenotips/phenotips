@@ -99,6 +99,8 @@ public class SolrPatientIndexerTest
 
     private DocumentReference patientDocReference;
 
+    private String patientFullName;
+
     @Before
     public void setUp() throws ComponentLookupException
     {
@@ -112,6 +114,7 @@ public class SolrPatientIndexerTest
         this.qm = this.mocker.getInstance(QueryManager.class);
         this.patientRepository = this.mocker.getInstance(PatientRepository.class);
         this.patientDocReference = new DocumentReference("wiki", "patient", "P0000001");
+        this.patientFullName = "wiki:patient.P0000001";
         this.patientIndexer = this.mocker.getComponentUnderTest();
         EntityReferenceSerializer<String> referenceSerializer =
             this.mocker.getInstance(EntityReferenceSerializer.TYPE_STRING);

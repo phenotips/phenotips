@@ -192,6 +192,9 @@ public class DefaultPatientAccessHelperTest
         when(this.stringEntitySerializer.serialize(COLLABORATOR)).thenReturn(COLLABORATOR_STR);
         when(this.stringEntitySerializer.serialize(OTHER_USER)).thenReturn(OTHER_USER_STR);
 
+        when(this.patient.getDocumentReference()).thenReturn(PATIENT_REFERENCE);
+        when(this.bridge.getProperty(PATIENT_REFERENCE, OWNER_CLASS, "owner")).thenReturn(OWNER_STR);
+
         Execution e = this.mocker.getInstance(Execution.class);
         ExecutionContext ec = mock(ExecutionContext.class);
         when(e.getContext()).thenReturn(ec);

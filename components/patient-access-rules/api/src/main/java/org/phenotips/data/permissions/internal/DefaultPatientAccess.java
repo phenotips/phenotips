@@ -171,6 +171,6 @@ public class DefaultPatientAccess implements PatientAccess
     public String toString()
     {
         return "Access rules for "
-               + (this.patient != null ? this.patient.getDocumentReference() : "<unknown patient>");
+            + (this.patient != null ? this.patient.getDocumentReference() : "<unknown patient>");
     }
 }

@@ -123,8 +123,9 @@ public class ClinicalStatusController implements PatientDataController<String>
     public void save(Patient patient)
     {
         BaseProperty<ObjectPropertyReference> isNormal =
-            (BaseProperty<ObjectPropertyReference>) patient.getXDocument().getXObject(Patient.CLASS_REFERENCE).getField(
-                PATIENT_DOCUMENT_FIELDNAME);
+            (BaseProperty<ObjectPropertyReference>) patient.getXDocument().getXObject(Patient.CLASS_REFERENCE)
+                .getField(
+                    PATIENT_DOCUMENT_FIELDNAME);
         PatientData<String> data = patient.getData(this.getName());
         if (isNormal == null || data == null) {
             return;

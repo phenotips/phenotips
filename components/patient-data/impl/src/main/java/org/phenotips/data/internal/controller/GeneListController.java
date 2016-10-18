@@ -300,11 +300,8 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     }
 
     /**
-     * Supports both 1.3-m5 and older 1.3-xx format.
-     * 1.3-m5 and newer format:
-     *   {"id": ENSEMBL_Id [[, "gene": HGNC_Symbol] , ...] }
-     * 1.3-old format:
-     *   {"gene": HGNC_Symbol [, ...] }
+     * Supports both 1.3-m5 and older 1.3-xx format. 1.3-m5 and newer format: {"id": ENSEMBL_Id [[, "gene": HGNC_Symbol]
+     * , ...] } 1.3-old format: {"gene": HGNC_Symbol [, ...] }
      */
     private void parseGenesJson(JSONObject json, List<Map<String, String>> allGenes)
     {
@@ -476,13 +473,11 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     }
 
     /**
-     * Gets EnsemblID corresponding to the HGNC symbol.
-     *
-     * FIXME: refactor HGNC vocabulary to have "ensembl_gene_id" as a single value not a list?
-     * FIXME: if done, refactor VocabularyTerm to simplify access to a String value using getString() instead of get()?
-     *        currently VocabularyTerm.get() is only ever used here and in gene migrator
-     * FIXME: in any case refactoring vocabulary code in _some_ way to avoid code duplication every time we need
-     *        to convert geneSymbol to ensembleID?
+     * Gets EnsemblID corresponding to the HGNC symbol. FIXME: refactor HGNC vocabulary to have "ensembl_gene_id" as a
+     * single value not a list? FIXME: if done, refactor VocabularyTerm to simplify access to a String value using
+     * getString() instead of get()? currently VocabularyTerm.get() is only ever used here and in gene migrator FIXME:
+     * in any case refactoring vocabulary code in _some_ way to avoid code duplication every time we need to convert
+     * geneSymbol to ensembleID?
      *
      * @param gene the string representation a gene, either geneSymbol (e.g. NOD2) or some other kind of ID
      * @return if gene is a vlaid geneSymbol, the corresponding Ensembl ID. Otherwise the original gene value

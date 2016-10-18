@@ -224,7 +224,7 @@ public class PatientSpecificityScriptService implements ScriptService
         }
 
         @Override
-        public DocumentReference getDocument()
+        public DocumentReference getDocumentReference()
         {
             return null;
         }

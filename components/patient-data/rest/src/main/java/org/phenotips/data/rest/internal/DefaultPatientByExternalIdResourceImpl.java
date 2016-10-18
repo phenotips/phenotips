@@ -222,8 +222,8 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
     }
 
     /**
-     * Tries to create a patient with provided {@code eid} and {@code json data}. Returns a {@link Response} with
-     * no content if successful, an error code otherwise.
+     * Tries to create a patient with provided {@code eid} and {@code json data}. Returns a {@link Response} with no
+     * content if successful, an error code otherwise.
      *
      * @param eid the external identifier for the patient; will be overwritten if an eid is specified in {@code json}
      * @param json patient data as json string

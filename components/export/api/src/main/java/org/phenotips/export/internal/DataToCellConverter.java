@@ -650,7 +650,8 @@ public class DataToCellConverter
         int x = 0;
         for (String fieldId : fields) {
             DataCell headerCell =
-                new DataCell(this.translationManager.translate("phenotips.export.excel.label.familyHistory." + fieldId),
+                new DataCell(
+                    this.translationManager.translate("phenotips.export.excel.label.familyHistory." + fieldId),
                     x, bottomY,
                     StyleOption.HEADER);
             headerSection.addCell(headerCell);

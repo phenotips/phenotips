@@ -429,7 +429,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
                 // check permissions on all patients
                 for (Patient patient : family.getMembers()) {
                     if (!this.authorizationService.hasAccess(
-                            updatingUser, Right.DELETE, patient.getDocumentReference())) {
+                        updatingUser, Right.DELETE, patient.getDocumentReference())) {
                         throw new PTNotEnoughPermissionsOnPatientException(Right.DELETE, patient.getId());
                     }
                 }
@@ -561,7 +561,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
                 if (singlePatient.has(idKey)) {
                     Patient patient = this.patientRepository.get(singlePatient.getString(idKey));
                     if (!this.authorizationService.hasAccess(
-                            updatingUser, Right.EDIT, patient.getDocumentReference())) {
+                        updatingUser, Right.EDIT, patient.getDocumentReference())) {
                         // skip patients the current user does not have edit rights for
                         continue;
                     }
@@ -605,7 +605,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
             if (!StringUtils.isEmpty(probandId)) {
                 Patient patient = this.patientRepository.get(probandId);
                 familyClassObject.setStringValue("proband_id",
-                        (patient == null) ? "" : patient.getDocumentReference().toString());
+                    (patient == null) ? "" : patient.getDocumentReference().toString());
             } else {
                 familyClassObject.setStringValue("proband_id", "");
             }

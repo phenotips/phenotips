@@ -118,7 +118,7 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
     @Override
     public String getFullName()
     {
-        return this.getDocument().toString();
+        return this.getDocumentReference().toString();
     }
 
     @Override

@@ -19,8 +19,8 @@ package org.phenotips.data.receive.internal;
 
 import org.phenotips.Constants;
 import org.phenotips.configuration.RecordConfigurationManager;
-import org.phenotips.consents.internal.ConsentAuthorizer;
 import org.phenotips.consents.ConsentManager;
+import org.phenotips.consents.internal.ConsentAuthorizer;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.internal.PhenoTipsPatient;
@@ -565,6 +565,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
     /**
      * Exctacts the list of granted consents from a request
+     * 
      * @param rawPatientState patient state JSON string directly from the {@link Request} object
      */
     private Set<String> extractConsents(String rawPatientState)
@@ -730,7 +731,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
             boolean hasEditRights =
                 this.authService.hasAccess(this.userManager.getUser(userName), Right.EDIT,
-                        patient.getDocumentReference());
+                    patient.getDocumentReference());
             if (hasEditRights) {
                 return true;
             }

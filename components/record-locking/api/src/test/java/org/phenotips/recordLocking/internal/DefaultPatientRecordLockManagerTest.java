@@ -198,7 +198,8 @@ public class DefaultPatientRecordLockManagerTest
     }
 
     @Test
-    public void returnsFalseAfterXWikiExceptionWhileRetrievingDocument() throws ComponentLookupException, XWikiException
+    public void returnsFalseAfterXWikiExceptionWhileRetrievingDocument() throws ComponentLookupException,
+        XWikiException
     {
         Mockito.doThrow(new XWikiException()).when(this.xwiki).getDocument(this.patientDocumentReference, this.context);
         PatientRecordLockManager mockedLockManager = this.mocker.getComponentUnderTest();

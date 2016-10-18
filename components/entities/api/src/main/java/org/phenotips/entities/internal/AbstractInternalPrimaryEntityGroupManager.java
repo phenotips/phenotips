@@ -163,9 +163,8 @@ public abstract class AbstractInternalPrimaryEntityGroupManager<G extends Primar
                 return true;
             }
             groupDocument.removeXObject(obj);
-            getXContext().getWiki().saveDocument(groupDocument, "Removed member " + member.getDocumentReference(),
-                true,
-                getXContext());
+            getXContext().getWiki().saveDocument(
+                groupDocument, "Removed member " + member.getDocumentReference(), true, getXContext());
             return true;
         } catch (Exception ex) {
             this.logger.warn("Failed to remove member from group: {}", ex.getMessage());

@@ -369,7 +369,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
                     || variantSymbols.contains(variantJson.getString(INTERNAL_VARIANT_KEY))
                     // storing variant without gene name is pointless as it can not be displayed
                     || StringUtils.isBlank(variantJson.optString(JSON_GENE_KEY))
-                        && StringUtils.isBlank(variantJson.optString(JSON_OLD_GENE_KEY))) {
+                    && StringUtils.isBlank(variantJson.optString(JSON_OLD_GENE_KEY))) {
                     continue;
                 }
 
