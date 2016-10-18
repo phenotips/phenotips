@@ -210,7 +210,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
             return null;
         }
         String patientId = patient.getId();
-        XWikiDocument patientDocument = getDocument(patient);
+        XWikiDocument patientDocument = patient.getDocument();
         if (patientDocument == null) {
             return null;
         }
@@ -256,7 +256,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
 
         String patientId = patient.getId();
         XWikiContext context = this.provider.get();
-        XWikiDocument patientDocument = getDocument(patient);
+        XWikiDocument patientDocument = patient.getDocument();
         if (patientDocument == null) {
             throw new PTInvalidPatientIdException(patientId);
         }
@@ -316,7 +316,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
 
         String patientId = patient.getId();
         XWikiContext context = this.provider.get();
-        XWikiDocument patientDocument = getDocument(patient);
+        XWikiDocument patientDocument = patient.getDocument();
         if (patientDocument == null) {
             throw new PTInvalidPatientIdException(patientId);
         }
@@ -768,19 +768,6 @@ public class PhenotipsFamilyRepository implements FamilyRepository
         }
         crtMaxID = Math.max(crtMaxID, 0);
         return crtMaxID;
-    }
-
-    private XWikiDocument getDocument(Patient patient)
-    {
-        // TODO use getDocument()
-        try {
-            DocumentReference document = patient.getDocumentReference();
-            XWikiDocument patientDocument = getDocument(document);
-            return patientDocument;
-        } catch (XWikiException ex) {
-            this.logger.error("Can't get patient document for patient [{}]: []", patient.getId(), ex);
-            return null;
-        }
     }
 
     private XWikiDocument getDocument(EntityReference docRef) throws XWikiException

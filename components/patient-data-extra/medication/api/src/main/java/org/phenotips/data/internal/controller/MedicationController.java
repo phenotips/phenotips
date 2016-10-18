@@ -23,7 +23,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 
@@ -74,16 +73,11 @@ public class MedicationController implements PatientDataController<Medication>
     @Inject
     private Provider<XWikiContext> xcontext;
 
-    /** Provides access to the underlying data storage. */
-    @Inject
-    private DocumentAccessBridge documentAccessBridge;
-
     @Override
     public PatientData<Medication> load(Patient patient)
     {
         try {
-            // TODO change to getDocument
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocumentReference());
+            XWikiDocument doc = patient.getDocument();
             List<BaseObject> data = doc.getXObjects(Medication.CLASS_REFERENCE);
             if (data == null || data.isEmpty()) {
                 this.logger.debug("No medication data for patient [{}]", patient.getDocumentReference());

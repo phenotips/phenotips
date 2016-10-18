@@ -324,7 +324,7 @@ public class DefaultPatientAccessHelperTest
     public void getCollaborators() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(PATIENT_REFERENCE)).thenReturn(doc);
+        when(this.patient.getDocument()).thenReturn(doc);
         List<BaseObject> objects = new ArrayList<BaseObject>();
         BaseObject collaborator = mock(BaseObject.class);
         when(collaborator.getStringValue("collaborator")).thenReturn(COLLABORATOR_STR);
@@ -356,7 +356,7 @@ public class DefaultPatientAccessHelperTest
     public void getCollaboratorsWithMultipleEntries() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(PATIENT_REFERENCE)).thenReturn(doc);
+        when(this.patient.getDocument()).thenReturn(doc);
         List<BaseObject> objects = new ArrayList<BaseObject>();
         BaseObject collaborator = mock(BaseObject.class);
         when(collaborator.getStringValue("collaborator")).thenReturn(COLLABORATOR_STR);
@@ -426,7 +426,7 @@ public class DefaultPatientAccessHelperTest
     public void setCollaborators() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(PATIENT_REFERENCE)).thenReturn(doc);
+        when(this.patient.getDocument()).thenReturn(doc);
         PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
         AccessLevel edit = mock(AccessLevel.class);
         when(edit.getName()).thenReturn("edit");
@@ -470,7 +470,7 @@ public class DefaultPatientAccessHelperTest
     public void addCollaboratorWithNewObject() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(PATIENT_REFERENCE)).thenReturn(doc);
+        when(this.patient.getDocument()).thenReturn(doc);
         PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
         BaseObject o = mock(BaseObject.class);
         when(doc.getXObject(COLLABORATOR_CLASS, "collaborator", COLLABORATOR_STR, false)).thenReturn(null);
@@ -494,7 +494,7 @@ public class DefaultPatientAccessHelperTest
     public void addCollaboratorWithExistingObject() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(PATIENT_REFERENCE)).thenReturn(doc);
+        when(this.patient.getDocument()).thenReturn(doc);
         PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
         BaseObject o = mock(BaseObject.class);
         when(doc.getXObject(COLLABORATOR_CLASS, "collaborator", COLLABORATOR_STR, false)).thenReturn(o);
@@ -533,7 +533,7 @@ public class DefaultPatientAccessHelperTest
     public void removeCollaboratorWithExistingObject() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(PATIENT_REFERENCE)).thenReturn(doc);
+        when(this.patient.getDocument()).thenReturn(doc);
         BaseObject o = mock(BaseObject.class);
         when(doc.getXObject(COLLABORATOR_CLASS, "collaborator", COLLABORATOR_STR, false)).thenReturn(o);
         XWiki xwiki = mock(XWiki.class);
@@ -643,7 +643,7 @@ public class DefaultPatientAccessHelperTest
     public void getAccessLevelWithSpecifiedCollaborator() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(PATIENT_REFERENCE)).thenReturn(doc);
+        when(this.patient.getDocument()).thenReturn(doc);
         List<BaseObject> objects = new ArrayList<BaseObject>();
         BaseObject collaborator = mock(BaseObject.class);
         when(collaborator.getStringValue("collaborator")).thenReturn(COLLABORATOR_STR);
@@ -676,7 +676,7 @@ public class DefaultPatientAccessHelperTest
     public void getAccessLevelWithGroupMemberCollaborator() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(PATIENT_REFERENCE)).thenReturn(doc);
+        when(this.patient.getDocument()).thenReturn(doc);
         List<BaseObject> objects = new ArrayList<BaseObject>();
         BaseObject collaborator = mock(BaseObject.class);
         when(collaborator.getStringValue("collaborator")).thenReturn(GROUP_STR);

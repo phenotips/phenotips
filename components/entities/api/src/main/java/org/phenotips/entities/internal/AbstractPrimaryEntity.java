@@ -79,6 +79,12 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
     }
 
     @Override
+    public XWikiDocument getDocument()
+    {
+        return document;
+    }
+
+    @Override
     public String getId()
     {
         return this.getDocumentReference().getName();

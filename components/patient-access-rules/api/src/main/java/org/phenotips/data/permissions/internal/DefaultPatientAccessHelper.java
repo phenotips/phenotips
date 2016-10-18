@@ -225,8 +225,7 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     public Collection<Collaborator> getCollaborators(Patient patient)
     {
         try {
-            // TODO use getDocument()
-            XWikiDocument patientDoc = (XWikiDocument) this.bridge.getDocument(patient.getDocumentReference());
+            XWikiDocument patientDoc = patient.getDocument();
             DocumentReference classReference =
                 this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocumentReference());
             Map<EntityReference, Collaborator> collaborators = new TreeMap<EntityReference, Collaborator>();
@@ -263,8 +262,7 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     public boolean setCollaborators(Patient patient, Collection<Collaborator> newCollaborators)
     {
         try {
-            // TODO use getDocument()
-            XWikiDocument patientDoc = (XWikiDocument) this.bridge.getDocument(patient.getDocumentReference());
+            XWikiDocument patientDoc = patient.getDocument();
             DocumentReference classReference =
                 this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocumentReference());
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
@@ -286,8 +284,7 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     public boolean addCollaborator(Patient patient, Collaborator collaborator)
     {
         try {
-            // TODO use getDocument()
-            XWikiDocument patientDoc = (XWikiDocument) this.bridge.getDocument(patient.getDocumentReference());
+            XWikiDocument patientDoc = patient.getDocument();
             DocumentReference classReference =
                 this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocumentReference());
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
@@ -315,8 +312,7 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     public boolean removeCollaborator(Patient patient, Collaborator collaborator)
     {
         try {
-            // TODO use getDocument()
-            XWikiDocument patientDoc = (XWikiDocument) this.bridge.getDocument(patient.getDocumentReference());
+            XWikiDocument patientDoc = patient.getDocument();
             DocumentReference classReference =
                 this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocumentReference());
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
