@@ -76,8 +76,7 @@ public class MedicalReportsController implements PatientDataController<String>
     {
         try {
             XWikiContext context = this.contextProvider.get();
-            // TODO change to getDocument
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocumentReference());
+            XWikiDocument doc = patient.getDocument();
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
                 throw new NullPointerException("The patient does not have a PatientClass");

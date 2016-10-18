@@ -22,7 +22,6 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -61,8 +60,6 @@ public class ClinicalStatusControllerTest
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
         new MockitoComponentMockingRule<PatientDataController<String>>(ClinicalStatusController.class);
 
-    private DocumentAccessBridge documentAccessBridge;
-
     @Mock
     private Patient patient;
 
@@ -77,11 +74,9 @@ public class ClinicalStatusControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
         doReturn(patientDocument).when(this.patient).getDocumentReference();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
+        doReturn(this.doc).when(this.patient).getDocument();
         doReturn(this.dataHolder).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
     }
 

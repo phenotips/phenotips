@@ -18,12 +18,10 @@
 package org.phenotips.entities.internal;
 
 import org.phenotips.Constants;
-import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.entities.PrimaryEntity;
 import org.phenotips.entities.PrimaryEntityGroupManager;
 import org.phenotips.entities.PrimaryEntityManager;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
@@ -121,10 +119,7 @@ public abstract class AbstractExternalPrimaryEntityGroupManager<G extends Primar
     public boolean addMember(G group, E member)
     {
         try {
-            DocumentAccessBridge dab =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
-            // TODO use getDocument()
-            XWikiDocument doc = (XWikiDocument) dab.getDocument(member.getDocumentReference());
+            XWikiDocument doc = member.getDocument();
             BaseObject obj = doc.getXObject(GROUP_MEMBERSHIP_CLASS, getMembershipProperty(),
                 getFullSerializer().serialize(group.getDocumentReference()), false);
             if (obj != null) {

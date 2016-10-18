@@ -24,7 +24,6 @@ import org.phenotips.data.PatientDataController;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -79,10 +78,6 @@ public class GlobalQualifiersControllerTest
     public MockitoComponentMockingRule<PatientDataController<List<VocabularyTerm>>> mocker =
         new MockitoComponentMockingRule<PatientDataController<List<VocabularyTerm>>>(GlobalQualifiersController.class);
 
-    private DocumentAccessBridge documentAccessBridge;
-
-    private DocumentReference patientDocument = new DocumentReference("wiki", "patient", "P0000001");
-
     private PatientDataController<List<VocabularyTerm>> tested;
 
     @Mock
@@ -131,10 +126,9 @@ public class GlobalQualifiersControllerTest
         this.xWikiContext = this.provider.get();
         doReturn(this.xwiki).when(this.xWikiContext).getWiki();
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
-        doReturn(this.patientDocument).when(this.patient).getDocument();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(this.patientDocument);
+        DocumentReference patientDocument = new DocumentReference("wiki", "patient", "P0000001");
+        doReturn(patientDocument).when(this.patient).getDocumentReference();
+        doReturn(this.doc).when(this.patient).getDocument();
 
         VocabularyManager vocabularyManager = this.mocker.getInstance(VocabularyManager.class);
         when(this.neonatalTerm.getId()).thenReturn(NEONATAL);
@@ -272,7 +266,7 @@ public class GlobalQualifiersControllerTest
         Assert.assertTrue(
             new JSONObject("{\"global_mode_of_inheritance\":[{\"id\":\"HP:0010985\"},{\"id\":\"HP:0001427\"}],"
                 + "\"global_age_of_onset\":[{\"id\":\"HP:0003623\"}]}")
-                    .similar(json));
+                .similar(json));
     }
 
     @Test

@@ -122,11 +122,9 @@ public class VariantListControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
         doReturn(patientDocument).when(this.patient).getDocumentReference();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
+        doReturn(this.doc).when(this.patient).getDocument();
         this.variantXWikiObjects = new LinkedList<>();
         doReturn(this.variantXWikiObjects).when(this.doc).getXObjects(any(EntityReference.class));
     }
@@ -190,8 +188,8 @@ public class VariantListControllerTest
     @Test
     public void loadCatchesExceptionFromDocumentAccess() throws Exception
     {
-        Exception exception = new Exception();
-        doThrow(exception).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
+        RuntimeException exception = new RuntimeException();
+        doThrow(exception).when(this.patient).getDocument();
 
         PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
 

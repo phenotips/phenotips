@@ -23,7 +23,6 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -91,8 +90,6 @@ public class GeneListControllerTest
     public MockitoComponentMockingRule<PatientDataController<Map<String, String>>> mocker =
         new MockitoComponentMockingRule<PatientDataController<Map<String, String>>>(GeneListController.class);
 
-    private DocumentAccessBridge documentAccessBridge;
-
     @Mock
     private Patient patient;
 
@@ -106,11 +103,9 @@ public class GeneListControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
         doReturn(patientDocument).when(this.patient).getDocumentReference();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
+        doReturn(this.doc).when(this.patient).getDocument();
         this.geneXWikiObjects = new LinkedList<>();
         doReturn(this.geneXWikiObjects).when(this.doc).getXObjects(any(EntityReference.class));
     }
@@ -162,8 +157,8 @@ public class GeneListControllerTest
     @Test
     public void loadCatchesExceptionFromDocumentAccess() throws Exception
     {
-        Exception exception = new Exception();
-        doThrow(exception).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
+        RuntimeException exception = new RuntimeException();
+        doThrow(exception).when(this.patient).getDocument();
 
         PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
 

@@ -256,8 +256,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
     {
         Set<String> ids = new LinkedHashSet<>();
         try {
-            // TODO change to getDocument
-            XWikiDocument patientDoc = (XWikiDocument) this.bridge.getDocument(patient.getDocumentReference());
+            XWikiDocument patientDoc = patient.getDocument();
             BaseObject idsHolder = patientDoc.getXObject(this.consentIdsHolderReference);
             if (idsHolder != null) {
                 List<String> patientConsentIds = idsHolder.getListValue(GRANTED);
@@ -369,8 +368,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
 
     private SaveablePatientConsentHolder getPatientConsentHolder(Patient patient) throws Exception
     {
-        // TODO change to getDocument
-        XWikiDocument patientDoc = (XWikiDocument) this.bridge.getDocument(patient.getDocumentReference());
+        XWikiDocument patientDoc = patient.getDocument();
         return new SaveablePatientConsentHolder(getXWikiConsentHolder(patientDoc), patientDoc,
             this.contextProvider.get());
     }
