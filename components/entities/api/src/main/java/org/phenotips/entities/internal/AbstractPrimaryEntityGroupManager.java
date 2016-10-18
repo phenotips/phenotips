@@ -234,7 +234,8 @@ public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntity,
     protected XWikiDocument getXWikiDocument(PrimaryEntity p) throws Exception
     {
         DocumentAccessBridge dab = getDataAccessBridge();
-        XWikiDocument doc = (XWikiDocument) dab.getDocument(p.getDocument());
+        // use getDocument()
+        XWikiDocument doc = (XWikiDocument) dab.getDocument(p.getDocumentReference());
         return doc;
     }
 }

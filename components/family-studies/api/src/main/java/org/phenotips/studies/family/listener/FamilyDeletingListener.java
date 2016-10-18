@@ -111,7 +111,7 @@ public class FamilyDeletingListener implements EventListener
                 DocumentReference familyDocumentRef = family.getDocumentReference();
                 XWikiDocument familyDocument = xwiki.getDocument(familyDocumentRef, context);
                 BaseObject familyClassObject = familyDocument.getXObject(Family.CLASS_REFERENCE);
-                if (familyClassObject.getStringValue("proband_id").equals(patient.getDocument().toString())) {
+                if (familyClassObject.getStringValue("proband_id").equals(patient.getFullName())) {
                     familyClassObject.setStringValue("proband_id", "");
                     xwiki.saveDocument(familyDocument, "Proband was deleted", true, context);
                 }

@@ -106,32 +106,33 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     @Override
     public boolean isAdministrator(Patient patient)
     {
-        if (patient == null || patient.getDocument() == null) {
+        if (patient == null || patient.getDocumentReference() == null) {
             return false;
         }
-        return this.rights.hasAccess(Right.ADMIN, getCurrentUser(), patient.getDocument());
+        return this.rights.hasAccess(Right.ADMIN, getCurrentUser(), patient.getDocumentReference());
     }
 
     @Override
     public boolean isAdministrator(Patient patient, DocumentReference user)
     {
-        if (patient == null || patient.getDocument() == null) {
+        if (patient == null || patient.getDocumentReference() == null) {
             return false;
         }
-        return this.rights.hasAccess(Right.ADMIN, user, patient.getDocument());
+        return this.rights.hasAccess(Right.ADMIN, user, patient.getDocumentReference());
     }
 
     @Override
     public Owner getOwner(Patient patient)
     {
-        if (patient == null || patient.getDocument() == null) {
+        if (patient == null || patient.getDocumentReference() == null) {
             return null;
         }
         DocumentReference classReference =
-            this.partialEntityResolver.resolve(Owner.CLASS_REFERENCE, patient.getDocument());
-        String owner = String.valueOf(this.bridge.getProperty(patient.getDocument(), classReference, "owner"));
+            this.partialEntityResolver.resolve(Owner.CLASS_REFERENCE, patient.getDocumentReference());
+        String owner = String.valueOf(this.bridge.getProperty(patient.getDocumentReference(),
+            classReference, "owner"));
         if (StringUtils.isNotBlank(owner) && !"null".equals(owner)) {
-            return new DefaultOwner(this.stringEntityResolver.resolve(owner, patient.getDocument()), this);
+            return new DefaultOwner(this.stringEntityResolver.resolve(owner, patient.getDocumentReference()), this);
         }
         return new DefaultOwner(null, this);
     }
@@ -140,12 +141,12 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     public boolean setOwner(Patient patient, EntityReference userOrGroup)
     {
         DocumentReference classReference =
-            this.partialEntityResolver.resolve(Owner.CLASS_REFERENCE, patient.getDocument());
+            this.partialEntityResolver.resolve(Owner.CLASS_REFERENCE, patient.getDocumentReference());
         try {
             EntityReference previousOwner = getOwner(patient).getUser();
             DocumentReference absoluteUserOrGroup = this.partialEntityResolver.resolve(userOrGroup);
             String owner = userOrGroup != null ? this.entitySerializer.serialize(absoluteUserOrGroup) : "";
-            this.bridge.setProperty(patient.getDocument(), classReference, "owner", owner);
+            this.bridge.setProperty(patient.getDocumentReference(), classReference, "owner", owner);
             if (!previousOwner.equals(userOrGroup)) {
                 addCollaborator(patient,
                     new DefaultCollaborator(previousOwner, this.manager.resolveAccessLevel("manage")));
@@ -161,8 +162,9 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     public Visibility getVisibility(Patient patient)
     {
         DocumentReference classReference =
-            this.partialEntityResolver.resolve(Visibility.CLASS_REFERENCE, patient.getDocument());
-        String visibility = (String) this.bridge.getProperty(patient.getDocument(), classReference, "visibility");
+            this.partialEntityResolver.resolve(Visibility.CLASS_REFERENCE, patient.getDocumentReference());
+        String visibility = (String) this.bridge.getProperty(patient.getDocumentReference(),
+            classReference, "visibility");
         if (StringUtils.isNotBlank(visibility)) {
             return this.manager.resolveVisibility(visibility);
         }
@@ -173,9 +175,9 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     public boolean setVisibility(Patient patient, Visibility visibility)
     {
         DocumentReference classReference =
-            this.partialEntityResolver.resolve(Visibility.CLASS_REFERENCE, patient.getDocument());
+            this.partialEntityResolver.resolve(Visibility.CLASS_REFERENCE, patient.getDocumentReference());
         try {
-            this.bridge.setProperty(patient.getDocument(), classReference, "visibility", visibility != null
+            this.bridge.setProperty(patient.getDocumentReference(), classReference, "visibility", visibility != null
                 ? visibility.getName() : "");
             return true;
         } catch (Exception e) {
@@ -213,8 +215,8 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
                 entitiesToCheck.addAll(groups);
             }
         } catch (XWikiException ex) {
-            this.logger.warn("Failed to compute access level for [{}] on [{}]: {}", user, patient.getDocument(),
-                ex.getMessage());
+            this.logger.warn("Failed to compute access level for [{}] on [{}]: {}",
+                user, patient.getDocumentReference(), ex.getMessage());
         }
         return result;
     }
@@ -223,9 +225,10 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     public Collection<Collaborator> getCollaborators(Patient patient)
     {
         try {
-            XWikiDocument patientDoc = (XWikiDocument) this.bridge.getDocument(patient.getDocument());
+            // TODO use getDocument()
+            XWikiDocument patientDoc = (XWikiDocument) this.bridge.getDocument(patient.getDocumentReference());
             DocumentReference classReference =
-                this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocument());
+                this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocumentReference());
             Map<EntityReference, Collaborator> collaborators = new TreeMap<EntityReference, Collaborator>();
             for (BaseObject o : patientDoc.getXObjects(classReference)) {
                 if (o == null) {
@@ -237,7 +240,7 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
                     continue;
                 }
                 EntityReference userOrGroup =
-                    this.stringEntityResolver.resolve(collaboratorName, patient.getDocument());
+                    this.stringEntityResolver.resolve(collaboratorName, patient.getDocumentReference());
                 AccessLevel access = this.manager.resolveAccessLevel(accessName);
                 if (collaborators.containsKey(userOrGroup)) {
                     Collaborator oldCollaborator = collaborators.get(userOrGroup);
@@ -260,9 +263,10 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     public boolean setCollaborators(Patient patient, Collection<Collaborator> newCollaborators)
     {
         try {
-            XWikiDocument patientDoc = (XWikiDocument) this.bridge.getDocument(patient.getDocument());
+            // TODO use getDocument()
+            XWikiDocument patientDoc = (XWikiDocument) this.bridge.getDocument(patient.getDocumentReference());
             DocumentReference classReference =
-                this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocument());
+                this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocumentReference());
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
             patientDoc.removeXObjects(classReference);
             for (Collaborator collaborator : newCollaborators) {
@@ -282,9 +286,10 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     public boolean addCollaborator(Patient patient, Collaborator collaborator)
     {
         try {
-            XWikiDocument patientDoc = (XWikiDocument) this.bridge.getDocument(patient.getDocument());
+            // TODO use getDocument()
+            XWikiDocument patientDoc = (XWikiDocument) this.bridge.getDocument(patient.getDocumentReference());
             DocumentReference classReference =
-                this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocument());
+                this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocumentReference());
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
 
             DocumentReference absoluteUserOrGroup = this.partialEntityResolver.resolve(collaborator.getUser());
@@ -310,9 +315,10 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     public boolean removeCollaborator(Patient patient, Collaborator collaborator)
     {
         try {
-            XWikiDocument patientDoc = (XWikiDocument) this.bridge.getDocument(patient.getDocument());
+            // TODO use getDocument()
+            XWikiDocument patientDoc = (XWikiDocument) this.bridge.getDocument(patient.getDocumentReference());
             DocumentReference classReference =
-                this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocument());
+                this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocumentReference());
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
             DocumentReference absoluteUserOrGroup = this.partialEntityResolver.resolve(collaborator.getUser());
             String user = collaborator.getUser() != null ? this.entitySerializer.serialize(absoluteUserOrGroup) : "";

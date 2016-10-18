@@ -88,7 +88,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         User currentUser = this.users.getCurrentUser();
 
         if (!this.access.hasAccess(Right.VIEW, currentUser == null ? null : currentUser.getProfileDocument(),
-            patient.getDocument())) {
+            patient.getDocumentReference())) {
             return null;
         }
 
@@ -96,7 +96,8 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
 
         XWikiDocument doc;
         try {
-            doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            // TODO use getDocument()
+            doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocumentReference());
         } catch (Exception e) {
             return null;
         }

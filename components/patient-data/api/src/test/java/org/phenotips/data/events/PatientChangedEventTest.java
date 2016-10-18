@@ -46,7 +46,7 @@ public class PatientChangedEventTest
     public void setup()
     {
         MockitoAnnotations.initMocks(this);
-        when(this.patient.getDocument()).thenReturn(this.pdoc);
+        when(this.patient.getDocumentReference()).thenReturn(this.pdoc);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class PatientChangedEventTest
         Assert.assertFalse(evt2.matches(evt1));
 
         Patient p2 = mock(Patient.class);
-        when(p2.getDocument()).thenReturn(new DocumentReference("instance", "data", "P0000002"));
+        when(p2.getDocumentReference()).thenReturn(new DocumentReference("instance", "data", "P0000002"));
         PatientChangedEvent evt3 = new PatientChangedEvent(p2, this.user);
         Assert.assertTrue(evt1.matches(evt3));
         Assert.assertFalse(evt2.matches(evt3));

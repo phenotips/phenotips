@@ -179,7 +179,7 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
         } catch (Exception ex) {
             // Just return failure below
             this.logger.error("Failed to compute specificity score for patient [{}] using the monarch server [{}]: {}",
-                patient.getDocument(), this.scorerURL, ex.getMessage());
+                patient.getDocumentReference(), this.scorerURL, ex.getMessage());
         } finally {
             if (response != null) {
                 try {

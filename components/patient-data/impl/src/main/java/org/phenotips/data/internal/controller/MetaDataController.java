@@ -82,7 +82,8 @@ public class MetaDataController extends AbstractSimpleController implements Pati
     public PatientData<String> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            // TODO change to getDocument
+            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocumentReference());
 
             Map<String, String> result = new LinkedHashMap<>();
 

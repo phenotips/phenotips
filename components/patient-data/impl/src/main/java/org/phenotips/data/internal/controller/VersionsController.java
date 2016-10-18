@@ -74,7 +74,8 @@ public class VersionsController extends AbstractSimpleController
         Map<String, String> versions = new LinkedHashMap<>();
 
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            // TODO change to getDocument
+            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocumentReference());
             addOntologyVersions(doc, versions);
             addPhenoTipsVersion(versions);
         } catch (Exception e) {

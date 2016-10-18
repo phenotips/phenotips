@@ -268,7 +268,7 @@ public class PhenoTipsPatientConsentManagerTest
         BaseObject idsHolder = mock(BaseObject.class);
 
         doReturn(patient).when(repository).get(patientId);
-        doReturn(patientRef).when(patient).getDocument();
+        doReturn(patientRef).when(patient).getDocumentReference();
         doReturn(patientDoc).when(dab).getDocument(patientRef);
         doReturn(idsHolder).when((XWikiDocument) patientDoc).getXObject(any(EntityReference.class));
         doReturn(consentIds).when(idsHolder).getListValue(anyString());
@@ -335,7 +335,7 @@ public class PhenoTipsPatientConsentManagerTest
         BaseObject idsHolder = mock(BaseObject.class);
 
         doReturn(patient).when(repository).get(patientId);
-        doReturn(patientRef).when(patient).getDocument();
+        doReturn(patientRef).when(patient).getDocumentReference();
         doReturn(patientDoc).when(dab).getDocument(patientRef);
         doReturn(idsHolder).when((XWikiDocument) patientDoc).getXObject(any(EntityReference.class));
         doReturn(consentIds).when(idsHolder).getListValue(anyString());
@@ -355,7 +355,7 @@ public class PhenoTipsPatientConsentManagerTest
             new DefaultParameterizedType((Type) null, Provider.class, new Type[] { XWikiContext.class }));
         DocumentReference patientRef = mock(DocumentReference.class);
 
-        doReturn(patientRef).when(patient).getDocument();
+        doReturn(patientRef).when(patient).getDocumentReference();
         doReturn(patientDoc).when(dab).getDocument(patientRef);
         doReturn(idsHolder).when((XWikiDocument) patientDoc).getXObject(any(EntityReference.class));
         doReturn(context).when(contextProvider).get();

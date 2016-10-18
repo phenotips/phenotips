@@ -92,7 +92,7 @@ public class SecurePatientIterator implements Iterator<Patient>
 
         while (this.patientIterator.hasNext() && this.nextPatient == null) {
             Patient potentialNextPatient = this.patientIterator.next();
-            if (this.access.hasAccess(this.currentUser, Right.VIEW, potentialNextPatient.getDocument())) {
+            if (this.access.hasAccess(this.currentUser, Right.VIEW, potentialNextPatient.getDocumentReference())) {
                 this.nextPatient = potentialNextPatient;
             }
         }

@@ -84,7 +84,7 @@ public class SecurePatientRepositoryTest
         UserManager userManager = this.mocker.getInstance(UserManager.class);
         when(userManager.getCurrentUser()).thenReturn(this.currentUser);
         when(this.currentUser.getProfileDocument()).thenReturn(new DocumentReference("xwiki", "XWiki", "jdoe"));
-        when(this.patient.getDocument()).thenReturn(this.patientReference);
+        when(this.patient.getDocumentReference()).thenReturn(this.patientReference);
 
         when(this.internalRepo.get("P0123456")).thenReturn(this.patient);
         when(this.internalRepo.getByName("Neuro123")).thenReturn(this.patient);
@@ -167,12 +167,12 @@ public class SecurePatientRepositoryTest
         List<Patient> rawInput = new LinkedList<>();
         Patient p1 = mock(Patient.class);
         DocumentReference p1ref = mock(DocumentReference.class);
-        when(p1.getDocument()).thenReturn(p1ref);
+        when(p1.getDocumentReference()).thenReturn(p1ref);
         when(this.access.hasAccess(this.currentUser, Right.VIEW, p1ref)).thenReturn(false);
         rawInput.add(p1);
         Patient p2 = mock(Patient.class);
         DocumentReference p2ref = mock(DocumentReference.class);
-        when(p2.getDocument()).thenReturn(p2ref);
+        when(p2.getDocumentReference()).thenReturn(p2ref);
         when(this.access.hasAccess(this.currentUser, Right.VIEW, p2ref)).thenReturn(true);
         rawInput.add(p2);
 

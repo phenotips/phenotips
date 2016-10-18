@@ -105,7 +105,7 @@ public class PedigreeScriptService implements ScriptService
 
             Patient patient = this.patientRepository.get(documentId);
             if (patient != null) {
-                if (!this.authorizationService.hasAccess(currentUser, Right.VIEW, patient.getDocument())) {
+                if (!this.authorizationService.hasAccess(currentUser, Right.VIEW, patient.getDocumentReference())) {
                     return new NotEnoughPermissionsOnPatientResponse(Arrays.asList(documentId), Right.VIEW);
                 }
                 // id belonged to a patient. Get patient's family

@@ -53,7 +53,7 @@ public interface PrimaryEntity
      *
      * @return a valid document reference
      */
-    DocumentReference getDocument();
+    DocumentReference getDocumentReference();
 
     // TODO:
     // 1. rename getDocument()->getDocumentReference()

@@ -73,7 +73,7 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
     }
 
     @Override
-    public DocumentReference getDocument()
+    public DocumentReference getDocumentReference()
     {
         return this.document.getDocumentReference();
     }
@@ -81,7 +81,7 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
     @Override
     public String getId()
     {
-        return this.getDocument().getName();
+        return this.getDocumentReference().getName();
     }
 
     @Override
@@ -93,7 +93,7 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
     @Override
     public String getFullName()
     {
-        return this.getDocument().toString();
+        return this.getDocumentReference().toString();
     }
 
     @Override
@@ -129,7 +129,7 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
     @Override
     public int hashCode()
     {
-        return this.getDocument().hashCode();
+        return this.getDocumentReference().hashCode();
     }
 
     @Override
@@ -138,7 +138,7 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
         if (!(obj instanceof PrimaryEntity)) {
             return false;
         }
-        return this.getDocument().equals(((PrimaryEntity) obj).getDocument());
+        return this.getDocumentReference().equals(((PrimaryEntity) obj).getDocumentReference());
     }
 
     @Override

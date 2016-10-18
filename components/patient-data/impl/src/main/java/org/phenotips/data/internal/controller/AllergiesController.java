@@ -85,7 +85,8 @@ public class AllergiesController implements PatientDataController<String>
     public PatientData<String> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            // TODO change to getDocument
+            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocumentReference());
             BaseObject data = doc.getXObject(CLASS_REFERENCE);
             if (data == null) {
                 return null;

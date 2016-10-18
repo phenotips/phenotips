@@ -92,18 +92,18 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
         User currentUser = this.users.getCurrentUser();
         DocumentReference currentUserProfile = currentUser == null ? null : currentUser.getProfileDocument();
         Right grantedRight;
-        if (!this.access.hasAccess(Right.VIEW, currentUserProfile, patient.getDocument())) {
+        if (!this.access.hasAccess(Right.VIEW, currentUserProfile, patient.getDocumentReference())) {
             this.logger.debug("View access denied to user [{}] on patient record [{}]", currentUser, id);
             return Response.status(Status.FORBIDDEN).build();
         } else {
             grantedRight = Right.VIEW;
         }
-        if (this.access.hasAccess(Right.EDIT, currentUserProfile, patient.getDocument())) {
+        if (this.access.hasAccess(Right.EDIT, currentUserProfile, patient.getDocumentReference())) {
             grantedRight = Right.EDIT;
         }
         Right manageRight = Right.toRight("manage");
         if (manageRight != Right.ILLEGAL
-            && this.access.hasAccess(manageRight, currentUserProfile, patient.getDocument())) {
+            && this.access.hasAccess(manageRight, currentUserProfile, patient.getDocumentReference())) {
             grantedRight = manageRight;
         }
         JSONObject json = patient.toJSON();
@@ -124,7 +124,7 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
         }
         User currentUser = this.users.getCurrentUser();
         if (!this.access.hasAccess(Right.EDIT, currentUser == null ? null : currentUser.getProfileDocument(),
-            patient.getDocument())) {
+            patient.getDocumentReference())) {
             this.logger.debug("Edit access denied to user [{}] on patient record [{}]", currentUser, id);
             throw new WebApplicationException(Status.FORBIDDEN);
         }
@@ -165,14 +165,15 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
         }
         User currentUser = this.users.getCurrentUser();
         if (!this.access.hasAccess(Right.DELETE, currentUser == null ? null : currentUser.getProfileDocument(),
-            patient.getDocument())) {
+            patient.getDocumentReference())) {
             this.logger.debug("Delete access denied to user [{}] on patient record [{}]", currentUser, id);
             return Response.status(Status.FORBIDDEN).build();
         }
         XWikiContext context = this.getXWikiContext();
         XWiki xwiki = context.getWiki();
         try {
-            xwiki.deleteDocument(xwiki.getDocument(patient.getDocument(), context), context);
+            // TODO use getDocument()
+            xwiki.deleteDocument(xwiki.getDocument(patient.getDocumentReference(), context), context);
         } catch (XWikiException ex) {
             this.logger.warn("Failed to delete patient record [{}]: {}", id, ex.getMessage());
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);

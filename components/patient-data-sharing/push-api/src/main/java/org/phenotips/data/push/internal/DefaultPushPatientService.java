@@ -205,7 +205,7 @@ public class DefaultPushPatientService implements PushPatientService
 
         // FIXME: Access rights should be checked in the script service, not here
         if (!this.access.hasAccess(Right.toRight(accessLevelName), this.bridge.getCurrentUserReference(),
-            patient.getDocument())) {
+            patient.getDocumentReference())) {
             this.logger.warn("Can't access patient [{}] at level [{}]: access level violation", patientID,
                 accessLevelName);
             return null;
@@ -313,7 +313,7 @@ public class DefaultPushPatientService implements PushPatientService
             storedData.getLoginToken());
 
         if (response != null && response.isSuccessful()) {
-            this.storageManager.storePatientPushInfo(patient.getDocument().getName(), remoteServerIdentifier,
+            this.storageManager.storePatientPushInfo(patient.getId(), remoteServerIdentifier,
                 response.getRemotePatientGUID(), response.getRemotePatientID(), response.getRemotePatientURL());
         }
         return response;
@@ -335,7 +335,7 @@ public class DefaultPushPatientService implements PushPatientService
             patientStateJSON, groupName, remoteGUID, remoteServerIdentifier, remoteUserName, password, null);
 
         if (response != null && response.isSuccessful()) {
-            this.storageManager.storePatientPushInfo(patient.getDocument().getName(), remoteServerIdentifier,
+            this.storageManager.storePatientPushInfo(patient.getId(), remoteServerIdentifier,
                 response.getRemotePatientGUID(), response.getRemotePatientID(), response.getRemotePatientURL());
         }
 

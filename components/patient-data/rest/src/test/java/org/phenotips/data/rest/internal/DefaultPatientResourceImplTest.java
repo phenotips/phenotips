@@ -135,7 +135,7 @@ public class DefaultPatientResourceImplTest
 
         this.patientDocument = new DocumentReference("wiki", "data", "P0000001");
         doReturn(this.patient).when(this.repository).get(this.id);
-        doReturn(this.patientDocument).when(this.patient).getDocument();
+        doReturn(this.patientDocument).when(this.patient).getDocumentReference();
 
         doReturn(new URI(this.uriString)).when(this.uriInfo).getRequestUri();
         ReflectionUtils.setFieldValue(this.patientResource, "uriInfo", this.uriInfo);

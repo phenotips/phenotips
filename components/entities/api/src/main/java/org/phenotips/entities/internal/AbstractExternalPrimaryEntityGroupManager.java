@@ -103,7 +103,7 @@ public abstract class AbstractExternalPrimaryEntityGroupManager<G extends Primar
 
             q.bindValue("memberClass", getLocalSerializer().serialize(GROUP_MEMBERSHIP_CLASS));
             q.bindValue("referenceProperty", getMembershipProperty());
-            q.bindValue("selfReference", getFullSerializer().serialize(group.getDocument()));
+            q.bindValue("selfReference", getFullSerializer().serialize(group.getDocumentReference()));
             if (type != null) {
                 q.bindValue("entityType", getLocalSerializer().serialize(type));
             }
@@ -123,15 +123,17 @@ public abstract class AbstractExternalPrimaryEntityGroupManager<G extends Primar
         try {
             DocumentAccessBridge dab =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
-            XWikiDocument doc = (XWikiDocument) dab.getDocument(member.getDocument());
+            // TODO use getDocument()
+            XWikiDocument doc = (XWikiDocument) dab.getDocument(member.getDocumentReference());
             BaseObject obj = doc.getXObject(GROUP_MEMBERSHIP_CLASS, getMembershipProperty(),
-                getFullSerializer().serialize(group.getDocument()), false);
+                getFullSerializer().serialize(group.getDocumentReference()), false);
             if (obj != null) {
                 return true;
             }
             obj = doc.newXObject(GROUP_MEMBERSHIP_CLASS, getXContext());
-            obj.setStringValue(getMembershipProperty(), getFullSerializer().serialize(group.getDocument()));
-            getXContext().getWiki().saveDocument(doc, "Added to group " + group.getDocument(), true, getXContext());
+            obj.setStringValue(getMembershipProperty(), getFullSerializer().serialize(group.getDocumentReference()));
+            getXContext().getWiki().saveDocument(
+                doc, "Added to group " + group.getDocumentReference(), true, getXContext());
             return true;
         } catch (Exception ex) {
             this.logger.warn("Failed to add member to group: {}", ex.getMessage());
@@ -145,12 +147,13 @@ public abstract class AbstractExternalPrimaryEntityGroupManager<G extends Primar
         try {
             XWikiDocument doc = getXWikiDocument(member);
             BaseObject obj = doc.getXObject(GROUP_MEMBERSHIP_CLASS, getMembershipProperty(),
-                getFullSerializer().serialize(group.getDocument()), false);
+                getFullSerializer().serialize(group.getDocumentReference()), false);
             if (obj == null) {
                 return true;
             }
             doc.removeXObject(obj);
-            getXContext().getWiki().saveDocument(doc, "Removed from group " + group.getDocument(), true, getXContext());
+            getXContext().getWiki().saveDocument(
+                doc, "Removed from group " + group.getDocumentReference(), true, getXContext());
             return true;
         } catch (Exception ex) {
             this.logger.warn("Failed to remove member from group: {}", ex.getMessage());
@@ -177,7 +180,7 @@ public abstract class AbstractExternalPrimaryEntityGroupManager<G extends Primar
                 + "groupObj.name = doc.fullName and "
                 + "groupObj.className = '" + groupClass + "'", Query.HQL);
             q.bindValue("gspace", this.groupManager.getDataSpace().getName());
-            q.bindValue("name", this.getLocalSerializer().serialize(member.getDocument()));
+            q.bindValue("name", this.getLocalSerializer().serialize(member.getDocumentReference()));
             List<String> docNames = q.execute();
             Collection<G> result = new ArrayList<>(docNames.size());
             for (String docName : docNames) {

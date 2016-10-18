@@ -197,7 +197,7 @@ public class PhenotipsFamilyPermissions
         for (Patient patient : members) {
             XWikiDocument patientDoc;
             try {
-                patientDoc = wiki.getDocument(patient.getDocument(), context);
+                patientDoc = wiki.getDocument(patient.getDocumentReference(), context);
             } catch (XWikiException e) {
                 this.logger.error("Can't retrieve patient document for patient {}: {}",
                     patient.getId(), e.getMessage());

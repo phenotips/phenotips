@@ -241,7 +241,8 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
     protected XWikiDocument getPatientDocument(Patient patient) throws Exception
     {
-        return (XWikiDocument) this.bridge.getDocument(patient.getDocument());
+        // TODO use getDocument()
+        return (XWikiDocument) this.bridge.getDocument(patient.getDocumentReference());
     }
 
     protected String getPatientGUID(Patient patient)
@@ -273,7 +274,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
         try {
             String guid = getPatientGUID(patient);
             String url = getPatientURL(patient, context);
-            String id = patient.getDocument().getName();
+            String id = patient.getId();
 
             JSONObject response = generateSuccessfulResponse();
             response.put(ShareProtocol.SERVER_JSON_PUSH_KEY_NAME_PATIENTGUID, guid);
@@ -506,7 +507,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
                 if (!userCanAccessPatient(userName, affectedPatient)) {
                     return generateFailedActionResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_GUIDACCESSDENIED);
                 }
-                this.logger.warn("Loaded existing patient [{}] successfully", affectedPatient.getDocument().getName());
+                this.logger.warn("Loaded existing patient [{}] successfully", affectedPatient.getId());
             } else {
 
                 affectedPatient = this.patientRepository.create(user.getProfileDocument());
@@ -733,7 +734,8 @@ public class DefaultReceivePatientData implements ReceivePatientData
             }
 
             boolean hasEditRights =
-                this.authService.hasAccess(this.userManager.getUser(userName), Right.EDIT, patient.getDocument());
+                this.authService.hasAccess(this.userManager.getUser(userName), Right.EDIT,
+                    patient.getDocumentReference());
             if (hasEditRights) {
                 return true;
             }
