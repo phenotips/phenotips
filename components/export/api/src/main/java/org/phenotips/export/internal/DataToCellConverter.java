@@ -601,7 +601,8 @@ public class DataToCellConverter
     {
         @SuppressWarnings("deprecation")
         DocumentAccessBridge dab = Utils.getComponent(DocumentAccessBridge.class);
-        XWikiDocument patientDoc = (XWikiDocument) dab.getDocument(patient.getDocument());
+        // use getDocument()
+        XWikiDocument patientDoc = (XWikiDocument) dab.getDocument(patient.getDocumentReference());
         String sectionName = "documentInfo";
         Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present == null || present.isEmpty()) {

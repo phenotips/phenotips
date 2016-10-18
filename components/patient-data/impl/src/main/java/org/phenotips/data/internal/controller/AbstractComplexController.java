@@ -80,7 +80,8 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     public PatientData<T> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            // TODO change to getDocument
+            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocumentReference());
             BaseObject data = doc.getXObject(getXClassReference());
             if (data == null) {
                 return null;

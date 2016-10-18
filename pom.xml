@@ -722,6 +722,18 @@
               <method>java.lang.String getServerProtocolVersion()</method>
               <justification>Improved handling of older push server protocol versions.</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/data/Patient</className>
+              <differenceType>7002</differenceType>
+              <method>org.xwiki.model.reference.DocumentReference getDocument()</method>
+              <justification>Renamed to getDocumentReference().</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/Patient</className>
+              <differenceType>7012</differenceType>
+              <method>org.xwiki.model.reference.DocumentReference getDocumentReference()</method>
+              <justification>Renamed from getDocument().</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

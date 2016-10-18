@@ -110,7 +110,7 @@ public class GeneListControllerTest
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
 
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocument();
+        doReturn(patientDocument).when(this.patient).getDocumentReference();
         doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
         this.geneXWikiObjects = new LinkedList<>();
         doReturn(this.geneXWikiObjects).when(this.doc).getXObjects(any(EntityReference.class));

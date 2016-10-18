@@ -173,16 +173,16 @@ public class PhenotipsFamilyExport
 
         // Patient URL
         XWikiContext context = this.provider.get();
-        String url = context.getWiki().getURL(patient.getDocument(), "view", context);
+        String url = context.getWiki().getURL(patient.getDocumentReference(), "view", context);
         patientJSON.put(URL, url);
 
         // add permissions information
         User currentUser = this.userManager.getCurrentUser();
         JSONObject permissionJSON = new JSONObject();
         permissionJSON.put("hasEdit",
-            this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument()));
+            this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocumentReference()));
         permissionJSON.put("hasView",
-            this.authorizationService.hasAccess(currentUser, Right.VIEW, patient.getDocument()));
+            this.authorizationService.hasAccess(currentUser, Right.VIEW, patient.getDocumentReference()));
         patientJSON.put(PERMISSIONS, permissionJSON);
 
         return patientJSON;
@@ -243,7 +243,8 @@ public class PhenotipsFamilyExport
             }
 
             Right right = Right.toRight(requiredPermissions);
-            if (!this.authorizationService.hasAccess(this.userManager.getCurrentUser(), right, patient.getDocument())) {
+            if (!this.authorizationService.hasAccess(
+                this.userManager.getCurrentUser(), right, patient.getDocumentReference())) {
                 continue;
             }
 
@@ -330,7 +331,8 @@ public class PhenotipsFamilyExport
         PatientData<String> links = patient.getData("medicalreports");
         Map<String, String> mapOfLinks = new HashMap<>();
 
-        if (this.authorizationService.hasAccess(this.userManager.getCurrentUser(), Right.VIEW, patient.getDocument())) {
+        if (this.authorizationService.hasAccess(
+            this.userManager.getCurrentUser(), Right.VIEW, patient.getDocumentReference())) {
             if (links != null) {
                 Iterator<Map.Entry<String, String>> iterator = links.dictionaryIterator();
                 while (iterator.hasNext()) {
