@@ -60,8 +60,7 @@ public abstract class AbstractSimpleController implements PatientDataController<
     public PatientData<String> load(Patient patient)
     {
         try {
-            // TODO change to getDocument
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocumentReference());
+            XWikiDocument doc = patient.getDocument();
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
                 return null;

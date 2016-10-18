@@ -24,7 +24,6 @@ import org.phenotips.data.PatientDataController;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.ObjectPropertyReference;
@@ -73,10 +72,6 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
     @Inject
     private Logger logger;
 
-    /** Provides access to the underlying data storage. */
-    @Inject
-    private DocumentAccessBridge documentAccessBridge;
-
     @Inject
     private VocabularyManager vocabularyManager;
 
@@ -84,8 +79,7 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
     public PatientData<List<VocabularyTerm>> load(Patient patient)
     {
         try {
-            // TODO change to getDocument
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocumentReference());
+            XWikiDocument doc = patient.getDocument();
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
                 return null;

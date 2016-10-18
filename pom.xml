@@ -731,8 +731,14 @@
             <difference>
               <className>org/phenotips/data/Patient</className>
               <differenceType>7012</differenceType>
+              <method>com.xpn.xwiki.doc.XWikiDocument getDocument()</method>
+              <justification>Returns the document.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/Patient</className>
+              <differenceType>7012</differenceType>
               <method>org.xwiki.model.reference.DocumentReference getDocumentReference()</method>
-              <justification>Renamed from getDocument().</justification>
+              <justification>Renamed from getDocumentReference().</justification>
             </difference>
           </ignored>
           <excludes>

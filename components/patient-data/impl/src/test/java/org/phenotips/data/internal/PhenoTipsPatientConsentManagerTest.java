@@ -259,7 +259,6 @@ public class PhenoTipsPatientConsentManagerTest
         String patientId = "pid";
 
         this.setUpInitializationWithConfigurationMocks();
-        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
         PatientRepository repository = this.mocker.getInstance(PatientRepository.class);
         Patient patient = mock(Patient.class);
         DocumentReference patientRef = mock(DocumentReference.class);
@@ -268,7 +267,7 @@ public class PhenoTipsPatientConsentManagerTest
 
         doReturn(patient).when(repository).get(patientId);
         doReturn(patientRef).when(patient).getDocumentReference();
-        doReturn(patientDoc).when(dab).getDocument(patientRef);
+        doReturn(patientDoc).when(patient).getDocument();
         doReturn(idsHolder).when((XWikiDocument) patientDoc).getXObject(any(EntityReference.class));
         doReturn(consentIds).when(idsHolder).getListValue(anyString());
 
@@ -326,7 +325,6 @@ public class PhenoTipsPatientConsentManagerTest
         consentIds.add(ConsentConfigurationMocks.TEST_ID1);
 
         this.setUpInitializationWithConfigurationMocks();
-        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
         PatientRepository repository = this.mocker.getInstance(PatientRepository.class);
         Patient patient = mock(Patient.class);
         DocumentReference patientRef = mock(DocumentReference.class);
@@ -335,7 +333,7 @@ public class PhenoTipsPatientConsentManagerTest
 
         doReturn(patient).when(repository).get(patientId);
         doReturn(patientRef).when(patient).getDocumentReference();
-        doReturn(patientDoc).when(dab).getDocument(patientRef);
+        doReturn(patientDoc).when(patient).getDocument();
         doReturn(idsHolder).when((XWikiDocument) patientDoc).getXObject(any(EntityReference.class));
         doReturn(consentIds).when(idsHolder).getListValue(anyString());
 
@@ -349,13 +347,12 @@ public class PhenoTipsPatientConsentManagerTest
     {
         this.setUpInitializationWithConfigurationMocks();
 
-        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
         Provider<XWikiContext> contextProvider = this.mocker.getInstance(
             new DefaultParameterizedType((Type) null, Provider.class, new Type[] { XWikiContext.class }));
         DocumentReference patientRef = mock(DocumentReference.class);
 
         doReturn(patientRef).when(patient).getDocumentReference();
-        doReturn(patientDoc).when(dab).getDocument(patientRef);
+        doReturn(patientDoc).when(patient).getDocument();
         doReturn(idsHolder).when((XWikiDocument) patientDoc).getXObject(any(EntityReference.class));
         doReturn(context).when(contextProvider).get();
         doReturn(wiki).when(context).getWiki();

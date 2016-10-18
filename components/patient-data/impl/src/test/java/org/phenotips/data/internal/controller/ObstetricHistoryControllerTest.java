@@ -22,7 +22,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -84,8 +83,6 @@ public class ObstetricHistoryControllerTest
     public MockitoComponentMockingRule<PatientDataController<Integer>> mocker =
         new MockitoComponentMockingRule<PatientDataController<Integer>>(ObstetricHistoryController.class);
 
-    private DocumentAccessBridge documentAccessBridge;
-
     private ObstetricHistoryController obstetricHistoryController;
 
     private DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
@@ -125,10 +122,8 @@ public class ObstetricHistoryControllerTest
         this.xWikiContext = this.provider.get();
         doReturn(this.xwiki).when(this.xWikiContext).getWiki();
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
         doReturn(this.patientDocument).when(this.patient).getDocumentReference();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(this.patientDocument);
+        doReturn(this.doc).when(this.patient).getDocument();
     }
 
     @Test
@@ -174,8 +169,8 @@ public class ObstetricHistoryControllerTest
     @Test
     public void loadCatchesUnforeseenExceptions() throws Exception
     {
-        Exception testException = new Exception("Test Exception");
-        doThrow(testException).when(this.documentAccessBridge).getDocument(this.patientDocument);
+        RuntimeException testException = new RuntimeException("Test Exception");
+        doThrow(testException).when(this.patient).getDocument();
 
         this.obstetricHistoryController.load(this.patient);
 
@@ -215,8 +210,8 @@ public class ObstetricHistoryControllerTest
     @Test
     public void saveHandlesExceptionsTest() throws Exception
     {
-        Exception testException = new Exception("Test Exception");
-        doThrow(testException).when(this.documentAccessBridge).getDocument(this.patientDocument);
+        RuntimeException testException = new RuntimeException("Test Exception");
+        doThrow(testException).when(this.patient).getDocument();
 
         this.obstetricHistoryController.save(this.patient, this.doc);
     }

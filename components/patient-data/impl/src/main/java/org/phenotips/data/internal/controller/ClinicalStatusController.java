@@ -22,7 +22,6 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.ObjectPropertyReference;
@@ -70,10 +69,6 @@ public class ClinicalStatusController implements PatientDataController<String>
     @Inject
     private Logger logger;
 
-    /** Provides access to the underlying data storage. */
-    @Inject
-    private DocumentAccessBridge documentAccessBridge;
-
     @Override
     public String getName()
     {
@@ -84,8 +79,7 @@ public class ClinicalStatusController implements PatientDataController<String>
     public PatientData<String> load(Patient patient)
     {
         try {
-            // TODO change to getDocument
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocumentReference());
+            XWikiDocument doc = patient.getDocument();
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
                 return null;
