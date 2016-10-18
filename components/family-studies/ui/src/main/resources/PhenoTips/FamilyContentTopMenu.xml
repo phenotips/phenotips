@@ -497,8 +497,8 @@
 #set ($membersMemo = "{{html clean='false' wiki='true'}}&lt;input type=""hidden"" value=""$!escapetool.xml($!{membersList})""/&gt;{{/html}}")
 * #if ($canDeleteFamily)(% class="xDropdown" %)#end[[#__icon("times")$services.localization.render('core.menu.delete')$!{membersMemo}&gt;&gt;path:$doc.getURL('delete', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($xwiki.getURL($doc.space.concat('.WebHome')))}$!languageparams")|| class="delete-family" id="delete-family"]]
 #if ($canDeleteFamily)
-** [[Delete family and unlink members$!{membersMemo}&gt;&gt;path:$doc.getURL('delete', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($xwiki.getURL($doc.space.concat('.WebHome')))}$!languageparams")|| class="delete-family" id="delete-family-unlink"]]
-** [[Delete family and all members$!{membersMemo}&gt;&gt;path:$xwiki.getDocument('PhenoTips.FamilyPedigreeInterface').getURL('get', "xredirect=$!{escapetool.url($xwiki.getURL($doc.space.concat('.WebHome')))}&amp;family_id=${doc.name}&amp;action=deletefamily&amp;removemembers=1&amp;form_token=$!{services.csrf.getToken()}$!languageparams")|| class="delete-family" id="delete-family-members"]]
+** [[$services.localization.render('phenotips.contentTopMenu.familyActionsMenu.deleteAndUnlink')$!{membersMemo}&gt;&gt;path:$doc.getURL('delete', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($xwiki.getURL($doc.space.concat('.WebHome')))}$!languageparams")|| class="delete-family" id="delete-family-unlink"]]
+** [[$services.localization.render('phenotips.contentTopMenu.familyActionsMenu.deleteAllMembers')$!{membersMemo}&gt;&gt;path:$xwiki.getDocument('PhenoTips.FamilyPedigreeInterface').getURL('get', "xredirect=$!{escapetool.url($xwiki.getURL($doc.space.concat('.WebHome')))}&amp;family_id=${doc.name}&amp;action=deletefamily&amp;removemembers=1&amp;form_token=$!{services.csrf.getToken()}$!languageparams")|| class="delete-family" id="delete-family-members"]]
 #end
 #end## DELETE MENU
 * (% class="xDropdown" %)#__icon("cog") $services.localization.render('phenotips.contentTopMenu.moreActionsMenu')
