@@ -82,10 +82,11 @@ public class MedicationController implements PatientDataController<Medication>
     public PatientData<Medication> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            // TODO change to getDocument
+            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocumentReference());
             List<BaseObject> data = doc.getXObjects(Medication.CLASS_REFERENCE);
             if (data == null || data.isEmpty()) {
-                this.logger.debug("No medication data for patient [{}]", patient.getDocument());
+                this.logger.debug("No medication data for patient [{}]", patient.getDocumentReference());
                 return null;
             }
             List<Medication> result = new LinkedList<>();

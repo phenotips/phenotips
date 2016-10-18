@@ -113,7 +113,7 @@ public class PhenotipsFamilyTools implements FamilyTools
             return null;
         }
         if (!this.authorizationService.hasAccess(
-            this.userManager.getCurrentUser(), Right.VIEW, patient.getDocument())) {
+            this.userManager.getCurrentUser(), Right.VIEW, patient.getDocumentReference())) {
             return null;
         }
         Family family = this.familyRepository.getFamilyForPatient(patient);
@@ -145,7 +145,7 @@ public class PhenotipsFamilyTools implements FamilyTools
         if (patient == null) {
             return false;
         }
-        if (!this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument())) {
+        if (!this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocumentReference())) {
             return false;
         }
 

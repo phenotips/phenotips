@@ -340,7 +340,7 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
         JSONObject result = new JSONObject();
 
         if (isFieldIncluded(selectedFields, JSON_KEY_ID)) {
-            result.put(JSON_KEY_ID, getDocument().getName());
+            result.put(JSON_KEY_ID, getId());
         }
 
         if (getReporter() != null && isFieldIncluded(selectedFields, JSON_KEY_REPORTER)) {

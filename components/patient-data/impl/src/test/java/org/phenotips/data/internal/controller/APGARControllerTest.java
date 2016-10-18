@@ -82,7 +82,7 @@ public class APGARControllerTest
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
 
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocument();
+        doReturn(patientDocument).when(this.patient).getDocumentReference();
         doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
         doReturn(this.dataHolder).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
     }

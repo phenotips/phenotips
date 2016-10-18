@@ -115,7 +115,7 @@ public class DefaultPatientRecordLockManager implements org.phenotips.recordLock
     {
         XWikiContext context = this.contextProvider.get();
         XWiki xwiki = context.getWiki();
-        DocumentReference patientDocumentReference = patient.getDocument();
+        DocumentReference patientDocumentReference = patient.getDocumentReference();
 
         try {
             return xwiki.getDocument(patientDocumentReference, context);
