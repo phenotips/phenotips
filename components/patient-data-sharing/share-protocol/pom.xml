@@ -27,10 +27,10 @@
   </parent>
   <artifactId>patient-data-sharing-share-protocol</artifactId>
   <name>PhenoTips - Patient data sharing - Communication Protocol Details</name>
-  <dependencies>
+   <dependencies>
     <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-model</artifactId>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-stability</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
   </dependencies>

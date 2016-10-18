@@ -44,8 +44,8 @@
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-security-api</artifactId>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-observation-api</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
@@ -76,6 +76,10 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
     <!-- Test dependencies -->
     <dependency>
