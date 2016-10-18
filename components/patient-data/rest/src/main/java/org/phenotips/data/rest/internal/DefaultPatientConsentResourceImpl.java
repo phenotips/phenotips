@@ -167,7 +167,7 @@ public class DefaultPatientConsentResourceImpl extends XWikiResource implements 
         }
         User currentUser = this.users.getCurrentUser();
         if (!this.access.hasAccess(right, currentUser == null ? null : currentUser.getProfileDocument(),
-            patient.getDocument())) {
+            patient.getDocumentReference())) {
             this.logger.debug("View access denied to user [{}] on patient record [{}]", currentUser, patientId);
             Response response = Response.status(ACCESS_DENIED).build();
             return new Security(patient, response, false);

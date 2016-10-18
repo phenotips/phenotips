@@ -102,10 +102,11 @@ public class ObstetricHistoryController implements PatientDataController<Integer
     public PatientData<Integer> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            // TODO change to getDocument
+            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocumentReference());
             BaseObject data = doc.getXObject(getXClassReference());
             if (data == null) {
-                this.logger.debug("No data for patient [{}]", patient.getDocument());
+                this.logger.debug("No data for patient [{}]", patient.getDocumentReference());
                 return null;
             }
             Map<String, Integer> result = new LinkedHashMap<>();

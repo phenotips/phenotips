@@ -170,6 +170,6 @@ public class DefaultPatientAccess implements PatientAccess
     @Override
     public String toString()
     {
-        return "Access rules for " + (this.patient != null ? this.patient.getDocument() : "<unknown patient>");
+        return "Access rules for " + (this.patient != null ? this.patient.getFullName() : "<unknown patient>");
     }
 }

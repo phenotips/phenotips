@@ -118,7 +118,7 @@ public class VariantListControllerTest
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
 
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocument();
+        doReturn(patientDocument).when(this.patient).getDocumentReference();
         doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
         this.variantXWikiObjects = new LinkedList<>();
         doReturn(this.variantXWikiObjects).when(this.doc).getXObjects(any(EntityReference.class));

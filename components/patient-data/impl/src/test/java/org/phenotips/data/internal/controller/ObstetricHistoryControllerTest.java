@@ -127,7 +127,7 @@ public class ObstetricHistoryControllerTest
 
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
 
-        doReturn(this.patientDocument).when(this.patient).getDocument();
+        doReturn(this.patientDocument).when(this.patient).getDocumentReference();
         doReturn(this.doc).when(this.documentAccessBridge).getDocument(this.patientDocument);
     }
 

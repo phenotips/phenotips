@@ -98,6 +98,8 @@ public class SolrPatientIndexerTest
 
     private DocumentReference patientDocReference;
 
+    private String patientFullName;
+
     @Before
     public void setUp() throws ComponentLookupException
     {
@@ -111,6 +113,7 @@ public class SolrPatientIndexerTest
         this.qm = this.mocker.getInstance(QueryManager.class);
         this.patientRepository = this.mocker.getInstance(PatientRepository.class);
         this.patientDocReference = new DocumentReference("wiki", "patient", "P0000001");
+        this.patientFullName = "wiki:patient.P0000001";
         this.patientIndexer = this.mocker.getComponentUnderTest();
         this.logger = this.mocker.getMockedLogger();
 
@@ -162,7 +165,7 @@ public class SolrPatientIndexerTest
         CapturingMatcher<SolrInputDocument> capturedArgument = new CapturingMatcher<>();
         when(this.server.add(argThat(capturedArgument))).thenReturn(mock(UpdateResponse.class));
 
-        doReturn(this.patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
         doReturn(reporterReference).when(this.patient).getReporter();
         doReturn(patientAccess).when(this.permissions).getPatientAccess(this.patient);
         doReturn(patientVisibility).when(patientAccess).getVisibility();
@@ -190,7 +193,7 @@ public class SolrPatientIndexerTest
         CapturingMatcher<SolrInputDocument> capturedArgument = new CapturingMatcher<>();
         when(this.server.add(argThat(capturedArgument))).thenReturn(mock(UpdateResponse.class));
 
-        doReturn(patientDocReference).when(this.patient).getDocument();
+        doReturn(patientDocReference).when(this.patient).getDocumentReference();
         doReturn(reporterReference).when(this.patient).getReporter();
 
         doReturn(Collections.EMPTY_SET).when(this.patient).getFeatures();
@@ -253,7 +256,7 @@ public class SolrPatientIndexerTest
         PatientAccess patientAccess = mock(DefaultPatientAccess.class);
         Visibility patientVisibility = new PublicVisibility();
 
-        doReturn(this.patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
         doReturn(reporterReference).when(this.patient).getReporter();
 
         doReturn(patientFeatures).when(this.patient).getFeatures();
@@ -281,7 +284,7 @@ public class SolrPatientIndexerTest
         PatientAccess patientAccess = mock(DefaultPatientAccess.class);
         Visibility patientVisibility = new PublicVisibility();
 
-        doReturn(this.patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
         doReturn(reporterReference).when(this.patient).getReporter();
 
         doReturn(patientFeatures).when(this.patient).getFeatures();
@@ -312,7 +315,7 @@ public class SolrPatientIndexerTest
         CapturingMatcher<SolrInputDocument> capturedArgument = new CapturingMatcher<>();
         when(this.server.add(argThat(capturedArgument))).thenReturn(mock(UpdateResponse.class));
 
-        doReturn(this.patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
         doReturn(null).when(this.patient).getReporter();
 
         doReturn(patientFeatures).when(this.patient).getFeatures();
@@ -332,7 +335,8 @@ public class SolrPatientIndexerTest
     @Test
     public void deleteDefaultBehaviourTest() throws IOException, SolrServerException
     {
-        doReturn(this.patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
+        doReturn(this.patientFullName).when(this.patient).getFullName();
         this.patientIndexer.delete(this.patient);
         verify(this.server).deleteByQuery("document:"
             + ClientUtils.escapeQueryChars(this.patientDocReference.toString()));
@@ -342,7 +346,8 @@ public class SolrPatientIndexerTest
     @Test
     public void deleteThrowsSolrException() throws IOException, SolrServerException
     {
-        doReturn(this.patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
+        doReturn(patientFullName).when(this.patient).getFullName();
         doThrow(new SolrServerException("commit failed")).when(this.server).commit();
         this.patientIndexer.delete(this.patient);
         verify(this.logger).warn("Failed to delete from Solr: {}", "commit failed");
@@ -351,7 +356,8 @@ public class SolrPatientIndexerTest
     @Test
     public void deleteThrowsIOException() throws IOException, SolrServerException
     {
-        doReturn(this.patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
+        doReturn(patientFullName).when(this.patient).getFullName();
         doThrow(new IOException("commit failed")).when(this.server).commit();
         this.patientIndexer.delete(this.patient);
         verify(this.logger).warn("Error occurred while deleting Solr documents: {}", "commit failed");
@@ -375,7 +381,7 @@ public class SolrPatientIndexerTest
         PatientAccess patientAccess = mock(DefaultPatientAccess.class);
         Visibility patientVisibility = new PublicVisibility();
 
-        doReturn(this.patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
         doReturn(reporterReference).when(this.patient).getReporter();
 
         doReturn(patientFeatures).when(this.patient).getFeatures();

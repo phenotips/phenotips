@@ -111,7 +111,7 @@ public class MetaDataControllerTest
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
 
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocument();
+        doReturn(patientDocument).when(this.patient).getDocumentReference();
         doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
 
         this.documentReference = new DocumentReference("wiki", "phenotips", "document");

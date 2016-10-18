@@ -114,7 +114,7 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     public void index(Patient patient)
     {
         SolrInputDocument input = new SolrInputDocument();
-        input.setField("document", patient.getDocument().toString());
+        input.setField("document", patient.getFullName());
         String reporter = "";
         if (patient.getReporter() != null) {
             reporter = patient.getReporter().toString();
@@ -158,7 +158,7 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     public void delete(Patient patient)
     {
         try {
-            this.server.deleteByQuery("document:" + ClientUtils.escapeQueryChars(patient.getDocument().toString()));
+            this.server.deleteByQuery("document:" + ClientUtils.escapeQueryChars(patient.getFullName()));
             this.server.commit();
         } catch (SolrServerException ex) {
             this.logger.warn("Failed to delete from Solr: {}", ex.getMessage());

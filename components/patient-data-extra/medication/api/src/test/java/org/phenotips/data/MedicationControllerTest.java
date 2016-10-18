@@ -92,7 +92,7 @@ public class MedicationControllerTest
     public void setup() throws Exception
     {
         MockitoAnnotations.initMocks(this);
-        when(this.patient.getDocument()).thenReturn(this.docRef);
+        when(this.patient.getDocumentReference()).thenReturn(this.docRef);
         DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
         when(dab.getDocument(this.docRef)).thenReturn(this.doc);
 

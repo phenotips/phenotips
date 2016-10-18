@@ -164,7 +164,7 @@ public class DefaultPatientAccessHelperTest
         when(this.stringEntitySerializer.serialize(COLLABORATOR)).thenReturn(COLLABORATOR_STR);
         when(this.stringEntitySerializer.serialize(OTHER_USER)).thenReturn(OTHER_USER_STR);
 
-        when(this.patient.getDocument()).thenReturn(PATIENT_REFERENCE);
+        when(this.patient.getDocumentReference()).thenReturn(PATIENT_REFERENCE);
         when(this.bridge.getProperty(PATIENT_REFERENCE, OWNER_CLASS, "owner")).thenReturn(OWNER_STR);
 
         Execution e = this.mocker.getInstance(Execution.class);
@@ -221,7 +221,7 @@ public class DefaultPatientAccessHelperTest
     @Test
     public void getOwnerWithMissingDocument() throws ComponentLookupException
     {
-        when(this.patient.getDocument()).thenReturn(null);
+        when(this.patient.getDocumentReference()).thenReturn(null);
         Assert.assertNull(this.mocker.getComponentUnderTest().getOwner(this.patient));
     }
 

@@ -72,7 +72,8 @@ public interface PrimaryEntityManager<E extends PrimaryEntity>
     /**
      * Retrieves an {@link PrimaryEntity entity} from the specified document.
      *
-     * @param reference reference of the {@link PrimaryEntity#getDocument() document where the entity is stored}
+     * @param reference reference of the {@link PrimaryEntity#getDocumentReference() document where the entity is
+     *     stored}
      * @return the requested entity
      */
     E get(DocumentReference reference);

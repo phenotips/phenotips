@@ -186,7 +186,7 @@ public class SecurePatientRepository implements PatientRepository
 
     private Patient checkAccess(Right right, Patient patient, User user)
     {
-        if (patient != null && this.access.hasAccess(user, right, patient.getDocument())) {
+        if (patient != null && this.access.hasAccess(user, right, patient.getDocumentReference())) {
             return patient;
         } else if (patient != null) {
             this.logger.warn("Illegal access requested for patient [{}] by user [{}]", patient.getId(), user);

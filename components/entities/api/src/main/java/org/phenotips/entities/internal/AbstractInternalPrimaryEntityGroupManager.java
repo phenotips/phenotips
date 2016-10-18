@@ -111,7 +111,7 @@ public abstract class AbstractInternalPrimaryEntityGroupManager<G extends Primar
             Query q = getQueryManager().createQuery(hql.toString(), Query.HQL);
 
             // FIXME
-            q.bindValue("selfReference", getFullSerializer().serialize(group.getDocument()).split(":")[1]);
+            q.bindValue("selfReference", getFullSerializer().serialize(group.getDocumentReference()).split(":")[1]);
             q.bindValue("referenceProperty", getMembershipProperty());
             q.bindValue("memberClass", getLocalSerializer().serialize(GROUP_MEMBER_CLASS));
             if (type != null) {
@@ -134,15 +134,15 @@ public abstract class AbstractInternalPrimaryEntityGroupManager<G extends Primar
         try {
             XWikiDocument groupDocument = getXWikiDocument(group);
             BaseObject obj = groupDocument.getXObject(GROUP_MEMBER_CLASS, getMembershipProperty(),
-                getFullSerializer().serialize(member.getDocument()), false);
+                getFullSerializer().serialize(member.getDocumentReference()), false);
             if (obj != null) {
                 return true;
             }
             obj = groupDocument.newXObject(GROUP_MEMBER_CLASS, getXContext());
-            obj.setStringValue(getMembershipProperty(), getFullSerializer().serialize(member.getDocument()));
+            obj.setStringValue(getMembershipProperty(), getFullSerializer().serialize(member.getDocumentReference()));
             obj.setStringValue(CLASS_XPROPERTY, getFullSerializer().serialize(member.getType()));
             this.setMemberParameters(member, obj);
-            getXContext().getWiki().saveDocument(groupDocument, "Added member " + member.getDocument(), true,
+            getXContext().getWiki().saveDocument(groupDocument, "Added member " + member.getDocumentReference(), true,
                 getXContext());
             return true;
         } catch (Exception ex) {
@@ -157,13 +157,13 @@ public abstract class AbstractInternalPrimaryEntityGroupManager<G extends Primar
         try {
             XWikiDocument groupDocument = getXWikiDocument(group);
             BaseObject obj = groupDocument.getXObject(GROUP_MEMBER_CLASS, getMembershipProperty(),
-                getFullSerializer().serialize(member.getDocument()), false);
+                getFullSerializer().serialize(member.getDocumentReference()), false);
             if (obj == null) {
                 return true;
             }
             groupDocument.removeXObject(obj);
-            getXContext().getWiki().saveDocument(groupDocument, "Removed member " + member.getDocument(), true,
-                getXContext());
+            getXContext().getWiki().saveDocument(
+                groupDocument, "Removed member " + member.getDocumentReference(), true, getXContext());
             return true;
         } catch (Exception ex) {
             this.logger.warn("Failed to remove member from group: {}", ex.getMessage());
@@ -190,7 +190,7 @@ public abstract class AbstractInternalPrimaryEntityGroupManager<G extends Primar
                 + "obj.className = '" + bindingClassName + "' and "
                 + "doc.space = :gspace", Query.HQL);
             q.bindValue("gspace", this.groupManager.getDataSpace().getName());
-            q.bindValue("referenceValue", this.getFullSerializer().serialize(member.getDocument()));
+            q.bindValue("referenceValue", this.getFullSerializer().serialize(member.getDocumentReference()));
             List<String> docNames = q.execute();
             Collection<G> result = new ArrayList<>(docNames.size());
             for (String docName : docNames) {
@@ -252,7 +252,7 @@ public abstract class AbstractInternalPrimaryEntityGroupManager<G extends Primar
             Query q = getQueryManager().createQuery(hql.toString(), Query.HQL);
 
             // FIXME
-            q.bindValue("selfReference", getFullSerializer().serialize(group.getDocument()).split(":")[1]);
+            q.bindValue("selfReference", getFullSerializer().serialize(group.getDocumentReference()).split(":")[1]);
             q.bindValue("memberClass", getLocalSerializer().serialize(GROUP_MEMBER_CLASS));
             q.bindValue("entityType", getLocalSerializer().serialize(type));
             q.bindValue("referenceProperty", getMembershipProperty());
