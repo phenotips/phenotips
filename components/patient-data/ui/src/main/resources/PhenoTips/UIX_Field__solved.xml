@@ -118,7 +118,7 @@
   (% class="controlled-group complete-hide exclude" %)(((
   (% class="fieldset unaffected controller" %)(((
   #if ($xcontext.action == 'edit')
-    $doc.display('solved') #__label('solved' '' "$class.get('solved').prettyName") {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("PhenoTips.PatientClass_solvedCase_hint").replace('"', '~~~"')"/}}
+    $doc.display('solved') #__label('solved' '' "$class.get('solved').translatedPrettyName") {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("PhenoTips.PatientClass_solvedCase_hint").replace('"', '~~~"')"/}}
 
   #else
     #if ($showSolved)$class.get('solved').translatedPrettyName#end

@@ -17,6 +17,10 @@
  */
 package org.phenotips.tools;
 
+import org.phenotips.components.ComponentManagerRegistry;
+import org.phenotips.translation.TranslationManager;
+
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.xml.XMLUtils;
 
 import java.util.Collection;
@@ -98,11 +102,17 @@ public class FormSection extends FormGroup
         String displayedLabel = "Other";
         result += String.format("<label for='%s' class='label-other label-other-%s'>%s</label>", id, fieldNames[YES],
             displayedLabel);
-
+        String placeholder = "enter free text and choose among suggested vocabulary terms";
+        try {
+            TranslationManager tm =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(TranslationManager.class);
+            placeholder = tm.translate("Phenotips.FormSection.suggestTermPlaceholder");
+        } catch (ComponentLookupException ex) {
+            // Will not happen, and if it does, it doesn't matter, placeholder is not that critical
+        }
         result += String.format("<input type='text' name='%s' class='suggested multi suggest-hpo %s accept-value'"
             + " value='' size='16' id='%s' placeholder='%s'/>", fieldNames[YES],
-            (fieldNames[NO] == null ? "generateCheckboxes" : "generateYesNo"), id,
-            "enter free text and choose among suggested ontology terms");
+            (fieldNames[NO] == null ? "generateCheckboxes" : "generateYesNo"), id, placeholder);
         result += String.format("<input type='hidden' value='%s' name='_category'/>",
             this.categories.toString().replaceAll("[\\[\\]\\s]", ""));
         return result;
