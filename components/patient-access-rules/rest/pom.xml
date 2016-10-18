@@ -40,6 +40,11 @@
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rest-api</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-component-api</artifactId>
       <version>${xwiki.version}</version>
@@ -71,13 +76,17 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-constants</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>xwiki-platform-users-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
-      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>joda-time</groupId>
@@ -106,13 +115,6 @@
       <artifactId>phenotips-rest-commons</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- Test dependencies -->
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-tool-test-component</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
@@ -120,7 +122,7 @@
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
-        <version>0.12.3</version>
+        <version>${maven-jaxb2-plugin.version}</version>
         <configuration>
           <generatePackage>org.phenotips.data.permissions.rest.model</generatePackage>
           <extension>true</extension>
@@ -146,7 +148,7 @@
             <plugin>
               <groupId>org.jvnet.jaxb2_commons</groupId>
               <artifactId>jaxb2-fluent-api</artifactId>
-              <version>3.0</version>
+              <version>${jaxb2-fluent-api.version}</version>
             </plugin>
           </plugins>
           <args>

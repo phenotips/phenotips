@@ -38,7 +38,6 @@
     <dependency>
       <groupId>org.hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
-      <version>2.3.4</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -130,7 +129,7 @@ xwiki.store.attachment.recyclebin.hint=file
           <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
-            <version>2.3.3</version>
+            <version>2.3.4</version>
           </dependency>
           <!-- Filesystem attachment storage -->
           <dependency>
