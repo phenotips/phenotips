@@ -239,16 +239,10 @@ public class DefaultReceivePatientData implements ReceivePatientData
         return response;
     }
 
-    protected XWikiDocument getPatientDocument(Patient patient) throws Exception
-    {
-        // TODO use getDocument()
-        return (XWikiDocument) this.bridge.getDocument(patient.getDocumentReference());
-    }
-
     protected String getPatientGUID(Patient patient)
     {
         try {
-            XWikiDocument doc = getPatientDocument(patient);
+            XWikiDocument doc = patient.getDocument();
             String guid = doc.getXObject(Patient.CLASS_REFERENCE).getGuid();
             return guid;
         } catch (Exception ex) {
@@ -260,7 +254,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
     protected String getPatientURL(Patient patient, XWikiContext context)
     {
         try {
-            XWikiDocument doc = getPatientDocument(patient);
+            XWikiDocument doc = patient.getDocument();
             String url = doc.getURL("view", context);
             return url;
         } catch (Exception ex) {
@@ -524,8 +518,12 @@ public class DefaultReceivePatientData implements ReceivePatientData
             } else {
 
                 affectedPatient = this.patientRepository.create(user.getProfileDocument());
+                if (affectedPatient == null) {
+                    this.logger.error("Can not create new patient");
+                    return generateFailedActionResponse();
+                }
 
-                XWikiDocument doc = getPatientDocument(affectedPatient);
+                XWikiDocument doc = affectedPatient.getDocument();
                 doc.setAuthorReference(user.getProfileDocument());
 
                 // assign ownership to group (if provided) or to the user, and set access rights
@@ -538,10 +536,6 @@ public class DefaultReceivePatientData implements ReceivePatientData
                     this.permissionManager.getPatientAccess(affectedPatient).setOwner(user.getProfileDocument());
                 }
 
-                if (affectedPatient == null) {
-                    this.logger.error("Can not create new patient");
-                    return generateFailedActionResponse();
-                }
 
                 this.logger.warn("Created new patient successfully");
             }

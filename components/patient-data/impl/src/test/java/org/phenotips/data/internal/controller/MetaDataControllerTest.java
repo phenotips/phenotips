@@ -23,7 +23,6 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -49,7 +48,6 @@ import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -64,8 +62,6 @@ public class MetaDataControllerTest
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
         new MockitoComponentMockingRule<PatientDataController<String>>(MetaDataController.class);
-
-    private DocumentAccessBridge documentAccessBridge;
 
     @Mock
     private Patient patient;
@@ -108,11 +104,9 @@ public class MetaDataControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
         doReturn(patientDocument).when(this.patient).getDocumentReference();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
+        doReturn(this.doc).when(this.patient).getDocument();
 
         this.documentReference = new DocumentReference("wiki", "phenotips", "document");
         doReturn(this.documentReference).when(this.doc).getDocumentReference();
@@ -150,8 +144,8 @@ public class MetaDataControllerTest
     @Test
     public void loadCatchesExceptionFromDocumentAccess() throws Exception
     {
-        Exception exception = new Exception();
-        doThrow(exception).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
+        RuntimeException exception = new RuntimeException();
+        doThrow(exception).when(this.patient).getDocument();
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 

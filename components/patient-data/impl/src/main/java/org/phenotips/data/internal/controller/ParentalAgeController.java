@@ -23,7 +23,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
@@ -76,10 +75,6 @@ public class ParentalAgeController implements PatientDataController<Integer>
     @Inject
     private Provider<XWikiContext> xcontext;
 
-    /** Provides access to the underlying data storage. */
-    @Inject
-    private DocumentAccessBridge documentAccessBridge;
-
     @Override
     public String getName()
     {
@@ -90,8 +85,7 @@ public class ParentalAgeController implements PatientDataController<Integer>
     public PatientData<Integer> load(Patient patient)
     {
         try {
-            // TODO change to getDocument
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocumentReference());
+            XWikiDocument doc = patient.getDocument();
             BaseObject data = doc.getXObject(getXClassReference());
             if (data == null) {
                 this.logger.debug("No parental information for patient [{}]", patient.getDocumentReference());
