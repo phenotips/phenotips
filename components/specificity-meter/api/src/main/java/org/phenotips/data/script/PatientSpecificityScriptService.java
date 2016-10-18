@@ -230,12 +230,6 @@ public class PatientSpecificityScriptService implements ScriptService
         }
 
         @Override
-        public DocumentReference getDocumentReference()
-        {
-            return null;
-        }
-
-        @Override
         public Document getSecureDocument()
         {
             return null;
@@ -246,7 +240,6 @@ public class PatientSpecificityScriptService implements ScriptService
         {
             return null;
         }
-
 
         @Override
         public DocumentReference getReporter()
@@ -288,6 +281,12 @@ public class PatientSpecificityScriptService implements ScriptService
         public void updateFromJSON(JSONObject json)
         {
             // Nothing to do
+        }
+
+        @Override
+        public DocumentReference getDocument()
+        {
+            return null;
         }
     }
 }

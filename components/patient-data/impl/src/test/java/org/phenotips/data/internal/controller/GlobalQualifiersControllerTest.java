@@ -266,7 +266,7 @@ public class GlobalQualifiersControllerTest
         Assert.assertTrue(
             new JSONObject("{\"global_mode_of_inheritance\":[{\"id\":\"HP:0010985\"},{\"id\":\"HP:0001427\"}],"
                 + "\"global_age_of_onset\":[{\"id\":\"HP:0003623\"}]}")
-                    .similar(json));
+                .similar(json));
     }
 
     @Test
