@@ -110,8 +110,7 @@ public abstract class AbstractInternalPrimaryEntityGroupManager<G extends Primar
 
             Query q = getQueryManager().createQuery(hql.toString(), Query.HQL);
 
-            // FIXME
-            q.bindValue("selfReference", getFullSerializer().serialize(group.getDocumentReference()).split(":")[1]);
+            q.bindValue("selfReference", getLocalSerializer().serialize(group.getDocumentReference()));
             q.bindValue("referenceProperty", getMembershipProperty());
             q.bindValue("classProperty", CLASS_XPROPERTY);
             q.bindValue("entityType", getLocalSerializer().serialize(type));
@@ -249,8 +248,7 @@ public abstract class AbstractInternalPrimaryEntityGroupManager<G extends Primar
 
             Query q = getQueryManager().createQuery(hql.toString(), Query.HQL);
 
-            // FIXME
-            q.bindValue("selfReference", getFullSerializer().serialize(group.getDocumentReference()).split(":")[1]);
+            q.bindValue("selfReference", getLocalSerializer().serialize(group.getDocumentReference()));
             q.bindValue("memberClass", getLocalSerializer().serialize(GROUP_MEMBER_CLASS));
             q.bindValue("entityType", getLocalSerializer().serialize(type));
             q.bindValue("referenceProperty", getMembershipProperty());
