@@ -84,7 +84,7 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
             DocumentAccessBridge documentAccessBridge =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
             List<AttachmentReference> attachmentRefs =
-                documentAccessBridge.getAttachmentReferences(this.getDocument());
+                documentAccessBridge.getAttachmentReferences(this.getDocumentReference());
             if (attachmentRefs.size() > 0) {
                 avatarURL = documentAccessBridge.getAttachmentURL(attachmentRefs.get(0), true);
             } else {
