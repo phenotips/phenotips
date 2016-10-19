@@ -54,6 +54,10 @@ The project is split into several modules, among which `distribution/standalone`
 * launch the `start` script (`start.sh` on unix-like systems, `start.bat` on Windows)
 * open [http://localhost:8080/](http://localhost:8080/) in a browser
 
+# Issue tracker #
+
+You can report issues, make feature requests and watch our progress on [our JIRA](https://phenotips.atlassian.net/projects/PT/issues/).
+
 # Usage & limitations #
 
 The standalone distribution comes packaged with a *Java Servlet Container*, [Jetty](http://www.eclipse.org/jetty/), a lightweight *relational database management system*, [HyperSQL](http://hsqldb.org/), and the *phenotyping application* itself.
