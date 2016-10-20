@@ -658,7 +658,7 @@ define([
                             Controller._checkPatientLinkValidity(setLink, nodeID, modValue, loadPatientProperties, skipConfirmDialogue);
                         } else {
                             // if this is a redo event skip all the warnings
-                            setLink(event.memo.clearOldData);
+                            setLink(event.memo.clearOldData, true);
                         }
                     }
                     else if (modificationType == "makePlaceholder") {
