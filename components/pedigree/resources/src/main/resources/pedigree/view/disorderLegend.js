@@ -75,8 +75,10 @@ define([
          */
         _updateDisorderName: function(disorderID) {
             //console.log("updating disorder display for " + disorderID + ", name = " + this.getDisorder(disorderID).getName());
-            var name = this._legendBox.down('li#' + this._getPrefix() + '-' + disorderID + ' .disorder-name');
-            name.update(this.getDisorder(disorderID).getName());
+            var nameElement = this._legendBox.down('li#' + this._getPrefix() + '-' + disorderID + ' .disorder-name');
+            var name = this.getDisorder(disorderID).getName();
+            nameElement.update(name);
+            document.fire('disorder:name', {'id' : disorderID, 'name': name});
         },
 
         /**

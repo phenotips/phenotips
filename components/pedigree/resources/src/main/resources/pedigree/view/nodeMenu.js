@@ -121,8 +121,8 @@ define([
             // Attach pickers and suggest widgets
             this._generatePickersAndSuggests();
 
-            // Update disorder colors
-            this._updateDisorderColor = function(id, color) {
+            // Update disorder data (color & name)
+            this._updateDisorder = function(id, color, name) {
                 this.menuBox.select('.field-disorders li input[value="' + id + '"]').each(function(item) {
                     var colorBubble = item.up('li').down('.abnormality-color');
                     if (!colorBubble) {
@@ -130,15 +130,36 @@ define([
                         item.up('li').insert({top : colorBubble});
                     }
                     colorBubble.setStyle({background : color});
+                    var nameElement = item.up().down('span');
+                    nameElement && (nameElement.innerText = name);
                 });
             }.bind(this);
+            document.observe('disorder:name', function(event) {
+                if (!event.memo || !event.memo.id || !event.memo.name) {
+                    return;
+                }
+                _this._updateDisorder(event.memo.id, editor.getDisorderLegend().getObjectColor(event.memo.id), event.memo.name);
+            });
             document.observe('disorder:color', function(event) {
                 if (!event.memo || !event.memo.id || !event.memo.color) {
                     return;
                 }
-                _this._updateDisorderColor(event.memo.id, event.memo.color);
+                _this._updateDisorder(event.memo.id, event.memo.color, editor.getDisorderLegend().getName(event.memo.id) );
             });
-            //this._setFieldValue['disease-picker'].bind(this);
+
+            // Update HPO term human readable name
+            this._updateHPOTerm = function(id, name) {
+                this.menuBox.select('.field-hpo_positive li input[value="' + id + '"]').each(function(item) {
+                    var nameElement = item.up().down('span');
+                    nameElement && (nameElement.innerText = name);
+                });
+            }.bind(this);
+            document.observe('hpoTerm:name', function(event) {
+                if (!event.memo || !event.memo.id || !event.memo.name) {
+                    return;
+                }
+                _this._updateHPOTerm(event.memo.id, event.memo.name);
+            });
 
             // Update gene colors
             this._updateGeneColor = function(container, id, color) {
@@ -1233,7 +1254,7 @@ define([
                     if (values) {
                         values.each(function(v) {
                             target._suggestPicker.addItem(v.id, v.value, '');
-                            _this._updateDisorderColor(v.id, editor.getDisorderLegend().getObjectColor(v.id));
+                            _this._updateDisorder(v.id, editor.getDisorderLegend().getObjectColor(v.id), v.value);
                         })
                     }
                     target._silent = false;
