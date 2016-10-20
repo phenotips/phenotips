@@ -889,7 +889,7 @@ define([
 
             var numTwins = event.memo.twins ? event.memo.twins : 1;
 
-            var childParams = Helpers.cloneObject(event.memo.childParams);
+            var childParams = event.memo.childParams ? Helpers.cloneObject(event.memo.childParams) : {};
             if (editor.getGraph().isInfertile(partnershipID)) {
                 childParams["adoptedStatus"] = "adoptedIn";
             }
