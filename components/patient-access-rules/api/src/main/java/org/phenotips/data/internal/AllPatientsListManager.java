@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 /**
@@ -38,7 +39,7 @@ import javax.inject.Singleton;
 public class AllPatientsListManager
 {
     @Inject
-    private PatientsListCriteriaProvider criteriaProvider;
+    private Provider<List<PatientListCriterion>> allCriteria;
 
     /**
      * Calculates and returns the total list of patients current user can view. The method runs over all
@@ -53,7 +54,7 @@ public class AllPatientsListManager
         List<Patient> addList = new LinkedList<>();
         List<Patient> removeList = new LinkedList<>();
 
-        for (PatientListCriterion criterion : this.criteriaProvider.get()) {
+        for (PatientListCriterion criterion : this.allCriteria.get()) {
             addList.addAll(criterion.getAddList());
             removeList.addAll(criterion.getRemoveList());
         }

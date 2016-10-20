@@ -19,5 +19,3 @@ org.phenotips.data.permissions.internal.visibility.OpenVisibility
 org.phenotips.data.permissions.script.PermissionsManagerScriptService
 org.phenotips.data.permissions.events.PatientRightsUpdatedEvent
 org.phenotips.data.internal.AllPatientsListManager
-org.phenotips.data.script.PatientsListScriptService
-org.phenotips.data.internal.PatientsListCriteriaProvider
