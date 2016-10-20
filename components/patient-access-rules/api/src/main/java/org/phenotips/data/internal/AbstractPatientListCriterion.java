@@ -17,13 +17,8 @@
  */
 package org.phenotips.data.internal;
 
-import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientListCriterion;
-
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.query.QueryManager;
-import org.xwiki.users.UserManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,25 +43,5 @@ public abstract class AbstractPatientListCriterion implements PatientListCriteri
     public List<Patient> getRemoveList()
     {
         return Collections.emptyList();
-    }
-
-    protected QueryManager getQueryManager()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager().getInstance(QueryManager.class);
-        } catch (ComponentLookupException ex) {
-            this.logger.error("Failed to access the query manager: {}", ex.getMessage(), ex);
-        }
-        return null;
-    }
-
-    protected UserManager getUserManager()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager().getInstance(UserManager.class);
-        } catch (ComponentLookupException ex) {
-            this.logger.error("Failed to access the user manager: {}", ex.getMessage(), ex);
-        }
-        return null;
     }
 }
