@@ -697,7 +697,6 @@ $xwiki.jsx.use('PhenoTips.FamilySelector')##
     $xwiki.jsx.use('PhenoTips.UIX_Field__pedigree')##
     #if ($doc.getObject('PhenoTips.FamilyClass'))## it's a family page
       #set ($docIdRequest = 'fid=')
-=== {{translation key="phenotips.patientRecord.pedigree.title"/}} ===
     #else
       #set ($docIdRequest = 'id=')
     #end
