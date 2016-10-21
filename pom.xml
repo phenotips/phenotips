@@ -224,6 +224,7 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <!-- HTTP libraries -->
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore-nio</artifactId>
@@ -273,6 +274,7 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <!-- Other commons libraries -->
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
