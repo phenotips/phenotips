@@ -36,7 +36,7 @@ public class HeadCircumferenceTest
 {
     @Rule
     public final MockitoComponentMockingRule<MeasurementHandler> mocker =
-    new MockitoComponentMockingRule<MeasurementHandler>(HeadCircumferenceMeasurementHandler.class);
+        new MockitoComponentMockingRule<MeasurementHandler>(HeadCircumferenceMeasurementHandler.class);
 
     @Test
     public void testValueToPercentile() throws ComponentLookupException

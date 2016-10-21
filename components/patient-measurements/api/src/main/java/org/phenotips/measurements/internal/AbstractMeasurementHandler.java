@@ -175,8 +175,8 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     {
         BufferedReader in = null;
         String filename = getName() + ".csv";
-        this.measurementsForAgeBoys = new ArrayList<LMS>();
-        this.measurementsForAgeGirls = new ArrayList<LMS>();
+        this.measurementsForAgeBoys = new ArrayList<>();
+        this.measurementsForAgeGirls = new ArrayList<>();
         InputStream inStream = this.getClass().getResourceAsStream(filename);
         if (inStream == null) {
             throw new InitializationException("Missing measurements tables for [" + this.getName() + "]");

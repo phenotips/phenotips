@@ -17,18 +17,11 @@
  */
 package org.phenotips.measurements.internal;
 
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.observation.EventListener;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.observation.event.Event;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,19 +29,25 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyFloat;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.eq;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
 /**
  * Tests for the {@link MeasurementAgeUpdater} component.
- *
  */
 public class MeasurementAgeUpdaterTest
 {
@@ -86,9 +85,9 @@ public class MeasurementAgeUpdaterTest
         MockitoAnnotations.initMocks(this);
         when(this.source.getXObject(any(EntityReference.class))).thenReturn(this.patientRecordObj);
 
-        objects = new LinkedList<>();
-        objects.add(measurement);
-        when(this.source.getXObjects(any(EntityReference.class))).thenReturn(objects);
+        this.objects = new LinkedList<>();
+        this.objects.add(this.measurement);
+        when(this.source.getXObjects(any(EntityReference.class))).thenReturn(this.objects);
 
         when(this.measurement.getStringValue(anyString())).thenReturn(null);
         when(this.measurement.getDateValue(DATE_PROPERTY_NAME)).thenReturn(new Date());
@@ -100,7 +99,7 @@ public class MeasurementAgeUpdaterTest
     {
         when(this.patientRecordObj.getDateValue(DATE_OF_BIRTH_PROPERTY_NAME)).thenReturn(null);
 
-        this.mocker.getComponentUnderTest().onEvent(event, source, data);
+        this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
         verify(this.measurement).removeField(AGE_PROPERTY_NAME);
     }
 
@@ -109,7 +108,7 @@ public class MeasurementAgeUpdaterTest
     {
         when(this.measurement.getDateValue(DATE_PROPERTY_NAME)).thenReturn(null);
 
-        this.mocker.getComponentUnderTest().onEvent(event, source, data);
+        this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
         verify(this.measurement).removeField(AGE_PROPERTY_NAME);
     }
 
@@ -118,7 +117,7 @@ public class MeasurementAgeUpdaterTest
     {
         when(this.measurement.getStringValue("type")).thenReturn("birth");
 
-        this.mocker.getComponentUnderTest().onEvent(event, source, data);
+        this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
 
         verify(this.measurement).setFloatValue(AGE_PROPERTY_NAME, 0);
         verify(this.measurement).removeField(DATE_PROPERTY_NAME);
@@ -137,27 +136,28 @@ public class MeasurementAgeUpdaterTest
         Date measureDate = dateFormat.parse(measureDateString);
 
         when(this.measurement.getDateValue(DATE_PROPERTY_NAME)).thenReturn(measureDate);
-        this.mocker.getComponentUnderTest().onEvent(event, source, data);
-        verify(this.measurement).setFloatValue(eq(AGE_PROPERTY_NAME), eq(365/30.4375f));
+        this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
+        verify(this.measurement).setFloatValue(eq(AGE_PROPERTY_NAME), eq(365 / 30.4375f));
 
         measureDateString = "01-01-2035 12:00:00";
         measureDate = dateFormat.parse(measureDateString);
 
         when(this.measurement.getDateValue(DATE_PROPERTY_NAME)).thenReturn(measureDate);
-        this.mocker.getComponentUnderTest().onEvent(event, source, data);
-        verify(this.measurement).setFloatValue(eq(AGE_PROPERTY_NAME), eq((365*20 + 5)/30.4375f));
+        this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
+        verify(this.measurement).setFloatValue(eq(AGE_PROPERTY_NAME), eq((365 * 20 + 5) / 30.4375f));
 
         measureDateString = "01-03-2016 12:00:00";
         measureDate = dateFormat.parse(measureDateString);
 
         when(this.measurement.getDateValue(DATE_PROPERTY_NAME)).thenReturn(measureDate);
-        this.mocker.getComponentUnderTest().onEvent(event, source, data);
-        verify(this.measurement).setFloatValue(eq(AGE_PROPERTY_NAME), eq((31 + 29 + 365)/30.4375f));
+        this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
+        verify(this.measurement).setFloatValue(eq(AGE_PROPERTY_NAME), eq((31 + 29 + 365) / 30.4375f));
 
     }
 
     @Test
-    public void checkMultipleDatesAreUpdated() throws ComponentLookupException {
+    public void checkMultipleDatesAreUpdated() throws ComponentLookupException
+    {
         BaseObject measurement2 = mock(BaseObject.class);
         BaseObject measurement3 = mock(BaseObject.class);
         this.objects.add(measurement2);
@@ -166,14 +166,15 @@ public class MeasurementAgeUpdaterTest
         when(measurement2.getDateValue(DATE_PROPERTY_NAME)).thenReturn(new Date());
         when(measurement3.getDateValue(DATE_PROPERTY_NAME)).thenReturn(new Date());
 
-        this.mocker.getComponentUnderTest().onEvent(event, source, data);
+        this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
         verify(this.measurement).setFloatValue(eq(AGE_PROPERTY_NAME), anyFloat());
         verify(measurement2).setFloatValue(eq(AGE_PROPERTY_NAME), anyFloat());
         verify(measurement3).setFloatValue(eq(AGE_PROPERTY_NAME), anyFloat());
     }
 
     @Test
-    public void behavesNormallyWithNullMeasurement() throws ComponentLookupException {
+    public void behavesNormallyWithNullMeasurement() throws ComponentLookupException
+    {
         BaseObject measurement2 = mock(BaseObject.class);
         BaseObject measurement3 = null;
         BaseObject measurement4 = mock(BaseObject.class);
@@ -184,21 +185,23 @@ public class MeasurementAgeUpdaterTest
         when(measurement2.getDateValue(DATE_PROPERTY_NAME)).thenReturn(new Date());
         when(measurement4.getDateValue(DATE_PROPERTY_NAME)).thenReturn(new Date());
 
-        this.mocker.getComponentUnderTest().onEvent(event, source, data);
+        this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
         verify(this.measurement).setFloatValue(eq(AGE_PROPERTY_NAME), anyFloat());
         verify(measurement2).setFloatValue(eq(AGE_PROPERTY_NAME), anyFloat());
         verify(measurement4).setFloatValue(eq(AGE_PROPERTY_NAME), anyFloat());
     }
 
     @Test
-    public void returnsNormallyWithNullPatientRecord() throws ComponentLookupException {
+    public void returnsNormallyWithNullPatientRecord() throws ComponentLookupException
+    {
         when(this.source.getXObject(any(EntityReference.class))).thenReturn(null);
-        this.mocker.getComponentUnderTest().onEvent(event, source, data);
+        this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
     }
 
     @Test
-    public void returnsNormallyWhenGivenNoMeasurementObjects() throws Exception {
+    public void returnsNormallyWhenGivenNoMeasurementObjects() throws Exception
+    {
         when(this.source.getXObjects(any(EntityReference.class))).thenReturn(null);
-        this.mocker.getComponentUnderTest().onEvent(event, source, data);
+        this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
     }
 }

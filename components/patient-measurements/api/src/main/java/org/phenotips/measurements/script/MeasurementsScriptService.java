@@ -124,7 +124,7 @@ public class MeasurementsScriptService implements ScriptService
             Map<String, MeasurementHandler> handlers =
                 this.componentManager.get().getInstanceMap(MeasurementHandler.class);
             if (handlers != null) {
-                Set<String> result = new TreeSet<String>(MeasurementNameSorter.instance);
+                Set<String> result = new TreeSet<>(MeasurementNameSorter.instance);
                 result.addAll(handlers.keySet());
                 return result;
             }
@@ -184,8 +184,8 @@ public class MeasurementsScriptService implements ScriptService
     private static final class MeasurementSorter implements Comparator<MeasurementHandler>
     {
         /** Hardcoded list of measurements and their order. */
-        private static final String[] TARGET_ORDER = new String[] {"weight", "height", "bmi", "armspan", "sitting",
-            "hc", "philtrum", "ear", "ocd", "icd", "pfl", "ipd", "hand", "palm", "foot"};
+        private static final String[] TARGET_ORDER = new String[] { "weight", "height", "bmi", "armspan", "sitting",
+            "hc", "philtrum", "ear", "ocd", "icd", "pfl", "ipd", "hand", "palm", "foot" };
 
         /** Singleton instance. */
         private static MeasurementSorter instance = new MeasurementSorter();

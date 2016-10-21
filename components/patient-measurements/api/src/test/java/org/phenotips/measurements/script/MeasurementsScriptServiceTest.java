@@ -47,7 +47,7 @@ public class MeasurementsScriptServiceTest
 {
     @Rule
     public final MockitoComponentMockingRule<MeasurementsScriptService> mocker =
-        new MockitoComponentMockingRule<MeasurementsScriptService>(MeasurementsScriptService.class);
+        new MockitoComponentMockingRule<>(MeasurementsScriptService.class);
 
     @Test
     public void testGetWithNonExistentHint() throws ComponentLookupException
@@ -70,7 +70,7 @@ public class MeasurementsScriptServiceTest
     public void testGetAvailableMeasurementHandlers() throws ComponentLookupException
     {
         ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
-        List<MeasurementHandler> toReturn = new ArrayList<MeasurementHandler>();
+        List<MeasurementHandler> toReturn = new ArrayList<>();
         toReturn.add(Mockito.mock(MeasurementHandler.class));
         when(cm.<MeasurementHandler>getInstanceList(MeasurementHandler.class)).thenReturn(toReturn);
         List<MeasurementHandler> response = this.mocker.getComponentUnderTest().getAvailableMeasurementHandlers();
@@ -101,7 +101,7 @@ public class MeasurementsScriptServiceTest
     public void testGetAvailableMeasurementNames() throws ComponentLookupException
     {
         ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
-        Map<String, MeasurementHandler> toReturn = new HashMap<String, MeasurementHandler>();
+        Map<String, MeasurementHandler> toReturn = new HashMap<>();
         toReturn.put("hand", Mockito.mock(MeasurementHandler.class));
         when(cm.<MeasurementHandler>getInstanceMap(MeasurementHandler.class)).thenReturn(toReturn);
         Set<String> response = this.mocker.getComponentUnderTest().getAvailableMeasurementNames();

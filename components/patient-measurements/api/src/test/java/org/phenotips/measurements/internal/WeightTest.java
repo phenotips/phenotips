@@ -36,7 +36,7 @@ public class WeightTest
 {
     @Rule
     public final MockitoComponentMockingRule<MeasurementHandler> mocker =
-    new MockitoComponentMockingRule<MeasurementHandler>(WeightMeasurementHandler.class);
+        new MockitoComponentMockingRule<MeasurementHandler>(WeightMeasurementHandler.class);
 
     @Test
     public void testValueToPercentile() throws ComponentLookupException
@@ -86,12 +86,12 @@ public class WeightTest
         Assert.assertEquals(3.35, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 0, 0), 1.0E-2);
         Assert.assertEquals(3.23, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 0, 0), 1.0E-2);
         Assert
-        .assertEquals(2.15, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 0, -2.807), 1.0E-2);
+            .assertEquals(2.15, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 0, -2.807), 1.0E-2);
         Assert.assertEquals(4.91, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 0, 2.807), 1.0E-2);
         Assert
-        .assertEquals(2.1, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 0, -2.807), 1.0E-2);
+            .assertEquals(2.1, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 0, -2.807), 1.0E-2);
         Assert
-        .assertEquals(4.68, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 0, 2.807), 1.0E-2);
+            .assertEquals(4.68, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 0, 2.807), 1.0E-2);
         Assert.assertEquals(71.9, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 1000, 0), 1.0E-2);
         Assert.assertEquals(68.34, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 349, -0.332),
             1.0E-2);

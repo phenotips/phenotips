@@ -230,7 +230,7 @@ public class DefaultMeasurementsChartConfigurationsFactory implements Measuremen
             return Collections.emptyList();
         }
         String[] charts = configuration.getString(key).split(",");
-        List<MeasurementsChartConfiguration> result = new ArrayList<MeasurementsChartConfiguration>(charts.length);
+        List<MeasurementsChartConfiguration> result = new ArrayList<>(charts.length);
         for (String chart : charts) {
             SimpleMeasurementsChartConfiguration chartSettings = loadChart(key + '.' + chart + '.', configuration);
             if (validateChart(chartSettings)) {
@@ -336,8 +336,8 @@ public class DefaultMeasurementsChartConfigurationsFactory implements Measuremen
                 settings.chartIdentifier, settings.ageLabelStep, settings.ageTickStep);
             isValid = false;
         }
-        if (Math.abs(Math.IEEEremainder(settings.upperValueLimit - settings.lowerValueLimit, settings.valueTickStep))
-            > 1.0E-10) {
+        if (Math.abs(Math.IEEEremainder(settings.upperValueLimit - settings.lowerValueLimit,
+            settings.valueTickStep)) > 1.0E-10) {
             this.logger.warn("Invalid chart settings for [{}]: value grid lines don't fit evenly: [{}] in [{}-{}]",
                 settings.chartIdentifier, settings.valueTickStep, settings.lowerValueLimit, settings.upperValueLimit);
             isValid = false;
