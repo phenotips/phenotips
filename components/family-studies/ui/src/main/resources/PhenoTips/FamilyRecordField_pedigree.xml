@@ -110,16 +110,12 @@
     <property>
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
+{{include reference="PhenoTips.PedigreeMacros" /}}
+
 {{velocity}}
-#foreach ($e in $services.uix.getExtensions('org.phenotips.patientSheet.section.family-info'))
-  #if ($e.getId() == 'org.phenotips.patientSheet.field.pedigree')
-    #set ($pedigreeHtml = $services.rendering.render($e.execute(), 'xhtml/1.0'))
-  #end
-#end
-#if ("$!{pedigreeHtml}" != '')
-  (% id='pedigree' class='chapter clinical-info pedigree-family-section' %)(((
-    {{html wiki=false clean=false}}$pedigreeHtml{{/html}}
-  )))
+#if ($xcontext.action != 'export')
+  #set ($family = $services.families.getFamilyById($doc.name))
+  #pedigreeThumbnail($family)
 #end
 {{/velocity}}</content>
     </property>
