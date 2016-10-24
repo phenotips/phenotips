@@ -1429,7 +1429,7 @@
       </url>
     </class>
     <property>
-      <description>$services.localization.render('phenotips.push.phenomecentral.description')</description>
+      <description>$services.localization.render('phenotips.patientSharing.push.configuration.phenomecentral.description')</description>
     </property>
     <property>
       <name>PhenomeCentral</name>
@@ -3034,7 +3034,7 @@ In order to activate your account, please follow this link:
 ${host}${xwiki.getURL('XWiki.AccountValidation', 'view', "validkey=${validkey}&amp;xwikiname=${xwikiname}")}</validation_email_content>
     </property>
     <property>
-      <version>&lt;a href="http://phenotips.org"&gt;PhenoTips&lt;/a&gt; $services.localization.render('phenotips.defaultSettings.version') $!{services.distribution.distributionExtension.id.version}</version>
+      <version>$services.localization.render('phenotips.defaultSettings.version', [$!{services.distribution.distributionExtension.id.version}])</version>
     </property>
     <property>
       <webcopyright>$services.localization.render('phenotips.defaultSettings.webcopyright')</webcopyright>

@@ -45,7 +45,12 @@
 #set ($serverConfigurationClassname = 'PhenoTips.ReceivePatientServer')
 #set ($existingServers = $preferencesDoc.getObjects($serverConfigurationClassname))
 #set ($mainConfigurationClassname = 'PhenoTips.ReceivePatientSettings')
-#set ($existingConfigs = $preferencesDoc.getObjects($mainConfigurationClassname))
+
+#set ($targetObj = $doc.getObject($mainConfigurationClassname))
+#if (!$targetObj)
+  #set ($targetObj = $doc.newObject($mainConfigurationClassname))
+  $doc.save('Added receive patient configuration', true)
+#end
 
 $xwiki.ssx.use($displayDocumentName)##
 {{/velocity}}
@@ -61,35 +66,30 @@ $xwiki.ssx.use($displayDocumentName)##
   #__extradata_displayLastEntry($request.dataClassName $options)
 #else
 {{html clean="false"}}
-&lt;h2&gt;$services.localization.render('phenotips.receivePatientConfiguration.receiveHeader')&lt;/h2&gt;
+&lt;h2&gt;$services.localization.render('phenotips.patientSharing.receive.configuration.title')&lt;/h2&gt;
 &lt;form action="${preferencesDoc.getURL('save')}" method="post"&gt;
 &lt;div class="hidden"&gt;
     &lt;input type="hidden" name="form_token" value="${escapetool.xml($services.csrf.token)}" /&gt;
     &lt;input type="hidden" name="classname" value="${mainConfigurationClassname}" /&gt;
     &lt;input type="hidden" name="xredirect" value="${escapetool.xml($doc.getURL($xcontext.action, $request.queryString))}" /&gt;
   &lt;/div&gt;
-  $services.localization.render('phenotips.receivePatientConfiguration.allowPushes') ##
+  $targetObj.getxWikiClass().AllowPushesFromNonListedServers.translatedPrettyName ##
 {{/html}}##
-    #set ($targetObj = $doc.getObject($mainConfigurationClassname))
-    #if (!$targetObj)
-        #set ($targetObj = $doc.newObject($mainConfigurationClassname))
-        $doc.save('Added receive patient configuration', true)
-    #end
     $doc.display("AllowPushesFromNonListedServers", "edit", $targetObj)
     ##
   #if ($services.consentauthorizer.consentsGloballyEnabled())
     {{html clean="false"}}
-    $services.localization.render('phenotips.receivePatientConfiguration.acceptData') ##
+      $targetObj.getxWikiClass().AllowNoConsentsFromOldClients.translatedPrettyName ##
     {{/html}}##
     $doc.display("AllowNoConsentsFromOldClients", "edit", $targetObj)
   #end
   ##
 {{html clean="false"}}
 &lt;div class="buttons"&gt;
-    &lt;input class="button" type="submit" value="$services.localization.render('phenotips.receivePatientConfiguration.save')" /&gt;
+    &lt;input class="button" type="submit" value="$services.localization.render('phenotips.patientSharing.receive.configuration.submit')" /&gt;
   &lt;/div&gt;
 &lt;/form&gt;
-&lt;h2&gt;$services.localization.render('phenotips.receivePatientConfiguration.approvedHeader')&lt;/h2&gt;
+&lt;h2&gt;$services.localization.render('phenotips.patientSharing.receive.configuration.whitelist.title')&lt;/h2&gt;
 &lt;form action="${preferencesDoc.getURL('save')}" method="post"&gt;
 &lt;div class="hidden"&gt;
     &lt;input type="hidden" name="form_token" value="${escapetool.xml($services.csrf.token)}" /&gt;
@@ -100,7 +100,7 @@ $xwiki.ssx.use($displayDocumentName)##
   #__extradata_displayTable($serverConfigurationClassname, {'counter' : false, 'labels' : false, 'mode' : 'edit', 'addedDisplaySheet' : $displayDocumentName})
 {{html clean="false"}}
   &lt;div class="buttons"&gt;
-    &lt;input class="button" type="submit" value="$services.localization.render('phenotips.receivePatientConfiguration.saveChanges')" /&gt;
+    &lt;input class="button" type="submit" value="$services.localization.render('phenotips.patientSharing.receive.configuration.submit')" /&gt;
   &lt;/div&gt;
 &lt;/form&gt;
 {{/html}}

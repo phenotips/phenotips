@@ -51,7 +51,7 @@
 $xwiki.ssx.use($displayDocumentName)##
 {{/velocity}}
 
-==$services.localization.render('phenotips.pedigree.header')==
+==$services.localization.render('phenotips.pedigree.configuration.title')==
 
 {{velocity}}
 {{html clean="false"}}
@@ -62,7 +62,7 @@ $xwiki.ssx.use($displayDocumentName)##
     &lt;input type="hidden" name="xredirect" value="${escapetool.xml($doc.getURL($xcontext.action, $request.queryString))}" /&gt;
   &lt;/div&gt;
   &lt;fieldset&gt;
-    &lt;legend&gt;$services.localization.render('phenotips.pedigree.graphics')&lt;/legend&gt;
+    &lt;legend&gt;$services.localization.render('phenotips.pedigree.configuration.graphics')&lt;/legend&gt;
     &lt;dl&gt;
       &lt;dt&gt;&lt;label for="${targetObj.getxWikiClass().name}_${targetObj.number}_nonStandardAdoptedOutGraphic"&gt;${doc.display("nonStandardAdoptedOutGraphic", "edit", $targetObj).replaceAll('\{\{/?html.*?}}', '')} ${targetObj.getxWikiClass().get('nonStandardAdoptedOutGraphic').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
       &lt;dt&gt;&lt;label for="${targetObj.getxWikiClass().name}_${targetObj.number}_lineStyle"&gt;${targetObj.getxWikiClass().get('lineStyle').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
@@ -71,14 +71,14 @@ $xwiki.ssx.use($displayDocumentName)##
   &lt;/fieldset&gt;
 
   &lt;fieldset&gt;
-    &lt;legend&gt;$services.localization.render('phenotips.pedigree.behavior')&lt;/legend&gt;
+    &lt;legend&gt;$services.localization.render('phenotips.pedigree.configuration.behavior')&lt;/legend&gt;
     &lt;dl&gt;
       &lt;dt&gt;&lt;label for="${targetObj.getxWikiClass().name}_${targetObj.number}_propagateFatherLastName"&gt;${doc.display("propagateFatherLastName", "edit", $targetObj).replaceAll('\{\{/?html.*?}}', '')} ${targetObj.getxWikiClass().get('propagateFatherLastName').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
     &lt;/dl&gt;
   &lt;/fieldset&gt;
 
   &lt;fieldset&gt;
-    &lt;legend&gt;$services.localization.render('phenotips.pedigree.date')&lt;/legend&gt;
+    &lt;legend&gt;$services.localization.render('phenotips.pedigree.configuration.date')&lt;/legend&gt;
     &lt;dl&gt;
       &lt;dt&gt;&lt;label for="${targetObj.getxWikiClass().name}_${targetObj.number}_dateInputFormat"&gt;${targetObj.getxWikiClass().get('dateInputFormat').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
       &lt;dd&gt;${doc.display("dateInputFormat", "edit", $targetObj).replaceAll('\{\{/?html.*?}}', '')}&lt;/dd&gt;
@@ -86,7 +86,7 @@ $xwiki.ssx.use($displayDocumentName)##
       &lt;dd&gt;${doc.display("dateDisplayFormat", "edit", $targetObj).replaceAll('\{\{/?html.*?}}', '')}&lt;/dd&gt;
     &lt;/dl&gt;
   &lt;/fieldset&gt;
-    &lt;legend&gt;$services.localization.render('phenotips.pedigree.preview')&lt;/legend&gt;
+    &lt;legend&gt;$services.localization.render('phenotips.pedigree.configuration.preview')&lt;/legend&gt;
     &lt;dl&gt;
       &lt;dt&gt;&lt;label for="${targetObj.getxWikiClass().name}_${targetObj.number}_pedigreePreviewSize"&gt;${targetObj.getxWikiClass().get('pedigreePreviewSize').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
       &lt;dd&gt;${doc.display("pedigreePreviewSize", "edit", $targetObj).replaceAll('\{\{/?html.*?}}', '')}&lt;/dd&gt;
@@ -94,7 +94,7 @@ $xwiki.ssx.use($displayDocumentName)##
   &lt;/fieldset&gt;
 
   &lt;div class="buttons"&gt;
-    &lt;input class="button" type="submit" value="$services.localization.render('phenotips.pedigree.save')" /&gt;
+    &lt;input class="button" type="submit" value="$services.localization.render('phenotips.pedigree.configuration.submit')" /&gt;
   &lt;/div&gt;
 &lt;/form&gt;
 {{/html}}
