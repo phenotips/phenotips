@@ -315,7 +315,7 @@ a:hover {
   #end
 &lt;g clip-path="url(#border${chartCounter})"&gt;
   #foreach ($m in $measurements)
-    #if ($m.a &gt;= $chartConfiguration.lowerAgeLimit &amp;&amp; $m.a &lt; $chartConfiguration.upperAgeLimit)
+    #if ($m.a &gt;= $chartConfiguration.lowerAgeLimit)
       #getValuePercentile($m.a $m.x)
       #getPercentileValue($chartConfiguration.lowerAgeLimit $p)
       &lt;path class="chart-percentile-curve guideline" d="M0 $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $chartConfiguration.lowerValueLimit), $yscale))L##
@@ -353,19 +353,36 @@ a:hover {
     &lt;text x="$mathtool.mul($mathtool.sub($xlines, 0.85), $xstep)" y="$mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $chartConfiguration.lowerValueLimit), $yscale))" class="chart-deviation chart-label" dy="0.5ex"&gt;#if ($d &gt;= 0)+#end${d}SD&lt;/text&gt;
   #end
   #foreach ($m in $measurements)
-    #if ($m.a &gt;= $chartConfiguration.lowerAgeLimit &amp;&amp; $m.a &lt; $chartConfiguration.upperAgeLimit)
+    #if ($m.a &gt;= $chartConfiguration.lowerAgeLimit &amp;&amp; $m.x)
       #getValuePercentile($m.a $m.x)
       #getValueSD($m.a $m.x)
       #set ($d = $mathtool.roundTo(2, $d))
-      #set ($x = $mathtool.mul($mathtool.sub($m.a, $chartConfiguration.lowerAgeLimit), $xscale))
+      #set ($x = $mathtool.mul($mathtool.sub($mathtool.min($m.a, $chartConfiguration.upperAgeLimit), $chartConfiguration.lowerAgeLimit), $xscale))
       #set ($y = $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($m.x, $chartConfiguration.lowerValueLimit), $yscale)))
-      #if ($y &gt; $mathtool.sub($graphHeight, 10))
+      #if ($m.a &gt;= $chartConfiguration.upperAgeLimit)
+        ## Age over the chart limit
+        #if ($y &gt; $mathtool.sub($graphHeight, 10))
+          ## Age over the chart limit + Measurement under chart limit -&gt; arrow in the lower right corner
+          #set ($y = $graphHeight - 2)
+          &lt;path d="M $mathtool.sub($x, 2) $y l -14.85 -4.95 l 9.9 -9.9 z" fill="#getPercentileColor($p)" stroke="black" stroke-width="4" title="$mathtool.roundTo(2, $m.x), $p pctl (#if ($d &gt;= 0)+#end${d}SD)"/&gt;
+        #elseif ($y &lt; 10)
+          ## Age over the chart limit + Measurement above chart limit -&gt; arrow in the upper right corner
+          #set ($y = 2)
+          &lt;path d="M $mathtool.sub($x, 2) $y l -14.85 4.95 l 9.9 9.9 z" fill="#getPercentileColor($p)" stroke="black" stroke-width="4" title="$mathtool.roundTo(2, $m.x), $p pctl (#if ($d &gt;= 0)+#end${d}SD)"/&gt;
+        #else
+          ## Age over the chart limit + Measurement in range -&gt; arrow on the right side
+          &lt;path d="M $mathtool.sub($x, 2) $y l -14 7 v -14 z" fill="#getPercentileColor($p)" stroke="black" stroke-width="4" title="$mathtool.roundTo(2, $m.x), $p pctl (#if ($d &gt;= 0)+#end${d}SD)"/&gt;
+        #end
+      #elseif ($y &gt; $mathtool.sub($graphHeight, 10))
+        ## Age in range + Measurement under chart limit -&gt; arrow on the bottom side
         #set ($y = $graphHeight - 4)
         &lt;path d="M $x $y l 7 -14 h -14 z" fill="#getPercentileColor($p)" stroke="black" stroke-width="4" title="$mathtool.roundTo(2, $m.x), $p pctl (#if ($d &gt;= 0)+#end${d}SD)"/&gt;
       #elseif ($y &lt; 10)
+        ## Age in range + Measurement above chart limit -&gt; arrow on the top side
         #set ($y = 4)
         &lt;path d="M $x $y l 7 14 h -14 z" fill="#getPercentileColor($p)" stroke="black" stroke-width="4" title="$mathtool.roundTo(2, $m.x), $p pctl (#if ($d &gt;= 0)+#end${d}SD)"/&gt;
       #else
+        ## Age in range + Measurement in range -&gt; circle in the correct position on the chart
         &lt;circle cx="$x" cy="$y" fill="#getPercentileColor($p)" stroke="black" stroke-width="4" r="8" title="$mathtool.roundTo(2, $m.x), $p pctl (#if ($d &gt;= 0)+#end${d}SD)"/&gt;
       #end
     #end
