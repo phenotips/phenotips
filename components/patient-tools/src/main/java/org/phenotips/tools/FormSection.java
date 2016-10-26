@@ -41,7 +41,7 @@ public class FormSection extends FormGroup
     {
         super(title);
         this.propertyName = propertyName;
-        this.categories = new LinkedList<String>();
+        this.categories = new LinkedList<>();
         if (categories != null) {
             this.categories.addAll(categories);
         }
@@ -78,7 +78,7 @@ public class FormSection extends FormGroup
         // section, which has the selection summary
         if (this.elements.isEmpty()
             && (this.customElements.elements.isEmpty()
-            || ("phenotype".equals(this.propertyName) && DisplayMode.Edit.equals(mode)))) {
+                || ("phenotype".equals(this.propertyName) && DisplayMode.Edit.equals(mode)))) {
             display = "display:none";
         }
         return String.format("<div class='%s-group%s' style='" + display + "'><h3 id='H%s'><span>%s</span></h3>"

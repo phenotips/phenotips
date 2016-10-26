@@ -112,7 +112,7 @@ public class PhenotypeDisplayTools implements ScriptService
 
     public void setMessageMap(Map<String, String> messages)
     {
-        Map<String, String> messageMap = new LinkedHashMap<String, String>();
+        Map<String, String> messageMap = new LinkedHashMap<>();
         messageMap.putAll(messages);
         this.execution.getContext().setProperty(MESSAGES_KEY, messageMap);
     }
@@ -123,7 +123,7 @@ public class PhenotypeDisplayTools implements ScriptService
             FormData formData = this.replaceOldTerms(this.getFormData());
             return new PropertyDisplayer(template, formData, this.ontologyService).display();
         } catch (Exception ex) {
-            logger.error("An error has occurred while trying to display phenotypes. {}", ex.getMessage(), ex);
+            this.logger.error("An error has occurred while trying to display phenotypes. {}", ex.getMessage(), ex);
             return "";
         }
     }
@@ -150,8 +150,8 @@ public class PhenotypeDisplayTools implements ScriptService
     private FormData replaceOldTerms(FormData data)
     {
         if (data.getMode() == DisplayMode.Edit) {
-            List<String> correctIds = new LinkedList<String>();
-            List<String> correctNegativeIds = new LinkedList<String>();
+            List<String> correctIds = new LinkedList<>();
+            List<String> correctNegativeIds = new LinkedList<>();
             if (data.getSelectedValues() != null && !data.getSelectedValues().isEmpty()) {
                 for (String id : data.getSelectedValues()) {
                     if (StringUtils.isNotBlank(id)) {

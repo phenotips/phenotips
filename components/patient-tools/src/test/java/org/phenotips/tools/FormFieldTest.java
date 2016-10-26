@@ -277,7 +277,7 @@ public class FormFieldTest
             this.name = name;
             this.description = description;
             this.synonyms = synonyms;
-            this.parents = new HashSet<VocabularyTerm>(Arrays.asList(parents));
+            this.parents = new HashSet<>(Arrays.asList(parents));
         }
 
         @Override

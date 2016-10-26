@@ -56,7 +56,7 @@ public class FormSectionTest
     public void setUp() throws ComponentLookupException, NoSuchFieldException, IllegalArgumentException,
         IllegalAccessException
     {
-        List<String> categories = new LinkedList<String>();
+        List<String> categories = new LinkedList<>();
         this.testFormSection = new FormSection(this.title, this.propertyName, categories);
         this.testFormField = mock(FormField.class);
         this.testFormGroup = mock(FormGroup.class);

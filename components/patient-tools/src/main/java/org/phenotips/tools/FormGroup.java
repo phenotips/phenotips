@@ -22,7 +22,7 @@ import java.util.List;
 
 public class FormGroup extends AbstractFormElement
 {
-    protected List<FormElement> elements = new LinkedList<FormElement>();
+    protected List<FormElement> elements = new LinkedList<>();
 
     FormGroup(String title)
     {

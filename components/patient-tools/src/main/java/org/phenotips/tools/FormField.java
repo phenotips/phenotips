@@ -90,9 +90,9 @@ public class FormField extends AbstractFormElement
                 generateCheckbox("none", this.value, "", (!isSelected(YES) && !isSelected(NO)), "na", "NA"),
                 generateCheckbox(fieldNames[YES], this.value, this.hint, isSelected(YES), "yes", "Y"),
                 generateCheckbox(fieldNames[NO], this.value, this.hint, isSelected(NO), "no", "N"),
-                this.term == null ? this.title + "\n(custom term)" : (this.term.getName() + (StringUtils
-                    .isNotBlank(this.term.getDescription()) ? "\n"
-                    + StringEscapeUtils.escapeXml10(this.term.getDescription()) : "")),
+                this.term == null ? this.title + "\n(custom term)"
+                    : (this.term.getName() + (StringUtils.isNotBlank(this.term.getDescription())
+                        ? "\n" + StringEscapeUtils.escapeXml10(this.term.getDescription()) : "")),
                 generateLabel(fieldNames[YES] + '_' + this.value, "yes-no-picker-label", this.title));
         } else {
             return generateCheckbox(fieldNames[YES], this.value, this.hint, isSelected(YES), DEFAULT_CSS_CLASS
@@ -116,9 +116,8 @@ public class FormField extends AbstractFormElement
             termSourceMarker = "<span class='fa fa-exclamation-triangle fa-fw' title='" + customTitle + "'> </span>";
         }
         String selectionPrefix = isSelected(NO) ? "NO " : "";
-        return (selectionMarker != null) ? ("<div class='value-checked " + selectionMarker + "'>"
-            + termSourceMarker + selectionPrefix + XMLUtils.escapeElementContent(this.title) + this.metaData + "</div>")
-            : "";
+        return (selectionMarker != null) ? ("<div class='value-checked " + selectionMarker + "'>" + termSourceMarker
+            + selectionPrefix + XMLUtils.escapeElementContent(this.title) + this.metaData + "</div>") : "";
     }
 
     private String generateCheckbox(String name, String value, String title, boolean selected, String labelClass,
@@ -127,8 +126,8 @@ public class FormField extends AbstractFormElement
         String id = name + '_' + value;
         return String.format(
             "<label class='%s' for='%s'><input type='checkbox' name='%s' value='%s' id='%s' title='%s'%s/>%s</label>",
-            labelClass, id, name, value, id, XMLUtils.escapeAttributeValue(title), (selected ? " checked='checked'"
-                : ""), XMLUtils.escapeElementContent(labelText));
+            labelClass, id, name, value, id, XMLUtils.escapeAttributeValue(title),
+            (selected ? " checked='checked'" : ""), XMLUtils.escapeElementContent(labelText));
     }
 
     private String generateLabel(String forId, String labelClass, String labelText)

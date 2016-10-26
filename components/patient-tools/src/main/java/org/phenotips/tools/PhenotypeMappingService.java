@@ -78,7 +78,7 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
     /**
      * Cached mappings for faster responses.
      */
-    private Map<String, Map<String, Object>> cache = new HashMap<String, Map<String, Object>>();
+    private Map<String, Map<String, Object>> cache = new HashMap<>();
 
     /**
      * Reference serializer used for converting entities into strings.
