@@ -916,7 +916,7 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
 #if($hasCreatePage)
 * {{html}}&lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;$services.localization.render('phenotips.globalHeader.createPatient')&lt;/label&gt;{{/html}}
 #end
-* (% class="xDropdown" %)#__icon("download") $services.localization.render('phenotips.contentTopMenu.exportMenu')
+* (% class="xDropdown" %)#__icon("download") $services.localization.render('phenotips.allData.menu.export')
 ** [[$services.localization.render('phenotips.allData.menu.export.excel')&gt;&gt;path:$xwiki.getURL('PhenoTips.Export', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")|| id="phenotips_export" class="phenotips_export_tool" title="$services.localization.render('phenotips.allData.menu.export.excel.tooltip')"]]
 ** [[$services.localization.render('phenotips.allData.menu.export.json')&gt;&gt;path:$xwiki.getURL('PhenoTips.ExportJSON', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")|| id="phenotips_json_export" class="phenotips_export_tool" title="$services.localization.render('phenotips.allData.menu.export.json.tooltip')"]]
 #set ($service = $services.pushPatient)##
