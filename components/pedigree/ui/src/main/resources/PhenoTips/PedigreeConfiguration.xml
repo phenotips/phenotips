@@ -51,7 +51,7 @@
 $xwiki.ssx.use($displayDocumentName)##
 {{/velocity}}
 
-==$services.localization.render('phenotips.pedigree.configuration.title')==
+=={{translation key="phenotips.pedigree.configuration.title"/}}==
 
 {{velocity}}
 {{html clean="false"}}

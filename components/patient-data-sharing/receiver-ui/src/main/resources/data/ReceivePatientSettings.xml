@@ -52,7 +52,7 @@
       <displayFormType>select</displayFormType>
       <name>AllowNoConsentsFromOldClients</name>
       <number>2</number>
-      <prettyName>AllowNoConsentsFromOldClients</prettyName>
+      <prettyName>Accept data from old clients that cannot push consent information</prettyName>
       <unmodifiable>0</unmodifiable>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </AllowNoConsentsFromOldClients>
@@ -62,7 +62,7 @@
       <displayFormType>select</displayFormType>
       <name>AllowPushesFromNonListedServers</name>
       <number>1</number>
-      <prettyName>AllowPushesFromNonListedServers</prettyName>
+      <prettyName>Allow pushes from servers not listed below</prettyName>
       <unmodifiable>0</unmodifiable>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </AllowPushesFromNonListedServers>

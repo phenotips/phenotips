@@ -104,7 +104,7 @@ public class FormSection extends FormGroup
         try {
             TranslationManager tm =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(TranslationManager.class);
-            displayedLabel = tm.translate("Phenotips.FormSection.otherLabel");
+            displayedLabel = tm.translate("phenotips.patients.phenotypes.other");
             placeholder = tm.translate("Phenotips.FormSection.suggestTermPlaceholder");
         } catch (ComponentLookupException ex) {
             // Will not happen, and if it does, it doesn't matter, placeholder is not that critical
