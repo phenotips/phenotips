@@ -916,10 +916,9 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
 #if($hasCreatePage)
 * {{html}}&lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;$services.localization.render('phenotips.globalHeader.createPatient')&lt;/label&gt;{{/html}}
 #end
-* (% class="xDropdown" %)#__icon("download") Export##$services.localization.render('phenotips.contentTopMenu.exportMenu')
-
-** [[$services.localization.render('phenotips.allData.exportExcel')&gt;&gt;path:$xwiki.getURL('PhenoTips.Export', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")|| id="phenotips_export" class="phenotips_export_tool" title="$services.localization.render('phenotips.allData.exportExcelTitle')"]]
-** [[$services.localization.render('phenotips.allData.exportJSON')&gt;&gt;path:$xwiki.getURL('PhenoTips.ExportJSON', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")|| id="phenotips_json_export" class="phenotips_export_tool" title="$services.localization.render('phenotips.allData.exportJSONTitle')"]]
+* (% class="xDropdown" %)#__icon("download") $services.localization.render('phenotips.contentTopMenu.exportMenu')
+** [[$services.localization.render('phenotips.allData.menu.export.excel')&gt;&gt;path:$xwiki.getURL('PhenoTips.Export', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")|| id="phenotips_export" class="phenotips_export_tool" title="$services.localization.render('phenotips.allData.menu.export.excel.tooltip')"]]
+** [[$services.localization.render('phenotips.allData.menu.export.json')&gt;&gt;path:$xwiki.getURL('PhenoTips.ExportJSON', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")|| id="phenotips_json_export" class="phenotips_export_tool" title="$services.localization.render('phenotips.allData.menu.export.json.tooltip')"]]
 #set ($service = $services.pushPatient)##
 #set ($configuredServers = $service.getPushTargetsWithHistory(""))##
 #if ($configuredServers.size() &gt; 0)
@@ -927,11 +926,11 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
     #set ($indent = "* #__icon('share')")
   #else
     #set ($indent = '**')
-* (% class="xDropdown" %)#__icon("share") $services.localization.render('phenotips.allData.push.toAnotherDB')
+* (% class="xDropdown" %)#__icon("share") $services.localization.render('phenotips.allData.menu.push.toAnotherDB')
   #end
 #foreach ($mapEntry in $configuredServers.entrySet())##
   #set ($serverName = $mapEntry.key.getServerID())##
-${indent} {{html wiki=false clean=false}}&lt;a href="#" id="pushall-server-${foreach.index}" name="$serverName" title="$services.localization.render('phenotips.allData.pushTitle',[$serverName])"&gt;$services.localization.render('phenotips.allData.push', [$serverName])&lt;/a&gt;{{/html}}
+${indent} {{html wiki=false clean=false}}&lt;a href="#" id="pushall-server-${foreach.index}" name="$serverName" title="$services.localization.render('phenotips.allData.menu.push.tooltip', [$serverName])"&gt;$services.localization.render('phenotips.allData.menu.push', [$serverName])&lt;/a&gt;{{/html}}
 #end##
 #end##
 )))
