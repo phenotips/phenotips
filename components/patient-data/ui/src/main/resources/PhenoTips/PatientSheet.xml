@@ -139,7 +139,7 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
     )))
   #end
 #end
-#if ($elementCount == 0)
+#if ($elementCount == 0 &amp;&amp; $xcontext.action == 'edit')
   {{warning}}$services.localization.render('PhenoTips.PatientConsent_none_to_dispaly'){{/warning}}
 
 #end
