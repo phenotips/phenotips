@@ -159,7 +159,8 @@ public class DefaultPushPatientService implements PushPatientService
                 PushServerInfo info = new DefaultPushServerInfo(
                     serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME),
                     serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_URL_PROPERTY_NAME),
-                    serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_DESC_PROPERTY_NAME));
+                    serverConfiguration.displayView(DefaultPushPatientData.PUSH_SERVER_CONFIG_DESC_PROPERTY_NAME,
+                        context));
                 response.add(info);
             }
             return response;

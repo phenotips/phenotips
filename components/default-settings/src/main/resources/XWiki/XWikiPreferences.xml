@@ -1429,7 +1429,7 @@
       </url>
     </class>
     <property>
-      <description>$services.localization.render('phenotips.patientSharing.push.configuration.phenomecentral.description')</description>
+      <description>{{translation key="phenotips.patientSharing.push.configuration.phenomecentral.description"/}}</description>
     </property>
     <property>
       <name>PhenomeCentral</name>
