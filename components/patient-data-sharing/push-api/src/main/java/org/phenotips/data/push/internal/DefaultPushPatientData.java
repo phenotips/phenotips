@@ -102,7 +102,7 @@ public class DefaultPushPatientData implements PushPatientData
     private final CloseableHttpClient client = HttpClients.createSystem();
 
     /** A cache of known protocol versions for various server */
-    private Map<String,String> protocolVersionsCache = new HashMap<String,String>();
+    private Map<String, String> protocolVersionsCache = new HashMap<>();
 
     /**
      * Helper method for obtaining a valid xcontext from the execution context.
@@ -197,7 +197,7 @@ public class DefaultPushPatientData implements PushPatientData
     {
         // try to connect to server using current push protocol version
         PushServerConfigurationResponse serverResponse = this.sendRemoteConfigurationRequest(
-                remoteServerIdentifier, userName, password, userToken, ShareProtocol.CURRENT_PUSH_PROTOCOL_VERSION);
+            remoteServerIdentifier, userName, password, userToken, ShareProtocol.CURRENT_PUSH_PROTOCOL_VERSION);
         if (serverResponse == null) {
             return null;
         }
@@ -211,22 +211,22 @@ public class DefaultPushPatientData implements PushPatientData
         }
 
         if (serverResponse.isServerDoesNotAcceptClientProtocolVersion()
-            && ShareProtocol.COMPATIBLE_OLD_SERVER_PROTOCOL_VERSIONS.contains(serverProtocolVersion))
-        {
+            && ShareProtocol.COMPATIBLE_OLD_SERVER_PROTOCOL_VERSIONS.contains(serverProtocolVersion)) {
             // server does not accept our initial protocol version, and it is one of the older supported verisons
             // => fall back to the same version that server uses - and retry the connection
             serverResponse = this.sendRemoteConfigurationRequest(
-                    remoteServerIdentifier, userName, password, userToken, serverProtocolVersion);
+                remoteServerIdentifier, userName, password, userToken, serverProtocolVersion);
         }
 
         // store the last known version of push protocol used by the server, so that without client code
         // worrying about that a proper serializer (when possible) is used when pushing data to that server
-        protocolVersionsCache.put(remoteServerIdentifier, serverProtocolVersion);
+        this.protocolVersionsCache.put(remoteServerIdentifier, serverProtocolVersion);
 
         return serverResponse;
     }
 
-    private PushServerConfigurationResponse sendRemoteConfigurationRequest(String remoteServerIdentifier, String userName,
+    private PushServerConfigurationResponse sendRemoteConfigurationRequest(String remoteServerIdentifier,
+        String userName,
         String password, String userToken, String useProtocolVersion)
     {
         this.logger.debug("===> Getting server configuration for: [{}]", remoteServerIdentifier);
@@ -236,7 +236,7 @@ public class DefaultPushPatientData implements PushPatientData
         try {
             method = generateRequest(remoteServerIdentifier,
                 generateRequestData(ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_INFO,
-                        userName, password, userToken, useProtocolVersion));
+                    userName, password, userToken, useProtocolVersion));
             if (method == null) {
                 return null;
             }
@@ -290,7 +290,7 @@ public class DefaultPushPatientData implements PushPatientData
 
             List<NameValuePair> data =
                 generateRequestData(ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_PUSH, userName, password, userToken,
-                        serverProtocolVersion);
+                    serverProtocolVersion);
             if (exportFields != null) {
                 // Version information is required in the JSON; when exportFields is null everything is included anyway
                 exportFields.add(VersionsController.getEnablingFieldName());
@@ -300,12 +300,12 @@ public class DefaultPushPatientData implements PushPatientData
             //
             // if the target server is known to support only old versions of push protocol, replace
             // those fields which are not compatible with compatible alternatives (to trigger old serializers)
-            if (protocolVersionsCache.containsKey(remoteServerIdentifier)) {
+            if (this.protocolVersionsCache.containsKey(remoteServerIdentifier)) {
                 if (ShareProtocol.INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS.containsKey(serverProtocolVersion)) {
                     this.logger.warn("Using old serializers for protocol version [{}] to push data to server [{}]",
-                            serverProtocolVersion, remoteServerIdentifier);
+                        serverProtocolVersion, remoteServerIdentifier);
                     List<ShareProtocol.Incompatibility> incompatibilitiesList =
-                            ShareProtocol.INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS.get(serverProtocolVersion);
+                        ShareProtocol.INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS.get(serverProtocolVersion);
                     for (Incompatibility incompat : incompatibilitiesList) {
                         if (exportFields.contains(incompat.getCurrentFieldName())) {
                             exportFields.remove(incompat.getCurrentFieldName());
@@ -368,7 +368,7 @@ public class DefaultPushPatientData implements PushPatientData
         try {
             List<NameValuePair> data =
                 generateRequestData(ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_GETID, userName, password, userToken,
-                        this.getProtocolVersionForPushingToServer(remoteServerIdentifier));
+                    this.getProtocolVersionForPushingToServer(remoteServerIdentifier));
             data.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_GUID, remoteGUID));
 
             method = generateRequest(remoteServerIdentifier, data);
@@ -398,8 +398,8 @@ public class DefaultPushPatientData implements PushPatientData
 
     private String getProtocolVersionForPushingToServer(String remoteServerIdentifier)
     {
-        return protocolVersionsCache.containsKey(remoteServerIdentifier)
-               ? protocolVersionsCache.get(remoteServerIdentifier)
-               : ShareProtocol.CURRENT_PUSH_PROTOCOL_VERSION;
+        return this.protocolVersionsCache.containsKey(remoteServerIdentifier)
+            ? this.protocolVersionsCache.get(remoteServerIdentifier)
+            : ShareProtocol.CURRENT_PUSH_PROTOCOL_VERSION;
     }
 }

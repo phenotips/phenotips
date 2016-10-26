@@ -17,13 +17,13 @@
  */
 package org.phenotips.data.push.internal;
 
-
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DefaultPushServerGetPatientIDResponseTest {
+public class DefaultPushServerGetPatientIDResponseTest
+{
 
     private DefaultPushServerGetPatientIDResponse pushServerResponse;
 
@@ -31,27 +31,27 @@ public class DefaultPushServerGetPatientIDResponseTest {
     public void setUp()
     {
         JSONObject response = new JSONObject();
-        pushServerResponse = new DefaultPushServerGetPatientIDResponse(response);
+        this.pushServerResponse = new DefaultPushServerGetPatientIDResponse(response);
     }
 
     @Test
     public void getRemotePatientGUIDReturnsCorrectValue()
     {
-        pushServerResponse.response.accumulate("patient_guid", "a");
-        Assert.assertEquals("a", pushServerResponse.getRemotePatientGUID());
+        this.pushServerResponse.response.accumulate("patient_guid", "a");
+        Assert.assertEquals("a", this.pushServerResponse.getRemotePatientGUID());
     }
 
     @Test
     public void getRemotePatientURLReturnsCorrectValue()
     {
-        pushServerResponse.response.accumulate("patient_url", "b");
-        Assert.assertEquals("b", pushServerResponse.getRemotePatientURL());
+        this.pushServerResponse.response.accumulate("patient_url", "b");
+        Assert.assertEquals("b", this.pushServerResponse.getRemotePatientURL());
     }
 
     @Test
     public void getRemotePatientIdReturnsCorrectValue()
     {
-        pushServerResponse.response.accumulate("patient_id", "c");
-        Assert.assertEquals("c", pushServerResponse.getRemotePatientID());
+        this.pushServerResponse.response.accumulate("patient_id", "c");
+        Assert.assertEquals("c", this.pushServerResponse.getRemotePatientID());
     }
 }

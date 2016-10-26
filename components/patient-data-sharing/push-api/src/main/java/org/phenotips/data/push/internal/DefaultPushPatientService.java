@@ -145,7 +145,7 @@ public class DefaultPushPatientService implements PushPatientService
             List<BaseObject> servers = prefsDoc.getXObjects(new DocumentReference(context.getWikiId(),
                 Constants.CODE_SPACE, "PushPatientServer"));
 
-            Set<PushServerInfo> response = new TreeSet<PushServerInfo>();
+            Set<PushServerInfo> response = new TreeSet<>();
             if (servers == null || servers.isEmpty()) {
                 return response;
             }
@@ -175,7 +175,7 @@ public class DefaultPushPatientService implements PushPatientService
     {
         Set<PushServerInfo> servers = getAvailablePushTargets();
 
-        Map<PushServerInfo, PatientPushHistory> response = new TreeMap<PushServerInfo, PatientPushHistory>();
+        Map<PushServerInfo, PatientPushHistory> response = new TreeMap<>();
 
         for (PushServerInfo server : servers) {
             PatientPushHistory history = getPatientPushHistory(localPatientID, server.getServerID());
@@ -221,7 +221,7 @@ public class DefaultPushPatientService implements PushPatientService
             if (listOfStrings != null) {
                 JSONArray fields = new JSONArray(listOfStrings);
                 if (fields != null) {
-                    fieldSet = new TreeSet<String>();
+                    fieldSet = new TreeSet<>();
                     for (Object field : fields) {
                         fieldSet.add(field.toString());
                     }

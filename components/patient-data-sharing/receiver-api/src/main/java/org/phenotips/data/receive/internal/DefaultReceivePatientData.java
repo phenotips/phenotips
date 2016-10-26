@@ -483,7 +483,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             if (patientStateRaw != null) {
                 consentIds = extractConsents(patientStateRaw);
                 // there should not be any consent updates if consents are not enabled
-                if (!consentIds.isEmpty() && !consentAuthorizer.consentsGloballyEnabled()) {
+                if (!consentIds.isEmpty() && !this.consentAuthorizer.consentsGloballyEnabled()) {
                     // reject, as a non-malicious user would never arrive to this execution point
                     return this.generateFailedActionResponse();
                 }
@@ -492,7 +492,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             boolean requireConsents =
                 areConsentsRequired(request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_PROTOCOLVER));
             if (requireConsents) {
-                boolean consentAuthorized = consentAuthorizer.authorizeInteraction(consentIds);
+                boolean consentAuthorized = this.consentAuthorizer.authorizeInteraction(consentIds);
                 if (!consentAuthorized) {
                     this.logger.error("Rejecting patient data from {} - not all required consents have been given",
                         request.getRemoteAddr());
@@ -549,7 +549,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             affectedPatient.updateFromJSON(patientData);
 
             if (consentIds != null) {
-                consentManager.setPatientConsents(affectedPatient, consentIds);
+                this.consentManager.setPatientConsents(affectedPatient, consentIds);
             }
 
             this.logger.warn("Updated patient successfully");
@@ -652,7 +652,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             response.put(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_ACCEPTEDFIELDS, acceptedFields);
             response.put(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_UPDATESENABLED, true);
             response.put(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_CONSENTS,
-                consentManager.toJSON(consentManager.getSystemConsents()));
+                this.consentManager.toJSON(this.consentManager.getSystemConsents()));
 
             BaseObject serverConfig = getSourceServerConfiguration(request.getRemoteAddr(), context); // TODO: make nice
             if (this.userTokensEnabled(serverConfig)) {

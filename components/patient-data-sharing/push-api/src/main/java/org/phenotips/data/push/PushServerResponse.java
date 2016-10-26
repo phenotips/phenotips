@@ -69,16 +69,16 @@ public interface PushServerResponse
     boolean isActionFailed();
 
     /**
-     * @return {@code true} if the version of the POST protocol used is not supported by the server
-     *         (the assumption is that client protocol version is outdated, since by default any
-     *         client version newer than the server is supported)
+     * @return {@code true} if the version of the POST protocol used is not supported by the server (the assumption is
+     *         that client protocol version is outdated, since by default any client version newer than the server is
+     *         supported)
      */
     boolean isServerDoesNotAcceptClientProtocolVersion();
 
     /**
-     * @return {@code true} if the version of the POST protocol used by the server is not supported by the client
-     *         (the assumption is that server protocol version is outdated, since by default any
-     *         server version newer than the client is supported)
+     * @return {@code true} if the version of the POST protocol used by the server is not supported by the client (the
+     *         assumption is that server protocol version is outdated, since by default any server version newer than
+     *         the client is supported)
      */
     boolean isClientDoesNotAcceptServerProtocolVersion();
 
@@ -109,8 +109,8 @@ public interface PushServerResponse
     boolean isLoginFailed_UserTokenExpired();
 
     /**
-     * @return {@code true} iff the user token are not accepted by the remote server (possibly after a config change).<br>
-     *         May only be true if user token was supplied in the POST request.
+     * @return {@code true} iff the user token are not accepted by the remote server (possibly after a config
+     *         change); may only be true if user token was supplied in the POST request
      */
     boolean isLoginFailed_TokensNotSuported();
 

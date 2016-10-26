@@ -21,46 +21,47 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DefaultPushServerInfoTest {
+public class DefaultPushServerInfoTest
+{
 
     private DefaultPushServerInfo serverInfo;
 
     @Before
     public void setUp()
     {
-        serverInfo = new DefaultPushServerInfo("serverId", "serverURL", "serverDescription");
+        this.serverInfo = new DefaultPushServerInfo("serverId", "serverURL", "serverDescription");
     }
 
     @Test
     public void getServerIDReturnsCorrectID()
     {
-        Assert.assertEquals("serverId", serverInfo.getServerID());
+        Assert.assertEquals("serverId", this.serverInfo.getServerID());
     }
 
     @Test
     public void getServerURLReturnsCorrectURL()
     {
-        Assert.assertEquals("serverURL", serverInfo.getServerURL());
+        Assert.assertEquals("serverURL", this.serverInfo.getServerURL());
     }
 
     @Test
     public void getServerDescriptionReturnsCorrectDescription()
     {
-        Assert.assertEquals("serverDescription", serverInfo.getServerDescription());
+        Assert.assertEquals("serverDescription", this.serverInfo.getServerDescription());
     }
 
     @Test
     public void compareToIdentifiesSameServerID()
     {
         DefaultPushServerInfo otherInfo = new DefaultPushServerInfo("serverId", "otherURL", "otherDescription");
-        Assert.assertEquals(serverInfo.compareTo(otherInfo), 0);
+        Assert.assertEquals(this.serverInfo.compareTo(otherInfo), 0);
     }
 
     @Test
     public void compareToIdentifiesDifferentServerID()
     {
         DefaultPushServerInfo otherInfo = new DefaultPushServerInfo("otherId", "otherURL", "otherDescription");
-        Assert.assertNotEquals(serverInfo.compareTo((otherInfo)), 0);
+        Assert.assertNotEquals(this.serverInfo.compareTo((otherInfo)), 0);
     }
 
 }
