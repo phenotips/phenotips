@@ -420,7 +420,7 @@
       </description>
     </class>
     <property>
-      <description>A generic set of common phenotypes, covering most anatomical systems from top to bottom, and including neurological and behavioral signs.</description>
+      <description>$services.localization.render('phenotips.genericPhenotypeConfig.description')</description>
     </property>
   </object>
 </xwikidoc>
