@@ -106,11 +106,7 @@
   margin-top: 0px;
 }
 .xdialog-box .button {
-  width: 100px;
-}
-.xdialog-box .question {
-  padding: 4px 0 6px 25px;
-  white-space: nowrap;
+  min-width: 5em;
 }
 .push-fields.singlepatient{
   margin-left: 1.5em !important;
