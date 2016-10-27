@@ -105,7 +105,7 @@
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -211,10 +211,10 @@
       <name/>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -371,11 +371,12 @@
           }
 
           if (list) {
-            var listHtml = $("&lt;ul class='consents-list'&gt;&lt;/ul&gt;");
+            var listHtml = $("&lt;ul class='consents-list'&gt;");
             list.each(function (c)
             {
               listHtml.append(c);
             });
+            listHtml.append("&lt;/ul&gt;");
             consentList.html(listHtml);
           }
         },
@@ -540,10 +541,10 @@
       <name/>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -660,10 +661,10 @@
       <name/>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -728,7 +729,7 @@
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -750,9 +751,8 @@
         &lt;div class='patient-id hidden'&gt;${patientId}&lt;/div&gt;
         &lt;input type="hidden" id="patient-consents-json" class="patient-consents-json" value='$escapetool.xml($jsontool.serialize($consents))'/&gt;
       {{/html}}
-      (% class='consents-title clear' %)(((
-        ==== $services.localization.render('PhenoTips.PatientConsent_granted_list') ====
-      )))
+      (% class='consents-title clear' %)
+      ==== $services.localization.render('PhenoTips.PatientConsent_granted_list') ====
       (% class='consents' %)(((
 
       )))

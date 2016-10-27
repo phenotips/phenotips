@@ -38,7 +38,7 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
-    <object>
+  <object>
     <name>PhenoTips.UIX_Field__gene-variants</name>
     <number>0</number>
     <className>XWiki.JavaScriptExtension</className>
