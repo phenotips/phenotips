@@ -658,7 +658,7 @@ define([
                             Controller._checkPatientLinkValidity(setLink, nodeID, modValue, loadPatientProperties, skipConfirmDialogue);
                         } else {
                             // if this is a redo event skip all the warnings
-                            setLink(event.memo.clearOldData);
+                            setLink(event.memo.clearOldData, true);
                         }
                     }
                     else if (modificationType == "makePlaceholder") {
@@ -889,7 +889,7 @@ define([
 
             var numTwins = event.memo.twins ? event.memo.twins : 1;
 
-            var childParams = Helpers.cloneObject(event.memo.childParams);
+            var childParams = event.memo.childParams ? Helpers.cloneObject(event.memo.childParams) : {};
             if (editor.getGraph().isInfertile(partnershipID)) {
                 childParams["adoptedStatus"] = "adoptedIn";
             }
