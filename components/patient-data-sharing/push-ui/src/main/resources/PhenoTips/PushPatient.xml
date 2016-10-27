@@ -1172,7 +1172,7 @@
             new XWiki.widgets.ConfirmationBox(
               { onYes : function() { doMultiPush(patients, columns); }, },
               { confirmationText: confirmMessage, showCancelButton: false }
-            );
+            ).dialog.style.zIndex = 3001;
         }
 
         if (_this._pushManyPatients) {

@@ -456,7 +456,6 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
   color: $theme.menuLinkColor;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
-  z-index: 1006;
 }
 #phenotips-mainmenu .menu-horizontal, #phenotips-globalTools .menu-horizontal {
   font-size: 1em;
@@ -675,7 +674,11 @@ h1:target, h2:target, h3:target {
   cursor: default !important;
   text-decoration: blink;
   padding-top: 0;
-}</code>
+}
+.xdialog-box .button {
+  min-width: 5em;
+}
+</code>
     </property>
     <property>
       <contentType>CSS</contentType>
@@ -1006,7 +1009,7 @@ h1:target, h2:target, h3:target {
   position: absolute;
   right: 0px;
   top: 0;
-  z-index: 1002;
+  z-index: 998;
 }
 
 .page-actions .menu.menu-horizontal {

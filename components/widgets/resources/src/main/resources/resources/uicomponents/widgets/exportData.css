@@ -94,20 +94,6 @@
   padding: 0;
 }
 
-.xdialog-modal-container {
-  z-index: 400000 !important;
-}
-.xdialog-box {
-  max-width: 600px;
-  width: inherit;
-}
-.xdialog-box .buttons {
-  margin-left: 25px;
-  margin-top: 0px;
-}
-.xdialog-box .button {
-  min-width: 5em;
-}
 .push-fields.singlepatient{
   margin-left: 1.5em !important;
   margin-bottom: 1em !important;
