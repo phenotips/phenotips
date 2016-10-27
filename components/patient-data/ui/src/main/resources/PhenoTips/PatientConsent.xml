@@ -642,42 +642,16 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>.consents ul
+      <code>.consents .consents-list
 {
   list-style-type: none;
-}
-.consents-list li
-{
-  margin-bottom: 0.5em;
-}
-.consents .hint
-{
-  font-size: 100%;
-}
-.consents-list .hint
-{
-  font-size: 100%;
-}
-.consent-checkbox
-{
-  margin-right: 0.25em !important;
+  margin-left: 0;
 }
 .consent-description
 {
   margin-left: 2em;
 }
-.consent-update-button
-{
-  margin: 1em 0 1em 2em;
-}
-#HConsentsgranted
-{
-  margin-bottom: 0.75em;
-}
-.error_updating_consents {
-  margin-top: 1em;
-  margin-left: 2em;
-}</code>
+</code>
     </property>
     <property>
       <contentType>CSS</contentType>
