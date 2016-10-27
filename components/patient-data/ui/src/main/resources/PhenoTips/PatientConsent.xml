@@ -184,6 +184,7 @@
 
       // attach button action
       var onUpdateButtonPress = function(event) {
+        event.stop();
         var errorMessage = consentsBlock.children(".error_updating_consents");
         errorMessage.addClass("hidden");
 
