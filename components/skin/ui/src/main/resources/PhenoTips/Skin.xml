@@ -1009,7 +1009,6 @@ h1:target, h2:target, h3:target {
   position: absolute;
   right: 0px;
   top: 0;
-  z-index: 998;
 }
 
 .page-actions .menu.menu-horizontal {
