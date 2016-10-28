@@ -109,8 +109,8 @@
       &lt;div class="pedigree-button p-export"&gt;
         &lt;span class="buttonwrapper"&gt;&lt;a class="action-download fa fa-download download-pedegree button secondary" id="pedigree-export-button" href="#" title="${pDownload}"&gt;&lt;/a&gt;&lt;/span&gt;
         &lt;ul id="pedigree-export-buttons"&gt;
-          &lt;li&gt;&lt;a href='$xwiki.getDocument("PhenoTips","PedigreeImageService").getURL("get", "${docIdRequest}$doc.getName()&amp;format=raster")' target="_blank"&gt;Image (PNG)&lt;/a&gt;&lt;/li&gt;
-          &lt;li&gt;&lt;a href='$xwiki.getDocument("PhenoTips","PedigreeImageService").getURL("get", "${docIdRequest}$doc.getName()")' target="_blank"&gt;Scalable image (SVG)&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href='$xwiki.getDocument("PhenoTips","PedigreeImageService").getURL("get", "${docIdRequest}$doc.getName()&amp;format=raster")' target="_blank"&gt;"$services.localization.render('phenotips.patientRecord.pedigree.download.png')"&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href='$xwiki.getDocument("PhenoTips","PedigreeImageService").getURL("get", "${docIdRequest}$doc.getName()")' target="_blank"&gt;"$services.localization.render('phenotips.patientRecord.pedigree.download.svg')"&lt;/a&gt;&lt;/li&gt;
           ##&lt;li&gt;&lt;a href="#" target="_blank"&gt;PDF&lt;/a&gt;&lt;/li&gt;
         &lt;/ul&gt;
       &lt;/div&gt;
