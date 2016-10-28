@@ -34,7 +34,7 @@ In short, Maven handles everything related to building the project: downloading 
 
 Building the entire project is as simple as `mvn install`, but first the environment must be set-up:
 
-* Make sure a proper JDK is installed, Oracle Java SE 1.6 or 1.7 is recommended. Just a JRE isn't enough, since the project requires compilation.
+* Make sure a proper JDK is installed, Oracle Java SE 1.7 or higher. Just a JRE isn't enough, since the project requires compilation.
 * Install maven by [downloading it](http://maven.apache.org/download.html) and following the [installation instructions](http://maven.apache.org/download.html#Installation).
 * Clone the sources of the project locally, using one of:
     * `git clone git://github.com/phenotips/phenotips.git` if you need a read-only clone
