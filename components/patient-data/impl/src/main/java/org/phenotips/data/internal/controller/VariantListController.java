@@ -45,6 +45,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -100,6 +101,14 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
     private static final String INTERNAL_SANGER_KEY = "sanger";
 
+    private static final String INTERNAL_CHROMOSOME_KEY = "chromosome";
+
+    private static final String INTERNAL_START_POSITION_KEY = "start_position";
+
+    private static final String INTERNAL_END_POSITION_KEY = "end_position";
+
+    private static final String INTERNAL_REFERENCE_GENOME_KEY = "reference_genome";
+
     private static final String JSON_VARIANT_KEY = INTERNAL_VARIANT_KEY;
 
     private static final String JSON_GENESYMBOL_KEY = INTERNAL_GENESYMBOL_KEY;
@@ -124,6 +133,14 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
     private static final String JSON_SANGER_KEY = INTERNAL_SANGER_KEY;
 
+    private static final String JSON_CHROMOSOME_KEY = INTERNAL_CHROMOSOME_KEY;
+
+    private static final String JSON_START_POSITION_KEY = INTERNAL_START_POSITION_KEY;
+
+    private static final String JSON_END_POSITION_KEY = INTERNAL_END_POSITION_KEY;
+
+    private static final String JSON_REFERENCE_GENOME_KEY = INTERNAL_REFERENCE_GENOME_KEY;
+
     private static final List<String> ZYGOSITY_VALUES = Arrays.asList("heterozygous", "homozygous", "hemizygous");
 
     private static final List<String> EFFECT_VALUES = Arrays.asList("missense", "nonsense", "insertion_in_frame",
@@ -141,6 +158,11 @@ public class VariantListController extends AbstractComplexController<Map<String,
     private static final List<String> SEGREGATION_VALUES = Arrays.asList("segregates", "not_segregates");
 
     private static final List<String> SANGER_VALUES = Arrays.asList("positive", "negative");
+
+    private static final List<String> CHROMOSOME_VALUES = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9",
+        "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y");
+
+    private static final List<String> REFERENCE_GENOME_VALUES = Arrays.asList("GRCh37", "GRCh38", "NCBI36");
 
     @Inject
     private Logger logger;
@@ -167,7 +189,8 @@ public class VariantListController extends AbstractComplexController<Map<String,
         return Arrays.asList(INTERNAL_VARIANT_KEY, INTERNAL_GENESYMBOL_KEY, INTERNAL_PROTEIN_KEY,
             INTERNAL_TRANSCRIPT_KEY, INTERNAL_DBSNP_KEY, INTERNAL_ZYGOSITY_KEY,
             INTERNAL_EFFECT_KEY, INTERNAL_INTERPRETATION_KEY, INTERNAL_INHERITANCE_KEY, INTERNAL_EVIDENCE_KEY,
-            INTERNAL_SEGREGATION_KEY, INTERNAL_SANGER_KEY);
+            INTERNAL_SEGREGATION_KEY, INTERNAL_SANGER_KEY, INTERNAL_CHROMOSOME_KEY, INTERNAL_START_POSITION_KEY,
+            INTERNAL_END_POSITION_KEY, INTERNAL_REFERENCE_GENOME_KEY);
     }
 
     @Override
@@ -228,6 +251,12 @@ public class VariantListController extends AbstractComplexController<Map<String,
             }
             return fields.getTextValue();
 
+        } else if (INTERNAL_START_POSITION_KEY.equals(property) || INTERNAL_END_POSITION_KEY.equals(property)) {
+            int value = variantObject.getIntValue(property, -1);
+            if (value == -1) {
+                return null;
+            }
+            return Integer.toString(value);
         } else {
             BaseStringProperty field = (BaseStringProperty) variantObject.getField(property);
             if (field == null) {
@@ -272,6 +301,10 @@ public class VariantListController extends AbstractComplexController<Map<String,
         internalToJSONkeys.put(JSON_EVIDENCE_KEY, INTERNAL_EVIDENCE_KEY);
         internalToJSONkeys.put(JSON_SEGREGATION_KEY, INTERNAL_SEGREGATION_KEY);
         internalToJSONkeys.put(JSON_SANGER_KEY, INTERNAL_SANGER_KEY);
+        internalToJSONkeys.put(JSON_CHROMOSOME_KEY, INTERNAL_CHROMOSOME_KEY);
+        internalToJSONkeys.put(JSON_START_POSITION_KEY, INTERNAL_START_POSITION_KEY);
+        internalToJSONkeys.put(JSON_END_POSITION_KEY, INTERNAL_END_POSITION_KEY);
+        internalToJSONkeys.put(JSON_REFERENCE_GENOME_KEY, INTERNAL_REFERENCE_GENOME_KEY);
 
         while (iterator.hasNext()) {
             Map<String, String> item = iterator.next();
@@ -312,6 +345,8 @@ public class VariantListController extends AbstractComplexController<Map<String,
         enumValues.put(INTERNAL_EVIDENCE_KEY, EVIDENCE_VALUES);
         enumValues.put(INTERNAL_SEGREGATION_KEY, SEGREGATION_VALUES);
         enumValues.put(INTERNAL_SANGER_KEY, SANGER_VALUES);
+        enumValues.put(INTERNAL_CHROMOSOME_KEY, CHROMOSOME_VALUES);
+        enumValues.put(INTERNAL_REFERENCE_GENOME_KEY, REFERENCE_GENOME_VALUES);
 
         try {
             JSONArray variantsJson = json.getJSONArray(this.getJsonPropertyName());
@@ -371,6 +406,12 @@ public class VariantListController extends AbstractComplexController<Map<String,
                 }
             }
             singleVariant.put(property, field);
+        } else if ((INTERNAL_START_POSITION_KEY.equals(property) || INTERNAL_END_POSITION_KEY.equals(property))
+            && !StringUtils.isBlank(variantJson.getString(property))) {
+            String value = variantJson.optString(property);
+            if (NumberUtils.isDigits(value)) {
+                singleVariant.put(property, value);
+            }
         } else if (enumValueKeys.contains(property) && !StringUtils.isBlank(variantJson.getString(property))) {
             field = variantJson.getString(property);
             if (enumValues.get(property).contains(field.toLowerCase())) {
@@ -404,7 +445,12 @@ public class VariantListController extends AbstractComplexController<Map<String,
                 for (String property : this.getProperties()) {
                     String value = variant.get(property);
                     if (value != null) {
-                        xwikiObject.set(property, value, context);
+                        if (INTERNAL_START_POSITION_KEY.equals(property) || INTERNAL_END_POSITION_KEY.equals(property)) {
+                            xwikiObject.setIntValue(property, Integer.valueOf(value));
+                        } else {
+                            xwikiObject.set(property, value, context);
+                        }
+
                     }
                 }
             } catch (Exception e) {
