@@ -93,7 +93,7 @@ public class DataToCellConverter
             "phenotype_by_section" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
-        { { "phenotype", "positive" }, { "code", "positive" }, { "phenotype", "code", "positive" },
+            { { "phenotype", "positive" }, { "code", "positive" }, { "phenotype", "code", "positive" },
             { "meta_code", "phenotype", "positive" }, { "meta", "phenotype", "positive" },
             { "negative", "phenotype" }, { "negative", "code" }, { "negative", "code", "phenotype" },
             { "category" } };
@@ -262,12 +262,12 @@ public class DataToCellConverter
     {
         String sectionName = "variants";
         String[] fieldIds =
-        { "variants", "variants_protein", "variants_transcript", "variants_dbsnp", "variants_zygosity",
+            { "variants", "variants_protein", "variants_transcript", "variants_dbsnp", "variants_zygosity",
             "variants_effect", "variants_interpretation", "variants_inheritance", "variants_evidence",
             "variants_segregation", "variants_sanger" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
-        {
+            {
             { "cdna" },
             { "protein", "cdna" },
             { "transcript", "protein", "cdna" },
@@ -292,7 +292,7 @@ public class DataToCellConverter
         String[] fieldIds = { "genes", "genes_status", "genes_strategy", "genes_comments" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
-        { { "genes" }, { "status", "genes" }, { "strategy", "status", "genes" },
+            { { "genes" }, { "status", "genes" }, { "strategy", "status", "genes" },
             { "comments", "strategy", "status", "genes" } };
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
@@ -567,9 +567,9 @@ public class DataToCellConverter
 
         // Must be linked to keep order; in other sections as well
 
-        List<String> fields = new ArrayList<String>(Arrays.asList("referrer", "creationDate", "author", "date"));
+        List<String> fields = new ArrayList<>(Arrays.asList("referrer", "creationDate", "author", "date"));
         fields.retainAll(enabledFields);
-        Set<String> fieldSet = new HashSet<String>(fields);
+        Set<String> fieldSet = new HashSet<>(fields);
         this.enabledHeaderIdsBySection.put(sectionName, fieldSet);
 
         DataSection headerSection = new DataSection();
@@ -644,10 +644,10 @@ public class DataToCellConverter
 
         // Must be linked to keep order; in other sections as well
         List<String> fields =
-            new ArrayList<String>(Arrays.asList("first_name", "last_name", "date_of_birth", "gender",
+            new ArrayList<>(Arrays.asList("first_name", "last_name", "date_of_birth", "gender",
                 "indication_for_referral"));
         fields.retainAll(enabledFields);
-        Set<String> fieldSet = new HashSet<String>(fields);
+        Set<String> fieldSet = new HashSet<>(fields);
         this.enabledHeaderIdsBySection.put(sectionName, fieldSet);
 
         DataSection headerSection = new DataSection();
@@ -727,12 +727,12 @@ public class DataToCellConverter
     public DataSection familyHistoryHeader(Set<String> enabledFields) throws Exception
     {
         String sectionName = "familyHistory";
-        Map<String, String> fieldToHeaderMap = new LinkedHashMap<String, String>();
+        Map<String, String> fieldToHeaderMap = new LinkedHashMap<>();
         List<String> fields =
-            new ArrayList<String>(Arrays.asList("global_mode_of_inheritance", "miscarriages", "consanguinity",
+            new ArrayList<>(Arrays.asList("global_mode_of_inheritance", "miscarriages", "consanguinity",
                 "family_history", "maternal_ethnicity", "paternal_ethnicity"));
         fields.retainAll(enabledFields);
-        Set<String> fieldSet = new HashSet<String>(fields);
+        Set<String> fieldSet = new HashSet<>(fields);
         this.enabledHeaderIdsBySection.put(sectionName, fieldSet);
         if (fields.isEmpty()) {
             return null;
@@ -863,12 +863,12 @@ public class DataToCellConverter
     {
         String sectionName = "prenatalPerinatalHistory";
         List<String> fields =
-            new ArrayList<String>(Arrays.asList("gestation", "prenatal_development",
+            new ArrayList<>(Arrays.asList("gestation", "prenatal_development",
                 "assistedReproduction_fertilityMeds",
                 "assistedReproduction_iui", "ivf", "icsi", "assistedReproduction_surrogacy",
                 "assistedReproduction_donorsperm", "assistedReproduction_donoregg", "apgar1", "apgar5"));
         fields.retainAll(enabledFields);
-        Set<String> fieldSet = new HashSet<String>(fields);
+        Set<String> fieldSet = new HashSet<>(fields);
         this.enabledHeaderIdsBySection.put(sectionName, fieldSet);
         if (fields.isEmpty()) {
             return null;
@@ -876,9 +876,9 @@ public class DataToCellConverter
 
         DataSection headerSection = new DataSection();
 
-        List<String> apgarFields = new ArrayList<String>(Arrays.asList("apgar1", "apgar2"));
+        List<String> apgarFields = new ArrayList<>(Arrays.asList("apgar1", "apgar2"));
         List<String> assitedReproductionFields =
-            new ArrayList<String>(Arrays.asList("assistedReproduction_iui", "ivf", "icsi",
+            new ArrayList<>(Arrays.asList("assistedReproduction_iui", "ivf", "icsi",
                 "assistedReproduction_surrogacy", "assistedReproduction_fertilityMeds",
                 "assistedReproduction_donoregg", "assistedReproduction_donorsperm"));
         apgarFields.retainAll(fieldSet);
@@ -1205,9 +1205,9 @@ public class DataToCellConverter
     {
         String sectionName = "medicalHistory";
         List<String> fields =
-            new ArrayList<String>(Arrays.asList("allergies", "global_age_of_onset", "medical_history"));
+            new ArrayList<>(Arrays.asList("allergies", "global_age_of_onset", "medical_history"));
         fields.retainAll(enabledFields);
-        Set<String> fieldSet = new HashSet<String>(fields);
+        Set<String> fieldSet = new HashSet<>(fields);
         this.enabledHeaderIdsBySection.put(sectionName, fieldSet);
 
         DataSection headerSection = new DataSection();
@@ -1334,9 +1334,9 @@ public class DataToCellConverter
     public DataSection isSolvedHeader(Set<String> enabledFields) throws Exception
     {
         String sectionName = "isSolved";
-        List<String> fields = new ArrayList<String>(Arrays.asList("solved", "solved__pubmed_id", "solved__notes"));
+        List<String> fields = new ArrayList<>(Arrays.asList("solved", "solved__pubmed_id", "solved__notes"));
         fields.retainAll(enabledFields);
-        Set<String> fieldSet = new HashSet<String>(fields);
+        Set<String> fieldSet = new HashSet<>(fields);
         this.enabledHeaderIdsBySection.put(sectionName, fieldSet);
 
         DataSection headerSection = new DataSection();
