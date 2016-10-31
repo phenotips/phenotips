@@ -45,7 +45,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -72,16 +71,16 @@ public class DataToCellConverter
 
     public static final Integer charactersPerLine = 100;
 
-    private static TranslationManager translationManager;
+    private TranslationManager translationManager;
 
-    private static Logger logger = LoggerFactory.getLogger(DataToCellConverter.class);
-
-    static {
+    public DataToCellConverter()
+    {
         try {
-            DataToCellConverter.translationManager = ComponentManagerRegistry.getContextComponentManager().getInstance(
+            this.translationManager = ComponentManagerRegistry.getContextComponentManager().getInstance(
                 TranslationManager.class);
         } catch (ComponentLookupException ex) {
-            DataToCellConverter.logger.warn("Failed to lookup TranslationManager component: [{}]", ex.getMessage());
+            LoggerFactory.getLogger(getClass()).warn("Failed to lookup TranslationManager component: [{}]",
+                ex.getMessage());
         }
     }
 
@@ -118,7 +117,7 @@ public class DataToCellConverter
         int hX = 0;
         if (present.contains("positive") && present.contains("negative")) {
             DataCell cell =
-                new DataCell(DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_present"),
+                new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_present"),
                     hX, 1, StyleOption.HEADER);
             section.addCell(cell);
             hX++;
@@ -128,13 +127,13 @@ public class DataToCellConverter
                 continue;
             }
             DataCell cell =
-                new DataCell(DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_"
+                new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_"
                     + headerId), hX, 1, StyleOption.HEADER);
             section.addCell(cell);
             hX++;
         }
         DataCell sectionHeader =
-            new DataCell(DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_sectionHeader"), 0,
+            new DataCell(this.translationManager.translate("PhenoTips.PatientClass_sectionHeader"), 0,
                 0, StyleOption.HEADER);
         sectionHeader.addStyle(StyleOption.LARGE_HEADER);
         section.addCell(sectionHeader);
@@ -176,8 +175,8 @@ public class DataToCellConverter
                 lastStatus = feature.isPresent();
                 lastSection = "";
                 DataCell cell = new DataCell(lastStatus
-                    ? DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_yes")
-                    : DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_no"), x, y);
+                    ? this.translationManager.translate("PhenoTips.PatientClass_label_yes")
+                    : this.translationManager.translate("PhenoTips.PatientClass_label_no"), x, y);
                 if (!lastStatus) {
                     cell.addStyle(StyleOption.YES_NO_SEPARATOR);
                 }
@@ -309,7 +308,7 @@ public class DataToCellConverter
         int hX = 0;
         DataSection section = new DataSection();
         DataCell cell =
-            new DataCell(DataToCellConverter.translationManager.translate("PhenoTips.GeneClass_label_genename"), hX, 1,
+            new DataCell(this.translationManager.translate("PhenoTips.GeneClass_label_genename"), hX, 1,
                 StyleOption.HEADER);
         section.addCell(cell);
         hX++;
@@ -320,14 +319,14 @@ public class DataToCellConverter
                 continue;
             }
             cell =
-                new DataCell(DataToCellConverter.translationManager.translate("PhenoTips.GeneClass_" + field), hX, 1,
+                new DataCell(this.translationManager.translate("PhenoTips.GeneClass_" + field), hX, 1,
                     StyleOption.HEADER);
             section.addCell(cell);
             hX++;
         }
 
         DataCell sectionHeader =
-            new DataCell(DataToCellConverter.translationManager.translate("PhenoTips.GeneClass_sectionHeader"), 0, 0,
+            new DataCell(this.translationManager.translate("PhenoTips.GeneClass_sectionHeader"), 0, 0,
                 StyleOption.HEADER);
         sectionHeader.addStyle(StyleOption.LARGE_HEADER);
         section.addCell(sectionHeader);
@@ -345,15 +344,18 @@ public class DataToCellConverter
 
         int hX = 0;
         DataSection section = new DataSection();
-        DataCell cell = new DataCell(
-            DataToCellConverter.translationManager.translate("PhenoTips.GeneVariantClass_label_genesymbol"), hX, 1,
-            StyleOption.HEADER);
+        DataCell cell =
+            new DataCell(
+                this.translationManager.translate("PhenoTips.GeneVariantClass_label_genesymbol"), hX, 1,
+                StyleOption.HEADER);
         section.addCell(cell);
         hX++;
 
-        cell = new DataCell(
-            DataToCellConverter.translationManager.translate("PhenoTips.GeneVariantClass.variantTable.cdna"), hX,
-            1, StyleOption.HEADER);
+        cell =
+            new DataCell(
+                this.translationManager.translate("PhenoTips.GeneVariantClass.variantTable.cdna"), hX,
+                1,
+                StyleOption.HEADER);
         section.addCell(cell);
         hX++;
 
@@ -365,14 +367,14 @@ public class DataToCellConverter
             if (!present.contains(field)) {
                 continue;
             }
-            String head = DataToCellConverter.translationManager.translate("PhenoTips.GeneVariantClass_" + field);
+            String head = this.translationManager.translate("PhenoTips.GeneVariantClass_" + field);
             cell = new DataCell(head, hX, 1, StyleOption.HEADER);
             section.addCell(cell);
             hX++;
         }
 
         DataCell sectionHeader =
-            new DataCell(DataToCellConverter.translationManager.translate("PhenoTips.GeneVariantClass_sectionHeader"),
+            new DataCell(this.translationManager.translate("PhenoTips.GeneVariantClass_sectionHeader"),
                 0, 0, StyleOption.HEADER);
         sectionHeader.addStyle(StyleOption.LARGE_HEADER);
         section.addCell(sectionHeader);
@@ -427,8 +429,9 @@ public class DataToCellConverter
                 if ("evidence".equals(field)) {
                     value = parseMultivalueField(value, evidenceTranslates, "PhenoTips.GeneVariantClass_evidence_");
                 } else {
-                    value = translatables.contains(field) ? DataToCellConverter.translationManager
-                        .translate("PhenoTips.GeneVariantClass_" + field + "_" + value) : value;
+                    value = translatables.contains(field)
+                        ? this.translationManager.translate("PhenoTips.GeneVariantClass_" + field + "_" + value)
+                        : value;
                 }
                 cell = new DataCell(value, x++, y);
                 section.addCell(cell);
@@ -466,7 +469,7 @@ public class DataToCellConverter
         List<String> strategyTranslates =
             Arrays.asList("sequencing", "deletion", "familial_mutation", "common_mutations");
         DataCell cell =
-            new DataCell(DataToCellConverter.translationManager.translate("PhenoTips.GeneClass_genes"), 0, y);
+            new DataCell(this.translationManager.translate("PhenoTips.GeneClass_genes"), 0, y);
         section.addCell(cell);
 
         for (Map<String, String> gene : allGenes) {
@@ -483,10 +486,9 @@ public class DataToCellConverter
                 if ("strategy".equals(field)) {
                     value = parseMultivalueField(value, strategyTranslates, "PhenoTips.GeneClass_strategy_");
                 } else if ("status".equals(field)) {
-                    value =
-                        DataToCellConverter.translationManager.translate("PhenoTips.GeneClass_" + field + "_" + value);
+                    value = this.translationManager.translate("PhenoTips.GeneClass_" + field + "_" + value);
                 } else if ("comments".equals(field)) {
-                    value = "comments".equals(field) ? value : DataToCellConverter.translationManager
+                    value = "comments".equals(field) ? value : this.translationManager
                         .translate("PhenoTips.GeneClass_" + value);
                 }
                 cell = new DataCell(value, x++, y);
@@ -516,22 +518,24 @@ public class DataToCellConverter
 
         DataSection section = new DataSection();
         DataCell topCell =
-            new DataCell(DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_identifiers"),
+            new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_identifiers"),
                 0, 0, StyleOption.HEADER);
         topCell.addStyle(StyleOption.LARGE_HEADER);
         section.addCell(topCell);
         int hX = 0;
         if (present.contains("id")) {
-            DataCell idCell = new DataCell(
-                DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_report_id"), hX, 1,
-                StyleOption.HEADER);
+            DataCell idCell =
+                new DataCell(
+                    this.translationManager.translate("PhenoTips.PatientClass_label_report_id"), hX, 1,
+                    StyleOption.HEADER);
             section.addCell(idCell);
             hX++;
         }
         if (present.contains("external_id")) {
-            DataCell externalIdCell = new DataCell(
-                DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_patient_identifier"),
-                hX, 1, StyleOption.HEADER);
+            DataCell externalIdCell =
+                new DataCell(
+                    this.translationManager.translate("PhenoTips.PatientClass_label_patient_identifier"),
+                    hX, 1, StyleOption.HEADER);
             section.addCell(externalIdCell);
         }
         // section.finalizeToMatrix();
@@ -580,14 +584,14 @@ public class DataToCellConverter
         int hX = 0;
         for (String fieldId : fields) {
             DataCell headerCell =
-                new DataCell(DataToCellConverter.translationManager.translate("phenotips.exportPreferences.field."
+                new DataCell(this.translationManager.translate("phenotips.exportPreferences.field."
                     + fieldId), hX, 1, StyleOption.HEADER);
             headerSection.addCell(headerCell);
             hX++;
         }
         DataCell headerCell =
             new DataCell(
-                DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_sectionHeader"), 0, 0,
+                this.translationManager.translate("PhenoTips.PatientClass_label_sectionHeader"), 0, 0,
                 StyleOption.LARGE_HEADER);
         headerCell.addStyle(StyleOption.HEADER);
         headerSection.addCell(headerCell);
@@ -658,13 +662,13 @@ public class DataToCellConverter
         int hX = 0;
         for (String fieldId : fields) {
             DataCell headerCell =
-                new DataCell(DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_" + fieldId), hX,
+                new DataCell(this.translationManager.translate("PhenoTips.PatientClass_" + fieldId), hX,
                     1, StyleOption.HEADER);
             headerSection.addCell(headerCell);
             hX++;
         }
         DataCell headerCell =
-            new DataCell(DataToCellConverter.translationManager.translate("phenotips.UIXSection.patientInfo"), 0, 0,
+            new DataCell(this.translationManager.translate("phenotips.UIXSection.patientInfo"), 0, 0,
                 StyleOption.LARGE_HEADER);
         headerCell.addStyle(StyleOption.HEADER);
         headerSection.addCell(headerCell);
@@ -754,19 +758,19 @@ public class DataToCellConverter
         int x = 0;
         for (String fieldId : fields) {
             DataCell headerCell = new DataCell(
-                DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_" + fieldId), x,
+                this.translationManager.translate("PhenoTips.PatientClass_label_" + fieldId), x,
                 bottomY, StyleOption.HEADER);
             headerSection.addCell(headerCell);
             x++;
         }
         if (ethnicityOffset > 0) {
             DataCell headerCell = new DataCell(
-                DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_ethnicity"), x
-                    - ethnicityOffset, 1, StyleOption.HEADER);
+                this.translationManager.translate("PhenoTips.PatientClass_label_ethnicity"),
+                x - ethnicityOffset, 1, StyleOption.HEADER);
             headerSection.addCell(headerCell);
         }
         DataCell headerCell = new DataCell(
-            DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_family_fistory"), 0, 0,
+            this.translationManager.translate("PhenoTips.PatientClass_label_family_fistory"), 0, 0,
             StyleOption.LARGE_HEADER);
         headerCell.addStyle(StyleOption.HEADER);
         headerSection.addCell(headerCell);
@@ -891,26 +895,26 @@ public class DataToCellConverter
         int hX = 0;
         for (String fieldId : fields) {
             DataCell headerCell = new DataCell(
-                DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_" + fieldId), hX,
+                this.translationManager.translate("PhenoTips.PatientClass_label_" + fieldId), hX,
                 bottomY, StyleOption.HEADER);
             headerSection.addCell(headerCell);
             hX++;
         }
         if (apgarOffset > 0) {
             DataCell headerCell = new DataCell(
-                DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_apgar_score"), hX
-                    - apgarOffset, 1, StyleOption.HEADER);
+                this.translationManager.translate("PhenoTips.PatientClass_label_apgar_score"),
+                hX - apgarOffset, 1, StyleOption.HEADER);
             headerSection.addCell(headerCell);
             hX++;
         }
         if (assistedReproductionOffset > 0) {
             DataCell headerCell = new DataCell(
-                DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_assisted_reproduction"),
+                this.translationManager.translate("PhenoTips.PatientClass_label_assisted_reproduction"),
                 hX - assistedReproductionOffset, 1, StyleOption.HEADER);
             headerSection.addCell(headerCell);
         }
         DataCell headerCell =
-            new DataCell(DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_pp_history"),
+            new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_pp_history"),
                 0, 0, StyleOption.LARGE_HEADER);
         headerCell.addStyle(StyleOption.HEADER);
         headerSection.addCell(headerCell);
@@ -1008,7 +1012,7 @@ public class DataToCellConverter
         int hX = 0;
         if (present.contains("phenotype") && present.contains("negative")) {
             DataCell cell =
-                new DataCell(DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_present"),
+                new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_present"),
                     hX, 1, StyleOption.HEADER);
             section.addCell(cell);
             hX++;
@@ -1018,13 +1022,13 @@ public class DataToCellConverter
                 continue;
             }
             DataCell cell =
-                new DataCell(DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_"
+                new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_"
                     + headerId), hX, 1, StyleOption.HEADER);
             section.addCell(cell);
             hX++;
         }
         DataCell sectionHeader = new DataCell(
-            DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_prenatal_phenotype"), 0,
+            this.translationManager.translate("PhenoTips.PatientClass_label_prenatal_phenotype"), 0,
             0, StyleOption.HEADER);
         sectionHeader.addStyle(StyleOption.LARGE_HEADER);
         section.addCell(sectionHeader);
@@ -1133,13 +1137,13 @@ public class DataToCellConverter
                 continue;
             }
             DataCell headerCell = new DataCell(
-                DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_" + fieldId), hX, 1,
+                this.translationManager.translate("PhenoTips.PatientClass_label_" + fieldId), hX, 1,
                 StyleOption.HEADER);
             headerSection.addCell(headerCell);
             hX++;
         }
         DataCell headerCell =
-            new DataCell(DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_disorders"), 0,
+            new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_disorders"), 0,
                 0, StyleOption.LARGE_HEADER);
         headerCell.addStyle(StyleOption.HEADER);
         headerSection.addCell(headerCell);
@@ -1218,13 +1222,13 @@ public class DataToCellConverter
         int hX = 0;
         for (String fieldId : fields) {
             DataCell headerCell = new DataCell(
-                DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_" + fieldId), hX, 1,
+                this.translationManager.translate("PhenoTips.PatientClass_label_" + fieldId), hX, 1,
                 StyleOption.HEADER);
             headerSection.addCell(headerCell);
             hX++;
         }
         DataCell headerCell =
-            new DataCell(DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_medhistory"),
+            new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_medhistory"),
                 0, 0, StyleOption.LARGE_HEADER);
         headerCell.addStyle(StyleOption.HEADER);
         headerSection.addCell(headerCell);
@@ -1303,7 +1307,7 @@ public class DataToCellConverter
         }
 
         DataCell headerCell =
-            new DataCell(DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_unaffected"),
+            new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_unaffected"),
                 0, 0, StyleOption.LARGE_HEADER);
         headerCell.addStyle(StyleOption.HEADER);
         headerSection.addCell(headerCell);
@@ -1347,13 +1351,13 @@ public class DataToCellConverter
         int hX = 0;
         for (String fieldId : fields) {
             DataCell headerCell = new DataCell(
-                DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_" + fieldId), hX, 1,
+                this.translationManager.translate("PhenoTips.PatientClass_label_" + fieldId), hX, 1,
                 StyleOption.HEADER);
             headerSection.addCell(headerCell);
             hX++;
         }
         DataCell headerCell = new DataCell(
-            DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_solved_status"), 0, 0,
+            this.translationManager.translate("PhenoTips.PatientClass_label_solved_status"), 0, 0,
             StyleOption.LARGE_HEADER);
         headerCell.addStyle(StyleOption.HEADER);
         headerSection.addCell(headerCell);
@@ -1399,7 +1403,7 @@ public class DataToCellConverter
     private String getUsername(DocumentReference reference)
     {
         if (reference == null) {
-            return DataToCellConverter.translationManager.translate("PhenoTips.PatientClass_label_unknown_user");
+            return this.translationManager.translate("PhenoTips.PatientClass_label_unknown_user");
         }
         return reference.getName();
     }
@@ -1424,7 +1428,7 @@ public class DataToCellConverter
         String field = "";
         for (String property : valueTranslates) {
             if (value.contains(property)) {
-                field += DataToCellConverter.translationManager.translate(className + property) + "; ";
+                field += this.translationManager.translate(className + property) + "; ";
             }
         }
         return field;
