@@ -62,7 +62,9 @@ public interface PrimaryEntity
      *
      * @return a valid document reference
      */
-    XWikiDocument getDocument();
+    DocumentReference getDocument();
+
+    XWikiDocument getXWikiDocument();
 
     /**
      * Returns the internal identifier of the entity.

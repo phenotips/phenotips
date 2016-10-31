@@ -119,7 +119,7 @@ public abstract class AbstractExternalPrimaryEntityGroupManager<G extends Primar
     public boolean addMember(G group, E member)
     {
         try {
-            XWikiDocument doc = member.getDocument();
+            XWikiDocument doc = member.getXWikiDocument();
             BaseObject obj = doc.getXObject(GROUP_MEMBERSHIP_CLASS, getMembershipProperty(),
                 getFullSerializer().serialize(group.getDocumentReference()), false);
             if (obj != null) {
