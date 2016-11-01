@@ -267,7 +267,7 @@
           onSuccess: onFamilyDataReadyBeforeDeletion.bind(this)
         });
       } else {
-        standartPatientDelete();
+        standardPatientDelete();
       }
     }
   });
@@ -280,7 +280,7 @@
       var familyExternalId = response.responseJSON.family.externalId;
 
       if (familyMembers.length &gt; 1) {
-        standartPatientDelete();
+        standardPatientDelete();
       } else {
         // check if the user has delete rights to delete family
         new Ajax.Request(baseUrl, {
@@ -294,9 +294,9 @@
                                        "$services.localization.render('phenotips.patientRecord.pedigree.deleteFamilyWarning')" + " " + familyString + "." +
                                        "$services.localization.render('phenotips.patientRecord.pedigree.deleteFamilyWarningQuestion')" + "&lt;br&gt;&lt;br&gt;";
                 var parameters = {"action": "deletefamily", "removemembers": true, "family_id": familyId};
-                standartPatientDelete(confirmationText);
+                standardPatientDelete(confirmationText);
               } else {
-                standartPatientDelete();
+                standardPatientDelete();
               }
             }
          });
@@ -305,7 +305,7 @@
     }
   }
 
-  var standartPatientDelete = function (confirmationText) {
+  var standardPatientDelete = function (confirmationText) {
     var item = $('prActionDelete');
     var url = item.readAttribute('href') + "?confirm=1&amp;form_token=" + $$('meta[name=form_token]')[0].content + (Prototype.Browser.Opera ? "" : "&amp;ajax=1");
     if (confirmationText)
