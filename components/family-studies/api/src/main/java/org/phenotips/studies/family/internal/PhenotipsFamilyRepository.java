@@ -139,9 +139,6 @@ public class PhenotipsFamilyRepository implements FamilyRepository
         if (!canDeleteFamily(family, updatingUser, deleteAllMembers, false)) {
             return false;
         }
-        if (!this.forceRemoveAllMembers(family, updatingUser)) {
-            return false;
-        }
         if (deleteAllMembers) {
             for (Patient patient : family.getMembers()) {
                 if (!this.patientRepository.delete(patient)) {
@@ -150,7 +147,10 @@ public class PhenotipsFamilyRepository implements FamilyRepository
                     return false;
                 }
             }
+        } else if (!this.forceRemoveAllMembers(family, updatingUser)) {
+            return false;
         }
+
         try {
             XWikiContext context = this.provider.get();
             XWiki xwiki = context.getWiki();

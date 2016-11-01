@@ -379,7 +379,7 @@
               deleteFamilyButton.observe("click", function(event) {
                 event.stop();
                 confirmationDialog.closeDialog();
-                var parameters = {"action": "deletefamily", "removemembers": false, "family_id": familyId};
+                var parameters = {"action": "deletefamily", "removemembers": false, "family_id": familyId, "form_token": $$('meta[name=form_token]')[0].content};
                  sendDeleteRequest(parameters);
               });
             }
