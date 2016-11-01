@@ -294,7 +294,7 @@
                                        "$services.localization.render('phenotips.patientRecord.pedigree.deleteFamilyWarning')" + " " + familyString + "." +
                                        "$services.localization.render('phenotips.patientRecord.pedigree.deleteFamilyWarningQuestion')" + "&lt;br&gt;&lt;br&gt;";
                 var parameters = {"action": "deletefamily", "removemembers": true, "family_id": familyId};
-                standardPatientDelete(confirmationText);
+                standardPatientDelete(confirmationText, familyId);
               } else {
                 standardPatientDelete();
               }
@@ -305,7 +305,7 @@
     }
   }
 
-  var standardPatientDelete = function (confirmationText) {
+  var standardPatientDelete = function (confirmationText, familyId) {
     var item = $('prActionDelete');
     var url = item.readAttribute('href') + "?confirm=1&amp;form_token=" + $$('meta[name=form_token]')[0].content + (Prototype.Browser.Opera ? "" : "&amp;ajax=1");
     if (confirmationText)
@@ -349,7 +349,7 @@
       deleteFamilyButton.observe("click", function(event) {
           event.stop();
           confirmationDialog.closeDialog();
-          var parameters = {"action": "deletefamily", "removemembers": true, "family_id": familyId};
+          var parameters = {"action": "deletefamily", "removemembers": true, "family_id": familyId, "form_token": $$('meta[name=form_token]')[0].content};
           sendDeleteRequest(parameters);
      });
     }
