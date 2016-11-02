@@ -654,6 +654,10 @@
 .menu-box .field-evaluated .field-name {
   font-weight: normal;
 }
+.menu-box .field-aliveandwell .field-name {
+  font-weight: normal;
+  cursor: pointer;
+}
 .menu-box .field-carrier {
   padding-top: 0.8em;
   padding-bottom: 0.6em;

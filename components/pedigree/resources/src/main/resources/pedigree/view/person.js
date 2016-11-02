@@ -74,6 +74,7 @@ define([
             this._evaluated = false;
             this._pedNumber = "";
             this._lostContact = false;
+            this._aliveandwell = false;
         },
 
         /**
@@ -367,6 +368,16 @@ define([
         },
 
         /**
+         * Returns the if the Person is alive and well status
+         *
+         * @method getAliveAndWell
+         * @return {boolean} true if the person is alive and well, false otherwise
+         */
+        getAliveAndWell: function() {
+            return this._aliveandwell;
+        },
+
+        /**
          * Returns True if this node's status is not 'alive' or 'deceased'.
          *
          * @method isFetus
@@ -407,6 +418,7 @@ define([
 
                 (newStatus != 'deceased') && this.setDeathDate("");
                 (newStatus == 'alive') && this.setGestationAge();
+                (newStatus != 'alive') && this.setAliveAndWell(false);
                 this.getGraphics().updateSBLabel();
 
                 if(this.isFetus()) {
@@ -419,6 +431,20 @@ define([
                 }
                 this.getGraphics().updateLifeStatusShapes(oldStatus);
                 this.getGraphics().getHoverBox().regenerateHandles();
+                this.getGraphics().getHoverBox().regenerateButtons();
+            }
+        },
+
+        /**
+         * Changes the alive and well status of the Person
+         *
+         * @method setAliveAndWell
+         * @param {boolean} true if the person is alive and well, false otherwise
+         */
+        setAliveAndWell: function(newStatus) {
+            if (typeof(newStatus) == "boolean" && newStatus != this._aliveandwell) {
+                this._aliveandwell = newStatus;
+                newStatus && this.setLifeStatus("alive");
                 this.getGraphics().getHoverBox().regenerateButtons();
             }
         },
@@ -1115,6 +1141,7 @@ define([
                 rejected_genes:  {value : rejectedGeneList, disabled: true, inactive: (rejectedGeneList.length == 0)},
                 adopted:       {value : this.getAdopted(), inactive: cantChangeAdopted},
                 state:         {value : this.getLifeStatus(), inactive: inactiveStates, disabled: disabledStates},
+                aliveandwell:  {value : this.getAliveAndWell(), inactive: this.isFetus()},
                 date_of_death: {value : this.getDeathDate(), inactive: this.isFetus(), disabled: false},
                 commentsClinical:{value : this.getComments(), inactive: false},
                 commentsPersonal:{value : this.getComments(), inactive: false},  // so far the same set of comments is displayed on all tabs
@@ -1178,6 +1205,8 @@ define([
                 info['adoptedStatus'] = this.getAdopted();
             if (this.getLifeStatus() != 'alive')
                 info['lifeStatus'] = this.getLifeStatus();
+            if (this.getAliveAndWell())
+                info['aliveandwell'] = this.getAliveAndWell();
             if (this.getDeathDate() != null)
                 info['dod'] = this.getDeathDate().getSimpleObject();
             if (this.getGestationAge() != null)
@@ -1488,6 +1517,13 @@ define([
                     }
                 } else {
                     this.setLifeStatus('alive');
+                }
+                if(info.hasOwnProperty('aliveandwell')) {
+                    if (this.getAliveAndWell() != info.aliveandwell) {
+                        this.setAliveAndWell(info.aliveandwell);
+                    }
+                } else {
+                    this.setAliveAndWell(false);
                 }
                 if(info.gestationAge) {
                     if (this.getGestationAge() != info.gestationAge) {

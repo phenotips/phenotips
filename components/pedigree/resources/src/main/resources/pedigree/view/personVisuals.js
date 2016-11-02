@@ -995,7 +995,8 @@ define([
         },
 
         _labelSelectionOffset: function() {
-            var selectionOffset = this.isSelected() ? PedigreeEditorParameters.attributes.radius/1.4 : 0;
+            var labelsOffset = this.getHoverBox().getHoverBoxHeightExtension();
+            var selectionOffset = this.isSelected() ? PedigreeEditorParameters.attributes.radius/1.4 + labelsOffset : 0;
 
             if (this.isSelected() && this.getNode().isPersonGroup())
                 selectionOffset += PedigreeEditorParameters.attributes.radius * (1-PedigreeEditorParameters.attributes.groupNodesScale) + 5;

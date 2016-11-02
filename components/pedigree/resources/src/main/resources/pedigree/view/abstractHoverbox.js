@@ -42,7 +42,7 @@ define([
             this._currentOrbs    = null;
             this._currentButtons = null; 
             this._handlesZoomSz  = null;
-            this._boxOnHover    = editor.getPaper().rect(this.getX(), this.getY(), this._width, this._height, 5).attr(PedigreeEditorParameters.attributes.boxOnHover);
+            this._boxOnHover     = editor.getPaper().rect(this.getX(), this.getY(), this._width, this._height, 5).attr(PedigreeEditorParameters.attributes.boxOnHover);
             this._boxOnHover.node.setAttribute("class","pedigree-hoverbox");
             this._backElements  = editor.getPaper().set(this._boxOnHover);
             this._mask          = this._boxOnHover.clone().attr({fill: 'green', opacity: 0});
@@ -138,6 +138,16 @@ define([
          */
         getNode: function() {
             return this._node;
+        },
+
+        /**
+         * Returns the gray hover box height extension
+         *
+         * @method getHoverBoxHeightExtension
+         * @return {int} 0 by default
+         */
+        getHoverBoxHeightExtension: function() {
+            return 0;
         },
 
         /**

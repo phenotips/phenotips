@@ -186,6 +186,13 @@ define([
                 'function' : 'setLifeStatus'
             },
             {
+                'name' : 'aliveandwell',
+                'label' : 'Alive & Well',
+                'type' : 'checkbox',
+                'tab': 'Personal',
+                'function' : 'setAliveAndWell'
+            },
+            {
                 'label' : 'Heredity options',
                 'name' : 'childlessSelect',
                 'values' : [{'actual': 'none', displayed: 'None'},

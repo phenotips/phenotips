@@ -23,8 +23,22 @@ define([
     var PersonHoverbox = Class.create(AbstractHoverbox, {
 
         initialize: function($super, personNode, centerX, centerY, nodeShapes) {
-            var radius = PedigreeEditorParameters.attributes.personHoverBoxRadius;        
-            $super(personNode, -radius, -radius, radius * 2, radius * 2, centerX, centerY, nodeShapes);                
+            var radius = PedigreeEditorParameters.attributes.personHoverBoxRadius;
+            $super(personNode, -radius, -radius, radius * 2, radius * 3, centerX, centerY, nodeShapes);
+        },
+
+        /**
+         * Returns the gray hover box height extension
+         *
+         * @method getHoverBoxHeightExtension
+         * @return {int} 0 by default or PedigreeEditorParameters.attributes.personHoverBoxRadius if we display alive and well radio buttons
+         */
+        getHoverBoxHeightExtension: function() {
+            if (this.getNode().getLifeStatus() == "alive" || this.getNode().getLifeStatus() == "deceased") {
+                return PedigreeEditorParameters.attributes.personHoverBoxRadius - 20;
+            } else {
+                return 0;
+            }
         },
 
         /**
@@ -125,6 +139,10 @@ define([
             $super();
 
             this.generateMenuBtn();
+            if (this.getNode().getLifeStatus() == "alive" || this.getNode().getLifeStatus() == "deceased") {
+                this.generateAliveWell();
+            }
+            this.getBoxOnHover().attr({'height': PedigreeEditorParameters.attributes.personHoverBoxRadius * 2 + this.getHoverBoxHeightExtension()});
 
             // proband can't be removed, and the only remaining node can't be removed
             if (!this.getNode().isProband()
@@ -154,6 +172,65 @@ define([
             this._currentButtons.push(genderShapedButton);
             this.disable();
             this.getFrontElements().push(genderShapedButton);
+            this.enable();
+        },
+
+        /**
+         * Generates alive, alive and well and deceased radio button section
+         *
+         * @method generateAliveWell
+         * @return {Raphael.el} Raphael element set
+         */
+        generateAliveWell: function() {
+            var node = this.getNode();
+            var lifeStatus = node.getLifeStatus();
+            var aliveandwellStatus = node.getAliveAndWell();
+            //generate 3 radio buttons
+            var labeles = { "alive" : "Alive",
+                            "aliveandwell" : "Alive & Well",
+                            "deceased" : "Deceased" };
+            var rects = [];
+            var height = this.getY()+this._height-this.getHoverBoxHeightExtension()-10;
+            var yTickIndex = 0;
+            var aliveAndWell = editor.getPaper().set();
+
+            var _this = this;
+            Object.keys(labeles).each(function (key, index) {
+                var circle = _this._generateRadioTickCircle(_this.getX()+15, height+20*index, false);
+                if ((lifeStatus == "alive" && !aliveandwellStatus && key == "alive")
+                    || (aliveandwellStatus && key == "aliveandwell")
+                    || (lifeStatus == "deceased" && key == "deceased") ) {
+                    yTickIndex = index;
+                }
+                var text = editor.getPaper().text(_this.getX()+25, height+20*index, labeles[key]).attr(PedigreeEditorParameters.attributes.awLabel);
+                var rect = editor.getPaper().rect(_this.getX()+5, height+20*index-10, _this._width-20, 20, 1).attr(PedigreeEditorParameters.attributes.awRect);
+                rects[index] = rect;
+                aliveAndWell.push(circle, text, rect);
+            });
+
+            var tick = this._generateRadioTickCircle(this.getX()+15, height+20*yTickIndex, true);
+            aliveAndWell.push(tick);
+
+            //TODO generating 'age' and 'cause' inputs for deceased radio button
+
+            rects.forEach(function(el) {
+                el.click(function() {
+                    for (var j = 0; j < 3; j++) {
+                        if (el == rects[j]) {
+                            // move black circle to selected row
+                            tick.attr({'Y' : height+20*j});
+                            // set patient node live status
+                            (j == 0) && node.setLifeStatus("alive");
+                            (j == 1) && node.setAliveAndWell(true);
+                            (j == 2) && node.setLifeStatus("deceased");
+                        }
+                    }
+                });
+            });
+
+            this._currentButtons.push(aliveAndWell);
+            this.disable();
+            this.getFrontElements().push(aliveAndWell);
             this.enable();
         },
 
@@ -294,7 +371,16 @@ define([
                 }
             }
             this.animateHideHoverZone();
-        }
+        },
+
+        /**
+         * Generate circles to draw radio buttons, white under-circle if tick if false and black if true
+         *
+         * @method _generateRadioTickCircle
+         */
+        _generateRadioTickCircle: function(x, y, tick) {
+            return editor.getPaper().circle(x, y, 5).attr({"fill": (tick) ? "#000": "#fff"});
+        },
     });
     return PersonHoverbox;
 });

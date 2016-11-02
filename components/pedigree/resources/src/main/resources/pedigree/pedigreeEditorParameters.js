@@ -94,6 +94,8 @@ define([], function(){
         pedNumberLabel: {'font-size': 19, 'font-family': 'Serif'},
         descendantGroupLabel: {'font-size': 21, 'font-family': 'Tahoma'},
         label: {'font-size': 20, 'font-family': 'Arial'},
+        awLabel: {'font-size': 17, 'font-family': 'Arial', 'text-anchor': 'start'},
+        awRect: {'fill': '#000000', 'cursor' : 'pointer', 'stroke': 'none', 'fill-opacity':0},
         nameLabels: {'font-size': 20, 'font-family': 'Arial'},
         commentLabel: {'font-size': 19, 'font-family': 'Arial' },
         cancerAgeOfOnsetLabels: {'font-size': 19, 'font-family': 'Arial' },
