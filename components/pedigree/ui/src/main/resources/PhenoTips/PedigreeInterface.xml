@@ -47,14 +47,26 @@
 #end
 #macro(__getDisabledFields)
   #set ($recordConfiguration = $services.recordConfiguration.getActiveConfiguration())
-  #set ($disabled = ["first_name","last_name","last_name_birth"])
-  #foreach ($section in $recordConfiguration.enabledSections)
-    #foreach ($element in $section.enabledElements)
-      #if ($element == "Patient name")
-        #set ($disabled = [])
-        #break
-      #end
-    #end
+  #set ($disabledFieldNames = [])
+  #set ($discard = $disabledFieldNames.addAll($recordConfiguration.allFieldNames))
+  #set ($discard = $disabledFieldNames.removeAll($recordConfiguration.enabledFieldNames))
+  #set ($linkedFields = {
+    "external_id": ["external_id"],
+    "first_name": ["first_name"],
+    "last_name": ["last_name", "last_name_birth"],
+    "gender": ["gender"],
+    "date_of_birth": ["date_of_birth"],
+    "date_of_death": ["date_of_death"],
+    "phenotype": ["hpo_positive"],
+    "negative_phenotype" : ["hpo_negative"],
+    "omim_id" : ["disorders"],
+    "gestation" : ["gestation_age"],
+    "gene" : ["candidate_genes", "causal_genes", "rejected_genes"]
+  })
+  #set ($discard = $disabledFieldNames.retainAll($linkedFields.keySet()))
+  #set ($disabled = [])
+  #foreach ($f in $disabledFieldNames)
+    #set ($discard = $disabled.addAll($linkedFields.get($f)))
   #end
   $jsontool.serialize($disabled)##
 #end
