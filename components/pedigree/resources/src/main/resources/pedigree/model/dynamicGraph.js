@@ -252,7 +252,7 @@ define([
             // TODO: review
             var keepProperties = [ 'lNameAtB', 'adoptedStatus', 'childlessStatus', 'childlessReason',
                                    'cancers', 'ethnicities', 'twinGroup', 'monozygotic', 'evaluated',
-                                   'carrierStatus', 'lostContact', 'nodeNumber' ];
+                                   'carrierStatus', 'lostContact', 'nodeNumber', 'comments' ];
 
             var result = {};
             for (var i = 0; i < keepProperties.length; i++) {
