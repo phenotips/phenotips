@@ -90,7 +90,7 @@
   ##
   #foreach ($section in $optionList.keySet())
     &lt;strong&gt;$section&lt;/strong&gt;
-    &lt;ul class="custom-display-list col-2"&gt;
+    &lt;ul class="custom-display-list"&gt;
       #foreach ($option in $optionList.get($section))
       &lt;li&gt;
         #set ($optionValue = "${option.field.name}/${option.pt_class}")
