@@ -1839,7 +1839,7 @@ widgets.ModalPopup = Class.create({
         try {
           // if parent element is longer than the screen (e.g. patient form) make sure dialog pops up within the
           // area currently visible by the user, which can be achieved by absolute positioning
-          if (this.dialogBox.parentElement.clientHeight > window.innerHeight) {
+          if (this.dialogBox.parentElement.clientHeight &gt; window.innerHeight) {
               targetPosition = Math.floor(window.pageYOffset + window.innerHeight * targetPercentage / 100) + "px";
           }
         } catch (err) {
@@ -2382,7 +2382,7 @@ return PhenoTips;
     } else {
       this.container = new PhenoTips.widgets.ModalPopup(this.loadingMessage, {}, {
         idPrefix : 'ontology-browser-window-',
-        title : "Related terms",
+        title : "$escapetool.javascript($services.localization.render('phenotips.widgets.vocabularyBrowser.title'))",
         backgroundColor : "#ffffff",
         verticalPosition : "top",
         extraDialogClassName : "dialog-ontology-browser",
@@ -4542,7 +4542,7 @@ document.observe("xwiki:dom:updated", init);
       var range = (this.__date.hasOwnProperty("range") &amp;&amp; this.__date.range.hasOwnProperty("years")) ? this.__date.range.years : 1;
       var year = this.__date.hasOwnProperty("year") ? this.__date.year : null;
       var values = [];
-      if (year > crtYear) {
+      if (year &gt; crtYear) {
           values.push({"value" : year, "selected" : true });
       }
       for (var y = crtYear; y &gt;= startYear; --y) {
@@ -5370,13 +5370,13 @@ div.suggestItems span.matching-alternative-name {
 }
 
 div.suggestItems span.matching-alternative-name:before {
-  content: "(also known as: ";
+  content: "$services.localization.render('phenotips.widgets.suggest.matchingAlternativeName.before')";
   font-size: 0.8em;
   opacity: .4;
 }
 
 div.suggestItems span.matching-alternative-name:after {
-  content: ")";
+  content: "$services.localization.render('phenotips.widgets.suggest.matchingAlternativeName.after')";
   font-size: 0.8em;
   opacity: .4;
 }

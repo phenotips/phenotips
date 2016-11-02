@@ -117,7 +117,7 @@ $xwiki.ssx.use('PhenoTips.ImageDisplayer', {'colorTheme' : "$xwiki.getSpacePrefe
 $xwiki.jsx.use('PhenoTips.ImageDisplayer')##
 #set ($targetClassName = 'PhenoTips.ExternalFileClass')
 #if ($xcontext.action == 'edit' || $xcontext.action != 'export' &amp;&amp; $doc.getObject($targetClassName))
-  === Documents ===
+  === {{translation key="phenotips.UIXField.additionalDocuments"/}} ===
   #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'mode' : $xcontext.action})
 #end
 {{/velocity}}</content>

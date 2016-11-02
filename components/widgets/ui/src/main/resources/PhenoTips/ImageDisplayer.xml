@@ -119,7 +119,7 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
   &lt;a class='action delete fa fa-times-circle fa-lg fa-fw' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($xcontext.action, $request.queryString))}")" title="$services.localization.render('phenotips.imageDisplayer.delete')"&gt;&lt;/a&gt;##
   #end
   #if($options.isImage)(% class="attachment-preview" %)((([[image:${services.rendering.escape($targetDoc.fullName, $doc.syntax)}@${services.rendering.escape($attachment.filename, $doc.syntax)}||title="${services.rendering.escape($attachment.filename, $doc.syntax)}"]])))#else##
- &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="$services.localization.render('phenotips.imageDisplayer.openImage', [$!{attachment.filename}])"&gt; [open]&lt;/a&gt;#end##
+ #* *# &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="$services.localization.render('phenotips.imageDisplayer.openImage', [$!{attachment.filename}])"&gt;$services.localization.render('phenotips.imageDisplayer.open')&lt;/a&gt;#end##
   &lt;/div&gt;{{/html}}##
 #end
 

@@ -72,5 +72,8 @@ phenotips.UIXDirectory.options.download=Exportar esta extensión como xar
 phenotips.UIXDirectory.options.delete=Eliminar esta extensión
 phenotips.UIXDirectory.newExtension.create=Crear
 phenotips.UIXDirectory.sortedBy=Ordenado por {0}
-phenotips.UIXDirectory.sortBy=Ordenar por {0}</content>
+phenotips.UIXDirectory.sortBy=Ordenar por {0}
+
+core.shortcuts.edit.saveandcontinue=Alt+Shift+S
+</content>
 </xwikidoc>

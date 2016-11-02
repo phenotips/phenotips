@@ -65,7 +65,7 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
   #if($firstLevel)
     #set($firstLevel = false)
     #if($field.getProperty('multiSelect').value != 1)
-      &lt;li class="hpo-unknown term-entry"&gt;#_displayItem('', 'Unknown')&lt;/li&gt;
+      &lt;li class="hpo-unknown term-entry"&gt;#_displayItem('', $escapetool.xml($services.localization.render("${object.getxWikiClass().getName()}_${name}_unknown")))&lt;/li&gt;
     #end
   #end
   #set($macro.childrenMap = {})
