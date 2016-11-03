@@ -27,4 +27,7 @@
   </parent>
   <artifactId>phenotips-widgets-api</artifactId>
   <name>PhenoTips - Widget - Java APIs</name>
+  <properties>
+    <checkstyle.resourceIncludes></checkstyle.resourceIncludes>
+  </properties>
 </project>
