@@ -757,8 +757,8 @@ public class DataToCellConverter
         fieldToHeaderMap.put("ivf", "In vitro fertilization");
         fieldToHeaderMap.put("icsi", "Intra-cytoplasmic sperm injection");
         fieldToHeaderMap.put("assistedReproduction_surrogacy", "Surrogacy");
-        fieldToHeaderMap.put("assistedReproduction_donorsperm", "Donor sperm");
         fieldToHeaderMap.put("assistedReproduction_donoregg", "Donor egg");
+        fieldToHeaderMap.put("assistedReproduction_donorsperm", "Donor sperm");
         fieldToHeaderMap.put("apgar1", "1 min");
         fieldToHeaderMap.put("apgar5", "5 min");
 
@@ -777,8 +777,8 @@ public class DataToCellConverter
 
         List<String> apgarFields = new LinkedList<String>(Arrays.asList("apgar1", "apgar5"));
         List<String> assitedReproductionFields = new LinkedList<String>(
-            Arrays.asList("assistedReproduction_iui", "ivf", "icsi", "assistedReproduction_surrogacy",
-                "assistedReproduction_fertilityMeds", "assistedReproduction_donoregg",
+            Arrays.asList("assistedReproduction_fertilityMeds", "assistedReproduction_iui", "ivf", "icsi",
+                "assistedReproduction_surrogacy", "assistedReproduction_donoregg",
                 "assistedReproduction_donorsperm"));
         apgarFields.retainAll(present);
         assitedReproductionFields.retainAll(present);
