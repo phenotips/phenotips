@@ -1341,7 +1341,7 @@ public class DataToCellConverter
         if (present.contains("unaffected")) {
             PatientData<String> isNormal = patient.getData("clinicalStatus");
             String isNormalString = (isNormal != null) ? isNormal.getValue() : "unaffected";
-            Integer isNormalValue = ("unaffected".equals(isNormalString)) ? 0 : 1;
+            Integer isNormalValue = ("unaffected".equals(isNormalString)) ? 1 : 0;
             DataCell cell = new DataCell(ConversionHelpers.integerToStrBool(isNormalValue), 0, 0);
             bodySection.addCell(cell);
         }
