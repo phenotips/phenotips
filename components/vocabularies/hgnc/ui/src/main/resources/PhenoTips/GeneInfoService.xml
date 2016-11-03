@@ -64,6 +64,7 @@
 #end
 
 #set ($result = {
+  'id' : $stringtool.defaultIfBlank($term.ensembl_gene_id[0], $term.symbol),
   'symbol' : $term.symbol,
   'name' : $term.name,
   'external_ids' : {'genecards_id' :  $term.symbol}

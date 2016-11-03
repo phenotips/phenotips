@@ -141,6 +141,8 @@
     method : "get",
     // The name of the request parameter holding the input stub
     varname : "input",
+    // The name of the request parameter holding the input stub for exact term search
+    matchVarname : "id",
     // The CSS classname of the suggest list
     className : "ajaxsuggest",
     timeout : 2500,
@@ -208,6 +210,10 @@
   aSuggestions : [],
   iHighlighted : null,
   isActive : false,
+  // True iff the suggest dropdown is displayed, or an item from it was just selected.
+  suggestionSelected: false,
+  // Input that has been submitted.
+  lastSubmitted: "",
 
   /**
    * Initialize the suggest
@@ -251,6 +257,7 @@
     // (less unneccessary DOM manipulation, and less unneccessary highlighting computation).
     this.latestRequest = 0;
 
+    this.addInputObservers();
   },
 
   /**
@@ -279,6 +286,14 @@
       this.latestRequest++;
       this.fld.removeClassName("loading");
     }.bind(this));
+  },
+
+  addInputObservers: function() {
+    $(document).observe("ms:suggest:containerCreated", this.onSuggestCreated.bindAsEventListener(this));
+
+    $(document).observe("ms:suggest:selected", this.onDataSubmitted.bindAsEventListener(this));
+
+    this.fld.observe("blur", this.onInputBlurred.bindAsEventListener(this));
   },
 
   /**
@@ -363,6 +378,222 @@
         break;
       default:
         break;
+    }
+  },
+
+  /**
+   * Attaches mousedown observers on newly created suggests.
+   *
+   * @param event the event being observed
+   */
+  onSuggestCreated : function (event) {
+    this.suggestionSelected = false;
+    var _this = this;
+    // A mousedown event occurred in the suggest. Don't want onInputBlurred to perform a search on this loss of focus
+    $(this.container).observe("mousedown", function(event) {
+      _this.suggestionSelected = true;
+    });
+  },
+
+  /**
+   * Reset the suggest variable.
+   *
+   * @param event the event being observed
+   */
+  onDataSubmitted : function (event) {
+    // Prevents the onInputBlurred performing searches unnecessarily, as an item was just selected from dropdown.
+    this.suggestionSelected = true;
+    this.lastSubmitted = event.memo.value || this.fld.value.strip();
+  },
+
+  /**
+   * If no items are selected from the suggest dropdown, checks the suggest widget suggestions for exact matches.
+   * If no exact match is found, performs a server-side search for the exact match.
+   *
+   * @param event the event being observed
+   */
+  onInputBlurred : function (event) {
+    if (this.suggestionSelected || this.fld.value.length &lt; this.options.minchars) {
+      this.suggestionSelected = false;
+      return;
+    }
+    // Prepare the query.
+    var query = this.fld.value.strip();
+
+    // Try to find a match among the suggest items.
+    var matchSubmitted = this.submitDropdownMatch(query);
+
+    // If no match found in suggest widget, perform a server-side search for the exact match.
+    // This will most likely never happen.
+    if (!matchSubmitted) {
+      // Our input didn't change. No need to search again.
+      if (query == this.lastSubmitted &amp;&amp; query.length &gt; 1) {
+        return;
+      }
+      this.latestRequest++;
+      var requestId = this.latestRequest;
+      var pointer = this;
+      clearTimeout(this.ajID);
+      this.ajID = setTimeout( function() { pointer.submitAjaxSearchMatch(query, requestId) }, this.options.delay );
+    }
+  },
+
+  /**
+   * Finds a match among the dropdown menu items, if exists, and submits it through the suggest widget.
+   *
+   * @param query the search query
+   * @return {boolean} true iff a match was found, false otherwise
+   */
+  submitDropdownMatch : function (query) {
+    if (typeof this.aSuggestions == 'undefined' || this.aSuggestions.length &lt;= 0) {
+      return false;
+    }
+    var modQuery = query.toUpperCase();
+    for (var i = 0; i &lt; this.aSuggestions.length; i++) {
+      var item = this.aSuggestions[i];
+      if (item.value.strip().toUpperCase() === modQuery || item.id.strip().toUpperCase() === modQuery) {
+        this.acceptEntry(item, item.value, item.value);
+        return true;
+      }
+    }
+    return false;
+  },
+
+  /**
+   * Performs a server-side search for the query, and submits if an exact match exists.
+   *
+   * @param query the search query
+   * @param requestId the id of the current request
+   */
+  submitAjaxSearchMatch : function (query, requestId) {
+    this.lastSubmitted = this.fld.value.strip();
+    if (requestId &lt; this.latestRequest || this.fld.value.strip().length &lt; this.options.minchars) {
+      return;
+    }
+
+    for (var i = 0; i &lt; this.sources.length; i++) {
+      var source = this.sources[i];
+
+      if (!source.matchScript) {
+        continue;
+      }
+
+      var param = {};
+
+      if (this.options.queryProcessor != null &amp;&amp; typeof(this.options.queryProcessor.generateParameters) == "function") {
+        param = this.options.queryProcessor.generateParameters(query);
+      }
+      if (this.options.queryProcessor != null &amp;&amp; typeof(this.options.queryProcessor.processQuery) == "function") {
+        query = this.options.queryProcessor.processQuery(query);
+      }
+
+      var url = source.matchScript + source.matchVarname + "=" + encodeURIComponent(query);
+      var method = source.method || "get";
+      var headers = {};
+      if (source.json) {
+        headers.Accept = "application/json";
+      } else {
+        headers.Accept = "application/xml";
+      }
+      var ajx = new Ajax.Request(url, {
+        method: method,
+        parameter: param,
+        requestHeaders: headers,
+        onCreate : function () {
+          this.fld.addClassName("loading");
+        }.bind(this),
+        onSuccess: this.setSearchData.bindAsEventListener(this, source, query, requestId),
+        onComplete : function () {
+          if (requestId &lt; this.latestRequest) {
+            return;
+          }
+          this.fld.removeClassName("loading");
+        }.bind(this)
+      });
+    }
+  },
+
+  /**
+   * Process and set the data obtained from the ajax request.
+   *
+   * @param response the response from the ajax request
+   * @param source
+   * @param query the user-entered query term
+   * @param requestId the ID of the current request
+   * @return {boolean} false iff no json or xml data is available
+   */
+  setSearchData : function (response, source, query, requestId) {
+    if (requestId &lt; this.latestRequest) {
+      return false;
+    }
+
+    var result, _getResultFieldValue, _getResultFieldValueAsArray;
+    if (source &amp;&amp; source.json) {
+      var result = response.responseJSON;
+      if (!result) {
+        return false;
+      }
+
+      _getResultFieldValue = function(data, fieldName) {
+        return data &amp;&amp; data[fieldName] || '';
+      };
+
+      _getResultFieldValueAsArray = function(data, fieldName) {
+        return new Array(data &amp;&amp; data[fieldName] || '').flatten();
+      };
+    } else {
+      var result = response.responseXML;
+      if (!result) {
+        return false;
+      }
+
+      _getResultFieldValue = function(data, selector) {
+        var element = data &amp;&amp; Element.down(data, selector);
+      return element &amp;&amp; element.firstChild &amp;&amp; element.firstChild.nodeValue || '';
+      };
+
+      _getResultFieldValueAsArray = function(data, selector) {
+        var result = [];
+        if (data) {
+          Element.select(data, selector).each(function(item) {
+            var value = item.firstChild &amp;&amp; item.firstChild.nodeValue;
+            if (value) {
+              result.push(value);
+            }
+          });
+        }
+        return result;
+      };
+    }
+    var data = {
+      'suggest' : this,
+      'id': _getResultFieldValue(result, source.resultId || this.options.resultId),
+      'value': _getResultFieldValue(result, source.resultValue || this.options.resultValue),
+      'info'    : this.generateResultInfo(result, _getResultFieldValueAsArray),
+      'icon': _getResultFieldValue(result, source.resultIcon || this.options.resultIcon),
+      'category': this.generateResultCategory(result, _getResultFieldValueAsArray)
+    };
+
+    this.acceptTypedInput(data, data.value)
+  },
+
+  /**
+   * Accept the data provided.
+   *
+   * @param data the provided data
+   * @param newValue the new displayed value for the input
+   * @param silent true if the data should not be displayed in the input
+   */
+  acceptTypedInput : function (data, newValue, silent) {
+    var event = Event.fire(this.fld, "ms:suggest:selected", data);
+    if (!event.stopped) {
+      if (!silent) {
+        this.fld.value = newValue || this.fld.defaultValue || '';
+      }
+      // pass selected object to callback function, if exists
+      if (typeof(this.options.callback) == "function") {
+        this.options.callback(data);
+      }
     }
   },
 
@@ -549,70 +780,9 @@
       };
     }
 
-    var _getExpandCollapseTriggerSymbol = function(isCollapsed) {
-      if (isCollapsed) return "&amp;#x25B8;";
-      return "&amp;#x25BE;";
-    }
     for (var i = 0; i &lt; results.length; i++) {
-      var info = new Element("dl");
-      for (var section in this.options.resultInfo) {
-        var sOptions = this.options.resultInfo[section];
-
-        sectionClass = section.strip().toLowerCase().replace(/[^a-z0-9 ]/gi, '').replace(/\s+/gi, "-");
-
-        var sectionState = ""
-        if (sOptions.collapsed) {
-          sectionState = "collapsed";
-        }
-
-        var processingFunction = sOptions.processor;
-
-        if (sOptions.extern) {
-          var trigger =  new Element("a").update(section);
-          trigger._processingFunction = processingFunction;
-          info.insert({"bottom" : new Element("dt", {'class' : sectionState + " " + sectionClass}).insert({'bottom' : trigger})});
-          trigger._processingFunction.call(this, trigger);
-          continue;
-        }
-
-        var selector = sOptions.selector;
-        if (!selector) {
-          continue;
-        }
-
-        var sectionContents = null;
-        _getResultFieldValueAsArray(results[i], selector).each(function(item) {
-          var text = item || '';
-          if (typeof (processingFunction) == "function") {
-            text = processingFunction(text);
-          }
-          if (text == '') {return;}
-          if (!sectionContents) {
-            var trigger = new Element("a", {'class' : 'expand-tool'}).update(_getExpandCollapseTriggerSymbol(sOptions.collapsed));
-            info.insert({"bottom" : new Element("dt", {'class' : sectionState}).insert({'top' : trigger}).insert({'bottom' : section})});
-            sectionContents = new Element("dd", {'class' : 'expandable'});
-            info.insert({"bottom" : sectionContents});
-            trigger.observe('click', function(event) {
-              event.stop();
-              trigger.up().toggleClassName('collapsed');
-              trigger.update(_getExpandCollapseTriggerSymbol(trigger.up().hasClassName('collapsed')));
-            }.bindAsEventListener(this));
-          }
-          sectionContents.insert({"bottom" : new Element("div").update(text)});
-        });
-      }
-      if (!info.hasChildNodes()) {
-        info = '';
-      }
-      if (this.options.resultCategory) {
-        var category = new Element("span", {'class' : 'hidden term-category'});
-        _getResultFieldValueAsArray(results[i], this.options.resultCategory).each(function(c) {
-           category.insert(new Element('input', {'type' : 'hidden', 'value' : c}));
-        });
-      }
-      if (!this.options.resultCategory || !category.hasChildNodes()) {
-        category = '';
-      }
+      var info = this.generateResultInfo(results[i], _getResultFieldValueAsArray);
+      var category = this.generateResultCategory(results[i], _getResultFieldValueAsArray);
 
       if (this.options.resultAltName) {
         var bestNameMatch = '';
@@ -638,6 +808,93 @@
       });
     }
     return aSuggestions;
+  },
+
+  /**
+   * Generates HTML containing the result information.
+   *
+   * @param result the ajax search result
+   * @param getResultValueAsArray callback function
+   * @return {*} the info html string
+   * @private
+   */
+  generateResultInfo : function (result, getResultValueAsArray) {
+    var info = new Element("dl");
+    var _this = this;
+    for (var section in this.options.resultInfo) {
+      var sOptions = this.options.resultInfo[section];
+      var sectionClass = section.strip().toLowerCase().replace(/[^a-z0-9 ]/gi, '').replace(/\s+/gi, "-");
+      var sectionState = "";
+      if (sOptions.collapsed) {
+        sectionState = "collapsed";
+      }
+      var processingFunction = sOptions.processor;
+      if (sOptions.extern) {
+        var trigger =  new Element("a").update(section);
+        trigger._processingFunction = processingFunction;
+        info.insert({"bottom" : new Element("dt", {'class' : sectionState + " " + sectionClass})
+          .insert({'bottom' : trigger})});
+        trigger._processingFunction.call(this, trigger);
+        continue;
+      }
+      var selector = sOptions.selector;
+      if (!selector) {
+        continue;
+      }
+      var sectionContents = null;
+      getResultValueAsArray(result, selector).each(function(item) {
+        var text = item || '';
+        if (typeof (processingFunction) == "function") {
+          text = processingFunction(text);
+        }
+        if (text == '') {return;}
+        if (!sectionContents) {
+          var trigger = new Element("a", {'class' : 'expand-tool'})
+            .update(_this._getExpandCollapseTriggerSymbol(sOptions.collapsed));
+          info.insert({"bottom" : new Element("dt", {'class' : sectionState})
+            .insert({'top' : trigger})
+            .insert({'bottom' : section})});
+          sectionContents = new Element("dd", {'class' : 'expandable'});
+          info.insert({"bottom" : sectionContents});
+          trigger.observe('click', function(event) {
+            event.stop();
+            trigger.up().toggleClassName('collapsed');
+            trigger.update(_this._getExpandCollapseTriggerSymbol(trigger.up().hasClassName('collapsed')));
+          }.bindAsEventListener(this));
+        }
+        sectionContents.insert({"bottom" : new Element("div").update(text)});
+      });
+    }
+    if (!info.hasChildNodes()) {
+      info = '';
+    }
+    return info;
+  },
+
+  /**
+   * Generates HTML if result category is set.
+   *
+   * @param result the ajax search result
+   * @param getResultValueAsArray callback function
+   * @return {*} the category html string
+   * @private
+   */
+  generateResultCategory : function (result, getResultValueAsArray) {
+    if (this.options.resultCategory) {
+      var category = new Element("span", {'class' : 'hidden term-category'});
+      getResultValueAsArray(result, this.options.resultCategory).each(function(c) {
+        category.insert(new Element('input', {'type' : 'hidden', 'value' : c}));
+      });
+    }
+    if (!this.options.resultCategory || !category.hasChildNodes()) {
+      category = '';
+    }
+    return category;
+  },
+
+  _getExpandCollapseTriggerSymbol : function(isCollapsed) {
+    if (isCollapsed) return "&amp;#x25B8;";
+    return "&amp;#x25BE;";
   },
 
   /**
