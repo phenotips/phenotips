@@ -27,18 +27,4 @@
   </parent>
   <artifactId>phenotips-widgets-api</artifactId>
   <name>PhenoTips - Widget - Java APIs</name>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <!-- This would speed up build time, but we're playing with the singleton ComponentManagerRegistry and this causes concurrency issues. -->
-          <parallel>none</parallel>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
 </project>
