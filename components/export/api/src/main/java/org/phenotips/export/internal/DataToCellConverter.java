@@ -784,7 +784,7 @@ public class DataToCellConverter
         assitedReproductionFields.retainAll(present);
         int apgarOffset = apgarFields.size();
         // there used to be a +1 for the offset
-        int assistedReproductionOffset = apgarOffset + assitedReproductionFields.size();
+        int assistedReproductionOffset = assitedReproductionFields.size();
         int bottomY = (apgarOffset > 0 || assistedReproductionOffset > 0) ? 2 : 1;
 
         int x = 0;
@@ -800,7 +800,7 @@ public class DataToCellConverter
         }
         if (assistedReproductionOffset > 0) {
             DataCell headerCell =
-                new DataCell("Assisted Reproduction", x - assistedReproductionOffset, 1, StyleOption.HEADER);
+                new DataCell("Assisted Reproduction", x - apgarOffset - assistedReproductionOffset, 1, StyleOption.HEADER);
             headerSection.addCell(headerCell);
         }
         DataCell headerCell = new DataCell("Prenatal and Perinatal History", 0, 0, StyleOption.LARGE_HEADER);
