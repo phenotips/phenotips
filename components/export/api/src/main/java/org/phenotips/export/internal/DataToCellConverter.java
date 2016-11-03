@@ -859,11 +859,10 @@ public class DataToCellConverter
     public DataSection prenatalPerinatalHistoryHeader(Set<String> enabledFields) throws Exception
     {
         String sectionName = "prenatalPerinatalHistory";
-        List<String> fields =
-            new ArrayList<>(Arrays.asList("gestation", "prenatal_development",
-                "assistedReproduction_iui", "ivf", "icsi", "assistedReproduction_surrogacy",
-                "assistedReproduction_fertilityMeds",
-                "assistedReproduction_donorsperm", "assistedReproduction_donoregg", "apgar1", "apgar5"));
+        List<String> fields = new ArrayList<>(Arrays.asList("gestation", "prenatal_development",
+            "assistedReproduction_fertilityMeds", "assistedReproduction_iui", "ivf", "icsi",
+            "assistedReproduction_surrogacy", "assistedReproduction_donoregg", "assistedReproduction_donorsperm",
+            "apgar1", "apgar5"));
         fields.retainAll(enabledFields);
         Set<String> fieldSet = new HashSet<>(fields);
         this.enabledHeaderIdsBySection.put(sectionName, fieldSet);
@@ -874,10 +873,9 @@ public class DataToCellConverter
         DataSection headerSection = new DataSection();
 
         List<String> apgarFields = new ArrayList<>(Arrays.asList("apgar1", "apgar5"));
-        List<String> assitedReproductionFields =
-            new ArrayList<>(Arrays.asList("assistedReproduction_iui", "ivf", "icsi",
-                "assistedReproduction_surrogacy", "assistedReproduction_fertilityMeds",
-                "assistedReproduction_donorsperm", "assistedReproduction_donoregg"));
+        List<String> assitedReproductionFields = new ArrayList<>(Arrays.asList("assistedReproduction_fertilityMeds",
+            "assistedReproduction_iui", "ivf", "icsi", "assistedReproduction_surrogacy",
+            "assistedReproduction_donoregg", "assistedReproduction_donorsperm"));
         apgarFields.retainAll(fieldSet);
         assitedReproductionFields.retainAll(fieldSet);
         int apgarOffset = apgarFields.size();
