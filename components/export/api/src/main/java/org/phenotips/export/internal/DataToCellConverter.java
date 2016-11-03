@@ -38,7 +38,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -725,7 +724,6 @@ public class DataToCellConverter
     public DataSection familyHistoryHeader(Set<String> enabledFields) throws Exception
     {
         String sectionName = "familyHistory";
-        Map<String, String> fieldToHeaderMap = new LinkedHashMap<>();
         List<String> fields = new ArrayList<>(Arrays.asList("global_mode_of_inheritance", "miscarriages",
             "consanguinity", "family_history", "maternal_ethnicity", "paternal_ethnicity"));
         fields.retainAll(enabledFields);
@@ -741,8 +739,8 @@ public class DataToCellConverter
         int ethnicityOffset = 0;
         if (fields.contains("maternal_ethnicity") || fields.contains("paternal_ethnicity")) {
             bottomY = 2;
-            if (fieldToHeaderMap.containsKey("maternal_ethnicity")
-                && fieldToHeaderMap.containsKey("paternal_ethnicity")) {
+            if (fields.contains("maternal_ethnicity")
+                && fields.contains("paternal_ethnicity")) {
                 ethnicityOffset = 2;
             } else {
                 ethnicityOffset = 1;
