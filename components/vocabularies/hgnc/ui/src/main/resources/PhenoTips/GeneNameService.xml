@@ -57,6 +57,7 @@
       #set ($term = $services.vocabularies.hgnc.getTerm($i))
       #if ($term)
         #set ($result = {
+          'id' : $stringtool.defaultIfBlank($term.ensembl_gene_id[0], $term.symbol),
           'symbol' : $term.symbol,
           'external_ids' : {'genecards_id' :  $term.symbol}
         })
@@ -87,7 +88,7 @@
   #set ($terms = $services.vocabularies.hgnc.search("${request.q}", $max, "", ""))
   #set ($result = {'numReturned' : $terms.size(), 'docs': []})
   #foreach ($term in $terms)
-    #set ($discard = $result.docs.add({'symbol' : $term.symbol}))
+    #set ($discard = $result.docs.add({'id' : $stringtool.defaultIfBlank($term.ensembl_gene_id[0], $term.symbol), 'symbol' : $term.symbol}))
   #end
   $jsontool.serialize($result)
 #end
