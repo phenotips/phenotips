@@ -426,7 +426,7 @@ public class DataToCellConverter
             section.addCell(cell);
 
             for (String field : fields) {
-                if (!present.contains(field) || variant.get(field) == null) {
+                if (!present.contains(field)) {
                     continue;
                 }
                 String value = variant.get(field);
@@ -481,7 +481,7 @@ public class DataToCellConverter
             section.addCell(cell);
 
             for (String field : fields) {
-                if (!present.contains(field) || gene.get(field) == null) {
+                if (!present.contains(field)) {
                     continue;
                 }
                 String value = gene.get(field);
@@ -1443,6 +1443,9 @@ public class DataToCellConverter
 
     private String parseMultivalueField(String value, List<String> valueTranslates, String className)
     {
+        if (StringUtils.isBlank(value)) {
+            return "";
+        }
         String field = "";
         for (String property : valueTranslates) {
             if (value.contains(property)) {
