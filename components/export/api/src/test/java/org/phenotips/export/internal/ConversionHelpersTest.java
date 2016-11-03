@@ -17,14 +17,18 @@
  */
 package org.phenotips.export.internal;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Feature;
 import org.phenotips.tools.PhenotypeMappingService;
+import org.phenotips.translation.TranslationManager;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.script.service.ScriptService;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -32,7 +36,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Provider;
+
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.mockito.Matchers.anyString;
@@ -45,6 +52,26 @@ import static org.mockito.Mockito.verify;
 
 public class ConversionHelpersTest
 {
+    @Before
+    public void setup() throws Exception
+    {
+        final ComponentManager cm = mock(ComponentManager.class);
+        final TranslationManager tm = mock(TranslationManager.class);
+        doReturn(tm).when(cm).getInstance(TranslationManager.class);
+        doReturn("No").when(tm).translate("yesno_0");
+        doReturn("Yes").when(tm).translate("yesno_1");
+        Field cmp = ReflectionUtils.getField(ComponentManagerRegistry.class, "cmProvider");
+        cmp.setAccessible(true);
+        cmp.set(null, new Provider<ComponentManager>()
+        {
+            @Override
+            public ComponentManager get()
+            {
+                return cm;
+            }
+        });
+    }
+
     @Test
     public void featureSetUpNoCategories() throws Exception
     {
