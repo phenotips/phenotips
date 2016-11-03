@@ -83,7 +83,7 @@
 #if ($identifier != '')
   #set ($patientDoc = $xwiki.getDocument($services.model.createDocumentReference('', 'data', $identifier)))
   #if (!$patientDoc || $patientDoc.isNew())
-    {{error}}$services.localization.render('phenotips.OpenPatientRecord.patientNotFound'){{/error}}
+    {{error}}{{translation key="phenotips.OpenPatientRecord.patientNotFound"/}}{{/error}}
   #else
     #fixMode()
     #if ($canEditPatientRecord)
@@ -101,7 +101,7 @@
     #end
     $response.sendRedirect($patientDoc.getURL($mode))
   #elseif ($matchingDocuments.size() &gt; 1)
-    {{error}}Non-unique identifier.{{/error}}
+    {{error}}{{translation key="phenotips.openPatientRecord.nonUniqueIdentifier"/}}{{/error}}
   #elseif ("$!{request.create}" == 'true')
     #set ($patient = $services.patients.create())
     #if ($patient)
@@ -112,13 +112,13 @@
       #end
       $response.sendRedirect($xwiki.getURL($patientDoc, $mode))
     #else
-    {{error}}$services.localization.render('phenotips.OpenPatientRecord.noPermission'){{/error}}
+      {{error}}{{translation key="phenotips.OpenPatientRecord.noPermission"/}}{{/error}}
     #end
   #else
-    {{error}}$services.localization.render('phenotips.OpenPatientRecord.patientNotFound'){{/error}}
+    {{error}}{{translation key="phenotips.OpenPatientRecord.patientNotFound"/}}{{/error}}
   #end
 #else
-  {{error}}$services.localization.render('phenotips.OpenPatientRecord.noPatient'){{/error}}
+  {{error}}{{translation key="phenotips.OpenPatientRecord.noPatient"/}}{{/error}}
 #end
 {{/velocity}}</content>
 </xwikidoc>
