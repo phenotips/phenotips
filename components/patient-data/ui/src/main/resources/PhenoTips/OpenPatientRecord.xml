@@ -92,9 +92,13 @@
     $response.sendRedirect($patientDoc.getURL($mode))
   #end
 #elseif ($externalIdentifier != '')
-  #set ($matchingDocuments = $xwiki.wrapDocs($services.query.xwql("where doc.object(PhenoTips.PatientClass).external_id = :eid").bindValue('eid', $externalIdentifier).execute()))
+  #set ($matchingDocuments = $services.query.xwql("where doc.object(PhenoTips.PatientClass).external_id = :eid").bindValue('eid', $externalIdentifier).execute())
   #if ($matchingDocuments.size() == 1)
-    #set ($patientDoc = $matchingDocuments.get(0))
+    #set ($patientDoc = $xwiki.getDocument($matchingDocuments.get(0)))
+    #if (!$patientDoc)
+      {{error}}{{translation key="phenotips.openPatientRecord.noAccess"/}}{{/error}}
+      #break
+    #end
     #fixMode()
     #if ($canEditPatientRecord)
       #saveDataFromRequest()
