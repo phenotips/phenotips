@@ -66,8 +66,8 @@ $xwiki.ssx.use($displayDocumentName)##
   #__extradata_displayLastEntry($request.dataClassName $options)
 #else
 {{html clean="false"}}
-&lt;h2&gt;$services.localization.render('phenotips.patientSharing.receive.configuration.title')&lt;/h2&gt;
 &lt;form action="${preferencesDoc.getURL('save')}" method="post"&gt;
+&lt;h2&gt;$services.localization.render('phenotips.patientSharing.receive.configuration.title')&lt;/h2&gt;
 &lt;div class="hidden"&gt;
     &lt;input type="hidden" name="form_token" value="${escapetool.xml($services.csrf.token)}" /&gt;
     &lt;input type="hidden" name="classname" value="${mainConfigurationClassname}" /&gt;
@@ -85,12 +85,7 @@ $xwiki.ssx.use($displayDocumentName)##
   #end
   ##
 {{html clean="false"}}
-&lt;div class="buttons"&gt;
-    &lt;input class="button" type="submit" value="$services.localization.render('phenotips.patientSharing.receive.configuration.submit')" /&gt;
-  &lt;/div&gt;
-&lt;/form&gt;
 &lt;h2&gt;$services.localization.render('phenotips.patientSharing.receive.configuration.whitelist.title')&lt;/h2&gt;
-&lt;form action="${preferencesDoc.getURL('save')}" method="post"&gt;
 &lt;div class="hidden"&gt;
     &lt;input type="hidden" name="form_token" value="${escapetool.xml($services.csrf.token)}" /&gt;
     &lt;input type="hidden" name="classname" value="${serverConfigurationClassname}" /&gt;
