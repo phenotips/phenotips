@@ -882,7 +882,7 @@ public class DataToCellConverter
         assitedReproductionFields.retainAll(fieldSet);
         int apgarOffset = apgarFields.size();
         // there used to be a +1 for the offset
-        int assistedReproductionOffset = apgarOffset + assitedReproductionFields.size();
+        int assistedReproductionOffset = assitedReproductionFields.size();
         int bottomY = (apgarOffset > 0 || assistedReproductionOffset > 0) ? 2 : 1;
 
         int hX = 0;
@@ -902,7 +902,7 @@ public class DataToCellConverter
         if (assistedReproductionOffset > 0) {
             DataCell headerCell = new DataCell(this.translationManager
                 .translate("phenotips.export.excel.label.prenatalPerinatalHistory.assistedReproduction"),
-                hX - assistedReproductionOffset, 1, StyleOption.HEADER);
+                hX - apgarOffset - assistedReproductionOffset, 1, StyleOption.HEADER);
             headerSection.addCell(headerCell);
         }
         DataCell headerCell =
