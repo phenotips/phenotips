@@ -873,7 +873,7 @@ public class DataToCellConverter
 
         DataSection headerSection = new DataSection();
 
-        List<String> apgarFields = new ArrayList<>(Arrays.asList("apgar1", "apgar2"));
+        List<String> apgarFields = new ArrayList<>(Arrays.asList("apgar1", "apgar5"));
         List<String> assitedReproductionFields =
             new ArrayList<>(Arrays.asList("assistedReproduction_iui", "ivf", "icsi",
                 "assistedReproduction_surrogacy", "assistedReproduction_fertilityMeds",
