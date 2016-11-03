@@ -64,6 +64,9 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     @Override
     public VocabularyTerm getTerm(String id)
     {
+        if (StringUtils.isBlank(id)) {
+            return null;
+        }
         VocabularyTerm result = super.getTerm(id);
         if (result == null) {
             Map<String, String> queryParameters = new HashMap<>();

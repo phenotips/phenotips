@@ -180,6 +180,10 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
     @Override
     public VocabularyTerm getTerm(String symbol)
     {
+        if (StringUtils.isBlank(symbol)) {
+            return null;
+        }
+
         String escapedSymbol = ClientUtils.escapeQueryChars(symbol);
 
         VocabularyTerm result = getTermById(escapedSymbol);

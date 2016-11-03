@@ -91,6 +91,9 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     @Override
     public VocabularyTerm getTerm(String id)
     {
+        if (StringUtils.isBlank(id)) {
+            return null;
+        }
         VocabularyTerm result = this.externalServicesAccess.getTermCache().get(id);
         if (result == null) {
             ModifiableSolrParams params = new ModifiableSolrParams();
