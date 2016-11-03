@@ -175,6 +175,9 @@ $!doc.content
     <property>
       <code>document.observe("xwiki:dom:loaded", function () {
   (function(link) {
+    if (!link) {
+      return;
+    }
     var saveAfterClick = function() {
       event.stop();
       document.observe('xwiki:document:saved', followLinkAfterSave);
