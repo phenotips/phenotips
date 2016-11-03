@@ -178,7 +178,7 @@ $!doc.content
     if (!link) {
       return;
     }
-    var saveAfterClick = function() {
+    var saveAfterClick = function(event) {
       event.stop();
       document.observe('xwiki:document:saved', followLinkAfterSave);
       document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
