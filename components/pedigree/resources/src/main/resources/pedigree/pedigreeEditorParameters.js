@@ -118,7 +118,10 @@ define([], function(){
         layoutRelativeOtherWidth: 2,
         layoutScale: { xscale: 12.0, yscale: 8 },
         maxPrintPreviewPaneHeight: 600,
-        minPrintPreviewPaneHeight: 250
+        minPrintPreviewPaneHeight: 250,
+        howerboxHighlightColor: "green",
+        mainGlowColor: "green",
+        secondaryGlowColor: "#556B2F"
     };
 
     return PedigreeEditorParameters;

@@ -1049,18 +1049,6 @@ define([
                 Helpers.removeFirstOccurrenceByValue(disabledStates,this.getLifeStatus())
             }
 
-            var disabledGenders = false;
-            var inactiveGenders = false;
-            var genderSet = editor.getGraph().getPossibleGenders(this.getID());
-            for (gender in genderSet) {
-                if (genderSet.hasOwnProperty(gender))
-                    if (!genderSet[gender]) {
-                        if (!inactiveGenders)
-                            inactiveGenders = [];
-                        inactiveGenders.push(gender);
-                    }
-            }
-
             var childlessInactive = this.isFetus();  // TODO: can a person which already has children become childless?
                                                      // maybe: use editor.getGraph().hasNonPlaceholderNonAdoptedChildren() ?
             var disorders = [];
@@ -1117,7 +1105,7 @@ define([
                 last_name:     {value : this.getLastName(), disabled: false},
                 last_name_birth: {value: this.getLastNameAtBirth()}, //, inactive: (this.getGender() != 'F')},
                 external_id:   {value : this.getExternalID(), disabled: false},
-                gender:        {value : this.getGender(), inactive: inactiveGenders, disabled: disabledGenders},
+                gender:        {value : this.getGender()},
                 date_of_birth: {value : this.getBirthDate(), inactive: this.isFetus(), disabled: false},
                 carrier:       {value : this.getCarrierStatus(), disabled: inactiveCarriers},
                 disorders:     {value : disorders, disabled: false},

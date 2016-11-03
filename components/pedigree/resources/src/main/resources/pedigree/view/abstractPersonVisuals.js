@@ -126,14 +126,22 @@ define([
          *
          * @method grow
          */
-        grow: function($super) {
+        grow: function($super, glowColor) {
             $super();
             if (this._callback) {
                 //throw "Assertion failed: grow() during animation";
                 return;
             }
-            if (this.glow) return;
-            this.glow = this._genderShape.glow({width: 11, fill: true, opacity: 0.4, color: "green"});
+            if (!glowColor) {
+                glowColor = PedigreeEditorParameters.attributes.mainGlowColor;
+            }
+            if (this.glow && this.glowColor && this.glowColor == glowColor) {
+                // already glowing with the same color
+                return;
+            }
+            this.glow && this.glow.remove();
+            this.glow = this._genderShape.glow({width: 11, fill: true, opacity: 0.4, color: glowColor});
+            this.glowColor = glowColor;
             if (this.marked) {
                 this.marked.hide();  // to avoid interference between green and yelow marks
             }
