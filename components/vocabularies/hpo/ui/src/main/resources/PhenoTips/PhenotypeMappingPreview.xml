@@ -67,7 +67,7 @@ $xwiki.jsx.use('PhenoTips.PatientSheetCode')##
     $!phenotypeDisplayTools.use('', $name, "negative_${name}")##
     #if ($mapping != $doc)
 
-{{info}}$services.localization.render('phenotips.phenotypeMappingPreview.title') [[$mapping||target="_blank"]]{{/info}}
+{{info}}$services.localization.render('phenotips.phenotypeMappingPreview.title') [[$mapping.plainTitle&gt;&gt;$mapping||target="_blank"]]{{/info}}
 
     #end
     {{html clean=false}}$phenotypeDisplayTools.display($phenotype){{/html}}##
