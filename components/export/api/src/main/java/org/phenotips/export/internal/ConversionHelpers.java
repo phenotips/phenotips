@@ -21,9 +21,11 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Feature;
 import org.phenotips.tools.PhenotypeMappingService;
 import org.phenotips.tools.PropertyDisplayer;
+import org.phenotips.translation.TranslationManager;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.script.service.ScriptService;
 
@@ -38,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 
 /**
  * Contains supplementary functions to the main conversion functions. It is used as an instance, rather that a
@@ -48,11 +51,11 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ConversionHelpers
 {
-    private static final String YES = "Yes";
+    private static final String YESNO_TRANSLATION_PREFIX = "yesno_";
 
-    private static final String NO = "No";
+    private static final String NA = "-";
 
-    private static final String NA = "N/A";
+    private static TranslationManager translationManager;
 
     /** Global parameter for whether to include phenotypes with "present" status. */
     private Boolean positive;
@@ -68,6 +71,16 @@ public class ConversionHelpers
 
     /** Phenotypic feature to phenotypic category section map. Used for sorting features by category. */
     private Map<String, String> sectionFeatureTree;
+
+    static {
+        try {
+            translationManager = ComponentManagerRegistry.getContextComponentManager().getInstance(
+                TranslationManager.class);
+        } catch (ComponentLookupException ex) {
+            LoggerFactory.getLogger(ConversionHelpers.class).warn("Failed to lookup TranslationManager component: [{}]",
+                ex.getMessage());
+        }
+    }
 
     /**
      * Clears the {@link #sectionFeatureTree} and must be called before processing each patient, as each patient has a
@@ -277,10 +290,8 @@ public class ConversionHelpers
      */
     public static String strIntegerToStrBool(String strInt)
     {
-        if (StringUtils.equals("0", strInt)) {
-            return NO;
-        } else if (StringUtils.equals("1", strInt)) {
-            return YES;
+        if (StringUtils.equals("0", strInt) || StringUtils.equals("1", strInt)) {
+            return translationManager.translate(YESNO_TRANSLATION_PREFIX + strInt);
         } else if (StringUtils.equals("", strInt)) {
             return "";
         } else {
@@ -299,10 +310,8 @@ public class ConversionHelpers
         if (integer == null) {
             return "";
         }
-        if (integer == 0) {
-            return NO;
-        } else if (integer == 1) {
-            return YES;
+        if (integer >= 0) {
+            return translationManager.translate(YESNO_TRANSLATION_PREFIX + integer);
         } else {
             return NA;
         }

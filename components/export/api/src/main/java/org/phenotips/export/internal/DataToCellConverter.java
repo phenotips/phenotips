@@ -87,21 +87,37 @@ public class DataToCellConverter
     public void phenotypeSetup(Set<String> enabledFields) throws Exception
     {
         String sectionName = "phenotype";
-        String[] fieldIds = { "phenotype", "phenotype_code", "phenotype_combined", "phenotype_code_meta",
-            "phenotype_meta", "negative_phenotype", "negative_phenotype_code", "negative_phenotype_combined",
-            "phenotype_by_section" };
+        String[] fieldIds =
+            {
+            "phenotype",
+            "phenotype_code",
+            "phenotype_combined",
+            "phenotype_code_meta",
+            "phenotype_meta",
+            "negative_phenotype",
+            "negative_phenotype_code",
+            "negative_phenotype_combined",
+            "phenotype_by_section"
+            };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
-            { { "phenotype", "positive" }, { "code", "positive" }, { "phenotype", "code", "positive" },
-            { "meta_code", "phenotype", "positive" }, { "meta", "phenotype", "positive" },
-            { "negative", "phenotype" }, { "negative", "code" }, { "negative", "code", "phenotype" },
-            { "category" } };
+            {
+            { "name", "positive" },
+            { "id", "positive" },
+            { "name", "id", "positive" },
+            { "meta.id", "name", "positive" },
+            { "meta.name", "name", "positive" },
+            { "name", "negative" },
+            { "id", "negative" },
+            { "id", "name", "negative" },
+            { "type" }
+            };
 
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
         this.phenotypeHelper = new ConversionHelpers();
         this.phenotypeHelper
-            .featureSetUp(present.contains("positive"), present.contains("negative"), present.contains("category"));
+            .featureSetUp(present.contains("positive"), present.contains("negative"), present.contains("type"));
     }
 
     public DataSection phenotypeHeader() throws Exception
@@ -113,28 +129,26 @@ public class DataToCellConverter
         }
 
         DataSection section = new DataSection();
-        List<String> orderedHeaderIds = Arrays.asList("category", "phenotype", "code", "meta", "meta_code");
         int hX = 0;
         if (present.contains("positive") && present.contains("negative")) {
             DataCell cell =
-                new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_present"),
+                new DataCell(this.translationManager.translate("phenotips.export.excel.label.phenotype.present"),
                     hX, 1, StyleOption.HEADER);
             section.addCell(cell);
             hX++;
         }
-        for (String headerId : orderedHeaderIds) {
+        for (String headerId : Arrays.asList("type", "name", "id", "meta.name", "meta.id")) {
             if (!present.contains(headerId)) {
                 continue;
             }
-            DataCell cell =
-                new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_"
-                    + headerId), hX, 1, StyleOption.HEADER);
+            DataCell cell = new DataCell(this.translationManager.translate("phenotips.export.excel.label.phenotype."
+                + headerId), hX, 1, StyleOption.HEADER);
             section.addCell(cell);
             hX++;
         }
         DataCell sectionHeader =
-            new DataCell(this.translationManager.translate("PhenoTips.PatientClass_sectionHeader"), 0,
-                0, StyleOption.HEADER);
+            new DataCell(this.translationManager.translate("phenotips.export.excel.label.phenotype"), 0, 0,
+                StyleOption.HEADER);
         sectionHeader.addStyle(StyleOption.LARGE_HEADER);
         section.addCell(sectionHeader);
 
@@ -156,7 +170,7 @@ public class DataToCellConverter
         int y = 0;
         Set<? extends Feature> features = patient.getFeatures();
         this.phenotypeHelper.newPatient();
-        Boolean categoriesEnabled = present.contains("category");
+        Boolean categoriesEnabled = present.contains("type");
         List<Feature> sortedFeatures;
         Map<String, String> sectionFeatureLookup = new HashMap<>();
         if (!categoriesEnabled) {
@@ -175,8 +189,9 @@ public class DataToCellConverter
                 lastStatus = feature.isPresent();
                 lastSection = "";
                 DataCell cell = new DataCell(lastStatus
-                    ? this.translationManager.translate("PhenoTips.PatientClass_label_yes")
-                    : this.translationManager.translate("PhenoTips.PatientClass_label_no"), x, y);
+                    ? this.translationManager.translate("yes")
+                    : this.translationManager.translate("no"),
+                    x, y);
                 if (!lastStatus) {
                     cell.addStyle(StyleOption.YES_NO_SEPARATOR);
                 }
@@ -195,29 +210,29 @@ public class DataToCellConverter
                 }
                 x++;
             }
-            if (present.contains("phenotype")) {
+            if (present.contains("name")) {
                 DataCell cell = new DataCell(feature.getName(), x, y, StyleOption.FEATURE_SEPARATOR);
                 section.addCell(cell);
                 x++;
             }
-            if (present.contains("code")) {
+            if (present.contains("id")) {
                 DataCell cell = new DataCell(feature.getId(), x, y, StyleOption.FEATURE_SEPARATOR);
                 section.addCell(cell);
                 x++;
             }
-            if (present.contains("meta") || present.contains("meta_code")) {
+            if (present.contains("meta.name") || present.contains("meta.id")) {
                 int mX = x;
                 Collection<? extends FeatureMetadatum> featureMetadatum = feature.getMetadata().values();
                 Boolean metaPresent = !featureMetadatum.isEmpty();
                 int offset = 0;
                 for (FeatureMetadatum meta : featureMetadatum) {
                     offset = 0;
-                    if (present.contains("meta")) {
+                    if (present.contains("meta.name")) {
                         DataCell cell = new DataCell(meta.getName(), mX + offset, y);
                         section.addCell(cell);
                         offset += 1;
                     }
-                    if (present.contains("meta_code")) {
+                    if (present.contains("meta.id")) {
                         DataCell cell = new DataCell(meta.getId(), mX + offset, y);
                         section.addCell(cell);
                         offset += 1;
@@ -227,12 +242,12 @@ public class DataToCellConverter
                 // Because otherwise the section has smaller width than the header
                 offset = 0;
                 if (!metaPresent) {
-                    if (present.contains("meta")) {
+                    if (present.contains("meta.name")) {
                         DataCell cell = new DataCell("", mX + offset, y);
                         section.addCell(cell);
                         offset += 1;
                     }
-                    if (present.contains("meta_code")) {
+                    if (present.contains("meta.id")) {
                         DataCell cell = new DataCell("", mX + offset, y);
                         section.addCell(cell);
                         offset += 1;
@@ -244,7 +259,7 @@ public class DataToCellConverter
             }
             y++;
         }
-        /* Creating empties */
+        // Creating empties
         if (sortedFeatures.isEmpty()) {
             // offset is included to account for the presence of both "positive" and "negative" in "present"
             int offset = bothTypes ? 1 : 0;
@@ -280,7 +295,8 @@ public class DataToCellConverter
             { "segregation", "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp", "transcript",
                 "protein", "cdna" },
             { "sanger", "segregation", "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp",
-                "transcript", "protein", "cdna" } };
+                "transcript", "protein", "cdna" }
+            };
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
     }
@@ -308,8 +324,8 @@ public class DataToCellConverter
         int hX = 0;
         DataSection section = new DataSection();
         DataCell cell =
-            new DataCell(this.translationManager.translate("PhenoTips.GeneClass_label_genename"), hX, 1,
-                StyleOption.HEADER);
+            new DataCell(this.translationManager.translate("phenotips.export.excel.label.genotype.name"),
+                hX, 1, StyleOption.HEADER);
         section.addCell(cell);
         hX++;
         List<String> fields = Arrays.asList("status", "strategy", "comments");
@@ -318,16 +334,15 @@ public class DataToCellConverter
             if (!present.contains(field)) {
                 continue;
             }
-            cell =
-                new DataCell(this.translationManager.translate("PhenoTips.GeneClass_" + field), hX, 1,
-                    StyleOption.HEADER);
+            cell = new DataCell(this.translationManager.translate("PhenoTips.GeneClass_" + field), hX, 1,
+                StyleOption.HEADER);
             section.addCell(cell);
             hX++;
         }
 
         DataCell sectionHeader =
-            new DataCell(this.translationManager.translate("PhenoTips.GeneClass_sectionHeader"), 0, 0,
-                StyleOption.HEADER);
+            new DataCell(this.translationManager.translate("phenotips.export.excel.label.genotype"),
+                0, 0, StyleOption.HEADER);
         sectionHeader.addStyle(StyleOption.LARGE_HEADER);
         section.addCell(sectionHeader);
 
@@ -345,23 +360,13 @@ public class DataToCellConverter
         int hX = 0;
         DataSection section = new DataSection();
         DataCell cell =
-            new DataCell(
-                this.translationManager.translate("PhenoTips.GeneVariantClass_label_genesymbol"), hX, 1,
-                StyleOption.HEADER);
+            new DataCell(this.translationManager.translate("phenotips.export.excel.label.genotype.variant.symbol"),
+                hX, 1, StyleOption.HEADER);
         section.addCell(cell);
         hX++;
 
-        cell =
-            new DataCell(
-                this.translationManager.translate("PhenoTips.GeneVariantClass.variantTable.cdna"), hX,
-                1,
-                StyleOption.HEADER);
-        section.addCell(cell);
-        hX++;
-
-        List<String> fields =
-            Arrays.asList("protein", "transcript", "dbsnp", "zygosity", "effect", "interpretation", "inheritance",
-                "evidence", "segregation", "sanger");
+        List<String> fields = Arrays.asList("cdna", "protein", "transcript", "dbsnp", "zygosity", "effect",
+            "interpretation", "inheritance", "evidence", "segregation", "sanger");
 
         for (String field : fields) {
             if (!present.contains(field)) {
@@ -374,8 +379,8 @@ public class DataToCellConverter
         }
 
         DataCell sectionHeader =
-            new DataCell(this.translationManager.translate("PhenoTips.GeneVariantClass_sectionHeader"),
-                0, 0, StyleOption.HEADER);
+            new DataCell(this.translationManager.translate("phenotips.export.excel.label.genotype.variant"),
+                0, 0,StyleOption.HEADER);
         sectionHeader.addStyle(StyleOption.LARGE_HEADER);
         section.addCell(sectionHeader);
 
@@ -405,9 +410,8 @@ public class DataToCellConverter
             return section;
         }
 
-        List<String> fields =
-            Arrays.asList("protein", "transcript", "dbsnp", "zygosity", "effect",
-                "interpretation", "inheritance", "evidence", "segregation", "sanger");
+        List<String> fields = Arrays.asList("protein", "transcript", "dbsnp", "zygosity", "effect",
+            "interpretation", "inheritance", "evidence", "segregation", "sanger");
         List<String> translatables =
             Arrays.asList("zygosity", "effect", "interpretation", "inheritance", "segregation", "evidence", "sanger");
         List<String> evidenceTranslates = Arrays.asList("rare", "predicted", "reported");
@@ -468,9 +472,7 @@ public class DataToCellConverter
         List<String> fields = Arrays.asList("status", "strategy", "comments");
         List<String> strategyTranslates =
             Arrays.asList("sequencing", "deletion", "familial_mutation", "common_mutations");
-        DataCell cell =
-            new DataCell(this.translationManager.translate("PhenoTips.GeneClass_genes"), 0, y);
-        section.addCell(cell);
+        DataCell cell;
 
         for (Map<String, String> gene : allGenes) {
             int x = 0;
@@ -486,10 +488,7 @@ public class DataToCellConverter
                 if ("strategy".equals(field)) {
                     value = parseMultivalueField(value, strategyTranslates, "PhenoTips.GeneClass_strategy_");
                 } else if ("status".equals(field)) {
-                    value = this.translationManager.translate("PhenoTips.GeneClass_" + field + "_" + value);
-                } else if ("comments".equals(field)) {
-                    value = "comments".equals(field) ? value : this.translationManager
-                        .translate("PhenoTips.GeneClass_" + value);
+                    value = this.translationManager.translate("PhenoTips.GeneClass_status_" + value);
                 }
                 cell = new DataCell(value, x++, y);
                 section.addCell(cell);
@@ -517,24 +516,21 @@ public class DataToCellConverter
         this.enabledHeaderIdsBySection.put(sectionName, present);
 
         DataSection section = new DataSection();
-        DataCell topCell =
-            new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_identifiers"),
-                0, 0, StyleOption.HEADER);
+        DataCell topCell = new DataCell(this.translationManager.translate("phenotips.export.excel.label.identifiers"),
+            0, 0, StyleOption.HEADER);
         topCell.addStyle(StyleOption.LARGE_HEADER);
         section.addCell(topCell);
         int hX = 0;
         if (present.contains("id")) {
             DataCell idCell =
-                new DataCell(
-                    this.translationManager.translate("PhenoTips.PatientClass_label_report_id"), hX, 1,
-                    StyleOption.HEADER);
+                new DataCell(this.translationManager.translate("phenotips.export.excel.label.identifiers.internal"),
+                    hX, 1, StyleOption.HEADER);
             section.addCell(idCell);
             hX++;
         }
         if (present.contains("external_id")) {
             DataCell externalIdCell =
-                new DataCell(
-                    this.translationManager.translate("PhenoTips.PatientClass_label_patient_identifier"),
+                new DataCell(this.translationManager.translate("phenotips.export.excel.label.identifiers.external"),
                     hX, 1, StyleOption.HEADER);
             section.addCell(externalIdCell);
         }
@@ -584,14 +580,13 @@ public class DataToCellConverter
         int hX = 0;
         for (String fieldId : fields) {
             DataCell headerCell =
-                new DataCell(this.translationManager.translate("phenotips.exportPreferences.field."
-                    + fieldId), hX, 1, StyleOption.HEADER);
+                new DataCell(this.translationManager.translate("phenotips.exportPreferences.field." + fieldId), hX, 1,
+                    StyleOption.HEADER);
             headerSection.addCell(headerCell);
             hX++;
         }
         DataCell headerCell =
-            new DataCell(
-                this.translationManager.translate("PhenoTips.PatientClass_label_sectionHeader"), 0, 0,
+            new DataCell(this.translationManager.translate("phenotips.export.excel.label.documentInfo"), 0, 0,
                 StyleOption.LARGE_HEADER);
         headerCell.addStyle(StyleOption.HEADER);
         headerSection.addCell(headerCell);
@@ -647,9 +642,8 @@ public class DataToCellConverter
         String sectionName = "patientInfo";
 
         // Must be linked to keep order; in other sections as well
-        List<String> fields =
-            new ArrayList<>(Arrays.asList("first_name", "last_name", "date_of_birth", "gender",
-                "indication_for_referral"));
+        List<String> fields = new ArrayList<>(
+            Arrays.asList("first_name", "last_name", "date_of_birth", "gender", "indication_for_referral"));
         fields.retainAll(enabledFields);
         Set<String> fieldSet = new HashSet<>(fields);
         this.enabledHeaderIdsBySection.put(sectionName, fieldSet);
@@ -661,14 +655,14 @@ public class DataToCellConverter
 
         int hX = 0;
         for (String fieldId : fields) {
-            DataCell headerCell =
-                new DataCell(this.translationManager.translate("PhenoTips.PatientClass_" + fieldId), hX,
-                    1, StyleOption.HEADER);
+            DataCell headerCell = new DataCell(this.translationManager.translate("PhenoTips.PatientClass_" + fieldId),
+                hX, 1, StyleOption.HEADER);
             headerSection.addCell(headerCell);
             hX++;
         }
+
         DataCell headerCell =
-            new DataCell(this.translationManager.translate("phenotips.UIXSection.patientInfo"), 0, 0,
+            new DataCell(this.translationManager.translate("phenotips.export.excel.label.patientInformation"), 0, 0,
                 StyleOption.LARGE_HEADER);
         headerCell.addStyle(StyleOption.HEADER);
         headerSection.addCell(headerCell);
@@ -732,9 +726,8 @@ public class DataToCellConverter
     {
         String sectionName = "familyHistory";
         Map<String, String> fieldToHeaderMap = new LinkedHashMap<>();
-        List<String> fields =
-            new ArrayList<>(Arrays.asList("global_mode_of_inheritance", "miscarriages", "consanguinity",
-                "family_history", "maternal_ethnicity", "paternal_ethnicity"));
+        List<String> fields = new ArrayList<>(Arrays.asList("global_mode_of_inheritance", "miscarriages",
+            "consanguinity", "family_history", "maternal_ethnicity", "paternal_ethnicity"));
         fields.retainAll(enabledFields);
         Set<String> fieldSet = new HashSet<>(fields);
         this.enabledHeaderIdsBySection.put(sectionName, fieldSet);
@@ -757,20 +750,22 @@ public class DataToCellConverter
         }
         int x = 0;
         for (String fieldId : fields) {
-            DataCell headerCell = new DataCell(
-                this.translationManager.translate("PhenoTips.PatientClass_label_" + fieldId), x,
-                bottomY, StyleOption.HEADER);
+            DataCell headerCell =
+                new DataCell(this.translationManager.translate("phenotips.export.excel.label.familyHistory." + fieldId),
+                    x, bottomY,
+                    StyleOption.HEADER);
             headerSection.addCell(headerCell);
             x++;
         }
         if (ethnicityOffset > 0) {
-            DataCell headerCell = new DataCell(
-                this.translationManager.translate("PhenoTips.PatientClass_label_ethnicity"),
-                x - ethnicityOffset, 1, StyleOption.HEADER);
+            DataCell headerCell =
+                new DataCell(this.translationManager.translate("phenotips.export.excel.label.familyHistory.ethnicity"),
+                    x - ethnicityOffset, 1, StyleOption.HEADER);
             headerSection.addCell(headerCell);
         }
+
         DataCell headerCell = new DataCell(
-            this.translationManager.translate("PhenoTips.PatientClass_label_family_fistory"), 0, 0,
+            this.translationManager.translate("phenotips.export.excel.label.familyHistory"), 0, 0,
             StyleOption.LARGE_HEADER);
         headerCell.addStyle(StyleOption.HEADER);
         headerSection.addCell(headerCell);
@@ -868,8 +863,8 @@ public class DataToCellConverter
         String sectionName = "prenatalPerinatalHistory";
         List<String> fields =
             new ArrayList<>(Arrays.asList("gestation", "prenatal_development",
-                "assistedReproduction_fertilityMeds",
                 "assistedReproduction_iui", "ivf", "icsi", "assistedReproduction_surrogacy",
+                "assistedReproduction_fertilityMeds",
                 "assistedReproduction_donorsperm", "assistedReproduction_donoregg", "apgar1", "apgar5"));
         fields.retainAll(enabledFields);
         Set<String> fieldSet = new HashSet<>(fields);
@@ -884,7 +879,7 @@ public class DataToCellConverter
         List<String> assitedReproductionFields =
             new ArrayList<>(Arrays.asList("assistedReproduction_iui", "ivf", "icsi",
                 "assistedReproduction_surrogacy", "assistedReproduction_fertilityMeds",
-                "assistedReproduction_donoregg", "assistedReproduction_donorsperm"));
+                "assistedReproduction_donorsperm", "assistedReproduction_donoregg"));
         apgarFields.retainAll(fieldSet);
         assitedReproductionFields.retainAll(fieldSet);
         int apgarOffset = apgarFields.size();
@@ -895,26 +890,25 @@ public class DataToCellConverter
         int hX = 0;
         for (String fieldId : fields) {
             DataCell headerCell = new DataCell(
-                this.translationManager.translate("PhenoTips.PatientClass_label_" + fieldId), hX,
-                bottomY, StyleOption.HEADER);
+                this.translationManager.translate("phenotips.export.excel.label.prenatalPerinatalHistory." + fieldId),
+                hX, bottomY, StyleOption.HEADER);
             headerSection.addCell(headerCell);
             hX++;
         }
         if (apgarOffset > 0) {
             DataCell headerCell = new DataCell(
-                this.translationManager.translate("PhenoTips.PatientClass_label_apgar_score"),
+                this.translationManager.translate("phenotips.export.excel.label.prenatalPerinatalHistory.apgarScore"),
                 hX - apgarOffset, 1, StyleOption.HEADER);
             headerSection.addCell(headerCell);
-            hX++;
         }
         if (assistedReproductionOffset > 0) {
-            DataCell headerCell = new DataCell(
-                this.translationManager.translate("PhenoTips.PatientClass_label_assisted_reproduction"),
+            DataCell headerCell = new DataCell(this.translationManager
+                .translate("phenotips.export.excel.label.prenatalPerinatalHistory.assistedReproduction"),
                 hX - assistedReproductionOffset, 1, StyleOption.HEADER);
             headerSection.addCell(headerCell);
         }
         DataCell headerCell =
-            new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_pp_history"),
+            new DataCell(this.translationManager.translate("phenotips.export.excel.label.prenatalPerinatalHistory"),
                 0, 0, StyleOption.LARGE_HEADER);
         headerCell.addStyle(StyleOption.HEADER);
         headerSection.addCell(headerCell);
@@ -985,17 +979,30 @@ public class DataToCellConverter
     public void prenatalPhenotypeSetup(Set<String> enabledFields) throws Exception
     {
         String sectionName = "prenatalPhenotype";
-        String[] fieldIds = { "prenatal_phenotype", "prenatal_phenotype_code", "prenatal_phenotype_combined",
-            "negative_prenatal_phenotype", "prenatal_phenotype_by_section" };
+        String[] fieldIds =
+            {
+            "prenatal_phenotype",
+            "prenatal_phenotype_code",
+            "prenatal_phenotype_combined",
+            "negative_prenatal_phenotype",
+            "prenatal_phenotype_by_section"
+            };
         /* FIXME These will not work properly in different configurations */
-        String[][] headerIds = { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "negative" }, { "category" } };
+        String[][] headerIds =
+            {
+            { "name", "positive" },
+            { "id", "positive" },
+            { "name", "id", "positive" },
+            { "name", "negative" },
+            { "type" }
+            };
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
 
         /* Needed for ordering phenotypes */
         this.prenatalPhenotypeHelper = new ConversionHelpers();
         this.prenatalPhenotypeHelper
-            .featureSetUp(present.contains("phenotype"), present.contains("negative"), present.contains("category"));
+            .featureSetUp(present.contains("positive"), present.contains("negative"), present.contains("type"));
     }
 
     public DataSection prenatalPhenotypeHeader() throws Exception
@@ -1007,28 +1014,27 @@ public class DataToCellConverter
         }
 
         DataSection section = new DataSection();
-        List<String> orderedHeaderIds = Arrays.asList("category", "phenotype", "code", "meta", "meta_code");
 
         int hX = 0;
-        if (present.contains("phenotype") && present.contains("negative")) {
+        if (present.contains("positive") && present.contains("negative")) {
             DataCell cell =
-                new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_present"),
+                new DataCell(this.translationManager.translate("phenotips.export.excel.label.phenotype.present"),
                     hX, 1, StyleOption.HEADER);
             section.addCell(cell);
             hX++;
         }
-        for (String headerId : orderedHeaderIds) {
+        for (String headerId : Arrays.asList("type", "name", "id")) {
             if (!present.contains(headerId)) {
                 continue;
             }
             DataCell cell =
-                new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_"
-                    + headerId), hX, 1, StyleOption.HEADER);
+                new DataCell(this.translationManager.translate("phenotips.export.excel.label.phenotype." + headerId),
+                    hX, 1, StyleOption.HEADER);
             section.addCell(cell);
             hX++;
         }
         DataCell sectionHeader = new DataCell(
-            this.translationManager.translate("PhenoTips.PatientClass_label_prenatal_phenotype"), 0,
+            this.translationManager.translate("phenotips.export.excel.label.prenatalPhenotype"), 0,
             0, StyleOption.HEADER);
         sectionHeader.addStyle(StyleOption.LARGE_HEADER);
         section.addCell(sectionHeader);
@@ -1044,7 +1050,7 @@ public class DataToCellConverter
             return null;
         }
 
-        Boolean bothTypes = present.contains("phenotype") && present.contains("negative");
+        Boolean bothTypes = present.contains("positive") && present.contains("negative");
         DataSection section = new DataSection();
 
         int x;
@@ -1053,7 +1059,7 @@ public class DataToCellConverter
 
         this.prenatalPhenotypeHelper.newPatient();
         features = this.prenatalPhenotypeHelper.filterFeaturesByPrenatal(features, true);
-        Boolean categoriesEnabled = present.contains("category");
+        Boolean categoriesEnabled = present.contains("type");
         List<Feature> sortedFeatures;
         Map<String, String> sectionFeatureLookup = new HashMap<>();
         if (!categoriesEnabled) {
@@ -1071,7 +1077,10 @@ public class DataToCellConverter
             if (bothTypes && lastStatus != feature.isPresent()) {
                 lastStatus = feature.isPresent();
                 lastSection = "";
-                DataCell cell = new DataCell(lastStatus ? "Yes" : "No", x, y);
+                DataCell cell = new DataCell(lastStatus
+                    ? this.translationManager.translate("yes")
+                    : this.translationManager.translate("no"),
+                    x, y);
                 if (!lastStatus) {
                     cell.addStyle(StyleOption.YES_NO_SEPARATOR);
                 }
@@ -1090,12 +1099,12 @@ public class DataToCellConverter
                 }
                 x++;
             }
-            if (present.contains("phenotype")) {
+            if (present.contains("name")) {
                 DataCell cell = new DataCell(feature.getName(), x, y, StyleOption.FEATURE_SEPARATOR);
                 section.addCell(cell);
                 x++;
             }
-            if (present.contains("code")) {
+            if (present.contains("id")) {
                 DataCell cell = new DataCell(feature.getId(), x, y, StyleOption.FEATURE_SEPARATOR);
                 section.addCell(cell);
                 x++;
@@ -1117,33 +1126,42 @@ public class DataToCellConverter
     {
         String sectionName = "disorders";
 
-        String[] fieldIds = { "omim_id", "omim_id_code", "omim_id_combined", "diagnosis_notes" };
+        String[] fieldIds =
+            {
+            "omim_id",
+            "omim_id_code",
+            "omim_id_combined",
+            "diagnosis_notes"
+            };
         /* FIXME These will not work properly in different configurations */
-        String[][] headerIds = { { "disorder" }, { "code" }, { "disorder", "code" }, { "notes" } };
+        String[][] headerIds =
+            {
+            { "name" },
+            { "id" },
+            { "name", "id" },
+            { "notes" }
+            };
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
-        this.enabledHeaderIdsBySection.put(sectionName, present);
-
-        // Must be linked to keep order; in other sections as well
-        List<String> fields = Arrays.asList("disorder", "code", "notes");
-
-        DataSection headerSection = new DataSection();
         if (present.isEmpty()) {
             return null;
         }
 
+        this.enabledHeaderIdsBySection.put(sectionName, present);
+
+        DataSection headerSection = new DataSection();
         int hX = 0;
-        for (String fieldId : fields) {
+        for (String fieldId : Arrays.asList("name", "id", "notes")) {
             if (!present.contains(fieldId)) {
                 continue;
             }
             DataCell headerCell = new DataCell(
-                this.translationManager.translate("PhenoTips.PatientClass_label_" + fieldId), hX, 1,
+                this.translationManager.translate("phenotips.export.excel.label.disorders." + fieldId), hX, 1,
                 StyleOption.HEADER);
             headerSection.addCell(headerCell);
             hX++;
         }
         DataCell headerCell =
-            new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_disorders"), 0,
+            new DataCell(this.translationManager.translate("phenotips.export.excel.label.disorders"), 0,
                 0, StyleOption.LARGE_HEADER);
         headerCell.addStyle(StyleOption.HEADER);
         headerSection.addCell(headerCell);
@@ -1165,13 +1183,13 @@ public class DataToCellConverter
         Integer y = 0;
         for (Disorder disorder : disorders) {
             Integer x = 0;
-            if (present.contains("disorder")) {
+            if (present.contains("name")) {
                 DataCell cell = new DataCell(disorder.getName(), x, y);
                 cell.setMultiline();
                 bodySection.addCell(cell);
                 x++;
             }
-            if (present.contains("code")) {
+            if (present.contains("id")) {
                 DataCell cell = new DataCell(disorder.getId(), x, y);
                 bodySection.addCell(cell);
                 x++;
@@ -1181,12 +1199,12 @@ public class DataToCellConverter
         /* If there is no data, but there are headers present, create empty cells */
         if (disorders.isEmpty()) {
             Integer x = 0;
-            if (present.contains("disorder")) {
+            if (present.contains("name")) {
                 DataCell cell = new DataCell("", x, y);
                 bodySection.addCell(cell);
                 x++;
             }
-            if (present.contains("code")) {
+            if (present.contains("id")) {
                 DataCell cell = new DataCell("", x, y);
                 bodySection.addCell(cell);
                 x++;
@@ -1222,13 +1240,13 @@ public class DataToCellConverter
         int hX = 0;
         for (String fieldId : fields) {
             DataCell headerCell = new DataCell(
-                this.translationManager.translate("PhenoTips.PatientClass_label_" + fieldId), hX, 1,
+                this.translationManager.translate("phenotips.export.excel.label.medicalHistory." + fieldId), hX, 1,
                 StyleOption.HEADER);
             headerSection.addCell(headerCell);
             hX++;
         }
         DataCell headerCell =
-            new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_medhistory"),
+            new DataCell(this.translationManager.translate("phenotips.export.excel.label.medicalHistory"),
                 0, 0, StyleOption.LARGE_HEADER);
         headerCell.addStyle(StyleOption.HEADER);
         headerSection.addCell(headerCell);
@@ -1307,7 +1325,7 @@ public class DataToCellConverter
         }
 
         DataCell headerCell =
-            new DataCell(this.translationManager.translate("PhenoTips.PatientClass_label_unaffected"),
+            new DataCell(this.translationManager.translate("phenotips.export.excel.label.unaffected"),
                 0, 0, StyleOption.LARGE_HEADER);
         headerCell.addStyle(StyleOption.HEADER);
         headerSection.addCell(headerCell);
@@ -1351,13 +1369,13 @@ public class DataToCellConverter
         int hX = 0;
         for (String fieldId : fields) {
             DataCell headerCell = new DataCell(
-                this.translationManager.translate("PhenoTips.PatientClass_label_" + fieldId), hX, 1,
+                this.translationManager.translate("phenotips.export.excel.label.solvedStatus." + fieldId), hX, 1,
                 StyleOption.HEADER);
             headerSection.addCell(headerCell);
             hX++;
         }
         DataCell headerCell = new DataCell(
-            this.translationManager.translate("PhenoTips.PatientClass_label_solved_status"), 0, 0,
+            this.translationManager.translate("phenotips.export.excel.label.solvedStatus"), 0, 0,
             StyleOption.LARGE_HEADER);
         headerCell.addStyle(StyleOption.HEADER);
         headerSection.addCell(headerCell);
@@ -1403,7 +1421,7 @@ public class DataToCellConverter
     private String getUsername(DocumentReference reference)
     {
         if (reference == null) {
-            return this.translationManager.translate("PhenoTips.PatientClass_label_unknown_user");
+            return this.translationManager.translate("phenotips.export.excel.label.unknownUser");
         }
         return reference.getName();
     }
