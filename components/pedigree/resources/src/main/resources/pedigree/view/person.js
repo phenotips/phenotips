@@ -1075,10 +1075,6 @@ define([
             });
 
             var cantChangeAdopted = this.isFetus() || editor.getGraph().hasToBeAdopted(this.getID());
-            // a person which has relationships can't be adopted out - we wouldn't know details in that case
-            if (!cantChangeAdopted && onceAlive) {
-                cantChangeAdopted = ["adoptedOut", "disableViaOpacity"];
-            }
 
             var inactiveMonozygothic = true;
             var disableMonozygothic  = true;
@@ -1347,7 +1343,7 @@ define([
          /**
           * These properties are related to pedigree structure, but not to PhenoTips patient.
           *
-          * Used to decide whichproperties to keep when the link to PhenoTips patient is removed
+          * Used to decide which properties to keep when the link to PhenoTips patient is removed
           */
          getPatientIndependentProperties: function() {
              // TODO: review the set of properties retained

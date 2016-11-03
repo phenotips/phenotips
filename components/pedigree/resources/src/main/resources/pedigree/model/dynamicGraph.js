@@ -144,7 +144,7 @@ define([
 
         getAllPersonIDs: function()
         {
-            return this._getAllPersonsOfGenders(null, false);
+            return this._getAllPersonsOfGenders(null);
         },
 
         getGeneration: function( id )
@@ -750,7 +750,6 @@ define([
                if (this.isPersonGroup(i)) continue;
                if (this.isPlaceholder(i)) continue;
                if (this.DG.ancestors[i].hasOwnProperty(v)) continue;
-               if (this.isPerson(i) && this.isAdoptedOut(i)) continue;
                result.push(i);
             }
             return result;
@@ -762,7 +761,7 @@ define([
             var oppositeGender  = this.DG.GG.getOppositeGender(v);
             var validGendersSet = (oppositeGender == 'U') ? ['M','F','U','O'] : [oppositeGender,'U','O'];
 
-            var result = this._getAllPersonsOfGenders(validGendersSet, true);
+            var result = this._getAllPersonsOfGenders(validGendersSet);
 
             var partners = this.DG.GG.getAllPartners(v);
             partners.push(v);
@@ -2445,7 +2444,7 @@ define([
 
         //=============================================================
 
-        _getAllPersonsOfGenders: function (validGendersSet, excludeAdoptedOut)
+        _getAllPersonsOfGenders: function (validGendersSet)
         {
             // all person nodes whose gender matches one of genders in the validGendersSet array
 
@@ -2468,7 +2467,6 @@ define([
                 if (!this.isPerson(i)) continue;
                 if (this.isPersonGroup(i)) continue;
                 if (this.isPlaceholder(i)) continue;
-                if (excludeAdoptedOut && this.isAdoptedOut(i)) continue;
                 var gender = this.getProperties(i)["gender"].toLowerCase();
                 //console.log("trying: " + i + ", gender: " + gender + ", validSet: " + Helpers.stringifyObject(validGendersSet));
                 if (Helpers.arrayContains(validGendersSet, gender))
