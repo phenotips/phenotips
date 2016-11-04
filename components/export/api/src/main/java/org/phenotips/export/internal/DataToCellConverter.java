@@ -379,7 +379,7 @@ public class DataToCellConverter
 
         DataCell sectionHeader =
             new DataCell(this.translationManager.translate("phenotips.export.excel.label.genotype.variant"),
-                0, 0,StyleOption.HEADER);
+                0, 0, StyleOption.HEADER);
         sectionHeader.addStyle(StyleOption.LARGE_HEADER);
         section.addCell(sectionHeader);
 
