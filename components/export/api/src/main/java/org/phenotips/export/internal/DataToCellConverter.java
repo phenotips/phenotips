@@ -980,8 +980,7 @@ public class DataToCellConverter
             "prenatal_phenotype",
             "prenatal_phenotype_code",
             "prenatal_phenotype_combined",
-            "negative_prenatal_phenotype",
-            "prenatal_phenotype_by_section"
+            "negative_prenatal_phenotype"
             };
         /* FIXME These will not work properly in different configurations */
         String[][] headerIds =
@@ -989,8 +988,7 @@ public class DataToCellConverter
             { "name", "positive" },
             { "id", "positive" },
             { "name", "id", "positive" },
-            { "name", "negative" },
-            { "type" }
+            { "name", "negative" }
             };
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
@@ -998,7 +996,7 @@ public class DataToCellConverter
         /* Needed for ordering phenotypes */
         this.prenatalPhenotypeHelper = new ConversionHelpers();
         this.prenatalPhenotypeHelper
-            .featureSetUp(present.contains("positive"), present.contains("negative"), present.contains("type"));
+            .featureSetUp(present.contains("positive"), present.contains("negative"), false);
     }
 
     public DataSection prenatalPhenotypeHeader() throws Exception
@@ -1019,7 +1017,7 @@ public class DataToCellConverter
             section.addCell(cell);
             hX++;
         }
-        for (String headerId : Arrays.asList("type", "name", "id")) {
+        for (String headerId : Arrays.asList("name", "id")) {
             if (!present.contains(headerId)) {
                 continue;
             }
@@ -1055,24 +1053,15 @@ public class DataToCellConverter
 
         this.prenatalPhenotypeHelper.newPatient();
         features = this.prenatalPhenotypeHelper.filterFeaturesByPrenatal(features, true);
-        Boolean categoriesEnabled = present.contains("type");
         List<Feature> sortedFeatures;
-        Map<String, String> sectionFeatureLookup = new HashMap<>();
-        if (!categoriesEnabled) {
-            sortedFeatures = this.prenatalPhenotypeHelper.sortFeaturesSimple(features);
-        } else {
-            sortedFeatures = this.prenatalPhenotypeHelper.sortFeaturesWithSections(features);
-            sectionFeatureLookup = this.prenatalPhenotypeHelper.getSectionFeatureTree();
-        }
+        sortedFeatures = this.prenatalPhenotypeHelper.sortFeaturesSimple(features);
 
         Boolean lastStatus = false;
-        String lastSection = "";
         for (Feature feature : sortedFeatures) {
             x = 0;
 
             if (bothTypes && lastStatus != feature.isPresent()) {
                 lastStatus = feature.isPresent();
-                lastSection = "";
                 DataCell cell = new DataCell(lastStatus
                     ? this.translationManager.translate("yes")
                     : this.translationManager.translate("no"),
@@ -1084,15 +1073,6 @@ public class DataToCellConverter
                 section.addCell(cell);
             }
             if (bothTypes) {
-                x++;
-            }
-            if (categoriesEnabled) {
-                String currentSection = sectionFeatureLookup.get(feature.getId());
-                if (!StringUtils.equals(currentSection, lastSection)) {
-                    DataCell cell = new DataCell(currentSection, x, y);
-                    section.addCell(cell);
-                    lastSection = currentSection;
-                }
                 x++;
             }
             if (present.contains("name")) {
