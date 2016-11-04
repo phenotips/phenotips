@@ -1035,10 +1035,12 @@ public class DataToCellConverter
             }
             y++;
         }
-        /* Creating empties */
-        if (sortedFeatures.size() == 0) {
-            for (int i = 0; i < present.size(); ++i) {
-                DataCell cell = new DataCell("", i, 0);
+        // Creating empties
+        if (sortedFeatures.isEmpty()) {
+            // offset is included to account for the presence of both "positive" and "negative" in "present"
+            int offset = bothTypes ? 1 : 0;
+            for (int emptyX = 0; emptyX < present.size() - offset; emptyX++) {
+                DataCell cell = new DataCell("", emptyX, 0);
                 section.addCell(cell);
             }
         }
