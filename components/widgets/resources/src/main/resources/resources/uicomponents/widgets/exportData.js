@@ -158,16 +158,22 @@ document.observe('xwiki:dom:loading', function() {
               item._suggestPicker = suggestPicker;
 
               // Format the predefined value
-              item.value.split(',').each(function(value) {
-                item._suggestPicker.addItem(value, value, '', '');
-              });
-              item.value = '';
+              // addItem triggers a URL update, so to avoid creating an entry on
+              // the Back button for each iteration of this loop, keep the URL
+              // the same by removing selections from the textbox as they are
+              // added to the suggest picker
+              var selections = item.value.split(',');
+              while (selections.length) {
+                var selection = selections.shift();
+                item.value = selections.join(',');
+                item._suggestPicker.addItem(selection, selection, '', '');
+              }
             }
             if (tableFilters) {
               // Integrate the custom fields
               // 1. find the container element displaying them
               var source = tableFilters.down('input[type="text"][name="' + item.name + '"]');
-              var selectionContainer = source && source.next('.accepted-suggestions');
+              var selectionContainer = source && source != item && source.next('.accepted-suggestions');
               if (selectionContainer) {
                 // 2. find all the values and display them as part of the multi suggest picker
                 var tmp = suggestPicker.silent;
