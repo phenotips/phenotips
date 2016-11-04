@@ -43,8 +43,14 @@
 ##
 ##
 #macro(__variant_head $count $geneObjNumber $geneName $classname $options)##
+#set ($term = $services.vocabularies.hgnc.getTerm("${geneName}"))
+#if ($term)
+  #set ($geneSymbol = $term.symbol)
+#else
+  #set ($geneSymbol = $gene.id)
+#end
 |(%class="pseudoindent"%)##
-|=(% colspan="4" class="variant variant-title gene-$geneObjNumber" %)$services.localization.render("${classname}.variantTable.title", [$geneName, $count]) \\
+|=(% colspan="4" class="variant variant-title gene-$geneObjNumber" %)$services.localization.render("${classname}.variantTable.title", [$geneSymbol, $count]) \\
 (%class="variant-gene-$geneObjNumber variant-title-row variant-hide-heading-$geneObjNumber"%)##
 |(%class="pseudoindent"%)##
 |=(% class="variant var-row-number"  %) #(%%)##

@@ -270,6 +270,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
 
       var className = addTrigger.up('td.variant').className;
       var geneIndex = className.substring(className.lastIndexOf('-') + 1);
+      var geneId = $$('[name="' + this.geneClassName + '_' + geneIndex + '_gene"]')[0].value;
       var geneSymbol = $$('.gene.col-label.gene-' + geneIndex)[0].innerHTML;
 
       //lock the genesymbol input field
@@ -373,7 +374,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       newMoreInfoRow.select('.variant.moreinfo').invoke('observe', 'click', this.areaEditData.bindAsEventListener(this));
       newMoreInfoRow.select('.variant.moreinfo').invoke('click');
 
-      $(this.geneVariantClassName + '_' + varIndex + '_genesymbol').value = geneSymbol;
+      $(this.geneVariantClassName + '_' + varIndex + '_genesymbol').value = geneId;
 
       Event.fire(document, 'xwiki:dom:updated', {elements :[newVariantRow]});
     },
