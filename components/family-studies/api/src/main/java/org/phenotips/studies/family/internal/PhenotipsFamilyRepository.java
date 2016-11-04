@@ -184,6 +184,9 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     @Override
     public Family getFamilyById(String id)
     {
+        if (StringUtils.isEmpty(id)) {
+            return null;
+        }
         DocumentReference reference = this.referenceResolver.resolve(id, Family.DATA_SPACE);
         XWikiContext context = this.provider.get();
         try {
@@ -194,7 +197,6 @@ public class PhenotipsFamilyRepository implements FamilyRepository
         } catch (XWikiException ex) {
             this.logger.error("Failed to load document for family [{}]: {}", id, ex.getMessage(), ex);
         }
-        this.logger.info("Requested family [{}] not found", id);
         return null;
     }
 
