@@ -42,6 +42,14 @@ public interface FamilyTools
     Family createFamily();
 
     /**
+     * Checks if a family with the given identifier exists, but does not check access rights.
+     *
+     * @param familyId family internal identifier
+     * @return true if familyId is an identifier of an existing family
+     */
+    boolean familyExists(String familyId);
+
+    /**
      * Returns family object, or null if doesn't exist or current user has no rights.
      *
      * @param familyId a PhenotTips family ID
@@ -116,13 +124,13 @@ public interface FamilyTools
     boolean currentUserCanDeleteFamily(String familyId, boolean deleteAllMembers);
 
     /**
-     * Checks if the current user has the given right (VIEW/EDIUT/DELETE) for the given family.
+     * Checks if the current user has the given right (VIEW/EDIT/DELETE) for the given family.
      *
-     * @param family The family to check access rights for
-     * @param right The right to check for
-     * @return true if the right is given, false otherwise (or if family is null)
+     * @param familyId the id of the family to check access rights for
+     * @param right the right to check for
+     * @return true if familyId is a valid family id and the right is given, false otherwise
      */
-    boolean currentUserHasAccessRight(Family family, Right right);
+    boolean currentUserHasAccessRight(String familyId, Right right);
 
     /**
      * Checks of the given user can add the given patient to the given family.

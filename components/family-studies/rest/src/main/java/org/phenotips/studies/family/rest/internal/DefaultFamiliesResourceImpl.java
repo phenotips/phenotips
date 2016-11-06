@@ -182,7 +182,9 @@ public class DefaultFamiliesResourceImpl extends XWikiResource implements Famili
                         } else {
                             familyJSON = getFamilySummaryJSON(record, this.uriInfo);
                         }
-                        familyList.put(familyJSON);
+                        if (familyJSON != null) {
+                            familyList.put(familyJSON);
+                        }
                     } catch (Exception ex) {
                         this.logger.error("Error creating family JSON: {}", ex.getMessage(), ex);
                     }
@@ -210,9 +212,12 @@ public class DefaultFamiliesResourceImpl extends XWikiResource implements Famili
     private JSONObject getFullFamilyJSON(String familyID, Object[] summaryData, UriInfo uriInfo)
     {
         Family family = this.familyTools.getFamilyById(familyID);
-        JSONObject familyJSON = family.toJSON();
-        addMetadata(familyJSON, summaryData);
-        return familyJSON;
+        if (family != null) {
+            JSONObject familyJSON = family.toJSON();
+            addMetadata(familyJSON, summaryData);
+            return familyJSON;
+        }
+        return null;
     }
 
     private JSONObject getFamilySummaryJSON(Object[] summaryData, UriInfo uriInfo)
