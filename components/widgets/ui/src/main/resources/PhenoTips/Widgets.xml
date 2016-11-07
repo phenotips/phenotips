@@ -2704,13 +2704,13 @@ return PhenoTips;
       Event.fire(target, "obrowser:expand:finished");
     }
     target.removeClassName('collapsed');
-    target.down('.expand-tool').update(this._getExpandCollapseSymbol(false));
+    target.down('.expand-tool') &amp;&amp; target.down('.expand-tool').update(this._getExpandCollapseSymbol(false));
   },
   _collapseEntry : function(target) {
     if(!target) return;
     target.addClassName('collapsed');
     Event.fire(target, "obrowser:expand:finished");
-    target.down('.expand-tool').update(this._getExpandCollapseSymbol(true));
+    target.down('.expand-tool') &amp;&amp; target.down('.expand-tool').update(this._getExpandCollapseSymbol(true));
   },
   _toggleExpandState : function(target) {
     if (target) {
