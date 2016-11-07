@@ -134,7 +134,7 @@ public class DefaultFamiliesResourceImpl extends XWikiResource implements Famili
     @Override
     public Response listFamilies(Integer start, Integer number, Boolean fullJSON)
     {
-        this.logger.error("Listing families via via REST, start: {} number: {}, fullJSON: {}", start, number, fullJSON);
+        this.logger.debug("Listing families via REST, start: {} number: {}, fullJSON: {}", start, number, fullJSON);
         long startTime = System.nanoTime();
 
         try {
@@ -160,14 +160,14 @@ public class DefaultFamiliesResourceImpl extends XWikiResource implements Famili
             for (Object[] record : records) {
 
                 String familyID = (String) record[0];
-                this.logger.warn("REST: Found family: {}", familyID);
+                this.logger.debug("REST: Found family: {}", familyID);
 
                 if (!validateSummaryObject(record)) {
-                    this.logger.warn("REST: Skipping family, misformatted data");
+                    this.logger.debug("REST: Skipping family, misformatted data");
                     continue;
                 }
                 if (!hasViewRights(familyID, userProfileDocument)) {
-                    this.logger.warn("REST: Skipping family, no view rights for the user");
+                    this.logger.debug("REST: Skipping family, no view rights for the user");
                     continue;
                 }
 
@@ -175,19 +175,7 @@ public class DefaultFamiliesResourceImpl extends XWikiResource implements Famili
 
                 // Since raw queries can't take into account access rights, we must do our own paging with rights checks
                 if (++skipped > start && familyList.length() < number) {
-                    JSONObject familyJSON;
-                    try {
-                        if (fullJSON) {
-                            familyJSON = getFullFamilyJSON(familyID, record, this.uriInfo);
-                        } else {
-                            familyJSON = getFamilySummaryJSON(record, this.uriInfo);
-                        }
-                        if (familyJSON != null) {
-                            familyList.put(familyJSON);
-                        }
-                    } catch (Exception ex) {
-                        this.logger.error("Error creating family JSON: {}", ex.getMessage(), ex);
-                    }
+                    this.addRecordToList(familyList, fullJSON, familyID, record);
                 }
             }
 
@@ -200,7 +188,7 @@ public class DefaultFamiliesResourceImpl extends XWikiResource implements Famili
             response.put(METADATA_FIELD_NAME, metadata);
             response.put(DATA_FIELD_NAME, familyList);
 
-            this.logger.error("Time to complete request: {} ms", Math.round((System.nanoTime() - startTime) / 1000000));
+            this.logger.debug("Time to complete request: {} ms", Math.round((System.nanoTime() - startTime) / 1000000));
 
             return Response.ok(response, MediaType.APPLICATION_JSON_TYPE).build();
         } catch (Exception ex) {
@@ -208,6 +196,24 @@ public class DefaultFamiliesResourceImpl extends XWikiResource implements Famili
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
     }
+
+    private void addRecordToList(JSONArray familyList, Boolean fullJSON, String familyID, Object[] summaryData)
+    {
+        JSONObject familyJSON;
+        try {
+            if (fullJSON) {
+                familyJSON = getFullFamilyJSON(familyID, summaryData, this.uriInfo);
+            } else {
+                familyJSON = getFamilySummaryJSON(summaryData, this.uriInfo);
+            }
+            if (familyJSON != null) {
+                familyList.put(familyJSON);
+            }
+        } catch (Exception ex) {
+            this.logger.error("Error creating family JSON for family {}: {}", familyID, ex);
+        }
+    }
+
 
     private JSONObject getFullFamilyJSON(String familyID, Object[] summaryData, UriInfo uriInfo)
     {
