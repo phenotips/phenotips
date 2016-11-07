@@ -1324,9 +1324,8 @@ document.observe('xwiki:dom:loaded', function()
                 elt.__termCategory &amp;&amp;  elt.__termCategory.insert(negative) || (elt.__termCategory = negative);
             } else if (selected == 'yes') {
               var element = event.findElement('.entry');
-              if (!element.down('.descendents') || element.hasClassName('collapsed')) {
-                var obrowser = event.findElement('.dropdown').previous('.dropdown-root').down('label.yes input')._ontologyBrowser;
-                obrowser._toggleExpandState(element);
+              if (element.down('.expand-tool') &amp;&amp; (!element.down('.descendents') || element.hasClassName('collapsed'))) {
+                ynpickerElt._obrowser._toggleExpandState(element);
               }
             }
             // both yes &amp; no:
