@@ -79,9 +79,12 @@
   #if (!$section_disabled)
   #set ($sectionContent = '')
   #foreach ($f in $services.uix.getExtensions($s.id, {'sortByParameter' : 'order'}))
+    #set ($extension_disabled = ($f.getParameters().get('enabled') == 'false'))
+    #if (!$extension_disabled)
       #set ($extension_required = ($f.getParameters().get('required') == 'true'))
       #set ($itemContent = $services.rendering.render($f.execute(), 'xhtml/1.0').trim())
       #set ($sectionContent = $sectionContent.concat($itemContent))
+    #end
   #end
   #if ($sectionContent.trim() != '')
     (% class="clear clinical-info $stringtool.substringAfterLast($s.id, '.') chapter" %)(((
