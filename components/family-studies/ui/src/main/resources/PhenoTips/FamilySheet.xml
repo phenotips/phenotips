@@ -62,7 +62,7 @@
 (% class="before-family-data" %)(((
 #foreach ($e in $services.uix.getExtensions('phenotips.familyRecord.before', {'sortByParameter' : 'order'}))
   #set ($hasExtensionsBefore = true)
-  #set ($extension_disabled = ($e.getParameters().get('disabled') == 'true'))
+  #set ($extension_disabled = ($e.getParameters().get('enabled') == 'false'))
   #if (!$extension_disabled)
     {{html wiki=false clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
 
