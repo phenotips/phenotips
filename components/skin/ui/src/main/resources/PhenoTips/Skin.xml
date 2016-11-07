@@ -571,6 +571,10 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
 .actionmenu {
   height: 1.8em;
 }
+/** Bug in Colibri: although the page body has 25px padding, the menus on top have 10px + 10px padding. */
+.rightmenu {
+  padding-right: 15px;
+}
 /** Bug in Colibri: a custom font is used instead of the one used everywhere else. */
 .actionmenu a, .actionmenu a:visited {
   font-family: inherit;
@@ -599,10 +603,10 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
 }
 #phenotips-globalTools .search input {
   margin-left: 0;
-  margin-right: 5px;
+  margin-right: 0;
   margin-top: 0.05em;
   min-height: 20px;
-  padding: 0 3px;
+  padding: 0 0 0 3px;
   width: 20em;
 }
 
@@ -933,7 +937,9 @@ h1:target, h2:target, h3:target {
   line-height: 16px;
   min-height: 16px;
 }
-
+.menu-horizontal li:last-of-type {
+  padding-right: 10px;
+}
 .menu-horizontal img {
   vertical-align: middle;
 }
