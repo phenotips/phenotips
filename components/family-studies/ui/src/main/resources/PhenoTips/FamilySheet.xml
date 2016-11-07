@@ -75,7 +75,7 @@
 ##
 ## Extensions making up the main content, the actual information about the patient
 #foreach ($s in $services.uix.getExtensions('phenotips.familyRecord.content', {'sortByParameter' : 'order'}))
-  #set ($section_disabled = ($e.getParameters().get('disabled') == 'true'))
+  #set ($section_disabled = ($e.getParameters().get('enabled') == 'false'))
   #if (!$section_disabled)
   #set ($sectionContent = '')
   #foreach ($f in $services.uix.getExtensions($s.id, {'sortByParameter' : 'order'}))
