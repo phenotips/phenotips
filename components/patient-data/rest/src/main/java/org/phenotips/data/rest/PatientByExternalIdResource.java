@@ -82,7 +82,6 @@ public interface PatientByExternalIdResource
      * @return a status message
      */
     @DELETE
-    @Consumes(MediaType.APPLICATION_JSON)
     @RequiredAccess("edit")
     Response deletePatient(@PathParam("eid") String eid);
 }

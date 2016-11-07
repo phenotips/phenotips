@@ -57,7 +57,6 @@ public interface FamilyResource
      * @return a status message
      */
     @DELETE
-    @Consumes(MediaType.APPLICATION_JSON)
     Response deleteFamily(@PathParam("id") String id,
         @QueryParam("delete_all_members") @DefaultValue("false") Boolean deleteMembers);
 }

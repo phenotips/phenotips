@@ -79,7 +79,6 @@ public interface PatientResource
      * @return a status message
      */
     @DELETE
-    @Consumes(MediaType.APPLICATION_JSON)
     @RequiredAccess("edit")
     Response deletePatient(@PathParam("patient-id") String id);
 }
