@@ -97,8 +97,11 @@
 ##
 ## Extensions displayed after the content
 #foreach ($e in $services.uix.getExtensions('phenotips.familyRecord.after', {'sortByParameter' : 'order'}))
+  #set ($extension_disabled = ($e.getParameters().get('enabled') == 'false'))
+  #if (!$extension_disabled)
 
-  {{html clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
+    {{html clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
+  #end
 #end
 #end
 {{/velocit}}</content>
