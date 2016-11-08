@@ -8,10 +8,12 @@
  */
 define([
         "pedigree/pedigreeEditorParameters",
-        "pedigree/view/printEngine"
+        "pedigree/view/printEngine",
+        "pedigree/view/graphicHelpers"
     ], function(
         PedigreeEditorParameters,
-        PrintEngine
+        PrintEngine,
+        GraphicHelpers
     ){
     var PrintDialog = Class.create( {
 
@@ -22,6 +24,8 @@ define([
             this._landscape = true;
             this._zoomLevel = 100;
             this._moveHorizontally = 0;
+            this._minPreviewHeight = PedigreeEditorParameters.attributes.minPrintPreviewPaneHeight;
+            this._maxPreviewHeight = PedigreeEditorParameters.attributes.maxPrintPreviewPaneHeight;
             this._printPageSet = {};
             this._printEngine = new PrintEngine();
 
@@ -206,23 +210,7 @@ define([
          * Attempts to make preview window fit on screen by adjusting the preview pane height
          */
         _adjustPreviewWindowHeight: function() {
-            var canvas = editor.getWorkspace().canvas || $('body');
-            var pedigreeDialogue = $$('.pedigree-print-dialog')[0];
-            if (!pedigreeDialogue) {
-                return;
-            }
-            var screenHeight = canvas.getHeight() - 10;
-            var dialogueHeight = pedigreeDialogue.getHeight();
-            var freeSpace = screenHeight - dialogueHeight;
-            var previewPaneHeight = $('printPreview').getHeight();
-            if (freeSpace < 0) {
-                var newPreviewHeight = Math.max(PedigreeEditorParameters.attributes.minPrintPreviewPaneHeight, previewPaneHeight + freeSpace);
-                $('printPreview').style.height = newPreviewHeight + "px";
-            }
-            if (freeSpace > 0 && previewPaneHeight < PedigreeEditorParameters.attributes.maxPrintPreviewPaneHeight) {
-                var newPreviewHeight = Math.min(PedigreeEditorParameters.attributes.maxPrintPreviewPaneHeight, previewPaneHeight + freeSpace);
-                $('printPreview').style.height = newPreviewHeight + "px";
-            }
+            GraphicHelpers.adjustPreviewWindowHeight("pedigree-print-dialog", 'printPreview', this._minPreviewHeight, this._maxPreviewHeight);
         },
 
         /**
