@@ -57,16 +57,15 @@ $services.localization.render('defaultlanguage')##
  * @param $id (optional) the HTML id of the element
  *#
 #macro(drawerTopItemStart $text $id)
-<div class="actionmenu language-block" id="${id}_menu">
+<div class="language-block" id="${id}_menu">
   <div class="rightmenu">
-    <select onchange="if (this.value) window.location.href=this.value">
+    <label class="tme">$services.localization.render('language'): <select onchange="if (this.value) window.location.href=this.value">
 #end
 #**
  * Close an foldable drawer item
  *#
 #macro(drawerTopItemStop)
-    </select>
-    <a class="tme">$services.localization.render('language'): </a>
+      </select></label>
   </div>
 </div>
 #end
