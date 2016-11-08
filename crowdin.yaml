@@ -2,3 +2,9 @@ files:
   - 
     source: /**/ApplicationResources.properties
     translation: /**/ApplicationResources_%two_letters_code%.properties
+  - 
+    source: /**/*Translations.xml
+    translation: /**/%file_name%.%two_letters_code%.xml
+    content_segmentation: 0
+    translatable_elements:
+      - /xwikidoc/content
