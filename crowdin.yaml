@@ -1,0 +1,4 @@
+files:
+  - 
+    source: '**/ApplicationResources.properties'
+    translation: '%original_path%/ApplicationResources_%two_letters_code%.properties'
