@@ -606,7 +606,7 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   margin-right: 0;
   margin-top: 0.05em;
   min-height: 20px;
-  padding: 0 0 0 3px;
+  padding: 0 3px;
   width: 20em;
 }
 
