@@ -571,6 +571,14 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
 .actionmenu {
   height: 1.8em;
 }
+.actionmenu a, .actionmenu a:visited {
+  /* (menu height - line height) / 2 = (1.8em - 1.2em) / 2 = 0.3em */
+  padding-top: .3em;
+  line-height: 1.2em;
+}
+.actionmenu a strong {
+  line-height: inherit;
+}
 /** Bug in Colibri: although the page body has 25px padding, the menus on top have 10px + 10px padding. */
 .rightmenu {
   padding-right: 15px;
@@ -602,11 +610,10 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   font-size: 1em;
 }
 #phenotips-globalTools .search input {
-  margin-left: 0;
-  margin-right: 0;
-  margin-top: 0.05em;
-  min-height: 20px;
+  font-size: 1em;
+  margin: -1px;
   padding: 0 3px;
+  vertical-align: baseline;
   width: 20em;
 }
 
@@ -921,20 +928,25 @@ h1:target, h2:target, h3:target {
   margin: auto;
 }
 
-.menu-horizontal ul * {
-  line-height: normal;
-}
-
 .menu-horizontal li {
   cursor: default;
   line-height: 16px;
   min-height: 16px;
+  padding: .3em 1.3em;
 }
+
 .menu-horizontal li:last-of-type {
   padding-right: 10px;
 }
+.menu .fa:before {
+  line-height: 1em !important;
+}
 .menu-horizontal img {
   vertical-align: middle;
+}
+
+.menu-horizontal &gt; ul * {
+  line-height: 1.2em;
 }
 
 /* Horizontal separator */
@@ -949,12 +961,8 @@ h1:target, h2:target, h3:target {
 
 .menu.menu-horizontal {
   font-size: .85em;
-  height: 2em;
+  height: 1.8em;
   padding-left: 25px;
-}
-
-.menu-horizontal li {
-  padding: 0.2em 1.3em;
 }
 
 .menu-horizontal li li:empty {
@@ -981,6 +989,7 @@ h1:target, h2:target, h3:target {
 .menu-horizontal &gt; ul &gt; li &gt; .xDropdown:after {
   content: '\25BC';
   font-size: .8em;
+  line-height: 1em;
   margin-left: .5em;
 }
 
@@ -989,7 +998,7 @@ h1:target, h2:target, h3:target {
   border-radius: 0 0 .8em .8em;
   box-shadow: 0 1px 1px $theme.textColor;
   display: none;
-  margin: 0.2em 0 0 -1.3em;
+  margin: 0.3em 0 0 -1.3em;
   padding-bottom: .3em;
   position: absolute;
   z-index: 1000;
@@ -1150,7 +1159,7 @@ h1:target, h2:target, h3:target {
   border: 0 none;
   color: $theme.menuLinkColor;
   font-size: 1em;
-  height: 1.833em;
+  line-height: 1.2em;
   padding: 0 0 0 10px;
   text-shadow: none;
 }
@@ -1160,7 +1169,8 @@ h1:target, h2:target, h3:target {
 }
 
 .page-actions .menu-horizontal &gt; ul &gt; li {
-  padding: 0.2em 1.3em 0.2em 0.3em;
+  /* (menu height - line height) / 2 = (1.8em - 1.2em) / 2 = 0.3em */
+  padding: 0.3em 1.3em 0.3em 0.3em;
 }
 .page-actions .menu-horizontal &gt; ul {
   white-space: nowrap;
@@ -1175,7 +1185,7 @@ h1:target, h2:target, h3:target {
   /* Buttons without a border in IE don't trigger the :hover state */
   border: 1px solid transparent !important;
   color: inherit !important;
-  margin: 0 !important;
+  margin: -1px !important;
   padding: 0 !important;
   font-size: inherit !important;
   font-family: inherit !important;
