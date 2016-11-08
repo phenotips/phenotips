@@ -56,7 +56,9 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 /**
  * Migration for PhenoTips issue PT-2777: Currently genes are being stored internally as gene symbols, it is better to
  * store them using Ensembl ID, as this is more stable.
- * For each {@code gene} field, switch the value from the HGNC symbol to the Ensembl ID.
+ * For each {@code gene} field in {@code GeneClass}, switch the value from the HGNC symbol to the Ensembl ID.
+ * For each {@code genesymbol} field in {@code GeneVariantClass}, rename the field to {@code gene} and switch the value
+ * from HGNC symbol to the Ensembl ID.
  *
  * @version $Id$
  * @since 1.3M4
@@ -69,10 +71,15 @@ public class R71499PhenoTips2777DataMigration extends AbstractHibernateDataMigra
 {
     private static final String GENE_NAME = "gene";
 
+    private static final String OLD_GENE_SYMBOL_NAME = "genesymbol";
+
     private static final String HGNC = "HGNC";
 
     private static final EntityReference GENE_CLASS = new EntityReference("GeneClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
+
+    private static final EntityReference GENE_VARIANT_CLASS = new EntityReference("GeneVariantClass",
+        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /** Resolves unprefixed document names to the current wiki. */
     @Inject
@@ -96,7 +103,8 @@ public class R71499PhenoTips2777DataMigration extends AbstractHibernateDataMigra
     @Override
     public String getDescription()
     {
-        return "Migrate all existing gene values from HGNC symbols to Ensembl IDs";
+        return "Migrate all existing gene values from HGNC symbols to Ensembl IDs; rename all genesymbol values to gene"
+            + "and migrate from HGNC symbols to Ensembl IDs";
     }
 
     @Override
@@ -117,18 +125,23 @@ public class R71499PhenoTips2777DataMigration extends AbstractHibernateDataMigra
         final XWikiContext context = getXWikiContext();
         final XWiki xwiki = context.getWiki();
         final DocumentReference geneClassReference = this.entityResolver.resolve(GENE_CLASS);
+        final DocumentReference geneVariantClassReference = this.entityResolver.resolve(GENE_VARIANT_CLASS);
 
         final Query q =
                 session.createQuery("select distinct o.name from BaseObject o where o.className = '"
-                + this.serializer.serialize(geneClassReference)
+                + this.serializer.serialize(geneClassReference) + "' or o.className = '"
+                + this.serializer.serialize(geneVariantClassReference)
                 + "' and exists(from StringProperty p where p.id.id = o.id and p.id.name = '"
-                + GENE_NAME + "' and p.value <> '')");
+                + GENE_NAME + "' or p.id.name = '" + OLD_GENE_SYMBOL_NAME + "' and p.value <> '')");
 
         @SuppressWarnings("unchecked")
         List<String> docs = q.list();
         for (String docName : docs) {
             final XWikiDocument doc = xwiki.getDocument(this.resolver.resolve(docName), context);
-            migrateGeneValues(doc, geneClassReference);
+            // Migrate all "gene" fields to Ensembl IDs.
+            migrateGenes(doc, geneClassReference);
+            // Rename all "genesymbol" fields to "gene", and migrate to Ensembl IDs.
+            migrateGeneVariants(doc, geneVariantClassReference);
             doc.setComment(getDescription());
             doc.setMinorEdit(true);
             try {
@@ -144,24 +157,78 @@ public class R71499PhenoTips2777DataMigration extends AbstractHibernateDataMigra
         return null;
     }
 
-    private void migrateGeneValues(final XWikiDocument doc, final DocumentReference geneClassReference)
-            throws HibernateException, XWikiException
+    /**
+     * For each {@code gene} field, switch the value from HGNC symbol to Ensembl ID, if provided.
+     *
+     * @param doc XWiki document
+     * @param geneClassReference reference to {@code GeneClass}
+     * @throws XWikiException if property value cannot be set
+     */
+    private void migrateGenes(final XWikiDocument doc, final DocumentReference geneClassReference) throws XWikiException
     {
         final List<BaseObject> genes = doc.getXObjects(geneClassReference);
         if (genes == null) {
             return;
         }
         for (final BaseObject gene : genes) {
-            if (gene == null) {
-                continue;
-            }
-            final StringProperty oldGeneNameProp = (StringProperty) gene.get(GENE_NAME);
-            if (oldGeneNameProp == null || StringUtils.isBlank(oldGeneNameProp.getValue())) {
-                continue;
-            }
-            final String ensemblId = getEnsemblId(oldGeneNameProp.getValue());
-            gene.setStringValue(GENE_NAME, ensemblId);
+            setPropertyValue(gene, GENE_NAME);
         }
+    }
+
+    /**
+     * For each {@code genesymbol} field, rename it to {@code gene} and swtich the value from HGNC symbol to Ensembl ID,
+     * if provided.
+     *
+     * @param doc XWiki document
+     * @param geneVariantClassReference reference to {@code GeneVariantClass}
+     * @throws XWikiException if property value cannot be set
+     */
+    private void migrateGeneVariants(final XWikiDocument doc, final DocumentReference geneVariantClassReference)
+        throws XWikiException
+    {
+        final List<BaseObject> variants = doc.getXObjects(geneVariantClassReference);
+        if (variants == null) {
+            return;
+        }
+        for (final BaseObject variant : variants) {
+            final StringProperty oldGeneSymbol = setPropertyValue(variant, OLD_GENE_SYMBOL_NAME);
+
+            // Rename all "genesymbol" properties to "gene".
+            if (oldGeneSymbol != null) {
+                variant.removeField(OLD_GENE_SYMBOL_NAME);
+                final StringProperty newGeneSymbol = (StringProperty) oldGeneSymbol.clone();
+                newGeneSymbol.setName(GENE_NAME);
+                variant.addField(GENE_NAME, newGeneSymbol);
+            }
+        }
+    }
+
+    /**
+     * Sets the value to Ensembl ID for a given property.
+     *
+     * @param baseObject {@code BaseObject} containing the property name
+     * @param propertyName the name of the property, for example {@code gene}
+     * @return {@code StringProperty} for the provided property name
+     * @throws XWikiException if property value cannot be set
+     */
+    private StringProperty setPropertyValue(final BaseObject baseObject, final String propertyName)
+        throws XWikiException
+    {
+        if (baseObject == null) {
+            return null;
+        }
+
+        final StringProperty oldBaseObjProp = (StringProperty) baseObject.get(propertyName);
+        // Want to return oldBaseObjProp in case it is not null, that way it can still be renamed if the
+        // genesymbol property, for whatever reason, contains no value.
+        final String geneSymbol = oldBaseObjProp.getValue();
+        if (StringUtils.isBlank(geneSymbol)) {
+            return oldBaseObjProp;
+        }
+
+        final String ensemblId = getEnsemblId(geneSymbol);
+        baseObject.setStringValue(propertyName, ensemblId);
+        return oldBaseObjProp;
     }
 
     /**
