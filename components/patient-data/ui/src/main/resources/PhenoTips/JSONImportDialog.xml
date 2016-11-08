@@ -128,7 +128,7 @@
       this.mainDiv = new Element('div', {'class': 'import-selector'});
       this.jsonData = new Element("textarea", {
         "id": "import",
-        "placeholder": "$!{escapetool.javascript($services.localization.render('phenotips.patientData.jsonImportDialog.textarea.placeholder'))}",
+        "placeholder": "$!{escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.data.placeholder'))}",
         "value": "",
         "class": "import-textarea"
       });
@@ -148,7 +148,7 @@
       buttons.insert(new Element('input',
         {type: 'button',
           name : 'import',
-          'value': "$escapetool.javascript($services.localization.render('phenotips.patientData.buttons.import'))",
+          'value': "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.submit'))",
           'class' : 'button',
           'id': 'import_button'
         }).wrap('span', {'class' : 'buttonwrapper'}));
@@ -156,7 +156,7 @@
       buttons.insert(new Element('input',
         {type: 'button',
           name : 'cancel',
-          'value': "$escapetool.javascript($services.localization.render('phenotips.patientData.buttons.cancel'))",
+          'value': "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.cancel'))",
           'class' : 'button secondary'})
         .wrap('span', {'class' : 'buttonwrapper'}));
 
@@ -186,31 +186,11 @@
     importServices : {
       'single-patient-import' : {
         'service' : XWiki.contextPath + '/rest/patients/' + XWiki.currentDocument.page + '?method=PUT',
-        'modalTitle' : "$escapetool.javascript($services.localization.render('phenotips.patientData.jsonImportDialog.singleImport.title'))",
-        'callback' : function (event, importDialog) {
-          event.stop();
-          if (typeof event.findElement('.editbody') !== "undefined") {
-            // We are in edit mode.
-            var importAfterSave = function() {
-              document.stopObserving('xwiki:document:saved', importAfterSave);
-            };
-            importDialog.dialog.show();
-            document.observe('xwiki:document:saved', importAfterSave);
-            document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
-          } else {
-            // View mode
-            importDialog.dialog.show();
-          }
-          importDialog.patientId = event.target.getAttribute("content");
-        }
+        'modalTitle' : "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.title.singlePatient'))"
       },
       'multi-patient-import' : {
         'service' : XWiki.contextPath + 'rest/patients',
-        'modalTitle' : "$escapetool.javascript($services.localization.render('phenotips.patientData.jsonImportDialog.multiImport.title'))",
-        'callback' : function (event, importDialog) {
-           event.stop();
-           importDialog.dialog.show();
-        }
+        'modalTitle' : "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.title.multiplePatients'))"
       }
     },
 
@@ -234,7 +214,8 @@
       if (!this.dialog) {
         this.createDialog();
       }
-      this._builder.callback(event, this);
+      event.stop();
+      this.dialog.show();
     },
 
     createDialog : function() {
@@ -255,19 +236,22 @@
     _updatePatientValues : function (importVal) {
       var _this = this;
 
-      var notificationMsg = "$escapetool.javascript($services.localization.render('phenotips.patientData.jsonImportDialog.longWaitWarning'))";
+      var notificationMsg = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.longWaitWarning'))";
       this.$body._x_notification = new XWiki.widgets.Notification(notificationMsg, "inprogress");
 
       new Ajax.Request(_this._builder.service, {
-        method: 'POST',
-        parameters: importVal,
+        method : 'POST',
+        parameters : importVal,
         contentType : 'application/json',
-        onSuccess: function() {
-          var notificationMsg = "$escapetool.javascript($services.localization.render('phenotips.patientData.jsonImportDialog.importSuccess'))";
+        on304 : function (response) {
+          response.request.options.onSuccess(response);
+        },
+        onSuccess : function() {
+          var notificationMsg = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.success'))";
           _this.$body._x_notification.replace(new XWiki.widgets.Notification(notificationMsg, "done"));
           window.location.reload();
         },
-        onFailure: function(response) {
+        onFailure : function(response) {
           var failureMsg = _this._generateFailureReason(response.status);
           _this.$body._x_notification.replace(new XWiki.widgets.Notification(failureMsg, "error"));
         }
@@ -291,9 +275,9 @@
 
         var fileUploadWrapper = new Element('div', {'class' : 'file-select-block-wrapper'});
 
-        var uploadButtonName = "$escapetool.javascript($services.localization.render('phenotips.patientData.buttons.importFileSelect'))";
+        var uploadButtonName = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.import.fileUpload'))";
 
-        var uploadPromptString = "$escapetool.javascript($services.localization.render('phenotips.patientData.jsonImportDialog.sectionTitles.import'))";
+        var uploadPromptString = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.data.label'))";
 
         var uploadButton = '&lt;input class="button file-select-button" type="button" value="' + uploadButtonName + '"&gt;&lt;/input&gt;'
 
@@ -311,7 +295,7 @@
         this.mainDiv.insertBefore(fileUploadWrapper, this.jsonData).insert(uploadFileSelector);
       } else {
         this.mainDiv.insert(new Element('div', {'class': 'box infomessage import-warning-nofileupload'})
-          .update("$escapetool.javascript($services.localization.render('phenotips.patientData.jsonImportDialog.fileUploadNotSupported'))"));
+          .update("$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.warning.fileUploadNotSupported'))"));
       }
     },
 
@@ -328,23 +312,20 @@
       var response;
 
       switch (status) {
-        case 304 :
-          response = "$escapetool.javascript($services.localization.render('phenotips.patientData.jsonImportDialog.notModified'))";
-          break;
         case 401 :
-          response = "$escapetool.javascript($services.localization.render('phenotips.patientData.jsonImportDialog.notAuthenticated'))";
+          response = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.error.notAuthenticated'))";
           break;
         case 403 :
-          response = "$escapetool.javascript($services.localization.render('phenotips.patientData.jsonImportDialog.notAuthorized'))";
+          response = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.error.notAuthorized'))";
           break;
         case 500 :
-          response = "$escapetool.javascript($services.localization.render('phenotips.patientData.jsonImportDialog.patientCreateFailed'))";
+          response = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.error.patientCreationFailed'))";
           break;
         case 404 :
-          response = "$escapetool.javascript($services.localization.render('phenotips.patientData.jsonImportDialog.noPatientRecord'))";
+          response = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.error.noSuchPatient'))";
           break;
         default :
-          response = "$escapetool.javascript($services.localization.render('phenotips.patientData.jsonImportDialog.patientCreateFailed'))";
+          response = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.error.patientCreationFailed'))";
       }
       return response;
     },
@@ -494,7 +475,7 @@
 }
 
 .import-selector .import-textarea {
-  height: 12em;
+  height: 22ex;
   resize: vertical;
   margin: 1em auto;
 }
