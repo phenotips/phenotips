@@ -239,15 +239,10 @@ public class DefaultReceivePatientData implements ReceivePatientData
         return response;
     }
 
-    protected XWikiDocument getPatientDocument(Patient patient) throws Exception
-    {
-        return (XWikiDocument) this.bridge.getDocument(patient.getDocument());
-    }
-
     protected String getPatientGUID(Patient patient)
     {
         try {
-            XWikiDocument doc = getPatientDocument(patient);
+            XWikiDocument doc = patient.getXDocument();
             String guid = doc.getXObject(Patient.CLASS_REFERENCE).getGuid();
             return guid;
         } catch (Exception ex) {
@@ -259,7 +254,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
     protected String getPatientURL(Patient patient, XWikiContext context)
     {
         try {
-            XWikiDocument doc = getPatientDocument(patient);
+            XWikiDocument doc = patient.getXDocument();
             String url = doc.getURL("view", context);
             return url;
         } catch (Exception ex) {
@@ -273,7 +268,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
         try {
             String guid = getPatientGUID(patient);
             String url = getPatientURL(patient, context);
-            String id = patient.getDocument().getName();
+            String id = patient.getId();
 
             JSONObject response = generateSuccessfulResponse();
             response.put(ShareProtocol.SERVER_JSON_PUSH_KEY_NAME_PATIENTGUID, guid);
@@ -519,12 +514,16 @@ public class DefaultReceivePatientData implements ReceivePatientData
                 if (!userCanAccessPatient(userName, affectedPatient)) {
                     return generateFailedActionResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_GUIDACCESSDENIED);
                 }
-                this.logger.warn("Loaded existing patient [{}] successfully", affectedPatient.getDocument().getName());
+                this.logger.warn("Loaded existing patient [{}] successfully", affectedPatient.getId());
             } else {
 
                 affectedPatient = this.patientRepository.create(user.getProfileDocument());
+                if (affectedPatient == null) {
+                    this.logger.error("Can not create new patient");
+                    return generateFailedActionResponse();
+                }
 
-                XWikiDocument doc = getPatientDocument(affectedPatient);
+                XWikiDocument doc = affectedPatient.getXDocument();
                 doc.setAuthorReference(user.getProfileDocument());
 
                 // assign ownership to group (if provided) or to the user, and set access rights
@@ -535,11 +534,6 @@ public class DefaultReceivePatientData implements ReceivePatientData
                         this.permissionManager.resolveAccessLevel("manage"));
                 } else {
                     this.permissionManager.getPatientAccess(affectedPatient).setOwner(user.getProfileDocument());
-                }
-
-                if (affectedPatient == null) {
-                    this.logger.error("Can not create new patient");
-                    return generateFailedActionResponse();
                 }
 
                 this.logger.warn("Created new patient successfully");
@@ -748,7 +742,8 @@ public class DefaultReceivePatientData implements ReceivePatientData
             }
 
             boolean hasEditRights =
-                this.authService.hasAccess(this.userManager.getUser(userName), Right.EDIT, patient.getDocument());
+                this.authService.hasAccess(this.userManager.getUser(userName), Right.EDIT,
+                        patient.getDocumentReference());
             if (hasEditRights) {
                 return true;
             }

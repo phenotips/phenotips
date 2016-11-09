@@ -61,7 +61,7 @@ $!response.setContentType('application/json')##
   $jsontool.serialize($result)
   #break
 #end
-#set ($result.source_url = $xwiki.getDocument($patient.document).externalURL)
+#set ($result.source_url = $patient.getSecureDocument().externalURL)
 #set ($onset = $patient.getData('global-qualifiers').global_age_of_onset)
 #if ($onset)
   #set ($result.global_age_of_onset = {'id' : $onset.id, 'label' : $onset.name})
