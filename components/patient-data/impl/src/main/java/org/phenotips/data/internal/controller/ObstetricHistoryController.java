@@ -23,8 +23,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
-import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
@@ -88,10 +86,6 @@ public class ObstetricHistoryController implements PatientDataController<Integer
     @Inject
     private Provider<XWikiContext> xcontext;
 
-    /** Provides access to the underlying data storage. */
-    @Inject
-    private DocumentAccessBridge documentAccessBridge;
-
     @Override
     public String getName()
     {
@@ -102,10 +96,10 @@ public class ObstetricHistoryController implements PatientDataController<Integer
     public PatientData<Integer> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getXDocument();
             BaseObject data = doc.getXObject(getXClassReference());
             if (data == null) {
-                this.logger.debug("No data for patient [{}]", patient.getDocument());
+                this.logger.debug("No data for patient [{}]", patient.getId());
                 return null;
             }
             Map<String, Integer> result = new LinkedHashMap<>();
@@ -119,21 +113,20 @@ public class ObstetricHistoryController implements PatientDataController<Integer
                 return new DictionaryPatientData<>(getName(), result);
             }
         } catch (Exception ex) {
-            this.logger.error("Could not find requested document or some unforeseen"
-                + " error has occurred during controller loading ", ex.getMessage());
+            this.logger.error(ERROR_MESSAGE_LOAD_FAILED, ex.getMessage());
         }
         return null;
     }
 
     @Override
-    public void save(Patient patient, DocumentModelBridge doc)
+    public void save(Patient patient)
     {
         PatientData<Integer> data = patient.getData(getName());
         if (data == null || !data.isNamed()) {
             return;
         }
         XWikiContext context = this.xcontext.get();
-        BaseObject o = ((XWikiDocument) doc).getXObject(getXClassReference(), true, context);
+        BaseObject o = patient.getXDocument().getXObject(getXClassReference(), true, context);
         for (String property : getProperties()) {
             o.set(PREFIX + property, data.get(property), context);
         }

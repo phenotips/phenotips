@@ -599,9 +599,7 @@ public class DataToCellConverter
 
     public DataSection documentInfoBody(Patient patient) throws Exception
     {
-        @SuppressWarnings("deprecation")
-        DocumentAccessBridge dab = Utils.getComponent(DocumentAccessBridge.class);
-        XWikiDocument patientDoc = (XWikiDocument) dab.getDocument(patient.getDocument());
+        XWikiDocument patientDoc = patient.getXDocument();
         String sectionName = "documentInfo";
         Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present == null || present.isEmpty()) {

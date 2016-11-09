@@ -340,7 +340,7 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
         JSONObject result = new JSONObject();
 
         if (isFieldIncluded(selectedFields, JSON_KEY_ID)) {
-            result.put(JSON_KEY_ID, getDocument().getName());
+            result.put(JSON_KEY_ID, getId());
         }
 
         if (getReporter() != null && isFieldIncluded(selectedFields, JSON_KEY_REPORTER)) {
@@ -541,7 +541,7 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
                     PatientData<?> patientData = serializer.readJSON(json);
                     if (patientData != null) {
                         this.extraData.put(patientData.getName(), patientData);
-                        serializer.save(this, this.document);
+                        serializer.save(this);
                         this.logger.info("Successfully updated patient form JSON using serializer [{}]",
                             serializer.getName());
                     }

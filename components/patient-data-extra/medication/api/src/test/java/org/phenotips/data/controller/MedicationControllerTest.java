@@ -15,11 +15,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data;
+package org.phenotips.data.controller;
 
+import org.phenotips.data.DictionaryPatientData;
+import org.phenotips.data.IndexedPatientData;
+import org.phenotips.data.Medication;
+import org.phenotips.data.MedicationEffect;
+import org.phenotips.data.Patient;
+import org.phenotips.data.PatientData;
+import org.phenotips.data.PatientDataController;
 import org.phenotips.data.internal.controller.MedicationController;
-
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -92,9 +97,8 @@ public class MedicationControllerTest
     public void setup() throws Exception
     {
         MockitoAnnotations.initMocks(this);
-        when(this.patient.getDocument()).thenReturn(this.docRef);
-        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
-        when(dab.getDocument(this.docRef)).thenReturn(this.doc);
+        when(this.patient.getDocumentReference()).thenReturn(this.docRef);
+        when(this.patient.getXDocument()).thenReturn(this.doc);
 
         when(this.obj1.getStringValue("name")).thenReturn("n");
         when(this.obj1.getStringValue("genericName")).thenReturn("gn");
@@ -188,8 +192,7 @@ public class MedicationControllerTest
     @Test
     public void loadWithExceptionReturnsNull() throws Exception
     {
-        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
-        when(dab.getDocument(this.docRef)).thenThrow(new XWikiException());
+        when(this.patient.getXDocument()).thenThrow(new RuntimeException());
         Assert.assertNull(this.mocker.getComponentUnderTest().load(this.patient));
     }
 
@@ -197,7 +200,7 @@ public class MedicationControllerTest
     public void saveWithNoDataDoesNothing() throws Exception
     {
         when(this.patient.getData(MedicationController.DATA_NAME)).thenReturn(null);
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
         Mockito.verifyZeroInteractions(this.doc);
     }
 
@@ -206,7 +209,7 @@ public class MedicationControllerTest
     {
         when(this.patient.<Medication>getData(MedicationController.DATA_NAME)).thenReturn(
             new DictionaryPatientData<>(MedicationController.DATA_NAME, Collections.<String, Medication>emptyMap()));
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
         Mockito.verifyZeroInteractions(this.doc);
     }
 
@@ -215,7 +218,7 @@ public class MedicationControllerTest
     {
         when(this.patient.getData(MedicationController.DATA_NAME))
             .thenReturn(new IndexedPatientData<>(MedicationController.DATA_NAME, Collections.emptyList()));
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
         Mockito.verify(this.doc).removeXObjects(Medication.CLASS_REFERENCE);
         Mockito.verifyNoMoreInteractions(this.doc);
     }
@@ -226,7 +229,7 @@ public class MedicationControllerTest
         setupSampleData();
         when(this.doc.newXObject(eq(Medication.CLASS_REFERENCE), any(XWikiContext.class)))
             .thenThrow(new XWikiException());
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
         Mockito.verify(this.doc).removeXObjects(Medication.CLASS_REFERENCE);
     }
 
@@ -239,7 +242,7 @@ public class MedicationControllerTest
         when(this.doc.newXObject(eq(Medication.CLASS_REFERENCE), any(XWikiContext.class)))
             .thenReturn(obj1, obj2);
 
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.doc, times(1)).removeXObjects(Medication.CLASS_REFERENCE);
 
@@ -409,7 +412,7 @@ public class MedicationControllerTest
         Assert.assertEquals("medication", this.mocker.getComponentUnderTest().getName());
     }
 
-    private void setupSampleData() throws XWikiException
+    private void setupSampleData()
     {
         List<Medication> input = new LinkedList<>();
         MutablePeriod p = new MutablePeriod();

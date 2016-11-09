@@ -65,6 +65,13 @@ public interface PatientDataController<T>
     String ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT = "controller data in memory is in unexpected format";
 
     /**
+     * The error message that should be used when a controller can not load patient document or some
+     * unforseen exception is thrown during dataloading.
+     */
+    String ERROR_MESSAGE_LOAD_FAILED = "Could not find requested document or some unforeseen"
+                                       + " error has occurred during controller loading: [{}]";
+
+    /**
      * Plays the role of initialization function. Given a patient, extracts data from the underlying document and
      * returns it to the patient.
      *
@@ -78,9 +85,8 @@ public interface PatientDataController<T>
      * for this patient in the underlying document storing the patient record.
      *
      * @param patient the patient object with data to be saved
-     * @param document the patient document being saved
      */
-    void save(Patient patient, DocumentModelBridge document);
+    void save(Patient patient);
 
     /**
      * Exports the data being managed by this data controller into the patient JSON export.
