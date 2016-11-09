@@ -24,8 +24,6 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.internal.PhenoTipsDisorder;
 
-import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 
 import java.util.ArrayList;
@@ -45,7 +43,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.ListProperty;
 
@@ -69,10 +66,6 @@ public class ClinicalDiagnosisController implements PatientDataController<Disord
     @Inject
     private Logger logger;
 
-    /** Provides access to the underlying data storage. */
-    @Inject
-    private DocumentAccessBridge documentAccessBridge;
-
     /** Provides access to the current execution context. */
     @Inject
     private Provider<XWikiContext> xcontextProvider;
@@ -87,8 +80,7 @@ public class ClinicalDiagnosisController implements PatientDataController<Disord
     public IndexedPatientData<Disorder> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
+            BaseObject data = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
                 return null;
             }
@@ -109,24 +101,20 @@ public class ClinicalDiagnosisController implements PatientDataController<Disord
                 return new IndexedPatientData<>(getName(), disorders);
             }
         } catch (Exception e) {
-            this.logger.error("Failed to access patient data for [{}]: {}", patient.getDocument(), e.getMessage());
+            this.logger.error(ERROR_MESSAGE_LOAD_FAILED, e.getMessage());
         }
         return null;
     }
 
     @Override
-    public void save(Patient patient, DocumentModelBridge doc)
+    public void save(Patient patient)
     {
-        if (doc == null) {
-            throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
-        }
         PatientData<Disorder> disorders = patient.getData(this.getName());
         if (disorders == null || !disorders.isIndexed()) {
             return;
         }
 
-        XWikiDocument docX = (XWikiDocument) doc;
-        BaseObject data = docX.getXObject(Patient.CLASS_REFERENCE);
+        BaseObject data = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE);
 
         // new disorders list (for setting values in the Wiki document)
         List<String> disorderValues = new LinkedList<>();

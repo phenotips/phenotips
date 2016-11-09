@@ -82,7 +82,7 @@ public class MetaDataController extends AbstractSimpleController implements Pati
     public PatientData<String> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getXDocument();
 
             Map<String, String> result = new LinkedHashMap<>();
 
@@ -100,8 +100,7 @@ public class MetaDataController extends AbstractSimpleController implements Pati
             return new DictionaryPatientData<>(getName(), result);
 
         } catch (Exception e) {
-            this.logger.error("Could not find requested document or some unforeseen"
-                + " error has occurred during controller loading ", e.getMessage());
+            this.logger.error(ERROR_MESSAGE_LOAD_FAILED, e.getMessage());
         }
         return null;
     }

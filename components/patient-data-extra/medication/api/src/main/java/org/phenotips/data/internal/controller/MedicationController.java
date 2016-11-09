@@ -23,8 +23,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
-import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 
 import java.util.Collection;
@@ -74,18 +72,14 @@ public class MedicationController implements PatientDataController<Medication>
     @Inject
     private Provider<XWikiContext> xcontext;
 
-    /** Provides access to the underlying data storage. */
-    @Inject
-    private DocumentAccessBridge documentAccessBridge;
-
     @Override
     public PatientData<Medication> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getXDocument();
             List<BaseObject> data = doc.getXObjects(Medication.CLASS_REFERENCE);
             if (data == null || data.isEmpty()) {
-                this.logger.debug("No medication data for patient [{}]", patient.getDocument());
+                this.logger.debug("No medication data for patient [{}]", patient.getId());
                 return null;
             }
             List<Medication> result = new LinkedList<>();
@@ -115,20 +109,20 @@ public class MedicationController implements PatientDataController<Medication>
     }
 
     @Override
-    public void save(Patient patient, DocumentModelBridge doc)
+    public void save(Patient patient)
     {
         try {
             PatientData<Medication> data = patient.getData(DATA_NAME);
             if (data == null || !data.isIndexed()) {
                 return;
             }
-            ((XWikiDocument) doc).removeXObjects(Medication.CLASS_REFERENCE);
+            patient.getXDocument().removeXObjects(Medication.CLASS_REFERENCE);
             XWikiContext context = this.xcontext.get();
             for (Medication m : data) {
                 if (m == null) {
                     continue;
                 }
-                BaseObject o = ((XWikiDocument) doc).newXObject(Medication.CLASS_REFERENCE, context);
+                BaseObject o = patient.getXDocument().newXObject(Medication.CLASS_REFERENCE, context);
                 o.setStringValue(Medication.NAME, m.getName());
                 o.setStringValue(Medication.GENERIC_NAME, m.getGenericName());
                 o.setStringValue(Medication.DOSE, m.getDose());

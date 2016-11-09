@@ -21,8 +21,6 @@ import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -53,8 +51,8 @@ import com.xpn.xwiki.objects.classes.ListClass;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -107,9 +105,6 @@ public class VariantListControllerTest
         new MockitoComponentMockingRule<PatientDataController<Map<String, String>>>(VariantListController.class);
 
     @Mock
-    private DocumentAccessBridge documentAccessBridge;
-
-    @Mock
     private Patient patient;
 
     @Mock
@@ -122,11 +117,10 @@ public class VariantListControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
+        DocumentReference patientDocRef = new DocumentReference("wiki", "patient", "00000001");
+        doReturn(patientDocRef).when(this.patient).getDocumentReference();
+        doReturn(this.doc).when(this.patient).getXDocument();
 
-        DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocument();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
         this.variantXWikiObjects = new LinkedList<>();
         doReturn(this.variantXWikiObjects).when(this.doc).getXObjects(any(EntityReference.class));
     }
@@ -188,16 +182,14 @@ public class VariantListControllerTest
     // --------------------load() is Overridden from AbstractSimpleController--------------------
 
     @Test
-    public void loadCatchesExceptionFromDocumentAccess() throws Exception
+    public void loadCatchesInvalidDocument() throws ComponentLookupException
     {
-        Exception exception = new Exception();
-        doThrow(exception).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
+        doReturn(null).when(this.patient).getXDocument();
 
         PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
 
+        verify(this.mocker.getMockedLogger()).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), any());
         Assert.assertNull(result);
-        verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen "
-            + "error has occurred during controller loading ", exception.getMessage());
     }
 
     @Test

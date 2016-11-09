@@ -21,8 +21,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
-
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
@@ -47,8 +45,8 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -73,8 +71,6 @@ public class SexControllerTest
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
         new MockitoComponentMockingRule<PatientDataController<String>>(SexController.class);
 
-    private DocumentAccessBridge documentAccessBridge;
-
     @Mock
     private ExecutionContext executionContext;
 
@@ -98,11 +94,9 @@ public class SexControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
-        DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocument();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
+        DocumentReference patientDocRef = new DocumentReference("wiki", "patient", "00000001");
+        doReturn(patientDocRef).when(this.patient).getDocumentReference();
+        doReturn(this.doc).when(this.patient).getXDocument();
         doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
         doReturn(this.xcontext).when(this.executionContext).getProperty("xwikicontext");
@@ -110,12 +104,13 @@ public class SexControllerTest
     }
 
     @Test
-    public void loadCatchesExceptionFromDocumentAccess() throws Exception
+    public void loadCatchesInvalidDocument() throws ComponentLookupException
     {
-        doThrow(Exception.class).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
+        doReturn(null).when(this.patient).getXDocument();
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
+        verify(this.mocker.getMockedLogger()).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), any());
         Assert.assertNull(result);
     }
 
@@ -165,27 +160,27 @@ public class SexControllerTest
     public void saveSetsCorrectSex() throws XWikiException, ComponentLookupException
     {
         doReturn(new SimpleValuePatientData<>(DATA_NAME, SEX_MALE)).when(this.patient).getData(DATA_NAME);
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
         verify(this.data).setStringValue(INTERNAL_PROPERTY_NAME, SEX_MALE);
 
         Mockito.reset(this.xwiki);
         doReturn(new SimpleValuePatientData<>(DATA_NAME, SEX_FEMALE)).when(this.patient).getData(DATA_NAME);
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
         verify(this.data).setStringValue(INTERNAL_PROPERTY_NAME, SEX_FEMALE);
 
         Mockito.reset(this.xwiki);
         doReturn(new SimpleValuePatientData<>(DATA_NAME, SEX_OTHER)).when(this.patient).getData(DATA_NAME);
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
         verify(this.data).setStringValue(INTERNAL_PROPERTY_NAME, SEX_OTHER);
 
         Mockito.reset(this.xwiki);
         doReturn(new SimpleValuePatientData<>(DATA_NAME, SEX_UNKNOWN)).when(this.patient).getData(DATA_NAME);
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
         verify(this.data).setStringValue(INTERNAL_PROPERTY_NAME, SEX_UNKNOWN);
 
         Mockito.reset(this.xwiki);
         doReturn(new SimpleValuePatientData<String>(DATA_NAME, null)).when(this.patient).getData(DATA_NAME);
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
         verify(this.data).setStringValue(INTERNAL_PROPERTY_NAME, null);
     }
 

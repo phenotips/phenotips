@@ -74,12 +74,11 @@ public class VersionsController extends AbstractSimpleController
         Map<String, String> versions = new LinkedHashMap<>();
 
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getXDocument();
             addOntologyVersions(doc, versions);
             addPhenoTipsVersion(versions);
         } catch (Exception e) {
-            this.logger.error("Could not find requested document or some unforeseen"
-                + " error has occurred during controller loading ", e.getMessage());
+            this.logger.error(ERROR_MESSAGE_LOAD_FAILED, e.getMessage());
         }
         return new DictionaryPatientData<>(getName(), versions);
     }

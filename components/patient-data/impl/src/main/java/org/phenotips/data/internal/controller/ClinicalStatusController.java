@@ -22,8 +22,6 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
 
-import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.ObjectPropertyReference;
 
@@ -70,10 +68,6 @@ public class ClinicalStatusController implements PatientDataController<String>
     @Inject
     private Logger logger;
 
-    /** Provides access to the underlying data storage. */
-    @Inject
-    private DocumentAccessBridge documentAccessBridge;
-
     @Override
     public String getName()
     {
@@ -84,7 +78,7 @@ public class ClinicalStatusController implements PatientDataController<String>
     public PatientData<String> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getXDocument();
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
                 return null;
@@ -96,8 +90,7 @@ public class ClinicalStatusController implements PatientDataController<String>
                 return new SimpleValuePatientData<>(getName(), VALUE_UNAFFECTED);
             }
         } catch (Exception e) {
-            this.logger.error("Could not find requested document or some unforeseen"
-                + " error has occurred during controller loading ", e.getMessage());
+            this.logger.error(ERROR_MESSAGE_LOAD_FAILED, e.getMessage());
         }
         return null;
     }
@@ -127,10 +120,10 @@ public class ClinicalStatusController implements PatientDataController<String>
 
     @SuppressWarnings("unchecked")
     @Override
-    public void save(Patient patient, DocumentModelBridge doc)
+    public void save(Patient patient)
     {
         BaseProperty<ObjectPropertyReference> isNormal =
-            (BaseProperty<ObjectPropertyReference>) ((XWikiDocument) doc).getXObject(Patient.CLASS_REFERENCE).getField(
+            (BaseProperty<ObjectPropertyReference>) patient.getXDocument().getXObject(Patient.CLASS_REFERENCE).getField(
                 PATIENT_DOCUMENT_FIELDNAME);
         PatientData<String> data = patient.getData(this.getName());
         if (isNormal == null || data == null) {

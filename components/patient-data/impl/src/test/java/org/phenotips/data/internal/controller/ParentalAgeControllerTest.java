@@ -22,8 +22,6 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -52,6 +50,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -69,6 +68,8 @@ public class ParentalAgeControllerTest
 
     private static final Integer AGE_ZERO = 0;
 
+    private static final String TEST_PATIENT_ID = "00000001";
+
     private static final EntityReference CLASS_REFERENCE =
         new EntityReference("ParentalInformationClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
@@ -82,11 +83,6 @@ public class ParentalAgeControllerTest
     private Provider<XWikiContext> provider;
 
     private XWikiContext xWikiContext;
-
-    @Mock
-    private DocumentAccessBridge documentAccessBridge;
-
-    private DocumentReference patientDocument = new DocumentReference("xwiki", "patient", "0000001");
 
     private ParentalAgeController parentalAgeController;
 
@@ -113,9 +109,11 @@ public class ParentalAgeControllerTest
         this.provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         this.xWikiContext = this.provider.get();
         doReturn(this.xwiki).when(this.xWikiContext).getWiki();
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-        doReturn(this.patientDocument).when(this.patient).getDocument();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(this.patientDocument);
+
+        DocumentReference patientDocRef = new DocumentReference("wiki", "patient", TEST_PATIENT_ID);
+        doReturn(patientDocRef).when(this.patient).getDocumentReference();
+        doReturn(this.doc).when(this.patient).getXDocument();
+        doReturn(patientDocRef.getName()).when(this.patient).getId();
     }
 
     @Test
@@ -124,7 +122,7 @@ public class ParentalAgeControllerTest
         doReturn(null).when(this.doc).getXObject(any(EntityReference.class));
         PatientData<Integer> testData = this.parentalAgeController.load(this.patient);
         Assert.assertNull(testData);
-        verify(this.logger).debug("No parental information for patient [{}]", this.patientDocument);
+        verify(this.logger).debug("No parental information for patient [{}]", TEST_PATIENT_ID);
     }
 
     @Test
@@ -192,13 +190,12 @@ public class ParentalAgeControllerTest
     @Test
     public void loadHandlesExceptions() throws Exception
     {
-        Exception testException = new Exception("Test Exception");
-        doThrow(testException).when(this.documentAccessBridge).getDocument(this.patientDocument);
+        Exception testException = new RuntimeException("Test Exception");
+        doThrow(testException).when(this.patient).getXDocument();
 
         this.parentalAgeController.load(this.patient);
 
-        verify(this.logger).error("Could not find requested document or some unforeseen"
-            + " error has occurred during controller loading ", testException.getMessage());
+        verify(this.logger).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), any());
     }
 
     @Test
@@ -206,7 +203,7 @@ public class ParentalAgeControllerTest
     {
         doReturn(this.patientData).when(this.patient).getData(this.parentalAgeController.getName());
         doReturn(false).when(this.patientData).isNamed();
-        this.parentalAgeController.save(this.patient, this.doc);
+        this.parentalAgeController.save(this.patient);
         verifyNoMoreInteractions(this.doc);
     }
 
@@ -221,19 +218,10 @@ public class ParentalAgeControllerTest
         doReturn(AGE_NON_ZERO).when(this.patientData).get(MATERNAL_AGE);
         doReturn(AGE_NON_ZERO).when(this.patientData).get(PATERNAL_AGE);
 
-        this.parentalAgeController.save(this.patient, this.doc);
+        this.parentalAgeController.save(this.patient);
 
         verify(data).set(MATERNAL_AGE, AGE_NON_ZERO, this.xWikiContext);
         verify(data).set(PATERNAL_AGE, AGE_NON_ZERO, this.xWikiContext);
-    }
-
-    @Test
-    public void saveHandlesExceptions() throws Exception
-    {
-        Exception testException = new Exception("Test Exception");
-        doThrow(testException).when(this.documentAccessBridge).getDocument(this.patientDocument);
-
-        this.parentalAgeController.save(this.patient, this.doc);
     }
 
     @Test

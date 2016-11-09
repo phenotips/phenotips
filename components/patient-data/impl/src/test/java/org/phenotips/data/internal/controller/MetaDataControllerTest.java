@@ -23,7 +23,6 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -50,8 +49,8 @@ import org.mockito.MockitoAnnotations;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -84,8 +83,6 @@ public class MetaDataControllerTest
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
         new MockitoComponentMockingRule<PatientDataController<String>>(MetaDataController.class);
 
-    private DocumentAccessBridge documentAccessBridge;
-
     @Mock
     private Patient patient;
 
@@ -107,14 +104,11 @@ public class MetaDataControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
-        DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocument();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
-
-        this.documentReference = new DocumentReference("wiki", "phenotips", "document");
+        this.documentReference = new DocumentReference("wiki", "patient", "00000001");
+        doReturn(this.documentReference).when(this.patient).getDocumentReference();
+        doReturn(this.doc).when(this.patient).getXDocument();
         doReturn(this.documentReference).when(this.doc).getDocumentReference();
+
         this.authorReference = new DocumentReference("wiki", "phenotips", "author");
         doReturn(this.authorReference).when(this.doc).getAuthorReference();
         this.date = new Date(10);
@@ -147,15 +141,13 @@ public class MetaDataControllerTest
     // --------------------load() is Overridden from AbstractSimpleController--------------------
 
     @Test
-    public void loadCatchesExceptionFromDocumentAccess() throws Exception
+    public void loadCatchesInvalidDocument() throws ComponentLookupException
     {
-        Exception exception = new Exception();
-        doThrow(exception).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
+        doReturn(null).when(this.patient).getXDocument();
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen"
-            + " error has occurred during controller loading ", exception.getMessage());
+        verify(this.mocker.getMockedLogger()).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), any());
         Assert.assertNull(result);
     }
 

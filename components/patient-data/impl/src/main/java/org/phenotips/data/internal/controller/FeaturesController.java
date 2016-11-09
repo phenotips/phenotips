@@ -26,7 +26,6 @@ import org.phenotips.data.PatientDataController;
 import org.phenotips.data.internal.PhenoTipsFeature;
 import org.phenotips.data.internal.PhenoTipsFeatureMetadatum;
 
-import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.EntityReference;
 
@@ -132,8 +131,7 @@ public class FeaturesController extends AbstractComplexController<Feature>
     public IndexedPatientData<Feature> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
+            BaseObject data = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
                 return null;
             }
@@ -149,7 +147,7 @@ public class FeaturesController extends AbstractComplexController<Feature>
                 ListProperty values = (ListProperty) field;
                 for (String value : values.getList()) {
                     if (StringUtils.isNotBlank(value)) {
-                        features.add(new PhenoTipsFeature(doc, values, value));
+                        features.add(new PhenoTipsFeature(patient.getXDocument(), values, value));
                     }
                 }
             }
@@ -159,7 +157,7 @@ public class FeaturesController extends AbstractComplexController<Feature>
                 return new IndexedPatientData<>(getName(), features);
             }
         } catch (Exception e) {
-            this.logger.error("Failed to access patient data for [{}]: {}", patient.getDocument(), e.getMessage());
+            this.logger.error(ERROR_MESSAGE_LOAD_FAILED, e.getMessage());
         }
         return null;
     }
@@ -281,17 +279,14 @@ public class FeaturesController extends AbstractComplexController<Feature>
     }
 
     @Override
-    public void save(Patient patient, DocumentModelBridge doc)
+    public void save(Patient patient)
     {
         PatientData<Feature> features = patient.getData(this.getName());
         if (features == null || !features.isIndexed()) {
             return;
         }
 
-        if (doc == null) {
-            throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
-        }
-        XWikiDocument docX = (XWikiDocument) doc;
+        XWikiDocument docX = patient.getXDocument();
         BaseObject data = docX.getXObject(Patient.CLASS_REFERENCE);
         XWikiContext context = this.xcontextProvider.get();
 

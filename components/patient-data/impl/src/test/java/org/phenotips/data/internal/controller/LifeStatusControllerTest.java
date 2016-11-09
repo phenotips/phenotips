@@ -22,7 +22,6 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -43,8 +42,8 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -63,8 +62,6 @@ public class LifeStatusControllerTest
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
         new MockitoComponentMockingRule<PatientDataController<String>>(LifeStatusController.class);
 
-    private DocumentAccessBridge documentAccessBridge;
-
     @Mock
     private XWiki xwiki;
 
@@ -82,23 +79,20 @@ public class LifeStatusControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
-        DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocument();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
+        DocumentReference patientDocRef = new DocumentReference("wiki", "patient", "00000001");
+        doReturn(patientDocRef).when(this.patient).getDocumentReference();
+        doReturn(this.doc).when(this.patient).getXDocument();
         doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
     }
 
     @Test
-    public void loadCatchesExceptionFromDocumentAccess() throws Exception
+    public void loadCatchesInvalidDocument() throws ComponentLookupException
     {
-        doThrow(Exception.class).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
+        doReturn(null).when(this.patient).getXDocument();
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen"
-            + " error has occurred during controller loading ", (String) null);
+        verify(this.mocker.getMockedLogger()).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), any());
         Assert.assertNull(result);
     }
 

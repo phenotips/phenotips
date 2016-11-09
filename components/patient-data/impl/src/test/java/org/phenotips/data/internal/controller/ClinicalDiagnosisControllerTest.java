@@ -24,7 +24,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -56,6 +55,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 /**
@@ -75,8 +76,6 @@ public class ClinicalDiagnosisControllerTest
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Disorder>> mocker =
         new MockitoComponentMockingRule<PatientDataController<Disorder>>(ClinicalDiagnosisController.class);
-
-    private DocumentAccessBridge documentAccessBridge;
 
     @Mock
     private XWikiContext xcontext;
@@ -104,13 +103,13 @@ public class ClinicalDiagnosisControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
         Provider<XWikiContext> xcp = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         when(xcp.get()).thenReturn(this.xcontext);
 
-        DocumentReference patientDocument = new DocumentReference("wiki", "patient", "P0000001");
-        when(this.patient.getDocument()).thenReturn(patientDocument);
-        when(this.documentAccessBridge.getDocument(patientDocument)).thenReturn(this.doc);
+        DocumentReference patientDocRef = new DocumentReference("wiki", "patient", "00000001");
+        doReturn(patientDocRef).when(this.patient).getDocumentReference();
+        doReturn(this.doc).when(this.patient).getXDocument();
+
         when(this.doc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(this.dataHolder);
         when(this.dataHolder.get(XPROPERTY_NAME)).thenReturn(this.xproperty);
         when(this.disorder1.getValue()).thenReturn(DISORDER1);
@@ -173,19 +172,11 @@ public class ClinicalDiagnosisControllerTest
         assertNull(result);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void saveDoesNotAcceptNullDocument() throws ComponentLookupException
-    {
-        PatientData<Disorder> data = new IndexedPatientData<>(DATA_NAME, Arrays.asList(this.disorder1, this.disorder2));
-        when(this.patient.<Disorder>getData(DATA_NAME)).thenReturn(data);
-        this.mocker.getComponentUnderTest().save(this.patient, null);
-    }
-
     @Test
     public void saveDoesNothingWhenNoDataAvailable() throws ComponentLookupException
     {
         when(this.patient.getData(DATA_NAME)).thenReturn(null);
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
         Mockito.verifyZeroInteractions(this.doc);
     }
 
@@ -193,7 +184,7 @@ public class ClinicalDiagnosisControllerTest
     public void saveResetsDiagnosisToEmptyForEmptyData() throws ComponentLookupException
     {
         when(this.patient.getData(DATA_NAME)).thenReturn(new IndexedPatientData<>(DATA_NAME, Collections.emptyList()));
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
         Mockito.verify(this.dataHolder).set(XPROPERTY_NAME, Collections.emptyList(), this.xcontext);
     }
 
@@ -202,7 +193,7 @@ public class ClinicalDiagnosisControllerTest
     {
         when(this.patient.<Disorder>getData(DATA_NAME))
             .thenReturn(new DictionaryPatientData<>(DATA_NAME, Collections.<String, Disorder>emptyMap()));
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
         Mockito.verifyZeroInteractions(this.doc);
         Mockito.verifyZeroInteractions(this.dataHolder);
     }
@@ -212,7 +203,7 @@ public class ClinicalDiagnosisControllerTest
     {
         PatientData<Disorder> data = new IndexedPatientData<>(DATA_NAME, Arrays.asList(this.disorder1, this.disorder2));
         when(this.patient.<Disorder>getData(DATA_NAME)).thenReturn(data);
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
         Mockito.verify(this.dataHolder).set(XPROPERTY_NAME, Arrays.asList(DISORDER1, DISORDER2), this.xcontext);
     }
 
