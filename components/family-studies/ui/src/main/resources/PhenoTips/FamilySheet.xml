@@ -105,5 +105,5 @@ $xwiki.ssx.use('PhenoTips.PatientSheetCode', {'colorTheme' : "$xwiki.getSpacePre
   #end
 #end
 #end
-{{/velocit}}</content>
+{{/velocity}}</content>
 </xwikidoc>
