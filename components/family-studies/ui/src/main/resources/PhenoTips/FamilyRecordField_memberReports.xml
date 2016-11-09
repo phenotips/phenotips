@@ -116,7 +116,7 @@
 #end
 #foreach ($patient in $family.members)
   #if ($patient)
-    #set ($patientDoc = $patient.getXDocument())
+    #set ($patientDoc = $patient.getSecureDocument())
     #set ($patientReports = $patientDoc.getObject('PhenoTips.PatientClass').getProperty('reports_history').value)
     #if ($patientReports &amp;&amp; $patientReports.size() &gt; 0)
       #set ($id = "$!patient.externalId")
