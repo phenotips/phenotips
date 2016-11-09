@@ -33,6 +33,7 @@
     <xwiki.extension.features>edu.toronto.cs.phenotips:phenotips-ui</xwiki.extension.features>
   </properties>
   <dependencies>
+    <!-- Keep this one first, so that skin extensions requiring programming rights are correctly registered when installing via the distribution wizard -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-default-settings</artifactId>
