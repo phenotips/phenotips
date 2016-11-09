@@ -40,6 +40,7 @@
   <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
+$xwiki.ssx.use('PhenoTips.PatientSheetCode', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 #set ($displayDocExtra = true)
 #set ($family = $services.families.getFamilyById($doc.fullName))
 #set($obj = $doc.getObject('PhenoTips.FamilyClass'))

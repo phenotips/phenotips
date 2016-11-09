@@ -111,7 +111,6 @@
       <content>{{include reference="PhenoTips.FormMacros" /}}
 
 {{velocity}}
-$xwiki.ssx.use('PhenoTips.PatientSheetCode', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 #if($xcontext.action == 'edit' || $doc.display('external_id') != '')
   #if ($xcontext.action != 'edit')
     (((#__form_label('external_id')
