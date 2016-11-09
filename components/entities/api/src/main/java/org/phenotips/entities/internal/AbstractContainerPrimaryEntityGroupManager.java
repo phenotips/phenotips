@@ -82,7 +82,7 @@ public abstract class AbstractContainerPrimaryEntityGroupManager
                     + ") as grp where gdoc.space = :gspace and binding.reference = :name order by gdoc.fullName asc",
                 Query.XWQL);
             q.bindValue("gspace", this.getDataSpace().getName());
-            q.bindValue("name", this.defaultSerializer.serialize(entity.getDocument()));
+            q.bindValue("name", this.defaultSerializer.serialize(entity.getDocumentReference()));
             List<String> docNames = q.execute();
             Collection<G> result = new ArrayList<>(docNames.size());
             for (String docName : docNames) {
