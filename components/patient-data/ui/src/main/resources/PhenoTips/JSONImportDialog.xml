@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>JSONImportDialog</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1475786040000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1475786078000</date>
+  <contentUpdateDate>1475786040000</contentUpdateDate>
+  <version>1.1</version>
+  <title>JSON import dialog</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <object>
+    <name>PhenoTips.JSONImportDialog</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>5e964309-cd1a-42ff-81ac-c365383a136c</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function(PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+  widgets.JSONImportDialog = Class.create({
+    initialize : function(jsonButton) {
+      var _this = this;
+
+      this.$body = $('body');
+      this.mainDiv = new Element('div', {'class': 'import-selector'});
+      this.jsonData = new Element("textarea", {
+        "id": "import",
+        "placeholder": "$!{escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.data.placeholder'))}",
+        "value": "",
+        "class": "import-textarea"
+      });
+      this.mainDiv.insert(this.jsonData);
+
+      this._initFilePicker();
+
+      this._initServicePicker(jsonButton);
+
+      // Open the modal once the import button is clicked.
+      jsonButton.observe("click", function (event) {
+        _this.openModal(event);
+      }.bindAsEventListener(this));
+
+      var buttons = new Element('div', {'class' : 'buttons import-block-bottom'});
+
+      buttons.insert(new Element('input',
+        {type: 'button',
+          name : 'import',
+          'value': "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.submit'))",
+          'class' : 'button',
+          'id': 'import_button'
+        }).wrap('span', {'class' : 'buttonwrapper'}));
+
+      buttons.insert(new Element('input',
+        {type: 'button',
+          name : 'cancel',
+          'value': "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.cancel'))",
+          'class' : 'button secondary'})
+        .wrap('span', {'class' : 'buttonwrapper'}));
+
+      this.mainDiv.insert(buttons);
+
+      var cancelButton = buttons.down('input[name="cancel"]');
+      cancelButton.observe('click', function() {
+        _this.hide();
+      });
+
+      var importButton = buttons.down('input[name="import"]');
+      importButton.observe('click', function() {
+        _this._importJsonData();
+      });
+
+      this.textareaChangeFunction = function() {
+        importButton.disabled = _this.jsonData.value.trim() == "";
+      };
+
+      // different browsers require different event for onchange detection (special cases: IE, paste, backspace)
+      var eventList = ["input","propertychange", "mousemove", "keyup"];
+      eventList.each(function(item) {
+        _this.jsonData.observe(item, _this.textareaChangeFunction);
+      });
+    },
+
+    importServices : {
+      'single-patient-import' : {
+        'service' : XWiki.contextPath + '/rest/patients/' + XWiki.currentDocument.page + '?method=PUT',
+        'modalTitle' : "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.title.singlePatient'))"
+      },
+      'multi-patient-import' : {
+        'service' : XWiki.contextPath + 'rest/patients',
+        'modalTitle' : "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.title.multiplePatients'))"
+      }
+    },
+
+    handleFileUpload : function(files) {
+      // Handles file upload
+      for (var i = 0, numFiles = files.length; i &lt; numFiles; i++) {
+        var nextFile = files[i];
+        console.log("loading file: " + nextFile.name + ", size: " + nextFile.size);
+
+        var fr = new FileReader();
+        var _this = this;
+        fr.onload = function(e) {
+          _this.jsonData.value = e.target.result;
+          _this.textareaChangeFunction();
+        };
+        fr.readAsText(nextFile);
+      }
+    },
+
+    openModal : function(event) {
+      if (!this.dialog) {
+        this.createDialog();
+      }
+      event.stop();
+      this.dialog.show();
+    },
+
+    createDialog : function() {
+      var closeShortcut = ['Esc'];
+      this.dialog = new PhenoTips.widgets.ModalPopup(this.mainDiv,
+        {close: {method : this.hide.bind(this), keys : closeShortcut}},
+        {extraClassName: "import-dialog", title: this._builder.modalTitle, displayCloseButton: true});
+    },
+
+    _importJsonData : function() {
+      var importVal = this.jsonData.value.strip();
+
+      this.hide();
+
+      this._updatePatientValues(importVal);
+    },
+
+    _updatePatientValues : function (importVal) {
+      var _this = this;
+
+      var notificationMsg = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.longWaitWarning'))";
+      this.$body._x_notification = new XWiki.widgets.Notification(notificationMsg, "inprogress");
+
+      new Ajax.Request(_this._builder.service, {
+        method : 'POST',
+        parameters : importVal,
+        contentType : 'application/json',
+        on304 : function (response) {
+          response.request.options.onSuccess(response);
+        },
+        onSuccess : function() {
+          var notificationMsg = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.success'))";
+          _this.$body._x_notification.replace(new XWiki.widgets.Notification(notificationMsg, "done"));
+          window.location.reload();
+        },
+        onFailure : function(response) {
+          var failureMsg = _this._generateFailureReason(response.status);
+          _this.$body._x_notification.replace(new XWiki.widgets.Notification(failureMsg, "error"));
+        }
+      });
+    },
+
+    _initFilePicker : function() {
+      if (!!window.FileReader &amp;&amp; !!window.FileList) {
+        // Show upload button if the browser supports FileReader/DOM File API
+        var uploadFileSelector = new Element('input', {"type" : "file", "id": 'jsonInputFile', "style": 'display:none'});
+        var _this = this;
+
+        uploadFileSelector.observe('change', function(event) {
+          _this.handleFileUpload(this.files);
+          try {
+            this.value = "";  // clear file selector
+          } catch (err) {
+            // some older browsers do not allow setting value of a file input element and may generate a security error
+          }
+        });
+
+        var fileUploadWrapper = new Element('div', {'class' : 'file-select-block-wrapper'});
+
+        var uploadButtonName = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.import.fileUpload'))";
+
+        var uploadPromptString = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.data.label'))";
+
+        var uploadButton = '&lt;input class="button file-select-button" type="button" value="' + uploadButtonName + '"&gt;&lt;/input&gt;'
+
+        var re = /___placeholder___/gi;
+        uploadPromptString = uploadPromptString.replace(re, uploadButton);
+
+        fileUploadWrapper.insert(new Element('label', {'class': 'import-label'})
+          .update(uploadPromptString));
+
+        fileUploadWrapper.down("input.file-select-button").observe('click', function() {
+          var fileElem = document.getElementById("jsonInputFile");
+          fileElem.click();
+        });
+
+        this.mainDiv.insertBefore(fileUploadWrapper, this.jsonData).insert(uploadFileSelector);
+      } else {
+        this.mainDiv.insert(new Element('div', {'class': 'box infomessage import-warning-nofileupload'})
+          .update("$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.warning.fileUploadNotSupported'))"));
+      }
+    },
+
+    _initServicePicker : function(jsonButton) {
+      for (var service in this.importServices) {
+        // Find the correct import service
+        if (jsonButton.hasClassName(service)) {
+          this._builder = this.importServices[service];
+        }
+      }
+    },
+
+    _generateFailureReason : function(status) {
+      var response;
+
+      switch (status) {
+        case 401 :
+          response = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.error.notAuthenticated'))";
+          break;
+        case 403 :
+          response = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.error.notAuthorized'))";
+          break;
+        case 500 :
+          response = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.error.patientCreationFailed'))";
+          break;
+        case 404 :
+          response = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.error.noSuchPatient'))";
+          break;
+        default :
+          response = "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.error.patientCreationFailed'))";
+      }
+      return response;
+    },
+
+    hide: function() {
+      this.jsonData.value = "";
+      this.dialog.closeDialog();
+    }
+  });
+
+  var init = function(event) {
+    ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      (element.hasClassName("json-import") ? [element] : element.select(".json-import")).each(function(button) {
+        if (!button.__jsonImporter) {
+          button.__jsonImporter = new PhenoTips.widgets.JSONImportDialog(button);
+        }
+      });
+    });
+    return true;
+  };
+
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+  document.observe("xwiki:dom:updated", init);
+
+  // End augmentation.
+  return PhenoTips;
+}(PhenoTips || {}));</code>
+    </property>
+    <property>
+      <name>JSON import dialog</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.JSONImportDialog</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>56d95c86-b7f9-42f9-8b30-b418214bdfa5</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>
+.import-dialog {
+  width: 65%;
+}
+
+.import-warning-nofileupload {
+  margin-bottom: 1em;
+}
+
+.import-label {
+  margin-bottom: .8em;
+  font-weight: bold;
+}
+
+.import-selector .import-textarea {
+  height: 12em;
+  resize: vertical;
+  margin: 1em auto;
+}
+
+.file-select-button {
+  margin-left: .5em !important;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name>JSON import dialog</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+</xwikidoc>

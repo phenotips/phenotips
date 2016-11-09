@@ -911,10 +911,13 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
 )))## container
 #elseif ($doc.name == 'AllData' &amp;&amp; $xcontext.action == 'view')
 $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
+$xwiki.jsx.use('PhenoTips.JSONImportDialog')##
+$xwiki.ssx.use('PhenoTips.JSONImportDialog')##
 (% id="patient-directory-actions" class="content-actions directory-actions" %)(((
 (% id="pd-more-actions-menu" class="menu menu-horizontal" %)(((
 #if($hasCreatePage)
 * {{html}}&lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;$services.localization.render('phenotips.globalHeader.createPatient')&lt;/label&gt;{{/html}}
+* #__icon("upload") {{html}}&lt;label for="phenotips_json_import"&gt;&lt;span class="upload"&gt; &lt;/span&gt;&lt;a href="#" id="phenotips_json_import" class="json-import multi-patient-import" title="$services.localization.render('phenotips.allData.menu.import.json.tooltip')" role="button"&gt;$services.localization.render('phenotips.allData.menu.import.json')&lt;/a&gt;&lt;/label&gt;{{/html}}
 #end
 * (% class="xDropdown" %)#__icon("download") $services.localization.render('phenotips.allData.menu.export')
 ** [[$services.localization.render('phenotips.allData.menu.export.excel')&gt;&gt;path:$xwiki.getURL('PhenoTips.Export', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")|| id="phenotips_export" class="phenotips_export_tool" title="$services.localization.render('phenotips.allData.menu.export.excel.tooltip')"]]
