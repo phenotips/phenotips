@@ -84,17 +84,11 @@
   position: relative;
   height: 2.5em;
   width: 60%;
-}
-.gene-table td.variant.moreinfo input[type="button"]{
-  float: right;
-}
-.gene-table td.variant-moreinfo {
   text-align: left;
   vertical-align: middle;
 }
-td.variant.moreinfo td{
-  text-align: left;
-  vertical-align: top;
+.gene-table td.variant.moreinfo input[type="button"]{
+  float: right;
 }
 .variant-moreinfo-button {
   float: right;
@@ -141,7 +135,6 @@ td.variant.moreinfo td{
 }
 td.variant.moreinfo {
   text-align: left;
-  font-size: 75%;
   cursor: pointer;
 }
 td.variant-moreinfo strong::after {
