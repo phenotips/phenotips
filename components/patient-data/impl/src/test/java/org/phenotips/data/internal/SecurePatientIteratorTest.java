@@ -71,9 +71,9 @@ public class SecurePatientIteratorTest
     {
         MockitoAnnotations.initMocks(this);
 
-        when(this.p1.getDocument()).thenReturn(this.p1Reference);
-        when(this.p2.getDocument()).thenReturn(this.p2Reference);
-        when(this.p3.getDocument()).thenReturn(this.p3Reference);
+        when(this.p1.getDocumentReference()).thenReturn(this.p1Reference);
+        when(this.p2.getDocumentReference()).thenReturn(this.p2Reference);
+        when(this.p3.getDocumentReference()).thenReturn(this.p3Reference);
     }
 
     @Test

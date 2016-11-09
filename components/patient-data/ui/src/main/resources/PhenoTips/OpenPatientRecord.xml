@@ -109,7 +109,7 @@
   #elseif ("$!{request.create}" == 'true')
     #set ($patient = $services.patients.create())
     #if ($patient)
-      #set ($patientDoc = $xwiki.getDocument($patient.document))
+      #set ($patientDoc = $patient.getSecureDocument())
       #fixMode()
       #if ($canEditPatientRecord)
         #saveDataFromRequest()

@@ -334,7 +334,7 @@ public class PhenoTipsPatientConsentManagerTest
         doReturn(patient).when(repository).get(patientId);
         doReturn(patientRef).when(patient).getDocumentReference();
         doReturn(patientDoc).when(patient).getXDocument();
-        doReturn(idsHolder).when((XWikiDocument) patientDoc).getXObject(any(EntityReference.class));
+        doReturn(idsHolder).when(patientDoc).getXObject(any(EntityReference.class));
         doReturn(consentIds).when(idsHolder).getListValue(anyString());
 
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasConsent(patient, ConsentConfigurationMocks.TEST_ID1));
@@ -353,7 +353,7 @@ public class PhenoTipsPatientConsentManagerTest
 
         doReturn(patientRef).when(patient).getDocumentReference();
         doReturn(patientDoc).when(patient).getXDocument();
-        doReturn(idsHolder).when((XWikiDocument) patientDoc).getXObject(any(EntityReference.class));
+        doReturn(idsHolder).when(patientDoc).getXObject(any(EntityReference.class));
         doReturn(context).when(contextProvider).get();
         doReturn(wiki).when(context).getWiki();
     }
@@ -375,7 +375,7 @@ public class PhenoTipsPatientConsentManagerTest
         this.mocker.getComponentUnderTest().setPatientConsents(patient, granted);
 
         verify(idsHolder, times(1)).set(eq("granted"), eq(granted), eq(context));
-        verify(wiki, times(1)).saveDocument(eq((XWikiDocument) patientDoc), anyString(), eq(true), eq(context));
+        verify(wiki, times(1)).saveDocument(eq(patientDoc), anyString(), eq(true), eq(context));
     }
 
     @Test
@@ -389,17 +389,16 @@ public class PhenoTipsPatientConsentManagerTest
 
         this.setUpSettingConsents(null, patient, patientDoc, context, wiki);
 
-        doReturn(idsHolder).when((XWikiDocument) patientDoc)
-            .newXObject(any(EntityReference.class), any(XWikiContext.class));
+        doReturn(idsHolder).when(patientDoc).newXObject(any(EntityReference.class), any(XWikiContext.class));
 
         List<String> granted = new LinkedList<>();
         granted.add(ConsentConfigurationMocks.TEST_ID1);
 
         this.mocker.getComponentUnderTest().setPatientConsents(patient, granted);
 
-        verify((XWikiDocument) patientDoc, times(1)).newXObject(any(EntityReference.class), any(XWikiContext.class));
+        verify(patientDoc, times(1)).newXObject(any(EntityReference.class), any(XWikiContext.class));
         verify(idsHolder, times(1)).set(eq("granted"), eq(granted), eq(context));
-        verify(wiki, times(1)).saveDocument(eq((XWikiDocument) patientDoc), anyString(), eq(true), eq(context));
+        verify(wiki, times(1)).saveDocument(eq(patientDoc), anyString(), eq(true), eq(context));
     }
 
     @Test
@@ -423,6 +422,6 @@ public class PhenoTipsPatientConsentManagerTest
         this.mocker.getComponentUnderTest().setPatientConsents(patient, testIds);
 
         verify(idsHolder, times(1)).set(eq("granted"), eq(existingIds), eq(context));
-        verify(wiki, times(1)).saveDocument(eq((XWikiDocument) patientDoc), anyString(), eq(true), eq(context));
+        verify(wiki, times(1)).saveDocument(eq(patientDoc), anyString(), eq(true), eq(context));
     }
 }
