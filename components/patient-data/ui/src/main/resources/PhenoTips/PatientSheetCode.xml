@@ -3644,14 +3644,11 @@ hr {
       {'color': $theme.menuBackgroundColor, 'position': '50%'}
     ]
   })
-  color: $theme.menuLinkColor;
   border: 0 none;
-  font-size: 0.87em;
-  padding: 0.5em 10px;
-  text-shadow: 1px 0 0 rgba(0, 0, 0, .3);
-  vertical-align: top;
-  display: block;
-  border-bottom: 0 none;
+  color: $theme.menuLinkColor;
+  line-height: 1.2em;
+  padding: 0.3em 10px;
+  text-shadow: none;
 }
 
 #document-head #document-authors .sep {
