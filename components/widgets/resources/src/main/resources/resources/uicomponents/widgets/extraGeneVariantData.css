@@ -87,6 +87,9 @@
   text-align: left;
   vertical-align: middle;
 }
+#inline .gene-table td.variant.moreinfo {
+  cursor: pointer;
+}
 .gene-table td.variant.moreinfo input[type="button"]{
   float: right;
 }
@@ -98,9 +101,6 @@
 .variant-showmoreinfo-button {
   float: left;
 }
-.variant-property-value {
-  text-align: left;
-}
 .variant-moreinfo-button-row {
   height: 30px;
 }
@@ -111,31 +111,14 @@
 .variant-edit-done {
   display: none;
 }
-.variant-info .extradata-list td {
-  text-align: left;
-}
-.variant-info .extradata-list td.chr {
-  text-align: center;
-}
-.variant-info .extradata-list td {
-  text-align: left;
-}
-.variant-info .extradata-list td.chr {
-  text-align: center;
-}
 .v-collapsed {
   display: none !important;
 }
 .variant.moreinfo table {
   table-layout: fixed;
-  cursor: pointer;
 }
 .transparent-row {
   background-color: inherit;
-}
-td.variant.moreinfo {
-  text-align: left;
-  cursor: pointer;
 }
 td.variant-moreinfo strong::after {
   content: ":";
@@ -162,7 +145,7 @@ td.Evidence.gene select {
   width: 120px;
 }
 a.delete-variant.secondary:hover {
-  color : red;
+  color: red;
 }
 a.action-edit.secondary.variant-edit:hover, a.action-edit.secondary.variant-edit-done:hover {
   color: #0089DC;
