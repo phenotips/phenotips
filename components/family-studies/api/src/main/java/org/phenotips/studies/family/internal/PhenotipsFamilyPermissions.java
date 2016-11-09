@@ -39,7 +39,6 @@ import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
@@ -164,14 +163,14 @@ public class PhenotipsFamilyPermissions
 
         List<Patient> members = family.getMembers();
 
-        this.updatePermissionsForOneRightLevel(VIEW_RIGHTS, members, family.getDocument(), wiki, context);
+        this.updatePermissionsForOneRightLevel(VIEW_RIGHTS, members, family.getXDocument(), wiki, context);
         // setting view-edit rights after view rights makes sure if a user has edit rights on one patient
         // and view rights on another the user still gets edit permissions for the family
-        this.updatePermissionsForOneRightLevel(VIEWEDIT_RIGHTS, members, family.getDocument(), wiki, context);
+        this.updatePermissionsForOneRightLevel(VIEWEDIT_RIGHTS, members, family.getXDocument(), wiki, context);
 
-        DocumentReference creatorReference = family.getDocument().getCreatorReference();
+        DocumentReference creatorReference = family.getXDocument().getCreatorReference();
         this.setOwnerPermissionsForUser(creatorReference == null ? "" : creatorReference.toString(),
-            family.getDocument(), context);
+            family.getXDocument(), context);
     }
 
     private void setOwnerPermissionsForUser(String user, XWikiDocument familyDocument, XWikiContext context)
@@ -195,12 +194,9 @@ public class PhenotipsFamilyPermissions
         Set<String> groupsUnion = new HashSet<>();
 
         for (Patient patient : members) {
-            XWikiDocument patientDoc;
-            try {
-                patientDoc = wiki.getDocument(patient.getDocument(), context);
-            } catch (XWikiException e) {
-                this.logger.error("Can't retrieve patient document for patient {}: {}",
-                    patient.getId(), e.getMessage());
+            XWikiDocument patientDoc = patient.getXDocument();
+            if (patientDoc == null) {
+                this.logger.error("Patient document is null for patient {}", patient.getId());
                 continue;
             }
 

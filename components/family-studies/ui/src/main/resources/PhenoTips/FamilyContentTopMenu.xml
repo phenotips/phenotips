@@ -490,7 +490,7 @@
     #set ($dob = "$!{member.getData('dates').date_of_birth.toYYYYMMDDString()}")
     #set ($meta = "$name#if($name != '' &amp;&amp; $dob != ''), #end$dob")
     #set ($patientLabel = "$id#if ($meta != '') ($meta)#end")
-    #set ($membersList = "$!{membersList}${util.newline}&lt;li&gt;&lt;a href=""${xwiki.getDocument($member.document).getURL()}"" target=""_blank""&gt;$patientLabel&lt;/a&gt;&lt;/li&gt;")
+    #set ($membersList = "$!{membersList}${util.newline}&lt;li&gt;&lt;a href=""${member.getXDocument().getURL()}"" target=""_blank""&gt;$patientLabel&lt;/a&gt;&lt;/li&gt;")
   #end
 #end
 #set ($membersList = "$!{membersList}${util.newline}&lt;/ul&gt;")

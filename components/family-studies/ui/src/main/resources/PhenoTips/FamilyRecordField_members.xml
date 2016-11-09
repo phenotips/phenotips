@@ -122,7 +122,7 @@
     #set ($dob = "$!{member.getData('dates').date_of_birth.toYYYYMMDDString()}")
     #set ($meta = "$name#if($name != '' &amp;&amp; $dob != ''), #end$dob")
     #set ($patientLabel = "$id#if ($meta != '') ($meta)#end")
-* [[$patientLabel&gt;&gt;$member.document||rel="__blank"]]
+* [[$patientLabel&gt;&gt;$member.getDocumentReference()||rel="__blank"]]
   #end
 #end
 {{/velocity}}</content>
