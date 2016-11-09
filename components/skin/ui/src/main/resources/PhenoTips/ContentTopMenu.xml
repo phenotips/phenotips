@@ -859,6 +859,8 @@
 ##
 #if ($doc.getObject('PhenoTips.PatientClass'))
 $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
+$xwiki.jsx.use('PhenoTips.JSONImportDialog')##
+$xwiki.ssx.use('PhenoTips.JSONImportDialog')##
 (% id="patient-record-actions" class="content-actions page-actions" %)(((
 (% id="pr-more-actions-menu" class="menu menu-horizontal" %)(((
 #if ($xcontext.action == 'view')
@@ -890,6 +892,10 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
   #set ($pdfTemplate = $xwiki.getSpacePreference('colorTheme'))
 #else
   #set ($pdfTemplate = 'PhenoTips.PatientSheetCode')
+#end
+#if ($isAdvancedUser &amp;&amp; $hasEdit &amp;&amp; !$isReadOnly)
+** (% class="empty" %)----
+** (% class="json-import single-patient-import" %){{html clean="false"}}&lt;a href="#" name="single_patient_import"&gt;$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.importJSON')&lt;/a&gt;{{/html}}
 #end
 ** (% class="empty" %)----
 ** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.exportPDF')&gt;&gt;path:$doc.getURL('export', "format=pdf&amp;pdfcover=0&amp;pdftoc=0&amp;pdftemplate=${pdfTemplate}")|| class="export-link"]]
