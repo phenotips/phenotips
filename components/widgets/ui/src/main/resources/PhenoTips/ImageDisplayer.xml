@@ -473,7 +473,8 @@ $content
         var image = item.down('.attachment-preview img');
         var viewlink = item.down('a.view.hidden');
         var id = input.id.substring(XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX.length);
-        var lItem = new Element('div', {'class' : item.className + (input.checked &amp;&amp; ' selected' || '')});
+        var lItem = new Element('div', {'class' : item.className});
+        lItem.toggleClassName('selected', input.checked)
         lItem.insert({
                   'top' : new Element('label', {'for' : id, 'title' : input.value}).update(input.value).insert({
                               top : new Element('input', {
