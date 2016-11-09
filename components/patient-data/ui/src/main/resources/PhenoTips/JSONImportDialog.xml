@@ -475,7 +475,7 @@
 }
 
 .import-selector .import-textarea {
-  height: 12em;
+  height: 22ex;
   resize: vertical;
   margin: 1em auto;
 }
