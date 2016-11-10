@@ -102,19 +102,21 @@ public class EthnicityOntology extends AbstractSolrVocabulary
     @Override
     public Set<String> getAliases()
     {
-        Set<String> aliases = new HashSet<String>();
+        Set<String> aliases = new HashSet<>();
         aliases.add(getIdentifier());
         aliases.add("ETHNO");
         return aliases;
     }
 
     @Override
-    public String getWebsite() {
+    public String getWebsite()
+    {
         return "";
     }
 
     @Override
-    public String getCitation() {
+    public String getCitation()
+    {
         return "";
     }
 }

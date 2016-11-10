@@ -28,10 +28,10 @@ import com.xpn.xwiki.web.Utils;
  * XProperty for storing a piece of text encrypted in the database. The maximum length of the values depends on the text
  * itself, but is large enough to support even a hundred megabytes.
  *
- * @version $Id$
- * @since 1.3M2
  * @see EncryptedMetaClass
  * @see EncryptedClass
+ * @version $Id$
+ * @since 1.3M2
  */
 public class EncryptedProperty extends BaseStringProperty
 {

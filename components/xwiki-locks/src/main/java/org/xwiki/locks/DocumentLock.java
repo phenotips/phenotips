@@ -128,7 +128,7 @@ public class DocumentLock
      */
     public User getUser()
     {
-        return user;
+        return this.user;
     }
 
     /**
@@ -148,7 +148,7 @@ public class DocumentLock
      */
     public Date getDate()
     {
-        return date;
+        return this.date;
     }
 
     /**

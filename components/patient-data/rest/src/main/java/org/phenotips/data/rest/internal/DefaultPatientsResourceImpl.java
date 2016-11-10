@@ -124,8 +124,8 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
      *
      * @param json the JSON representation of the new patients to be created
      * @return a response containing locations of the newly created patients in its body, if successful
-     * @throws WebApplicationException if a {@link JSONArray} object cannot be created or one of the patient objects
-     * is null
+     * @throws WebApplicationException if a {@link JSONArray} object cannot be created or one of the patient objects is
+     *             null
      * @throws NullPointerException if the patient was not created
      */
     private Response addPatients(final String json)
@@ -142,7 +142,7 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
         for (int i = 0; i < jsonArrayLength; i++) {
             JSONObject jsonObject = patientsData.optJSONObject(i);
             if (jsonObject == null) {
-                logger.warn("One of the members of the patient JSONArray is null.");
+                this.logger.warn("One of the members of the patient JSONArray is null.");
                 continue;
             }
             Patient patient = this.repository.create();
@@ -187,9 +187,9 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
     private Response buildCreatedResponse(final Patient patient)
     {
         final URI targetURI = UriBuilder
-                .fromUri(this.uriInfo.getBaseUri())
-                .path(PatientResource.class)
-                .build(patient.getId());
+            .fromUri(this.uriInfo.getBaseUri())
+            .path(PatientResource.class)
+            .build(patient.getId());
         final ResponseBuilder response = Response.created(targetURI);
         return response.build();
     }

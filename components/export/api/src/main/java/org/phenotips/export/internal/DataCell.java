@@ -24,10 +24,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Holds the value of the cell, its styling, instructions on merging and size. A {@link org.phenotips.export.internal
- * .DataCell} does not necessarily correspond only to one spreadsheet cell; it can represent several of those at a time.
- * The internal position variables should not be depended upon; they are used for convenience of classes whose job is to
- * assemble the spreadsheet.
+ * Holds the value of the cell, its styling, instructions on merging and size. A
+ * {@link org.phenotips.export.internal.DataCell} does not necessarily correspond only to one spreadsheet cell; it can
+ * represent several of those at a time. The internal position variables should not be depended upon; they are used for
+ * convenience of classes whose job is to assemble the spreadsheet.
  *
  * @version $Id$
  * @since 1.0RC1
@@ -38,8 +38,8 @@ public class DataCell
     private String value;
 
     /**
-     * These styles are not applied directly. This set holds a list of styles that a {@link
-     * org.phenotips.export.internal.Styler} reads and applies.
+     * These styles are not applied directly. This set holds a list of styles that a
+     * {@link org.phenotips.export.internal.Styler} reads and applies.
      */
     private Set<StyleOption> styles;
 
@@ -53,8 +53,7 @@ public class DataCell
     private Integer y;
 
     /**
-     * How many additional spreadsheet cells on the x axis this {@link org.phenotips.export.internal.DataCell}
-     * occupies.
+     * How many additional spreadsheet cells on the x axis this {@link org.phenotips.export.internal.DataCell} occupies.
      */
     private Integer mergeX;
 
@@ -66,14 +65,14 @@ public class DataCell
     private Boolean isChild;
 
     /**
-     * A set of {@link org.phenotips.export.internal.DataCell} that were generated to support this {@link
-     * org.phenotips.export.internal.DataCell}; for example, these cells are used for merging.
+     * A set of {@link org.phenotips.export.internal.DataCell} that were generated to support this
+     * {@link org.phenotips.export.internal.DataCell}; for example, these cells are used for merging.
      */
     private Set<DataCell> generated;
 
     /**
-     * Holds the number of lines in cases where the {@link #value} of this {@link org.phenotips.export.internal
-     * .DataCell} contains several lines.
+     * Holds the number of lines in cases where the {@link #value} of this
+     * {@link org.phenotips.export.internal.DataCell} contains several lines.
      */
     private Integer numberOfLines;
 
@@ -95,7 +94,7 @@ public class DataCell
      * @param x see {@link #x}
      * @param y see {@link #y}
      * @param style a {@link org.phenotips.export.internal.StyleOption} which will be applied when committing this
-     * {@link org.phenotips.export.internal.DataCell} to a spreadsheet.
+     *            {@link org.phenotips.export.internal.DataCell} to a spreadsheet.
      */
     public DataCell(String value, Integer x, Integer y, StyleOption style)
     {
@@ -107,12 +106,12 @@ public class DataCell
 
     /**
      * @param style added to {@link #styles} of this {@link org.phenotips.export.internal.DataCell} and all of its
-     * children
+     *            children
      */
     public void addStyle(StyleOption style)
     {
         if (this.styles == null) {
-            this.styles = new HashSet<StyleOption>();
+            this.styles = new HashSet<>();
         }
         this.styles.add(style);
         if (this.generated != null) {
@@ -131,7 +130,7 @@ public class DataCell
             return;
         }
         if (this.styles == null) {
-            this.styles = new HashSet<StyleOption>();
+            this.styles = new HashSet<>();
         }
         this.styles.addAll(styles);
         if (this.generated != null) {
@@ -225,7 +224,7 @@ public class DataCell
             return this.generated;
         }
 
-        this.generated = new HashSet<DataCell>();
+        this.generated = new HashSet<>();
         for (int gx = 1; gx <= this.mergeX; gx++) {
             DataCell cell = new DataCell("", this.x + gx, this.getY());
             cell.setIsChild(true);

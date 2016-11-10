@@ -174,7 +174,7 @@ public class PhenoTipsPatientRepository extends PatientEntityManager implements 
             }
             crtMaxID = Math.max(crtMaxID, 0);
         } catch (QueryException ex) {
-
+            this.logger.warn("Failed to get the last used identifier: {}", ex.getMessage());
         }
         return crtMaxID;
     }

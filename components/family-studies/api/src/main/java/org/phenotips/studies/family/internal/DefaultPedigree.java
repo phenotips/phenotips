@@ -162,7 +162,7 @@ public class DefaultPedigree implements Pedigree
     }
 
     /**
-     * @return a pair <ProbandId, ProbandLastname>
+     * @return a pair {@code <ProbandId, ProbandLastname>}
      */
     private Pair<String, String> getProbandInfo()
     {

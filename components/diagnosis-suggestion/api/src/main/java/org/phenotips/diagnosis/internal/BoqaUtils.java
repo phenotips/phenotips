@@ -55,9 +55,10 @@ public class BoqaUtils implements Utils
      * @throws java.lang.InterruptedException if the notification process fails
      * @throws IOException if the graph or the association container fail to load
      */
+    @Override
     public void loadDataFiles(String oboFileName, String associationFileName) throws InterruptedException, IOException
     {
-        File workspace = new File(env.getTemporaryDirectory(), "ontologizer");
+        File workspace = new File(this.env.getTemporaryDirectory(), "ontologizer");
         if (!workspace.exists()) {
             workspace.mkdirs();
         }
@@ -75,10 +76,11 @@ public class BoqaUtils implements Utils
             WorkSetLoadThread.obtainDatafiles(ws,
                 new Runnable()
                 {
+                    @Override
                     public void run()
                     {
-                        graph = WorkSetLoadThread.getGraph(ws.getOboPath());
-                        dataAssociation = WorkSetLoadThread.getAssociations(ws.getAssociationPath());
+                        BoqaUtils.this.graph = WorkSetLoadThread.getGraph(ws.getOboPath());
+                        BoqaUtils.this.dataAssociation = WorkSetLoadThread.getAssociations(ws.getAssociationPath());
                         synchronized (notify) {
                             notify.notifyAll();
                         }
@@ -99,16 +101,18 @@ public class BoqaUtils implements Utils
     /**
      * @return ontology graph which could be null
      */
+    @Override
     public Ontology getGraph()
     {
-        return graph;
+        return this.graph;
     }
 
     /**
      * @return the association container which could be null
      */
+    @Override
     public AssociationContainer getDataAssociation()
     {
-        return dataAssociation;
+        return this.dataAssociation;
     }
 }

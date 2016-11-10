@@ -243,12 +243,6 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     /**
      * This method may be called either as a standalone invocation, or internally as part of family pedigree update. The
      * latter invocation may add multiple patients (a "batch update")
-     *
-     * @param family
-     * @param patient
-     * @param updatingUser
-     * @param batchUpdate
-     * @throws PTException
      */
     private void addMember(Family family, Patient patient, User updatingUser, boolean batchUpdate) throws PTException
     {

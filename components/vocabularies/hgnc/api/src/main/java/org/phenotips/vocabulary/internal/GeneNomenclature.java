@@ -160,21 +160,23 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
     @Override
     public Set<String> getAliases()
     {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         result.add(getIdentifier());
         result.add("HGNC");
         return result;
     }
 
     @Override
-    public String getWebsite() {
+    public String getWebsite()
+    {
         return "http://www.genenames.org/";
     }
 
     @Override
-    public String getCitation() {
+    public String getCitation()
+    {
         return "HGNC Database, HUGO Gene Nomenclature Committee (HGNC), EMBL Outstation - Hinxton, European"
-                + " Bioinformatics Institute, Wellcome Trust Genome Campus, Hinxton, Cambridgeshire, CB10 1SD, UK";
+            + " Bioinformatics Institute, Wellcome Trust Genome Campus, Hinxton, Cambridgeshire, CB10 1SD, UK";
     }
 
     @Override
@@ -312,7 +314,7 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
     protected Collection<SolrInputDocument> load(URL url)
     {
         try {
-            Collection<SolrInputDocument> solrDocuments = new HashSet<SolrInputDocument>();
+            Collection<SolrInputDocument> solrDocuments = new HashSet<>();
 
             Reader in = new InputStreamReader(url.openConnection().getInputStream(), Charset.forName("UTF-8"));
             for (CSVRecord row : CSVFormat.TDF.withHeader().parse(in)) {

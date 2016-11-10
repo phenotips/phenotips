@@ -186,9 +186,6 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         /**
          * Returns either existing patient family or relative family document, or a new one. Patient and relatives are
          * assigned to a new family as members. Returns null if more than one family exists for patient and relatives.
-         *
-         * @throws XWikiException
-         * @throws QueryException
          */
         private XWikiDocument processPatientWithRelatives(XWikiDocument patientXDocument, String patientFamilyRef,
             String relativesFamilyRef, Map<String, XWikiDocument> relativesDocList, XWiki xwiki) throws QueryException,
@@ -234,10 +231,6 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         /**
          * A new family document with pedigree object is created for a patient with relatives. A family pedigree is
          * created only for relatives from a list ["parent", "child", "sibling", "twin"].
-         *
-         * @throws Exception
-         * @throws XWikiException
-         * @throws QueryException
          */
         private XWikiDocument createFamilyWithPedigree(XWikiDocument patientXDocument,
             Map<String, XWikiDocument> relativesDocList) throws QueryException, XWikiException, Exception
@@ -271,8 +264,6 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
         /**
          * Set family references for all relatives.
-         *
-         * @throws XWikiException
          */
         private void setAllFamilyRefs(XWikiDocument patientXDocument, String famReference,
             Map<String, XWikiDocument> relativesDocList, XWiki xwiki) throws XWikiException

@@ -53,8 +53,8 @@ import sonumina.boqa.calculation.BOQA;
 import sonumina.boqa.calculation.Observations;
 
 /**
- * An implementation of {@link DiagnosisService} using BOQA, see <a
- * href="http://bioinformatics.oxfordjournals.org/content/28/19/2502.abstract">this article</a>.
+ * An implementation of {@link DiagnosisService} using BOQA, see
+ * <a href="http://bioinformatics.oxfordjournals.org/content/28/19/2502.abstract">this article</a>.
  *
  * @since 1.1M1
  * @version $Id$
@@ -106,18 +106,18 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
 
         // Load datafiles
         try {
-            utils.loadDataFiles(vocabularyPath, annotationPath);
+            this.utils.loadDataFiles(vocabularyPath, annotationPath);
         } catch (InterruptedException e) {
             throw new InitializationException(e.getMessage());
         } catch (IOException e) {
             throw new InitializationException(e.getMessage());
         }
 
-        this.boqa.setup(utils.getGraph(), utils.getDataAssociation());
+        this.boqa.setup(this.utils.getGraph(), this.utils.getDataAssociation());
 
         // Set up our index -> OMIM mapping by flipping the OMIM -> Index mapping in boqa
         Set<Map.Entry<ByteString, Integer>> omimtonum = this.boqa.item2Index.entrySet();
-        this.omimMap = new HashMap<Integer, ByteString>(omimtonum.size());
+        this.omimMap = new HashMap<>(omimtonum.size());
 
         for (Map.Entry<ByteString, Integer> item : omimtonum) {
             this.omimMap.put(item.getValue(), item.getKey());
@@ -168,7 +168,7 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         });
 
         // Get top limit results
-        List<VocabularyTerm> results = new ArrayList<VocabularyTerm>();
+        List<VocabularyTerm> results = new ArrayList<>();
         for (int id : order) {
             if (results.size() >= limit) {
                 break;

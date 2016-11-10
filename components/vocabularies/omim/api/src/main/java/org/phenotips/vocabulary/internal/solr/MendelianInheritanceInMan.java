@@ -118,7 +118,7 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
     @Override
     public Set<String> getAliases()
     {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         result.add(getIdentifier());
         result.add(STANDARD_NAME);
         result.add("OMIM");
@@ -126,14 +126,16 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
     }
 
     @Override
-    public String getWebsite() {
+    public String getWebsite()
+    {
         return "http://www.omim.org/";
     }
 
     @Override
-    public String getCitation() {
+    public String getCitation()
+    {
         return "Online Mendelian Inheritance in Man, OMIM\u00ae. McKusick-Nathans Institute of Genetic Medicine,"
-                + " Johns Hopkins University (Baltimore, MD)";
+            + " Johns Hopkins University (Baltimore, MD)";
     }
 
     @Override

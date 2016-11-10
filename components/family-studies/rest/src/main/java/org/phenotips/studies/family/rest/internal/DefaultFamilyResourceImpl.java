@@ -42,7 +42,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 
 /**
- * Default implementation for {@link PatientResource} using XWiki's support for REST resources.
+ * Default implementation for {@link FamilyResource} using XWiki's support for REST resources.
  *
  * @version $Id$
  * @since 1.4
@@ -101,12 +101,12 @@ public class DefaultFamilyResourceImpl extends XWikiResource implements FamilyRe
             this.logger.warn(NO_SUCH_FAMILY_ERROR_MESSAGE, id);
             return Response.status(Status.NOT_FOUND).build();
         }
-        if (familyTools.currentUserCanDeleteFamily(id, deleteMembers)) {
+        if (this.familyTools.currentUserCanDeleteFamily(id, deleteMembers)) {
             this.logger.error("Delete access denied to user [{}] for family record [{}] with deleteMemebers=[{}]",
-                    this.users.getCurrentUser(), id, deleteMembers);
+                this.users.getCurrentUser(), id, deleteMembers);
             return Response.status(Status.FORBIDDEN).build();
         }
-        if (!familyTools.deleteFamily(id, deleteMembers)) {
+        if (!this.familyTools.deleteFamily(id, deleteMembers)) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).build();
         }
         this.logger.warn("Deleted family record [{}]", id);

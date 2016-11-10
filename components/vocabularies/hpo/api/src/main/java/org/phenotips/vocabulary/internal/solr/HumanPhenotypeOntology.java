@@ -91,7 +91,7 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
     @Override
     public Set<String> getAliases()
     {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         result.add(getIdentifier());
         result.add("HP");
         result.add("HPO");
@@ -99,15 +99,17 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
     }
 
     @Override
-    public String getWebsite() {
+    public String getWebsite()
+    {
         return "http://human-phenotype-ontology.github.io/";
     }
 
     @Override
-    public String getCitation() {
+    public String getCitation()
+    {
         return "The Human Phenotype Ontology project: linking molecular biology and disease through phenotype data."
-                + " Sebastian K\u00f6hler, Sandra C Doelken, Christopher J. Mungall, Sebastian Bauer, Helen V. Firth,"
-                + " et al. Nucl. Acids Res. (1 January 2014) 42 (D1): D966-D974 doi:10.1093/nar/gkt1026";
+            + " Sebastian K\u00f6hler, Sandra C Doelken, Christopher J. Mungall, Sebastian Bauer, Helen V. Firth,"
+            + " et al. Nucl. Acids Res. (1 January 2014) 42 (D1): D966-D974 doi:10.1093/nar/gkt1026";
     }
 
     @Override

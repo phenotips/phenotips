@@ -34,7 +34,8 @@ public enum ConsentStatus
 
     private String stringRepresentation;
 
-    ConsentStatus(String stringRepresentation) {
+    ConsentStatus(String stringRepresentation)
+    {
         this.stringRepresentation = stringRepresentation;
     }
 
@@ -46,13 +47,14 @@ public enum ConsentStatus
 
     /**
      * For converting a string into this {@link Enum}.
+     *
      * @param string which corresponds to one of this enum values
      * @return corresponding enum
      */
-    public static ConsentStatus fromString(String string) {
+    public static ConsentStatus fromString(String string)
+    {
         for (ConsentStatus status : ConsentStatus.values()) {
-            if (status.toString().contentEquals(string))
-            {
+            if (status.toString().contentEquals(string)) {
                 return status;
             }
         }

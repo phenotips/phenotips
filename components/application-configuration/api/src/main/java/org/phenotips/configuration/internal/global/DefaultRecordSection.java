@@ -87,13 +87,13 @@ public class DefaultRecordSection implements RecordSection
     @Override
     public boolean isExpandedByDefault()
     {
-        return StringUtils.equals("true", extension.getParameters().get("expanded_by_default"));
+        return StringUtils.equals("true", this.extension.getParameters().get("expanded_by_default"));
     }
 
     @Override
     public List<RecordElement> getAllElements()
     {
-        List<RecordElement> result = new LinkedList<RecordElement>();
+        List<RecordElement> result = new LinkedList<>();
         List<UIExtension> fields = this.uixManager.get(this.extension.getId());
         fields = this.orderFilter.filter(fields, "order");
         for (UIExtension field : fields) {
@@ -105,7 +105,7 @@ public class DefaultRecordSection implements RecordSection
     @Override
     public List<RecordElement> getEnabledElements()
     {
-        List<RecordElement> result = new LinkedList<RecordElement>();
+        List<RecordElement> result = new LinkedList<>();
         for (RecordElement element : getAllElements()) {
             if (element.isEnabled()) {
                 result.add(element);
