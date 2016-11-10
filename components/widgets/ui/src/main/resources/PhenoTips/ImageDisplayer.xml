@@ -169,7 +169,16 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
 #macro (__displayGallery $targetDocument  $selection)
   #set ($content = '')
   #foreach ($name in  $selection)
-    #if ("$!{targetDocument.getAttachment(${name})}" != '')
+    ## This filters file names that already contain another document reference
+    ## Regexp means: contains @, not preceded by an odd (2n+1) number of escape characters
+    ## Since lookbehinds must have a known maximum length, only check for at most 11 preceding tildas
+    #if ($name.matches('.*(?&lt;!([^~]|^)(~~){0,5}+~)+@.*'))
+      #if ($options.isImage)
+        #set ($content = "$!{content}[[image:${services.rendering.escape($name, $doc.syntax)}||style=""max-width:100%""]]${util.newline}")
+      #else
+        #set ($content = "$!{content}[[attach:${services.rendering.escape($name, $doc.syntax)}||class='attachment-link #__getExtension($name)']]${util.newline}")
+      #end
+    #elseif ("$!{targetDocument.getAttachment(${name})}" != '')
       #if ($options.isImage)
         #set ($content = "$!{content}[[image:${services.rendering.escape($targetDocument.fullName, $doc.syntax)}@${services.rendering.escape($name, $doc.syntax)}||style=""max-width:100%""]]${util.newline}")
       #else
