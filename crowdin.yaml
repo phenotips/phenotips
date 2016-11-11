@@ -1,10 +1,14 @@
 files:
   - 
-    source: /**/ApplicationResources.properties
+    source: /**/*.properties
+    ignore:
+      - /**/*core.properties
     translation: /**/ApplicationResources_%two_letters_code%.properties
+    languages_mapping:
+      two_letters_code:
+        en-CA: en_CA
   - 
     source: /**/*Translations.xml
     translation: /**/%file_name%.%two_letters_code%.xml
-    content_segmentation: 0
     translatable_elements:
       - /xwikidoc/content
