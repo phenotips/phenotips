@@ -17,9 +17,9 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
+import org.phenotips.vocabulary.SolrVocabularyResourceManager;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
-import org.phenotips.vocabulary.SolrVocabularyResourceManager;
 
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
@@ -58,17 +58,17 @@ import static org.mockito.Mockito.when;
  */
 public class HumanPhenotypeOntologyTest
 {
-    public int ontologyServiceResult;
-
-    public Cache<VocabularyTerm> cache;
-
-    public SolrClient server;
-
-    public Vocabulary ontologyService;
-
     @Rule
     public final MockitoComponentMockingRule<Vocabulary> mocker =
         new MockitoComponentMockingRule<Vocabulary>(HumanPhenotypeOntology.class);
+
+    private int ontologyServiceResult;
+
+    private Cache<VocabularyTerm> cache;
+
+    private SolrClient server;
+
+    private Vocabulary ontologyService;
 
     @SuppressWarnings("unchecked")
     @Before

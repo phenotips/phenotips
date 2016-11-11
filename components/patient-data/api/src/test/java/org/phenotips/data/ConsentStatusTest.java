@@ -32,16 +32,16 @@ public class ConsentStatusTest
     @Test
     public void stringResolveToCorrectEnum() throws ComponentLookupException
     {
-     Assert.assertSame(ConsentStatus.fromString("yes"), ConsentStatus.YES);
-     Assert.assertSame(ConsentStatus.fromString("no"), ConsentStatus.NO);
-     Assert.assertSame(ConsentStatus.fromString("not_set"), ConsentStatus.NOT_SET);
+        Assert.assertSame(ConsentStatus.fromString("yes"), ConsentStatus.YES);
+        Assert.assertSame(ConsentStatus.fromString("no"), ConsentStatus.NO);
+        Assert.assertSame(ConsentStatus.fromString("not_set"), ConsentStatus.NOT_SET);
     }
 
     @Test
     public void incorrectStringDoesNotResolveToEnum() throws ComponentLookupException
     {
-     Assert.assertNotSame(ConsentStatus.fromString("Yes"), ConsentStatus.YES);
-     Assert.assertNotSame(ConsentStatus.fromString("nO"), ConsentStatus.NO);
-     Assert.assertNotSame(ConsentStatus.fromString("notset"), ConsentStatus.NOT_SET);
+        Assert.assertNotSame(ConsentStatus.fromString("Yes"), ConsentStatus.YES);
+        Assert.assertNotSame(ConsentStatus.fromString("nO"), ConsentStatus.NO);
+        Assert.assertNotSame(ConsentStatus.fromString("notset"), ConsentStatus.NOT_SET);
     }
 }

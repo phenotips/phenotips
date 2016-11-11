@@ -216,11 +216,11 @@ public class DefaultPatientResourceImplTest
             ex = temp;
         }
 
-        Assert.assertNotNull("updatePatient did not throw a WebApplicationException as expected " +
-            "when the patient could not be found", ex);
+        Assert.assertNotNull("updatePatient did not throw a WebApplicationException as expected "
+            + "when the patient could not be found", ex);
         Assert.assertEquals(Status.NOT_FOUND.getStatusCode(), ex.getResponse().getStatus());
-        verify(this.logger).debug("Patient record [{}] doesn't exist yet. It can be created by POST-ing the" +
-            " JSON to /rest/patients", this.id);
+        verify(this.logger).debug("Patient record [{}] doesn't exist yet. It can be created by POST-ing the"
+            + " JSON to /rest/patients", this.id);
     }
 
     @Test
@@ -235,8 +235,8 @@ public class DefaultPatientResourceImplTest
             ex = temp;
         }
 
-        Assert.assertNotNull("updatePatient did not throw a WebApplicationException as expected " +
-            "when the User did not have edit rights", ex);
+        Assert.assertNotNull("updatePatient did not throw a WebApplicationException as expected "
+            + "when the User did not have edit rights", ex);
         Assert.assertEquals(Status.FORBIDDEN.getStatusCode(), ex.getResponse().getStatus());
         verify(this.logger).debug("Edit access denied to user [{}] on patient record [{}]", this.currentUser, this.id);
     }
@@ -256,8 +256,8 @@ public class DefaultPatientResourceImplTest
             ex = temp;
         }
 
-        Assert.assertNotNull("updatePatient did not throw a WebApplicationException as expected " +
-            "when json id did not match patient id", ex);
+        Assert.assertNotNull("updatePatient did not throw a WebApplicationException as expected "
+            + "when json id did not match patient id", ex);
         Assert.assertEquals(Status.CONFLICT.getStatusCode(), ex.getResponse().getStatus());
     }
 
@@ -277,8 +277,8 @@ public class DefaultPatientResourceImplTest
             ex = temp;
         }
 
-        Assert.assertNotNull("updatePatient did not throw a WebApplicationException as expected " +
-            "when catching an Exception from Patient.updateFromJSON", ex);
+        Assert.assertNotNull("updatePatient did not throw a WebApplicationException as expected "
+            + "when catching an Exception from Patient.updateFromJSON", ex);
         Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), ex.getResponse().getStatus());
         verify(this.logger).warn("Failed to update patient [{}] from JSON: {}. Source JSON was: {}",
             this.patient.getId(),
@@ -339,8 +339,8 @@ public class DefaultPatientResourceImplTest
             ex = temp;
         }
 
-        Assert.assertNotNull("deletePatient did not throw a WebApplicationException as expected " +
-            "when catching an XWikiException", ex);
+        Assert.assertNotNull("deletePatient did not throw a WebApplicationException as expected "
+            + "when catching an XWikiException", ex);
         Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), ex.getResponse().getStatus());
         verify(this.logger).warn(eq("Failed to delete patient record [{}]: {}"), eq(this.id), anyString());
     }
