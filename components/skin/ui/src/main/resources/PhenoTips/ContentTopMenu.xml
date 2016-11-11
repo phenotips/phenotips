@@ -859,8 +859,6 @@
 ##
 #if ($doc.getObject('PhenoTips.PatientClass'))
 $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
-$xwiki.jsx.use('PhenoTips.JSONImportDialog')##
-$xwiki.ssx.use('PhenoTips.JSONImportDialog')##
 (% id="patient-record-actions" class="content-actions page-actions" %)(((
 (% id="pr-more-actions-menu" class="menu menu-horizontal" %)(((
 #if ($xcontext.action == 'view')
@@ -894,6 +892,8 @@ $xwiki.ssx.use('PhenoTips.JSONImportDialog')##
   #set ($pdfTemplate = 'PhenoTips.PatientSheetCode')
 #end
 #if ($isAdvancedUser &amp;&amp; $hasEdit &amp;&amp; !$isReadOnly)
+$xwiki.jsx.use('PhenoTips.JSONImportDialog')##
+$xwiki.ssx.use('PhenoTips.JSONImportDialog')##
 ** (% class="empty" %)----
 ** (% class="json-import single-patient-import" %){{html clean="false"}}&lt;a href="#" name="single_patient_import"&gt;$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.importJSON')&lt;/a&gt;{{/html}}
 #end
@@ -917,11 +917,11 @@ $xwiki.ssx.use('PhenoTips.JSONImportDialog')##
 )))## container
 #elseif ($doc.name == 'AllData' &amp;&amp; $xcontext.action == 'view')
 $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
-$xwiki.jsx.use('PhenoTips.JSONImportDialog')##
-$xwiki.ssx.use('PhenoTips.JSONImportDialog')##
 (% id="patient-directory-actions" class="content-actions directory-actions" %)(((
 (% id="pd-more-actions-menu" class="menu menu-horizontal" %)(((
 #if($hasCreatePage)
+$xwiki.jsx.use('PhenoTips.JSONImportDialog')##
+$xwiki.ssx.use('PhenoTips.JSONImportDialog')##
 * {{html}}&lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;$services.localization.render('phenotips.globalHeader.createPatient')&lt;/label&gt;{{/html}}
 * #__icon("upload") {{html}}&lt;label for="phenotips_json_import"&gt;&lt;span class="upload"&gt; &lt;/span&gt;&lt;a href="#" id="phenotips_json_import" class="json-import multi-patient-import" title="$services.localization.render('phenotips.allData.menu.import.json.tooltip')" role="button"&gt;$services.localization.render('phenotips.allData.menu.import.json')&lt;/a&gt;&lt;/label&gt;{{/html}}
 #end

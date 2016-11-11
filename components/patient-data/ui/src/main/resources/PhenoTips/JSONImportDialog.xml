@@ -192,8 +192,7 @@
         _this.jsonData.observe(item, _this.textareaChangeFunction);
       });
 
-      if (this._builder.performIdCheck)
-        this.jsonData.observe("input", this.textareaTextEntered);
+      this._builder.performIdCheck &amp;&amp; this.jsonData.observe("input", this.textareaTextEntered);
     },
 
     importServices : {
@@ -206,7 +205,6 @@
       'multi-patient-import' : {
         'service' : XWiki.contextPath + 'rest/patients',
         'modalTitle' : "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.title.multiplePatients'))",
-        'performIdCheck' : false,
         'successfulImportMsg' : "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.success.multiplePatients'))"
       }
     },
@@ -222,8 +220,7 @@
         fr.onload = function(e) {
           _this.jsonData.value = e.target.result.strip();
           _this.textareaChangeFunction();
-          if (_this._builder.performIdCheck)
-            _this.textareaTextEntered();
+          _this._builder.performIdCheck &amp;&amp; _this.textareaTextEntered();
         };
         fr.readAsText(nextFile);
       }
