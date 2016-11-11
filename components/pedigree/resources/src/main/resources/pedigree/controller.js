@@ -589,10 +589,7 @@ define([
                                     patientJSONObject.pedigreeProperties = node.getPatientIndependentProperties();
                                     delete patientJSONObject.pedigreeProperties.gender; // this one is loaded from the patient
 
-                                    var genderOk = editor.getGraph().setNodeDataFromPhenotipsJSON( nodeID, patientJSONObject);
-                                    if (!genderOk && !event.memo.noUndoRedo) {
-                                        alert("Gender defined in Phenotips for patient " + modValue + " is incompatible with this pedigree. Setting pedigree node gender to 'Unknown'");
-                                    }
+                                    editor.getGraph().setNodeDataFromPhenotipsJSON( nodeID, patientJSONObject);
 
                                     // update visual node's properties using data in graph model which was just loaded from phenotips
                                     node.assignProperties(editor.getGraph().getProperties(nodeID));
@@ -935,11 +932,7 @@ define([
 
     Controller._validatePropertyValue = function( nodeID, propertySetFunction, propValue)
     {
-        if (propertySetFunction == "setGender") {
-            var possibleGenders = editor.getGraph().getPossibleGenders(nodeID);
-
-            return possibleGenders[propValue];
-        }
+        // nothing to validate for now
         return true;
     }
 

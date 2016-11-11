@@ -1049,18 +1049,6 @@ define([
                 Helpers.removeFirstOccurrenceByValue(disabledStates,this.getLifeStatus())
             }
 
-            var disabledGenders = false;
-            var inactiveGenders = false;
-            var genderSet = editor.getGraph().getPossibleGenders(this.getID());
-            for (gender in genderSet) {
-                if (genderSet.hasOwnProperty(gender))
-                    if (!genderSet[gender]) {
-                        if (!inactiveGenders)
-                            inactiveGenders = [];
-                        inactiveGenders.push(gender);
-                    }
-            }
-
             var childlessInactive = this.isFetus();  // TODO: can a person which already has children become childless?
                                                      // maybe: use editor.getGraph().hasNonPlaceholderNonAdoptedChildren() ?
             var disorders = [];
@@ -1075,10 +1063,6 @@ define([
             });
 
             var cantChangeAdopted = this.isFetus() || editor.getGraph().hasToBeAdopted(this.getID());
-            // a person which has relationships can't be adopted out - we wouldn't know details in that case
-            if (!cantChangeAdopted && onceAlive) {
-                cantChangeAdopted = ["adoptedOut", "disableViaOpacity"];
-            }
 
             var inactiveMonozygothic = true;
             var disableMonozygothic  = true;
@@ -1121,7 +1105,7 @@ define([
                 last_name:     {value : this.getLastName(), disabled: false},
                 last_name_birth: {value: this.getLastNameAtBirth()}, //, inactive: (this.getGender() != 'F')},
                 external_id:   {value : this.getExternalID(), disabled: false},
-                gender:        {value : this.getGender(), inactive: inactiveGenders, disabled: disabledGenders},
+                gender:        {value : this.getGender()},
                 date_of_birth: {value : this.getBirthDate(), inactive: this.isFetus(), disabled: false},
                 carrier:       {value : this.getCarrierStatus(), disabled: inactiveCarriers},
                 disorders:     {value : disorders, disabled: false},
@@ -1347,7 +1331,7 @@ define([
          /**
           * These properties are related to pedigree structure, but not to PhenoTips patient.
           *
-          * Used to decide whichproperties to keep when the link to PhenoTips patient is removed
+          * Used to decide which properties to keep when the link to PhenoTips patient is removed
           */
          getPatientIndependentProperties: function() {
              // TODO: review the set of properties retained

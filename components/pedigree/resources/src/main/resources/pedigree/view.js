@@ -481,11 +481,20 @@ define([
             var me = this;
             var validTargets = this.getValidDragTargets(sourceNode.getID(), hoverType);
 
-            validTargets.each(function(nodeID) {
+            validTargets.each(function(target) {
+                if (typeof target === 'object') {
+                    var nodeID = target.nodeID;
+                    var highlightColor = (target.hasOwnProperty("preferred") && target.preferred)
+                                         ? null : PedigreeEditorParameters.attributes.secondaryGlowColor;
+                } else {
+                    var nodeID = target;
+                    var highlightColor = null;
+                }
+
                 me._currentGrownNodes.push(nodeID);
 
                 var node = me.getNode(nodeID);
-                node.getGraphics().grow();
+                node.getGraphics().grow(highlightColor);
 
                 var hoverModeZone = node.getGraphics().getHoverBox().getHoverZoneMask().clone().toFront();
                 //var hoverModeZone = node.getGraphics().getHoverBox().getHoverZoneMask().toFront();
@@ -553,7 +562,8 @@ define([
                 break;
             case "partnerR":
             case "partnerL":
-                // all person nodes of the other gender or unknown gender (who ar enot already partners)
+                // allow dragging to anyone who is not already a partner of target not and who is not a fetus
+                // ...but set "preferred" status only for nodes of the opposite or unknown gender
                 result = editor.getGraph().getPossiblePartnersOf(sourceNodeID)
                 //console.log("possible partners: " + Helpers.stringifyObject(result));
                 break;

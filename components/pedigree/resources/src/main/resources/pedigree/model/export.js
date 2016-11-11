@@ -439,11 +439,11 @@ define([
              sex = "F";
          } else if (gender == "U" || gender == "O") {
              // check partner gender(s) and if possible assign the opposite gender
-             var possibleGenders = dynamicPedigree.getPossibleGenders(i);
+             var possibleGenders = PedigreeExport.guessPossibleGender(dynamicPedigree, i);
              if (!possibleGenders["F"] && !possibleGenders["M"]) {
                  // there is a person which can't be assigned both M and F because both conflict with other partner genders
-                 editor.getOkCancelDialogue().showCustomized("Unable to export in BOADICEA format since gender assignment in pedigree is inconsistent",
-                                                             "Can't export: gender inconsistency in pedigree", "OK", null );
+                 editor.getOkCancelDialogue().showCustomized("Unable to export in BOADICEA format since some genders in pedigree can not be determined",
+                                                             "Can't export: not all nodes can be unambiguously assigned a Male or Female gender", "OK", null );
                  return "";
              }
              if (possibleGenders["F"] && !possibleGenders["M"]) {
@@ -476,11 +476,12 @@ define([
 
          var age = "0";
          var yob = "0";
-         if (pedigree.GG.properties[i].hasOwnProperty("dob")) {
-             var birthDate = new PedigreeDate(pedigree.GG.properties[i]["dob"]);
+         var birthDate = new PedigreeDate(pedigree.GG.properties[i]["dob"]);
+         if (birthDate && birthDate.isSet()) {
              // BOADICEA file format does not support fuzzy dates, so get an estimate if only decade is available
              yob = parseInt(birthDate.getAverageYearEstimate());
-             if (pedigree.GG.properties[i].hasOwnProperty("dod")) {
+             var deathDate = new PedigreeDate(pedigree.GG.properties[i]["dod"]);
+             if (deathDate && deathDate.isSet()) {
                  var deathDate = new PedigreeDate(pedigree.GG.properties[i]["dod"]);
                  var lastYearAlive = parseInt(deathDate.getAverageYearEstimate());
                  if (deathDate.toJSDate().getDayOfYear() < birthDate.toJSDate().getDayOfYear()) {
@@ -679,7 +680,7 @@ define([
       return {"propertyName": externalPropertyName, "value": value };
   }
 
-  /*
+  /**
    * Converts property name from internal format to external JSON format.
    */
   PedigreeExport.convertRelationshipProperty = function(internalPropertyName, value) {
@@ -697,6 +698,27 @@ define([
       }
       return {"propertyName": externalPropertyName, "value": value };
   }
+
+  /**
+   * Tries to guess a gender based on partner gender - required by BOADICEA which does not support
+   * Unknown and Other genders.
+   */
+  PedigreeExport.guessPossibleGender = function(dynamicPedigree, v)
+  {
+        // returns: - any gender if no partners or all partners are of unknown genders;
+        //          - opposite of the partner gender if partner genders do not conflict
+        var possible = {"M": true, "F": true};
+
+        var partners = dynamicPedigree.DG.GG.getAllPartners(v);
+
+        for (var i = 0; i < partners.length; i++) {
+            var partnerGender = dynamicPedigree.getGender(partners[i]);
+            if (partnerGender != "U" && partnerGender != "O") {
+                possible[partnerGender] = false;
+            }
+        }
+        return possible;
+  },
 
   /**
    * idGenerationPreference: {"newid"|"external"|"name"}, default: "newid"

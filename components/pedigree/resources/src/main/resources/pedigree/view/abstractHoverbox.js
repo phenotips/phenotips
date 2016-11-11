@@ -387,15 +387,14 @@ define([
          * @param {Boolean} isHighlighted Set to true enables green highlight box, false disables it
          */
         setHighlighted: function(isHighlighted) {
-            // autoimaticaly highlight and unhighlight the node being dragged over
-            if(isHighlighted) {
-                this.getBoxOnHover().attr(PedigreeEditorParameters.attributes.boxOnHover);                    
-                this.getBoxOnHover().attr("fill", "green");
+            if (isHighlighted) {
+                this.getBoxOnHover().attr(PedigreeEditorParameters.attributes.boxOnHover);
+                this.getBoxOnHover().attr("fill", PedigreeEditorParameters.attributes.howerboxHighlightColor);
             }
             else {
-                this.getBoxOnHover().attr(PedigreeEditorParameters.attributes.boxOnHover).attr('opacity', 0);            
+                this.getBoxOnHover().attr(PedigreeEditorParameters.attributes.boxOnHover).attr('opacity', 0);
             }
-        },    
+        },
 
         /**
          * Returns the invisible mask layer in front of the hoverbox

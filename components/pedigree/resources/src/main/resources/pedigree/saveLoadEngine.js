@@ -129,9 +129,7 @@ define([
                             // such as cancers and pedigree specific stuff
                             patientJSONObject.pedigreeProperties = editor.getGraph().getNodePropertiesNotStoredInPatientProfile(nodeID);
 
-                            var genderOk = editor.getGraph().setNodeDataFromPhenotipsJSON( nodeID, patientJSONObject);
-                            if (!genderOk)
-                                alert("Gender defined in Phenotips for patient " + patient + " is incompatible with this pedigree. Setting pedigree node gender to 'Unknown'");
+                            editor.getGraph().setNodeDataFromPhenotipsJSON( nodeID, patientJSONObject);
                         }
                     }
 
