@@ -57,7 +57,7 @@ define([
             // hide initially
             this.getBoxOnHover().attr({opacity:0});        
             this.enable();
-            //timer.printSinceLast("=== abstract howerbox runtime: ");
+            //timer.printSinceLast("=== abstract hoverbox runtime: ");
             this._isMenuToggled  = false;
             this._justClosedMenu = false;        
         },
@@ -389,7 +389,7 @@ define([
         setHighlighted: function(isHighlighted) {
             if (isHighlighted) {
                 this.getBoxOnHover().attr(PedigreeEditorParameters.attributes.boxOnHover);
-                this.getBoxOnHover().attr("fill", PedigreeEditorParameters.attributes.howerboxHighlightColor);
+                this.getBoxOnHover().attr("fill", PedigreeEditorParameters.attributes.hoverboxHighlightColor);
             }
             else {
                 this.getBoxOnHover().attr(PedigreeEditorParameters.attributes.boxOnHover).attr('opacity', 0);

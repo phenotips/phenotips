@@ -119,7 +119,7 @@ define([], function(){
         layoutScale: { xscale: 12.0, yscale: 8 },
         maxPrintPreviewPaneHeight: 600,
         minPrintPreviewPaneHeight: 250,
-        howerboxHighlightColor: "green",
+        hoverboxHighlightColor: "green",
         mainGlowColor: "green",
         secondaryGlowColor: "#556B2F"
     };
