@@ -5,7 +5,7 @@ files:
       - /**/*core.properties
       - /**/jetty-logging.properties
       - /**/*_*.properties
-    translation: /**/%original_file_name%_%two_letters_code%.properties
+    translation: /**/%file_name%_%two_letters_code%.properties
     languages_mapping:
       two_letters_code:
         en-CA: en_CA
