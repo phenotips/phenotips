@@ -113,13 +113,13 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 #foreach ($prop in $variantObj.xWikiClass.properties)
 #if ($prop.getName() != 'genesymbol' && !$options.defaultProperties.contains($prop.getName()) && $variantObj.getProperty($prop.getName()))
 #set($rawValue = $variantObj.getProperty($prop.getName()).value)
-#set($isValueEmpty = $rawValue == '' || $rawValue == 'NA' || $rawValue == [])
+#set($isValueEmpty = "$!{rawValue}" == '' || $rawValue == 'NA' || $rawValue == [])
 #if ($options.mode == 'edit' || ($options.mode != 'edit' && !$isValueEmpty))
 (% class="variant-moreinfo-table" %)
 #set ($isInputString = $options.inputStrings.contains($prop.getName()))
 |(% class="variant-moreinfo variant-property-name-$variantIndex %)**${prop.translatedPrettyName}**##
 | (% class="variant-property-value ${prop.getName()}-$variantIndex ##
-#if ($options.mode == 'edit') variant-label-$variantIndex #end"%) #if($isInputString)$rawValue#else $doc.display($prop.getName(), 'view', $variantObj )#end
+#if ($options.mode == 'edit') variant-label-$variantIndex #end"%)#if($isInputString)$rawValue#else $doc.display($prop.getName(), 'view', $variantObj )#end
  (%%)#if ($options.mode == 'edit')(% class="v-collapsed variant-input-$variantIndex" %)$doc.display($prop.getName(), $options.mode, $variantObj )#end#end##
 #end#end
 ))) #if ($options.mode == 'edit')(% class="variant-moreinfo-editdonebutton-row variant-$variantIndex" %)#end\\

@@ -277,7 +277,7 @@ public class DataToCellConverter
         String[] fieldIds =
             { "variants", "variants_protein", "variants_transcript", "variants_dbsnp", "variants_zygosity",
             "variants_effect", "variants_interpretation", "variants_inheritance", "variants_evidence",
-            "variants_segregation", "variants_sanger" };
+            "variants_segregation", "variants_sanger", "variants_coordinates" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
             {
@@ -294,8 +294,9 @@ public class DataToCellConverter
             { "segregation", "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp", "transcript",
                 "protein", "cdna" },
             { "sanger", "segregation", "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp",
-                "transcript", "protein", "cdna" }
-            };
+                "transcript", "protein", "cdna" },
+            { "reference_genome", "end_position", "start_position", "chromosome", "cdna" }
+        };
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
     }
@@ -364,8 +365,10 @@ public class DataToCellConverter
         section.addCell(cell);
         hX++;
 
-        List<String> fields = Arrays.asList("cdna", "protein", "transcript", "dbsnp", "zygosity", "effect",
-            "interpretation", "inheritance", "evidence", "segregation", "sanger");
+        List<String> fields =
+            Arrays.asList("cdna", "protein", "transcript", "dbsnp", "zygosity", "effect", "interpretation",
+                "inheritance", "evidence", "segregation", "sanger", "chromosome", "start_position",
+                "end_position", "reference_genome");
 
         for (String field : fields) {
             if (!present.contains(field)) {
@@ -410,7 +413,8 @@ public class DataToCellConverter
         }
 
         List<String> fields = Arrays.asList("protein", "transcript", "dbsnp", "zygosity", "effect",
-            "interpretation", "inheritance", "evidence", "segregation", "sanger");
+            "interpretation", "inheritance", "evidence", "segregation", "sanger", "chromosome", "start_position",
+            "end_position", "reference_genome");
         List<String> translatables =
             Arrays.asList("zygosity", "effect", "interpretation", "inheritance", "segregation", "evidence", "sanger");
         List<String> evidenceTranslates = Arrays.asList("rare", "predicted", "reported");

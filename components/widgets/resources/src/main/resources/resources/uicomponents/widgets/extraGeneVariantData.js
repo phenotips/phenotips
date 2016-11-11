@@ -5,6 +5,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
     initialize : function () {
       var geneTable = $$('.gene-table.extradata-list')[0];
       if (geneTable) {
+        this._geneTable = geneTable;
         var geneTableId = geneTable.id;
         this.geneClassName = geneTableId.substring(geneTableId.lastIndexOf('-') + 1);
         this.geneVariantClassName = 'PhenoTips.GeneVariantClass';
@@ -13,15 +14,16 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
         if ($('inline')) {
           // getting rid of 'for' attributes in labels and 'id' in inputs
           $$('.gene-table label.xwiki-form-listclass').each (function (label) {
-        	label.removeAttribute("for");
-        	label.down('input').removeAttribute("id");
+            label.removeAttribute("for");
+            label.down('input').removeAttribute("id");
           });
-            
+
           this.warnSaving = false;
           this.areaEditDataListenerArray = [];
           this.getNewRowsTemplates();
           this.createEditButtons('.variant-moreinfo-editbutton-row');
           this.createEditDoneButtons('.variant-moreinfo-editdonebutton-row');
+          this.restrictNumericInput();
           $$('.gene-table a.variant-edit').invoke('observe', 'click', this.editData.bindAsEventListener(this));
           $$('.gene-table a.variant-edit-done').invoke('observe', 'click', this.editDoneData.bindAsEventListener(this));
           $$('.variant.moreinfo').invoke('observe', 'click', this.areaEditData.bindAsEventListener(this));
@@ -63,7 +65,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       }
     },
 
-     getNewRowsTemplates  : function () {
+    getNewRowsTemplates : function () {
       var sizep = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ').size();
       var geneRowTemplateEl = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[0].previous();
       var buttonRowTemplateEl = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 5];
@@ -101,7 +103,6 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
 
         onSuccess : function() {
           var dataRow = deleteTrigger.up('tr:not(.head-group)');
-          var dataTable = deleteTrigger.up('table.gene-table.extradata-list');
           if (dataRow) {
             var geneIdInput = dataRow.down('input.gene-id');
             geneIdInput.remove();
@@ -112,9 +113,9 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
             });
             dataRow.remove();
           }
-          if (dataTable) {
+          if (this._geneTable) {
             var i = 1;
-            dataTable.select('td.row-count').each(function(item) {
+            this._geneTable.select('td.row-count').each(function(item) {
               var geneRowIndex = item.next().className.substring(item.next().className.lastIndexOf('-') + 1);
               var y = 1;
               $$('.variant-hide-heading-' + geneRowIndex + ' .variant-row-count').each(function(vitem) {
@@ -143,15 +144,14 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
         return;
       }
 
-      var dataTable = addTrigger.up('.list-actions').previous();
-      if (!dataTable) {
+      if (!this._geneTable) {
         new XWiki.widgets.Notification("$services.localization.render('phenotips.tableMacros.listNotFound')", 'error');
       }
 
-      var idx = dataTable.select('td.row-count').size() + 1;
+      var idx = this._geneTable.select('td.row-count').size() + 1;
       var geneIndex = 0;
-      if (dataTable.select('td.row-count').size() > 0) {
-        var className = dataTable.select('td.row-count')[idx - 2].next().className;
+      if (this._geneTable.select('td.row-count').size() > 0) {
+        var className = this._geneTable.select('td.row-count')[idx - 2].next().className;
         geneIndex = parseInt(className.substring(className.lastIndexOf('-') + 1), 10) + 1;
       }
 
@@ -174,9 +174,9 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       });
 
       newGeneRow.insert(geneRowInner);
-      dataTable.down('tbody').insert(newGeneRow);
+      this._geneTable.down('tbody').insert(newGeneRow);
       newButtonRow.insert(buttonRowInner);
-      dataTable.down('tbody').insert(newButtonRow);
+      this._geneTable.down('tbody').insert(newButtonRow);
 
       newGeneRow.down('a.delete-gene').observe('click', this.ajaxDeleteGeneData.bindAsEventListener(this));
       $$('tr.variant-gene-' + geneIndex + ' a.add-variant')[0].observe('click', this.ajaxAddVariantData.bindAsEventListener(this));
@@ -291,7 +291,6 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       });
       varIndex++;
 
-
       var data = {
           GENE_SYMBOL_PLACEHOLDER: geneSymbol,
           VARIANT_COUNT_PLACEHOLDER: varCount,
@@ -355,6 +354,14 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
         });
       newMoreInfoRow.insert(varMoreInfoInner);
       variantFooter.insert({before : newMoreInfoRow});
+
+      this.restrictNumericInput(newMoreInfoRow);
+
+      // get the last value of reference_genome of all variants to create a new variant row with this value
+      refGenomes = this._geneTable.select('select[id$="_reference_genome"]');
+      if (refGenomes.length > 0) {
+        newMoreInfoRow.down('select[id$="_reference_genome"]').value = refGenomes[refGenomes.length -1].value;
+      }
 
       newVariantRow.down('a.delete-variant').observe('click', this.ajaxDeleteVariantData.bindAsEventListener(this));
 
@@ -427,6 +434,18 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
             id : 'PhenoTips.GeneVariantClass_' + variantIndex + '_editDone'
           });
         row.insert(editVariantLink);
+      });
+    },
+
+    // restrict only numerical input for start_position and end_position variant fiellds
+    restrictNumericInput : function (container) {
+      if (!container) {
+        var container = this._geneTable;
+      }
+      container.select('input[id$="_start_position"]', 'input[id$="_end_position"]').each( function(input) {
+        input.observe('input', function(event) {
+          this.value=this.value.replace(/[^\d]/g,'');
+        });
       });
     },
 

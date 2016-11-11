@@ -79,6 +79,76 @@ $!{value}
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </genesymbol>
+    <reference_genome>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>reference_genome</name>
+      <number>3</number>
+      <picker>0</picker>
+      <prettyName>Reference genome</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>GRCh38=GRCh38 (hg38)|GRCh37=GRCh37 (hg19)|NCBI36=NCBI36 (hg18)</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </reference_genome>
+    <chromosome>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>chromosome</name>
+      <number>4</number>
+      <picker>0</picker>
+      <prettyName>Chromosome</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>NA= |1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|X|Y</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </chromosome>
+    <start_position>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>start_position</name>
+      <number>5</number>
+      <numberType>integer</numberType>
+      <prettyName>Start position</prettyName>
+      <size>3</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+    </start_position>
+    <end_position>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>end_position</name>
+      <number>6</number>
+      <numberType>integer</numberType>
+      <prettyName>End position</prettyName>
+      <size>3</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+    </end_position>
     <protein>
       <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit')
@@ -89,7 +159,7 @@ $!{value}
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>protein</name>
-      <number>3</number>
+      <number>7</number>
       <picker>0</picker>
       <prettyName>Protein</prettyName>
       <size>30</size>
@@ -108,7 +178,7 @@ $!{value}
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>transcript</name>
-      <number>4</number>
+      <number>8</number>
       <picker>0</picker>
       <prettyName>Transcript</prettyName>
       <size>30</size>
@@ -127,7 +197,7 @@ $!{value}
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>dbsnp</name>
-      <number>5</number>
+      <number>9</number>
       <picker>0</picker>
       <prettyName>dbSNP</prettyName>
       <size>30</size>
@@ -143,7 +213,7 @@ $!{value}
       <displayType>select</displayType>
       <multiSelect>0</multiSelect>
       <name>zygosity</name>
-      <number>6</number>
+      <number>10</number>
       <picker>0</picker>
       <prettyName>Zygosity</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -164,7 +234,7 @@ $!{value}
       <displayType>select</displayType>
       <multiSelect>0</multiSelect>
       <name>effect</name>
-      <number>7</number>
+      <number>11</number>
       <picker>0</picker>
       <prettyName>Effect</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -185,7 +255,7 @@ $!{value}
       <displayType>select</displayType>
       <multiSelect>0</multiSelect>
       <name>interpretation</name>
-      <number>8</number>
+      <number>12</number>
       <picker>0</picker>
       <prettyName>Interpretation (ACMG category)</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -206,7 +276,7 @@ $!{value}
       <displayType>select</displayType>
       <multiSelect>0</multiSelect>
       <name>inheritance</name>
-      <number>9</number>
+      <number>13</number>
       <picker>0</picker>
       <prettyName>Inheritance</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -227,7 +297,7 @@ $!{value}
       <displayType>checkbox</displayType>
       <multiSelect>1</multiSelect>
       <name>evidence</name>
-      <number>10</number>
+      <number>14</number>
       <picker>0</picker>
       <prettyName>Evidence</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -248,7 +318,7 @@ $!{value}
       <displayType>select</displayType>
       <multiSelect>0</multiSelect>
       <name>segregation</name>
-      <number>11</number>
+      <number>15</number>
       <picker>0</picker>
       <prettyName>Segregation Studies</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -269,7 +339,7 @@ $!{value}
       <displayType>select</displayType>
       <multiSelect>0</multiSelect>
       <name>sanger</name>
-      <number>12</number>
+      <number>16</number>
       <picker>0</picker>
       <prettyName>Sanger validation</prettyName>
       <relationalStorage>0</relationalStorage>
