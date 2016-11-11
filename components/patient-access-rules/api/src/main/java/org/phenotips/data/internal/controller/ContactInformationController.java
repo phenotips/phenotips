@@ -183,6 +183,7 @@ public class ContactInformationController implements PatientDataController<Strin
 
     private void populateGroupInfo(Map<String, String> contactInfo, Group group)
     {
+        addInfo(contactInfo, DATA_USER_ID, group.getReference().getName());
         addInfo(contactInfo, DATA_NAME, group.getReference().getName());
 
         DocumentReference documentReference = group.getReference();
