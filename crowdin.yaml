@@ -4,7 +4,8 @@ files:
     ignore:
       - /**/*core.properties
       - /**/jetty-logging.properties
-    translation: /**/ApplicationResources_%two_letters_code%.properties
+      - /**/*_*.properties
+    translation: /**/%original_file_name%_%two_letters_code%.properties
     languages_mapping:
       two_letters_code:
         en-CA: en_CA
