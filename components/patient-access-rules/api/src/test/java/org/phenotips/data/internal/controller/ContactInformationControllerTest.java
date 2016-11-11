@@ -202,7 +202,7 @@ public class ContactInformationControllerTest
         Assert.assertNotNull(result);
         Assert.assertEquals("contact", result.getName());
         Assert.assertEquals(GROUP.getName(), result.get("name"));
-        Assert.assertNull(result.get("user_id"));
+        Assert.assertEquals(GROUP.getName(), result.get("user_id"));
         Assert.assertEquals(GROUP_EMAIL, result.get("email"));
         Assert.assertNull(result.get("institution"));
     }
