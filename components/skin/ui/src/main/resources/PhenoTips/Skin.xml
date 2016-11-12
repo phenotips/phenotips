@@ -961,7 +961,6 @@ h1:target, h2:target, h3:target {
 
 .menu.menu-horizontal {
   font-size: .85em;
-  height: 1.8em;
   padding-left: 25px;
 }
 
@@ -998,7 +997,8 @@ h1:target, h2:target, h3:target {
   border-radius: 0 0 .8em .8em;
   box-shadow: 0 1px 1px $theme.textColor;
   display: none;
-  margin: 0.3em 0 0 -1.3em;
+  /* Top margin should be 0.3em, but due to rounding errors, sometimes it would leave a pixel-high gap between the parent menu and the submenu. */
+  margin: 0.25em 0 0 -1.3em;
   padding-bottom: .3em;
   position: absolute;
   z-index: 1000;
