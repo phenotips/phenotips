@@ -231,12 +231,14 @@
   padding: .5em .5em .5em 1em;
 }
 .legend-container {
-  top:5px;
+  top: 0;
   position: absolute;
   right: 0;
   z-index: 10000;
   min-width: 140px;
   max-width: 255px;
+  max-height: 100%;
+  overflow-y: scroll;
 }
 .legend-container span {
   font-family: Arial,Verdana,sans-serif;
