@@ -312,7 +312,9 @@
             resultInfo : {},
             fadeOnClear : false,
             timeout : 30000,
-            parentContainer : null
+            parentContainer : null,
+            matchScript : new XWiki.Document('GeneInfoService', 'PhenoTips').getURL('get') + "?",
+            matchVarname : "id",
   };
 
   // -----------------------------------------------------------------
