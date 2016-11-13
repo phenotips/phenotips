@@ -84,17 +84,14 @@
   position: relative;
   height: 2.5em;
   width: 60%;
-}
-.gene-table td.variant.moreinfo input[type="button"]{
-  float: right;
-}
-.gene-table td.variant-moreinfo {
   text-align: left;
   vertical-align: middle;
 }
-td.variant.moreinfo td{
-  text-align: left;
-  vertical-align: top;
+#inline .gene-table td.variant.moreinfo {
+  cursor: pointer;
+}
+.gene-table td.variant.moreinfo input[type="button"]{
+  float: right;
 }
 .variant-moreinfo-button {
   float: right;
@@ -103,9 +100,6 @@ td.variant.moreinfo td{
 }
 .variant-showmoreinfo-button {
   float: left;
-}
-.variant-property-value {
-  text-align: left;
 }
 .variant-moreinfo-button-row {
   height: 30px;
@@ -117,32 +111,14 @@ td.variant.moreinfo td{
 .variant-edit-done {
   display: none;
 }
-.variant-info .extradata-list td {
-  text-align: left;
-}
-.variant-info .extradata-list td.chr {
-  text-align: center;
-}
-.variant-info .extradata-list td {
-  text-align: left;
-}
-.variant-info .extradata-list td.chr {
-  text-align: center;
-}
 .v-collapsed {
   display: none !important;
 }
 .variant.moreinfo table {
   table-layout: fixed;
-  cursor: pointer;
 }
 .transparent-row {
   background-color: inherit;
-}
-td.variant.moreinfo {
-  text-align: left;
-  font-size: 75%;
-  cursor: pointer;
 }
 td.variant-moreinfo strong::after {
   content: ":";
@@ -169,7 +145,7 @@ td.Evidence.gene select {
   width: 120px;
 }
 a.delete-variant.secondary:hover {
-  color : red;
+  color: red;
 }
 a.action-edit.secondary.variant-edit:hover, a.action-edit.secondary.variant-edit-done:hover {
   color: #0089DC;
