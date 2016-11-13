@@ -430,11 +430,8 @@
       if (query == this.lastSubmitted &amp;&amp; query.length &gt; 1) {
         return;
       }
-      this.latestRequest++;
-      var requestId = this.latestRequest;
-      var pointer = this;
       clearTimeout(this.ajID);
-      this.ajID = setTimeout( function() { pointer.submitAjaxSearchMatch(query, requestId) }, this.options.delay );
+      this.submitAjaxSearchMatch(query, ++this.latestRequest);
     }
   },
 
