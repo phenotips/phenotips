@@ -60,6 +60,9 @@
 .gene-table, .gene-table tr, .gene-table th {
   position: relative;
 }
+.gene-table .variant-moreinfo-table td {
+  vertical-align: baseline;
+}
 .moreinfo-view {
   display: inline-block;
   background-color: #FFF;
