@@ -390,7 +390,7 @@
     this.suggestionSelected = false;
     var _this = this;
     // A mousedown event occurred in the suggest. Don't want onInputBlurred to perform a search on this loss of focus
-    $(this.container).observe("mousedown", function(event) {
+    event.memo.container &amp;&amp; $(event.memo.container).observe("mousedown", function(event) {
       _this.suggestionSelected = true;
     });
   },
