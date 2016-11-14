@@ -343,7 +343,7 @@ public class VariantListControllerTest
         doReturn(property).when(obj).getField(VARIANT_KEY);
 
         property = mock(BaseStringProperty.class);
-        doReturn("Gene Name").when(property).getValue();
+        doReturn("Gene").when(property).getValue();
         doReturn(property).when(obj).getField(GENE_KEY);
 
         property = mock(BaseStringProperty.class);

@@ -19,7 +19,7 @@
 package org.phenotips.data.internal;
 
 import org.phenotips.Constants;
-
+import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
@@ -100,6 +100,8 @@ public class R71499PhenoTips2777DataMigration extends AbstractHibernateDataMigra
     @Inject
     private VocabularyManager vocabularies;
 
+    private Vocabulary hgnc;
+
     @Override
     public String getDescription()
     {
@@ -126,6 +128,7 @@ public class R71499PhenoTips2777DataMigration extends AbstractHibernateDataMigra
         final XWiki xwiki = context.getWiki();
         final DocumentReference geneClassReference = this.entityResolver.resolve(GENE_CLASS);
         final DocumentReference geneVariantClassReference = this.entityResolver.resolve(GENE_VARIANT_CLASS);
+        this.hgnc = this.vocabularies.getVocabulary(HGNC);
 
         final Query q =
                 session.createQuery("select distinct o.name from BaseObject o where o.className = '"
@@ -237,7 +240,7 @@ public class R71499PhenoTips2777DataMigration extends AbstractHibernateDataMigra
      * @return the string representation of the corresponding Ensembl ID.
      */
     private String getEnsemblId(final String geneSymbol) {
-        final VocabularyTerm term = this.vocabularies.resolveTerm(HGNC, geneSymbol);
+        final VocabularyTerm term = this.hgnc.getTerm(geneSymbol);
         @SuppressWarnings("unchecked")
         final List<String> ensemblIdList = term != null ? (List<String>) term.get("ensembl_gene_id") : null;
         final String ensemblId = ensemblIdList != null && !ensemblIdList.isEmpty() ? ensemblIdList.get(0) : null;

@@ -67,14 +67,7 @@ public class DefaultVocabularyManager implements VocabularyManager, Initializabl
     @Override
     public VocabularyTerm resolveTerm(String termId)
     {
-        String vocabularyId = StringUtils.substringBefore(termId, ":");
-        return resolveTerm(vocabularyId, termId);
-    }
-
-    @Override
-    public VocabularyTerm resolveTerm(String vocabularyId, String termId)
-    {
-        Vocabulary vocabulary = StringUtils.isNotBlank(vocabularyId) ? getVocabulary(vocabularyId) : null;
+        Vocabulary vocabulary = getVocabularyForTerm(termId);
         if (vocabulary != null) {
             return vocabulary.getTerm(termId);
         }

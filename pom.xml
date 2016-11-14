@@ -413,12 +413,6 @@
               <justification>New method for getting all the vocabularies; it's esential for a Manager to be able to say what it manages.</justification>
             </difference>
             <difference>
-              <className>org/phenotips/vocabulary/VocabularyManager</className>
-              <differenceType>7012</differenceType>
-              <method>org.phenotips.vocabulary.VocabularyTerm resolveTerm(java.lang.String, java.lang.String)</method>
-              <justification>Overloaded the original resolveTerm method.</justification>
-            </difference>
-            <difference>
               <className>org/phenotips/vocabulary/Vocabulary</className>
               <differenceType>7012</differenceType>
               <method>java.lang.String getIdentifier()</method>
