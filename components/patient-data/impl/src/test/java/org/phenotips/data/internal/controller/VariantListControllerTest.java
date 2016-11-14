@@ -72,7 +72,7 @@ public class VariantListControllerTest
 
     private static final String VARIANT_KEY = "cdna";
 
-    private static final String GENESYMBOL_KEY = "genesymbol";
+    private static final String GENE_KEY = "gene";
 
     private static final String PROTEIN_KEY = "protein";
 
@@ -153,7 +153,7 @@ public class VariantListControllerTest
 
         Assert.assertEquals(16, result.size());
         Assert.assertThat(result, Matchers.hasItem(VARIANT_KEY));
-        Assert.assertThat(result, Matchers.hasItem(GENESYMBOL_KEY));
+        Assert.assertThat(result, Matchers.hasItem(GENE_KEY));
         Assert.assertThat(result, Matchers.hasItem(PROTEIN_KEY));
         Assert.assertThat(result, Matchers.hasItem(TRANSCRIPT_KEY));
         Assert.assertThat(result, Matchers.hasItem(DBSNP_KEY));
@@ -342,8 +342,8 @@ public class VariantListControllerTest
         doReturn(property).when(obj).getField(VARIANT_KEY);
 
         property = mock(BaseStringProperty.class);
-        doReturn("Gene Symbol").when(property).getValue();
-        doReturn(property).when(obj).getField(GENESYMBOL_KEY);
+        doReturn("Gene").when(property).getValue();
+        doReturn(property).when(obj).getField(GENE_KEY);
 
         property = mock(BaseStringProperty.class);
         doReturn("Protein").when(property).getValue();
@@ -371,7 +371,7 @@ public class VariantListControllerTest
 
         Assert.assertNotNull(result);
         Assert.assertEquals("Variant", result.get(0).get(VARIANT_KEY));
-        Assert.assertEquals("Gene Symbol", result.get(0).get(GENESYMBOL_KEY));
+        Assert.assertEquals("Gene", result.get(0).get(GENE_KEY));
         Assert.assertEquals("Protein", result.get(0).get(PROTEIN_KEY));
         Assert.assertEquals("Transcript", result.get(0).get(TRANSCRIPT_KEY));
         Assert.assertEquals("DBSNP", result.get(0).get(DBSNP_KEY));
@@ -458,7 +458,7 @@ public class VariantListControllerTest
 
         Map<String, String> item = new LinkedHashMap<>();
         item.put(VARIANT_KEY, "variantName");
-        item.put(GENESYMBOL_KEY, "");
+        item.put(GENE_KEY, "");
         item.put(PROTEIN_KEY, null);
         internalList.add(item);
 
@@ -481,7 +481,7 @@ public class VariantListControllerTest
 
         Map<String, String> item = new LinkedHashMap<>();
         item.put(VARIANT_KEY, "variantName");
-        item.put(GENESYMBOL_KEY, "geneSymbol");
+        item.put(GENE_KEY, "gene");
         item.put(PROTEIN_KEY, "Protein");
         item.put(TRANSCRIPT_KEY, "Transcript");
         item.put(DBSNP_KEY, "DBSNP");
@@ -506,7 +506,7 @@ public class VariantListControllerTest
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
         JSONObject result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
         Assert.assertEquals("variantName", result.get(VARIANT_KEY));
-        Assert.assertEquals("geneSymbol", result.get(GENESYMBOL_KEY));
+        Assert.assertEquals("gene", result.get(GENE_KEY));
         Assert.assertEquals("Protein", result.get(PROTEIN_KEY));
         Assert.assertEquals("Transcript", result.get(TRANSCRIPT_KEY));
         Assert.assertEquals("DBSNP", result.get(DBSNP_KEY));
@@ -516,7 +516,7 @@ public class VariantListControllerTest
         internalList = new LinkedList<>();
         item = new LinkedHashMap<>();
         item.put(VARIANT_KEY, "variantName");
-        item.put(GENESYMBOL_KEY, "geneSymbol");
+        item.put(GENE_KEY, "gene");
         item.put(PROTEIN_KEY, "Protein");
         item.put(TRANSCRIPT_KEY, "Transcript");
         item.put(DBSNP_KEY, "DBSNP");

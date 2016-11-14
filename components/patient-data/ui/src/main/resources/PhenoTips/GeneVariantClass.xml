@@ -161,19 +161,19 @@ $!{value}
       <values>rare=Rare (MAF less than 0.01)|predicted=Predicted damaging by in silico models|reported=Reported in other affected individuals</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </evidence>
-    <genesymbol>
+    <gene>
       <customDisplay/>
       <disabled>0</disabled>
-      <name>genesymbol</name>
+      <name>gene</name>
       <number>2</number>
       <picker>1</picker>
-      <prettyName>Genesymbol</prettyName>
+      <prettyName>Gene</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </genesymbol>
+    </gene>
     <inheritance>
       <cache>0</cache>
       <customDisplay/>

@@ -271,13 +271,13 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             JSONObject solvedGene = json.optJSONObject(JSON_SOLVED_KEY);
 
             List<Map<String, String>> accumulatedGenes = new LinkedList<>();
-            List<String> geneSymbols = new ArrayList<>();
+            List<String> geneNames = new ArrayList<>();
 
-            parseGenesJson(genesJson, geneSymbols, accumulatedGenes, enumValues);
+            parseGenesJson(genesJson, geneNames, accumulatedGenes, enumValues);
 
             // 1.2.* json compatibility
-            parseRejectedGenes(rejectedGenes, geneSymbols, accumulatedGenes);
-            parseSolvedGene(solvedGene, geneSymbols, accumulatedGenes);
+            parseRejectedGenes(rejectedGenes, geneNames, accumulatedGenes);
+            parseSolvedGene(solvedGene, geneNames, accumulatedGenes);
 
             return new IndexedPatientData<>(getName(), accumulatedGenes);
         } catch (Exception e) {
@@ -286,7 +286,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         return null;
     }
 
-    private void parseGenesJson(JSONArray genesJson, List<String> geneSymbols, List<Map<String, String>> allGenes,
+    private void parseGenesJson(JSONArray genesJson, List<String> geneNames, List<Map<String, String>> allGenes,
         Map<String, List<String>> enumValues)
     {
         if (genesJson != null) {
@@ -295,7 +295,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
                 // discard it if gene symbol is not present in the geneJson, or is whitespace, empty or duplicate
                 if (!geneJson.has(JSON_GENE_KEY) || StringUtils.isBlank(geneJson.getString(JSON_GENE_KEY))
-                    || geneSymbols.contains(geneJson.getString(JSON_GENE_KEY))) {
+                    || geneNames.contains(geneJson.getString(JSON_GENE_KEY))) {
                     continue;
                 }
 
@@ -310,12 +310,12 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                 }
 
                 allGenes.add(singleGene);
-                geneSymbols.add(geneJson.getString(JSON_GENE_KEY));
+                geneNames.add(geneJson.getString(JSON_GENE_KEY));
             }
         }
     }
 
-    private void parseRejectedGenes(JSONArray rejectedGenes, List<String> geneSymbols,
+    private void parseRejectedGenes(JSONArray rejectedGenes, List<String> geneNames,
         List<Map<String, String>> allGenes)
     {
         if (rejectedGenes != null && rejectedGenes.length() > 0) {
@@ -325,7 +325,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                 // discard it if gene symbol is not present in the geneJson, or is whitespace, empty or duplicate
                 if (!rejectedGeneJson.has(JSON_GENE_KEY)
                     || StringUtils.isBlank(rejectedGeneJson.getString(JSON_GENE_KEY))
-                    || geneSymbols.contains(rejectedGeneJson.getString(JSON_GENE_KEY))) {
+                    || geneNames.contains(rejectedGeneJson.getString(JSON_GENE_KEY))) {
                     continue;
                 }
                 Map<String, String> singleGene = new LinkedHashMap<>();
@@ -338,16 +338,16 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                 }
 
                 allGenes.add(singleGene);
-                geneSymbols.add(rejectedGeneJson.getString(JSON_GENE_KEY));
+                geneNames.add(rejectedGeneJson.getString(JSON_GENE_KEY));
             }
         }
     }
 
-    private void parseSolvedGene(JSONObject solvedGene, List<String> geneSymbols, List<Map<String, String>> allGenes)
+    private void parseSolvedGene(JSONObject solvedGene, List<String> geneNames, List<Map<String, String>> allGenes)
     {
         if (solvedGene != null && solvedGene.has(JSON_GENE_KEY)
             && !StringUtils.isBlank(solvedGene.getString(JSON_GENE_KEY))
-            && !geneSymbols.contains(solvedGene.getString(JSON_GENE_KEY))) {
+            && !geneNames.contains(solvedGene.getString(JSON_GENE_KEY))) {
             Map<String, String> singleGene = new LinkedHashMap<>();
             singleGene.put(INTERNAL_GENE_KEY, solvedGene.getString(JSON_GENE_KEY));
             singleGene.put(INTERNAL_STATUS_KEY, INTERNAL_SOLVED_KEY);

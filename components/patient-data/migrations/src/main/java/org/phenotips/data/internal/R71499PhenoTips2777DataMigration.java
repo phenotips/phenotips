@@ -71,7 +71,7 @@ public class R71499PhenoTips2777DataMigration extends AbstractHibernateDataMigra
 {
     private static final String GENE_NAME = "gene";
 
-    private static final String OLD_GENE_SYMBOL_NAME = "genesymbol";
+    private static final String OLD_GENE_NAME = "genesymbol";
 
     private static final String HGNC = "HGNC";
 
@@ -135,7 +135,7 @@ public class R71499PhenoTips2777DataMigration extends AbstractHibernateDataMigra
                 + this.serializer.serialize(geneClassReference) + "' or o.className = '"
                 + this.serializer.serialize(geneVariantClassReference)
                 + "' and exists(from StringProperty p where p.id.id = o.id and p.id.name = '"
-                + GENE_NAME + "' or p.id.name = '" + OLD_GENE_SYMBOL_NAME + "' and p.value <> '')");
+                + GENE_NAME + "' or p.id.name = '" + OLD_GENE_NAME + "' and p.value <> '')");
 
         @SuppressWarnings("unchecked")
         List<String> docs = q.list();
@@ -194,14 +194,14 @@ public class R71499PhenoTips2777DataMigration extends AbstractHibernateDataMigra
             return;
         }
         for (final BaseObject variant : variants) {
-            final StringProperty oldGeneSymbol = setPropertyValue(variant, OLD_GENE_SYMBOL_NAME);
+            final StringProperty oldGeneName = setPropertyValue(variant, OLD_GENE_NAME);
 
             // Rename all "genesymbol" properties to "gene".
-            if (oldGeneSymbol != null) {
-                variant.removeField(OLD_GENE_SYMBOL_NAME);
-                final StringProperty newGeneSymbol = (StringProperty) oldGeneSymbol.clone();
-                newGeneSymbol.setName(GENE_NAME);
-                variant.addField(GENE_NAME, newGeneSymbol);
+            if (oldGeneName != null) {
+                variant.removeField(OLD_GENE_NAME);
+                final StringProperty newGeneName = (StringProperty) oldGeneName.clone();
+                newGeneName.setName(GENE_NAME);
+                variant.addField(GENE_NAME, newGeneName);
             }
         }
     }

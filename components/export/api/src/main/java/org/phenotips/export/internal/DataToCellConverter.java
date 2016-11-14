@@ -421,7 +421,7 @@ public class DataToCellConverter
 
         for (Map<String, String> variant : variants) {
             int x = 0;
-            String variantGene = variant.get("genesymbol");
+            String variantGene = variant.get("gene");
             DataCell cell = new DataCell(variantGene, x++, y);
             section.addCell(cell);
             String variantName = variant.get("cdna");
