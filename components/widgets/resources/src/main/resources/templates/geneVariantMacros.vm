@@ -167,7 +167,7 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 #set($fakeObj = $doc.newObject($geneClassName))
 #set($geneNumber = 'ZZGENE_NUMBER_PLACEHOLDERZZ')
 #set($geneObjNumber = 'ZZGENE_INDEX_PLACEHOLDERZZ')
-#set($genename = 'ZZGENE_NAME_PLACEHOLDERZZ')
+#set($geneName = 'ZZGENE_NAME_PLACEHOLDERZZ')
 |(% class="row-count" %)$geneNumber##
 #foreach($prop in $xwiki.getDocument($geneClassName).xWikiClass.properties)
 |(% class="$prop.translatedPrettyName gene #if ($prop.name == 'gene')mandatory#end gene-$geneObjNumber"##
@@ -175,7 +175,7 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 #end
 |(% class="gene delete-gene-button-$geneObjNumber" %)#__gene__deleteWithVariants__tool($fakeObj $variantClassName)
 
-(%class="variant-gene-$geneObjNumber variant-footer"%)#__variant_foot($options $geneObjNumber $genename $variantClassName)
+(%class="variant-gene-$geneObjNumber variant-footer"%)#__variant_foot($options $geneObjNumber $geneName $variantClassName)
 #end
 ##
 ##
