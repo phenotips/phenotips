@@ -169,7 +169,7 @@ public class R71496PhenoTips2339DataMigration extends AbstractHibernateDataMigra
                 patientXDocument.setComment(this.getDescription());
                 patientXDocument.setMinorEdit(true);
             } catch (Exception e) {
-                this.logger.error("Error converting gene data for patient {}: [{}]", docName, e.getMessage());
+                this.logger.error("Error converting phenotype data for patient {}: [{}]", docName, e.getMessage());
                 continue;
             }
 
