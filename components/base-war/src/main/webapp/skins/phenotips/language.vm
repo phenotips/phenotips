@@ -24,7 +24,7 @@
   #drawerTopItemStart($services.localization.render('languages'), 'tmLanguages')
   #foreach($lang in $allangs)
     #set($discard = $queryStringMap.put('language', $lang))
-    #drawerItem($!doc.getURL('view', $escapetool.url($queryStringMap)), $lang, "#displayLanguagePrettyName($lang)")
+    #drawerItem($!doc.getURL($xcontext.action, $escapetool.url($queryStringMap)), $lang, "#displayLanguagePrettyName($lang)")
   #end
   #drawerTopItemStop()
 #end
