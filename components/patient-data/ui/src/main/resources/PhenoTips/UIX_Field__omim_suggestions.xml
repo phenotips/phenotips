@@ -121,15 +121,17 @@
       (% id="defaultSearchTerms" %)((()))
       ##(% class="hint"%)$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.defaultTerms')(%%)
       ## {{html wiki=false clean=false}}&lt;input type="text" id="customSearchTermsInput" value="" /&gt;{{/html}}
+      (% id="instantSearchDiagram" %)((()))
       (% class="background-search omim-search hidden" %)(((
         ====$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.matchingDisorders')====
         (% id="omim-search-results" class="background-suggestions" %)((()))
       )))
+
     )))
   )))## ncbi-search-box
   (% class="clear" %)((()))
 #end
-{{/velocity}}</content>
+{{/velocity}</content>
     </property>
     <property>
       <extensionPointId>org.phenotips.patientSheet.section.diagnosis-info</extensionPointId>
