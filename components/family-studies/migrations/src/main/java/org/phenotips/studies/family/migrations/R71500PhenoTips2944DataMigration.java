@@ -30,7 +30,6 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -87,15 +86,27 @@ public class R71500PhenoTips2944DataMigration extends AbstractHibernateDataMigra
 
     private static final String PEDIGREE_GENES_FIELD = "genes";
 
-    private static final String PEDIGREE_GENE_FIELD = "gene";
+    private static final String PEDIGREE_GENE_SYMBOL_FIELD = "gene";
 
     private static final String PEDIGREE_COLORS_FIELD = "colors";
+
+    private static final String PEDIGREE_NAMES_FIELD = "names";
 
     private static final String PEDIGREE_SOLVED_GENES_FIELD = "causalGenes";
 
     private static final String PEDIGREE_CANDIDATE_GENES_FIELD = "candidateGenes";
 
     private static final String PEDIGREE_REJECTED_GENES_FIELD = "rejectedGenes";
+
+    private static final String PEDIGREE_CANDIDATE_GENES_STATUS = "candidate";
+
+    private static final String PEDIGREE_SOLVED_GENES_STATUS = "solved";
+
+    private static final String PEDIGREE_REJECTED_GENES_STATUS = "rejected";
+
+    private static final String PEDIGREE_GENE_STATUS_FIELD = "status";
+
+    private Map<String, String> geneStatusToFieldMap = new HashMap<String, String>();
 
     /** Logging helper object. */
     @Inject
@@ -141,11 +152,14 @@ public class R71500PhenoTips2944DataMigration extends AbstractHibernateDataMigra
         XWikiContext context = getXWikiContext();
         XWiki xwiki = context.getWiki();
         this.hgnc = this.vocabularies.getVocabulary(HGNC);
+        this.geneStatusToFieldMap.put(PEDIGREE_CANDIDATE_GENES_STATUS, PEDIGREE_CANDIDATE_GENES_FIELD);
+        this.geneStatusToFieldMap.put(PEDIGREE_SOLVED_GENES_STATUS, PEDIGREE_SOLVED_GENES_FIELD);
+        this.geneStatusToFieldMap.put(PEDIGREE_REJECTED_GENES_STATUS, PEDIGREE_REJECTED_GENES_FIELD);
 
         // Select all families
         Query q = session.createQuery("select distinct o.name from BaseObject o where o.className = '"
             + this.serializer.serialize(PEDIGREE_CLASS_REFERENCE)
-            + "' and o.name <> 'PhenoTips.FamilyTemplate' and o.name <> 'PhenoTips.PatientTemplate'");
+            + "' and o.name <> 'PhenoTips.FamilyTemplate'");
 
         @SuppressWarnings("unchecked")
         List<String> docs = q.list();
@@ -204,13 +218,13 @@ public class R71500PhenoTips2944DataMigration extends AbstractHibernateDataMigra
             }
 
             JSONObject pedigree = new JSONObject(dataText);
-            Map<String, String> hgncToEnsemblMap = new HashMap<String, String>();
+            Map<String, Map<String, String>> geneDataMap = new HashMap<>();
 
             JSONArray pedigreeNodes = pedigree.optJSONArray(PEDIGREE_GRAPH_KEY);
             if (pedigreeNodes != null) {
                 for (Object node : pedigreeNodes) {
                     JSONObject nodeJSON = (JSONObject) node;
-                    updatedGenes = this.convertGenes(nodeJSON, hgncToEnsemblMap);
+                    updatedGenes = this.convertGenes(nodeJSON, geneDataMap);
                 }
             }
 
@@ -218,8 +232,10 @@ public class R71500PhenoTips2944DataMigration extends AbstractHibernateDataMigra
             if (pedigreeSettings != null) {
                 JSONObject pedigreeColors = pedigreeSettings.optJSONObject(PEDIGREE_COLORS_FIELD);
                 if (pedigreeColors != null) {
-                    updatedColors = this.convertColors(pedigreeColors, hgncToEnsemblMap);
+                    updatedColors = this.convertColors(pedigreeColors, geneDataMap);
                 }
+                JSONObject pedigreeNames = pedigreeSettings.optJSONObject(PEDIGREE_NAMES_FIELD);
+                this.addGeneNames(pedigreeNames, geneDataMap);
             }
 
             if (updatedGenes || updatedColors) {
@@ -234,28 +250,40 @@ public class R71500PhenoTips2944DataMigration extends AbstractHibernateDataMigra
         return false;
     }
 
+    private void addGeneNames(JSONObject pedigreeNames, Map<String, Map<String, String>> geneData)
+    {
+        if (pedigreeNames == null) {
+            return;
+        }
+        for (String field : geneData.keySet()) {
+            JSONObject genesObject = new JSONObject();
+            for (String geneSymbol : geneData.get(field).keySet()) {
+                String geneEnsemblId = geneData.get(field).get(geneSymbol);
+                genesObject.put(geneEnsemblId, geneSymbol);
+            }
+            pedigreeNames.put(field, genesObject);
+        }
+    }
+
     // convert from e.g.
     // "colors":{"causalGenes":{"SLC37A4":"#eac080"},
     // to
     // "colors":{"causalGenes":{"ENSG00000137700":"#eac080"},
-    private boolean convertColors(JSONObject colorsJSON, Map<String, String> hgncToEnsemblMap)
+    private boolean convertColors(JSONObject colorsJSON, Map<String, Map<String, String>> geneData)
     {
         boolean updated = false;
-        String[] geneFileds =
-        { PEDIGREE_SOLVED_GENES_FIELD, PEDIGREE_CANDIDATE_GENES_FIELD, PEDIGREE_REJECTED_GENES_FIELD };
-        for (String field : geneFileds) {
+
+        for (String field : this.geneStatusToFieldMap.values()) {
             JSONObject colors = colorsJSON.optJSONObject(field);
             JSONObject updatedColors = new JSONObject();
             if (colors == null || colors.length() == 0) {
                 continue;
             }
-            Iterator<String> it = colors.keys();
-            while (it.hasNext()) {
-                String geneSymbol = it.next();
+            for (String geneSymbol : colors.keySet()) {
                 String color = colors.optString(geneSymbol);
-                String enselmbId = hgncToEnsemblMap.containsKey(geneSymbol) ? hgncToEnsemblMap.get(geneSymbol)
+                String ensemblId = geneData.get(field).containsKey(geneSymbol) ? geneData.get(field).get(geneSymbol)
                     : this.getEnsemblId(geneSymbol);
-                updatedColors.put(enselmbId, color);
+                updatedColors.put(ensemblId, color);
             }
             colorsJSON.put(field, updatedColors);
             updated = true;
@@ -268,7 +296,7 @@ public class R71500PhenoTips2944DataMigration extends AbstractHibernateDataMigra
     // "genes":[{"gene":"SLC37A4","status":"candidate"}]
     // to
     // "genes":[{"gene":"ENSG00000137700","status":"candidate"}]
-    private boolean convertGenes(JSONObject nodeJSON, Map<String, String> hgncToEnsemblMap)
+    private boolean convertGenes(JSONObject nodeJSON, Map<String, Map<String, String>> geneData)
     {
         boolean updated = false;
         JSONObject properties = nodeJSON.optJSONObject(PEDIGREE_PROPERTIES_STRING);
@@ -282,13 +310,22 @@ public class R71500PhenoTips2944DataMigration extends AbstractHibernateDataMigra
 
         for (Object gene : genes) {
             JSONObject geneObj = (JSONObject) gene;
-            String geneSymbol = geneObj.optString(PEDIGREE_GENE_FIELD);
+            String geneSymbol = geneObj.optString(PEDIGREE_GENE_SYMBOL_FIELD);
+            String geneStatus = geneObj.optString(PEDIGREE_GENE_STATUS_FIELD);
+            String geneField = this.geneStatusToFieldMap.get(geneStatus);
             if (geneSymbol == null) {
                 continue;
             }
             String geneEnsemblId = this.getEnsemblId(geneSymbol);
-            hgncToEnsemblMap.put(geneSymbol, geneEnsemblId);
-            geneObj.put(PEDIGREE_GENE_FIELD, geneEnsemblId);
+            // store gene data in map of maps {"candidateGenes" : {"SLC37A4":"ENSG00000137700"}, "rejectedGenes": {}
+            if (geneData.containsKey(geneField)) {
+                geneData.get(geneField).put(geneSymbol, geneEnsemblId);
+            } else {
+                Map<String, String> hgncToEnsemblMap = new HashMap<String, String>();
+                hgncToEnsemblMap.put(geneSymbol, geneEnsemblId);
+                geneData.put(geneField, hgncToEnsemblMap);
+            }
+            geneObj.put(PEDIGREE_GENE_SYMBOL_FIELD, geneEnsemblId);
             updated = true;
         }
 
