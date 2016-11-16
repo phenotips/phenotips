@@ -74,6 +74,5 @@ phenotips.UIXDirectory.newExtension.create=Crear
 phenotips.UIXDirectory.sortedBy=Ordenado por {0}
 phenotips.UIXDirectory.sortBy=Ordenar por {0}
 
-core.shortcuts.edit.saveandcontinue=Alt+Shift+S
-</content>
+core.shortcuts.edit.saveandcontinue=Alt+Shift+S</content>
 </xwikidoc>
