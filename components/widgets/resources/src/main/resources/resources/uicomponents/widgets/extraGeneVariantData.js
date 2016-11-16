@@ -93,9 +93,9 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       var deleteTrigger = event.element();
       var className = deleteTrigger.up('td').className;
       var geneIndex = parseInt(className.substring(className.lastIndexOf('-') + 1), 10);
-      var geneId = $$('[name="' + this.geneClassName + '_' + geneIndex + '_gene"]')[0].value;
+      var geneSymbol = $$('[name="' + this.geneClassName + '_' + geneIndex + '_gene"]')[0].value;
 
-      new XWiki.widgets.ConfirmedAjaxRequest(deleteTrigger.href + geneId, {
+      new XWiki.widgets.ConfirmedAjaxRequest(deleteTrigger.href + geneSymbol, {
 
         onCreate : function() {
           deleteTrigger.disabled = true;
@@ -104,8 +104,6 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
         onSuccess : function() {
           var dataRow = deleteTrigger.up('tr:not(.head-group)');
           if (dataRow) {
-            var geneIdInput = dataRow.down('input.gene-id');
-            geneIdInput.remove();
             var geneNameInput = dataRow.down('input.gene-name');
             geneNameInput.__validation.destroy();
             $$('.variant-gene-' + geneIndex).each(function(item) {
@@ -218,7 +216,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
               $$('.variant-gene-' + geneIndex + '.variant-title-row').each(function(item) {
                 item.remove();
               });
-              $$('[name="' + geneClass + '_' + geneIndex + '_symbol"]')[0].toggleClassName('v-collapsed', false);
+              $$('[name="' + geneClass + '_' + geneIndex + '_gene"]')[0].toggleClassName('v-collapsed', false);
               $$('.gene.col-label.gene-' + geneIndex + '.gene-input-label')[0].toggleClassName('v-collapsed', true);
               dataRow.next().remove();
               dataRow.remove();
@@ -273,7 +271,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       var geneSymbol = $$('.gene.col-label.gene-' + geneIndex)[0].innerHTML;
 
       //lock the genesymbol input field
-      $$('[name="' + this.geneClassName + '_' + geneIndex + '_symbol"]')[0].toggleClassName('v-collapsed', true);
+      $$('[name="' + this.geneClassName + '_' + geneIndex + '_gene"]')[0].toggleClassName('v-collapsed', true);
       $$('.gene.col-label.gene-' + geneIndex + '.gene-input-label')[0].toggleClassName('v-collapsed', false);
 
       var variantFooter = addTrigger.up('tr.variant-footer');

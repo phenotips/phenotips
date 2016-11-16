@@ -125,7 +125,6 @@
       geneNames = geneRefs.pluck('value');
     }
     var i = 0;
-    var notmapped = 'notmapped';
     geneRefs.each(function (element) {
       if (element.next() &amp;&amp; element.next(1) &amp;&amp; element.next(1).hasClassName('xHelpButton gene-info'))
           element.next().next('span.xHelpButton').remove();
@@ -138,21 +137,16 @@
         var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton gene-info', 'title' : geneNames[i]});
         var icon_helpController = new PhenoTips.widgets.HelpButton(infoTool);
         var triangle = new Element('span', {'class': "fa fa-exclamation-triangle", title: '$services.localization.render('phenotips.patientSheetCode.termSuggest.nonStandardGenesymbol')'}).update(' ');
-        if (isSuggestSelected) {
-          element.removeClassName(notmapped);
+        if (isSuggestSelected)
           element.insert({after: infoTool});
-        } else if (/^ENSG[0-9]{11}$/.test(geneNames[i])) {
-          element.addClassName(notmapped);
-        } else {
-          element.addClassName(notmapped);
+        else
           element.up().insert({top: triangle});
-        }
         ++i;
       }
     });
   }
 
-  var updateInfo = function(el, id, value, isSuggestSelected) {
+  var updateInfo = function(el, value, isSuggestSelected) {
     value = value || el.value;
     if (el.next() &amp;&amp; el.next().className.startsWith('LV_validation_message'))
         el.next().remove();
@@ -168,25 +162,18 @@
     }
     //update genesymbol label for input field
     el.previous().innerHTML = value;
-    // update geneid label for the hidden input field
-    el.next("input.gene-id").value = id || value;
     //update info icon
     fetchGeneDetails([el],[value], isSuggestSelected);
   }
 
-  // Fetch gene details, marking any non-standardized ids.
-  $$('input.gene-name').each(function(elt) {
-    fetchGeneDetails([elt], null, !elt.className.endsWith('notmapped'));
-  });
+  fetchGeneDetails($$('input.gene-name'), null, true);
 
   $$('input.gene-name').invoke('observe', "ms:suggest:selected", function (event) {
     fetchGeneDetails([event.findElement()], event.memo &amp;&amp; [event.memo.value] || [], true);
-    // Update the id element.
-    event.element().next("input.gene-id").value = event.memo.id || event.memo.value;
   });
 
   $$('input.gene-name').invoke('observe', 'change', function (event) {
-    updateInfo(event.element(), null, null, false);
+    updateInfo(event.element(), null, false);
   });
 
   document.observe("xwiki:dom:updated", function(event) {
@@ -196,10 +183,10 @@
           fetchGeneDetails(elt.select('input.gene-name'), false);
           var inputGene = elt.select('input.gene-name');
           inputGene.invoke('observe', "ms:suggest:selected", function (event) {
-            updateInfo(event.element(), event.memo.id, event.memo.value, true);
+            updateInfo(event.element(), event.memo.value, true);
           });
           inputGene.invoke('observe', 'change', function (event) {
-            updateInfo(event.element(), null, null, false);
+            updateInfo(event.element(), null, false);
           });
         }
       });
@@ -304,7 +291,7 @@
             noresults: "$services.localization.render('phenotips.UIXField.genes.noMatches')",
             json: true,
             resultsParameter : "docs",
-            resultId : 'id',
+            resultId : 'symbol',
             resultValue : 'symbol',
             resultAltName : "alias_symbol",
             enableHierarchy: false,

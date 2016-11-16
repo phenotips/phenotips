@@ -39,7 +39,7 @@ document.observe('xwiki:dom:loading', function() {
             noresults: "No matching gene names",
             json: true,
             resultsParameter : "docs",
-            resultId : 'id',
+            resultId : 'symbol',
             resultValue : 'symbol',
             resultAltName : "alias_symbol",
             enableHierarchy: false,
