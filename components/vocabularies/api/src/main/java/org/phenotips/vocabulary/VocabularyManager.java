@@ -55,6 +55,7 @@ public interface VocabularyManager
 
     /**
      * Retrieves a list of vocabulary ids that are available for use.
+     *
      * @return A list of vocabulary ids. One id for each vocabulary.
      */
     List<String> getAvailableVocabularies();
