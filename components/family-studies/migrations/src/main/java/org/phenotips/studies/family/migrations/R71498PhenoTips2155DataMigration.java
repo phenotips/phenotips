@@ -254,7 +254,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             this.processData(patientsWithStudies, patientReferredBy, existingPatientFamilies);
 
         } catch (Exception ex) {
-            this.logger.error("Family Studies migration exception: [{}] [{}]", ex.getMessage(), ex);
+            this.logger.error("Family Studies migration exception: [{}]", ex.getMessage(), ex);
         } finally {
             this.context.getWiki().flushCache(this.context);
         }
@@ -270,7 +270,6 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         Map<String, List<String>> patientReferredBy, Map<String, String> existingPatientFamilies)
     {
         for (Map.Entry<String, Map<String, String>> patientEntry : patientsWithStudies.entrySet()) {
-
             if (patientEntry.getValue().size() == 0) {
                 // no old family studies data
                 continue;
@@ -280,10 +279,10 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
             JSONObject probandData = this.getBasicPatientData(this.getPatientXDocument(patientID));
 
-            // check if nodes referred to are ok to link: they don't reference other relatives, don't have
-            // a pedigree, are owned by the same user, etc. etc. - if they do, we don't know which node should
-            // have the pedigree with links and if is ok to link for privacy reasons, and thus
-            // no pedigree will be created
+            // Check if nodes referred to are ok to link: they don't reference other relatives, don't have
+            // a pedigree, are owned by the same user, etc. etc.
+            // If they do, we don't know which node should have the pedigree with links
+            // and if is ok to link for privacy reasons, and thus no pedigree will be created
             List<String> relativesToLinkList = this.getOkToAddRelatives(patientID, probandData,
                 patientsWithStudies, existingPatientFamilies, patientReferredBy);
 
@@ -315,22 +314,6 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         }
     }
 
-    private boolean saveXWikiDocument(XWikiDocument doc, String documentHistoryComment)
-    {
-        try {
-            this.logger.debug("Migration: saving document {}...", doc.getDocumentReference().getName());
-            doc.setComment(documentHistoryComment);
-            this.session.clear();
-            ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, this.context, false);
-            this.session.flush();
-            return true;
-        } catch (Exception ex) {
-            this.logger.error("Error saving a document: {} - [{}]", ex.getMessage(), ex);
-            return false;
-        }
-    }
-
-    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     private List<String> getOkToAddRelatives(String patientID, JSONObject probandData,
         Map<String, Map<String, String>> patientsWithStudies, Map<String, String> existingPatientFamilies,
         Map<String, List<String>> patientReferredBy)
@@ -345,25 +328,12 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         int numberOfParents = 0;
         for (Map.Entry<String, String> relativeEntry : relatives.entrySet()) {
             String relationshipType = relativeEntry.getValue();
-            if (!R71498PhenoTips2155DataMigration.AUTO_LINKING_SUPPORTED_RELATIVE_TYPES.contains(relationshipType)) {
+            if (!AUTO_LINKING_SUPPORTED_RELATIVE_TYPES.contains(relationshipType)) {
                 // relative is of an unsupported (for auto pedigree creation) relationship type
                 continue;
             }
             String relativeID = relativeEntry.getKey();
-            if (existingPatientFamilies.containsKey(relativeID)
-                && existingPatientFamilies.get(relativeID) != null) {
-                // relative has a pedigree
-                continue;
-            }
-            if (patientsWithStudies.containsKey(relativeID)
-                && patientsWithStudies.get(relativeID).size() > 0) {
-                // relative also has relatives specified in old family studies section
-                continue;
-            }
-            if (patientReferredBy.containsKey(relativeID)
-                && patientReferredBy.get(relativeID).size() > 1) {
-                // this patient is referred to by more than one patient - can't put into more
-                // than one pedigree so don't put into any
+            if (areLinksInconsistent(relativeID, patientsWithStudies, existingPatientFamilies, patientReferredBy)) {
                 continue;
             }
             if (FAMSTUDIES_CHILD.equals(relationshipType)) {
@@ -385,6 +355,28 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         return okRelativesList;
     }
 
+    private boolean areLinksInconsistent(String relativeID, Map<String, Map<String, String>> patientsWithStudies,
+        Map<String, String> existingPatientFamilies, Map<String, List<String>> patientReferredBy)
+    {
+        if (existingPatientFamilies.containsKey(relativeID)
+            && existingPatientFamilies.get(relativeID) != null) {
+            // relative has a pedigree
+            return true;
+        }
+        if (patientsWithStudies.containsKey(relativeID)
+            && patientsWithStudies.get(relativeID).size() > 0) {
+            // relative also has relatives specified in old family studies section
+            return true;
+        }
+        if (patientReferredBy.containsKey(relativeID)
+            && patientReferredBy.get(relativeID).size() > 1) {
+            // this patient is referred to by more than one patient - can't put into more
+            // than one pedigree so don't put into any
+            return true;
+        }
+        return false;
+    }
+
     /**
      * In an existing pedigree finds a node linked to the given patient and adds all given relatives to pedigree node
      * comments.
@@ -402,7 +394,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
             BaseObject pedigreeObj = familyXDocument.getXObject(Pedigree.CLASS_REFERENCE);
             if (pedigreeObj == null) {
-                this.logger.error("Error updating existing family: no pedigree object for {}", familyId);
+                this.logger.error("Error updating existing family: no pedigree object for [{}]", familyId);
                 return;
             }
 
@@ -419,29 +411,12 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
                 String comment = this.getDescription() + " (adding comments to pedigree)";
                 if (!this.saveXWikiDocument(familyXDocument, comment)) {
-                    this.logger.error("Updated family document was not saved for family {}", familyId);
+                    this.logger.error("Updated family document was not saved for family [{}]", familyId);
                 }
             }
         } catch (Exception ex) {
-            this.logger.error("Error updating pedigree for family {}: {}", familyId, ex.getMessage());
+            this.logger.error("Error updating pedigree for family [{}]: {}", familyId, ex.getMessage(), ex);
         }
-    }
-
-    private String generatePedigreeCommentForRelatives(Map<String, String> relativesToAdd)
-    {
-        if (relativesToAdd.size() == 0) {
-            return null;
-        }
-
-        String comment = PEDIGREE_MIGRATED_RELATIVE_COMMENT_HEADER;
-        for (Map.Entry<String, String> relativeEntry : relativesToAdd.entrySet()) {
-            String relationshipType = relativeEntry.getValue();
-            String relativeNamePlusArticle = RELATIVE_ID_TO_NAME.containsKey(relationshipType)
-                ? RELATIVE_ID_TO_NAME.get(relationshipType) : relationshipType;
-            comment += "\n- this patient is " + relativeNamePlusArticle + " of patient "
-                + relativeEntry.getKey();
-        }
-        return comment;
     }
 
     /**
@@ -470,15 +445,31 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
             // try to save the new document, if it was created
             if (familyXDocument == null || !this.saveXWikiDocument(familyXDocument, documentUpdateDescription)) {
-                this.logger.error("Failed to create new family document for patient {}", probandId);
+                this.logger.error("Failed to create new family document for patient [{}]", probandId);
+            } else {
+                this.logger.info("Created new family [{}] for patient [{}]",
+                    familyXDocument.getDocumentReference().getName(), probandId);
             }
-
-            this.logger.info("Created new family {} for patient {}",
-                familyXDocument.getDocumentReference().getName(), probandId);
-
         } catch (Exception ex) {
-            this.logger.error("Error creating new family: [{}] [{}]", ex.getMessage(), ex);
+            this.logger.error("Error creating new family: {}", ex.getMessage(), ex);
         }
+    }
+
+    private String generatePedigreeCommentForRelatives(Map<String, String> relativesToAdd)
+    {
+        if (relativesToAdd.size() == 0) {
+            return null;
+        }
+
+        String comment = PEDIGREE_MIGRATED_RELATIVE_COMMENT_HEADER;
+        for (Map.Entry<String, String> relativeEntry : relativesToAdd.entrySet()) {
+            String relationshipType = relativeEntry.getValue();
+            String relativeNamePlusArticle = RELATIVE_ID_TO_NAME.containsKey(relationshipType)
+                ? RELATIVE_ID_TO_NAME.get(relationshipType) : relationshipType;
+            comment += "\n- this patient is " + relativeNamePlusArticle + " of patient "
+                + relativeEntry.getKey();
+        }
+        return comment;
     }
 
     /**
@@ -659,7 +650,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
     }
 
     /**
-     * Creates anew family document, sets th epedigree to the given one and links given patients ot the family and
+     * Creates a new family document, sets the pedigree to the given one and links given patients of the family and
      * family to the patients. Only relatives from the list ["parent", "child", "sibling", "twin"] may be auto-added to
      * the generated pedigree.
      */
@@ -667,7 +658,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         Map<String, String> relativesToLink)
     {
         // TODO: Generate the correct image as well? Or may use one of the predefined images.
-        // For now using the same svg with explanation text for all the famlies.
+        // For now using the same SVG with explanation text for all the families.
         String pedigreeImage =
             ("<svg xmlns=`http://www.w3.org/2000/svg` xmlns:xlink=`http://www.w3.org/1999/xlink` "
                 + "preserveAspectRatio=`xMidYMid` viewBox=`0 0 480 480`>"
@@ -680,7 +671,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 + "Please open pedigree "
                 + "<tspan x=`25` dy=`1.5em`>editor to see the pedigree.</tspan></text></svg>").replace('`', '"');
 
-        this.logger.debug("Creating new family for patient {}.", probandPatientId);
+        this.logger.debug("Creating new family for patient [{}]", probandPatientId);
 
         XWikiDocument newFamilyXDocument =
             this.familyMigrations.createFamilyDocument(this.getPatientXDocument(probandPatientId),
@@ -712,14 +703,11 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 XWikiDocument patientDoc = this.getPatientXDocument(memberId);
                 if (!this.familyMigrations.setFamilyReference(patientDoc, familyDocumentRef, this.context)
                     || !this.saveXWikiDocument(patientDoc, this.getDescription())) {
-                    this.logger.error("Failed to link patient {} to family {}", memberId, familyID);
+                    this.logger.error("Failed to link patient [{}] to family [{}]", memberId, familyID);
                 }
             }
 
-            BaseObject familyObject = familyXDocument.getXObject(Family.CLASS_REFERENCE);
-            if (familyObject == null) {
-                familyObject = familyXDocument.newXObject(Family.CLASS_REFERENCE, this.context);
-            }
+            BaseObject familyObject = familyXDocument.getXObject(Family.CLASS_REFERENCE, true, this.context);
             familyObject.setStringListValue("members", membersRefsList);
 
             String probandLastName = probandData.getString(LASTNAME);
@@ -727,7 +715,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 familyObject.set("external_id", probandLastName, this.context);
             }
         } catch (Exception ex) {
-            this.logger.error("Failed to link family {} to its members [{}]", familyID, familyMembers);
+            this.logger.error("Failed to link family [{}] to its members [{}]", familyID, familyMembers);
         }
     }
 
@@ -747,13 +735,13 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             }
         } catch (Exception ex) {
             this.logger.info("Failed to retrieve the family of patient [{}]: {}",
-                patientXDocument.getDocumentReference(), ex.getMessage());
+                patientXDocument.getDocumentReference(), ex.getMessage(), ex);
         }
         return null;
     }
 
     /**
-     * Gets the map of patient relative type mapped to relative XWiki document, or null.
+     * Gets the map of patient relative type mapped to relative XWiki document.
      */
     private Map<String, String> getRelatives(XWikiDocument patientXDocument)
     {
@@ -776,7 +764,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 if (StringUtils.isBlank(relativeType) || StringUtils.isBlank(relativeOf)) {
                     continue;
                 }
-                XWikiDocument relativeXDocument = getRelativeDoc(relativeOf, this.context.getWiki());
+                XWikiDocument relativeXDocument = getRelativeXDocument(relativeOf);
                 if (relativeXDocument == null) {
                     continue;
                 }
@@ -791,9 +779,12 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
     }
 
     /**
-     * Gets the relative XWiki document or null.
+     * Gets the XWiki document of a relative, identified by its external identifier.
+     *
+     * @param relativeDoc the external identifier of a relative, as stored in the patient record
+     * @return the document corresponding to the external identifier, or {@code null} if no such document is found
      */
-    private XWikiDocument getRelativeDoc(String relativeDoc, XWiki xwiki)
+    private XWikiDocument getRelativeXDocument(String relativeDoc)
     {
         try {
             Query rq = this.session.createQuery("select distinct o.name from BaseObject o, StringProperty p where "
@@ -810,7 +801,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
             String relativeDocName = relativeDocuments.get(0);
             XWikiDocument relativeXDocument =
-                xwiki.getDocument(this.resolver.resolve(relativeDocName), this.context);
+                this.context.getWiki().getDocument(this.resolver.resolve(relativeDocName), this.context);
             return relativeXDocument;
         } catch (Exception ex) {
             return null;
@@ -842,5 +833,21 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             result.put(OWNER, this.familyMigrations.getOwner(patientDoc));
         }
         return result;
+    }
+
+    private boolean saveXWikiDocument(XWikiDocument doc, String documentHistoryComment)
+    {
+        try {
+            this.logger.debug("Migration: saving document [{}]...", doc.getDocumentReference().getName());
+            doc.setComment(documentHistoryComment);
+            this.session.clear();
+            ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, this.context, false);
+            this.session.flush();
+            return true;
+        } catch (Exception ex) {
+            this.logger.error("Error saving document [{}]: {}", doc.getDocumentReference().getName(), ex.getMessage(),
+                ex);
+            return false;
+        }
     }
 }
