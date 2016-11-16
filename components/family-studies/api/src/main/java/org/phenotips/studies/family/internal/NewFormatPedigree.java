@@ -30,7 +30,8 @@ import org.json.JSONObject;
  * Handles pedigrees in the new SimpleJSON format. Some of the methods (used for converting pedigree JSOn to patient
  * data) are not yet supported for this format.
  *
- * @todo add support and rename class to SimpleJSONPedigree or alike.
+ * TODO: add support and rename class to SimpleJSONPedigree or alike.
+ *
  * @version $Id$
  * @since 1.3M4
  */
