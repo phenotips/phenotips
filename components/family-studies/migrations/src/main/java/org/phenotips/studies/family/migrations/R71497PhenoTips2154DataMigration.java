@@ -141,17 +141,25 @@ public class R71497PhenoTips2154DataMigration extends AbstractHibernateDataMigra
 
                 String familyDocumentRef = newFamilyXDocument.getDocumentReference().toString();
 
-                this.migrator.familyMigrations.setFamilyReference(patientXDocument, familyDocumentRef, this.context);
+                if (!this.migrator.familyMigrations.setFamilyReference(patientXDocument, familyDocumentRef,
+                        this.context)) {
+                    this.migrator.logger.error("Could not set a link between patient {} and its new family {}",
+                            docName, newFamilyXDocument.getDocumentReference().getName());
+                    continue;
+                }
+
                 patientXDocument.removeXObject(patientXDocument.getXObject(Pedigree.CLASS_REFERENCE));
-                patientXDocument.setComment(this.migrator.getDescription());
                 patientXDocument.setMinorEdit(true);
+                patientXDocument.setComment(this.migrator.getDescription());
 
                 newFamilyXDocument.setComment(this.migrator.getDescription());
 
                 try {
                     this.session.clear();
-                    ((XWikiHibernateStore) getStore()).saveXWikiDoc(patientXDocument, this.context, false);
+                    // save family document first, so that if that save fails we do not overwrite patient
+                    // document with the version containing no pedigree thus losing the pedigree
                     ((XWikiHibernateStore) getStore()).saveXWikiDoc(newFamilyXDocument, this.context, false);
+                    ((XWikiHibernateStore) getStore()).saveXWikiDoc(patientXDocument, this.context, false);
                     this.session.flush();
                 } catch (DataMigrationException e) {
                     // We're in the middle of a migration, we're not expecting another migration
@@ -168,43 +176,39 @@ public class R71497PhenoTips2154DataMigration extends AbstractHibernateDataMigra
          * Creates a new family document with processed pedigree object for a patient with an old version pedigree.
          * Patient is assigned to a new family as a member.
          */
-        private XWikiDocument importPedigreeToFamily(XWikiDocument patientXDocument) throws XWikiException
+        private XWikiDocument importPedigreeToFamily(XWikiDocument patientXDocument)
         {
-            BaseObject pedigreeXObject = patientXDocument.getXObject(Pedigree.CLASS_REFERENCE);
-            if (pedigreeXObject == null || pedigreeXObject.get("data") == null) {
-                this.migrator.logger.debug("Patient does not have pedigree. Patient Id: {}.", patientXDocument.getId());
-                return null;
-            }
-
-            BaseStringProperty data = (BaseStringProperty) pedigreeXObject.get("data");
-            BaseStringProperty image = (BaseStringProperty) pedigreeXObject.get("image");
-
-            String dataText = data.toText();
-            String imageText = image.toText();
-
-            if (StringUtils.isEmpty(dataText) || StringUtils.isEmpty(imageText)) {
-                this.migrator.logger.debug(
-                    "Patient does not have pedigree data or pedigree image properties. Patient Id: {}.",
-                    patientXDocument.getId());
-                return null;
-            }
-
-            String patientId = patientXDocument.getDocumentReference().getName();
-            JSONObject procesedData =
-                this.migrator.familyMigrations.processPedigree(new JSONObject(dataText), patientId);
-
-            this.migrator.logger.debug("Creating new family for patient {}.", patientXDocument.getId());
-            XWikiDocument newFamilyXDocument = null;
             try {
-                newFamilyXDocument =
-                    this.migrator.familyMigrations.createFamilyDocument(patientXDocument, procesedData, imageText,
-                        this.context,
-                        this.session);
-            } catch (Exception e) {
-                this.migrator.logger.error("Could not create a new family document: {}", e.getMessage());
-            }
+                BaseObject pedigreeXObject = patientXDocument.getXObject(Pedigree.CLASS_REFERENCE);
+                if (pedigreeXObject == null || pedigreeXObject.get("data") == null) {
+                    this.migrator.logger.debug("Patient does not have pedigree. Patient Id: {}.",
+                            patientXDocument.getId());
+                    return null;
+                }
 
-            return newFamilyXDocument;
+                BaseStringProperty data = (BaseStringProperty) pedigreeXObject.get("data");
+                BaseStringProperty image = (BaseStringProperty) pedigreeXObject.get("image");
+
+                String dataText = data.toText();
+                String imageText = image.toText();
+
+                if (StringUtils.isEmpty(dataText) || StringUtils.isEmpty(imageText)) {
+                    this.migrator.logger.debug(
+                        "Patient does not have pedigree data or pedigree image properties. Patient Id: {}.",
+                        patientXDocument.getId());
+                    return null;
+                }
+
+                String patientId = patientXDocument.getDocumentReference().getName();
+                JSONObject procesedData =
+                    this.migrator.familyMigrations.processPedigree(new JSONObject(dataText), patientId);
+
+                this.migrator.logger.debug("Creating new family for patient {}.", patientXDocument.getId());
+                return this.migrator.familyMigrations.createFamilyDocument(patientXDocument, procesedData, imageText,
+                        this.context, this.session);
+            } catch (Exception ex) {
+                return null;
+            }
         }
 
     }

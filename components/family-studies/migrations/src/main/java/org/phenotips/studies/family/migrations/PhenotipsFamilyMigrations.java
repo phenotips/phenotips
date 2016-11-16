@@ -44,6 +44,7 @@ import org.hibernate.QueryException;
 import org.hibernate.Session;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -96,6 +97,10 @@ public class PhenotipsFamilyMigrations
     @Named("compactwiki")
     private EntityReferenceSerializer<String> serializer;
 
+    /** Logging helper object. */
+    @Inject
+    private Logger logger;
+
     /**
      * Creates a new family document for given patient with pedigree data.
      *
@@ -104,38 +109,40 @@ public class PhenotipsFamilyMigrations
      * @param pedigreeImage pedigree SVG image text
      * @param xcontext xwiki context
      * @param hsession hibernate session
-     * @return new family xwiki document
-     * @throws XWikiException error when creating a family document, or QueryException or other Exception
-     * @throws QueryException error when querying for a the largest family identifier id
-     * @throws Exception error when other errors occur
+     * @return new family xwiki document or null in case of any errors
      */
     public XWikiDocument createFamilyDocument(XWikiDocument patientXDoc, JSONObject pedigreeData, String pedigreeImage,
-        XWikiContext xcontext, Session hsession) throws QueryException, XWikiException, Exception
+        XWikiContext xcontext, Session hsession)
     {
-        this.context = xcontext;
-        this.session = hsession;
-        long nextId = getLastUsedId() + 1;
-        String nextStringId = String.format("%s%07d", FAMILY_PREFIX, nextId);
+        try {
+            this.context = xcontext;
+            this.session = hsession;
+            long nextId = getLastUsedId() + 1;
+            String nextStringId = String.format("%s%07d", FAMILY_PREFIX, nextId);
 
-        EntityReference newFamilyRef = new EntityReference(nextStringId, EntityType.DOCUMENT, Family.DATA_SPACE);
-        XWikiDocument newFamilyXDocument = this.context.getWiki().getDocument(newFamilyRef, this.context);
-        if (!newFamilyXDocument.isNew()) {
-            throw new IllegalArgumentException("The new family id was already taken.");
+            EntityReference newFamilyRef = new EntityReference(nextStringId, EntityType.DOCUMENT, Family.DATA_SPACE);
+            XWikiDocument newFamilyXDocument = this.context.getWiki().getDocument(newFamilyRef, this.context);
+            if (!newFamilyXDocument.isNew()) {
+                throw new IllegalArgumentException("The new family id was already taken.");
+            }
+
+            this.setOwner(newFamilyXDocument, patientXDoc);
+            this.setFamilyObject(newFamilyXDocument, patientXDoc, nextId);
+            this.setPedigreeObject(newFamilyXDocument, pedigreeData, pedigreeImage);
+            this.setPermissionsObject(newFamilyXDocument, patientXDoc);
+            this.setVisibilityObject(newFamilyXDocument, patientXDoc);
+            this.setCollaborators(newFamilyXDocument, patientXDoc);
+
+            newFamilyXDocument.setAuthorReference(patientXDoc.getAuthorReference());
+            newFamilyXDocument.setCreatorReference(patientXDoc.getCreatorReference());
+            newFamilyXDocument.setContentAuthorReference(patientXDoc.getContentAuthorReference());
+            newFamilyXDocument.setParentReference(this.familyParentReference);
+
+            return newFamilyXDocument;
+        } catch (Exception ex) {
+            this.logger.error("Error creating new family document: {} [{}]", ex.getMessage(), ex);
+            return null;
         }
-
-        this.setOwner(newFamilyXDocument, patientXDoc);
-        this.setFamilyObject(newFamilyXDocument, patientXDoc, nextId);
-        this.setPedigreeObject(newFamilyXDocument, pedigreeData, pedigreeImage);
-        this.setPermissionsObject(newFamilyXDocument, patientXDoc);
-        this.setVisibilityObject(newFamilyXDocument, patientXDoc);
-        this.setCollaborators(newFamilyXDocument, patientXDoc);
-
-        newFamilyXDocument.setAuthorReference(patientXDoc.getAuthorReference());
-        newFamilyXDocument.setCreatorReference(patientXDoc.getCreatorReference());
-        newFamilyXDocument.setContentAuthorReference(patientXDoc.getContentAuthorReference());
-        newFamilyXDocument.setParentReference(this.familyParentReference);
-
-        return newFamilyXDocument;
     }
 
     /**
@@ -144,17 +151,21 @@ public class PhenotipsFamilyMigrations
      * @param patientDoc patient document
      * @param documentReference family document reference
      * @param xcontext context
-     * @throws XWikiException error when creating the new object
+     * @return true if operation was successful, false otherwise (e.g. when family reference creation failed)
      */
-    public void setFamilyReference(XWikiDocument patientDoc, String documentReference, XWikiContext xcontext)
-        throws XWikiException
+    public boolean setFamilyReference(XWikiDocument patientDoc, String documentReference, XWikiContext xcontext)
     {
-        this.context = xcontext;
-        BaseObject pointer = patientDoc.getXObject(this.familyReferenceClassReference);
-        if (pointer == null) {
-            pointer = patientDoc.newXObject(this.familyReferenceClassReference, this.context);
+        try {
+            this.context = xcontext;
+            BaseObject pointer = patientDoc.getXObject(this.familyReferenceClassReference);
+            if (pointer == null) {
+                pointer = patientDoc.newXObject(this.familyReferenceClassReference, this.context);
+            }
+            pointer.setStringValue("reference", documentReference);
+            return true;
+        } catch (Exception ex) {
+            return false;
         }
-        pointer.setStringValue("reference", documentReference);
     }
 
     /**
@@ -176,15 +187,76 @@ public class PhenotipsFamilyMigrations
                 continue;
             }
 
-            JSONObject properties = (JSONObject) node.get("prop");
+            JSONObject properties = node.optJSONObject("prop");
+            if (properties == null) {
+                properties = new JSONObject();
+                node.accumulate("prop", properties);
+            }
             properties.accumulate("phenotipsId", patientId);
             break;
         }
 
-        data.accumulate("probandNodeID", 0);
-        data.accumulate("JSON_version", "1.0");
+        data.put("probandNodeID", 0);
+        data.put("JSON_version", "1.0");
         return data;
     }
+
+    /**
+     * Finds a pedigree node linked to patientID and adds the given comment to it's free-text comment.
+     *
+     * @param pedigree pedigree as JSON
+     * @param patientId the PhenoTips patient id
+     * @param commentAddition text of comment addition
+     */
+    public void updatePedigreeComment(JSONObject pedigree, String patientId, String commentAddition)
+    {
+        JSONArray gg = pedigree.getJSONArray("GG");
+        for (int pedigreeId = 0; pedigreeId < gg.length(); pedigreeId++) {
+            JSONObject node = gg.getJSONObject(pedigreeId);
+
+            JSONObject properties = node.optJSONObject("prop");
+            if (properties == null) {
+                continue;
+            }
+
+            //logger.error("Node: properties: [{}]", properties);
+
+            String linkPatientId = properties.optString("phenotipsId");
+            if (StringUtils.equals(linkPatientId, patientId)) {
+                // update comments
+                String comment = properties.optString("comments", null);
+                if (comment == null) {
+                    comment = commentAddition;
+                } else {
+                    comment += "\n" + commentAddition;
+                }
+                properties.put("comments", comment);
+                node.put("prop", properties);
+                gg.put(pedigreeId, node);
+                pedigree.put("GG", gg);
+                return;
+            }
+        }
+    }
+
+    /**
+     * Returns the owner of the patient.
+     *
+     * @param patientDoc patient XDocument
+     * @return owner as string
+     */
+    public String getOwner(XWikiDocument patientDoc)
+    {
+        String owner = getPropertyValue(patientDoc, Owner.CLASS_REFERENCE, Owner.PROPERTY_NAME, "");
+        if (StringUtils.isNotBlank(owner)) {
+            return owner;
+        }
+        if (patientDoc.getCreatorReference() != null) {
+            return this.serializer.serialize(patientDoc.getCreatorReference());
+        }
+        return owner;
+    }
+
 
     /**
      * Set owner object property.
@@ -292,18 +364,6 @@ public class PhenotipsFamilyMigrations
             value = obj.getStringValue(propertyName);
         }
         return StringUtils.defaultString(value, defaultValue);
-    }
-
-    private String getOwner(XWikiDocument patientDoc)
-    {
-        String owner = getPropertyValue(patientDoc, Owner.CLASS_REFERENCE, Owner.PROPERTY_NAME, "");
-        if (StringUtils.isNotBlank(owner)) {
-            return owner;
-        }
-        if (patientDoc.getCreatorReference() != null) {
-            return this.serializer.serialize(patientDoc.getCreatorReference());
-        }
-        return owner;
     }
 
     /**

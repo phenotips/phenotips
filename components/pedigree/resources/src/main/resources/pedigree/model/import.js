@@ -705,6 +705,7 @@ define([
      *                            First a match versus an existing ID is checked, if not found a check against "externalId",
      *                            if not found a check against "name" and finally "firstName".
      *                            If one of the parents is given and the other one is not a virtual new node is created
+     *   - "phenotipsId": The id of the PhenoTips document this node is linked to (default: none)
      *
      *  Supported properties for relationship nodes:
      *   - "relationshipId": string or number. The valu eis not used, only required ot indicate that this
@@ -1391,7 +1392,8 @@ define([
             "nodenumber":      "nodeNumber",
             "cancers":         "cancers",
             "childlessstatus": "childlessStatus",
-            "childlessreason": "childlessReason"
+            "childlessreason": "childlessReason",
+            "phenotipsid":     "phenotipsId"
         };
 
 

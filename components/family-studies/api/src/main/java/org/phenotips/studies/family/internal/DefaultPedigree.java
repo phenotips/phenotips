@@ -30,7 +30,7 @@ import org.json.JSONObject;
 /**
  * @version $Id$
  */
-public class DefaultPedigree implements Pedigree
+public class DefaultPedigree extends AbstractBasePedigree implements Pedigree
 {
     /** The main key under which pedigree data is stored. */
     private static final String PEDIGREE_JSON_DATA_KEY = "GG";
@@ -50,48 +50,26 @@ public class DefaultPedigree implements Pedigree
 
     private static final String FAMILY_HISTORY_JSON_KEY = "family_history";
 
-    private JSONObject data;
-
-    private String image = "";
-
     /**
-     * Create a new default pedigree with data and image.
+     * Create a new default pedigree from data (in "old internal" format) and image (a text representing SVG).
      *
      * @param data pedigree data
      * @param image SVG 'image'
      */
     public DefaultPedigree(JSONObject data, String image)
     {
-        if (data == null || data.length() == 0) {
-            throw new IllegalArgumentException();
-        }
-        this.data = data;
-        this.image = image;
+        super(data, image);
     }
 
-    @Override
-    public JSONObject getData()
+    /**
+     * Checks that the provided JSON objects represents a pedigree in the supported format.
+     *
+     * @param data JSON object ot check
+     * @return true if JSON represents a pedigree format supported by this class
+     */
+    public static boolean isSupportedPedigreeFormat(JSONObject data)
     {
-        return this.data;
-    }
-
-    @Override
-    public String getImage(String highlightCurrentPatientId)
-    {
-        return getImage(highlightCurrentPatientId, 0, 0);
-    }
-
-    @Override
-    public String getImage(String highlightCurrentPatientId, int width, int height)
-    {
-        String svg = SvgUpdater.setCurrentPatientStylesInSvg(this.image, highlightCurrentPatientId);
-        if (width > 0) {
-            svg = SvgUpdater.setSVGWidth(svg, width);
-        }
-        if (height > 0) {
-            svg = SvgUpdater.setSVGHeight(svg, height);
-        }
-        return svg;
+        return data.has(PEDIGREE_JSON_DATA_KEY);
     }
 
     @Override
@@ -146,25 +124,7 @@ public class DefaultPedigree implements Pedigree
     }
 
     @Override
-    public String getProbandId()
-    {
-        return getProbandInfo().getLeft();
-    }
-
-    @Override
-    public String getProbandPatientLastName()
-    {
-        String lastName = getProbandInfo().getRight();
-        if (StringUtils.isBlank(lastName)) {
-            return null;
-        }
-        return lastName;
-    }
-
-    /**
-     * @return a pair {@code <ProbandId, ProbandLastname>}
-     */
-    private Pair<String, String> getProbandInfo()
+    protected Pair<String, String> getProbandInfo()
     {
         int probandNodeId = this.data.optInt(PEDIGREE_JSON_PROBAND_KEY, -1);
         if (probandNodeId == -1) {
@@ -234,19 +194,7 @@ public class DefaultPedigree implements Pedigree
     }
 
     @Override
-    public void removeLink(String linkedPatientId)
-    {
-        // update SVG
-        this.image = SvgUpdater.removeLink(this.image, linkedPatientId);
-
-        // update JSON
-        removeLinkFromPedigreeJSON(linkedPatientId);
-    }
-
-    /*
-     * Removes all links to the given PhenoTips patient form the pedigree JSON.
-     */
-    private void removeLinkFromPedigreeJSON(String linkedPatientId)
+    protected void removeLinkFromPedigreeJSON(String linkedPatientId)
     {
         List<JSONObject> patientProperties = this.extractPatientJSONProperties();
         for (JSONObject properties : patientProperties) {

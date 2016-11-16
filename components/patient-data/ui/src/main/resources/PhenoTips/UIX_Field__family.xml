@@ -41,6 +41,121 @@
   <object>
     <name>PhenoTips.UIX_Field__family</name>
     <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>673ae15d-269a-450a-988e-be669a277755</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>.relatives-info {
+  padding: 0.5em;
+  background-color: #eed;
+  margin-top: 1em;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name></name>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.UIX_Field__family</name>
+    <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>c69577c0-d150-47f2-9895-e1317ac466f1</guid>
     <class>
@@ -113,26 +228,30 @@
 {{include reference="PhenoTips.TabelarDataMacros" /}}
 
 {{velocity}}
+$xwiki.ssx.use('PhenoTips.UIX_Field__family')##
+
 #set ($targetClassName = 'PhenoTips.RelativeClass')
 #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
-  {{error}}This component is deprecated. Please specify relevant family relationships in the pedigree.{{/error}}
 
   (% class="clear relatives-info" %)(((
+    {{error}}This component is deprecated. Please specify relevant family relationships in the pedigree.{{/error}}
+
     === $services.localization.render('phenotips.UIXField.family.heading') ===
+
     #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true, 'mode' : $xcontext.action})
   )))
 #end
 {{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.section.none</extensionPointId>
+      <extensionPointId>org.phenotips.patientSheet.section.family-info</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.patientSheet.field.family_study.DEPRECATED</name>
     </property>
     <property>
       <parameters>title=$services.localization.render('phenotips.UIXField.family')
-enabled=true
+enabled=false
 required=
 order=4
 fields=relative_type,relative_of
