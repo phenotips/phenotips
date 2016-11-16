@@ -730,7 +730,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         {
             try {
                 BaseObject pointer =
-                    patientXDocument.getXObject(this.migrator.familyMigrations.familyReferenceClassReference);
+                    patientXDocument.getXObject(Family.REFERENCE_CLASS_REFERENCE);
                 if (pointer == null) {
                     return null;
                 }

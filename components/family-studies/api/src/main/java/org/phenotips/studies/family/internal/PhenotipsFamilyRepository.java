@@ -80,10 +80,6 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     private static final EntityReference FAMILY_TEMPLATE =
         new EntityReference("FamilyTemplate", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
-    /** XWiki class that represents objects that contain a string reference to a family document. */
-    private static final EntityReference FAMILY_REFERENCE = new EntityReference("FamilyReferenceClass",
-        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
     private static final String FAMILY_REFERENCE_FIELD = "reference";
 
     @Inject
@@ -651,7 +647,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
      */
     private DocumentReference getFamilyReference(XWikiDocument patientDocument)
     {
-        BaseObject familyObject = patientDocument.getXObject(FAMILY_REFERENCE);
+        BaseObject familyObject = patientDocument.getXObject(Family.REFERENCE_CLASS_REFERENCE);
         if (familyObject == null) {
             return null;
         }
@@ -718,10 +714,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     private boolean setFamilyReference(XWikiDocument patientDoc, XWikiDocument familyDoc, XWikiContext context)
     {
         try {
-            BaseObject pointer = patientDoc.getXObject(FAMILY_REFERENCE);
-            if (pointer == null) {
-                pointer = patientDoc.newXObject(FAMILY_REFERENCE, context);
-            }
+            BaseObject pointer = patientDoc.getXObject(Family.REFERENCE_CLASS_REFERENCE, true, context);
             pointer.set(FAMILY_REFERENCE_FIELD, familyDoc.getDocumentReference().toString(), context);
             return true;
         } catch (Exception ex) {
@@ -740,7 +733,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     private boolean removeFamilyReference(XWikiDocument patientDoc)
     {
         try {
-            BaseObject pointer = patientDoc.getXObject(FAMILY_REFERENCE);
+            BaseObject pointer = patientDoc.getXObject(Family.REFERENCE_CLASS_REFERENCE);
             if (pointer != null) {
                 return patientDoc.removeXObject(pointer);
             }

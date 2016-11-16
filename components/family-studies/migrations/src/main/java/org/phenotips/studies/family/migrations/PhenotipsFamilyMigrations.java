@@ -17,7 +17,6 @@
  */
 package org.phenotips.studies.family.migrations;
 
-import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.Owner;
@@ -74,10 +73,6 @@ public class PhenotipsFamilyMigrations
     private static final String EDIT_RIGHT = "view,edit";
 
     private static final String FULL_RIGHT = "view,edit,delete";
-
-    /** Family reference class reference. */
-    public EntityReference familyReferenceClassReference = new EntityReference("FamilyReferenceClass",
-        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     private EntityReference rightsClassReference = new EntityReference("XWikiRights", EntityType.DOCUMENT,
         new EntityReference("XWiki", EntityType.SPACE));
@@ -157,10 +152,7 @@ public class PhenotipsFamilyMigrations
     {
         try {
             this.context = xcontext;
-            BaseObject pointer = patientDoc.getXObject(this.familyReferenceClassReference);
-            if (pointer == null) {
-                pointer = patientDoc.newXObject(this.familyReferenceClassReference, this.context);
-            }
+            BaseObject pointer = patientDoc.getXObject(Family.REFERENCE_CLASS_REFERENCE, true, this.context);
             pointer.setStringValue("reference", documentReference);
             return true;
         } catch (Exception ex) {

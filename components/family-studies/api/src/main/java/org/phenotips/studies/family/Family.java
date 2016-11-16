@@ -47,6 +47,10 @@ public interface Family
     /** The space where family data is stored. */
     EntityReference DATA_SPACE = new EntityReference("Families", EntityType.SPACE);
 
+    /** The XClass used for storing the link between a patient record and its family record. */
+    EntityReference REFERENCE_CLASS_REFERENCE = new EntityReference("FamilyReferenceClass",
+        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
     /**
      * @return family id
      */
