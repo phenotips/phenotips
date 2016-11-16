@@ -29,6 +29,7 @@ import org.json.JSONObject;
  * Common functionality (mostly related to images, which have the same format) is placed in this class.
  *
  * @version $Id$
+ * @since 1.3M4
  */
 public abstract class AbstractBasePedigree implements Pedigree
 {

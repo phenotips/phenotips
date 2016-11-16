@@ -27,12 +27,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Handles pedigrees in the new SimpleJSON format.
+ * Handles pedigrees in the new SimpleJSON format. Some of the methods (used for converting pedigree JSOn to patient
+ * data) are not yet supported for this format.
  *
- * Som of the methods (used for converting pedigree JSOn to patient data) are not yet
- * supported for this format. TODO: add support and rename class to SimpleJSONPedigree or alike.
- *
+ * @todo add support and rename class to SimpleJSONPedigree or alike.
  * @version $Id$
+ * @since 1.3M4
  */
 public class NewFormatPedigree extends AbstractBasePedigree implements Pedigree
 {

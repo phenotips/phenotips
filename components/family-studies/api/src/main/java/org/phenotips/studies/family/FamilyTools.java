@@ -29,7 +29,7 @@ import org.xwiki.security.authorization.Right;
  * current user.
  *
  * @version $Id$
- * @since 1.4
+ * @since 1.3
  */
 @Role
 public interface FamilyTools
