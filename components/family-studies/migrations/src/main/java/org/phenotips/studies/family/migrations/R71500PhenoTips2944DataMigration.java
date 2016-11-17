@@ -106,7 +106,7 @@ public class R71500PhenoTips2944DataMigration extends AbstractHibernateDataMigra
 
     private static final String PEDIGREE_GENE_STATUS_FIELD = "status";
 
-    private Map<String, String> geneStatusToFiledMap = new HashMap<String, String>();
+    private Map<String, String> geneStatusToFieldMap = new HashMap<String, String>();
 
     /** Logging helper object. */
     @Inject
@@ -152,9 +152,9 @@ public class R71500PhenoTips2944DataMigration extends AbstractHibernateDataMigra
         XWikiContext context = getXWikiContext();
         XWiki xwiki = context.getWiki();
         this.hgnc = this.vocabularies.getVocabulary(HGNC);
-        this.geneStatusToFiledMap.put(PEDIGREE_CANDIDATE_GENES_STATUS, PEDIGREE_CANDIDATE_GENES_FIELD);
-        this.geneStatusToFiledMap.put(PEDIGREE_SOLVED_GENES_STATUS, PEDIGREE_SOLVED_GENES_FIELD);
-        this.geneStatusToFiledMap.put(PEDIGREE_REJECTED_GENES_STATUS, PEDIGREE_REJECTED_GENES_FIELD);
+        this.geneStatusToFieldMap.put(PEDIGREE_CANDIDATE_GENES_STATUS, PEDIGREE_CANDIDATE_GENES_FIELD);
+        this.geneStatusToFieldMap.put(PEDIGREE_SOLVED_GENES_STATUS, PEDIGREE_SOLVED_GENES_FIELD);
+        this.geneStatusToFieldMap.put(PEDIGREE_REJECTED_GENES_STATUS, PEDIGREE_REJECTED_GENES_FIELD);
 
         // Select all families
         Query q = session.createQuery("select distinct o.name from BaseObject o where o.className = '"
@@ -273,7 +273,7 @@ public class R71500PhenoTips2944DataMigration extends AbstractHibernateDataMigra
     {
         boolean updated = false;
 
-        for (String field : this.geneStatusToFiledMap.values()) {
+        for (String field : this.geneStatusToFieldMap.values()) {
             JSONObject colors = colorsJSON.optJSONObject(field);
             JSONObject updatedColors = new JSONObject();
             if (colors == null || colors.length() == 0) {
@@ -312,7 +312,7 @@ public class R71500PhenoTips2944DataMigration extends AbstractHibernateDataMigra
             JSONObject geneObj = (JSONObject) gene;
             String geneSymbol = geneObj.optString(PEDIGREE_GENE_SYMBOL_FIELD);
             String geneStatus = geneObj.optString(PEDIGREE_GENE_STATUS_FIELD);
-            String geneField = this.geneStatusToFiledMap.get(geneStatus);
+            String geneField = this.geneStatusToFieldMap.get(geneStatus);
             if (geneSymbol == null) {
                 continue;
             }
