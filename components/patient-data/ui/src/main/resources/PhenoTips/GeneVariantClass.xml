@@ -66,40 +66,6 @@ $!{value}
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </cdna>
-    <genesymbol>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <name>genesymbol</name>
-      <number>2</number>
-      <picker>1</picker>
-      <prettyName>Genesymbol</prettyName>
-      <size>30</size>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </genesymbol>
-    <reference_genome>
-      <cache>0</cache>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <displayType>select</displayType>
-      <multiSelect>0</multiSelect>
-      <name>reference_genome</name>
-      <number>3</number>
-      <picker>0</picker>
-      <prettyName>Reference genome</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators> ,|</separators>
-      <size>1</size>
-      <sort>none</sort>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <values>GRCh38=GRCh38 (hg38)|GRCh37=GRCh37 (hg19)|NCBI36=NCBI36 (hg18)</values>
-      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </reference_genome>
     <chromosome>
       <cache>0</cache>
       <customDisplay/>
@@ -121,72 +87,6 @@ $!{value}
       <values>NA= |1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|X|Y</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </chromosome>
-    <start_position>
-      <cache>0</cache>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <name>start_position</name>
-      <number>5</number>
-      <numberType>integer</numberType>
-      <prettyName>Start position</prettyName>
-      <size>3</size>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-    </start_position>
-    <end_position>
-      <cache>0</cache>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <name>end_position</name>
-      <number>6</number>
-      <numberType>integer</numberType>
-      <prettyName>End position</prettyName>
-      <size>3</size>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-    </end_position>
-    <protein>
-      <customDisplay>{{velocity}}
-#if ($xcontext.action == 'edit')
-{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder="$services.localization.render("PhenoTips.GeneVariantClass.${name}Placeholder")" size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
-#else
-$!{value}
-#end
-{{/velocity}}</customDisplay>
-      <disabled>0</disabled>
-      <name>protein</name>
-      <number>7</number>
-      <picker>0</picker>
-      <prettyName>Protein</prettyName>
-      <size>30</size>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </protein>
-    <transcript>
-      <customDisplay>{{velocity}}
-#if ($xcontext.action == 'edit')
-{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder="$services.localization.render("PhenoTips.GeneVariantClass.${name}Placeholder")" size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
-#else
-$!{value}
-#end
-{{/velocity}}</customDisplay>
-      <disabled>0</disabled>
-      <name>transcript</name>
-      <number>8</number>
-      <picker>0</picker>
-      <prettyName>Transcript</prettyName>
-      <size>30</size>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </transcript>
     <dbsnp>
       <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit')
@@ -206,27 +106,6 @@ $!{value}
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </dbsnp>
-    <zygosity>
-      <cache>0</cache>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <displayType>select</displayType>
-      <multiSelect>0</multiSelect>
-      <name>zygosity</name>
-      <number>10</number>
-      <picker>0</picker>
-      <prettyName>Zygosity</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators> ,|</separators>
-      <size>1</size>
-      <sort>none</sort>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <values>NA= |heterozygous=heterozygous|homozygous=homozygous|hemizygous=hemizygous</values>
-      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </zygosity>
     <effect>
       <cache>0</cache>
       <customDisplay/>
@@ -248,48 +127,19 @@ $!{value}
       <values>NA= |missense=missense|nonsense=nonsense|insertion_in_frame=insertion - in frame|insertion_frameshift=insertion - frameshift|deletion_in_frame=deletion - in frame|deletion_frameshift=deletion - frameshift|indel_in_frame=indel - in frame|indel_frameshift=indel - frameshift|duplication=duplication|repeat_expansion=repeat expansion|synonymous=synonymous|other=other</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </effect>
-    <interpretation>
-      <cache>0</cache>
+    <end_position>
       <customDisplay/>
       <disabled>0</disabled>
-      <displayType>select</displayType>
-      <multiSelect>0</multiSelect>
-      <name>interpretation</name>
-      <number>12</number>
-      <picker>0</picker>
-      <prettyName>Interpretation (ACMG category)</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators> ,|</separators>
-      <size>1</size>
-      <sort>none</sort>
+      <name>end_position</name>
+      <number>6</number>
+      <numberType>integer</numberType>
+      <prettyName>End position</prettyName>
+      <size>3</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>NA= |pathogenic=Pathogenic|likely_pathogenic=Likely Pathogenic|variant_u_s=Variant of Unknown Significance|likely_benign=Likely Benign|benign=Benign|investigation_n=Investigation Needed</values>
-      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </interpretation>
-    <inheritance>
-      <cache>0</cache>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <displayType>select</displayType>
-      <multiSelect>0</multiSelect>
-      <name>inheritance</name>
-      <number>13</number>
-      <picker>0</picker>
-      <prettyName>Inheritance</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators> ,|</separators>
-      <size>1</size>
-      <sort>none</sort>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <values>NA= |denovo_germline=de novo germline|denovo_s_mosaicism=de novo somatic mosaicism|maternal=maternal|paternal=paternal|unknown=unknown</values>
-      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </inheritance>
+      <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+    </end_position>
     <evidence>
       <cache>0</cache>
       <customDisplay/>
@@ -311,16 +161,29 @@ $!{value}
       <values>rare=Rare (MAF less than 0.01)|predicted=Predicted damaging by in silico models|reported=Reported in other affected individuals</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </evidence>
-    <segregation>
+    <genesymbol>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>genesymbol</name>
+      <number>2</number>
+      <picker>1</picker>
+      <prettyName>Genesymbol</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </genesymbol>
+    <inheritance>
       <cache>0</cache>
       <customDisplay/>
       <disabled>0</disabled>
       <displayType>select</displayType>
       <multiSelect>0</multiSelect>
-      <name>segregation</name>
-      <number>15</number>
+      <name>inheritance</name>
+      <number>13</number>
       <picker>0</picker>
-      <prettyName>Segregation Studies</prettyName>
+      <prettyName>Inheritance</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
       <separators> ,|</separators>
@@ -329,9 +192,70 @@ $!{value}
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>NA= |segregates=Segregates|not_segregates=Does not segregate</values>
+      <values>NA= |denovo_germline=de novo germline|denovo_s_mosaicism=de novo somatic mosaicism|maternal=maternal|paternal=paternal|unknown=unknown</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </segregation>
+    </inheritance>
+    <interpretation>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>interpretation</name>
+      <number>12</number>
+      <picker>0</picker>
+      <prettyName>Interpretation (ACMG category)</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>NA= |pathogenic=Pathogenic|likely_pathogenic=Likely Pathogenic|variant_u_s=Variant of Unknown Significance|likely_benign=Likely Benign|benign=Benign|investigation_n=Investigation Needed</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </interpretation>
+    <protein>
+      <customDisplay>{{velocity}}
+#if ($xcontext.action == 'edit')
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder="$services.localization.render("PhenoTips.GeneVariantClass.${name}Placeholder")" size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+#else
+$!{value}
+#end
+{{/velocity}}</customDisplay>
+      <disabled>0</disabled>
+      <name>protein</name>
+      <number>7</number>
+      <picker>0</picker>
+      <prettyName>Protein</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </protein>
+    <reference_genome>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>reference_genome</name>
+      <number>3</number>
+      <picker>0</picker>
+      <prettyName>Reference genome</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>GRCh38=GRCh38 (hg38)|GRCh37=GRCh37 (hg19)|NCBI36=NCBI36 (hg18)</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </reference_genome>
     <sanger>
       <cache>0</cache>
       <customDisplay/>
@@ -353,5 +277,79 @@ $!{value}
       <values>NA= |positive=Positive|negative=Negative</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </sanger>
+    <segregation>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>segregation</name>
+      <number>15</number>
+      <picker>0</picker>
+      <prettyName>Segregation Studies</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>NA= |segregates=Segregates|not_segregates=Does not segregate</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </segregation>
+    <start_position>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>start_position</name>
+      <number>5</number>
+      <numberType>integer</numberType>
+      <prettyName>Start position</prettyName>
+      <size>3</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+    </start_position>
+    <transcript>
+      <customDisplay>{{velocity}}
+#if ($xcontext.action == 'edit')
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder="$services.localization.render("PhenoTips.GeneVariantClass.${name}Placeholder")" size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+#else
+$!{value}
+#end
+{{/velocity}}</customDisplay>
+      <disabled>0</disabled>
+      <name>transcript</name>
+      <number>8</number>
+      <picker>0</picker>
+      <prettyName>Transcript</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </transcript>
+    <zygosity>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>zygosity</name>
+      <number>10</number>
+      <picker>0</picker>
+      <prettyName>Zygosity</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>NA= |heterozygous=heterozygous|homozygous=homozygous|hemizygous=hemizygous</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </zygosity>
   </class>
 </xwikidoc>
