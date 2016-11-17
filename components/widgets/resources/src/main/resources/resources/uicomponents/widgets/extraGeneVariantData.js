@@ -550,7 +550,8 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       for (var i = 0; i < inputs.length; i++) {
 
         inputs[i].toggleClassName('v-collapsed', true);
-        if (labels[i].className.indexOf('segregation') >= 0 ||
+        if (labels[i].className.indexOf('chromosome') >= 0 ||
+            labels[i].className.indexOf('segregation') >= 0 ||
             labels[i].className.indexOf('sanger') >= 0 ||
             labels[i].className.indexOf('inheritance') >= 0 ||
             labels[i].className.indexOf('zygosity') >= 0 ||
