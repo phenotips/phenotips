@@ -105,8 +105,8 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 |(% class="pseudoindent" %)|(% class = "variant" %)|(% colspan="3" class="variant moreinfo" %)##
 #if ($options.mode == 'edit')(% class="variant-moreinfo-editbutton-row variant-$variantIndex" %)#end(((##
 #foreach ($prop in $variantObj.xWikiClass.properties)
-#if ($prop.getName() != 'genesymbol' && !$options.defaultProperties.contains($prop.getName()) && $variantObj.getProperty($prop.getName()))
-#set($rawValue = $variantObj.getProperty($prop.getName()).value)
+#if ($prop.getName() != 'genesymbol' && !$options.defaultProperties.contains($prop.getName()))
+#set($rawValue = $variantObj.getValue($prop.getName()))
 #set($isValueEmpty = "$!{rawValue}" == '' || $rawValue == 'NA' || $rawValue == [])
 #if ($options.mode == 'edit' || ($options.mode != 'edit' && !$isValueEmpty))
 (% class="variant-moreinfo-table" %)
