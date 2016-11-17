@@ -855,7 +855,10 @@
 #set ($groupDocs = $xwiki.wrapDocs($query.execute()))
 
 #set ($groupData = [])
-#set ($defaultLogo = "$groupTemplateName@$!{xwiki.getDocument($groupTemplateName).getObject($groupClassName).getProperty('image').value}")
+#set ($defaultLogo = "$!{xwiki.getDocument($groupTemplateName).getObject($groupClassName).getProperty('image').value}")
+#if ($defaultLogo  != '' &amp;&amp; $defaultLogo.indexOf('@') &lt; 0)
+  #set ($defaultLogo = "$groupTemplateName@$!{defaultLogo}")
+#end
 
 #foreach ($groupDoc in $groupDocs)
   #set ($groupObj = $groupDoc.getObject($groupClassName))
