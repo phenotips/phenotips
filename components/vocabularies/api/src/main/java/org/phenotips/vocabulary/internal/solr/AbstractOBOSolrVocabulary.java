@@ -80,6 +80,20 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
         return result;
     }
 
+    /**
+     * Load vocabulary data from a provided source url.
+     * @param sourceUrl the address from where to get the vocabulary source file
+     * @return vocabulary data, if exists
+     */
+    protected Map<String, TermData> load(final String sourceUrl)
+    {
+        String realOntologyUrl = StringUtils.defaultIfBlank(sourceUrl, getDefaultSourceLocation());
+
+        SolrUpdateGenerator generator = new SolrUpdateGenerator();
+        Map<String, Double> fieldSelection = new HashMap<>();
+        return generator.transform(realOntologyUrl, fieldSelection);
+    }
+
     @Override
     public int reindex(String sourceUrl)
     {
@@ -107,11 +121,8 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
      */
     protected int index(String sourceUrl)
     {
-        String realOntologyUrl = StringUtils.defaultIfBlank(sourceUrl, getDefaultSourceLocation());
+        Map<String, TermData> data = load(sourceUrl);
 
-        SolrUpdateGenerator generator = new SolrUpdateGenerator();
-        Map<String, Double> fieldSelection = new HashMap<>();
-        Map<String, TermData> data = generator.transform(realOntologyUrl, fieldSelection);
         if (data == null || data.isEmpty()) {
             return 2;
         }

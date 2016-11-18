@@ -17,6 +17,7 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
+import org.phenotips.obo2solr.TermData;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
@@ -107,6 +108,15 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
         return "The Human Phenotype Ontology project: linking molecular biology and disease through phenotype data."
             + " Sebastian K\u00f6hler, Sandra C Doelken, Christopher J. Mungall, Sebastian Bauer, Helen V. Firth,"
             + " et al. Nucl. Acids Res. (1 January 2014) 42 (D1): D966-D974 doi:10.1093/nar/gkt1026";
+    }
+
+    @Override
+    protected Map<String, TermData> load(final String sourceUrl)
+    {
+        // Load the hpo.obo data.
+        final Map<String, TermData> data = super.load(sourceUrl);
+        // Add annotation data.
+        return new HpoAnnotationSourceParser(data).getData();
     }
 
     @Override
