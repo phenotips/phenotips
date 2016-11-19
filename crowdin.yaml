@@ -9,8 +9,3 @@ files:
     languages_mapping:
       two_letters_code:
         en-CA: en_CA
-  - 
-    source: /**/*Translations.xml
-    translation: /**/%file_name%.%two_letters_code%.xml
-    translatable_elements:
-      - /xwikidoc/content
