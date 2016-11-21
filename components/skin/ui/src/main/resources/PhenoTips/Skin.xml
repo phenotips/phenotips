@@ -922,11 +922,28 @@ h1:target, h2:target, h3:target {
   top: 10px;
   margin-right: 10px;
 }
-.language-block .rightmenu label {
+.language-block .menu-horizontal &gt; ul &gt; li &gt; span {
   color: $theme.menuLinkColor;
   margin: 0;
   padding: 0;
   white-space: pre;
+}
+.language-block .menu-horizontal &gt; ul &gt; li:last-of-type {
+  padding-right: 0;
+}
+.language-block .menu-horizontal &gt; ul ul {
+  margin: 0;
+  z-index: 2000;
+}
+
+.language-block .menu-horizontal .selected {
+  position: relative;
+}
+.language-block .menu-horizontal .selected:before {
+  content: "✓";
+  display: block;
+  position: absolute;
+  left: .3em;
 }
 .xdialog-box .button {
   min-width: 5em;
