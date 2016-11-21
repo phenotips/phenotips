@@ -48,7 +48,7 @@ $services.localization.render('defaultlanguage')##
  * @param $text the full language name
  *#
 #macro(drawerItem $url $shortName $text)
-<option value="$url" label="$shortName" title="$text" #if ($shortName == "$!{xcontext.getLocale()}")selected="selected"#end>$shortName</option>
+<li #if ($shortName == "$!{xcontext.getLocale()}")class="selected"#end><a href="$url" title="$text">$text</a></li>
 #end
 #**
  * Display the top element of a foldable drawer item.
@@ -58,14 +58,18 @@ $services.localization.render('defaultlanguage')##
  *#
 #macro(drawerTopItemStart $text $id)
 <div class="language-block" id="${id}_menu">
-  <div class="rightmenu">
-    <label class="tme">$services.localization.render('language'): <select onchange="if (this.value) window.location.href=this.value">
+  <div class="menu menu-horizontal rightmenu">
+    <ul>
+      <li><span class="xDropdown">$services.localization.render('language'): $!{xcontext.getLocale()}</span>
+        <ul>
 #end
 #**
  * Close an foldable drawer item
  *#
 #macro(drawerTopItemStop)
-      </select></label>
+          </ul>
+        </li>
+     </ul>
   </div>
 </div>
 #end
