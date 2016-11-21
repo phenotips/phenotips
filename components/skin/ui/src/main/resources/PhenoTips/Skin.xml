@@ -429,6 +429,129 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   </object>
   <object>
     <name>PhenoTips.Skin</name>
+    <number>3</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>a847fd11-a557-4323-9940-9302a4f11f22</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>(function () {
+  var init = function() {
+    if ($('inline')) {
+      // Some form elements are still being modified while "xwiki:dom:loaded" is fired.
+      // If the initial state of the form is recorded immediately, there will likely be
+      // differences with the state of the form when navigating away even if the user
+      // hasn't actually changed any data.
+      // Setting a timeout, even zero, delays the initialization until other
+      // form elements have been modified already.
+      setTimeout(function(){window.__formData = $('inline').serialize(); }, 0);
+      // Record the state of the form again once the form is saved.
+      document.observe('xwiki:document:saved', function(event) {
+         window.__formData = $('inline').serialize();
+      });
+      $$("input[name='action_save']").invoke('observe', 'click', function(event) {
+        window.__formData = $('inline').serialize();
+      });
+      // Upon navigating away, check if anything has changed in the form and warn the user
+      // if it did.
+      window.addEventListener('beforeunload', function(event) {
+        if (window.__formData != $('inline').serialize()) {
+          var message = "$!escapetool.javascript($services.localization.render('phenotips.navigation.beforeunload.warning'))";
+          (event || window.event).returnValue = message;
+          return message;
+        }
+        return undefined;
+      });
+    }
+  };
+
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+})();</code>
+    </property>
+    <property>
+      <name>Warn the user before navigating away from an unsaved form</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>always</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
     <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
     <guid>8dda95b8-cd05-43f6-9f5b-c60c9566d28d</guid>
