@@ -51,9 +51,18 @@ public interface PrimaryEntity
     /**
      * Returns a reference to the document where the entity is stored.
      *
+     * @deprecated use {@link #getDocumentReference()} instead.
      * @return a valid document reference
      */
+    @Deprecated
     DocumentReference getDocument();
+
+    /**
+     * Returns a reference to the document where the entity is stored.
+     *
+     * @return a valid document reference
+     */
+    DocumentReference getDocumentReference();
 
     // TODO:
     // 1. rename getDocument()->getDocumentReference()

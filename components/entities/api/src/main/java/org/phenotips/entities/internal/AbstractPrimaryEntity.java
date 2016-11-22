@@ -75,6 +75,12 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
     @Override
     public DocumentReference getDocument()
     {
+        return this.getDocumentReference();
+    }
+
+    @Override
+    public DocumentReference getDocumentReference()
+    {
         return this.document.getDocumentReference();
     }
 
