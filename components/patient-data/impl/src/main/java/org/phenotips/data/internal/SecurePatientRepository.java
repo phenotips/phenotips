@@ -43,7 +43,8 @@ import org.slf4j.Logger;
 /**
  * Secure implementation of patient data access service which checks the user's access rights before performing an
  * operation. If the user is authorized, the actual work is done by the default {@link PatientRepository}
- * implementation. If the user is not authorized, a {@link SecurityException} is thrown.
+ * implementation and a read-only version of a Patient object is returned (implemented by {@link SecurePatient}).
+ * If the user is not authorized, a {@link SecurityException} is thrown.
  *
  * @version $Id$
  * @since 1.3M1
@@ -106,7 +107,8 @@ public class SecurePatientRepository implements PatientRepository
     {
         if (this.access.hasAccess(creator, Right.EDIT,
             this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
-            return this.internalService.create(creator != null ? creator.getProfileDocument() : null);
+            Patient patient = this.internalService.create(creator != null ? creator.getProfileDocument() : null);
+            return createSecurePatient(patient);
         }
         throw new SecurityException("User not authorized to create new patients");
     }
@@ -170,7 +172,7 @@ public class SecurePatientRepository implements PatientRepository
     public Patient load(DocumentModelBridge document) throws IllegalArgumentException
     {
         // If the caller already has access to the document, then it's safe to proceed
-        return this.internalService.load(document);
+        return createSecurePatient(this.internalService.load(document));
     }
 
     @Override
@@ -187,7 +189,7 @@ public class SecurePatientRepository implements PatientRepository
     private Patient checkAccess(Right right, Patient patient, User user)
     {
         if (patient != null && this.access.hasAccess(user, right, patient.getDocumentReference())) {
-            return patient;
+            return createSecurePatient(patient);
         } else if (patient != null) {
             this.logger.warn("Illegal access requested for patient [{}] by user [{}]", patient.getId(), user);
             throw new SecurityException("Unauthorized access");
@@ -205,5 +207,24 @@ public class SecurePatientRepository implements PatientRepository
         this.logger.warn("Illegal delete action requested for patient [{}] by user [{}]", id,
             this.userManager.getCurrentUser());
         throw new SecurityException("User not authorized to delete a patient");
+    }
+
+    /**
+     * Returns a SecurePatient wrapper around a given patient.
+     *
+     * TODO: Modify testing/change this method? The method is added and is made protected
+     *       for the sole purpose of simplifying testing and mocking:
+     *       - it is hard to test what patient is returned by the iterator if
+     *         "new SecurePatient(patient)" is used directly, since constructor can't be mocked,
+     *         and correctly mocking all dependencies to actually mock patien tcreation is hard.
+     *       - another "correct" way is to use some kind of SecurePatient factory, but static methods
+     *         can't be mocked as well, and a non-static method does not make sense
+     *
+     * @param patient a patient object
+     * @return a SecurePatient wrapper around the given patient
+     */
+    protected SecurePatient createSecurePatient(Patient patient)
+    {
+        return new SecurePatient(patient);
     }
 }

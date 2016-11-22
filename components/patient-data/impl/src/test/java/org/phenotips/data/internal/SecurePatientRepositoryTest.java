@@ -47,7 +47,9 @@ import org.mockito.MockitoAnnotations;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 /**
@@ -66,6 +68,9 @@ public class SecurePatientRepositoryTest
     private Patient patient;
 
     @Mock
+    private SecurePatient securePatient;
+
+    @Mock
     private User currentUser;
 
     private DocumentReference patientReference = new DocumentReference("xwiki", "data", "P0123456");
@@ -73,6 +78,8 @@ public class SecurePatientRepositoryTest
     private AuthorizationService access;
 
     private PatientRepository internalRepo;
+
+    private SecurePatientRepository componentUnderTest;
 
     @Before
     public void setup() throws ComponentLookupException
@@ -96,13 +103,17 @@ public class SecurePatientRepositoryTest
             this.mocker.getInstance(EntityReferenceResolver.TYPE_REFERENCE, "current");
         when(currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))
             .thenReturn(this.patientReference.getParent());
+
+        // mock SecurePatient creation
+        this.componentUnderTest = spy((SecurePatientRepository)this.mocker.getComponentUnderTest());
+        doReturn(this.securePatient).when(this.componentUnderTest).createSecurePatient(this.patient);
     }
 
     @Test
     public void getForwardsCallsWhenAuthorized() throws ComponentLookupException
     {
         when(this.access.hasAccess(this.currentUser, Right.VIEW, this.patientReference)).thenReturn(true);
-        Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().get("P0123456"));
+        Assert.assertSame(this.securePatient, this.componentUnderTest.get("P0123456"));
     }
 
     @Test
@@ -122,7 +133,7 @@ public class SecurePatientRepositoryTest
     public void getByNameForwardsCallsWhenAuthorized() throws ComponentLookupException
     {
         when(this.access.hasAccess(this.currentUser, Right.VIEW, this.patientReference)).thenReturn(true);
-        Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().getByName("Neuro123"));
+        Assert.assertSame(this.securePatient, this.componentUnderTest.getByName("Neuro123"));
     }
 
     @Test
@@ -143,7 +154,7 @@ public class SecurePatientRepositoryTest
     {
         when(this.access.hasAccess(this.currentUser, Right.EDIT, this.patientReference.getParent()))
             .thenReturn(true);
-        Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().create());
+        Assert.assertSame(this.securePatient, this.componentUnderTest.create());
     }
 
     @Test(expected = SecurityException.class)
@@ -158,7 +169,7 @@ public class SecurePatientRepositoryTest
     public void loadForwardsCalls() throws ComponentLookupException
     {
         XWikiDocument doc = new XWikiDocument(this.patientReference);
-        Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().load(doc));
+        Assert.assertSame(this.securePatient, this.componentUnderTest.load(doc));
     }
 
     @Test
@@ -177,10 +188,14 @@ public class SecurePatientRepositoryTest
         rawInput.add(p2);
 
         when(this.internalRepo.getAll()).thenReturn(rawInput.iterator());
-        Iterator<Patient> result = this.mocker.getComponentUnderTest().getAll();
+        SecurePatientIterator result = spy((SecurePatientIterator)this.mocker.getComponentUnderTest().getAll());
+
+        // mock SecurePatient creation
+        SecurePatient sp2 = mock(SecurePatient.class);
+        doReturn(sp2).when(result).createSecurePatient(p2);
 
         Assert.assertNotNull(result);
-        Assert.assertEquals(p2, result.next());
+        Assert.assertEquals(sp2, result.next());
         Assert.assertFalse(result.hasNext());
     }
 
