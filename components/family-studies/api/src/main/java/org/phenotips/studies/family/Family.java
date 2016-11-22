@@ -19,15 +19,13 @@ package org.phenotips.studies.family;
 
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
+import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.List;
 import java.util.Map;
-
-import org.json.JSONObject;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 
@@ -38,7 +36,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
  * @version $Id$
  * @since 1.4
  */
-public interface Family
+public interface Family extends PrimaryEntity
 {
     /** The XClass used for storing family data. */
     EntityReference CLASS_REFERENCE = new EntityReference("FamilyClass", EntityType.DOCUMENT,
@@ -52,19 +50,9 @@ public interface Family
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /**
-     * @return family id
-     */
-    String getId();
-
-    /**
      * @return the copy o family document held in memory by this Family instance.
      */
     XWikiDocument getXDocument();
-
-    /**
-     * @return reference to family document
-     */
-    DocumentReference getDocumentReference();
 
     /**
      * @return list of family members
@@ -87,13 +75,6 @@ public interface Family
      * @return true if a patient is a member of the family
      */
     boolean isMember(Patient patient);
-
-    /**
-     * Generates a JSON data structure that describes the family and its members.
-     *
-     * @return JSON with info about the family, each member and the current user's permissions.
-     */
-    JSONObject toJSON();
 
     /**
      * Retrieves medical reports for all family members.
