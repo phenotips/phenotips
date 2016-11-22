@@ -18,13 +18,17 @@
 package org.phenotips.data.permissions.script;
 
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
+import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
+import org.xwiki.security.authorization.Right;
+import org.xwiki.users.UserManager;
 
 import java.util.Collection;
 
@@ -44,6 +48,17 @@ public class PermissionsManagerScriptService implements ScriptService
     @Inject
     @Named("secure")
     private PermissionsManager manager;
+
+    @Inject
+    private PatientRepository patientRepository;
+
+    /** Used for obtaining the current user. */
+    @Inject
+    private UserManager userManager;
+
+    /** Used for checking access rights. */
+    @Inject
+    private AuthorizationService access;
 
     /**
      * Get the visibility options available, excluding {@link Visibility#isDisabled() disabled} ones.
@@ -92,13 +107,29 @@ public class PermissionsManagerScriptService implements ScriptService
         return this.manager.resolveAccessLevel(name);
     }
 
-    public PatientAccess getPatientAccess(Patient targetPatient)
+    public PatientAccess getPatientAccess(String targetPatientId)
     {
-        return this.manager.getPatientAccess(targetPatient);
+        // scripts have only access to a SecurePatient implementation of a Patient,
+        // which does not support all the functionality PatientAccess needs. So
+        // need to get the full Patient object here instead of taking it as an argument
+        //
+        // Since this is a script service, need to check access rights the same way SecurePatientReporistory does.
+        //
+        // TODO: rights management should be refactored so that less is done from velocity
+        //       and this method won't be needed any more
+
+        Patient patient = this.patientRepository.get(targetPatientId);
+        if (patient == null) {
+            return null;
+        }
+        if (!this.access.hasAccess(this.userManager.getCurrentUser(), Right.VIEW, patient.getDocumentReference())) {
+            return null;
+        }
+        return this.manager.getPatientAccess(patient);
     }
 
-    public void fireRightsUpdateEvent(Patient targetPatient)
+    public void fireRightsUpdateEvent(String targetPatientId)
     {
-        this.manager.fireRightsUpdateEvent(targetPatient.getId());
+        this.manager.fireRightsUpdateEvent(targetPatientId);
     }
 }
