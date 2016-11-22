@@ -150,7 +150,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
         try {
             XWikiContext context = this.provider.get();
             XWiki xwiki = context.getWiki();
-            xwiki.deleteDocument(xwiki.getDocument(family.getDocument(), context), context);
+            xwiki.deleteDocument(xwiki.getDocument(family.getXDocument(), context), context);
         } catch (XWikiException ex) {
             this.logger.error("Failed to delete family document [{}]: {}", family.getId(), ex.getMessage());
             return false;
@@ -268,7 +268,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
             throw new PTPedigreeContainesSamePatientMultipleTimesException(patientId);
         }
 
-        if (!this.setFamilyReference(patientDocument, family.getDocument(), context)) {
+        if (!this.setFamilyReference(patientDocument, family.getXDocument(), context)) {
             throw new PTInternalErrorException();
         }
         if (!savePatientDocument(patientDocument, "added to family " + family.getId(), context)) {
@@ -277,7 +277,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
 
         // Add member to the list of family members
         members.add(patientLinkString(patient));
-        BaseObject familyObject = family.getDocument().getXObject(Family.CLASS_REFERENCE);
+        BaseObject familyObject = family.getXDocument().getXObject(Family.CLASS_REFERENCE);
         familyObject.set(PhenotipsFamily.FAMILY_MEMBERS_FIELD, members, context);
 
         // only save family document if this add() is not performed as a part of a batch update
@@ -349,7 +349,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
 
         // Remove patient from family's members list
         members.remove(patientLinkString(patient));
-        BaseObject familyObject = family.getDocument().getXObject(Family.CLASS_REFERENCE);
+        BaseObject familyObject = family.getXDocument().getXObject(Family.CLASS_REFERENCE);
         familyObject.set(PhenotipsFamily.FAMILY_MEMBERS_FIELD, members, context);
 
         if (!batchUpdate) {
@@ -591,12 +591,12 @@ public class PhenotipsFamilyRepository implements FamilyRepository
             return false;
         }
 
-        BaseObject pedigreeObject = family.getDocument().getXObject(Pedigree.CLASS_REFERENCE);
+        BaseObject pedigreeObject = family.getXDocument().getXObject(Pedigree.CLASS_REFERENCE);
         pedigreeObject.set(Pedigree.IMAGE, ((pedigree == null) ? "" : pedigree.getImage(null)), context);
         pedigreeObject.set(Pedigree.DATA, ((pedigree == null) ? "" : pedigree.getData().toString()), context);
 
         // update proband ID every time pedigree is changed
-        BaseObject familyClassObject = family.getDocument().getXObject(Family.CLASS_REFERENCE);
+        BaseObject familyClassObject = family.getXDocument().getXObject(Family.CLASS_REFERENCE);
         if (familyClassObject != null) {
             String probandId = pedigree.getProbandId();
             if (!StringUtils.isEmpty(probandId)) {
@@ -613,7 +613,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
 
     private void setFamilyExternalId(String externalId, Family family, XWikiContext context)
     {
-        BaseObject familyObject = family.getDocument().getXObject(Family.CLASS_REFERENCE);
+        BaseObject familyObject = family.getXDocument().getXObject(Family.CLASS_REFERENCE);
         familyObject.set("external_id", externalId, context);
     }
 
@@ -633,7 +633,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     private synchronized boolean saveFamilyDocument(Family family, String documentHistoryComment, XWikiContext context)
     {
         try {
-            context.getWiki().saveDocument(family.getDocument(), documentHistoryComment, context);
+            context.getWiki().saveDocument(family.getXDocument(), documentHistoryComment, context);
         } catch (XWikiException e) {
             this.logger.error("Error saving family [{}] document for commit {}: [{}]",
                 family.getId(), documentHistoryComment, e.getMessage());

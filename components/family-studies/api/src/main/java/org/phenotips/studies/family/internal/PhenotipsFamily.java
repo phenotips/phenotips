@@ -97,7 +97,7 @@ public class PhenotipsFamily implements Family
     }
 
     @Override
-    public XWikiDocument getDocument()
+    public XWikiDocument getXDocument()
     {
         return this.familyDocument;
     }
