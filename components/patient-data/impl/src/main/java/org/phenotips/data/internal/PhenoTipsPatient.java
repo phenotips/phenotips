@@ -32,6 +32,7 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -69,9 +70,6 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(PhenoTipsPatient.class);
 
-    /** @see #getReporter() */
-    private DocumentReference reporter;
-
     /** The list of all the initialized data holders (PatientDataSerializer). */
     private Map<String, PatientDataController<?>> serializers = new TreeMap<>();
 
@@ -86,7 +84,6 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
     public PhenoTipsPatient(XWikiDocument doc)
     {
         super(doc);
-        this.reporter = doc.getCreatorReference();
 
         BaseObject data = doc.getXObject(CLASS_REFERENCE);
         if (data == null) {
@@ -151,7 +148,7 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
     @Override
     public DocumentReference getReporter()
     {
-        return this.reporter;
+        return this.getXDocument().getCreatorReference();
     }
 
     @Override
@@ -166,7 +163,7 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
                 features.add(feature);
             }
         }
-        return features;
+        return Collections.unmodifiableSet(features);
     }
 
     @Override
@@ -181,7 +178,7 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
                 disorders.add(disorder);
             }
         }
-        return disorders;
+        return Collections.unmodifiableSet(disorders);
     }
 
     @SuppressWarnings("unchecked")
