@@ -106,10 +106,10 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
     private DocumentReference reporter;
 
     /** @see #getFeatures() */
-    private Set<Feature> features = new TreeSet<>();
+    private Set<Feature> features;
 
     /** @see #getDisorders() */
-    private Set<Disorder> disorders = new TreeSet<>();
+    private Set<Disorder> disorders;
 
     /** The list of all the initialized data holders (PatientDataSerializer). */
     private Map<String, PatientDataController<?>> serializers = new TreeMap<>();
@@ -125,25 +125,14 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
     public PhenoTipsPatient(XWikiDocument doc)
     {
         super(doc);
-        this.reporter = doc.getCreatorReference();
 
         BaseObject data = doc.getXObject(CLASS_REFERENCE);
         if (data == null) {
+            this.logger.error("Patient [{}] does not have a PatientClass attached", this.getId());
             return;
         }
 
-        try {
-            loadFeatures(doc, data);
-            loadDisorders(doc, data);
-            loadSerializers();
-        } catch (XWikiException ex) {
-            this.logger.warn("Failed to access patient data for [{}]: {}", doc.getDocumentReference(), ex.getMessage());
-        }
-
-        // Read-only from now on
-        this.features = Collections.unmodifiableSet(this.features);
-        this.disorders = Collections.unmodifiableSet(this.disorders);
-
+        loadSerializers();
     }
 
     @Override
@@ -152,36 +141,55 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
         return CLASS_REFERENCE;
     }
 
-    private void loadFeatures(XWikiDocument doc, BaseObject data)
+    private void loadFeatures()
     {
-        @SuppressWarnings("unchecked")
-        Collection<BaseProperty<EntityReference>> fields = data.getFieldList();
-        for (BaseProperty<EntityReference> field : fields) {
-            if (field == null || !field.getName().matches("(?!extended_)(.*_)?phenotype")
-                || !ListProperty.class.isInstance(field)) {
-                continue;
-            }
-            ListProperty values = (ListProperty) field;
-            for (String value : values.getList()) {
-                if (StringUtils.isNotBlank(value)) {
-                    this.features.add(new PhenoTipsFeature(doc, values, value));
-                }
-            }
-        }
-    }
-
-    private void loadDisorders(XWikiDocument doc, BaseObject data) throws XWikiException
-    {
-        for (String property : DISORDER_PROPERTIES) {
-            ListProperty values = (ListProperty) data.get(property);
-            if (values != null) {
-                for (String value : values.getList()) {
-                    if (StringUtils.isNotBlank(value)) {
-                        this.disorders.add(new PhenoTipsDisorder(values, value));
+        this.features = new TreeSet<>();
+        try {
+            XWikiDocument doc = this.getXDocument();
+            BaseObject data = doc.getXObject(CLASS_REFERENCE);
+            if (data != null) {
+                @SuppressWarnings("unchecked")
+                Collection<BaseProperty<EntityReference>> fields = data.getFieldList();
+                for (BaseProperty<EntityReference> field : fields) {
+                    if (field == null || !field.getName().matches("(?!extended_)(.*_)?phenotype")
+                        || !ListProperty.class.isInstance(field)) {
+                        continue;
+                    }
+                    ListProperty values = (ListProperty) field;
+                    for (String value : values.getList()) {
+                        if (StringUtils.isNotBlank(value)) {
+                            this.features.add(new PhenoTipsFeature(doc, values, value));
+                        }
                     }
                 }
             }
+        } catch (Exception ex) {
+            this.logger.error("Error loading features for patient {}: [{}]", this.getId(), ex.getMessage(), ex);
         }
+        this.features = Collections.unmodifiableSet(this.features);
+    }
+
+    private void loadDisorders()
+    {
+        this.disorders = new TreeSet<>();
+        try {
+            BaseObject data = this.getXDocument().getXObject(CLASS_REFERENCE);
+            if (data != null) {
+                for (String property : DISORDER_PROPERTIES) {
+                    ListProperty values = (ListProperty) data.get(property);
+                    if (values != null) {
+                        for (String value : values.getList()) {
+                            if (StringUtils.isNotBlank(value)) {
+                                this.disorders.add(new PhenoTipsDisorder(values, value));
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            this.logger.error("Error loading disorders for patient {}: [{}]", this.getId(), ex.getMessage(), ex);
+        }
+        this.disorders = Collections.unmodifiableSet(this.disorders);
     }
 
     private void loadSerializers()
@@ -259,18 +267,24 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
     @Override
     public DocumentReference getReporter()
     {
-        return this.reporter;
+        return this.getXDocument().getCreatorReference();
     }
 
     @Override
     public Set<Feature> getFeatures()
     {
+        if (this.features == null) {
+            loadFeatures();
+        }
         return this.features;
     }
 
     @Override
     public Set<Disorder> getDisorders()
     {
+        if (this.disorders == null) {
+            loadDisorders();
+        }
         return this.disorders;
     }
 
@@ -294,7 +308,7 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
     private JSONArray featuresToJSON(Collection<String> selectedFields)
     {
         JSONArray featuresJSON = new JSONArray();
-        for (Feature phenotype : this.features) {
+        for (Feature phenotype : this.getFeatures()) {
             if (StringUtils.isBlank(phenotype.getId()) || !isFieldIncluded(selectedFields, phenotype.getType())) {
                 continue;
             }
@@ -309,7 +323,7 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
     private JSONArray nonStandardFeaturesToJSON(Collection<String> selectedFields)
     {
         JSONArray featuresJSON = new JSONArray();
-        for (Feature phenotype : this.features) {
+        for (Feature phenotype : this.getFeatures()) {
             if (StringUtils.isNotBlank(phenotype.getId()) || !isFieldIncluded(selectedFields, phenotype.getType())) {
                 continue;
             }
@@ -325,7 +339,7 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
     private JSONArray diseasesToJSON()
     {
         JSONArray diseasesJSON = new JSONArray();
-        for (Disorder disease : this.disorders) {
+        for (Disorder disease : this.getDisorders()) {
             JSONObject diseaseJSON = disease.toJSON();
             if (diseaseJSON != null) {
                 diseasesJSON.put(diseaseJSON);
@@ -426,7 +440,7 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
     private void updateMetaData(XWikiDocument doc, XWikiContext context) throws XWikiException
     {
         doc.removeXObjects(FeatureMetadatum.CLASS_REFERENCE);
-        for (Feature feature : this.features) {
+        for (Feature feature : this.getFeatures()) {
             @SuppressWarnings("unchecked")
             Map<String, FeatureMetadatum> metadataMap = (Map<String, FeatureMetadatum>) feature.getMetadata();
             if (metadataMap.isEmpty() && feature.getNotes().isEmpty()) {
@@ -448,7 +462,7 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
     private void updateCategories(XWikiDocument doc, XWikiContext context) throws XWikiException
     {
         doc.removeXObjects(PhenoTipsFeature.CATEGORY_CLASS_REFERENCE);
-        for (Feature feature : this.features) {
+        for (Feature feature : this.getFeatures()) {
             List<String> categories = feature.getCategories();
             if (categories.isEmpty()) {
                 continue;
