@@ -664,6 +664,13 @@
               <method>java.lang.String getServerProtocolVersion()</method>
               <justification>Improved handling of older push server protocol versions.</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/data/permissions/script/PermissionsManagerScriptService</className>
+              <differenceType>7005</differenceType>
+              <method>org.phenotips.data.permissions.PatientAccess getPatientAccess(org.phenotips.data.Patient)</method>
+              <to>org.phenotips.data.permissions.PatientAccess getPatientAccess(java.lang.String)</to>
+              <justification>after SecurePatient update this service now needs to get its own non-read-only copy of a patient</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
