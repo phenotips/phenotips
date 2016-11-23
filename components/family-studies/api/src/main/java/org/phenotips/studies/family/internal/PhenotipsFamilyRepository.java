@@ -34,6 +34,7 @@ import org.phenotips.studies.family.exceptions.PTNotEnoughPermissionsOnPatientEx
 import org.phenotips.studies.family.exceptions.PTPatientAlreadyInAnotherFamilyException;
 import org.phenotips.studies.family.exceptions.PTPatientNotInFamilyException;
 import org.phenotips.studies.family.exceptions.PTPedigreeContainesSamePatientMultipleTimesException;
+import org.phenotips.studies.family.groupManagers.PatientsInProjectManager;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
@@ -81,6 +82,9 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
 
     @Inject
     private PatientRepository patientRepository;
+
+    @Inject
+    private PatientsInProjectManager pipManager;
 
     @Inject
     private AuthorizationService authorizationService;
@@ -254,7 +258,10 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
                 throw new PTInvalidPatientIdException(null);
             }
 
-            // TODO getXDocument();
+            // TODO
+            // if (patient.getXDocument() == null) {
+            //     throw new PTInvalidPatientIdException(patient.getId());
+            // }
             String patientId = patient.getId();
             XWikiContext context = this.xcontextProvider.get();
             XWikiDocument patientDocument = patient.getXDocument();
@@ -263,23 +270,15 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
             }
 
             // Check if not already a member
-            List<String> members = family.getMembersIds();
-            if (members.contains(patientLinkString(patient))) {
+            Collection<Patient> members = this.pipManager.getMembers(family);
+            if (members.contains(patient)) {
                 this.logger.error("Patient [{}] already a member of the same family, not adding", patientId);
                 throw new PTPedigreeContainesSamePatientMultipleTimesException(patientId);
             }
 
-            if (!this.setFamilyReference(patientDocument, family.getXDocument(), context)) {
+            if (!this.pipManager.addMember(family, patient)) {
                 throw new PTInternalErrorException();
             }
-            if (!savePatientDocument(patientDocument, "added to family " + family.getId(), context)) {
-                throw new PTInternalErrorException();
-            }
-
-            // Add member to the list of family members
-            members.add(patientLinkString(patient));
-            BaseObject familyObject = family.getXDocument().getXObject(Family.CLASS_REFERENCE);
-            familyObject.set(PhenotipsFamily.FAMILY_MEMBERS_FIELD, members, context);
         }
     }
 
@@ -635,27 +634,6 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         DocumentReference familyReference = this.stringResolver.resolve(familyDocName, Family.DATA_SPACE);
 
         return familyReference;
-    }
-
-    /**
-     * Sets the reference to the family document in the patient document.
-     *
-     * @param patientDoc to set the family reference
-     * @param familyDoc family of the patient
-     * @param context context
-     * @return true if no problems, false in case of any error/sexception
-     */
-    private boolean setFamilyReference(XWikiDocument patientDoc, XWikiDocument familyDoc, XWikiContext context)
-    {
-        try {
-            BaseObject pointer = patientDoc.getXObject(Family.REFERENCE_CLASS_REFERENCE, true, context);
-            pointer.set(FAMILY_REFERENCE_FIELD, familyDoc.getDocumentReference().toString(), context);
-            return true;
-        } catch (Exception ex) {
-            this.logger.error("Could not add patient [{}] to family. Error setting family reference: []",
-                patientDoc.getId(), ex);
-            return false;
-        }
     }
 
     /**
