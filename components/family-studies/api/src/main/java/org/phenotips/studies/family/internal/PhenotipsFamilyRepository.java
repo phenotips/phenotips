@@ -45,6 +45,9 @@ import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -218,58 +221,65 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
     @Override
     public synchronized void addMember(Family family, Patient patient, User updatingUser) throws PTException
     {
-        this.addMember(family, patient, updatingUser, false);
+        String patientId = patient.getId();
+
+        this.checkValidity(family, Arrays.asList(patientId), updatingUser);
+        this.addAllMembers(family, Arrays.asList(patient), updatingUser);
+        this.updateFamilyPermissionsAndSave(family, "added " + patientId + " to the family");
+    }
+
+    private void updateFamilyPermissionsAndSave(Family family, String message) {
+        XWikiContext context = this.provider.get();
+        this.updateFamilyPermissions(family, context, false);
+        if (!saveFamilyDocument(family, message, context)) {
+            throw new PTInternalErrorException();
+        }
     }
 
     /**
-     * This method may be called either as a standalone invocation, or internally as part of family pedigree update. The
-     * latter invocation may add multiple patients (a "batch update")
+     * This method may be called either as a standalone invocation, or internally as part of family pedigree update.
+     * ({@link #checkValidity(Family, List, User)} and family saving is always done outside of this method.
+     *
+     * Updating permissions is an expensive operation which takes all patients into account, so it shouldn't be done
+     * after adding each patient. It should be done by the calling code.
      */
-    private void addMember(Family family, Patient patient, User updatingUser, boolean batchUpdate) throws PTException
+    private void addAllMembers(Family family, Collection<Patient> patients, User updatingUser) throws PTException
     {
         if (family == null) {
             throw new PTInvalidFamilyIdException(null);
         }
-        if (patient == null) {
-            throw new PTInvalidPatientIdException(null);
-        }
-        if (!batchUpdate) {
-            // when called as part of a batch update all permissions have already been checked;
-            // otherwise perform the check, which may throw some exceptiuon in case of problems
-            this.checkIfPatientCanBeAddedToFamily(family, patient, updatingUser);
-        }
 
-        String patientId = patient.getId();
-        XWikiContext context = this.xcontextProvider.get();
-        XWikiDocument patientDocument = patient.getXDocument();
-        if (patientDocument == null) {
-            throw new PTInvalidPatientIdException(patientId);
-        }
+        for (Patient patient : patients) {
+            if (patient == null) {
+                throw new PTInvalidPatientIdException(null);
+            }
 
-        // Check if not already a member
-        List<String> members = family.getMembersIds();
-        if (members.contains(patientLinkString(patient))) {
-            this.logger.error("Patient [{}] already a member of the same family, not adding", patientId);
-            throw new PTPedigreeContainesSamePatientMultipleTimesException(patientId);
-        }
+            // TODO getXDocument();
+            String patientId = patient.getId();
+            XWikiContext context = this.xcontextProvider.get();
+            XWikiDocument patientDocument = patient.getXDocument();
+            if (patientDocument == null) {
+                throw new PTInvalidPatientIdException(patientId);
+            }
 
-        if (!this.setFamilyReference(patientDocument, family.getXDocument(), context)) {
-            throw new PTInternalErrorException();
-        }
-        if (!savePatientDocument(patientDocument, "added to family " + family.getId(), context)) {
-            throw new PTInternalErrorException();
-        }
+            // Check if not already a member
+            List<String> members = family.getMembersIds();
+            if (members.contains(patientLinkString(patient))) {
+                this.logger.error("Patient [{}] already a member of the same family, not adding", patientId);
+                throw new PTPedigreeContainesSamePatientMultipleTimesException(patientId);
+            }
 
-        // Add member to the list of family members
-        members.add(patientLinkString(patient));
-        BaseObject familyObject = family.getXDocument().getXObject(Family.CLASS_REFERENCE);
-        familyObject.set(PhenotipsFamily.FAMILY_MEMBERS_FIELD, members, context);
-
-        // only save family document if this add() is not performed as a part of a batch update
-        if (!batchUpdate) {
-            if (!saveFamilyDocument(family, "added " + patientId + " to the family", context)) {
+            if (!this.setFamilyReference(patientDocument, family.getXDocument(), context)) {
                 throw new PTInternalErrorException();
             }
+            if (!savePatientDocument(patientDocument, "added to family " + family.getId(), context)) {
+                throw new PTInternalErrorException();
+            }
+
+            // Add member to the list of family members
+            members.add(patientLinkString(patient));
+            BaseObject familyObject = family.getXDocument().getXObject(Family.CLASS_REFERENCE);
+            familyObject.set(PhenotipsFamily.FAMILY_MEMBERS_FIELD, members, context);
         }
     }
 
@@ -444,11 +454,11 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         List<String> currentMembers = pedigree.extractIds();
 
         // Add new members to family
-        List<String> patientsToAdd = new LinkedList<>();
-        patientsToAdd.addAll(currentMembers);
-        patientsToAdd.removeAll(oldMembers);
+        List<String> patientIdsToAdd = new LinkedList<>();
+        patientIdsToAdd.addAll(currentMembers);
+        patientIdsToAdd.removeAll(oldMembers);
 
-        this.checkValidity(family, patientsToAdd, updatingUser);
+        this.checkValidity(family, patientIdsToAdd, updatingUser);
 
         XWikiContext context = this.xcontextProvider.get();
         context.setUserReference(updatingUser == null ? null : updatingUser.getProfileDocument());
@@ -472,10 +482,11 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
             this.removeMember(family, patient, updatingUser, true);
         }
 
-        for (String patientId : patientsToAdd) {
-            Patient patient = this.patientRepository.get(patientId);
-            this.addMember(family, patient, updatingUser, true);
+        List<Patient> patientsToAdd = new ArrayList<>(patientIdsToAdd.size());
+        for (String patientId : patientIdsToAdd) {
+            patientsToAdd.add(this.patientRepository.get(patientId));
         }
+        this.addAllMembers(family, patientsToAdd, updatingUser);
 
         if (firstPedigree && StringUtils.isEmpty(family.getExternalId())) {
             // default family identifier to proband last name - only on first pedigree creation
@@ -486,9 +497,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
             }
         }
 
-        if (!this.saveFamilyDocument(family, "Updated family from saved pedigree", context)) {
-            throw new PTInternalErrorException();
-        }
+        updateFamilyPermissionsAndSave(family, "Updated family from saved pedigree");
     }
 
     private void checkValidity(Family family, List<String> newMembers, User updatingUser) throws PTException
