@@ -170,11 +170,10 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
             return false;
         }
         try {
-            for (Patient patient : family.getMembers()) {
-                // remove the member without updating family document (use "batch mode")
-                // since we don't care about it as it will be removed anyway
-                this.removeMember(family, patient, updatingUser, true);
-            }
+            this.removeAllMembers(family, this.pifManager.getMembers(family), updatingUser);
+            // Remove the members without updating family document since we don't care about it as it will
+            // be removed anyway
+
             return true;
         } catch (PTException ex) {
             this.logger.error("Failed to unlink all patients for the family [{}]: {}", family.getId(), ex.getMessage());
@@ -232,6 +231,9 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         this.updateFamilyPermissionsAndSave(family, "added " + patientId + " to the family");
     }
 
+    /*
+     * This method should be called after the members of the family changed.
+     */
     private void updateFamilyPermissionsAndSave(Family family, String message) {
         XWikiContext context = this.provider.get();
         this.updateFamilyPermissions(family, context, false);
@@ -289,54 +291,44 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
     @Override
     public synchronized void removeMember(Family family, Patient patient, User updatingUser) throws PTException
     {
-        this.removeMember(family, patient, updatingUser, false);
+        this.checkIfPatientCanBeRemovedFromFamily(family, patient, updatingUser);
+        this.removeAllMembers(family, Arrays.asList(patient), updatingUser);
+        this.updateFamilyPermissionsAndSave(family, "removed " + patient.getId() + " from the family");
     }
 
-    private void removeMember(Family family, Patient patient, User updatingUser, boolean batchUpdate)
+    /*
+     * Calls to {@link #checkIfPatientCanBeRemovedFromFamily} and {@link #updateFamilyPermissionsAndSave}
+     * before and after, respectively, are the responsibility of the caller.
+     */
+    private void removeAllMembers(Family family, Collection<Patient> patients, User updatingUser)
         throws PTException
     {
         if (family == null) {
             throw new PTInvalidFamilyIdException(null);
         }
-        if (patient == null) {
-            throw new PTInvalidPatientIdException(null);
-        }
-        if (!batchUpdate) {
-            // when called as part of a batch update all permissions have already been checked;
-            // otherwise perform the check, which may throw some exceptiuon in case of problems
-            this.checkIfPatientCanBeRemovedFromFamily(family, patient, updatingUser);
-        }
 
-        String patientId = patient.getId();
-        XWikiContext context = this.xcontextProvider.get();
-        XWikiDocument patientDocument = patient.getXDocument();
-        if (patientDocument == null) {
-            throw new PTInvalidPatientIdException(patientId);
-        }
+        Collection<Patient> members = this.pifManager.getMembers(family);
 
-        List<String> members = family.getMembersIds();
-        if (!members.contains(patientLinkString(patient))) {
-            this.logger.error("Can't remove patient [{}] from framily [{}]: patient not a member of the family",
-                patientId, family.getId());
-            throw new PTPatientNotInFamilyException(patientId);
-        }
+        for (Patient patient : patients) {
+            if (patient == null) {
+                throw new PTInvalidPatientIdException(null);
+            }
 
-        // Remove reference to a family from patient document
-        if (!this.removeFamilyReference(patientDocument)) {
-            throw new PTInternalErrorException();
-        }
-        if (!savePatientDocument(patientDocument, "removed from family", context)) {
-            throw new PTInternalErrorException();
-        }
+            // TODO
+            // if (patient.getXDocument() == null) {
+            //    throw new PTInvalidPatientIdException(patientId);
+            // }
+            String patientId = patient.getId();
+            XWikiContext context = this.xcontextProvider.get();
+            XWikiDocument patientDocument = patient.getXDocument();
+            if (patientDocument == null) {
+                throw new PTInvalidPatientIdException(patientId);
+            }
 
-        // Remove patient from the pedigree
-        Pedigree pedigree = family.getPedigree();
-        if (pedigree != null) {
-            pedigree.removeLink(patientId);
-            if (!this.setPedigreeObject(family, pedigree, context)) {
-                this.logger.error("Could not remove patient [{}] from pedigree from the family [{}]",
+            if (!members.contains(patient)) {
+                this.logger.error("Can't remove patient [{}] from family [{}]: patient not a member of the family",
                     patientId, family.getId());
-                throw new PTInternalErrorException();
+                throw new PTPatientNotInFamilyException(patientId);
             }
         }
 
@@ -348,7 +340,21 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         if (!batchUpdate) {
             if (!saveFamilyDocument(family, "removed " + patientId + " from the family", context)) {
                 throw new PTInternalErrorException();
+
+            // Remove patient from the pedigree
+            Pedigree pedigree = family.getPedigree();
+            if (pedigree != null) {
+                pedigree.removeLink(patientId);
+                if (!this.setPedigreeObject(family, pedigree, context)) {
+                    this.logger.error("Could not remove patient [{}] from pedigree from the family [{}]",
+                        patientId, family.getId());
+                    throw new PTInternalErrorException();
+                }
             }
+        }
+
+        if (!this.pifManager.removeAllMembers(family, patients)) {
+            throw new PTInternalErrorException();
         }
     }
 
@@ -435,6 +441,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         }
     }
 
+    // TODO Change to work with Collection<Patient>
     private void checkIfPatientCanBeRemovedFromFamily(Family family, Patient patient, User updatingUser)
         throws PTException
     {
@@ -475,15 +482,18 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         this.setPedigreeObject(family, pedigree, context);
 
         // Removed members who are no longer in the family
-        List<String> patientsToRemove = new LinkedList<>();
-        patientsToRemove.addAll(oldMembers);
-        patientsToRemove.removeAll(currentMembers);
-        for (String patientId : patientsToRemove) {
+        Collection<String> patientIdsToRemove = new LinkedList<>();
+        patientIdsToRemove.addAll(oldMembers);
+        patientIdsToRemove.removeAll(currentMembers);
+
+        Collection<Patient> patientsToRemove = new ArrayList<>(patientIdsToRemove.size());
+        for (String patientId : patientIdsToRemove) {
             Patient patient = this.patientRepository.get(patientId);
-            // remove the memebr and update patient document, but don't write family document to disk yet
-            // and don't update permisisons (that will be done once afdter all patients are added/removed)
-            this.removeMember(family, patient, updatingUser, true);
+            this.checkIfPatientCanBeRemovedFromFamily(family, patient, updatingUser);
+            patientsToRemove.add(patient);
         }
+        this.removeAllMembers(family, patientsToRemove, updatingUser);
+        this.removeAllMembers(family, patientsToRemove, updatingUser);
 
         List<Patient> patientsToAdd = new ArrayList<>(patientIdsToAdd.size());
         for (String patientId : patientIdsToAdd) {
@@ -503,6 +513,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         updateFamilyPermissionsAndSave(family, "Updated family from saved pedigree");
     }
 
+    // TODO change to work with Collection<Patient> newMembers
     private void checkValidity(Family family, List<String> newMembers, User updatingUser) throws PTException
     {
         // Checks that current user has edit permissions on family
