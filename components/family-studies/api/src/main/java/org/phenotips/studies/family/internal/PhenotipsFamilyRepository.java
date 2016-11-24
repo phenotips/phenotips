@@ -20,6 +20,8 @@ package org.phenotips.studies.family.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.Owner;
+import org.phenotips.entities.PrimaryEntityManager;
+import org.phenotips.entities.internal.AbstractPrimaryEntityManager;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
@@ -70,7 +72,8 @@ import com.xpn.xwiki.objects.BaseObject;
  * @version $Id$
  * @since 1.4
  */
-@Component(roles = FamilyRepository.class)
+@Component(roles = {FamilyRepository.class, PrimaryEntityManager.class})
+@Named("Family")
 @Singleton
 public class PhenotipsFamilyRepository extends FamilyEntityManager implements FamilyRepository
 {
@@ -628,45 +631,39 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         return familyReference;
     }
 
-    /*
-     * Creates a new document for the family. Only handles XWiki side and no PhenotipsFamily is created.
-     */
-    private synchronized XWikiDocument createFamilyDocument(User creator)
-        throws IllegalArgumentException, QueryException, XWikiException
+    @Override
+    protected String getIdPrefix()
     {
-        XWikiContext context = this.provider.get();
-        XWiki wiki = context.getWiki();
-        long nextId = getLastUsedId() + 1;
-        String nextStringId = String.format("%s%07d", PREFIX, nextId);
+        return PREFIX;
+    }
 
-        EntityReference newFamilyRef =
-            new EntityReference(nextStringId, EntityType.DOCUMENT, Family.DATA_SPACE);
-        XWikiDocument newFamilyDoc = wiki.getDocument(newFamilyRef, context);
-        if (!newFamilyDoc.isNew()) {
-            throw new IllegalArgumentException("The new family id was already taken.");
+    @Override
+    public synchronized Family create(DocumentReference creator)
+    {
+        Family newFamily = null;
+
+        try {
+            XWikiContext context = this.xcontextProvider.get();
+            newFamily = super.create(creator);
+            int familyID = Integer.parseInt(newFamily.getDocumentReference().getName().replaceAll("\\D++", ""));
+
+            // TODO newFamily.getXDocument();
+            XWikiDocument familyXDocument = (XWikiDocument) this.bridge.getDocument(newFamily.getDocumentReference());
+
+            BaseObject ownerObject = familyXDocument.newXObject(Owner.CLASS_REFERENCE, context);
+
+            // FIXME is this the right way to do that?
+            String ownerString = creator == null ? "" : this.entityReferenceSerializer.serialize(creator);
+            ownerObject.set("owner", ownerString, context);
+
+            BaseObject familyObject = familyXDocument.getXObject(Family.CLASS_REFERENCE);
+            familyObject.set("identifier", familyID, context);
+
+            context.getWiki().saveDocument(familyXDocument, context);
+        } catch (Exception e) {
+            this.logger.error("Could not create a new family document: {}", e.getMessage());
         }
-
-        // Copying all objects from template to family
-        newFamilyDoc.readFromTemplate(
-            this.entityReferenceResolver.resolve(FAMILY_TEMPLATE), context);
-
-        // Adding additional values to family
-        BaseObject ownerObject = newFamilyDoc.newXObject(Owner.CLASS_REFERENCE, context);
-        ownerObject.set("owner", creator == null ? "" : creator.getId(), context);
-
-        BaseObject familyObject = newFamilyDoc.getXObject(Family.CLASS_REFERENCE);
-        familyObject.set("identifier", nextId, context);
-
-        if (creator != null) {
-            DocumentReference creatorRef = creator.getProfileDocument();
-            newFamilyDoc.setCreatorReference(creatorRef);
-            newFamilyDoc.setAuthorReference(creatorRef);
-            newFamilyDoc.setContentAuthorReference(creatorRef);
-        }
-
-        wiki.saveDocument(newFamilyDoc, context);
-
-        return newFamilyDoc;
+        return newFamily;
     }
 
     /*
@@ -700,5 +697,11 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         XWikiContext context = this.xcontextProvider.get();
         XWiki wiki = context.getWiki();
         return wiki.getDocument(docRef, context);
+    }
+
+    @Override
+    public EntityReference getDataSpace()
+    {
+        return Family.DATA_SPACE;
     }
 }
