@@ -85,9 +85,18 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntity, E extends Pr
      * Removes all members from a group.
      *
      * @param group to remove members from
-     * @return true if successul
+     * @return true if successful
      */
     boolean removeAllMembers(G group);
+
+    /**
+     * Removes all members in {@code members} from {@code group}.
+     *
+     * @param group to remove members from
+     * @param members a collection of members to remove
+     * @return true if successful
+     */
+    boolean removeAllMembers(G group, Collection<E> members);
 
     /**
      * Removed the member {@code member} from all the groups it is a member of.
