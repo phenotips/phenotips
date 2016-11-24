@@ -27,11 +27,11 @@ import org.xwiki.model.reference.EntityReference;
 /**
  * @version $Id$
  */
-public class PatientsInProjectManager
+public class PatientsInFamilyManager
     extends AbstractExternalPrimaryEntityGroupManager<Family, Patient>
     implements PrimaryEntityGroupManager<Family, Patient>
 {
-    protected PatientsInProjectManager(EntityReference groupEntityReference, EntityReference memberEntityReference)
+    protected PatientsInFamilyManager(EntityReference groupEntityReference, EntityReference memberEntityReference)
     {
         super(groupEntityReference, memberEntityReference);
     }
