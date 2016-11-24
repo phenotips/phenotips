@@ -253,6 +253,8 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
             throw new PTInvalidFamilyIdException(null);
         }
 
+        Collection<Patient> members = this.pifManager.getMembers(family);
+
         for (Patient patient : patients) {
             if (patient == null) {
                 throw new PTInvalidPatientIdException(null);
@@ -270,16 +272,18 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
             }
 
             // Check if not already a member
-            Collection<Patient> members = this.pifManager.getMembers(family);
             if (members.contains(patient)) {
                 this.logger.error("Patient [{}] already a member of the same family, not adding", patientId);
                 throw new PTPedigreeContainesSamePatientMultipleTimesException(patientId);
             }
-
-            if (!this.pifManager.addMember(family, patient)) {
-                throw new PTInternalErrorException();
-            }
         }
+
+        if (!this.pifManager.addAllMembers(family, patients)) {
+            // TODO what if some members could not be added? rollback?
+            // It can be implemented either here or in entities, for handling a more general case.
+            throw new PTInternalErrorException();
+        }
+
     }
 
     @Override
