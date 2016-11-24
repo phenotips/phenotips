@@ -167,9 +167,13 @@ public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntity,
     @Override
     public boolean removeAllMembers(G group)
     {
+        return this.removeAllMembers(group, this.getMembers(group));
+    }
+
+    @Override
+    public boolean removeAllMembers(G group, Collection<E> members) {
         boolean success = true;
-        Collection<E> existingMembers = this.getMembers(group);
-        for (E member : existingMembers) {
+        for (E member : members) {
             if (!this.removeMember(group, member)) {
                 success = false;
             }
