@@ -170,7 +170,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
             return false;
         }
         try {
-            this.removeAllMembers(family, this.pifManager.getMembers(family), updatingUser);
+            this.removeAllMembers(family, this.pifManager.getMembers(family));
             // Remove the members without updating family document since we don't care about it as it will
             // be removed anyway
 
@@ -227,7 +227,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         String patientId = patient.getId();
 
         this.checkValidity(family, Arrays.asList(patientId), updatingUser);
-        this.addAllMembers(family, Arrays.asList(patient), updatingUser);
+        this.addAllMembers(family, Arrays.asList(patient));
         this.updateFamilyPermissionsAndSave(family, "added " + patientId + " to the family");
     }
 
@@ -249,7 +249,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
      * Updating permissions is an expensive operation which takes all patients into account, so it shouldn't be done
      * after adding each patient. It should be done by the calling code.
      */
-    private void addAllMembers(Family family, Collection<Patient> patients, User updatingUser) throws PTException
+    private void addAllMembers(Family family, Collection<Patient> patients) throws PTException
     {
         if (family == null) {
             throw new PTInvalidFamilyIdException(null);
@@ -292,7 +292,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
     public synchronized void removeMember(Family family, Patient patient, User updatingUser) throws PTException
     {
         this.checkIfPatientCanBeRemovedFromFamily(family, patient, updatingUser);
-        this.removeAllMembers(family, Arrays.asList(patient), updatingUser);
+        this.removeAllMembers(family, Arrays.asList(patient));
         this.updateFamilyPermissionsAndSave(family, "removed " + patient.getId() + " from the family");
     }
 
@@ -300,7 +300,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
      * Calls to {@link #checkIfPatientCanBeRemovedFromFamily} and {@link #updateFamilyPermissionsAndSave}
      * before and after, respectively, are the responsibility of the caller.
      */
-    private void removeAllMembers(Family family, Collection<Patient> patients, User updatingUser)
+    private void removeAllMembers(Family family, Collection<Patient> patients)
         throws PTException
     {
         if (family == null) {
@@ -356,14 +356,6 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         if (!this.pifManager.removeAllMembers(family, patients)) {
             throw new PTInternalErrorException();
         }
-    }
-
-    /**
-     * Returns string as stored in the family members list.
-     */
-    private String patientLinkString(Patient patient)
-    {
-        return patient.getId();
     }
 
     @Override
@@ -492,14 +484,13 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
             this.checkIfPatientCanBeRemovedFromFamily(family, patient, updatingUser);
             patientsToRemove.add(patient);
         }
-        this.removeAllMembers(family, patientsToRemove, updatingUser);
-        this.removeAllMembers(family, patientsToRemove, updatingUser);
+        this.removeAllMembers(family, patientsToRemove);
 
         List<Patient> patientsToAdd = new ArrayList<>(patientIdsToAdd.size());
         for (String patientId : patientIdsToAdd) {
             patientsToAdd.add(this.patientRepository.get(patientId));
         }
-        this.addAllMembers(family, patientsToAdd, updatingUser);
+        this.addAllMembers(family, patientsToAdd);
 
         if (firstPedigree && StringUtils.isEmpty(family.getExternalId())) {
             // default family identifier to proband last name - only on first pedigree creation
@@ -604,20 +595,6 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         familyObject.set("external_id", externalId, context);
     }
 
-    private boolean savePatientDocument(XWikiDocument patientDocument, String documentHistoryComment,
-        XWikiContext context)
-    {
-        try {
-            patientDocument.setAuthorReference(context.getUserReference());
-            context.getWiki().saveDocument(patientDocument, documentHistoryComment, context);
-        } catch (XWikiException e) {
-            this.logger.error("Error saving patient [{}] document for commit {}: [{}]",
-                patientDocument.getId(), documentHistoryComment, e.getMessage());
-            return false;
-        }
-        return true;
-    }
-
     private synchronized boolean saveFamilyDocument(Family family, String documentHistoryComment, XWikiContext context)
     {
         try {
@@ -651,25 +628,45 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         return familyReference;
     }
 
-    /**
-     * Removes a family reference from a patient.
-     *
-     * @param patientDoc to set the family reference
-     * @return true if successful
+    /*
+     * Creates a new document for the family. Only handles XWiki side and no PhenotipsFamily is created.
      */
-    private boolean removeFamilyReference(XWikiDocument patientDoc)
+    private synchronized XWikiDocument createFamilyDocument(User creator)
+        throws IllegalArgumentException, QueryException, XWikiException
     {
-        try {
-            BaseObject pointer = patientDoc.getXObject(Family.REFERENCE_CLASS_REFERENCE);
-            if (pointer != null) {
-                return patientDoc.removeXObject(pointer);
-            }
-            return true;
-        } catch (Exception ex) {
-            this.logger.error("Could not remove patient [{}] from family. Error removing family reference: []",
-                patientDoc.getId(), ex);
-            return false;
+        XWikiContext context = this.provider.get();
+        XWiki wiki = context.getWiki();
+        long nextId = getLastUsedId() + 1;
+        String nextStringId = String.format("%s%07d", PREFIX, nextId);
+
+        EntityReference newFamilyRef =
+            new EntityReference(nextStringId, EntityType.DOCUMENT, Family.DATA_SPACE);
+        XWikiDocument newFamilyDoc = wiki.getDocument(newFamilyRef, context);
+        if (!newFamilyDoc.isNew()) {
+            throw new IllegalArgumentException("The new family id was already taken.");
         }
+
+        // Copying all objects from template to family
+        newFamilyDoc.readFromTemplate(
+            this.entityReferenceResolver.resolve(FAMILY_TEMPLATE), context);
+
+        // Adding additional values to family
+        BaseObject ownerObject = newFamilyDoc.newXObject(Owner.CLASS_REFERENCE, context);
+        ownerObject.set("owner", creator == null ? "" : creator.getId(), context);
+
+        BaseObject familyObject = newFamilyDoc.getXObject(Family.CLASS_REFERENCE);
+        familyObject.set("identifier", nextId, context);
+
+        if (creator != null) {
+            DocumentReference creatorRef = creator.getProfileDocument();
+            newFamilyDoc.setCreatorReference(creatorRef);
+            newFamilyDoc.setAuthorReference(creatorRef);
+            newFamilyDoc.setContentAuthorReference(creatorRef);
+        }
+
+        wiki.saveDocument(newFamilyDoc, context);
+
+        return newFamilyDoc;
     }
 
     /*
