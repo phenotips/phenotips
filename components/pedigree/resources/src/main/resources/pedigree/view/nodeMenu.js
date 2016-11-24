@@ -24,6 +24,7 @@
 define([
         "pedigree/disorder",
         "pedigree/hpoTerm",
+        "pedigree/gene",
         "pedigree/pedigreeDate",
         "pedigree/model/helpers",
         "pedigree/view/datepicker",
@@ -32,6 +33,7 @@ define([
     ], function(
         Disorder,
         HPOTerm,
+        Gene,
         PedigreeDate,
         Helpers,
         DatePicker,
@@ -154,22 +156,48 @@ define([
                     nameElement && (nameElement.innerText = name);
                 });
             }.bind(this);
-            document.observe('hpoTerm:name', function(event) {
+            document.observe('term:name', function(event) {
                 if (!event.memo || !event.memo.id || !event.memo.name) {
                     return;
                 }
                 _this._updateHPOTerm(event.memo.id, event.memo.name);
             });
 
-            // Update gene colors
-            this._updateGeneColor = function(container, id, color) {
-                container.select('li input[value="' + id + '"]').each(function(item) {
-                    var colorBubble = item.up('li').down('.abnormality-color');
-                    if (!colorBubble) {
-                        colorBubble = new Element('span', {'class' : 'abnormality-color'});
-                        item.up('li').insert({top : colorBubble});
+            // Update gene: maybe only the color, maybe the symbol, maybe ID has changed
+            //              (when old ID was actually the symbol and an ensemble id was found for it)
+            this._updateGene = function(container, oldid, newid, symbol, color) {
+                // expected container HTML stucture:
+                // <li>
+                //   <span class="abnormality-color" style="background: rgb(nn,nn,nn);"></span>
+                //   <label class="accepted-suggestion" for="candidate_genes_ENSG00000213281">
+                //     <input type="hidden" name="candidate_genes" id="candidate_genes_ENSG00000213281" value="ENSG00000213281">
+                //     <span class="value">NRAS</span>
+                //   </label>
+                // </li>
+                container.select('li input[value="' + oldid + '"]').each(function(input_item) {
+                    if (color) {
+                        var colorBubble = input_item.up('li').down('.abnormality-color');
+                        if (!colorBubble) {
+                            colorBubble = new Element('span', {'class' : 'abnormality-color'});
+                            input_item.up('li').insert({top : colorBubble});
+                        }
+                        colorBubble.setStyle({background : color});
                     }
-                    colorBubble.setStyle({background : color});
+                    if (newid != oldid) {
+                        // need to update
+                        // 1) for="..._genes_OLDID" to for="..._genes_NEWID"
+                        // 2) <input id="..._genes_OLDID" to <input id="..._genes_NEWID"
+                        // 3) <input value="OLDID" to value="NEWID"
+                        input_item.value = newid;
+
+                        var oldCompleteId = input_item.id;
+                        var newCompleteId = oldCompleteId.replace(oldid, newid);
+                        input_item.id = newCompleteId;
+                        input_item.up('label').for = newCompleteId;
+                    }
+                    if (symbol != null) {
+                        input_item.up('label').down('span').innerHTML = symbol;
+                    }
                 });
             }.bind(this);
             document.observe('gene:color', function(event) {
@@ -178,9 +206,24 @@ define([
                 }
                 try {
                     var container = $$('.field-' + event.memo.prefix + "_genes")[0];
-                    _this._updateGeneColor(container, event.memo.id, event.memo.color);
+                    _this._updateGene(container, event.memo.id, event.memo.id, null, event.memo.color);
                 } catch (err) {
-                    // in case $$ returns nothing
+                    //in case of any CSS selector/DOM manipulation errors
+                }
+            });
+            document.observe('gene:loaded', function(event) {
+                if (!event.memo || !event.memo.oldid || !event.memo.newid || !event.memo.symbol) {
+                    return;
+                }
+                try {
+                    // need to update all gene fields, as more than one field may have the gene
+                    // (find all elements which start with "field-" and end with "_genes")
+                    var containers = $$("div[class^='field-'][class$='_genes']");
+                    for (var i = 0; i < containers.length; i++) {
+                        _this._updateGene(containers[i], event.memo.oldid, event.memo.newid, event.memo.symbol, null);
+                    }
+                } catch (err) {
+                    //in case of any CSS selector/DOM manipulation errors
                 }
             });
         },
@@ -307,7 +350,7 @@ define([
                         noresults: "No matching terms",
                         resultsParameter : "docs",
                         json: true,
-                        resultId : "symbol",
+                        resultId : "id",
                         resultValue : "symbol",
                         resultInfo : {},
                         enableHierarchy: false,
@@ -761,7 +804,7 @@ define([
                     var container = this.up('.field-box');
                     if (container) {
                         container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
-                        results.push(item.next('.value') && item.next('.value').firstChild.nodeValue || item.value);
+                            results.push({"id": item.value, "gene": item.next('.value') && item.next('.value').firstChild.nodeValue || item.value});
                         });
                     }
                     return [results];
@@ -1299,8 +1342,8 @@ define([
                     target._suggestPicker.clearAcceptedList();
                     if (values) {
                         values.each(function(v) {
-                            target._suggestPicker.addItem(v, v, '');
-                            _this._updateGeneColor(container, v, editor.getGeneColor(v, _this.targetNode.getID()));
+                            target._suggestPicker.addItem(v.id, v.gene, '');
+                            _this._updateGene(container, v.id, v.id, v.gene, editor.getGeneColor(v.id, _this.targetNode.getID()));
                         })
                     }
                     target._silent = false;

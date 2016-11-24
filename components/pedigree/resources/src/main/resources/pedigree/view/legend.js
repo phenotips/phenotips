@@ -12,7 +12,9 @@ define([
     ){
     var Legend = Class.create( {
 
-        initialize: function(title, droppableName, allowDrop, dropOnGroupNodes) {
+        initialize: function(title, droppableName, allowDrop, dropOnGroupNodes, hideLegend) {
+            this._invisible = hideLegend;
+
             this._affectedNodes  = {};     // for each object: the list of affected person nodes
 
             this._objectColors = {};       // for each object: the corresponding object color
@@ -188,7 +190,7 @@ define([
          * @param {Number} nodeID ID of the Person who has this object associated with it
          */
         addCase: function(id, name, nodeID) {
-            if(Object.keys(this._affectedNodes).length == 0) {
+            if(!this._invisible && Object.keys(this._affectedNodes).length == 0) {
                 this._legendBox.show();
                 !editor.getPreferencesManager().getConfigurationOption("hideDraggingHint") &&
                     this._legendInfo && this._legendInfo.show();

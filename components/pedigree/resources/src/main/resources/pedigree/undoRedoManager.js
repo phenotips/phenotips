@@ -94,6 +94,17 @@ define([
         },
 
         /**
+         * Some operations should not be "undoable" and should be merged with the previous state which will
+         * be re-done and un-done as an atomic event.
+         *
+         * This method takes the current state of pedigree and makes the last undo/redo history state be equal to this state.
+         */
+        updateLastState: function() {
+            this._stack[this._currentState - 1].serializedState = editor.getSaveLoadEngine().serialize();
+            this._stack[this._currentState - 1].eventToGetToThisState = null;
+        },
+
+        /**
          * Pushes a new state to the end of the action stack
          *
          *   eventToGetToThisState - optional. Event which should bring the graph from the previous state to this tsate

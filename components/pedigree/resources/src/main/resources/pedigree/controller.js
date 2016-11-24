@@ -34,13 +34,13 @@ define([
 
         handleUndo: function(event)
         {
-            console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
+            //console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
             editor.getUndoRedoManager().undo();
         },
 
         handleRedo: function(event)
         {
-            console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
+            //console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
             editor.getUndoRedoManager().redo();
         },
 
@@ -339,9 +339,11 @@ define([
                     if (propertySetFunction == "setCarrierStatus") {
                         setUndoEventPropertyIfNotSet("setDisorders", node.getDisorders().slice(0));
                     }
-                    if (propertySetFunction == "setCausalGenes" || propertySetFunction == "setCandidateGenes") {
+                    if (propertySetFunction == "setCausalGenes" || propertySetFunction == "setCandidateGenes"
+                        || propertySetFunction == "setRejectedGenes") {
                         setUndoEventPropertyIfNotSet("setCausalGenes", node.getCausalGenes());
                         setUndoEventPropertyIfNotSet("setCandidateGenes", node.getCandidateGenes());
+                        setUndoEventPropertyIfNotSet("setRejectedGenes", node.getRejectedGenes());
                     }
 
                     node[propertySetFunction](propValue);
@@ -482,7 +484,9 @@ define([
 
             //console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
             //console.log("Undo event: " + Helpers.stringifyObject(undoEvent));
-            if (!event.memo.noUndoRedo && changedValue) {
+            if (event.memo.replaceLastUndoState) {
+                editor.getUndoRedoManager().updateLastState();
+            } else if (!event.memo.noUndoRedo && changedValue) {
                 editor.getUndoRedoManager().addState( event, undoEvent );
             }
 
