@@ -82,7 +82,8 @@ public class HpoAnnotationSourceParser
             for (final CSVRecord row : CSVFormat.TDF.withHeader().parse(in)) {
                 final String termName = row.get(0);
                 final TermData termData = this.data.get(termName);
-                linkGeneToPhenotype(termData, row.get(3));
+                final String geneSymbol = row.get(3);
+                linkGeneToPhenotype(termData, geneSymbol);
             }
         } catch (final IOException e) {
             this.logger.error("Failed to load HPO-Gene links: {}", e.getMessage(), e);
@@ -92,12 +93,12 @@ public class HpoAnnotationSourceParser
     /**
      * Links a gene to its corresponding HPO term.
      * @param termData HPO term data
-     * @param geneName the name of the gene to be added to the HPO term data set
+     * @param geneSymbol the name of the gene to be added to the HPO term data set
      */
-    private void linkGeneToPhenotype(@Nullable final TermData termData, @Nullable final String geneName)
+    private void linkGeneToPhenotype(@Nullable final TermData termData, @Nullable final String geneSymbol)
     {
-        if (termData != null && StringUtils.isNotBlank(geneName)) {
-            termData.addTo(GENES, geneName);
+        if (termData != null && StringUtils.isNotBlank(geneSymbol)) {
+            termData.addTo(GENES, geneSymbol);
         }
     }
 
