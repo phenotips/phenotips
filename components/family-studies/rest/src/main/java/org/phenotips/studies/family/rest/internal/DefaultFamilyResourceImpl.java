@@ -76,7 +76,7 @@ public class DefaultFamilyResourceImpl extends XWikiResource implements FamilyRe
     public Response getFamily(String id)
     {
         this.logger.warn("Retrieving family record [{}] via REST", id);
-        Family family = this.repository.getFamilyById(id);
+        Family family = this.repository.get(id);
         if (family == null) {
             this.logger.warn(NO_SUCH_FAMILY_ERROR_MESSAGE, id);
             return Response.status(Status.NOT_FOUND).build();
@@ -96,7 +96,7 @@ public class DefaultFamilyResourceImpl extends XWikiResource implements FamilyRe
     public Response deleteFamily(String id, Boolean deleteMembers)
     {
         this.logger.warn("Deleting family record [{}] via REST, deleteAllMembers = [{}]", id, deleteMembers);
-        Family family = this.repository.getFamilyById(id);
+        Family family = this.repository.get(id);
         if (family == null) {
             this.logger.warn(NO_SUCH_FAMILY_ERROR_MESSAGE, id);
             return Response.status(Status.NOT_FOUND).build();

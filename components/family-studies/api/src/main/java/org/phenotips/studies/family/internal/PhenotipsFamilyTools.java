@@ -84,7 +84,7 @@ public class PhenotipsFamilyTools implements FamilyTools
     @Override
     public Family getFamilyById(String familyId)
     {
-        Family family = this.familyRepository.getFamilyById(familyId);
+        Family family = this.familyRepository.get(familyId);
         if (family == null) {
             return null;
         }
@@ -166,7 +166,7 @@ public class PhenotipsFamilyTools implements FamilyTools
     @Override
     public boolean deleteFamily(String familyId, boolean deleteAllMembers)
     {
-        Family family = this.familyRepository.getFamilyById(familyId);
+        Family family = this.familyRepository.get(familyId);
         if (family == null) {
             return false;
         }
@@ -183,7 +183,7 @@ public class PhenotipsFamilyTools implements FamilyTools
     @Override
     public boolean currentUserCanDeleteFamily(String familyId, boolean deleteAllMembers)
     {
-        Family family = this.familyRepository.getFamilyById(familyId);
+        Family family = this.familyRepository.get(familyId);
         if (family == null) {
             return false;
         }
@@ -194,13 +194,13 @@ public class PhenotipsFamilyTools implements FamilyTools
     @Override
     public boolean familyExists(String familyId)
     {
-        return this.familyRepository.getFamilyById(familyId) != null;
+        return this.familyRepository.get(familyId) != null;
     }
 
     @Override
     public boolean currentUserHasAccessRight(String familyId, Right right)
     {
-        Family family = this.familyRepository.getFamilyById(familyId);
+        Family family = this.familyRepository.get(familyId);
         if (family == null) {
             return false;
         }

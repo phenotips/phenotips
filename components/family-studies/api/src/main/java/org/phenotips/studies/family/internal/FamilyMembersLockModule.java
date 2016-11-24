@@ -93,8 +93,7 @@ public class FamilyMembersLockModule implements LockModule
                 return null;
             }
 
-            String documentId = xdoc.getDocumentReference().getName();
-            Family family = this.familyRepository.getFamilyById(documentId);
+            Family family = this.familyRepository.get(xdoc.getDocumentReference());
             if (family == null) {
                 return null;
             }
