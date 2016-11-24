@@ -18,6 +18,7 @@
 package org.phenotips.studies.family;
 
 import org.phenotips.data.Patient;
+import org.phenotips.entities.PrimaryEntityManager;
 import org.phenotips.studies.family.exceptions.PTException;
 
 import org.xwiki.component.annotation.Role;
@@ -30,7 +31,7 @@ import org.xwiki.users.User;
  * @since 1.4
  */
 @Role
-public interface FamilyRepository
+public interface FamilyRepository extends PrimaryEntityManager<Family>
 {
     /**
      * @param patient whose family the function return
@@ -41,16 +42,10 @@ public interface FamilyRepository
     /**
      * @param id of family to return
      * @return family for which family.getId().equals(id) is true
+     * @deprecated use {@link PrimaryEntityManager#get(String)}.
      */
+    @Deprecated
     Family getFamilyById(String id);
-
-    /**
-     * Creates a new empty family (owned by the given entity).
-     *
-     * @param creator an entity (a user or a group) which will be set as the owner for the created {@link Family family}
-     * @return new Family object
-     */
-    Family createFamily(User creator);
 
     /**
      * Deletes the family: unlinks or deletes all patients, then removes family document.

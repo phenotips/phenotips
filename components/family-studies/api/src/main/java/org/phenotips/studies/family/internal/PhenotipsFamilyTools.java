@@ -76,7 +76,7 @@ public class PhenotipsFamilyTools implements FamilyTools
         User creator = this.userManager.getCurrentUser();
         if (this.access.hasAccess(creator, Right.EDIT,
             this.currentResolver.resolve(Family.DATA_SPACE, EntityType.SPACE))) {
-            return this.familyRepository.createFamily(creator);
+            return this.familyRepository.create(creator.getProfileDocument());
         }
         throw new SecurityException("User not authorized to create new families");
     }
