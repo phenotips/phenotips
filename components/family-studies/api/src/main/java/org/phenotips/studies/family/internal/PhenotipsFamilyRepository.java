@@ -34,7 +34,7 @@ import org.phenotips.studies.family.exceptions.PTNotEnoughPermissionsOnPatientEx
 import org.phenotips.studies.family.exceptions.PTPatientAlreadyInAnotherFamilyException;
 import org.phenotips.studies.family.exceptions.PTPatientNotInFamilyException;
 import org.phenotips.studies.family.exceptions.PTPedigreeContainesSamePatientMultipleTimesException;
-import org.phenotips.studies.family.groupManagers.PatientsInProjectManager;
+import org.phenotips.studies.family.groupManagers.PatientsInFamilyManager;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
@@ -84,7 +84,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
     private PatientRepository patientRepository;
 
     @Inject
-    private PatientsInProjectManager pipManager;
+    private PatientsInFamilyManager pifManager;
 
     @Inject
     private AuthorizationService authorizationService;
@@ -270,13 +270,13 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
             }
 
             // Check if not already a member
-            Collection<Patient> members = this.pipManager.getMembers(family);
+            Collection<Patient> members = this.pifManager.getMembers(family);
             if (members.contains(patient)) {
                 this.logger.error("Patient [{}] already a member of the same family, not adding", patientId);
                 throw new PTPedigreeContainesSamePatientMultipleTimesException(patientId);
             }
 
-            if (!this.pipManager.addMember(family, patient)) {
+            if (!this.pifManager.addMember(family, patient)) {
                 throw new PTInternalErrorException();
             }
         }
