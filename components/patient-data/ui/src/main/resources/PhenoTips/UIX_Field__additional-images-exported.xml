@@ -113,9 +113,9 @@
   #foreach ($o in $doc.getObjects('PhenoTips.ExternalImageClass'))
     #if ("$!{o.getProperty('file').value}" != '' &amp;&amp; ${o.getProperty('print').value} == '1')
       {{html clean=false}}#pagebreak(){{/html}}
-      [[image:@$!{o.getProperty('file').value}]]
+      [[image:@$!{services.rendering.escape($o.getProperty('file').value, $doc.syntax)}]]
 
-      $!{o.getProperty('comments').value}
+      ${doc.display('comments', 'view', $o).replaceFirst('^(\{\{html clean="false" wiki="false"}})?', '{{content syntax="plain/1.0"}}').replaceFirst('(\{\{/html}})?$', '{{/content}}')}
     #end
   #end
 #end

@@ -57,9 +57,9 @@
 #elseif ("$!value" != '')
   #set ($matchingDocuments = $xwiki.wrapDocs($services.query.xwql("where doc.object(PhenoTips.PatientClass).external_id = :eid").bindValue('eid', $value).execute()))
   #if ($matchingDocuments.size() == 1)
-    [[${value}&gt;&gt;$matchingDocuments.get(0).documentReference]]##
+    [[$!{services.rendering.escape($value, $doc.syntax)}&gt;&gt;$matchingDocuments.get(0).documentReference]]##
   #else
-    $!value##
+    $!{services.rendering.escape($value, $doc.syntax)}##
   #end
 #end
 {{/velocity}}</customDisplay>

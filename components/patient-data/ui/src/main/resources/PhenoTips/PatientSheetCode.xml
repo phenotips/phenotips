@@ -3457,7 +3457,7 @@ $services.localization.render('phenotips.PatientSheetCode.PDFFooterDisclaimer', 
 &lt;/xsl:stylesheet&gt;</fopxsl>
     </property>
     <property>
-      <header>{{velocity}}$escapetool.xml($doc.name)#if ("$!{doc.getValue('external_id')}" != '') ($escapetool.xml($doc.getValue('external_id')))#end{{/velocity}}</header>
+      <header>{{velocity}}$escapetool.xml($doc.name)#if ("$!{doc.getValue('external_id')}" != '') ($!{services.rendering.escape($doc.getValue('external_id'), $doc.syntax)})#end{{/velocity}}</header>
     </property>
     <property>
       <style>#template('colorThemeInit.vm')

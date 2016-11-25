@@ -68,7 +68,7 @@
 #if ($xcontext.action == 'edit')
 {{html clean=false}}&lt;input type='text' name='${prefix}${name}' class='suggested suggest-gene gene-name' placeholder='$services.localization.render('Phenotips.GeneClass.geneNamePlaceholder')' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
 #else
-$!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='gene_name' class='gene-name' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
+$!{services.rendering.escape($value, $doc.syntax)}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='gene_name' class='gene-name' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
 #end
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>
