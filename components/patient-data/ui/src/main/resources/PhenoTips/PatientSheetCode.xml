@@ -856,7 +856,7 @@ document.observe('xwiki:dom:loaded', function()
                  if (addTrigger.disabled) {
                    return;
                  }
-                 var url = detailsUrl.replace(/([&amp;?]classname=)(.*?)([&amp;$])/, "$1$2&amp;$2_target_property_name=" + inputElt.name.replace(/^.*_\d+_/, '') + "&amp;$2_target_property_value=" + inputElt.value + "$3");
+                 var url = detailsUrl.replace(/([&amp;?]classname=)(.*?)([&amp;$])/, "$1$2&amp;$2_target_property_name=" + inputElt.name.replace(/^.*_\d+_/, '') + "&amp;$2_target_property_value=" + encodeURIComponent(inputElt.value) + "$3");
                  new Ajax.Request(url, {
                    onCreate : function() {
                      addTrigger.disabled = true
