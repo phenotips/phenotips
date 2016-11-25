@@ -63,7 +63,7 @@
     #else
       #set ($termId = $term.id)
     #end
-    (%%)((([[~[$term.id]&gt;&gt;http://www.omim.org/entry/${termId}]] $name)))
+    (%%)((([[~[$term.id]&gt;&gt;http://www.omim.org/entry/${termId}]] $!{services.rendering.escape($name, $doc.syntax)})))
   #end
 #end
 {{/velocity}}</content>
