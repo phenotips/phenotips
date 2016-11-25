@@ -181,6 +181,12 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-entities-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>patient-data-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
