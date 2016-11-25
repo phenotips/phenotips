@@ -278,8 +278,9 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
     @Override
     public synchronized void removeMember(Family family, Patient patient, User updatingUser) throws PTException
     {
-        this.checkIfPatientCanBeRemovedFromFamily(family, patient, updatingUser);
-        this.removeAllMembers(family, Arrays.asList(patient));
+        List<Patient> asList = Arrays.asList(patient);
+        this.checkIfPatientsCanBeRemovedFromFamily(family, asList, updatingUser);
+        this.removeAllMembers(family, asList);
         this.updateFamilyPermissionsAndSave(family, "removed " + patient.getId() + " from the family");
     }
 
@@ -420,16 +421,17 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         }
     }
 
-    // TODO Change to work with Collection<Patient>
-    private void checkIfPatientCanBeRemovedFromFamily(Family family, Patient patient, User updatingUser)
+    private void checkIfPatientsCanBeRemovedFromFamily(Family family, Collection<Patient> patients, User updatingUser)
         throws PTException
     {
-        // check rights
-        if (!this.authorizationService.hasAccess(updatingUser, Right.EDIT, family.getDocumentReference())) {
-            throw new PTNotEnoughPermissionsOnFamilyException(Right.EDIT, family.getId());
-        }
-        if (!this.authorizationService.hasAccess(updatingUser, Right.EDIT, patient.getDocumentReference())) {
-            throw new PTNotEnoughPermissionsOnPatientException(Right.EDIT, patient.getId());
+        for (Patient patient : patients) {
+            // check rights
+            if (!this.authorizationService.hasAccess(updatingUser, Right.EDIT, family.getDocumentReference())) {
+                throw new PTNotEnoughPermissionsOnFamilyException(Right.EDIT, family.getId());
+            }
+            if (!this.authorizationService.hasAccess(updatingUser, Right.EDIT, patient.getDocumentReference())) {
+                throw new PTNotEnoughPermissionsOnPatientException(Right.EDIT, patient.getId());
+            }
         }
     }
 
@@ -468,9 +470,9 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         Collection<Patient> patientsToRemove = new ArrayList<>(patientIdsToRemove.size());
         for (String patientId : patientIdsToRemove) {
             Patient patient = this.patientRepository.get(patientId);
-            this.checkIfPatientCanBeRemovedFromFamily(family, patient, updatingUser);
             patientsToRemove.add(patient);
         }
+        this.checkIfPatientsCanBeRemovedFromFamily(family, patientsToRemove, updatingUser);
         this.removeAllMembers(family, patientsToRemove);
 
         List<Patient> patientsToAdd = new ArrayList<>(patientIdsToAdd.size());
