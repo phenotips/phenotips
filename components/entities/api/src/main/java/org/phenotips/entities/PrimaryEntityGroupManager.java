@@ -140,4 +140,13 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntity, E extends Pr
      * @return a collection of groups, may be empty
      */
     Collection<G> getGroupsForMember(E member);
+
+    /**
+     * Checks if {@code member} is a member of {@code group}.
+     *
+     * @param group for checking
+     * @param member for checking
+     * @return true if {@code member} is a member of {@code group}
+     */
+    boolean isMember(G group, E member);
 }
