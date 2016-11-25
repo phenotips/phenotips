@@ -29,7 +29,7 @@ import org.phenotips.studies.family.internal.export.PhenotipsFamilyExport;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.EntityReference;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,7 +46,6 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
-import com.xpn.xwiki.objects.ListProperty;
 import com.xpn.xwiki.objects.StringProperty;
 
 /**
@@ -101,22 +100,12 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     @Override
     public List<String> getMembersIds()
     {
-        BaseObject familyObject = getXDocument().getXObject(CLASS_REFERENCE);
-        if (familyObject == null) {
-            return new LinkedList<>();
+        List<Patient> members = this.getMembers();
+        List<String> ids = new ArrayList<>(members.size());
+        for (Patient patient : members) {
+            ids.add(patient.getId());
         }
-
-        ListProperty xwikiRelativesList;
-        try {
-            xwikiRelativesList = (ListProperty) familyObject.get(FAMILY_MEMBERS_FIELD);
-        } catch (XWikiException e) {
-            this.logger.error("Error reading family members: [{}]", e.getMessage(), e);
-            return null;
-        }
-        if (xwikiRelativesList == null) {
-            return Collections.emptyList();
-        }
-        return xwikiRelativesList.getList();
+        return ids;
     }
 
     @Override
