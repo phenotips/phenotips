@@ -80,7 +80,6 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
       #else
 
       #end
-      #if ($options.mode == 'export')#set ($disableLabels = true)#end
       #foreach ($o in $dataObjects)
         #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name#if ($prop.name == $options.propertyName) hidden#end" %)#if ("$!{options.labels}$!{disableLabels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="" &gt;${prop.translatedPrettyName}&lt;/label&gt;{{/html}}#end $doc.display($prop.getName(), $displayMode, $o).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')#end#if ($options.mode == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
 
