@@ -1528,6 +1528,54 @@
   <object>
     <name>XWiki.XWikiPreferences</name>
     <number>0</number>
+    <className>XWiki.ConfigurationClass</className>
+    <guid>39bd5687-3841-4e68-8b90-6c28277f932a</guid>
+    <class>
+      <name>XWiki.ConfigurationClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <property>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>property</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>Property</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </property>
+      <value>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>value</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Value</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </value>
+    </class>
+    <property>
+      <property>study-visibility-option</property>
+    </property>
+    <property>
+      <value>unrestricted</value>
+    </property>
+  </object>
+  <object>
+    <name>XWiki.XWikiPreferences</name>
+    <number>0</number>
     <className>XWiki.XWikiGlobalRights</className>
     <guid>369eb46f-6311-437b-a3a1-38755f324898</guid>
     <class>
