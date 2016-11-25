@@ -19,6 +19,7 @@ package org.phenotips.studies.family.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.studies.family.Family;
+import org.phenotips.studies.family.groupManagers.PatientsInFamilyManager;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
@@ -28,6 +29,7 @@ import org.xwiki.model.reference.EntityReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -75,6 +77,9 @@ public class PhenotipsFamilyPermissions
 
     @Inject
     private Logger logger;
+
+    @Inject
+    private PatientsInFamilyManager pifManager;
 
     /**
      * Returns all the users and groups that have the given right for the patient as array of two strings. First string
@@ -162,7 +167,7 @@ public class PhenotipsFamilyPermissions
     {
         XWiki wiki = context.getWiki();
 
-        List<Patient> members = family.getMembers();
+        List<Patient> members = new LinkedList<>(this.pifManager.getMembers(family));
 
         this.updatePermissionsForOneRightLevel(VIEW_RIGHTS, members, family.getXDocument(), wiki, context);
         // setting view-edit rights after view rights makes sure if a user has edit rights on one patient

@@ -19,17 +19,16 @@ package org.phenotips.studies.family.internal;
 
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
 import org.phenotips.data.internal.PhenoTipsPatient;
 import org.phenotips.entities.internal.AbstractPrimaryEntity;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.Pedigree;
+import org.phenotips.studies.family.groupManagers.PatientsInFamilyManager;
 import org.phenotips.studies.family.internal.export.PhenotipsFamilyExport;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.EntityReference;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -61,9 +60,9 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
 
     private static final String WARNING = "warning";
 
-    private static PatientRepository patientRepository;
-
     private static PhenotipsFamilyExport familyExport;
+
+    private static PatientsInFamilyManager pifManager;
 
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(PhenoTipsPatient.class);
@@ -72,10 +71,10 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
 
     static {
         try {
-            PhenotipsFamily.patientRepository =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(PatientRepository.class);
             PhenotipsFamily.familyExport =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(PhenotipsFamilyExport.class);
+            PhenotipsFamily.pifManager =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(PatientsInFamilyManager.class);
         } catch (ComponentLookupException e) {
             e.printStackTrace();
         }
@@ -120,13 +119,7 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     @Override
     public List<Patient> getMembers()
     {
-        List<String> memberIds = this.getMembersIds();
-        List<Patient> members = new ArrayList<>(memberIds.size());
-        for (String memberId : memberIds) {
-            Patient patient = PhenotipsFamily.patientRepository.get(memberId);
-            members.add(patient);
-        }
-        return members;
+        return new LinkedList<Patient>(PhenotipsFamily.pifManager.getMembers(this));
     }
 
     @Override
@@ -161,7 +154,7 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     {
         Map<String, Map<String, String>> allFamilyLinks = new HashMap<>();
 
-        for (Patient patient : getMembers()) {
+        for (Patient patient : PhenotipsFamily.pifManager.getMembers(this)) {
             allFamilyLinks.put(patient.getId(), PhenotipsFamily.familyExport.getMedicalReports(patient));
         }
         return allFamilyLinks;
