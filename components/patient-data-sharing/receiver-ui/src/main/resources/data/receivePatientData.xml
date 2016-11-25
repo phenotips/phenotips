@@ -18,29 +18,54 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>data</web>
   <name>receivePatientData</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>data.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
-  <author>xwiki:XWiki.Admin</author>
-  <customClass/>
-  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <creationDate>1387181906000</creationDate>
+  <parent>data.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <date>1387182456000</date>
   <contentUpdateDate>1387182456000</contentUpdateDate>
   <version>1.1</version>
   <title>Receive Patient Data</title>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content>{{velocity}}{{html clean="false"}}
+
+$response.setContentType('application/json')
+
+#set ($service = $services.receivePatientData)
+#if (!$service)
+  {}
+#else
+  #if ($service.isServerTrusted())
+    #if ($request.action == 'get_server_info')
+      $service.getConfiguration().toString()
+    #elseif ($request.action == 'push')
+      $service.receivePatient().toString()
+    #elseif ($request.action == 'get_patient_id')
+      $service.getPatientURL().toString()
+    #else
+      $service.unsupportedeActionResponse().toString()
+    #end
+  #else
+    $service.untrustedServerResponse().toString()
+  #end
+#end
+{{/html}}{{/velocity}}
+</content>
   <object>
+    <name>data.receivePatientData</name>
+    <number>0</number>
+    <className>XWiki.XWikiRights</className>
+    <guid>b4d5386c-f834-44ce-a8c7-e3750c5c275d</guid>
     <class>
       <name>XWiki.XWikiRights</name>
       <customClass/>
@@ -100,16 +125,12 @@
         <picker>1</picker>
         <prettyName>Users</prettyName>
         <relationalStorage>0</relationalStorage>
-        <separator/>
+        <separator> </separator>
         <size>5</size>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
       </users>
     </class>
-    <name>data.receivePatientData</name>
-    <number>0</number>
-    <className>XWiki.XWikiRights</className>
-    <guid>b4d5386c-f834-44ce-a8c7-e3750c5c275d</guid>
     <property>
       <allow>1</allow>
     </property>
@@ -120,28 +141,4 @@
       <users>XWiki.XWikiGuest</users>
     </property>
   </object>
-  <content>{{velocity}}{{html clean="false"}}
-
-$response.setContentType('application/json')
-
-#set ($service = $services.receivePatientData)
-#if (!$service)
-  {}
-#else
-  #if ($service.isServerTrusted())
-    #if ($request.action == 'get_server_info')
-      $service.getConfiguration().toString()
-    #elseif ($request.action == 'push')
-      $service.receivePatient().toString()
-    #elseif ($request.action == 'get_patient_id')
-      $service.getPatientURL().toString()
-    #else
-      $service.unsupportedeActionResponse().toString()
-    #end
-  #else
-    $service.untrustedServerResponse().toString()
-  #end
-#end
-{{/html}}{{/velocity}}
-</content>
 </xwikidoc>

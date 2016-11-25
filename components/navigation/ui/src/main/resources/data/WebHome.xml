@@ -229,7 +229,13 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
       <phenotypeMapping>
         <cache>0</cache>
         <classname>PhenoTips.PhenotypeMappingClass</classname>
-        <customDisplay/>
+        <customDisplay>{{velocity}}
+{{html clean="false"}}
+#foreach ($option in $field.getMapValues().keySet())
+  &lt;label class="xwiki-form-listclass" for="xwiki-form-${escapetool.xml("${prefix}${name}")}-${foreach.index}"&gt;&lt;input type="radio" name="${prefix}${name}" id="xwiki-form-${escapetool.xml("${prefix}${name}")}-${foreach.index}" value="${escapetool.xml($option)}"#if ($value == $option) checked="checked"#end/&gt; $escapetool.xml($xwiki.getDocument($option).plainTitle)&lt;/label&gt;
+#end
+{{/html}}
+{{/velocity}}</customDisplay>
         <disabled>0</disabled>
         <displayType>radio</displayType>
         <idField>doc.fullName</idField>

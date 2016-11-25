@@ -1258,7 +1258,7 @@
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
-        <values>MDY=mmm dd, yyyy|DMY=dd-mm-yyyy|MY=mm-yyyy|MMY=mmm yyyy</values>
+        <values>MDY=mmm dd, yyyy|DMY=dd-mm-yyyy|MY=mm-yyyy|Y=yyyy|MMY=mmm yyyy</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </dateDisplayFormat>
       <dateInputFormat>
@@ -1279,7 +1279,7 @@
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
-        <values>YMD=yyyy-mm-dd|DMY=dd-mm-yyyy|MY=mm-yyyy</values>
+        <values>YMD=yyyy-mm-dd|DMY=dd-mm-yyyy|MY=mm-yyyy|Y=yyyy</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </dateInputFormat>
       <lineStyle>
@@ -1317,20 +1317,6 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </nonStandardAdoptedOutGraphic>
-      <propagateFatherLastName>
-        <customDisplay/>
-        <defaultValue>1</defaultValue>
-        <disabled>0</disabled>
-        <displayFormType>checkbox</displayFormType>
-        <displayType/>
-        <name>propagateFatherLastName</name>
-        <number>2</number>
-        <prettyName>Propagate father's last name to descendants</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </propagateFatherLastName>
       <pedigreePreviewSize>
         <cache>0</cache>
         <customDisplay/>
@@ -1349,9 +1335,37 @@
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
-        <values>Small=small|Medium=medium|Large=large</values>
+        <values>small=Small|medium=Medium|large=Large</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </pedigreePreviewSize>
+      <propagateFatherLastName>
+        <customDisplay/>
+        <defaultValue>1</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>propagateFatherLastName</name>
+        <number>2</number>
+        <prettyName>Propagate father's last name to descendants</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </propagateFatherLastName>
+      <uiGradientNodes>
+        <customDisplay/>
+        <defaultValue>0</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>uiGradientNodes</name>
+        <number>3</number>
+        <prettyName>Apply color gradient to pedigree nodes</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </uiGradientNodes>
     </class>
     <property>
       <dateDisplayFormat>MDY</dateDisplayFormat>
@@ -1366,10 +1380,10 @@
       <nonStandardAdoptedOutGraphic>0</nonStandardAdoptedOutGraphic>
     </property>
     <property>
-      <propagateFatherLastName>1</propagateFatherLastName>
+      <pedigreePreviewSize>small</pedigreePreviewSize>
     </property>
     <property>
-      <pedigreePreviewSize>small</pedigreePreviewSize>
+      <propagateFatherLastName>1</propagateFatherLastName>
     </property>
   </object>
   <object>
@@ -1452,30 +1466,31 @@
       <defaultWeb/>
       <nameField/>
       <validationScript/>
-      <AllowPushesFromNonListedServers>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <name>AllowPushesFromNonListedServers</name>
-        <number>1</number>
-        <prettyName>AllowPushesFromNonListedServers</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </AllowPushesFromNonListedServers>
       <AllowNoConsentsFromOldClients>
         <disabled>0</disabled>
         <displayFormType>select</displayFormType>
         <name>AllowNoConsentsFromOldClients</name>
-        <number>1</number>
-        <prettyName>AllowNoConsentsFromOldClients</prettyName>
+        <number>2</number>
+        <prettyName>Accept data from old clients that cannot push consent information</prettyName>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </AllowNoConsentsFromOldClients>
+      <AllowPushesFromNonListedServers>
+        <defaultValue>0</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <name>AllowPushesFromNonListedServers</name>
+        <number>1</number>
+        <prettyName>Allow pushes from servers not listed below</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </AllowPushesFromNonListedServers>
     </class>
     <property>
-      <AllowPushesFromNonListedServers>0</AllowPushesFromNonListedServers>
+      <AllowNoConsentsFromOldClients>0</AllowNoConsentsFromOldClients>
     </property>
     <property>
-      <AllowNoConsentsFromOldClients>0</AllowNoConsentsFromOldClients>
+      <AllowPushesFromNonListedServers>0</AllowPushesFromNonListedServers>
     </property>
   </object>
   <object>
@@ -3013,6 +3028,9 @@ $xwiki.ssx.use($xwiki.getSpacePreference('colorTheme'))</meta>
     </property>
     <property>
       <stylesheets>style.css</stylesheets>
+    </property>
+    <property>
+      <timezone/>
     </property>
     <property>
       <title>#if ($doc.name != 'WebHome')$tdoc.getRenderedTitle("plain/1.0") | #{end}$!xwiki.getDocument("$!{doc.space}.WebHome").getRenderedTitle("plain/1.0")</title>
