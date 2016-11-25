@@ -66,7 +66,7 @@
       <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit' || $xcontext.action == 'inline')
 #set ($suggest_script = $xwiki.getURL('PhenoTips.AllergySearch', 'get', 'outputSyntax=plain'))
-{{html wiki=false clean=false}}&lt;input name="xwiki-free-multiselect-suggest-script" type="hidden" value="$!escapetool.xml($suggest_script)"/&gt;{{/html}}
+{{html wiki=false clean=false}}&lt;input name="xwiki-free-multiselect-suggest-script" type="hidden" value="$!escapetool.xml($suggest_script)"/&gt;&lt;input name="${prefix}${name}" type="hidden" value=""/&gt;{{/html}}
 #end
 #macro (_fms__displayValue $v $counter)
   #if($xcontext.action == 'edit' || $xcontext.action == 'inline')
