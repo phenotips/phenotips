@@ -80,8 +80,6 @@ public class PhenotipsFamilyRepository extends AbstractPrimaryEntityManager<Fami
 {
     private static final String PREFIX = "FAM";
 
-    private static final String FAMILY_REFERENCE_FIELD = "reference";
-
     @Inject
     private Logger logger;
 
@@ -165,7 +163,6 @@ public class PhenotipsFamilyRepository extends AbstractPrimaryEntityManager<Fami
         return super.get(id);
     }
 
-    @Override
     /**
      * Returns a Family object for patient. If there's an XWiki family document but no PhenotipsFamily object associated
      * with it in the cache, a new PhenotipsFamily object will be created.
@@ -173,29 +170,14 @@ public class PhenotipsFamilyRepository extends AbstractPrimaryEntityManager<Fami
      * @param patient for which to look for a family
      * @return Family if there's an XWiki family document, otherwise null
      */
+    @Override
     public Family getFamilyForPatient(Patient patient)
     {
-        if (patient == null) {
+        Collection<Family> families = this.pifManager.getGroupsForMember(patient);
+        if (families.size() != 1) {
             return null;
-        }
-        String patientId = patient.getId();
-        XWikiDocument patientDocument = getDocument(patient);
-        if (patientDocument == null) {
-            return null;
-        }
-
-        DocumentReference familyReference = getFamilyReference(patientDocument);
-        if (familyReference == null) {
-            this.logger.debug("Family not found for patient [{}]", patientId);
-            return null;
-        }
-
-        try {
-            XWikiDocument document = getDocument(familyReference);
-            return new PhenotipsFamily(document);
-        } catch (XWikiException e) {
-            this.logger.error("Can't find family document for patient [{}]", patient.getId());
-            return null;
+        } else {
+            return families.iterator().next();
         }
     }
 
@@ -584,26 +566,6 @@ public class PhenotipsFamilyRepository extends AbstractPrimaryEntityManager<Fami
             return false;
         }
         return true;
-    }
-
-    /*
-     * returns a reference to a family document from an XWiki patient document.
-     */
-    private DocumentReference getFamilyReference(XWikiDocument patientDocument)
-    {
-        BaseObject familyObject = patientDocument.getXObject(Family.REFERENCE_CLASS_REFERENCE);
-        if (familyObject == null) {
-            return null;
-        }
-
-        String familyDocName = familyObject.getStringValue(FAMILY_REFERENCE_FIELD);
-        if (StringUtils.isBlank(familyDocName)) {
-            return null;
-        }
-
-        DocumentReference familyReference = this.referenceResolver.resolve(familyDocName, Family.DATA_SPACE);
-
-        return familyReference;
     }
 
     @Override
