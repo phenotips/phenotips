@@ -135,12 +135,7 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     @Override
     public boolean isMember(Patient patient)
     {
-        List<String> members = getMembersIds();
-        if (members == null) {
-            return false;
-        }
-        String patientId = patient.getId();
-        return members.contains(patientId);
+        return PhenotipsFamily.pifManager.isMember(this, patient);
     }
 
     @Override

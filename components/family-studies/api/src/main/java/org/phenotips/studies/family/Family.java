@@ -69,7 +69,9 @@ public interface Family extends PrimaryEntity
     /**
      * @param patient check if the patient belongs to this family
      * @return true if a patient is a member of the family
+     * @deprecated user {@link PatientsInFamilyManager#isMember(Family, Patient)}.
      */
+    @Deprecated
     boolean isMember(Patient patient);
 
     /**
