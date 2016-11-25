@@ -211,11 +211,11 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
     @Override
     public synchronized void addMember(Family family, Patient patient, User updatingUser) throws PTException
     {
-        String patientId = patient.getId();
+        Collection<Patient> asList = Arrays.asList(patient);
 
-        this.checkValidity(family, Arrays.asList(patientId), updatingUser);
-        this.addAllMembers(family, Arrays.asList(patient));
-        this.updateFamilyPermissionsAndSave(family, "added " + patientId + " to the family");
+        this.checkValidity(family, asList, updatingUser);
+        this.addAllMembers(family, asList);
+        this.updateFamilyPermissionsAndSave(family, "added " + patient.getId() + " to the family");
     }
 
     /*
@@ -440,16 +440,19 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
     {
         // note: whenever available, internal versions of helper methods are used which modify the
         // family document but do not save it to disk
-        List<String> oldMembers = family.getMembersIds();
+        Collection<Patient> oldMembers = this.pifManager.getMembers(family);
 
-        List<String> currentMembers = pedigree.extractIds();
+        Collection<Patient> currentMembers = new ArrayList<>();
+        for (String id : pedigree.extractIds()) {
+            currentMembers.add(this.patientRepository.get(id));
+        }
 
         // Add new members to family
-        List<String> patientIdsToAdd = new LinkedList<>();
-        patientIdsToAdd.addAll(currentMembers);
-        patientIdsToAdd.removeAll(oldMembers);
+        List<Patient> patientsToAdd = new LinkedList<>();
+        patientsToAdd.addAll(currentMembers);
+        patientsToAdd.removeAll(oldMembers);
 
-        this.checkValidity(family, patientIdsToAdd, updatingUser);
+        this.checkValidity(family, patientsToAdd, updatingUser);
 
         XWikiContext context = this.xcontextProvider.get();
         context.setUserReference(updatingUser == null ? null : updatingUser.getProfileDocument());
@@ -463,22 +466,13 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         this.setPedigreeObject(family, pedigree, context);
 
         // Removed members who are no longer in the family
-        Collection<String> patientIdsToRemove = new LinkedList<>();
-        patientIdsToRemove.addAll(oldMembers);
-        patientIdsToRemove.removeAll(currentMembers);
+        List<Patient> patientsToRemove = new LinkedList<>();
+        patientsToRemove.addAll(oldMembers);
+        patientsToRemove.removeAll(currentMembers);
 
-        Collection<Patient> patientsToRemove = new ArrayList<>(patientIdsToRemove.size());
-        for (String patientId : patientIdsToRemove) {
-            Patient patient = this.patientRepository.get(patientId);
-            patientsToRemove.add(patient);
-        }
         this.checkIfPatientsCanBeRemovedFromFamily(family, patientsToRemove, updatingUser);
         this.removeAllMembers(family, patientsToRemove);
 
-        List<Patient> patientsToAdd = new ArrayList<>(patientIdsToAdd.size());
-        for (String patientId : patientIdsToAdd) {
-            patientsToAdd.add(this.patientRepository.get(patientId));
-        }
         this.addAllMembers(family, patientsToAdd);
 
         if (firstPedigree && StringUtils.isEmpty(family.getExternalId())) {
@@ -493,23 +487,21 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         updateFamilyPermissionsAndSave(family, "Updated family from saved pedigree");
     }
 
-    // TODO change to work with Collection<Patient> newMembers
-    private void checkValidity(Family family, List<String> newMembers, User updatingUser) throws PTException
+    private void checkValidity(Family family, Collection<Patient> newMembers, User updatingUser) throws PTException
     {
         // Checks that current user has edit permissions on family
         if (!this.authorizationService.hasAccess(updatingUser, Right.EDIT, family.getDocumentReference())) {
             throw new PTNotEnoughPermissionsOnFamilyException(Right.EDIT, family.getId());
         }
 
-        String duplicateID = this.findDuplicate(newMembers);
-        if (duplicateID != null) {
-            throw new PTPedigreeContainesSamePatientMultipleTimesException(duplicateID);
+        Patient duplicatePatient = this.findDuplicate(newMembers);
+        if (duplicatePatient != null) {
+            throw new PTPedigreeContainesSamePatientMultipleTimesException(duplicatePatient.getId());
         }
 
         // Check if every new member can be added to the family
         if (newMembers != null) {
-            for (String patientId : newMembers) {
-                Patient patient = this.patientRepository.get(patientId);
+            for (Patient patient : newMembers) {
                 checkIfPatientCanBeAddedToFamily(family, patient, updatingUser);
             }
         }
@@ -537,11 +529,11 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         }
     }
 
-    private String findDuplicate(List<String> updatedMembers)
+    private Patient findDuplicate(Collection<Patient> updatedMembers)
     {
-        List<String> duplicationCheck = new LinkedList<>();
+        List<Patient> duplicationCheck = new LinkedList<>();
         duplicationCheck.addAll(updatedMembers);
-        for (String member : updatedMembers) {
+        for (Patient member : updatedMembers) {
             duplicationCheck.remove(member);
             if (duplicationCheck.contains(member)) {
                 return member;
