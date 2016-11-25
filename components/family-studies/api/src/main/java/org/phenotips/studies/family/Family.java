@@ -29,9 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO: refactor on top of Entities model. Split/re-arrange functionality between Family (Entity), FamilyRepository
- * (EntityManager) and EntityGroupManager.
- *
  * @version $Id$
  * @since 1.4
  */
