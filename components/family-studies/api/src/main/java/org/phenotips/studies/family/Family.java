@@ -64,7 +64,9 @@ public interface Family extends PrimaryEntity
 
     /**
      * @return list of family members ids
+     * @deprecated use {@link PatientsInFamilyManager#getMembers(Family)} and work with patients and not ids.
      */
+    @Deprecated
     List<String> getMembersIds();
 
     /**
