@@ -181,6 +181,12 @@ public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntity,
         return success;
     }
 
+    @Override
+    public boolean isMember(G group, E member)
+    {
+        return this.getMembers(group).contains(member);
+    }
+
     protected QueryManager getQueryManager()
     {
         try {
