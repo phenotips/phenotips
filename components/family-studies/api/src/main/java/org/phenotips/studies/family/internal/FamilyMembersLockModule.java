@@ -20,6 +20,7 @@ package org.phenotips.studies.family.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
+import org.phenotips.studies.family.groupManagers.PatientsInFamilyManager;
 import org.phenotips.translation.TranslationManager;
 
 import org.xwiki.component.annotation.Component;
@@ -29,8 +30,10 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Date;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -72,6 +75,9 @@ public class FamilyMembersLockModule implements LockModule
     @Inject
     private Logger logger;
 
+    @Inject
+    private PatientsInFamilyManager pifManager;
+
     @Override
     public int getPriority()
     {
@@ -96,7 +102,7 @@ public class FamilyMembersLockModule implements LockModule
                 return null;
             }
 
-            List<Patient> members = family.getMembers();
+            Collection<Patient> members = this.pifManager.getMembers(family);
             if (members.isEmpty()) {
                 return null;
             }

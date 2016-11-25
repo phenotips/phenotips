@@ -152,7 +152,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         }
 
         if (deleteAllMembers) {
-            for (Patient patient : family.getMembers()) {
+            for (Patient patient : this.pifManager.getMembers(family)) {
                 if (!this.patientRepository.delete(patient)) {
                     this.logger.error("Failed to delete patient [{}] - deletion of family [{}] aborted",
                         patient.getId(), family.getId());
@@ -389,7 +389,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
             }
             if (deleteAllMembers) {
                 // check permissions on all patients
-                for (Patient patient : family.getMembers()) {
+                for (Patient patient : this.pifManager.getMembers(family)) {
                     if (!this.authorizationService.hasAccess(
                         updatingUser, Right.DELETE, patient.getDocumentReference())) {
                         throw new PTNotEnoughPermissionsOnPatientException(Right.DELETE, patient.getId());

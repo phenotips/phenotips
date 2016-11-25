@@ -24,6 +24,7 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
+import org.phenotips.studies.family.groupManagers.PatientsInFamilyManager;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.query.Query;
@@ -115,6 +116,9 @@ public class PhenotipsFamilyExport
     private RecordConfigurationManager configuration;
 
     @Inject
+    private PatientsInFamilyManager pifManager;
+
+    @Inject
     private Provider<XWikiContext> provider;
 
     /**
@@ -151,7 +155,7 @@ public class PhenotipsFamilyExport
         familyJSON.put(FAMILY_WARNING, family.getWarningMessage());
 
         JSONArray patientsJSONArray = new JSONArray();
-        for (Patient patient : family.getMembers()) {
+        for (Patient patient : this.pifManager.getMembers(family)) {
             JSONObject patientJSON = getPatientInformationAsJSON(patient);
             patientsJSONArray.put(patientJSON);
         }

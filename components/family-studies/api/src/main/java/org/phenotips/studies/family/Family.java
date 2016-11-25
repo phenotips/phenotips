@@ -20,6 +20,7 @@ package org.phenotips.studies.family;
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.entities.PrimaryEntity;
+import org.phenotips.studies.family.groupManagers.PatientsInFamilyManager;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
@@ -49,7 +50,9 @@ public interface Family extends PrimaryEntity
 
     /**
      * @return list of family members
+     * @deprecated use {@link PatientsInFamilyManager#getMembers(Family)}.
      */
+    @Deprecated
     List<Patient> getMembers();
 
     /**
