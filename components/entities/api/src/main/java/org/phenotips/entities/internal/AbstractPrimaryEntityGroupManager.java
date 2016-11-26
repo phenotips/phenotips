@@ -184,6 +184,7 @@ public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntity,
     @Override
     public boolean isMember(G group, E member)
     {
+        // TODO this can be implemented more efficiently.
         return this.getMembers(group).contains(member);
     }
 
