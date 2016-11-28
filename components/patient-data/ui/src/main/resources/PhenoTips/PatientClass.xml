@@ -55,7 +55,7 @@
       <displayType/>
       <name>affectedRelatives</name>
       <number>51</number>
-      <prettyName>Other living affected relatives</prettyName>
+      <prettyName>Other affected relatives</prettyName>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
