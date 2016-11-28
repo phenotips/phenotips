@@ -232,26 +232,16 @@ define([
                 if (editor.getGraph().isPerson(disconnectedList[i])) {
                     var node = editor.getNode(disconnectedList[i]);
                     if (node.getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
-                        editor.getOkCancelDialogue().showError("<br>Can't remove this node because the current patient would have to be removed as well.<br><br>" +
-                                "<font style='font-size:95%'>(a pedigree can't have disconnected components; " +
-                                "removing this node would<br>cause all highlighted individuals to be disconnected from the<br>" +
-                                "proband and thus all of them would have to be removed)</font>",
-                                "Can't remove", "OK", unhighlightSelected);
+                        editor.getOkCancelDialogue().showError("This family member cannot be removed because that would cause the current patient (consultand) to be disconnected from the proband and removed as well, which is currently not supported.",
+                                "Cannot remove family member", "OK", unhighlightSelected);
                         return;
                     }
                 }
             }
 
-            if (!editor.isFamilyPage()) {
-                // ...and display a OK/Cancel dialogue, calling "removeSelected()" on OK and "unhighlightSelected" on Cancel
-                editor.getOkCancelDialogue().show( '<br>All highlighted nodes will be removed. Do you want to proceed?<br><br>' +
-                                                   '<br><font style="font-size:95%">(all persons in a pedigree should be connected, so all nodes no longer<br>connected to the proband have to be removed as well)</font>',
-                                                   'Delete nodes?', removeSelected, unhighlightSelected );
-            } else {
-                editor.getOkCancelDialogue().show( '<br>All highlighted nodes will be removed. Do you want to proceed?<br><br>' +
-                        '<br><font style="font-size:95%">(all persons in a pedigree should be connected, so one of the disconnected sets of nodes has to be removed)</font>',
-                        'Delete nodes?', removeSelected, unhighlightSelected );
-            }
+            // ...and display a OK/Cancel dialogue, calling "removeSelected()" on OK and "unhighlightSelected" on Cancel
+            editor.getOkCancelDialogue().show( 'All highlighted members will be deleted from this family. However, if a deleted family member has a patient record, that record will remain in the database. Are you sure you wish to proceed?',
+                                                   'Delete family members?', removeSelected, unhighlightSelected );
         },
 
         handleSetProperty: function(event)
