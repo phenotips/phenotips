@@ -23,8 +23,8 @@
     "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
 
 <suppressions>
-  <suppress checks="ClassDataAbstractionCoupling" files="PhenotipsFamilyRepository.java"/>
-  <suppress checks="ClassFanOutComplexityCheck" files="PhenotipsFamilyRepository.java"/>
+  <suppress checks="ClassDataAbstractionCoupling" files="PhenotipsFamilyRepository.java|PatientsInFamilyManager.java"/>
+  <suppress checks="ClassFanOutComplexityCheck" files="PhenotipsFamilyRepository.java|PatientsInFamilyManager.java"/>
   <suppress checks="CyclomaticComplexity" files="PhenotipsFamilyRepository.java"/>
   <suppress checks="NPathComplexity" files="PhenotipsFamilyRepository.java"/>
 
