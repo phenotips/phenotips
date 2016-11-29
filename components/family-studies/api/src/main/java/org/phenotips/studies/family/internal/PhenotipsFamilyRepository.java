@@ -125,7 +125,14 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         }
     }
 
-    // TODO add inherited delete()
+    @Inject
+    private UserManager userManager;
+
+    @Override
+    public boolean delete(Family family) {
+        return this.deleteFamily(family, this.userManager.getCurrentUser(), true);
+    }
+
     @Override
     public synchronized boolean deleteFamily(Family family, User updatingUser, boolean deleteAllMembers)
     {
@@ -272,6 +279,12 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
     protected String getIdPrefix()
     {
         return PREFIX;
+    }
+
+    @Override
+    public Family create()
+    {
+        return this.create(this.userManager.getCurrentUser().getProfileDocument());
     }
 
     @Override
