@@ -36,8 +36,11 @@ import org.xwiki.users.User;
 public interface FamilyRepository extends PrimaryEntityManager<Family>
 {
     /**
-     * @param patient whose family the function return
-     * @return family for which family.isMember(patient) is true
+     * Returns a Family object for patient. If there's an XWiki family document but no PhenotipsFamily object associated
+     * with it in the cache, a new PhenotipsFamily object will be created.
+     *
+     * @param patient for which to look for a family
+     * @return Family if there's an XWiki family document, otherwise null
      */
     Family getFamilyForPatient(Patient patient);
 
@@ -79,50 +82,6 @@ public interface FamilyRepository extends PrimaryEntityManager<Family>
      * @return true if successful
      */
     boolean delete(Family family, boolean deleteAllMembers);
-
-    /**
-     * Unlinks all patients from the family. It is supposed to be used in the event handler for xwiki remove action,
-     * when the document will be removed by the framework itself.
-     *
-     * @param family the family
-     * @param updatingUser right checks are done for this user
-     * @return true if successful
-     */
-    boolean forceRemoveAllMembers(Family family, User updatingUser);
-
-    /**
-     * Adds a member to the family TODO: it is questionable where this method should be located, given new entities API.
-     *
-     * @param family family which should get a new member
-     * @param patient to add to family
-     * @param updatingUser right checks are done for this user
-     * @throws PTException in case addition was not successful for any reason (not enough rights, patient already has a
-     *             family, etc.)
-     */
-    void addMember(Family family, Patient patient, User updatingUser) throws PTException;
-
-    /**
-     * Removes the given patient form the family. TODO: it is questionable where this method should be located, given
-     * new entities API.
-     *
-     * @param family family which should lose a new member
-     * @param patient to remove from family
-     * @param updatingUser right checks are done for this user
-     * @throws PTException if removal was not successful for anyh reason (not enough rights, patient not a member of
-     *             this family, etc.)
-     */
-    void removeMember(Family family, Patient patient, User updatingUser) throws PTException;
-
-    /**
-     * Sets the pedigree for the family, and updates all the corresponding other documents. TODO: it is questionable
-     * where this method should be located, given new entities API.
-     *
-     * @param family the family
-     * @param pedigree to set
-     * @param updatingUser right checks are done for this user
-     * @throws PTException when the family could not be correctly and fully updated using the given pedigree
-     */
-    void setPedigree(Family family, Pedigree pedigree, User updatingUser) throws PTException;
 
     /**
      * Checks of the given user can add the given patient to the given family.

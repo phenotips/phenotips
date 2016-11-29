@@ -25,17 +25,12 @@ import org.phenotips.entities.internal.AbstractPrimaryEntityManager;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
-import org.phenotips.studies.family.Pedigree;
-import org.phenotips.studies.family.PedigreeProcessor;
 import org.phenotips.studies.family.exceptions.PTException;
-import org.phenotips.studies.family.exceptions.PTInternalErrorException;
 import org.phenotips.studies.family.exceptions.PTInvalidFamilyIdException;
 import org.phenotips.studies.family.exceptions.PTInvalidPatientIdException;
 import org.phenotips.studies.family.exceptions.PTNotEnoughPermissionsOnFamilyException;
 import org.phenotips.studies.family.exceptions.PTNotEnoughPermissionsOnPatientException;
 import org.phenotips.studies.family.exceptions.PTPatientAlreadyInAnotherFamilyException;
-import org.phenotips.studies.family.exceptions.PTPatientNotInFamilyException;
-import org.phenotips.studies.family.exceptions.PTPedigreeContainesSamePatientMultipleTimesException;
 import org.phenotips.studies.family.groupManagers.PatientsInFamilyManager;
 
 import org.xwiki.component.annotation.Component;
@@ -48,19 +43,15 @@ import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
-import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -100,6 +91,10 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
     private UserManager userManager;
 
     @Inject
+    @Named("current")
+    private DocumentReferenceResolver<String> referenceResolver;
+
+    @Inject
     private EntityReferenceSerializer<String> entitySerializer;
 
     @Override
@@ -130,6 +125,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         }
     }
 
+    // TODO add inherited delete()
     @Override
     public synchronized boolean deleteFamily(Family family, User updatingUser, boolean deleteAllMembers)
     {
@@ -159,30 +155,13 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
                     return false;
                 }
             }
-        } else if (!this.forceRemoveAllMembers(family, currentUser)) {
+        } else if (!this.pifManager.forceRemoveAllMembers(family, currentUser)) {
             return false;
         }
 
         return super.delete(family);
     }
 
-    @Override
-    public boolean forceRemoveAllMembers(Family family, User updatingUser)
-    {
-        if (!this.authorizationService.hasAccess(updatingUser, Right.EDIT, family.getDocumentReference())) {
-            return false;
-        }
-        try {
-            this.removeAllMembers(family, this.pifManager.getMembers(family));
-            // Remove the members without updating family document since we don't care about it as it will
-            // be removed anyway
-
-            return true;
-        } catch (PTException ex) {
-            this.logger.error("Failed to unlink all patients for the family [{}]: {}", family.getId(), ex.getMessage());
-            return false;
-        }
-    }
 
     @Override
     public Family getFamilyById(String id)
@@ -190,13 +169,6 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         return get(id);
     }
 
-    /**
-     * Returns a Family object for patient. If there's an XWiki family document but no PhenotipsFamily object associated
-     * with it in the cache, a new PhenotipsFamily object will be created.
-     *
-     * @param patient for which to look for a family
-     * @return Family if there's an XWiki family document, otherwise null
-     */
     @Override
     public Family getFamilyForPatient(Patient patient)
     {
@@ -205,144 +177,6 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
             return null;
         } else {
             return families.iterator().next();
-        }
-    }
-
-    @Override
-    public synchronized void addMember(Family family, Patient patient, User updatingUser) throws PTException
-    {
-        Collection<Patient> asList = Arrays.asList(patient);
-
-        this.checkValidity(family, asList, updatingUser);
-        this.addAllMembers(family, asList);
-        this.updateFamilyPermissionsAndSave(family, "added " + patient.getId() + " to the family");
-    }
-
-    /*
-     * This method should be called after the members of the family changed.
-     */
-    private void updateFamilyPermissionsAndSave(Family family, String message) {
-        XWikiContext context = this.provider.get();
-        this.updateFamilyPermissions(family, context, false);
-        if (!saveFamilyDocument(family, message, context)) {
-            throw new PTInternalErrorException();
-        }
-    }
-
-    /**
-     * This method may be called either as a standalone invocation, or internally as part of family pedigree update.
-     * ({@link #checkValidity(Family, List, User)} and family saving is always done outside of this method.
-     *
-     * Updating permissions is an expensive operation which takes all patients into account, so it shouldn't be done
-     * after adding each patient. It should be done by the calling code.
-     */
-    private void addAllMembers(Family family, Collection<Patient> patients) throws PTException
-    {
-        if (family == null) {
-            throw new PTInvalidFamilyIdException(null);
-        }
-
-        Collection<Patient> members = this.pifManager.getMembers(family);
-
-        for (Patient patient : patients) {
-            if (patient == null) {
-                throw new PTInvalidPatientIdException(null);
-            }
-
-            // TODO
-            // if (patient.getXDocument() == null) {
-            //     throw new PTInvalidPatientIdException(patient.getId());
-            // }
-            String patientId = patient.getId();
-            XWikiContext context = this.xcontextProvider.get();
-            XWikiDocument patientDocument = patient.getXDocument();
-            if (patientDocument == null) {
-                throw new PTInvalidPatientIdException(patientId);
-            }
-
-            // Check if not already a member
-            if (members.contains(patient)) {
-                this.logger.error("Patient [{}] already a member of the same family, not adding", patientId);
-                throw new PTPedigreeContainesSamePatientMultipleTimesException(patientId);
-            }
-        }
-
-        if (!this.pifManager.addAllMembers(family, patients)) {
-            // TODO what if some members could not be added? rollback?
-            // It can be implemented either here or in entities, for handling a more general case.
-            throw new PTInternalErrorException();
-        }
-
-    }
-
-    @Override
-    public synchronized void removeMember(Family family, Patient patient, User updatingUser) throws PTException
-    {
-        List<Patient> asList = Arrays.asList(patient);
-        this.checkIfPatientsCanBeRemovedFromFamily(family, asList, updatingUser);
-        this.removeAllMembers(family, asList);
-        this.updateFamilyPermissionsAndSave(family, "removed " + patient.getId() + " from the family");
-    }
-
-    /*
-     * Calls to {@link #checkIfPatientCanBeRemovedFromFamily} and {@link #updateFamilyPermissionsAndSave}
-     * before and after, respectively, are the responsibility of the caller.
-     */
-    private void removeAllMembers(Family family, Collection<Patient> patients)
-        throws PTException
-    {
-        if (family == null) {
-            throw new PTInvalidFamilyIdException(null);
-        }
-
-        Collection<Patient> members = this.pifManager.getMembers(family);
-
-        for (Patient patient : patients) {
-            if (patient == null) {
-                throw new PTInvalidPatientIdException(null);
-            }
-
-            // TODO
-            // if (patient.getXDocument() == null) {
-            //    throw new PTInvalidPatientIdException(patientId);
-            // }
-            String patientId = patient.getId();
-            XWikiContext context = this.xcontextProvider.get();
-            XWikiDocument patientDocument = patient.getXDocument();
-            if (patientDocument == null) {
-                throw new PTInvalidPatientIdException(patientId);
-            }
-
-            if (!members.contains(patient)) {
-                this.logger.error("Can't remove patient [{}] from family [{}]: patient not a member of the family",
-                    patientId, family.getId());
-                throw new PTPatientNotInFamilyException(patientId);
-            }
-        }
-
-        // Remove patient from family's members list
-        members.remove(patientLinkString(patient));
-        BaseObject familyObject = family.getXDocument().getXObject(Family.CLASS_REFERENCE);
-        familyObject.set(PhenotipsFamily.FAMILY_MEMBERS_FIELD, members, context);
-
-        if (!batchUpdate) {
-            if (!saveFamilyDocument(family, "removed " + patientId + " from the family", context)) {
-                throw new PTInternalErrorException();
-
-            // Remove patient from the pedigree
-            Pedigree pedigree = family.getPedigree();
-            if (pedigree != null) {
-                pedigree.removeLink(patientId);
-                if (!this.setPedigreeObject(family, pedigree, context)) {
-                    this.logger.error("Could not remove patient [{}] from pedigree from the family [{}]",
-                        patientId, family.getId());
-                    throw new PTInternalErrorException();
-                }
-            }
-        }
-
-        if (!this.pifManager.removeAllMembers(family, patients)) {
-            throw new PTInternalErrorException();
         }
     }
 
@@ -421,161 +255,6 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         }
     }
 
-    private void checkIfPatientsCanBeRemovedFromFamily(Family family, Collection<Patient> patients, User updatingUser)
-        throws PTException
-    {
-        for (Patient patient : patients) {
-            // check rights
-            if (!this.authorizationService.hasAccess(updatingUser, Right.EDIT, family.getDocumentReference())) {
-                throw new PTNotEnoughPermissionsOnFamilyException(Right.EDIT, family.getId());
-            }
-            if (!this.authorizationService.hasAccess(updatingUser, Right.EDIT, patient.getDocumentReference())) {
-                throw new PTNotEnoughPermissionsOnPatientException(Right.EDIT, patient.getId());
-            }
-        }
-    }
-
-    @Override
-    public synchronized void setPedigree(Family family, Pedigree pedigree, User updatingUser) throws PTException
-    {
-        // note: whenever available, internal versions of helper methods are used which modify the
-        // family document but do not save it to disk
-        Collection<Patient> oldMembers = this.pifManager.getMembers(family);
-
-        Collection<Patient> currentMembers = new ArrayList<>();
-        for (String id : pedigree.extractIds()) {
-            currentMembers.add(this.patientRepository.get(id));
-        }
-
-        // Add new members to family
-        List<Patient> patientsToAdd = new LinkedList<>();
-        patientsToAdd.addAll(currentMembers);
-        patientsToAdd.removeAll(oldMembers);
-
-        this.checkValidity(family, patientsToAdd, updatingUser);
-
-        XWikiContext context = this.xcontextProvider.get();
-        context.setUserReference(updatingUser == null ? null : updatingUser.getProfileDocument());
-
-        // update patient data from pedigree's JSON
-        // (no links to families are set at this point, only patient dat ais updated)
-        this.updatePatientsFromJson(pedigree, updatingUser);
-
-        boolean firstPedigree = (family.getPedigree() == null);
-
-        this.setPedigreeObject(family, pedigree, context);
-
-        // Removed members who are no longer in the family
-        List<Patient> patientsToRemove = new LinkedList<>();
-        patientsToRemove.addAll(oldMembers);
-        patientsToRemove.removeAll(currentMembers);
-
-        this.checkIfPatientsCanBeRemovedFromFamily(family, patientsToRemove, updatingUser);
-        this.removeAllMembers(family, patientsToRemove);
-
-        this.addAllMembers(family, patientsToAdd);
-
-        if (firstPedigree && StringUtils.isEmpty(family.getExternalId())) {
-            // default family identifier to proband last name - only on first pedigree creation
-            // and only if no extrenal id is already (manully) defined
-            String lastName = pedigree.getProbandPatientLastName();
-            if (lastName != null) {
-                this.setFamilyExternalId(lastName, family, context);
-            }
-        }
-
-        updateFamilyPermissionsAndSave(family, "Updated family from saved pedigree");
-    }
-
-    private void checkValidity(Family family, Collection<Patient> newMembers, User updatingUser) throws PTException
-    {
-        // Checks that current user has edit permissions on family
-        if (!this.authorizationService.hasAccess(updatingUser, Right.EDIT, family.getDocumentReference())) {
-            throw new PTNotEnoughPermissionsOnFamilyException(Right.EDIT, family.getId());
-        }
-
-        Patient duplicatePatient = this.findDuplicate(newMembers);
-        if (duplicatePatient != null) {
-            throw new PTPedigreeContainesSamePatientMultipleTimesException(duplicatePatient.getId());
-        }
-
-        // Check if every new member can be added to the family
-        if (newMembers != null) {
-            for (Patient patient : newMembers) {
-                checkIfPatientCanBeAddedToFamily(family, patient, updatingUser);
-            }
-        }
-    }
-
-    private void updatePatientsFromJson(Pedigree pedigree, User updatingUser)
-    {
-        String idKey = "id";
-        try {
-            List<JSONObject> patientsJson = this.pedigreeConverter.convert(pedigree);
-
-            for (JSONObject singlePatient : patientsJson) {
-                if (singlePatient.has(idKey)) {
-                    Patient patient = this.patientRepository.get(singlePatient.getString(idKey));
-                    if (!this.authorizationService.hasAccess(
-                        updatingUser, Right.EDIT, patient.getDocumentReference())) {
-                        // skip patients the current user does not have edit rights for
-                        continue;
-                    }
-                    patient.updateFromJSON(singlePatient);
-                }
-            }
-        } catch (Exception ex) {
-            throw new PTInternalErrorException();
-        }
-    }
-
-    private Patient findDuplicate(Collection<Patient> updatedMembers)
-    {
-        List<Patient> duplicationCheck = new LinkedList<>();
-        duplicationCheck.addAll(updatedMembers);
-        for (Patient member : updatedMembers) {
-            duplicationCheck.remove(member);
-            if (duplicationCheck.contains(member)) {
-                return member;
-            }
-        }
-
-        return null;
-    }
-
-    private boolean setPedigreeObject(Family family, Pedigree pedigree, XWikiContext context)
-    {
-        if (pedigree == null) {
-            this.logger.error("Can not set NULL pedigree for family [{}]", family.getId());
-            return false;
-        }
-
-        BaseObject pedigreeObject = family.getXDocument().getXObject(Pedigree.CLASS_REFERENCE);
-        pedigreeObject.set(Pedigree.IMAGE, ((pedigree == null) ? "" : pedigree.getImage(null)), context);
-        pedigreeObject.set(Pedigree.DATA, ((pedigree == null) ? "" : pedigree.getData().toString()), context);
-
-        // update proband ID every time pedigree is changed
-        BaseObject familyClassObject = family.getXDocument().getXObject(Family.CLASS_REFERENCE);
-        if (familyClassObject != null) {
-            String probandId = pedigree.getProbandId();
-            if (!StringUtils.isEmpty(probandId)) {
-                Patient patient = this.patientRepository.get(probandId);
-                familyClassObject.setStringValue("proband_id",
-                    (patient == null) ? "" : patient.getDocumentReference().toString());
-            } else {
-                familyClassObject.setStringValue("proband_id", "");
-            }
-        }
-
-        return true;
-    }
-
-    private void setFamilyExternalId(String externalId, Family family, XWikiContext context)
-    {
-        BaseObject familyObject = family.getXDocument().getXObject(Family.CLASS_REFERENCE);
-        familyObject.set("external_id", externalId, context);
-    }
-
     private synchronized boolean saveFamilyDocument(Family family, String documentHistoryComment, XWikiContext context)
     {
         try {
@@ -610,7 +289,6 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
 
             BaseObject ownerObject = familyXDocument.newXObject(Owner.CLASS_REFERENCE, context);
 
-            // FIXME is this the right way to do that?
             String ownerString = creator == null ? "" : this.entityReferenceSerializer.serialize(creator);
             ownerObject.set("owner", ownerString, context);
 
@@ -648,13 +326,6 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
             this.logger.warn("Failed to get the last used identifier: {}", ex.getMessage());
         }
         return crtMaxID;
-    }
-
-    private XWikiDocument getDocument(EntityReference docRef) throws XWikiException
-    {
-        XWikiContext context = this.xcontextProvider.get();
-        XWiki wiki = context.getWiki();
-        return wiki.getDocument(docRef, context);
     }
 
     @Override
