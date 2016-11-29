@@ -40,6 +40,7 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
 
 import java.util.Collection;
 
@@ -98,7 +99,14 @@ public class PhenotipsFamilyRepository extends AbstractPrimaryEntityManager<Fami
     @Inject
     private EntityReferenceSerializer<String> entityReferenceSerializer;
 
-    // TODO add inherited delete()
+    @Inject
+    private UserManager userManager;
+
+    @Override
+    public boolean delete(Family family) {
+        return this.deleteFamily(family, this.userManager.getCurrentUser(), true);
+    }
+
     @Override
     public synchronized boolean deleteFamily(Family family, User updatingUser, boolean deleteAllMembers)
     {
@@ -249,6 +257,12 @@ public class PhenotipsFamilyRepository extends AbstractPrimaryEntityManager<Fami
     protected String getIdPrefix()
     {
         return PREFIX;
+    }
+
+    @Override
+    public Family create()
+    {
+        return this.create(this.userManager.getCurrentUser().getProfileDocument());
     }
 
     @Override
