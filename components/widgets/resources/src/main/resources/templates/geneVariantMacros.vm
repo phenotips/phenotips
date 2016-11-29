@@ -44,7 +44,7 @@
 ##
 #macro(__variant_head $count $geneObjNumber $geneName $classname $options)##
 |(%class="pseudoindent"%)##
-|=(% colspan="4" class="variant variant-title gene-$geneObjNumber" %)$services.localization.render("${classname}.variantTable.title", [$geneName, $count]) \\
+|=(% colspan="4" class="variant variant-title gene-$geneObjNumber" %)$services.localization.render("${classname}.variantTable.title", [$!{services.rendering.escape($geneName, $doc.syntax)}, $count]) \\
 (%class="variant-gene-$geneObjNumber variant-title-row variant-hide-heading-$geneObjNumber"%)##
 |(%class="pseudoindent"%)##
 |=(% class="variant var-row-number"  %) #(%%)##
@@ -98,7 +98,7 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 #end
 |(% class="pseudoindent" %) |(% class="variant-row-count variant-${variantIndex} variant" %)$count##
 #foreach($propName in $options.defaultProperties)
-|(% class="variant variant-default-input $propName #if ($propName == 'cdna')mandatory#end variant-$variantIndex" %)$doc.display($propName, $options.mode, $variantObj)##
+|(% class="variant variant-default-input $propName #if ($propName == 'cdna')mandatory#end variant-$variantIndex" %)#if ($xcontext.action == 'edit')$doc.display($propName, 'edit', $variantObj)#else$!{services.rendering.escape($variantObj.getValue($propName), $doc.syntax)}#end##
 #end
 #if ($options.mode == 'edit')#__variant__deleteTool($variantObj)#end\\
 (% class="variant-gene-$geneObjNumber variant-moreinfo-row v-collapsed variant-hide-heading-$geneObjNumber" %)##
@@ -113,7 +113,7 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 #set ($isInputString = $options.inputStrings.contains($prop.getName()))
 |(% class="variant-moreinfo variant-property-name-$variantIndex %)**${prop.translatedPrettyName}**##
 | (% class="variant-property-value ${prop.getName()}-$variantIndex ##
-#if ($options.mode == 'edit') variant-label-$variantIndex #end"%)#if($isInputString)$rawValue#else $doc.display($prop.getName(), 'view', $variantObj )#end
+#if ($options.mode == 'edit') variant-label-$variantIndex #end"%)#if($isInputString)$!{services.rendering.escape($rawValue, $doc.syntax)}#else $doc.display($prop.getName(), 'view', $variantObj )#end
  (%%)#if ($options.mode == 'edit')(% class="v-collapsed variant-input-$variantIndex" %)$doc.display($prop.getName(), $options.mode, $variantObj )#end#end##
 #end#end
 ))) #if ($options.mode == 'edit')(% class="variant-moreinfo-editdonebutton-row variant-$variantIndex" %)#end\\

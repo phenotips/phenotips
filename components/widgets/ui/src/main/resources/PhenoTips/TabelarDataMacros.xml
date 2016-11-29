@@ -69,7 +69,14 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
       #set ($disableLabels = true)
       #foreach ($o in $dataObjects)
         #set ($localCounter = 1)
-        #foreach($prop in $dataClass.properties)#if ($prop.name != $options.propertyName)|= ${prop.translatedPrettyName}: |#if ($localCounter == 1)=#end#set($localCounter = $mathtool.add($localCounter, 1)) $doc.display($prop.getName(), $displayMode, $o)
+        #foreach($prop in $dataClass.properties)#if ($prop.name != $options.propertyName)|= ${prop.translatedPrettyName}: |#if ($localCounter == 1)=#end#set($localCounter = $mathtool.add($localCounter, 1))##
+          #if ("$!prop.getValue('contenttype')" == 'PureText' &amp;&amp; $xcontext.action != 'edit')
+            (((${doc.display($prop.name, $displayMode, $o).replaceFirst('^(\{\{html clean="false" wiki="false"}})?', '{{content syntax="plain/1.0"}}').replaceFirst('(\{\{/html}})?$', '{{/content}}')})))##
+          #elseif("$!prop.type" == 'StringClass' &amp;&amp; $xcontext.action != 'edit')
+            $!{services.rendering.escape($o.getValue($prop.name), $doc.syntax)}##
+          #else
+            ${doc.display($prop.getName(), $displayMode, $o).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}##
+          #end
 
         #end#end## foreach object
 
@@ -81,7 +88,15 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
 
       #end
       #foreach ($o in $dataObjects)
-        #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name#if ($prop.name == $options.propertyName) hidden#end" %)#if ("$!{options.labels}$!{disableLabels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="" &gt;${prop.translatedPrettyName}&lt;/label&gt;{{/html}}#end $doc.display($prop.getName(), $displayMode, $o).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')#end#if ($options.mode == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
+        #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${foreach.count}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name#if ($prop.name == $options.propertyName) hidden#end" %)#if ("$!{options.labels}$!{disableLabels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="" &gt;${prop.translatedPrettyName}&lt;/label&gt;{{/html}} #end##
+          #if ("$!prop.getValue('contenttype')" == 'PureText' &amp;&amp; $xcontext.action != 'edit')
+            (((${doc.display($prop.name, $displayMode, $o).replaceFirst('^(\{\{html clean="false" wiki="false"}})?', '{{content syntax="plain/1.0"}}').replaceFirst('(\{\{/html}})?$', '{{/content}}')})))##
+          #elseif("$!prop.type" == 'StringClass' &amp;&amp; $xcontext.action != 'edit')
+            $!{services.rendering.escape($o.getValue($prop.name), $doc.syntax)}##
+          #else
+            ${doc.display($prop.getName(), $displayMode, $o).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}##
+          #end
+        #end#if ($options.mode == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
 
       #end## foreach object
 

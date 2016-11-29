@@ -948,6 +948,9 @@ h1:target, h2:target, h3:target {
 .xdialog-box .button {
   min-width: 5em;
 }
+.commentcontent {
+  white-space: pre-wrap;
+}
 </code>
     </property>
     <property>

@@ -72,7 +72,7 @@
   #if($xcontext.action == 'edit' || $xcontext.action == 'inline')
     {{html wiki=false clean=false}}&lt;input class="xwiki-free-multiselect-value" type="text" size="30" name="${prefix}${name}" id="${prefix}${name}_${counter}" value="$!escapetool.xml($v)"/&gt;{{/html}}##
   #else
-    $escapetool.xml($v)##
+    $!{services.rendering.escape($v, $doc.syntax)}##
   #end
 #end
 #if ($xcontext.action == 'edit' || $xcontext.action == 'inline')

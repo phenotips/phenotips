@@ -83,6 +83,8 @@
 (% class="displayed-value"%)(((
 #if ("$!class.get($propName).getValue('contenttype')" == 'PureText' &amp;&amp; $xcontext.action != 'edit')
   #if($doc.display($propName) != '')${doc.display($propName).replaceFirst('^(\{\{html clean="false" wiki="false"}})?', '{{content syntax="plain/1.0"}}').replaceFirst('(\{\{/html}})?$', '{{/content}}')}#{else}-#{end}
+#elseif("$!class.get($propName).type" == 'StringClass' &amp;&amp; $xcontext.action != 'edit')
+  $!{services.rendering.escape($obj.getProperty($propName).value, $doc.syntax)}
 #else
   #if($xcontext.action == 'edit' || $doc.display($propName) != '')${doc.display($propName).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}#{else}-#{end}
 #end
@@ -180,7 +182,7 @@
     #if ($mode == 'half-width')
       #__displayHalfWidth($propName $label $_groupCssClass $labelCssClass)
     #else
-      (% class="$groupCssClass" %)(((#__label($propName $labelCssClass $label) (% class="displayed-value"%)#if ("$!{doc.display($propName)}" == '')-#else${doc.display($propName).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}#end(%%))))
+      (% class="$groupCssClass" %)(((#__label($propName $labelCssClass $label) (% class="displayed-value"%)#if ("$!{doc.display($propName)}" == '')-#elseif("$!class.get($propName).type" == 'StringClass')$!{services.rendering.escape($obj.getProperty($propName).value, $doc.syntax)}#else${doc.display($propName).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}#end(%%))))
     #end
   #else
     #if ($mode == 'half-width')
