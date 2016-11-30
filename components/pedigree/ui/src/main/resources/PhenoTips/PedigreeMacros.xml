@@ -159,24 +159,26 @@
       #end
       &lt;/ul&gt;
     #end
-    #if ($causalGeneColors &amp;&amp; $causalGeneColors.size() &gt; 0)
+    #set ($causalGeneNames = $pedigreeDataJSON.settings.names.causalGenes)
+    #if ($causalGeneColors &amp;&amp; $causalGeneNames &amp;&amp; $causalGeneColors.size() &gt; 0)
       Causal Genes:
       &lt;ul class="pedigree-legend-list" style="margin-top: .4em"&gt;
       #foreach ($color in $causalGeneColors.entrySet())
         &lt;li class="pedigree-disorder-item" style="list-style-type: none;"&gt;
           &lt;span class="pedigree-disorder-color" style="color: $color.value; $listyle"&gt;$circle&lt;/span&gt;
-          &lt;span class="pedigree-disorder-name"&gt;$color.key&lt;/span&gt;
+          &lt;span class="pedigree-disorder-name"&gt;$escapetool.xml($causalGeneNames[$color.key])&lt;/span&gt;
         &lt;/li&gt;
       #end
       &lt;/ul&gt;
     #end
-    #if ($candidateGeneColors &amp;&amp; $candidateGeneColors.size() &gt; 0)
+    #set ($candidateGeneNames = $pedigreeDataJSON.settings.names.candidateGenes)
+    #if ($candidateGeneColors &amp;&amp; $candidateGeneNames &amp;&amp; $candidateGeneColors.size() &gt; 0)
       Candidate Genes:
       &lt;ul class="pedigree-legend-list" style="margin-top: .4em"&gt;
       #foreach ($color in $candidateGeneColors.entrySet())
         &lt;li class="pedigree-disorder-item" style="list-style-type: none;"&gt;
           &lt;span class="pedigree-disorder-color" style="color: $color.value; $listyle"&gt;$circle&lt;/span&gt;
-          &lt;span class="pedigree-disorder-name"&gt;$color.key&lt;/span&gt;
+          &lt;span class="pedigree-disorder-name"&gt;$escapetool.xml($candidateGeneNames[$color.key])&lt;/span&gt;
         &lt;/li&gt;
       #end
       &lt;/ul&gt;

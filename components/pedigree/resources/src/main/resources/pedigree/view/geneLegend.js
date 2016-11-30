@@ -80,10 +80,20 @@
          * Returns a symbol for a gene with the given ID (ID and symbol are the same for genes without EnsembleID)
          *
          * @param {String|Number} Gene ID
-         * @return {String} associated gene name taken from the vocabulary and loaded via AJAX call
+         * @return {String} associated gene symbol taken from the vocabulary and loaded via AJAX call
          */
         getSymbol: function($super, geneID) {
             return this.getGene(geneID).getSymbol();
+        },
+
+        /**
+         * Returns a string which shoudl be displayed for the given gene (in case of genes it is a symbol)
+         *
+         * @param {String|Number} Gene ID
+         * @return {String} human-readable gene name (which is curently the gene symbol)
+         */
+        getName: function($super, geneID) {
+            return this.getSymbol(geneID);
         },
 
         /**

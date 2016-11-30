@@ -252,13 +252,13 @@ define([
               var negativeGenes = [];
               nodeGenes.each( function(item) {
                   if (candidateGeneSelected && (item.status == "candidate")) {
-                      candidateGenes.push(item.gene);
+                      candidateGenes.push(item.id);
                   } else
                   if (causalGeneSelected && (item.status == "solved")) {
-                      solvedGenes.push(item.gene);
+                      solvedGenes.push(item.id);
                   }
                   if (item.status == "rejected") {
-                      negativeGenes.push(item.gene);
+                      negativeGenes.push(item.id);
                   }
               });
               // if at least one of the possible genes is in the selected list, mark as affected

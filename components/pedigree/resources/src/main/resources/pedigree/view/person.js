@@ -1503,7 +1503,6 @@ define([
                     this.setEthnicities([]);
                 }
 
-                this._genes = [];
                 if(info.genes) {
                     // genes: [ {id: 'ENSG00000168765', gene: 'GSTM4', status: 'candidate', comments: 'abc'},
                     //          {id: 'ENSG00000243055', gene: 'GK-AS1', status: 'rejected', strategy: ['deletion']},
