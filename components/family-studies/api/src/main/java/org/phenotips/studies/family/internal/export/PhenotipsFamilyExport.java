@@ -24,7 +24,7 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
-import org.phenotips.studies.family.groupManagers.PatientsInFamilyManager;
+import org.phenotips.studies.family.PatientsInFamilyManager;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.query.Query;
@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
@@ -116,6 +117,7 @@ public class PhenotipsFamilyExport
     private RecordConfigurationManager configuration;
 
     @Inject
+    @Named("Family:Patient")
     private PatientsInFamilyManager pifManager;
 
     @Inject

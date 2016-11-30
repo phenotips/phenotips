@@ -25,13 +25,13 @@ import org.phenotips.entities.internal.AbstractPrimaryEntityManager;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
+import org.phenotips.studies.family.PatientsInFamilyManager;
 import org.phenotips.studies.family.exceptions.PTException;
 import org.phenotips.studies.family.exceptions.PTInvalidFamilyIdException;
 import org.phenotips.studies.family.exceptions.PTInvalidPatientIdException;
 import org.phenotips.studies.family.exceptions.PTNotEnoughPermissionsOnFamilyException;
 import org.phenotips.studies.family.exceptions.PTNotEnoughPermissionsOnPatientException;
 import org.phenotips.studies.family.exceptions.PTPatientAlreadyInAnotherFamilyException;
-import org.phenotips.studies.family.groupManagers.PatientsInFamilyManager;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
@@ -78,6 +78,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
     private PatientRepository patientRepository;
 
     @Inject
+    @Named("Family:Patient")
     private PatientsInFamilyManager pifManager;
 
     @Inject

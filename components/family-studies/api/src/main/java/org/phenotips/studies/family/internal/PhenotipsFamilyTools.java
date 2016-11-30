@@ -23,9 +23,9 @@ import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.FamilyTools;
+import org.phenotips.studies.family.PatientsInFamilyManager;
 import org.phenotips.studies.family.Pedigree;
 import org.phenotips.studies.family.exceptions.PTException;
-import org.phenotips.studies.family.groupManagers.PatientsInFamilyManager;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
@@ -51,6 +51,7 @@ import javax.inject.Singleton;
 public class PhenotipsFamilyTools implements FamilyTools
 {
     @Inject
+    @Named("Family:Patient")
     private PatientsInFamilyManager pifManager;
 
     @Inject

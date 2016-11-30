@@ -19,10 +19,10 @@ package org.phenotips.studies.family.groupManagers;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
-import org.phenotips.entities.PrimaryEntityGroupManager;
 import org.phenotips.entities.internal.AbstractExternalPrimaryEntityGroupManager;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
+import org.phenotips.studies.family.PatientsInFamilyManager;
 import org.phenotips.studies.family.Pedigree;
 import org.phenotips.studies.family.PedigreeProcessor;
 import org.phenotips.studies.family.exceptions.PTException;
@@ -37,12 +37,14 @@ import org.phenotips.studies.family.exceptions.PTPedigreeContainesSamePatientMul
 import org.phenotips.studies.family.internal.PhenotipsFamilyPermissions;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,6 +52,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
@@ -64,12 +67,17 @@ import com.xpn.xwiki.objects.BaseObject;
 /**
  * @version $Id$
  */
-@Component(roles = { PrimaryEntityGroupManager.class, PatientsInFamilyManager.class })
+@Component(roles = PatientsInFamilyManager.class)
+@Named("Family:Patient")
 @Singleton
-public class PatientsInFamilyManager
+public class DefaultPatientsInFamilyManager
     extends AbstractExternalPrimaryEntityGroupManager<Family, Patient>
-    implements PrimaryEntityGroupManager<Family, Patient>
+    implements PatientsInFamilyManager
 {
+    /** Type instance for lookup. */
+    public static final ParameterizedType TYPE = new DefaultParameterizedType(null, PatientsInFamilyManager.class,
+        Family.class, Patient.class);
+
     @Inject
     private UserManager userManager;
 
@@ -85,9 +93,12 @@ public class PatientsInFamilyManager
     @Inject
     private PhenotipsFamilyPermissions familyPermissions;
 
-    protected PatientsInFamilyManager(EntityReference groupEntityReference, EntityReference memberEntityReference)
+    /**
+     * Public constructor.
+     */
+    public DefaultPatientsInFamilyManager()
     {
-        super(groupEntityReference, memberEntityReference);
+        super(Family.CLASS_REFERENCE, Patient.CLASS_REFERENCE);
     }
 
     @Override
@@ -161,27 +172,13 @@ public class PatientsInFamilyManager
         return true;
     }
 
-    /**
-     * Unlinks Similar to deleteFamily, but does not delete the family document (unlinkes all patients from
-     * the family). It is supposed to be used in the event handler for xwiki remove action, when the document will be
-     * removed by the framework itself.
-     *
-     * @param family the family
-     * @return true if successful
-     */
+    @Override
     public boolean forceRemoveAllMembers(Family family)
     {
         return this.forceRemoveAllMembers(family, this.userManager.getCurrentUser());
     }
 
-    /**
-     * Unlinks all patients from the family. It is supposed to be used in the event handler for xwiki remove action,
-     * when the document will be removed by the framework itself.
-     *
-     * @param family the family
-     * @param updatingUser right checks are done for this user
-     * @return true if successful
-     */
+    @Override
     public boolean forceRemoveAllMembers(Family family, User updatingUser)
     {
         if (!this.authorizationService.hasAccess(updatingUser, Right.EDIT, family.getDocumentReference())) {
@@ -199,26 +196,13 @@ public class PatientsInFamilyManager
         }
     }
 
-    /**
-     * Sets the pedigree for the family, and updates all the corresponding other documents.
-     *
-     * @param family the family
-     * @param pedigree to set
-     * @throws PTException when the family could not be correctly and fully updated using the given pedigree
-     */
+    @Override
     public void setPedigree(Family family, Pedigree pedigree) throws PTException
     {
         this.setPedigree(family, pedigree, this.userManager.getCurrentUser());
     }
 
-    /**
-     * Sets the pedigree for the family, and updates all the corresponding other documents.
-     *
-     * @param family the family
-     * @param pedigree to set
-     * @param updatingUser right checks are done for this user
-     * @throws PTException when the family could not be correctly and fully updated using the given pedigree
-     */
+    @Override
     public synchronized void setPedigree(Family family, Pedigree pedigree, User updatingUser) throws PTException
     {
         // note: whenever available, internal versions of helper methods are used which modify the
@@ -347,15 +331,7 @@ public class PatientsInFamilyManager
         }
     }
 
-    /**
-     * For every family member, read users and groups that have either view or edit edit access on the patient, then
-     * gives the sam elevel of access on the family for those users and groups. After performing this method, if p is a
-     * member of the family, and x has level y access on p, x has level y access on the family. The user who is the
-     * owner of the family always has full access to the family. access on p, x has edit access of the family. The famly
-     * document is saved to disk after permissions are updated.
-     *
-     * @param family the family
-     */
+    @Override
     public synchronized void updateFamilyPermissions(Family family)
     {
         XWikiContext context = this.getXContext();

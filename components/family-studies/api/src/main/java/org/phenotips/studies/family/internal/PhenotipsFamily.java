@@ -22,11 +22,12 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.internal.PhenoTipsPatient;
 import org.phenotips.entities.internal.AbstractPrimaryEntity;
 import org.phenotips.studies.family.Family;
+import org.phenotips.studies.family.PatientsInFamilyManager;
 import org.phenotips.studies.family.Pedigree;
-import org.phenotips.studies.family.groupManagers.PatientsInFamilyManager;
 import org.phenotips.studies.family.internal.export.PhenotipsFamilyExport;
 
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.ArrayList;
@@ -69,10 +70,9 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
 
     static {
         try {
-            PhenotipsFamily.familyExport =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(PhenotipsFamilyExport.class);
-            PhenotipsFamily.pifManager =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(PatientsInFamilyManager.class);
+            ComponentManager cm = ComponentManagerRegistry.getContextComponentManager();
+            PhenotipsFamily.familyExport = cm.getInstance(PhenotipsFamilyExport.class);
+            PhenotipsFamily.pifManager = cm.getInstance(PatientsInFamilyManager.class, "Family:Patient");
         } catch (ComponentLookupException e) {
             e.printStackTrace();
         }
