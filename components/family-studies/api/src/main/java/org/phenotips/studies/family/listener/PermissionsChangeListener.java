@@ -46,6 +46,7 @@ import org.slf4j.Logger;
 public class PermissionsChangeListener extends AbstractEventListener
 {
     @Inject
+    @Named("Family")
     private FamilyRepository familyRepository;
 
     @Inject

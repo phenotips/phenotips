@@ -19,7 +19,7 @@ package org.phenotips.studies.family.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.studies.family.Family;
-import org.phenotips.studies.family.groupManagers.PatientsInFamilyManager;
+import org.phenotips.studies.family.PatientsInFamilyManager;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
@@ -79,6 +80,7 @@ public class PhenotipsFamilyPermissions
     private Logger logger;
 
     @Inject
+    @Named("Family:Patient")
     private PatientsInFamilyManager pifManager;
 
     /**
