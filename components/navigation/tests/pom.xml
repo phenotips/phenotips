@@ -37,12 +37,15 @@
   </properties>
 
   <dependencies>
+    <!-- UI modules that we want to have installed -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-navigation-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
+      <scope>runtime</scope>
     </dependency>
+    <!-- Other jars that are needed but not declared as dependencies transitively -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-configuration-default</artifactId>
