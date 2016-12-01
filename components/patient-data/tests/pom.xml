@@ -75,6 +75,14 @@ distribution.automaticStartOnWiki=false
 
   <dependencies>
     <!-- UI modules that we want to have installed -->
+    <!-- Keep this one first, so that skin extensions requiring programming rights are correctly registered when installing via the distribution wizard -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-default-settings</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>patient-data-ui</artifactId>
