@@ -160,26 +160,6 @@ distribution.automaticStartOnWiki=false
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-
-    <!-- Override Lucene version since the packager plugin pulls in a different version -->
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
-      <version>${solr.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-analyzers-common</artifactId>
-      <version>${solr.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-queryparser</artifactId>
-      <version>${solr.version}</version>
-      <scope>runtime</scope>
-    </dependency>
   </dependencies>
 
   <build>
