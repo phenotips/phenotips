@@ -23,6 +23,8 @@ import org.xwiki.stability.Unstable;
 
 import org.json.JSONObject;
 
+import com.xpn.xwiki.doc.XWikiDocument;
+
 /**
  * An XDocument containing a primary XObject, which gives it a special meaning, such as a User, a Patient Record, or a
  * Project.
@@ -53,7 +55,14 @@ public interface PrimaryEntity
      *
      * @return a valid document reference
      */
-    DocumentReference getDocument();
+    DocumentReference getDocumentReference();
+
+    /**
+     * Returns the document where the entity is stored.
+     *
+     * @return a valid document reference
+     */
+    XWikiDocument getDocument();
 
     /**
      * Returns the internal identifier of the entity.
@@ -69,6 +78,13 @@ public interface PrimaryEntity
      *         entity
      */
     String getName();
+
+    /**
+     * Returns the full name of the entity.
+     *
+     * @return a string
+     */
+    String getFullName();
 
     /**
      * Returns a longer, user-friendly description for the entity, if any.

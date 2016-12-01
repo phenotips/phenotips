@@ -17,77 +17,225 @@
  */
 package org.phenotips.entities.internal;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.entities.PrimaryEntity;
-import org.phenotips.entities.PrimaryEntityGroup;
 import org.phenotips.entities.PrimaryEntityGroupManager;
+import org.phenotips.entities.PrimaryEntityManager;
 
-import org.xwiki.query.Query;
-import org.xwiki.query.QueryException;
-import org.xwiki.stability.Unstable;
+import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceSerializer;
+import org.xwiki.query.QueryManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+
+import javax.inject.Provider;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Base class for implementing specific entity group managers. This can be used as an almost complete base
- * implementation, since the only unimplemented method is {@link #getDataSpace()}, however, several requirements are
- * imposed on the subclasses to fully work:
- * <ul>
- * <li>the concrete implementation must have its {@code @Named} annotation set to reference the XClass used for the
- * primary entity group, the one that's also returned by the {@link PrimaryEntity#getType()}</li>
- * <li>the {@code <G>} parameter must be set to the concrete class being managed</li>
- * <li>the class used for {@code <G>} must have a constructor that takes as an argument a
- * {@link org.xwiki.bridge.DocumentModelBridge} or a {@link com.xpn.xwiki.doc.XWikiDocument} argument</li>
- * <li>all documents {@link #create() created} by this manager will have the name in the format
- * {@code <PREFIX><7 digit sequential number>}, unless {@link #getNextDocument()} is overridden, where:
- * <ul>
- * <li>the prefix is computed from the uppercase letters of the XClass name, excluding {@code Class}, e.g. for
- * {@code PhenoTips.FamilyGroupClass} the prefix will be {@code FG}; override {@link #getIdPrefix()} to change this
- * behavior</li>
- * <li>the number is a 0-padded 7 digit number, starting at {@code 0000001} and automatically incremented for each new
- * entity created</li>
- * </ul>
- * </li>
- * </ul>
+ * Base class for implementing specific entity groups, where members declare the groups that they belong to. The class
+ * deals with logical group operations and not with implementation.
+ * <p>
  *
- * @param <G> the type of groups handled by this manager
- * @param <E> the type of entities belonging to the groups handled by this manager; if more than one type of entities
- *            can be part of the groups, then a generic {@code PrimaryEntity} should be used instead
+ * @param <G> the type of the group containing the entities
+ * @param <E> the type of entities belonging to this group; if more than one type of entities can be part of the group,
+ *            then a generic {@code PrimaryEntity} should be used instead
  * @version $Id$
  * @since 1.3M2
  */
-@Unstable("New class and interface added in 1.3")
-public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E extends PrimaryEntity>
-    extends AbstractPrimaryEntityManager<G> implements PrimaryEntityGroupManager<G, E>
+public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntity, E extends PrimaryEntity>
+    implements PrimaryEntityGroupManager<G, E>
 {
+    /** Entity type of group object. */
+    protected EntityReference groupEntityReference;
+
+    /** Manager of group primary entities. */
+    protected final PrimaryEntityManager<G> groupManager;
+
+    /** Entity type of member object. */
+    protected EntityReference memberEntityReference;
+
+    /** Manager of member primary entities. */
+    protected final PrimaryEntityManager<E> membersManager;
+
+    /** Logging helper object. */
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+    @SuppressWarnings("unchecked")
+    protected AbstractPrimaryEntityGroupManager(
+        EntityReference groupEntityReference, EntityReference memberEntityReference)
+    {
+        this.groupEntityReference = groupEntityReference;
+        this.memberEntityReference = memberEntityReference;
+
+        this.membersManager = (PrimaryEntityManager<E>) getManager(memberEntityReference);
+        this.groupManager = (PrimaryEntityManager<G>) getManager(groupEntityReference);
+    }
+
+    private PrimaryEntityManager<PrimaryEntity> getManager(EntityReference entityReference)
+    {
+        PrimaryEntityManager<PrimaryEntity> manager = null;
+        if (memberEntityReference != null) {
+            ComponentManager cm = ComponentManagerRegistry.getContextComponentManager();
+            String[] possibleRoles = new String[3];
+            possibleRoles[0] = getLocalSerializer().serialize(entityReference);
+            possibleRoles[1] = entityReference.getName();
+            possibleRoles[2] = StringUtils.removeEnd(entityReference.getName(), "Class");
+            for (String role : possibleRoles) {
+                try {
+                    manager = cm.getInstance(PrimaryEntityManager.class, role);
+                    if (manager != null) {
+                        break;
+                    }
+                } catch (ComponentLookupException ex) {
+                    // TODO Use a generic manager that can work with any type of group
+                }
+            }
+        }
+        if (manager == null) {
+            this.logger.info("No suitable primary entity manager found for entities of type [{}] available;"
+                + " certain group operations will fail", entityReference);
+        }
+        return manager;
+    }
+
     @Override
-    public Collection<G> getGroupsForEntity(PrimaryEntity entity)
+    public Collection<E> getMembers(G group)
+    {
+        return getMembersOfType(group, memberEntityReference);
+    }
+
+    @Override
+    public boolean addAllMembersById(G group, Collection<String> memberIds)
+    {
+        Collection<E> members = new ArrayList<>(memberIds.size());
+        for (String id : memberIds) {
+            E member = this.membersManager.get(id);
+            if (member != null) {
+                members.add(member);
+            }
+        }
+        return addAllMembers(group, members);
+    }
+
+    @Override
+    public boolean addAllMembers(G group, Collection<E> members)
+    {
+        boolean success = true;
+        for (E member : members) {
+            if (!this.addMember(group, member)) {
+                success = false;
+            }
+        }
+        return success;
+    }
+
+    @Override
+    public boolean removeFromAllGroups(E member)
+    {
+        boolean success = true;
+        Collection<G> groups = this.getGroupsForMember(member);
+        for (G group : groups) {
+            if (!this.removeMember(group, member)) {
+                success = false;
+            }
+        }
+        return success;
+    }
+
+    @Override
+    public boolean addToAllGroups(E member, Collection<G> groups)
+    {
+        boolean success = true;
+        for (G group : groups) {
+            if (!this.addMember(group,  member)) {
+                success = false;
+            }
+        }
+        return success;
+    }
+
+    @Override
+    public boolean removeAllMembers(G group)
+    {
+        boolean success = true;
+        Collection<E> existingMembers = this.getMembers(group);
+        for (E member : existingMembers) {
+            if (!this.removeMember(group, member)) {
+                success = false;
+            }
+        }
+        return success;
+    }
+
+    protected QueryManager getQueryManager()
     {
         try {
-            // FIXME GROUP_MEMBERSHIP_CLASS should be replaced with a static method call
-            Query q = this.qm.createQuery(
-                "select gdoc.fullName from Document edoc, edoc.object("
-                    + this.localSerializer.serialize(PrimaryEntityGroup.GROUP_MEMBERSHIP_CLASS)
-                    + ") as binding, Document gdoc, gdoc.object("
-                    + this.localSerializer.serialize(getEntityXClassReference())
-                    + ") as grp where gdoc.space = :gspace and binding.reference = concat('"
-                    + this.xcontextProvider.get().getWikiId()
-                    + ":', gdoc.fullName) and edoc.fullName = :name order by gdoc.fullName asc",
-                Query.XWQL);
-            q.bindValue("gspace", this.getDataSpace().getName());
-            q.bindValue("name", this.localSerializer.serialize(entity.getDocument()));
-            List<String> docNames = q.execute();
-            Collection<G> result = new ArrayList<>(docNames.size());
-            for (String docName : docNames) {
-                result.add(get(docName));
-            }
-            return result;
-        } catch (QueryException ex) {
-            this.logger.warn("Failed to query all entities of type [{}]: {}", getEntityXClassReference(),
-                ex.getMessage());
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(QueryManager.class);
+        } catch (ComponentLookupException ex) {
+            this.logger.error("Failed to access the query manager: {}", ex.getMessage(), ex);
         }
-        return Collections.emptyList();
+        return null;
+    }
+
+    protected EntityReferenceSerializer<String> getLocalSerializer()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager()
+                .getInstance(EntityReferenceSerializer.TYPE_STRING, "local");
+        } catch (Exception ex) {
+            this.logger.error("Unexpected exception while getting the local reference serializer: {}", ex.getMessage());
+        }
+        return null;
+    }
+
+    protected EntityReferenceSerializer<String> getFullSerializer()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager()
+                .getInstance(EntityReferenceSerializer.TYPE_STRING);
+        } catch (Exception ex) {
+            this.logger.error("Unexpected exception while getting the full reference serializer: {}", ex.getMessage());
+        }
+        return null;
+    }
+
+    protected XWikiContext getXContext()
+    {
+        try {
+            Provider<XWikiContext> xcontextProvider =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiContext.TYPE_PROVIDER);
+            return xcontextProvider.get();
+        } catch (Exception ex) {
+            this.logger.error("Unexpected exception while getting the current context: {}", ex.getMessage());
+        }
+        return null;
+    }
+
+    protected DocumentAccessBridge getDataAccessBridge()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
+        } catch (Exception ex) {
+            this.logger.error("Unexpected exception while getting the data access bridge: {}", ex.getMessage());
+        }
+        return null;
+    }
+
+    protected XWikiDocument getXWikiDocument(PrimaryEntity p) throws Exception
+    {
+        DocumentAccessBridge dab = getDataAccessBridge();
+        // use getDocument()
+        XWikiDocument doc = (XWikiDocument) dab.getDocument(p.getDocumentReference());
+        return doc;
     }
 }

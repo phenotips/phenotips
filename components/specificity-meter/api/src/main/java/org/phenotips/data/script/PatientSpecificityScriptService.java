@@ -44,6 +44,8 @@ import javax.inject.Singleton;
 
 import org.json.JSONObject;
 
+import com.xpn.xwiki.doc.XWikiDocument;
+
 /**
  * A service that computes the patient specificity, a score estimating how "good" a patient record is.
  *
@@ -209,13 +211,25 @@ public class PatientSpecificityScriptService implements ScriptService
         }
 
         @Override
+        public String getFullName()
+        {
+            return null;
+        }
+
+        @Override
         public String getDescription()
         {
             return null;
         }
 
         @Override
-        public DocumentReference getDocument()
+        public DocumentReference getDocumentReference()
+        {
+            return null;
+        }
+
+        @Override
+        public XWikiDocument getDocument()
         {
             return null;
         }

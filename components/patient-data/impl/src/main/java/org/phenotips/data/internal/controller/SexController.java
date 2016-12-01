@@ -22,7 +22,6 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 
@@ -66,10 +65,6 @@ public class SexController implements PatientDataController<String>
     @Inject
     private Logger logger;
 
-    /** Provides access to the underlying data storage. */
-    @Inject
-    private DocumentAccessBridge documentAccessBridge;
-
     private String parseGender(String gender)
     {
         return (StringUtils.equals(SEX_FEMALE, gender)
@@ -81,7 +76,7 @@ public class SexController implements PatientDataController<String>
     public PatientData<String> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getDocument();
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
                 return null;

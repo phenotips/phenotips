@@ -23,7 +23,6 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.PhenoTipsDate;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
@@ -67,8 +66,6 @@ public class DatesControllerTest
     public MockitoComponentMockingRule<PatientDataController<PhenoTipsDate>> mocker =
         new MockitoComponentMockingRule<PatientDataController<PhenoTipsDate>>(DatesController.class);
 
-    private DocumentAccessBridge documentAccessBridge;
-
     @Mock
     private ExecutionContext executionContext;
 
@@ -97,11 +94,9 @@ public class DatesControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocument();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
+        doReturn(patientDocument).when(this.patient).getDocumentReference();
+        doReturn(this.doc).when(this.patient).getDocument();
         doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
         doReturn(this.xWikiContext).when(this.executionContext).getProperty("xwikicontext");

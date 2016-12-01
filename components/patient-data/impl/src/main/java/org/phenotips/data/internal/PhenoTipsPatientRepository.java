@@ -114,9 +114,9 @@ public class PhenoTipsPatientRepository extends PatientEntityManager implements 
         try {
             XWikiContext context = this.xcontextProvider.get();
             Patient patient = super.create(creator);
-            XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getDocument();
             doc.getXObject(Patient.CLASS_REFERENCE).setLongValue("identifier",
-                Integer.parseInt(patient.getDocument().getName().replaceAll("\\D++", "")));
+                Integer.parseInt(patient.getId().replaceAll("\\D++", "")));
             if (creator != null) {
                 doc.setCreatorReference(creator);
                 doc.setAuthorReference(creator);

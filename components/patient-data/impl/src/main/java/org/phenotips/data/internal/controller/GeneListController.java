@@ -149,7 +149,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     public PatientData<Map<String, String>> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getDocument();
             List<BaseObject> geneXWikiObjects = doc.getXObjects(GENE_CLASS_REFERENCE);
             if (geneXWikiObjects == null || geneXWikiObjects.isEmpty()) {
                 return null;

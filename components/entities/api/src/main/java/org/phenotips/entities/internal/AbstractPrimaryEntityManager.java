@@ -225,11 +225,12 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
     {
         try {
             XWikiContext xcontext = this.xcontextProvider.get();
-            XWikiDocument doc = xcontext.getWiki().getDocument(entity.getDocument(), xcontext);
+            // use getDocument()
+            XWikiDocument doc = xcontext.getWiki().getDocument(entity.getDocumentReference(), xcontext);
             xcontext.getWiki().deleteDocument(doc, xcontext);
             return true;
         } catch (Exception ex) {
-            this.logger.warn("Failed to delete entity [{}]: {}", entity.getDocument(), ex.getMessage());
+            this.logger.warn("Failed to delete entity [{}]: {}", entity.getDocumentReference(), ex.getMessage());
         }
         return false;
     }

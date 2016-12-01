@@ -164,7 +164,7 @@ public class DefaultPatientAccessHelperTest
         when(this.stringEntitySerializer.serialize(COLLABORATOR)).thenReturn(COLLABORATOR_STR);
         when(this.stringEntitySerializer.serialize(OTHER_USER)).thenReturn(OTHER_USER_STR);
 
-        when(this.patient.getDocument()).thenReturn(PATIENT_REFERENCE);
+        when(this.patient.getDocumentReference()).thenReturn(PATIENT_REFERENCE);
         when(this.bridge.getProperty(PATIENT_REFERENCE, OWNER_CLASS, "owner")).thenReturn(OWNER_STR);
 
         Execution e = this.mocker.getInstance(Execution.class);
@@ -221,7 +221,7 @@ public class DefaultPatientAccessHelperTest
     @Test
     public void getOwnerWithMissingDocument() throws ComponentLookupException
     {
-        when(this.patient.getDocument()).thenReturn(null);
+        when(this.patient.getDocumentReference()).thenReturn(null);
         Assert.assertNull(this.mocker.getComponentUnderTest().getOwner(this.patient));
     }
 
@@ -298,7 +298,7 @@ public class DefaultPatientAccessHelperTest
     public void getCollaborators() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(PATIENT_REFERENCE)).thenReturn(doc);
+        when(this.patient.getDocument()).thenReturn(doc);
         List<BaseObject> objects = new ArrayList<BaseObject>();
         BaseObject collaborator = mock(BaseObject.class);
         when(collaborator.getStringValue("collaborator")).thenReturn(COLLABORATOR_STR);
@@ -330,7 +330,7 @@ public class DefaultPatientAccessHelperTest
     public void getCollaboratorsWithMultipleEntries() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(PATIENT_REFERENCE)).thenReturn(doc);
+        when(this.patient.getDocument()).thenReturn(doc);
         List<BaseObject> objects = new ArrayList<BaseObject>();
         BaseObject collaborator = mock(BaseObject.class);
         when(collaborator.getStringValue("collaborator")).thenReturn(COLLABORATOR_STR);
@@ -400,7 +400,7 @@ public class DefaultPatientAccessHelperTest
     public void setCollaborators() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(PATIENT_REFERENCE)).thenReturn(doc);
+        when(this.patient.getDocument()).thenReturn(doc);
         PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
         AccessLevel edit = mock(AccessLevel.class);
         when(edit.getName()).thenReturn("edit");
@@ -444,7 +444,7 @@ public class DefaultPatientAccessHelperTest
     public void addCollaboratorWithNewObject() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(PATIENT_REFERENCE)).thenReturn(doc);
+        when(this.patient.getDocument()).thenReturn(doc);
         PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
         BaseObject o = mock(BaseObject.class);
         when(doc.getXObject(COLLABORATOR_CLASS, "collaborator", COLLABORATOR_STR, false)).thenReturn(null);
@@ -468,7 +468,7 @@ public class DefaultPatientAccessHelperTest
     public void addCollaboratorWithExistingObject() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(PATIENT_REFERENCE)).thenReturn(doc);
+        when(this.patient.getDocument()).thenReturn(doc);
         PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
         BaseObject o = mock(BaseObject.class);
         when(doc.getXObject(COLLABORATOR_CLASS, "collaborator", COLLABORATOR_STR, false)).thenReturn(o);
@@ -507,7 +507,7 @@ public class DefaultPatientAccessHelperTest
     public void removeCollaboratorWithExistingObject() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(PATIENT_REFERENCE)).thenReturn(doc);
+        when(this.patient.getDocument()).thenReturn(doc);
         BaseObject o = mock(BaseObject.class);
         when(doc.getXObject(COLLABORATOR_CLASS, "collaborator", COLLABORATOR_STR, false)).thenReturn(o);
         XWiki xwiki = mock(XWiki.class);
@@ -617,7 +617,7 @@ public class DefaultPatientAccessHelperTest
     public void getAccessLevelWithSpecifiedCollaborator() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(PATIENT_REFERENCE)).thenReturn(doc);
+        when(this.patient.getDocument()).thenReturn(doc);
         List<BaseObject> objects = new ArrayList<BaseObject>();
         BaseObject collaborator = mock(BaseObject.class);
         when(collaborator.getStringValue("collaborator")).thenReturn(COLLABORATOR_STR);
@@ -650,7 +650,7 @@ public class DefaultPatientAccessHelperTest
     public void getAccessLevelWithGroupMemberCollaborator() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(PATIENT_REFERENCE)).thenReturn(doc);
+        when(this.patient.getDocument()).thenReturn(doc);
         List<BaseObject> objects = new ArrayList<BaseObject>();
         BaseObject collaborator = mock(BaseObject.class);
         when(collaborator.getStringValue("collaborator")).thenReturn(GROUP_STR);

@@ -432,7 +432,8 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         PatientAccess pa = new DefaultPatientAccess(p, null, null);
-        when(p.getDocument()).thenReturn(new DocumentReference("xwiki", "data", "P123"));
+        DocumentReference docRef = new DocumentReference("xwiki", "data", "P123");
+        when(p.getFullName()).thenReturn(docRef.toString());
         Assert.assertEquals("Access rules for xwiki:data.P123", pa.toString());
     }
 

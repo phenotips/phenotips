@@ -22,7 +22,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.ObjectPropertyReference;
@@ -62,10 +61,6 @@ public class APGARController implements PatientDataController<Integer>
     /** The name of this data. */
     private static final String DATA_NAME = "apgar";
 
-    /** Provides access to the document behind the patient record. */
-    @Inject
-    private DocumentAccessBridge documentAccessBridge;
-
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -74,7 +69,7 @@ public class APGARController implements PatientDataController<Integer>
     public PatientData<Integer> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getDocument();
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
                 return null;

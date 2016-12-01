@@ -23,7 +23,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -83,9 +82,6 @@ public class ParentalAgeControllerTest
 
     private XWikiContext xWikiContext;
 
-    @Mock
-    private DocumentAccessBridge documentAccessBridge;
-
     private DocumentReference patientDocument = new DocumentReference("xwiki", "patient", "0000001");
 
     private ParentalAgeController parentalAgeController;
@@ -113,9 +109,8 @@ public class ParentalAgeControllerTest
         this.provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         this.xWikiContext = this.provider.get();
         doReturn(this.xwiki).when(this.xWikiContext).getWiki();
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-        doReturn(this.patientDocument).when(this.patient).getDocument();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(this.patientDocument);
+        doReturn(this.patientDocument).when(this.patient).getDocumentReference();
+        doReturn(this.doc).when(this.patient).getDocument();
     }
 
     @Test
@@ -192,8 +187,8 @@ public class ParentalAgeControllerTest
     @Test
     public void loadHandlesExceptions() throws Exception
     {
-        Exception testException = new Exception("Test Exception");
-        doThrow(testException).when(this.documentAccessBridge).getDocument(this.patientDocument);
+        RuntimeException testException = new RuntimeException("Test Exception");
+        doThrow(testException).when(this.patient).getDocument();
 
         this.parentalAgeController.load(this.patient);
 
@@ -230,8 +225,8 @@ public class ParentalAgeControllerTest
     @Test
     public void saveHandlesExceptions() throws Exception
     {
-        Exception testException = new Exception("Test Exception");
-        doThrow(testException).when(this.documentAccessBridge).getDocument(this.patientDocument);
+        RuntimeException testException = new RuntimeException("Test Exception");
+        doThrow(testException).when(this.patient).getDocument();
 
         this.parentalAgeController.save(this.patient, this.doc);
     }

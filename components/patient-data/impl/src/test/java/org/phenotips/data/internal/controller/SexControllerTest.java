@@ -22,7 +22,6 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
@@ -61,8 +60,6 @@ public class SexControllerTest
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
         new MockitoComponentMockingRule<PatientDataController<String>>(SexController.class);
 
-    private DocumentAccessBridge documentAccessBridge;
-
     @Mock
     private ExecutionContext executionContext;
 
@@ -98,11 +95,9 @@ public class SexControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocument();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
+        doReturn(patientDocument).when(this.patient).getDocumentReference();
+        doReturn(this.doc).when(this.patient).getDocument();
         doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
         doReturn(this.xcontext).when(this.executionContext).getProperty("xwikicontext");
@@ -112,7 +107,7 @@ public class SexControllerTest
     @Test
     public void loadCatchesExceptionFromDocumentAccess() throws Exception
     {
-        doThrow(Exception.class).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
+        doThrow(RuntimeException.class).when(this.patient).getDocument();
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 

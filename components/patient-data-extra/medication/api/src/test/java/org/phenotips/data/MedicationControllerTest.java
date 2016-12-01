@@ -19,7 +19,6 @@ package org.phenotips.data;
 
 import org.phenotips.data.internal.controller.MedicationController;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -92,9 +91,8 @@ public class MedicationControllerTest
     public void setup() throws Exception
     {
         MockitoAnnotations.initMocks(this);
-        when(this.patient.getDocument()).thenReturn(this.docRef);
-        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
-        when(dab.getDocument(this.docRef)).thenReturn(this.doc);
+        when(this.patient.getDocumentReference()).thenReturn(this.docRef);
+        when(this.patient.getDocument()).thenReturn(this.doc);
 
         when(this.obj1.getStringValue("name")).thenReturn("n");
         when(this.obj1.getStringValue("genericName")).thenReturn("gn");
@@ -188,8 +186,7 @@ public class MedicationControllerTest
     @Test
     public void loadWithExceptionReturnsNull() throws Exception
     {
-        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
-        when(dab.getDocument(this.docRef)).thenThrow(new XWikiException());
+        when(patient.getDocument()).thenThrow(new RuntimeException());
         Assert.assertNull(this.mocker.getComponentUnderTest().load(this.patient));
     }
 

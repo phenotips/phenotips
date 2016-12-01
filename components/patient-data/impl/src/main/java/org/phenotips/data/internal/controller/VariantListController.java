@@ -209,7 +209,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
     public PatientData<Map<String, String>> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getDocument();
             List<BaseObject> variantXWikiObjects = doc.getXObjects(VARIANT_CLASS_REFERENCE);
             if (variantXWikiObjects == null || variantXWikiObjects.isEmpty()) {
                 return null;

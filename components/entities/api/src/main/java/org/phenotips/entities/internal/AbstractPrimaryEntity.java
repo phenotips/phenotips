@@ -20,6 +20,8 @@ package org.phenotips.entities.internal;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.entities.PrimaryEntity;
 
+import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.rendering.syntax.Syntax;
@@ -65,22 +67,39 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
         this.document = document;
     }
 
+    protected AbstractPrimaryEntity(DocumentReference reference)
+    {
+        this.document =  this.getXWikiDocument(reference);
+    }
+
     @Override
-    public DocumentReference getDocument()
+    public DocumentReference getDocumentReference()
     {
         return this.document.getDocumentReference();
     }
 
     @Override
+    public XWikiDocument getDocument()
+    {
+        return document;
+    }
+
+    @Override
     public String getId()
     {
-        return this.getDocument().getName();
+        return this.getDocumentReference().getName();
     }
 
     @Override
     public String getName()
     {
         return this.document.getRenderedTitle(Syntax.PLAIN_1_0, getXContext());
+    }
+
+    @Override
+    public String getFullName()
+    {
+        return this.getDocumentReference().toString();
     }
 
     @Override
@@ -116,7 +135,7 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
     @Override
     public int hashCode()
     {
-        return this.getDocument().hashCode();
+        return this.getDocumentReference().hashCode();
     }
 
     @Override
@@ -125,7 +144,7 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
         if (!(obj instanceof PrimaryEntity)) {
             return false;
         }
-        return this.getDocument().equals(((PrimaryEntity) obj).getDocument());
+        return this.getDocumentReference().equals(((PrimaryEntity) obj).getDocumentReference());
     }
 
     @Override
@@ -166,5 +185,28 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
             this.logger.error("Unexpected exception while getting the full reference serializer: {}", ex.getMessage());
         }
         return null;
+    }
+
+    private DocumentAccessBridge getBridge()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
+        } catch (ComponentLookupException e) {
+            this.logger.error("Failed to look up DocumentAccessBridge.", e);
+        }
+        return null;
+    }
+
+    protected XWikiDocument getXWikiDocument(DocumentReference documentReference)
+    {
+        XWikiDocument xdocument;
+        try {
+            xdocument = (XWikiDocument) this.getBridge().getDocument(documentReference);
+        } catch (Exception e) {
+            this.logger.error("Could not read XWikiDocument from reference {}", documentReference.getName(),
+                    e.getMessage());
+            return null;
+        }
+        return xdocument;
     }
 }

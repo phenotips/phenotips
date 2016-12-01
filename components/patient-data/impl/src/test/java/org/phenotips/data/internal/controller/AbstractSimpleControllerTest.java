@@ -93,8 +93,9 @@ public class AbstractSimpleControllerTest
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
 
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocument();
+        doReturn(patientDocument).when(this.patient).getDocumentReference();
         doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
+        doReturn(this.doc).when(this.patient).getDocument();
         doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
     }
 
@@ -109,8 +110,8 @@ public class AbstractSimpleControllerTest
     @Test
     public void loadCatchesExceptionFromDocumentAccess() throws Exception
     {
-        Exception exception = new Exception();
-        doThrow(exception).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
+        RuntimeException exception = new RuntimeException();
+        doThrow(exception).when(this.patient).getDocument();
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 

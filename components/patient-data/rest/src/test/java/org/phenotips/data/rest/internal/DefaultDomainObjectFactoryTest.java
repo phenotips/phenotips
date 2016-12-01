@@ -123,7 +123,7 @@ public class DefaultDomainObjectFactoryTest
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
         this.stringResolver = this.mocker.getInstance(this.stringResolverType, "current");
 
-        when(this.patient.getDocument()).thenReturn(this.patientReference1);
+        when(this.patient.getDocumentReference()).thenReturn(this.patientReference1);
         when(this.patient.getId()).thenReturn(this.patientReference1.getName());
         when(this.patient.getExternalId()).thenReturn(this.eid);
         when(this.patient.getReporter()).thenReturn(this.userReference1);
