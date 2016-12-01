@@ -811,6 +811,16 @@
       this._collaboratorsList.update('');
       collaborators.each(this._addCollaborator.bind(this));
     },
+    
+    /* Updates the list of collaborators that is displayed on hover */
+    _updateDisplayedCollaborators : function (collaborators, collabAccessRights) {
+      var collaboratorStr = '';
+      if (collaborators) {
+        collaborators = [].concat(collaborators); /* collaborators may be an array or a string */
+        collaboratorStr = $$('#manage-collaborators tr td:nth-child(2)').map(function(item) {return item.innerText}).join(', ');
+      } 
+      collabAccessRights.setAttribute("title", collaboratorStr);
+    },
 
     /* Updates the list of collaborators that is displayed on hover */
     _updateDisplayedCollaborators : function (collaborators, collabAccessRights) {
