@@ -42,11 +42,22 @@
       <version>${testframework.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-java</artifactId>
-      <scope>compile</scope>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-test</artifactId>
+      <version>${xwiki.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-api</artifactId>
+      <scope>compile</scope>
+      <version>2.53.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-support</artifactId>
+      <scope>compile</scope>
+      <version>2.53.1</version>
+    </dependency>
     <dependency>
       <groupId>org.phenotips</groupId>
       <artifactId>patient-data-pageobjects</artifactId>
