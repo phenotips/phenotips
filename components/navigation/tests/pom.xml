@@ -34,6 +34,43 @@
     <!-- There are no sources to cover -->
     <coverage.instructionRatio>0</coverage.instructionRatio>
     <jacoco.skip>true</jacoco.skip>
+    <xwikiCfgPlugins>\
+  com.xpn.xwiki.plugin.skinx.JsSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.JsSkinFileExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.JsResourceSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.CssSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.CssSkinFileExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.CssResourceSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.LinkExtensionPlugin,\
+  com.xpn.xwiki.plugin.fileupload.FileUploadPlugin,\
+  com.xpn.xwiki.plugin.image.ImagePlugin,\
+  com.xpn.xwiki.plugin.rightsmanager.RightsManagerPlugin</xwikiCfgPlugins>
+    <xwikiCfgVirtual>0</xwikiCfgVirtual>
+    <xwikiCfgVirtualUsepath>0</xwikiCfgVirtualUsepath>
+    <xwikiCfgEditCommentMandatory>0</xwikiCfgEditCommentMandatory>
+    <xwikiCfgDefaultSkin>phenotips</xwikiCfgDefaultSkin>
+    <xwikiCfgDefaultBaseSkin>colibri</xwikiCfgDefaultBaseSkin>
+    <xwikiCfgEncoding>UTF-8</xwikiCfgEncoding>
+    <xwikiCfgAdditionalProperties>
+xwiki.plugin.watchlist.automaticwatch=none
+xwiki.authentication.group.allgroupimplicit=1
+xwiki.authentication.rightsclass=org.phenotips.security.authorization.ModularRightServiceImpl
+xwiki.section.edit=0
+xwiki.backlinks=0
+xwiki.showviewaction=0
+xwiki.defaultweb=data
+xwiki.usedefaultweb=1
+xwiki.usedefaultaction=0
+xwiki.monitor=0
+    </xwikiCfgAdditionalProperties>
+    <xwikiPropertiesAdditionalProperties>
+model.reference.default.space=data
+rendering.transformations=macro
+activeinstalls.pingURL=http://void.net/
+activeinstalls.ipFetchURL=https://phenotips/get/Stats/Id
+distribution.automaticStartOnMainWiki=false
+distribution.automaticStartOnWiki=false
+    </xwikiPropertiesAdditionalProperties>
   </properties>
 
   <dependencies>
@@ -62,6 +99,24 @@
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-resource-servlet</artifactId>
       <version>${xwiki.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-webjars-api</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-security-bridge</artifactId>
+      <version>${project.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>xwiki-platform-users-wiki</artifactId>
+      <version>${project.version}</version>
       <scope>runtime</scope>
     </dependency>
     <!-- Test dependencies -->
