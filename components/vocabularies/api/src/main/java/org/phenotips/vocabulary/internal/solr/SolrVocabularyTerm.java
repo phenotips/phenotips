@@ -20,9 +20,6 @@ package org.phenotips.vocabulary.internal.solr;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
-import java.util.Collection;
-import java.util.Map;
-
 import org.apache.solr.common.SolrDocument;
 
 /**
@@ -34,62 +31,14 @@ import org.apache.solr.common.SolrDocument;
 public class SolrVocabularyTerm extends AbstractSolrVocabularyTerm
 {
     /**
-     * The solr document.
-     */
-    private SolrDocument doc;
-
-    /**
-     * Constructor that provides the backing {@link #doc Solr document} and the {@link #ontology owner ontology}.
+     * Constructor that provides the backing {@link #doc Solr document} and the {@link #vocabulary owner vocabulary}.
      *
      * @param doc the {@link #doc Solr document} representing this term
-     * @param ontology the {@link #ontology owner ontology}
+     * @param vocabulary the {@link #vocabulary owner vocabulary}
      */
-    public SolrVocabularyTerm(SolrDocument doc, Vocabulary ontology)
+    public SolrVocabularyTerm(SolrDocument doc, Vocabulary vocabulary)
     {
-        super(ontology);
-        this.doc = doc;
+        super(doc, vocabulary);
         initialize();
-    }
-
-    @Override
-    protected Iterable<Map.Entry<String, Object>> getEntrySet()
-    {
-        if (isNull()) {
-            return null;
-        }
-        return this.doc.entrySet();
-    }
-
-    @Override
-    protected Object getFirstValue(String key)
-    {
-        if (isNull()) {
-            return null;
-        }
-        return this.doc.getFirstValue(key);
-    }
-
-    @Override
-    public Collection<Object> getValues(String key)
-    {
-        if (isNull()) {
-            return null;
-        }
-        return this.doc.getFieldValues(key);
-    }
-
-    @Override
-    public Object get(String key)
-    {
-        if (isNull()) {
-            return null;
-        }
-        return this.doc.getFieldValue(key);
-    }
-
-    @Override
-    protected boolean isNull()
-    {
-        return this.doc == null;
     }
 }

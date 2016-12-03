@@ -20,6 +20,7 @@ package org.phenotips.vocabulary.internal.solr;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,48 +30,64 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocumentBase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Abstract implementation of common functionality of {@link VocabularyTerm} for solr documents.
+ * Abstract implementation of common functionality of {@link VocabularyTerm} for Solr documents.
  *
  * @version $Id$
+ * @since 1.3M5
  */
 public abstract class AbstractSolrVocabularyTerm implements VocabularyTerm
 {
     /**
-     * The name of the id field.
+     * The name of the Solr field used for storing the identifier of a term.
+     *
+     * @see #getId()
      */
-    protected static final String ID = "id";
+    protected static final String ID_KEY = "id";
 
     /**
-     * The name of the name field.
+     * The name of the Solr field used for storing the name of a term.
+     *
+     * @see #getName()
      */
     protected static final String NAME = "name";
 
     /**
-     * The name of the definition field.
+     * The name of the Solr field used for storing the description of a term.
+     *
+     * @see #getDescription()
      */
-    protected static final String DEF = "def";
+    protected static final String DESCRIPTION = "def";
 
     /**
-     * The name of the term category field.
+     * The name of the Solr field used for storing the ancestors of a term.
+     *
+     * @see #getAncestors()
      */
-    protected static final String TERM_CATEGORY = "term_category";
+    protected static final String ANCESTORS_KEY = "term_category";
 
     /**
-     * The name of the is_a field.
+     * The name of the Solr field used for storing the direct parents of a term.
+     *
+     * @see #getParents()
      */
-    protected static final String IS_A = "is_a";
+    protected static final String PARENTS_KEY = "is_a";
 
     /**
-     * The owner ontology.
+     * The owner vocabulary.
      *
      * @see #getVocabulary()
      */
-    protected final Vocabulary ontology;
+    protected final Vocabulary vocabulary;
+
+    /** The Solr document representing this term. */
+    protected final SolrDocumentBase<? extends Object, ? extends SolrDocumentBase<?, ?>> doc;
 
     /**
      * The parents of this term, transformed from a set of IDs into a real set of terms.
@@ -96,82 +113,30 @@ public abstract class AbstractSolrVocabularyTerm implements VocabularyTerm
     /**
      * Constructor linking to the vocabulary.
      *
-     * @param ontology the {@link #ontology owner ontology}
+     * @param vocabulary the {@link #vocabulary owner vocabulary}
+     * @param doc the Solr document holding the actual data
      */
-    public AbstractSolrVocabularyTerm(Vocabulary ontology)
+    public AbstractSolrVocabularyTerm(SolrDocumentBase<? extends Object, ? extends SolrDocumentBase<?, ?>> doc,
+        Vocabulary vocabulary)
     {
-        this.ontology = ontology;
+        this.doc = doc;
+        this.vocabulary = vocabulary;
     }
 
     protected void initialize()
     {
         if (!isNull()) {
-            this.removeSelfDuplicate();
-            this.parents = new LazySolrTermSet(getValues(IS_A), this.ontology);
-            this.ancestors = new LazySolrTermSet(getValues(TERM_CATEGORY), this.ontology);
-            Collection<Object> termSet = getAncestorsAndSelfTermSet();
-            this.ancestorsAndSelf = new LazySolrTermSet(termSet, this.ontology);
+            this.removeSelfFromAncestors();
+            this.parents = new LazySolrTermSet(getValues(PARENTS_KEY), this.vocabulary);
+            this.ancestors = new LazySolrTermSet(getValues(ANCESTORS_KEY), this.vocabulary);
+            this.ancestorsAndSelf = getUncachedAncestorsAndSelf();
         }
     }
-
-    /**
-     * The field "term_category" in {@code this.doc} can contain the term itself. It appears that this only happens with
-     * HPO. To avoid this problem, and to avoid writing a separate implementation for HPO specifically, this method
-     * checks for existence of the term in the term_category and takes it out.
-     */
-    private void removeSelfDuplicate()
-    {
-        Object value = getFirstValue(TERM_CATEGORY);
-        if (!(value instanceof List)) {
-            return;
-        }
-        @SuppressWarnings("unchecked")
-        List<String> listValue = (List<String>) value;
-        listValue.remove(this.getId());
-    }
-
-    /**
-     * Return the term set for the getAncestorsAndSelf method.
-     *
-     * @return the set
-     */
-    protected Collection<Object> getAncestorsAndSelfTermSet()
-    {
-        Collection<Object> termSet = new LinkedHashSet<>();
-        termSet.add(this.getId());
-        if (getValues(TERM_CATEGORY) != null) {
-            termSet.addAll(getValues(TERM_CATEGORY));
-        }
-        return termSet;
-    }
-
-    /**
-     * Return whether the doc contained by this vocabulary term is null.
-     *
-     * @return whether it is null
-     */
-    protected abstract boolean isNull();
-
-    /**
-     * Get the values corresponding to the key given in the document.
-     *
-     * @param key the key
-     * @return the collection of values
-     */
-    protected abstract Collection<Object> getValues(String key);
-
-    /**
-     * Get the first value corresponding to the key given in the document.
-     *
-     * @param key the key
-     * @return the first value
-     */
-    protected abstract Object getFirstValue(String key);
 
     @Override
     public String getId()
     {
-        return (String) getFirstValue(ID);
+        return (String) getFirstValue(ID_KEY);
     }
 
     @Override
@@ -183,7 +148,7 @@ public abstract class AbstractSolrVocabularyTerm implements VocabularyTerm
     @Override
     public String getDescription()
     {
-        return (String) getFirstValue(DEF);
+        return (String) getFirstValue(DESCRIPTION);
     }
 
     @Override
@@ -205,9 +170,18 @@ public abstract class AbstractSolrVocabularyTerm implements VocabularyTerm
     }
 
     @Override
+    public Object get(String key)
+    {
+        if (isNull()) {
+            return null;
+        }
+        return this.doc.getFieldValue(key);
+    }
+
+    @Override
     public Vocabulary getVocabulary()
     {
-        return this.ontology;
+        return this.vocabulary;
     }
 
     @Override
@@ -268,13 +242,6 @@ public abstract class AbstractSolrVocabularyTerm implements VocabularyTerm
         return minDistance;
     }
 
-    /**
-     * Get an iterable of the entires in this document.
-     *
-     * @return the entries as Map.Entry instances
-     */
-    protected abstract Iterable<Map.Entry<String, Object>> getEntrySet();
-
     @Override
     public JSONObject toJSON()
     {
@@ -285,6 +252,24 @@ public abstract class AbstractSolrVocabularyTerm implements VocabularyTerm
         }
 
         return json;
+    }
+
+    /**
+     * Get all the entries in this document.
+     *
+     * @return the entries as Map.Entry instances, or an empty collection if no entries are set
+     */
+    protected Set<Map.Entry<String, Object>> getEntrySet()
+    {
+        if (isNull()) {
+            return Collections.emptySet();
+        }
+        Set<String> keys = this.doc.keySet();
+        Set<Map.Entry<String, Object>> result = new LinkedHashSet<>(keys.size());
+        for (String key : keys) {
+            result.add(new AbstractMap.SimpleImmutableEntry<>(key, get(key)));
+        }
+        return result;
     }
 
     private void addAsCorrectType(JSONObject json, String name, Object toAdd)
@@ -317,5 +302,78 @@ public abstract class AbstractSolrVocabularyTerm implements VocabularyTerm
             return false;
         }
         return StringUtils.equals(getId(), ((VocabularyTerm) obj).getId());
+    }
+
+    /**
+     * Returns whether the Solr document defining this vocabulary term is {@code null}.
+     *
+     * @return {@code true} if this vocabulary term doesn't have a valid Solr document set, and is thus unusable
+     */
+    protected boolean isNull()
+    {
+        return this.doc == null;
+    }
+
+    /**
+     * Gets the values corresponding to the target key.
+     *
+     * @param key the name of the field to retrieve
+     * @return the collection of values, or {@code null} if no values are set for the target key
+     */
+    protected Collection<Object> getValues(String key)
+    {
+        if (isNull()) {
+            return null;
+        }
+        @SuppressWarnings("unchecked")
+        Collection<Object> values = this.doc.getFieldValues(key);
+        return values;
+    }
+
+    /**
+     * Retrieves the first value corresponding to the target key. This may be the only value set for a simple field, or
+     * the first in a collection of values for a multi-valued field.
+     *
+     * @param key the name of the field to retrieve
+     * @return the first value, or {@code null} if there's no value set for the target key
+     */
+    protected Object getFirstValue(String key)
+    {
+        Collection<Object> values = getValues(key);
+        if (CollectionUtils.isEmpty(values)) {
+            return null;
+        }
+        return CollectionUtils.get(values, 0);
+    }
+
+    /**
+     * The field "term_category" in {@code this.doc} can contain the term itself. It appears that this only happens with
+     * HPO. To avoid this problem, and to avoid writing a separate implementation for HPO specifically, this method
+     * checks for existence of the term in the term_category and takes it out.
+     */
+    private void removeSelfFromAncestors()
+    {
+        Object value = getFirstValue(ANCESTORS_KEY);
+        if (!(value instanceof List)) {
+            return;
+        }
+        @SuppressWarnings("unchecked")
+        List<String> listValue = (List<String>) value;
+        listValue.remove(this.getId());
+    }
+
+    /**
+     * Returns the term set for the {@link #getAncestorsAndSelf()} method.
+     *
+     * @return a set of identifiers, containing at least the identifier of this term
+     */
+    protected Set<VocabularyTerm> getUncachedAncestorsAndSelf()
+    {
+        Collection<Object> termSet = new LinkedHashSet<>();
+        termSet.add(this.getId());
+        if (getValues(ANCESTORS_KEY) != null) {
+            termSet.addAll(getValues(ANCESTORS_KEY));
+        }
+        return new LazySolrTermSet(termSet, this.vocabulary);
     }
 }

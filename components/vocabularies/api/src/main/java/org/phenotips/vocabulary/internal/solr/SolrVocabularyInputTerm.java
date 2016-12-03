@@ -21,11 +21,6 @@ import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyInputTerm;
 import org.phenotips.vocabulary.VocabularyTerm;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.solr.common.SolrInputDocument;
@@ -38,74 +33,26 @@ import org.apache.solr.common.SolrInputField;
  */
 public class SolrVocabularyInputTerm extends AbstractSolrVocabularyTerm implements VocabularyInputTerm
 {
-    /*
-     * Inexplicably, SolrInputDocument and SolrDocument aren't (in version 5.3.2) in the same class hierarchy, which is
-     * why there has to be a common parent to this and the solrvocabularyterm instead of just extending from it.
-     */
-
-    /**
-     * The solr input document.
-     */
-    private SolrInputDocument doc;
-
     /**
      * Constructor.
      *
      * @param doc the solr document representing the term
-     * @param ontology the owner ontology
+     * @param vocabulary the owner vocabulary
      */
-    public SolrVocabularyInputTerm(SolrInputDocument doc, Vocabulary ontology)
+    public SolrVocabularyInputTerm(SolrInputDocument doc, Vocabulary vocabulary)
     {
-        super(ontology);
-        this.doc = doc;
+        super(doc, vocabulary);
+        initialize();
     }
 
-    @Override
-    protected Iterable<Map.Entry<String, Object>> getEntrySet()
-    {
-        if (isNull()) {
-            return null;
-        }
-        Set<String> keySet = this.doc.keySet();
-        /*
-         * This sucks, but entrySet is of type Entry<String, SolrInputField> and will for sure wrap everything in an
-         * iterable, so we have to manually fix it
-         */
-        List<Map.Entry<String, Object>> retval = new ArrayList<>(keySet.size());
-        for (String key : keySet) {
-            retval.add(new AbstractMap.SimpleImmutableEntry<>(key, get(key)));
-        }
-        return retval;
-    }
-
-    @Override
-    protected Object getFirstValue(String key)
-    {
-        if (isNull()) {
-            return null;
-        }
-        return this.doc.getFieldValue(key);
-    }
-
-    @Override
-    protected Collection<Object> getValues(String key)
-    {
-        if (isNull()) {
-            return null;
-        }
-        return this.doc.getFieldValues(key);
-    }
-
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public Object get(String key)
     {
+        // We have to override this because in Solr 5.5 SolrInputDocument#get wrongly forwards to getFirstValue
         if (isNull()) {
             return null;
         }
-        SolrInputField field = this.doc.getField(key);
+        SolrInputField field = ((SolrInputDocument) this.doc).getField(key);
         if (field == null) {
             return null;
         }
@@ -113,16 +60,10 @@ public class SolrVocabularyInputTerm extends AbstractSolrVocabularyTerm implemen
     }
 
     @Override
-    protected boolean isNull()
-    {
-        return this.doc == null;
-    }
-
-    @Override
     public VocabularyInputTerm setId(String id)
     {
         if (this.doc != null) {
-            this.doc.setField(ID, id);
+            this.doc.setField(ID_KEY, id);
         }
         return this;
     }
@@ -140,7 +81,7 @@ public class SolrVocabularyInputTerm extends AbstractSolrVocabularyTerm implemen
     public VocabularyInputTerm setDescription(String description)
     {
         if (this.doc != null) {
-            this.doc.setField(DEF, description);
+            this.doc.setField(DESCRIPTION, description);
         }
         return this;
     }
@@ -149,11 +90,11 @@ public class SolrVocabularyInputTerm extends AbstractSolrVocabularyTerm implemen
     public VocabularyInputTerm setParents(Set<VocabularyTerm> parents)
     {
         if (this.doc != null) {
-            SolrInputField field = new SolrInputField(IS_A);
+            SolrInputField field = new SolrInputField(PARENTS_KEY);
             for (VocabularyTerm parent : parents) {
                 field.addValue(parent.getId(), 1.0f);
             }
-            this.doc.put(IS_A, field);
+            ((SolrInputDocument) this.doc).put(PARENTS_KEY, field);
         }
         return this;
     }
@@ -179,19 +120,21 @@ public class SolrVocabularyInputTerm extends AbstractSolrVocabularyTerm implemen
     @Override
     public Set<VocabularyTerm> getParents()
     {
-        /* We have to override this because the parents might be re-set */
-        return new LazySolrTermSet(getValues(IS_A), this.ontology);
+        // We have to override this because the parents might be re-set, so the result can't be cached
+        return new LazySolrTermSet(getValues(PARENTS_KEY), this.vocabulary);
     }
 
     @Override
     public Set<VocabularyTerm> getAncestors()
     {
-        return new LazySolrTermSet(getValues(TERM_CATEGORY), this.ontology);
+        // We have to override this because the ancestors might be re-set, so the result can't be cached
+        return new LazySolrTermSet(getValues(ANCESTORS_KEY), this.vocabulary);
     }
 
     @Override
     public Set<VocabularyTerm> getAncestorsAndSelf()
     {
-        return new LazySolrTermSet(getAncestorsAndSelfTermSet(), this.ontology);
+        // We have to override this because the ancestors might be re-set, so the result can't be cached
+        return getUncachedAncestorsAndSelf();
     }
 }
