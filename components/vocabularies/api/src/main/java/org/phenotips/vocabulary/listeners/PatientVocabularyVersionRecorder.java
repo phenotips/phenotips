@@ -64,7 +64,7 @@ public class PatientVocabularyVersionRecorder extends AbstractEventListener
 
     private static final String VERSION_FIELD = "version";
 
-    /** Access to services that are needed to get the ontology version. */
+    /** Access to services that are needed to get the vocabulary version. */
     @Inject
     private Map<String, Vocabulary> ontologies;
 

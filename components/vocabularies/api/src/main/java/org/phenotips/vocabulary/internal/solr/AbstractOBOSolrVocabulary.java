@@ -128,9 +128,10 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
             commitTerms(termBatch);
             return 0;
         } catch (SolrServerException ex) {
-            this.logger.warn("Failed to index ontology: {}", ex.getMessage());
+            this.logger.warn("Failed to index vocabulary: {}", ex.getMessage());
         } catch (IOException ex) {
-            this.logger.warn("Failed to communicate with the Solr server while indexing ontology: {}", ex.getMessage());
+            this.logger.warn("Failed to communicate with the Solr server while indexing vocabulary: {}",
+                ex.getMessage());
         } catch (OutOfMemoryError ex) {
             this.logger.warn("Failed to add terms to the Solr. Ran out of memory. {}", ex.getMessage());
         }
@@ -182,7 +183,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
                 return firstDoc.getFieldValue(VERSION_FIELD_NAME).toString();
             }
         } catch (SolrServerException | SolrException | IOException ex) {
-            this.logger.warn("Failed to query ontology version: {}", ex.getMessage());
+            this.logger.warn("Failed to query vocabulary version: {}", ex.getMessage());
         }
         return null;
     }

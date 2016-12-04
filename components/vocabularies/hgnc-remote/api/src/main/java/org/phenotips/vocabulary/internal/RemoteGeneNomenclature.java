@@ -112,12 +112,12 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
     private Logger logger;
 
     /**
-     * Cache for the recently accessed terms; useful since the ontology rarely changes, so a search should always return
-     * the same thing.
+     * Cache for the recently accessed terms; useful since the vocabulary rarely changes, so a search should always
+     * return the same thing.
      */
     private Cache<VocabularyTerm> cache;
 
-    /** Cache for ontology metadata. */
+    /** Cache for vocabulary metadata. */
     private Cache<JSONObject> infoCache;
 
     /** Cache factory needed for creating the term cache. */
@@ -334,7 +334,7 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
     @Override
     public int reindex(String ontologyUrl)
     {
-        // Remote ontology, we cannot reindex, but we can clear the local cache
+        // Remote vocabulary, we cannot reindex, but we can clear the local cache
         this.cache.removeAll();
         return 0;
     }

@@ -56,7 +56,8 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
 /**
- * Provides access to the HUGO Gene Nomenclature Committee's GeneNames ontology. The ontology prefix is {@code HGNC}.
+ * Provides access to the HUGO Gene Nomenclature Committee's GeneNames vocabulary. The vocabulary prefix is
+ * {@code HGNC}.
  *
  * @version $Id$
  * @since 1.2RC1

@@ -30,7 +30,7 @@ import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.params.SpellingParams;
 
 /**
- * Utility class for preparing the queries used by the {@link AbstractSolrVocabulary ontology service}.
+ * Utility class for preparing the queries used by the {@link AbstractSolrVocabulary vocabulary service}.
  *
  * @version $Id$
  * @since 1.2M4 (under a different package since 1.0M8)

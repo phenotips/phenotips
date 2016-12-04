@@ -26,7 +26,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Provides access to the Chemical Entities of Biological Interest Ontology (ChEBI). The ontology prefix is
+ * Provides access to the Chemical Entities of Biological Interest (ChEBI) ontology. The vocabulary prefix is
  * {@code CHEBI}.
  *
  * @version $Id$

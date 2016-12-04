@@ -45,8 +45,8 @@ import org.apache.solr.common.params.SolrParams;
 import org.slf4j.Logger;
 
 /**
- * Provides access to the Solr server, with the main purpose of providing access to an indexed ontology. There are two
- * ways of accessing items in the ontology: getting a single term by its identifier, or searching for terms matching a
+ * Provides access to the Solr server, with the main purpose of providing access to an indexed vocabulary. There are two
+ * ways of accessing items in the vocabulary: getting a single term by its identifier, or searching for terms matching a
  * given query in the Lucene query language.
  *
  * @version $Id$
@@ -270,7 +270,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
             results = this.externalServicesAccess.getSolrConnection().query(params).getResults();
             return results.getNumFound();
         } catch (Exception ex) {
-            this.logger.error("Failed to count ontology terms: {}", ex.getMessage(), ex);
+            this.logger.error("Failed to count vocabulary terms: {}", ex.getMessage(), ex);
             return -1;
         }
     }

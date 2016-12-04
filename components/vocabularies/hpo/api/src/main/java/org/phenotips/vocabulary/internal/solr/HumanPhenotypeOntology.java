@@ -44,7 +44,7 @@ import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.params.SpellingParams;
 
 /**
- * Provides access to the Human Phenotype Ontology (HPO). The ontology prefix is {@code HP}.
+ * Provides access to the Human Phenotype Ontology (HPO). The vocabulary prefix is {@code HP}.
  *
  * @version $Id$
  * @since 1.0M8
@@ -72,7 +72,7 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
     @Override
     protected int getSolrDocsPerBatch()
     {
-        /* This number should be sufficient to index the whole ontology in one go */
+        /* This number should be sufficient to index the whole vocabulary in one go */
         return 15000;
     }
 

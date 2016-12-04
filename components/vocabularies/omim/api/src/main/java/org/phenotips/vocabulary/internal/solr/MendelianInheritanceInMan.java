@@ -52,7 +52,7 @@ import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.params.SpellingParams;
 
 /**
- * Provides access to the Online Mendelian Inheritance in Man (OMIM) ontology. The ontology prefix is {@code MIM}.
+ * Provides access to the Online Mendelian Inheritance in Man (OMIM) vocabulary. The vocabulary prefix is {@code MIM}.
  *
  * @version $Id$
  * @since 1.0M8
@@ -62,7 +62,7 @@ import org.apache.solr.common.params.SpellingParams;
 @Singleton
 public class MendelianInheritanceInMan extends AbstractSolrVocabulary
 {
-    /** The standard name of this ontology, used as a term prefix. */
+    /** The standard name of this vocabulary, used as a term prefix. */
     public static final String STANDARD_NAME = "MIM";
 
     @Inject

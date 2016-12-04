@@ -68,7 +68,7 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
     }
 
     /**
-     * Add an ontology to the index.
+     * Add a vocabulary to the index.
      *
      * @param sourceUrl the URL to be indexed
      * @return {@code 0} if the indexing succeeded, {@code 1} if writing to the Solr server failed, {@code 2} if the
@@ -103,9 +103,10 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
             commitTerms(termBatch);
             return 0;
         } catch (SolrServerException ex) {
-            this.logger.warn("Failed to index ontology: {}", ex.getMessage());
+            this.logger.warn("Failed to index vocabulary: {}", ex.getMessage());
         } catch (IOException ex) {
-            this.logger.warn("Failed to communicate with the Solr server while indexing ontology: {}", ex.getMessage());
+            this.logger.warn("Failed to communicate with the Solr server while indexing vocabulary: {}",
+                ex.getMessage());
         } catch (OutOfMemoryError ex) {
             this.logger.warn("Failed to add terms to the Solr. Ran out of memory. {}", ex.getMessage());
         }
@@ -159,9 +160,9 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
                 return term;
             }
         } catch (SolrServerException | SolrException ex) {
-            this.logger.warn("Failed to query ontology term: {} ", ex.getMessage());
+            this.logger.warn("Failed to query vocabulary term: {} ", ex.getMessage());
         } catch (IOException ex) {
-            this.logger.error("IOException while getting ontology term ", ex);
+            this.logger.error("IOException while getting vocabulary term ", ex);
         }
         return null;
     }
@@ -185,9 +186,9 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
                 return firstDoc.getFieldValue(VERSION_FIELD_NAME).toString();
             }
         } catch (SolrServerException | SolrException ex) {
-            this.logger.warn("Failed to query ontology version: {}", ex.getMessage());
+            this.logger.warn("Failed to query vocabulary version: {}", ex.getMessage());
         } catch (IOException ex) {
-            this.logger.error("IOException while getting ontology version", ex);
+            this.logger.error("IOException while getting vocabulary version", ex);
         }
         return null;
     }
