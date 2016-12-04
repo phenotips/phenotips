@@ -46,50 +46,30 @@ public class SolrVocabularyInputTerm extends AbstractSolrVocabularyTerm implemen
     }
 
     @Override
-    public Object get(String key)
-    {
-        // We have to override this because in Solr 5.5 SolrInputDocument#get wrongly forwards to getFirstValue
-        if (isNull()) {
-            return null;
-        }
-        SolrInputField field = ((SolrInputDocument) this.doc).getField(key);
-        if (field == null) {
-            return null;
-        }
-        return field.getValue();
-    }
-
-    @Override
     public VocabularyInputTerm setId(String id)
     {
-        if (this.doc != null) {
-            this.doc.setField(ID_KEY, id);
-        }
+        set(ID_KEY, id);
         return this;
     }
 
     @Override
     public VocabularyInputTerm setName(String name)
     {
-        if (this.doc != null) {
-            this.doc.setField(NAME, name);
-        }
+        set(NAME_KEY, name);
         return this;
     }
 
     @Override
     public VocabularyInputTerm setDescription(String description)
     {
-        if (this.doc != null) {
-            this.doc.setField(DESCRIPTION, description);
-        }
+        set(DESCRIPTION_KEY, description);
         return this;
     }
 
     @Override
     public VocabularyInputTerm setParents(Set<VocabularyTerm> parents)
     {
-        if (this.doc != null) {
+        if (!isNull()) {
             SolrInputField field = new SolrInputField(PARENTS_KEY);
             for (VocabularyTerm parent : parents) {
                 field.addValue(parent.getId(), 1.0f);
@@ -102,7 +82,7 @@ public class SolrVocabularyInputTerm extends AbstractSolrVocabularyTerm implemen
     @Override
     public VocabularyInputTerm set(String key, Object value)
     {
-        if (this.doc != null) {
+        if (!isNull()) {
             this.doc.setField(key, value);
         }
         return this;
@@ -111,10 +91,24 @@ public class SolrVocabularyInputTerm extends AbstractSolrVocabularyTerm implemen
     @Override
     public VocabularyInputTerm append(String key, Object value)
     {
-        if (this.doc != null) {
+        if (!isNull()) {
             this.doc.addField(key, value);
         }
         return this;
+    }
+
+    @Override
+    public Object get(String key)
+    {
+        // We have to override this because in Solr 5.5 SolrInputDocument#get wrongly forwards to #getFirstValue
+        if (isNull()) {
+            return null;
+        }
+        SolrInputField field = ((SolrInputDocument) this.doc).getField(key);
+        if (field == null) {
+            return null;
+        }
+        return field.getValue();
     }
 
     @Override

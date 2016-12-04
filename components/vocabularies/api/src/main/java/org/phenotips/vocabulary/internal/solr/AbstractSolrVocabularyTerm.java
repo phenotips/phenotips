@@ -56,14 +56,14 @@ public abstract class AbstractSolrVocabularyTerm implements VocabularyTerm
      *
      * @see #getName()
      */
-    protected static final String NAME = "name";
+    protected static final String NAME_KEY = "name";
 
     /**
      * The name of the Solr field used for storing the description of a term.
      *
      * @see #getDescription()
      */
-    protected static final String DESCRIPTION = "def";
+    protected static final String DESCRIPTION_KEY = "def";
 
     /**
      * The name of the Solr field used for storing the ancestors of a term.
@@ -142,13 +142,13 @@ public abstract class AbstractSolrVocabularyTerm implements VocabularyTerm
     @Override
     public String getName()
     {
-        return (String) getFirstValue(NAME);
+        return (String) getFirstValue(NAME_KEY);
     }
 
     @Override
     public String getDescription()
     {
-        return (String) getFirstValue(DESCRIPTION);
+        return (String) getFirstValue(DESCRIPTION_KEY);
     }
 
     @Override
