@@ -53,11 +53,8 @@
 
 $response.addHeader("content-disposition", "attachment; filename=phenotips_${xwiki.formatDate($services.jodatime.getDateTime().toDate(), 'yyyy-MM-dd_HH-mm')}.xlsx")##
 $response.setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')##
-#set ($patients = [])
-#foreach ($patientId in $patientIds)
-  #set ($discard = $patients.add($services.patients.get($patientId)))
-#end
-$services.spreadsheetexport.export($patients, $enabledFields, $response.getOutputStream())
+
+$services.spreadsheetexport.export($patientIds, $enabledFields, $response.getOutputStream())
 
 }}}
 {{/velocity}}</content>
