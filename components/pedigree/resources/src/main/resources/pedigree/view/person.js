@@ -444,7 +444,9 @@ define([
         setAliveAndWell: function(newStatus) {
             if (typeof(newStatus) == "boolean" && newStatus != this._aliveandwell) {
                 this._aliveandwell = newStatus;
-                newStatus && this.setLifeStatus("alive");
+                if (newStatus && this.getLifeStatus() != "alive") {
+                        this.setLifeStatus("alive");
+                }
                 this.getGraphics().getHoverBox().regenerateButtons();
             }
         },

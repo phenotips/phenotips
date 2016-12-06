@@ -521,6 +521,11 @@
   display: block;
   font-weight: bold;
 }
+.menu-box .field-checkbox {
+  cursor: pointer;
+  display: inline-block;
+  padding-right: 1.5em;
+}
 .menu-box .accepted-suggestions li {
   line-height: 1em;
   padding: .2em 1em .1em 0;
