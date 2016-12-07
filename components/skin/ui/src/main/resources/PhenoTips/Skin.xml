@@ -509,25 +509,26 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
     <property>
       <code>(function () {
   var init = function() {
-    if ($('inline')) {
+    var form = $('inline');
+    var formData;
+    if (form) {
+      var saveFormData = function() {
+        formData = form.serialize();
+      };
       // Some form elements are still being modified while "xwiki:dom:loaded" is fired.
       // If the initial state of the form is recorded immediately, there will likely be
       // differences with the state of the form when navigating away even if the user
       // hasn't actually changed any data.
       // Setting a timeout, even zero, delays the initialization until other
       // form elements have been modified already.
-      setTimeout(function(){window.__formData = $('inline').serialize(); }, 0);
+      setTimeout(saveFormData, 0);
       // Record the state of the form again once the form is saved.
-      document.observe('xwiki:document:saved', function(event) {
-         window.__formData = $('inline').serialize();
-      });
-      $$("input[name='action_save']").invoke('observe', 'click', function(event) {
-        window.__formData = $('inline').serialize();
-      });
+      document.observe('xwiki:document:saved', saveFormData);
+      $$("input[name^='action_']").invoke('observe', 'click', saveFormData);
       // Upon navigating away, check if anything has changed in the form and warn the user
       // if it did.
       window.addEventListener('beforeunload', function(event) {
-        if (window.__formData != $('inline').serialize()) {
+        if (formData != form.serialize()) {
           var message = "$!escapetool.javascript($services.localization.render('phenotips.navigation.beforeunload.warning'))";
           (event || window.event).returnValue = message;
           return message;
