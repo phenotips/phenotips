@@ -70,7 +70,7 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
     /** Jackson object mapper to facilitate array serialization. */
     private static final ObjectMapper OBJECT_MAPPER = getCustomObjectMapper();
 
-    private static final String ORG_JSON_LABEL = "org.json";
+    private static final String SERIALIZER_LABEL = "PrimaryEntitySerializer";
 
     /** Logging helper object. */
     @Inject
@@ -201,7 +201,7 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
     private static ObjectMapper getCustomObjectMapper()
     {
         final ObjectMapper objectMapper = new ObjectMapper();
-        SimpleModule m = new SimpleModule(ORG_JSON_LABEL, new Version(1, 0, 0, "", ORG_JSON_LABEL, "json"));
+        SimpleModule m = new SimpleModule(SERIALIZER_LABEL, new Version(1, 0, 0, "", SERIALIZER_LABEL, "json"));
         m.addSerializer(PrimaryEntity.class, new PrimaryEntitySerializer());
         objectMapper.registerModule(m);
         return objectMapper;
