@@ -24,6 +24,7 @@ import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.container.Container;
+import org.xwiki.container.Request;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -34,19 +35,16 @@ import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -56,9 +54,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.google.common.base.Function;
-import com.google.common.base.Predicates;
-import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Default implementation for {@link PatientsFetchResource} using XWiki's support for REST resources.
@@ -73,6 +69,8 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
 {
     /** Jackson object mapper to facilitate array serialization. */
     private static final ObjectMapper OBJECT_MAPPER = getCustomObjectMapper();
+
+    private static final String ORG_JSON_LABEL = "org.json";
 
     /** Logging helper object. */
     @Inject
@@ -93,38 +91,25 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
     @Inject
     private Container container;
 
-    /** Function that returns an iterable containing the specified patient objects. */
-    private Function<Object, Iterable<PrimaryEntity>> patientsFromEidFunction = getPatientsFromEidFunction();
-
-    /** Function that returns an iterable containing the specified patient object. */
-    private Function<String, PrimaryEntity> patientFromIdFunction = getPatientFromIdFunction();
-
     @Override
     public Response fetchPatients()
     {
-        final List<Object> eids = this.container.getRequest().getProperties("eid");
-        @SuppressWarnings("unchecked")
-        final List<String> ids = (List<String>) (List<?>) FluentIterable.from(this.container.getRequest()
-            .getProperties("id"))
-            .filter(Predicates.notNull())
-            .toList();
+        final Request request = this.container.getRequest();
+        // Get the internal and external IDs, if provided.
+        final List<Object> eids = request.getProperties("eid");
+        final List<Object> ids = request.getProperties("id");
 
         this.logger.debug("Retrieving patient records with external IDs [{}] and patient IDs [{}] via REST", eids, ids);
 
-        // Get a set of patients from the provided eid and/or id data.
-        final Set<PrimaryEntity> patients = new HashSet<>();
+        // Build a set of patients from the provided external and/or internal ID data.
+        final ImmutableSet.Builder<PrimaryEntity> patientsBuilder = ImmutableSet.builder();
 
-        FluentIterable.from(eids)
-            .filter(Predicates.notNull())
-            .transformAndConcat(this.patientsFromEidFunction)
-            .copyInto(patients);
-
-        FluentIterable.from(getPatientsFromIds(ids))
-            .copyInto(patients);
+        addEids(patientsBuilder, eids);
+        addIds(patientsBuilder, ids);
 
         try {
             // Generate JSON for all retrieved patients.
-            final String json = OBJECT_MAPPER.writeValueAsString(patients);
+            final String json = OBJECT_MAPPER.writeValueAsString(patientsBuilder.build());
             return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
         } catch (final JsonProcessingException ex) {
             logger.warn("Failed to serialize patients [{}] to JSON: {}", eids, ex.getMessage());
@@ -133,88 +118,79 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
     }
 
     /**
-     * Gets the function that performs a query using the given patient eid, and returns an iterable containing the
-     * relevant patient entity objects.
+     * Retrieves patient entities given a list of external patient IDs.
      *
-     * @return a function that gets patients associated with the provided external id
+     * @param patientsBuilder a patient entity set builder
+     * @param eids a list of external patient IDs, as strings
      */
-    @Nonnull
-    private Function<Object, Iterable<PrimaryEntity>> getPatientsFromEidFunction()
+    private void addEids(@Nonnull final ImmutableSet.Builder<PrimaryEntity> patientsBuilder,
+        @Nonnull final List<Object> eids)
     {
-        return new Function<Object, Iterable<PrimaryEntity>>()
-        {
-            @Override
-            public Iterable<PrimaryEntity> apply(final Object eid)
-            {
-                try {
-                    final Query q = qm.createQuery("where doc.object(PhenoTips.PatientClass)"
-                        + ".external_id = :eid", Query.XWQL);
-                    q.bindValue("eid", eid);
-                    final List<String> patientIds = q.execute();
-                    return getPatientsFromIds(patientIds);
-                } catch (final QueryException ex) {
-                    logger.warn("Failed to retrieve patient with external id [{}]: {}", eid, ex.getMessage());
-                }
-                return Collections.emptyList();
+        for (final Object eid : eids) {
+            if (StringUtils.isNotBlank((String) eid)) {
+                collectPatientsFromEid(patientsBuilder, eid);
             }
-        };
+        }
     }
 
     /**
-     * Gets patient entities, given a list of patient IDs. Any patient IDs that are not in the database will
-     * be ignored.
+     * Retrieves and collects patient entities that correspond to the provided external ID.
      *
-     * @param patientIds the list of patient IDs of interest -- should not be null
-     * @return an iterable containing patient entity objects
+     * @param patientsBuilder a patient entity set builder
+     * @param eid an external patient ID, as string
      */
-    @Nonnull
-    private Iterable<PrimaryEntity> getPatientsFromIds(@Nonnull final List<String> patientIds)
-    {
-        return FluentIterable.from(patientIds).transform(this.patientFromIdFunction)
-            .filter(Predicates.<PrimaryEntity>notNull());
-    }
-
-    /**
-     * Returns the patient entity if it exists and if the user has view rights. Otherwise returns null.
-     *
-     * @param patientId the ID of the patient of interest
-     * @return the patient entity with the specified ID, if exists, null otherwise
-     */
-    @Nullable
-    private PrimaryEntity getPatientFromId(final String patientId)
+    private void collectPatientsFromEid(@Nonnull final ImmutableSet.Builder<PrimaryEntity> patientsBuilder,
+        @Nonnull final Object eid)
     {
         try {
-            final PrimaryEntity patient = repository.get(patientId);
-            final User currentUser = this.users.getCurrentUser();
-            // If user has view rights and patient with the provided id exists, return the patient. Else return null.
-            if (patient != null && this.access.hasAccess(Right.VIEW, currentUser == null ? null
-                    : currentUser.getProfileDocument(), patient.getDocument())) {
-                return patient;
-            }
-            this.logger.debug("Patient not found, or view access denied to user [{}] on patient record [{}]",
-                currentUser, patientId);
-        } catch (final IllegalArgumentException ex) {
-            logger.warn("Failed to retrieve patient with ID [{}]: {}", patientId, ex.getMessage());
+            final Query q = qm.createQuery("where doc.object(PhenoTips.PatientClass).external_id = :eid", Query.XWQL);
+            q.bindValue("eid", eid);
+            final List<Object> patientIds = q.execute();
+            addIds(patientsBuilder, patientIds);
+        } catch (final QueryException ex) {
+            logger.warn("Failed to retrieve patient with external id [{}]: {}", eid, ex.getMessage());
         }
-        return null;
     }
 
     /**
-     * Gets the function that gets the patient given the patient's ID.
+     * Retrieves patient entities given a list of internal patient IDs.
      *
-     * @return a function that gets the patient associated with the provided ID
+     * @param patientsBuilder a patient entity set builder
+     * @param ids a list of patient ids, as strings
      */
-    @Nonnull
-    private Function<String, PrimaryEntity> getPatientFromIdFunction()
+    private void addIds(@Nonnull final ImmutableSet.Builder<PrimaryEntity> patientsBuilder,
+        @Nonnull final List<Object> ids)
     {
-        return new Function<String, PrimaryEntity>()
-        {
-            @Override
-            public PrimaryEntity apply(final String patientId)
-            {
-                return getPatientFromId(patientId);
+        for (final Object id : ids) {
+            if (StringUtils.isNotBlank((String) id)) {
+                addPatientFromId(patientsBuilder, id);
             }
-        };
+        }
+    }
+
+    /**
+     * Given the patient's internal ID, retrieves the patient entity, if it exists and if the user has view rights, and
+     * adds it to the set of patient entities.
+     *
+     * @param patientsBuilder a patient entity set builder
+     * @param id an internal patient ID
+     */
+    private void addPatientFromId(@Nonnull final ImmutableSet.Builder<PrimaryEntity> patientsBuilder,
+        @Nonnull final Object id)
+    {
+        try {
+            // Try to get the patient entity.
+            final PrimaryEntity patient = this.repository.get((String) id);
+            // Get the current user.
+            final User currentUser = this.users.getCurrentUser();
+            // If user has view rights and patient with the provided ID exists, add patient to patient set.
+            if (patient != null && this.access.hasAccess(Right.VIEW, currentUser == null ? null
+                : currentUser.getProfileDocument(), patient.getDocument())) {
+                patientsBuilder.add(patient);
+            }
+        } catch (final IllegalArgumentException ex) {
+            logger.warn("Failed to retrieve patient with ID [{}]: {}", id, ex.getMessage());
+        }
     }
 
     /**
@@ -225,7 +201,7 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
     private static ObjectMapper getCustomObjectMapper()
     {
         final ObjectMapper objectMapper = new ObjectMapper();
-        SimpleModule m = new SimpleModule("org.json", new Version(1, 0, 0, "", "org.json", "json"));
+        SimpleModule m = new SimpleModule(ORG_JSON_LABEL, new Version(1, 0, 0, "", ORG_JSON_LABEL, "json"));
         m.addSerializer(PrimaryEntity.class, new PrimaryEntitySerializer());
         objectMapper.registerModule(m);
         return objectMapper;
