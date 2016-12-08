@@ -108,16 +108,37 @@
       </scope>
     </class>
     <property>
-      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
+      <content>
+{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-#if ($xcontext.action == 'edit')
+#set ($patient = $services.patients.get($doc.name))
+#set ($phenotypesSummary = [])
+#set($qualifiers = $patient.getData('global-qualifiers'))
+#foreach ($q in ['global_age_of_onset', 'global_mode_of_inheritance'])
+  #foreach ($t in $qualifiers.get($q))
+    #set ($discard = $phenotypesSummary.add({"key"  : $t.id, "text" : $t.name, "type" : 'symptom'}))
+  #end
+#end
+#foreach ($f in $patient.features)
+  #set ($discard = $phenotypesSummary.add({
+    "key"  : "#if($f.id == '')$f.name#{else}$f.id#end",
+    "text" : $f.name,
+    "type" : "#if (!$f.isPresent())not_#elseif($f.id == '')free_#{end}symptom"
+  }))
+#end
+
+#set ($hasSymptoms = ($phenotypesSummary.size() &gt; 0))
+#if ($xcontext.action == 'edit' || $hasSymptoms)
   (% class="ncbi-search-box" %)(((
     === $services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch')===
 
     (% class="ncbi-search-box-content"%)(((
-      (% class="hint"%)$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.Hint')(%%)
-      {{html wiki=false clean=false}}&lt;input type="hidden" id="defaultSearchTermsInput" value="" /&gt;&lt;input type="hidden" id="defaultSearchTermIDsInput" value="" /&gt;{{/html}}
+
+      (% class="hint"%)$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.Hint')(%%)##
+      {{html wiki=false clean=false}}&lt;input type="hidden" id="defaultSearchTermsInput" value="" /&gt;&lt;input type="hidden" id="defaultSearchTermIDsInput" value="" /&gt;{{/html}}##
+      {{html wiki=false clean=false}}&lt;input type="hidden" id="phenotypes-summary" value="$escapetool.xml($jsontool.serialize($phenotypesSummary))" /&gt;{{/html}}##
+      
       (% id="defaultSearchTerms" %)((()))
       ##(% class="hint"%)$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.defaultTerms')(%%)
       ## {{html wiki=false clean=false}}&lt;input type="text" id="customSearchTermsInput" value="" /&gt;{{/html}}
@@ -126,12 +147,12 @@
         ====$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.matchingDisorders')====
         (% id="omim-search-results" class="background-suggestions" %)((()))
       )))
-
     )))
   )))## ncbi-search-box
   (% class="clear" %)((()))
 #end
-{{/velocity}</content>
+{{/velocity}}
+</content>
     </property>
     <property>
       <extensionPointId>org.phenotips.patientSheet.section.diagnosis-info</extensionPointId>
