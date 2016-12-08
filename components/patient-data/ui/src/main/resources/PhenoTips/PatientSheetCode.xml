@@ -2551,36 +2551,14 @@ document.observe('xwiki:dom:loaded', function()
   });
 
   document.observe('xwiki:dom:loaded', function() {
-    $$(".yes-no-picker").each(function(element) {
-      var yesInput = element.down('.yes input');
-      var noInput = element.down('.no input');
-      if (yesInput.name === noInput.name) {
-        // Not a phenotype
-        return;
-      }
-      var key = yesInput.value;
-      // FIXME The nextSibling part is supposed to make simple checkboxes work as well, but we're already selecting only YesNo pickers.
-      // Should be revisited to add back support for simple checkboxes.
-      var text = yesInput.title || (element.nextSibling &amp;&amp; (element.nextSibling.firstChild &amp;&amp; element.nextSibling.firstChild.nodeValue || element.nextSibling.nodeValue)) || key;
-      var obj = cache.all[key];
-      var enable = !element.down('.na input').checked;
-      if (enable) {
-        if (!obj) {
-          obj = {'key' : key, 'text' : text};
-          cache.all[key] = obj;
-        } else {
-          obj.hidden = false;
-        }
-        obj.type = (noInput.checked ? 'not_symptom' : (key.startsWith('HP:') ? 'symptom' : 'free_symptom'));
-        cache.displayed[key] = true;
-      } else {
-        if (obj) {
-          obj.hidden = true;
-          delete cache.displayed[key];
-        }
-      }
-    });
-    updateDefaultSearchTerms();
+    if ($('phenotypes-summary')) {
+      var phenotypes = JSON.parse($('phenotypes-summary').value);
+      phenotypes.each (function (p) {
+        cache.all[p.key] = p;
+        cache.displayed[p.key] = true;
+      });
+      updateDefaultSearchTerms();
+    }
   });
 
   if (customSearchTermsInput) {
