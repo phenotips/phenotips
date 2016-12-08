@@ -23,8 +23,6 @@ import org.phenotips.obo2solr.TermData;
 import org.phenotips.vocabulary.VocabularyExtension;
 import org.phenotips.vocabulary.VocabularyTerm;
 
-import org.xwiki.component.phase.InitializationException;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
