@@ -378,7 +378,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       newMoreInfoRow.select('.variant.moreinfo').invoke('observe', 'click', this.areaEditData.bindAsEventListener(this));
       newMoreInfoRow.select('.variant.moreinfo').invoke('click');
 
-      $(this.geneVariantClassName + '_' + varIndex + '_genesymbol').value = geneSymbol;
+      $(this.geneVariantClassName + '_' + varIndex + '_gene').value = geneId;
 
       Event.fire(document, 'xwiki:dom:updated', {elements :[newVariantRow]});
     },

@@ -79,7 +79,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
     private static final String INTERNAL_VARIANT_KEY = "cdna";
 
-    private static final String INTERNAL_GENESYMBOL_KEY = "genesymbol";
+    private static final String INTERNAL_GENE_KEY = "gene";
 
     private static final String INTERNAL_PROTEIN_KEY = "protein";
 
@@ -111,7 +111,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
     private static final String JSON_VARIANT_KEY = INTERNAL_VARIANT_KEY;
 
-    private static final String JSON_GENESYMBOL_KEY = INTERNAL_GENESYMBOL_KEY;
+    private static final String JSON_GENE_KEY = INTERNAL_GENE_KEY;
 
     private static final String JSON_PROTEIN_KEY = INTERNAL_PROTEIN_KEY;
 
@@ -186,7 +186,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList(INTERNAL_VARIANT_KEY, INTERNAL_GENESYMBOL_KEY, INTERNAL_PROTEIN_KEY,
+        return Arrays.asList(INTERNAL_VARIANT_KEY, INTERNAL_GENE_KEY, INTERNAL_PROTEIN_KEY,
             INTERNAL_TRANSCRIPT_KEY, INTERNAL_DBSNP_KEY, INTERNAL_ZYGOSITY_KEY,
             INTERNAL_EFFECT_KEY, INTERNAL_INTERPRETATION_KEY, INTERNAL_INHERITANCE_KEY, INTERNAL_EVIDENCE_KEY,
             INTERNAL_SEGREGATION_KEY, INTERNAL_SANGER_KEY, INTERNAL_CHROMOSOME_KEY, INTERNAL_START_POSITION_KEY,
@@ -290,7 +290,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
         Map<String, String> internalToJSONkeys = new HashMap<>();
         internalToJSONkeys.put(JSON_VARIANT_KEY, INTERNAL_VARIANT_KEY);
-        internalToJSONkeys.put(JSON_GENESYMBOL_KEY, INTERNAL_GENESYMBOL_KEY);
+        internalToJSONkeys.put(JSON_GENE_KEY, INTERNAL_GENE_KEY);
         internalToJSONkeys.put(JSON_PROTEIN_KEY, INTERNAL_PROTEIN_KEY);
         internalToJSONkeys.put(JSON_TRANSCRIPT_KEY, INTERNAL_TRANSCRIPT_KEY);
         internalToJSONkeys.put(JSON_DBSNP_KEY, INTERNAL_DBSNP_KEY);
