@@ -2276,7 +2276,6 @@ document.observe('xwiki:dom:loaded', function()
     <property>
       <code>document.observe('xwiki:dom:loading', function() {
 
-
     var loadMatrixDiagram = function(data) {
             require(["$services.webjars.url('d3js', 'd3.js')"], function(d3) {
                 /**
@@ -3207,7 +3206,6 @@ document.observe('xwiki:dom:loaded', function()
                             .delay(10)
                             .style("opacity", 0)
                     }
-
                 })
 
 
