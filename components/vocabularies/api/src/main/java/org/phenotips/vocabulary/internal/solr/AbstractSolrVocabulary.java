@@ -19,6 +19,8 @@ package org.phenotips.vocabulary.internal.solr;
 
 import org.phenotips.vocabulary.SolrVocabularyResourceManager;
 import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyExtension;
+import org.phenotips.vocabulary.VocabularyInputTerm;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.phase.Initializable;
@@ -71,10 +73,15 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     @Inject
     protected SolrVocabularyResourceManager externalServicesAccess;
 
+    /** The extensions that apply to this vocabulary. */
+    @Inject
+    protected List<VocabularyExtension> extensions;
+
     @Override
     public void initialize() throws InitializationException
     {
         this.externalServicesAccess.initialize(this.getCoreName());
+        this.extensions = filterSupportedExtensions();
     }
 
     // Dilemma:
@@ -310,4 +317,33 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
         }
         return query.toString();
     }
+
+    /**
+     * Runs the term given through all the vocabulary extensions we have.
+     *
+     * @param term the term being processed
+     */
+    protected void extendTerm(VocabularyInputTerm term)
+    {
+        for (VocabularyExtension extension : this.extensions) {
+            extension.extendTerm(term, this);
+        }
+    }
+
+    /**
+     * Gets only the list of extensions that this vocabulary supports.
+     *
+     * @return the list of supported extensions, may be empty
+     */
+    private List<VocabularyExtension> filterSupportedExtensions()
+    {
+        List<VocabularyExtension> result = new LinkedList<>();
+        for (VocabularyExtension extension : this.extensions) {
+            if (extension.isVocabularySupported(this)) {
+                result.add(extension);
+            }
+        }
+        return result;
+    }
+
 }
