@@ -41,6 +41,7 @@ import java.util.Map.Entry;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
@@ -48,11 +49,16 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseProperty;
+import com.xpn.xwiki.objects.BaseStringProperty;
 import com.xpn.xwiki.objects.DBStringListProperty;
+import com.xpn.xwiki.objects.ListProperty;
 import com.xpn.xwiki.objects.StringProperty;
+import com.xpn.xwiki.objects.classes.BaseClass;
+import com.xpn.xwiki.objects.classes.PropertyClass;
 
 /**
  * Handles the patient's global qualifiers, such as global age of onset.
@@ -79,6 +85,9 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
 
     @Inject
     private VocabularyManager vocabularyManager;
+
+    @Inject
+    private Provider<XWikiContext> xcontextProvider;
 
     @Override
     public PatientData<List<VocabularyTerm>> load(Patient patient)
@@ -112,7 +121,6 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void save(Patient patient, DocumentModelBridge doc)
     {
@@ -123,20 +131,21 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
         if (data == null || dataHolder == null) {
             return;
         }
+        BaseClass xclass = dataHolder.getXClass(this.xcontextProvider.get());
         for (String propertyName : getProperties()) {
             List<VocabularyTerm> terms = data.get(propertyName);
             if (terms == null) {
                 continue;
             }
-            BaseProperty<ObjectPropertyReference> field =
-                (BaseProperty<ObjectPropertyReference>) dataHolder.getField(propertyName);
-            if (field != null) {
-                String fieldType = field.getClassType();
-                if (StringUtils.equals(fieldType, "com.xpn.xwiki.objects.StringProperty")) {
-                    /* there should be only one term present; just taking the head of the list */
-                    field.setValue(terms.isEmpty() ? null : termsToXWikiFormat(terms).get(0));
-                } else if (StringUtils.equals(fieldType, "com.xpn.xwiki.objects.DBStringListProperty")) {
-                    ((DBStringListProperty) field).setList(termsToXWikiFormat(terms));
+            PropertyClass xpropertyClass = (PropertyClass) xclass.get(propertyName);
+            if (xpropertyClass != null) {
+                @SuppressWarnings("unchecked")
+                BaseProperty<ObjectPropertyReference> xproperty = xpropertyClass.newProperty();
+                if (xproperty instanceof BaseStringProperty) {
+                    // there should be only one term present; just taking the head of the list
+                    dataHolder.setStringValue(propertyName, terms.isEmpty() ? null : termsToXWikiFormat(terms).get(0));
+                } else if (xproperty instanceof ListProperty) {
+                    dataHolder.setStringListValue(propertyName, termsToXWikiFormat(terms));
                 }
             }
         }
