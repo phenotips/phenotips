@@ -69,7 +69,7 @@ public class ParentalAgeControllerTest
 
     private static final Integer AGE_ZERO = 0;
 
-    public static final EntityReference CLASS_REFERENCE =
+    private static final EntityReference CLASS_REFERENCE =
         new EntityReference("ParentalInformationClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     @Rule

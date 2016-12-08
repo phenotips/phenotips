@@ -56,10 +56,29 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Test for the {@link MetaDataController} Component, only the overridden methods from {@link AbstractSimpleController}
- * are tested here
+ * are tested here.
  */
 public class MetaDataControllerTest
 {
+    private static final String UNKNOWN_USER = "Unknown user";
+
+    private static final String DOCUMENT_NAME = "doc.name";
+
+    private static final String DOCUMENT_NAME_STRING = "report_id";
+
+    private static final String CREATION_DATE = "creationDate";
+
+    private static final String AUTHOR = "author";
+
+    private static final String AUTHOR_STRING = "last_modified_by";
+
+    private static final String DATE = "date";
+
+    private static final String DATE_STRING = "last_modification_date";
+
+    private static final String CONTROLLER_NAME = "metadata";
+
+    private static final String DATA_NAME = CONTROLLER_NAME;
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
@@ -82,26 +101,6 @@ public class MetaDataControllerTest
     private Date date;
 
     private DateTimeFormatter formatter;
-
-    private static final String UNKNOWN_USER = "Unknown user";
-
-    private static final String DOCUMENT_NAME = "doc.name";
-
-    private static final String DOCUMENT_NAME_STRING = "report_id";
-
-    private static final String CREATION_DATE = "creationDate";
-
-    private static final String AUTHOR = "author";
-
-    private static final String AUTHOR_STRING = "last_modified_by";
-
-    private static final String DATE = "date";
-
-    private static final String DATE_STRING = "last_modification_date";
-
-    private static final String CONTROLLER_NAME = "metadata";
-
-    private static final String DATA_NAME = CONTROLLER_NAME;
 
     @Before
     public void setUp() throws Exception

@@ -53,10 +53,22 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Test for the {@link SexController} component, implementation of the {@link org.phenotips.data.PatientDataController}
- * interface
+ * interface.
  */
 public class SexControllerTest
 {
+    private static final String DATA_NAME = "sex";
+
+    private static final String INTERNAL_PROPERTY_NAME = "gender";
+
+    private static final String SEX_MALE = "M";
+
+    private static final String SEX_FEMALE = "F";
+
+    private static final String SEX_OTHER = "O";
+
+    private static final String SEX_UNKNOWN = "U";
+
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
         new MockitoComponentMockingRule<PatientDataController<String>>(SexController.class);
@@ -80,18 +92,6 @@ public class SexControllerTest
 
     @Mock
     private BaseObject data;
-
-    private static final String DATA_NAME = "sex";
-
-    private static final String INTERNAL_PROPERTY_NAME = "gender";
-
-    private static final String SEX_MALE = "M";
-
-    private static final String SEX_FEMALE = "F";
-
-    private static final String SEX_OTHER = "O";
-
-    private static final String SEX_UNKNOWN = "U";
 
     @Before
     public void setUp() throws Exception

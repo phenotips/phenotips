@@ -46,7 +46,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test for the {@link PatientDeathdateUpdater} component
+ * Test for the {@link PatientDeathdateUpdater} component.
  */
 public class PatientDeathdateUpdaterTest
 {
@@ -59,7 +59,7 @@ public class PatientDeathdateUpdaterTest
     private Object data;
 
     @Mock
-    public XWikiDocument source;
+    private XWikiDocument source;
 
     @Mock
     private Event event;

@@ -31,7 +31,7 @@ import org.junit.Test;
 
 /**
  * Test for the {@link TextNotesController} Component, only the overridden methods from {@link AbstractSimpleController}
- * are tested here
+ * are tested here.
  */
 public class TextNotesControllerTest
 {

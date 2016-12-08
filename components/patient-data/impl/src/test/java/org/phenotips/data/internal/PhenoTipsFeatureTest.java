@@ -58,6 +58,18 @@ import static org.mockito.Mockito.when;
 
 public class PhenoTipsFeatureTest
 {
+    private static final String HP0000100 = "HP:0000100";
+
+    private static final String HP0000082 = "HP:0000082";
+
+    private static final String HP0003678 = "HP:0003678";
+
+    private static final String HP0012211 = "HP:0012211";
+
+    private static final String TYPE_PHENOTYPE = "phenotype";
+
+    private static final String TYPE_NEGATIVE_PHENOTYPE = "negative_phenotype";
+
     @Mock
     private ComponentManager cm;
 
@@ -89,21 +101,21 @@ public class PhenoTipsFeatureTest
         when(this.cm.getInstance(DiffManager.class)).thenReturn(null);
         when(this.cm.getInstance(VocabularyManager.class)).thenReturn(this.vm);
 
-        when(this.hp0000082.getId()).thenReturn("HP:0000082");
+        when(this.hp0000082.getId()).thenReturn(HP0000082);
         when(this.hp0000082.getName()).thenReturn("Decreased renal function");
-        when(this.vm.resolveTerm("HP:0000082")).thenReturn(this.hp0000082);
+        when(this.vm.resolveTerm(HP0000082)).thenReturn(this.hp0000082);
 
-        when(this.hp0000100.getId()).thenReturn("HP:0000100");
+        when(this.hp0000100.getId()).thenReturn(HP0000100);
         when(this.hp0000100.getName()).thenReturn("Nephrosis");
-        when(this.vm.resolveTerm("HP:0000100")).thenReturn(this.hp0000100);
+        when(this.vm.resolveTerm(HP0000100)).thenReturn(this.hp0000100);
 
-        when(this.hp0003678.getId()).thenReturn("HP:0003678");
+        when(this.hp0003678.getId()).thenReturn(HP0003678);
         when(this.hp0003678.getName()).thenReturn("Rapidly progressive");
-        when(this.vm.resolveTerm("HP:0003678")).thenReturn(this.hp0003678);
+        when(this.vm.resolveTerm(HP0003678)).thenReturn(this.hp0003678);
 
-        when(this.hp0012211.getId()).thenReturn("HP:0012211");
+        when(this.hp0012211.getId()).thenReturn(HP0012211);
         when(this.hp0012211.getName()).thenReturn("Abnormal renal physiology");
-        when(this.vm.resolveTerm("HP:0012211")).thenReturn(this.hp0012211);
+        when(this.vm.resolveTerm(HP0012211)).thenReturn(this.hp0012211);
     }
 
     @Test
@@ -111,19 +123,19 @@ public class PhenoTipsFeatureTest
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
-        when(prop.getName()).thenReturn("phenotype");
+        when(prop.getName()).thenReturn(TYPE_PHENOTYPE);
         List<BaseObject> metas = new ArrayList<>();
 
         BaseObject meta = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
-        temp.setValue("phenotype");
+        temp.setValue(TYPE_PHENOTYPE);
         when(meta.get("target_property_name")).thenReturn(temp);
         temp = new StringProperty();
-        temp.setValue("HP:0000100");
+        temp.setValue(HP0000100);
         when(meta.get("target_property_value")).thenReturn(temp);
         when(meta.getLargeStringValue("comments")).thenReturn("Some comments");
         temp = new StringProperty();
-        temp.setValue("HP:0003678");
+        temp.setValue(HP0003678);
         temp.setName("pace_of_progression");
         when(meta.get("pace_of_progression")).thenReturn(temp);
         metas.add(meta);
@@ -133,23 +145,23 @@ public class PhenoTipsFeatureTest
         List<BaseObject> categories = new ArrayList<>();
         BaseObject category = mock(BaseObject.class);
         temp = new StringProperty();
-        temp.setValue("phenotype");
+        temp.setValue(TYPE_PHENOTYPE);
         when(category.get("target_property_name")).thenReturn(temp);
         temp = new StringProperty();
-        temp.setValue("HP:0000100");
+        temp.setValue(HP0000100);
         when(category.get("target_property_value")).thenReturn(temp);
         List<String> specifiedCategories = new ArrayList<>();
-        specifiedCategories.add("HP:0012211");
-        specifiedCategories.add("HP:0000082");
+        specifiedCategories.add(HP0012211);
+        specifiedCategories.add(HP0000082);
         when(category.getListValue("target_property_category")).thenReturn(specifiedCategories);
         categories.add(category);
         when(doc.getXObjects(new EntityReference("PhenotypeCategoryClass", EntityType.DOCUMENT,
             Constants.CODE_SPACE_REFERENCE))).thenReturn(categories);
 
-        Feature f = new PhenoTipsFeature(doc, prop, "HP:0000100");
-        Assert.assertEquals("HP:0000100", f.getId());
+        Feature f = new PhenoTipsFeature(doc, prop, HP0000100);
+        Assert.assertEquals(HP0000100, f.getId());
         Assert.assertEquals("Nephrosis", f.getName());
-        Assert.assertEquals("phenotype", f.getType());
+        Assert.assertEquals(TYPE_PHENOTYPE, f.getType());
         Assert.assertTrue(f.isPresent());
         Assert.assertEquals("Some comments", f.getNotes());
 
@@ -157,33 +169,33 @@ public class PhenoTipsFeatureTest
         Assert.assertEquals(1, metadata.size());
         FeatureMetadatum metadatum = metadata.get("pace_of_progression");
         Assert.assertNotNull(metadatum);
-        Assert.assertEquals("HP:0003678", metadatum.getId());
+        Assert.assertEquals(HP0003678, metadatum.getId());
         Assert.assertEquals("Rapidly progressive", metadatum.getName());
         Assert.assertEquals("pace_of_progression", metadatum.getType());
 
         // Testing the JSON format
         JSONObject json = f.toJSON();
 
-        Assert.assertEquals("HP:0000100", json.getString("id"));
+        Assert.assertEquals(HP0000100, json.getString("id"));
         Assert.assertEquals("Nephrosis", json.getString("label"));
-        Assert.assertEquals("phenotype", json.getString("type"));
+        Assert.assertEquals(TYPE_PHENOTYPE, json.getString("type"));
         Assert.assertEquals("yes", json.getString("observed"));
         Assert.assertEquals("Some comments", json.getString("notes"));
 
         JSONArray qualifiers = json.getJSONArray("qualifiers");
         Assert.assertEquals(1, qualifiers.length());
         JSONObject pop = qualifiers.getJSONObject(0);
-        Assert.assertEquals("HP:0003678", pop.getString("id"));
+        Assert.assertEquals(HP0003678, pop.getString("id"));
         Assert.assertEquals("Rapidly progressive", pop.getString("label"));
         Assert.assertEquals("pace_of_progression", pop.getString("type"));
 
         JSONArray jsonCategories = json.getJSONArray("categories");
         Assert.assertEquals(2, jsonCategories.length());
         JSONObject categ = jsonCategories.getJSONObject(0);
-        Assert.assertEquals("HP:0012211", categ.getString("id"));
+        Assert.assertEquals(HP0012211, categ.getString("id"));
         Assert.assertEquals("Abnormal renal physiology", categ.getString("label"));
         categ = jsonCategories.getJSONObject(1);
-        Assert.assertEquals("HP:0000082", categ.getString("id"));
+        Assert.assertEquals(HP0000082, categ.getString("id"));
         Assert.assertEquals("Decreased renal function", categ.getString("label"));
     }
 
@@ -192,19 +204,19 @@ public class PhenoTipsFeatureTest
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
-        when(prop.getName()).thenReturn("negative_phenotype");
+        when(prop.getName()).thenReturn(TYPE_NEGATIVE_PHENOTYPE);
         List<BaseObject> metas = new ArrayList<>();
 
         BaseObject meta = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
-        temp.setValue("negative_phenotype");
+        temp.setValue(TYPE_NEGATIVE_PHENOTYPE);
         when(meta.get("target_property_name")).thenReturn(temp);
         temp = new StringProperty();
-        temp.setValue("HP:0000100");
+        temp.setValue(HP0000100);
         when(meta.get("target_property_value")).thenReturn(temp);
         when(meta.getLargeStringValue("comments")).thenReturn("Some comments");
         temp = new StringProperty();
-        temp.setValue("HP:0003678");
+        temp.setValue(HP0003678);
         temp.setName("pace_of_progression");
         when(meta.get("pace_of_progression")).thenReturn(temp);
         metas.add(meta);
@@ -212,14 +224,14 @@ public class PhenoTipsFeatureTest
         List<BaseObject> categories = new ArrayList<>();
         BaseObject category = mock(BaseObject.class);
         temp = new StringProperty();
-        temp.setValue("negative_phenotype");
+        temp.setValue(TYPE_NEGATIVE_PHENOTYPE);
         when(category.get("target_property_name")).thenReturn(temp);
         temp = new StringProperty();
-        temp.setValue("HP:0000100");
+        temp.setValue(HP0000100);
         when(category.get("target_property_value")).thenReturn(temp);
         List<String> specifiedCategories = new ArrayList<>();
-        specifiedCategories.add("HP:0012211");
-        specifiedCategories.add("HP:0000082");
+        specifiedCategories.add(HP0012211);
+        specifiedCategories.add(HP0000082);
         when(category.getListValue("target_property_category")).thenReturn(specifiedCategories);
         categories.add(category);
         when(doc.getXObjects(new EntityReference("PhenotypeCategoryClass", EntityType.DOCUMENT,
@@ -227,10 +239,10 @@ public class PhenoTipsFeatureTest
 
         when(doc.getXObjects(FeatureMetadatum.CLASS_REFERENCE)).thenReturn(metas);
 
-        Feature f = new PhenoTipsFeature(doc, prop, "HP:0000100");
-        Assert.assertEquals("HP:0000100", f.getId());
+        Feature f = new PhenoTipsFeature(doc, prop, HP0000100);
+        Assert.assertEquals(HP0000100, f.getId());
         Assert.assertEquals("Nephrosis", f.getName());
-        Assert.assertEquals("phenotype", f.getType());
+        Assert.assertEquals(TYPE_PHENOTYPE, f.getType());
         Assert.assertFalse(f.isPresent());
         Assert.assertEquals("Some comments", f.getNotes());
 
@@ -238,33 +250,33 @@ public class PhenoTipsFeatureTest
         Assert.assertEquals(1, metadata.size());
         FeatureMetadatum metadatum = metadata.get("pace_of_progression");
         Assert.assertNotNull(metadatum);
-        Assert.assertEquals("HP:0003678", metadatum.getId());
+        Assert.assertEquals(HP0003678, metadatum.getId());
         Assert.assertEquals("Rapidly progressive", metadatum.getName());
         Assert.assertEquals("pace_of_progression", metadatum.getType());
 
         // Testing the JSON format
         JSONObject json = f.toJSON();
 
-        Assert.assertEquals("HP:0000100", json.getString("id"));
+        Assert.assertEquals(HP0000100, json.getString("id"));
         Assert.assertEquals("Nephrosis", json.getString("label"));
-        Assert.assertEquals("phenotype", json.getString("type"));
+        Assert.assertEquals(TYPE_PHENOTYPE, json.getString("type"));
         Assert.assertEquals("no", json.getString("observed"));
         Assert.assertEquals("Some comments", json.getString("notes"));
 
         JSONArray qualifiers = json.getJSONArray("qualifiers");
         Assert.assertEquals(1, qualifiers.length());
         JSONObject pop = qualifiers.getJSONObject(0);
-        Assert.assertEquals("HP:0003678", pop.getString("id"));
+        Assert.assertEquals(HP0003678, pop.getString("id"));
         Assert.assertEquals("Rapidly progressive", pop.getString("label"));
         Assert.assertEquals("pace_of_progression", pop.getString("type"));
 
         JSONArray jsonCategories = json.getJSONArray("categories");
         Assert.assertEquals(2, jsonCategories.length());
         JSONObject categ = jsonCategories.getJSONObject(0);
-        Assert.assertEquals("HP:0012211", categ.getString("id"));
+        Assert.assertEquals(HP0012211, categ.getString("id"));
         Assert.assertEquals("Abnormal renal physiology", categ.getString("label"));
         categ = jsonCategories.getJSONObject(1);
-        Assert.assertEquals("HP:0000082", categ.getString("id"));
+        Assert.assertEquals(HP0000082, categ.getString("id"));
         Assert.assertEquals("Decreased renal function", categ.getString("label"));
     }
 
@@ -273,24 +285,24 @@ public class PhenoTipsFeatureTest
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
-        when(prop.getName()).thenReturn("phenotype");
+        when(prop.getName()).thenReturn(TYPE_PHENOTYPE);
         List<BaseObject> metas = new ArrayList<>();
 
         metas.add(null);
 
         BaseObject meta = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
-        temp.setValue("phenotype");
+        temp.setValue(TYPE_PHENOTYPE);
         when(meta.get("target_property_name")).thenReturn(temp);
         temp = new StringProperty();
-        temp.setValue("HP:0000100");
+        temp.setValue(HP0000100);
         when(meta.get("target_property_value")).thenReturn(temp);
         when(meta.getLargeStringValue("comments")).thenReturn("Some comments");
         metas.add(meta);
 
         when(doc.getXObjects(FeatureMetadatum.CLASS_REFERENCE)).thenReturn(metas);
 
-        Feature f = new PhenoTipsFeature(doc, prop, "HP:0000100");
+        Feature f = new PhenoTipsFeature(doc, prop, HP0000100);
         Assert.assertEquals("Some comments", f.getNotes());
 
         JSONObject json = f.toJSON();
@@ -302,7 +314,7 @@ public class PhenoTipsFeatureTest
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
-        when(prop.getName()).thenReturn("phenotype");
+        when(prop.getName()).thenReturn(TYPE_PHENOTYPE);
         List<BaseObject> metas = new ArrayList<>();
 
         BaseObject meta = mock(BaseObject.class);
@@ -310,14 +322,14 @@ public class PhenoTipsFeatureTest
         temp.setValue("prenatal_phenotype");
         when(meta.get("target_property_name")).thenReturn(temp);
         temp = new StringProperty();
-        temp.setValue("HP:0000100");
+        temp.setValue(HP0000100);
         when(meta.get("target_property_value")).thenReturn(temp);
         when(meta.getLargeStringValue("comments")).thenReturn("Wrong comments");
         metas.add(meta);
 
         when(doc.getXObjects(FeatureMetadatum.CLASS_REFERENCE)).thenReturn(metas);
 
-        Feature f = new PhenoTipsFeature(doc, prop, "HP:0000100");
+        Feature f = new PhenoTipsFeature(doc, prop, HP0000100);
         Assert.assertEquals("", f.getNotes());
 
         JSONObject json = f.toJSON();
@@ -329,12 +341,12 @@ public class PhenoTipsFeatureTest
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
-        when(prop.getName()).thenReturn("phenotype");
+        when(prop.getName()).thenReturn(TYPE_PHENOTYPE);
         List<BaseObject> metas = new ArrayList<>();
 
         BaseObject meta = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
-        temp.setValue("phenotype");
+        temp.setValue(TYPE_PHENOTYPE);
         when(meta.get("target_property_name")).thenReturn(temp);
         temp = new StringProperty();
         temp.setValue("HP:0000123");
@@ -344,7 +356,7 @@ public class PhenoTipsFeatureTest
 
         when(doc.getXObjects(FeatureMetadatum.CLASS_REFERENCE)).thenReturn(metas);
 
-        Feature f = new PhenoTipsFeature(doc, prop, "HP:0000100");
+        Feature f = new PhenoTipsFeature(doc, prop, HP0000100);
         Assert.assertEquals("", f.getNotes());
 
         JSONObject json = f.toJSON();
@@ -356,15 +368,15 @@ public class PhenoTipsFeatureTest
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
-        when(prop.getName()).thenReturn("phenotype");
+        when(prop.getName()).thenReturn(TYPE_PHENOTYPE);
         List<BaseObject> metas = new ArrayList<>();
 
         BaseObject meta = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
-        temp.setValue("phenotype");
+        temp.setValue(TYPE_PHENOTYPE);
         when(meta.get("target_property_name")).thenReturn(temp);
         temp = new StringProperty();
-        temp.setValue("HP:0000100");
+        temp.setValue(HP0000100);
         when(meta.get("target_property_value")).thenReturn(temp);
         temp = new StringProperty();
         temp.setValue("");
@@ -374,7 +386,7 @@ public class PhenoTipsFeatureTest
 
         when(doc.getXObjects(FeatureMetadatum.CLASS_REFERENCE)).thenReturn(metas);
 
-        Feature f = new PhenoTipsFeature(doc, prop, "HP:0000100");
+        Feature f = new PhenoTipsFeature(doc, prop, HP0000100);
         Map<String, ? extends FeatureMetadatum> metadata = f.getMetadata();
         Assert.assertTrue(metadata.isEmpty());
 
@@ -387,15 +399,15 @@ public class PhenoTipsFeatureTest
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
-        when(prop.getName()).thenReturn("phenotype");
+        when(prop.getName()).thenReturn(TYPE_PHENOTYPE);
         List<BaseObject> metas = new ArrayList<>();
 
         BaseObject meta = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
-        temp.setValue("phenotype");
+        temp.setValue(TYPE_PHENOTYPE);
         when(meta.get("target_property_name")).thenReturn(temp);
         temp = new StringProperty();
-        temp.setValue("HP:0000100");
+        temp.setValue(HP0000100);
         when(meta.get("target_property_value")).thenReturn(temp);
         temp = new StringProperty();
         temp.setValue(null);
@@ -405,7 +417,7 @@ public class PhenoTipsFeatureTest
 
         when(doc.getXObjects(FeatureMetadatum.CLASS_REFERENCE)).thenReturn(metas);
 
-        Feature f = new PhenoTipsFeature(doc, prop, "HP:0000100");
+        Feature f = new PhenoTipsFeature(doc, prop, HP0000100);
         Map<String, ? extends FeatureMetadatum> metadata = f.getMetadata();
         Assert.assertTrue(metadata.isEmpty());
 
@@ -418,11 +430,11 @@ public class PhenoTipsFeatureTest
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
-        when(prop.getName()).thenReturn("phenotype");
+        when(prop.getName()).thenReturn(TYPE_PHENOTYPE);
 
         when(doc.getXObjects(FeatureMetadatum.CLASS_REFERENCE)).thenReturn(Collections.<BaseObject>emptyList());
 
-        Feature f = new PhenoTipsFeature(doc, prop, "HP:0000100");
+        Feature f = new PhenoTipsFeature(doc, prop, HP0000100);
         Map<String, ? extends FeatureMetadatum> metadata = f.getMetadata();
         Assert.assertTrue(metadata.isEmpty());
 
@@ -435,12 +447,12 @@ public class PhenoTipsFeatureTest
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
-        when(prop.getName()).thenReturn("phenotype");
+        when(prop.getName()).thenReturn(TYPE_PHENOTYPE);
 
         // Not really expected, but we should consider this case anyway
         when(doc.getXObjects(FeatureMetadatum.CLASS_REFERENCE)).thenReturn(null);
 
-        Feature f = new PhenoTipsFeature(doc, prop, "HP:0000100");
+        Feature f = new PhenoTipsFeature(doc, prop, HP0000100);
         Map<String, ? extends FeatureMetadatum> metadata = f.getMetadata();
         Assert.assertTrue(metadata.isEmpty());
 
@@ -453,24 +465,24 @@ public class PhenoTipsFeatureTest
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
-        when(prop.getName()).thenReturn("phenotype");
+        when(prop.getName()).thenReturn(TYPE_PHENOTYPE);
         List<BaseObject> metas = new ArrayList<>();
         BaseObject meta = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
-        temp.setValue("phenotype");
+        temp.setValue(TYPE_PHENOTYPE);
         when(meta.get("target_property_name")).thenReturn(null, null, null, temp);
         temp = new StringProperty();
-        temp.setValue("HP:0000100");
+        temp.setValue(HP0000100);
         when(meta.get("target_property_value")).thenReturn(null, temp, null, temp);
         when(meta.getLargeStringValue("comments")).thenReturn("Some comments");
         metas.add(meta);
 
         when(doc.getXObjects(FeatureMetadatum.CLASS_REFERENCE)).thenReturn(metas);
 
-        Assert.assertEquals("", new PhenoTipsFeature(doc, prop, "HP:0000100").getNotes());
-        Assert.assertEquals("", new PhenoTipsFeature(doc, prop, "HP:0000100").getNotes());
-        Assert.assertEquals("", new PhenoTipsFeature(doc, prop, "HP:0000100").getNotes());
-        Assert.assertEquals("Some comments", new PhenoTipsFeature(doc, prop, "HP:0000100").getNotes());
+        Assert.assertEquals("", new PhenoTipsFeature(doc, prop, HP0000100).getNotes());
+        Assert.assertEquals("", new PhenoTipsFeature(doc, prop, HP0000100).getNotes());
+        Assert.assertEquals("", new PhenoTipsFeature(doc, prop, HP0000100).getNotes());
+        Assert.assertEquals("Some comments", new PhenoTipsFeature(doc, prop, HP0000100).getNotes());
     }
 
     @Test
@@ -478,7 +490,7 @@ public class PhenoTipsFeatureTest
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
-        when(prop.getName()).thenReturn("phenotype");
+        when(prop.getName()).thenReturn(TYPE_PHENOTYPE);
 
         when(doc.getXObjects(FeatureMetadatum.CLASS_REFERENCE)).thenReturn(Collections.<BaseObject>emptyList());
 
@@ -497,25 +509,25 @@ public class PhenoTipsFeatureTest
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
-        when(prop.getName()).thenReturn("phenotype");
+        when(prop.getName()).thenReturn(TYPE_PHENOTYPE);
         List<BaseObject> categories = new ArrayList<>();
         categories.add(null);
         BaseObject category = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
-        temp.setValue("phenotype");
+        temp.setValue(TYPE_PHENOTYPE);
         when(category.get("target_property_name")).thenReturn(temp);
         temp = new StringProperty();
-        temp.setValue("HP:0000100");
+        temp.setValue(HP0000100);
         when(category.get("target_property_value")).thenReturn(temp);
         List<String> specifiedCategories = new ArrayList<>();
-        specifiedCategories.add("HP:0012211");
-        specifiedCategories.add("HP:0000082");
+        specifiedCategories.add(HP0012211);
+        specifiedCategories.add(HP0000082);
         when(category.getListValue("target_property_category")).thenReturn(specifiedCategories);
         categories.add(category);
         when(doc.getXObjects(new EntityReference("PhenotypeCategoryClass", EntityType.DOCUMENT,
             Constants.CODE_SPACE_REFERENCE))).thenReturn(categories);
 
-        JSONObject json = new PhenoTipsFeature(doc, prop, "HP:0000100").toJSON();
+        JSONObject json = new PhenoTipsFeature(doc, prop, HP0000100).toJSON();
         JSONArray jsonCategories = json.getJSONArray("categories");
         Assert.assertEquals(2, jsonCategories.length());
     }
@@ -525,24 +537,24 @@ public class PhenoTipsFeatureTest
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
-        when(prop.getName()).thenReturn("phenotype");
+        when(prop.getName()).thenReturn(TYPE_PHENOTYPE);
         List<BaseObject> categories = new ArrayList<>();
         BaseObject category = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
         temp.setValue("prenatal_phenotype");
         when(category.get("target_property_name")).thenReturn(temp);
         temp = new StringProperty();
-        temp.setValue("HP:0000100");
+        temp.setValue(HP0000100);
         when(category.get("target_property_value")).thenReturn(temp);
         List<String> specifiedCategories = new ArrayList<>();
-        specifiedCategories.add("HP:0012211");
-        specifiedCategories.add("HP:0000082");
+        specifiedCategories.add(HP0012211);
+        specifiedCategories.add(HP0000082);
         when(category.getListValue("target_property_category")).thenReturn(specifiedCategories);
         categories.add(category);
         when(doc.getXObjects(new EntityReference("PhenotypeCategoryClass", EntityType.DOCUMENT,
             Constants.CODE_SPACE_REFERENCE))).thenReturn(categories);
 
-        JSONObject json = new PhenoTipsFeature(doc, prop, "HP:0000100").toJSON();
+        JSONObject json = new PhenoTipsFeature(doc, prop, HP0000100).toJSON();
         Assert.assertFalse(json.has("categories"));
     }
 
@@ -551,24 +563,24 @@ public class PhenoTipsFeatureTest
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
-        when(prop.getName()).thenReturn("phenotype");
+        when(prop.getName()).thenReturn(TYPE_PHENOTYPE);
         List<BaseObject> categories = new ArrayList<>();
         BaseObject category = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
-        temp.setValue("phenotype");
+        temp.setValue(TYPE_PHENOTYPE);
         when(category.get("target_property_name")).thenReturn(temp);
         temp = new StringProperty();
         temp.setValue("HP:0000123");
         when(category.get("target_property_value")).thenReturn(temp);
         List<String> specifiedCategories = new ArrayList<>();
-        specifiedCategories.add("HP:0012211");
-        specifiedCategories.add("HP:0000082");
+        specifiedCategories.add(HP0012211);
+        specifiedCategories.add(HP0000082);
         when(category.getListValue("target_property_category")).thenReturn(specifiedCategories);
         categories.add(category);
         when(doc.getXObjects(new EntityReference("PhenotypeCategoryClass", EntityType.DOCUMENT,
             Constants.CODE_SPACE_REFERENCE))).thenReturn(categories);
 
-        JSONObject json = new PhenoTipsFeature(doc, prop, "HP:0000100").toJSON();
+        JSONObject json = new PhenoTipsFeature(doc, prop, HP0000100).toJSON();
         Assert.assertFalse(json.has("categories"));
     }
 
@@ -577,28 +589,28 @@ public class PhenoTipsFeatureTest
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
-        when(prop.getName()).thenReturn("phenotype");
+        when(prop.getName()).thenReturn(TYPE_PHENOTYPE);
         List<BaseObject> categories = new ArrayList<>();
         BaseObject category = mock(BaseObject.class);
         StringProperty temp = new StringProperty();
-        temp.setValue("phenotype");
+        temp.setValue(TYPE_PHENOTYPE);
         when(category.get("target_property_name")).thenReturn(null, null, null, temp);
         temp = new StringProperty();
-        temp.setValue("HP:0000100");
+        temp.setValue(HP0000100);
         when(category.get("target_property_value")).thenReturn(null, temp, null, temp);
         List<String> specifiedCategories = new ArrayList<>();
-        specifiedCategories.add("HP:0012211");
-        specifiedCategories.add("HP:0000082");
+        specifiedCategories.add(HP0012211);
+        specifiedCategories.add(HP0000082);
         when(category.getListValue("target_property_category")).thenReturn(null, specifiedCategories);
         categories.add(category);
         when(doc.getXObjects(new EntityReference("PhenotypeCategoryClass", EntityType.DOCUMENT,
             Constants.CODE_SPACE_REFERENCE))).thenReturn(categories);
 
-        Assert.assertFalse(new PhenoTipsFeature(doc, prop, "HP:0000100").toJSON().has("categories"));
-        Assert.assertFalse(new PhenoTipsFeature(doc, prop, "HP:0000100").toJSON().has("categories"));
-        Assert.assertFalse(new PhenoTipsFeature(doc, prop, "HP:0000100").toJSON().has("categories"));
-        Assert.assertFalse(new PhenoTipsFeature(doc, prop, "HP:0000100").toJSON().has("categories"));
-        Assert.assertTrue(new PhenoTipsFeature(doc, prop, "HP:0000100").toJSON().has("categories"));
+        Assert.assertFalse(new PhenoTipsFeature(doc, prop, HP0000100).toJSON().has("categories"));
+        Assert.assertFalse(new PhenoTipsFeature(doc, prop, HP0000100).toJSON().has("categories"));
+        Assert.assertFalse(new PhenoTipsFeature(doc, prop, HP0000100).toJSON().has("categories"));
+        Assert.assertFalse(new PhenoTipsFeature(doc, prop, HP0000100).toJSON().has("categories"));
+        Assert.assertTrue(new PhenoTipsFeature(doc, prop, HP0000100).toJSON().has("categories"));
     }
 
     @Test
@@ -606,12 +618,12 @@ public class PhenoTipsFeatureTest
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
-        when(prop.getName()).thenReturn("phenotype");
+        when(prop.getName()).thenReturn(TYPE_PHENOTYPE);
 
         when(doc.getXObjects(new EntityReference("PhenotypeCategoryClass", EntityType.DOCUMENT,
             Constants.CODE_SPACE_REFERENCE))).thenReturn(Collections.<BaseObject>emptyList());
 
-        Assert.assertFalse(new PhenoTipsFeature(doc, prop, "HP:0000100").toJSON().has("categories"));
+        Assert.assertFalse(new PhenoTipsFeature(doc, prop, HP0000100).toJSON().has("categories"));
     }
 
     @Test
@@ -619,11 +631,11 @@ public class PhenoTipsFeatureTest
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         ListProperty prop = mock(ListProperty.class);
-        when(prop.getName()).thenReturn("phenotype");
+        when(prop.getName()).thenReturn(TYPE_PHENOTYPE);
 
         when(doc.getXObjects(new EntityReference("PhenotypeCategoryClass", EntityType.DOCUMENT,
             Constants.CODE_SPACE_REFERENCE))).thenReturn(null);
 
-        Assert.assertFalse(new PhenoTipsFeature(doc, prop, "HP:0000100").toJSON().has("categories"));
+        Assert.assertFalse(new PhenoTipsFeature(doc, prop, HP0000100).toJSON().has("categories"));
     }
 }

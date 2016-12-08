@@ -59,10 +59,12 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Tests for the {@link DatesController} Component, implementation of the
- * {@link org.phenotips.data.PatientDataController} interface
+ * {@link org.phenotips.data.PatientDataController} interface.
  */
 public class DatesControllerTest
 {
+    private static final String DATA_NAME = "dates";
+
     @Rule
     public MockitoComponentMockingRule<PatientDataController<PhenoTipsDate>> mocker =
         new MockitoComponentMockingRule<PatientDataController<PhenoTipsDate>>(DatesController.class);
@@ -89,8 +91,6 @@ public class DatesControllerTest
 
     @Mock
     private Patient patient;
-
-    private static final String DATA_NAME = "dates";
 
     @Before
     public void setUp() throws Exception

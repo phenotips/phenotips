@@ -59,10 +59,9 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class ObstetricHistoryControllerTest
 {
+    private static final Integer NON_ZERO = 1;
 
-    private static final Integer AGE_NON_ZERO = 1; // Arbitrary age.
-
-    private static final Integer AGE_ZERO = 0;
+    private static final Integer ZERO = 0;
 
     private static final String PREFIX = "pregnancy_history__";
 
@@ -146,13 +145,13 @@ public class ObstetricHistoryControllerTest
     public void loadDefaultBehaviourTest()
     {
         doReturn(this.data).when(this.doc).getXObject(any(EntityReference.class));
-        doReturn(AGE_ZERO).when(this.data).getIntValue(PREFIX + GRAVIDA);
-        doReturn(AGE_ZERO).when(this.data).getIntValue(PREFIX + PARA);
-        doReturn(AGE_NON_ZERO).when(this.data).getIntValue(PREFIX + TERM);
-        doReturn(AGE_NON_ZERO).when(this.data).getIntValue(PREFIX + PRETERM);
-        doReturn(AGE_ZERO).when(this.data).getIntValue(PREFIX + SAB);
-        doReturn(AGE_NON_ZERO).when(this.data).getIntValue(PREFIX + TAB);
-        doReturn(AGE_NON_ZERO).when(this.data).getIntValue(PREFIX + LIVE_BIRTHS);
+        doReturn(ZERO).when(this.data).getIntValue(PREFIX + GRAVIDA);
+        doReturn(ZERO).when(this.data).getIntValue(PREFIX + PARA);
+        doReturn(NON_ZERO).when(this.data).getIntValue(PREFIX + TERM);
+        doReturn(NON_ZERO).when(this.data).getIntValue(PREFIX + PRETERM);
+        doReturn(ZERO).when(this.data).getIntValue(PREFIX + SAB);
+        doReturn(NON_ZERO).when(this.data).getIntValue(PREFIX + TAB);
+        doReturn(NON_ZERO).when(this.data).getIntValue(PREFIX + LIVE_BIRTHS);
 
         PatientData<Integer> testPatientData = this.obstetricHistoryController.load(this.patient);
 
@@ -199,13 +198,13 @@ public class ObstetricHistoryControllerTest
         doReturn(this.mockPatientData).when(this.patient).getData(this.obstetricHistoryController.getName());
         doReturn(true).when(this.mockPatientData).isNamed();
 
-        doReturn(AGE_NON_ZERO).when(this.mockPatientData).get(GRAVIDA);
-        doReturn(AGE_NON_ZERO).when(this.mockPatientData).get(PARA);
-        doReturn(AGE_ZERO).when(this.mockPatientData).get(TERM);
-        doReturn(AGE_ZERO).when(this.mockPatientData).get(PRETERM);
-        doReturn(AGE_NON_ZERO).when(this.mockPatientData).get(SAB);
-        doReturn(AGE_NON_ZERO).when(this.mockPatientData).get(TAB);
-        doReturn(AGE_ZERO).when(this.mockPatientData).get(LIVE_BIRTHS);
+        doReturn(NON_ZERO).when(this.mockPatientData).get(GRAVIDA);
+        doReturn(NON_ZERO).when(this.mockPatientData).get(PARA);
+        doReturn(ZERO).when(this.mockPatientData).get(TERM);
+        doReturn(ZERO).when(this.mockPatientData).get(PRETERM);
+        doReturn(NON_ZERO).when(this.mockPatientData).get(SAB);
+        doReturn(NON_ZERO).when(this.mockPatientData).get(TAB);
+        doReturn(ZERO).when(this.mockPatientData).get(LIVE_BIRTHS);
 
         doReturn(this.data).when(this.doc).getXObject(any(EntityReference.class), eq(true), eq(this.xWikiContext));
 
@@ -225,8 +224,8 @@ public class ObstetricHistoryControllerTest
     public void writeJSONWithoutSelectedFieldsTest()
     {
         Map<String, Integer> testData = new LinkedHashMap<>();
-        testData.put(GRAVIDA, AGE_NON_ZERO);
-        testData.put(PARA, AGE_ZERO);
+        testData.put(GRAVIDA, NON_ZERO);
+        testData.put(PARA, ZERO);
         JSONObject json = new JSONObject();
         PatientData<Integer> testObstetricHistoryData =
             new DictionaryPatientData<>("obstetric-history", testData);

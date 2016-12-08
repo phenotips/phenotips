@@ -31,11 +31,10 @@ import org.junit.Test;
 
 /**
  * Test for the {@link PatientNameController} Component, only the overridden methods from
- * {@link AbstractSimpleController} are tested here
+ * {@link AbstractSimpleController} are tested here.
  */
 public class PatientNameControllerTest
 {
-
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
         new MockitoComponentMockingRule<PatientDataController<String>>(PatientNameController.class);

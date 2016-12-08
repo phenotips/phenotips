@@ -44,7 +44,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
@@ -56,7 +55,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Test for the {@link LifeStatusController} component, implementation of the
- * {@link org.phenotips.data.PatientDataController} interface
+ * {@link org.phenotips.data.PatientDataController} interface.
  */
 public class LifeStatusControllerTest
 {
@@ -75,8 +74,6 @@ public class LifeStatusControllerTest
         new MockitoComponentMockingRule<PatientDataController<String>>(LifeStatusController.class);
 
     private DocumentAccessBridge documentAccessBridge;
-
-    private XWikiContext xcontext;
 
     @Mock
     private XWiki xwiki;
