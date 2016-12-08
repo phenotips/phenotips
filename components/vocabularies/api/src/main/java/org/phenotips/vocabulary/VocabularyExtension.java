@@ -22,12 +22,11 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Allows extending a base vocabulary with additional annotations. A vocabulary extension can support one or more base
- * vocabularies, identified by the {@link #getSupportedVocabularies()} method. Every time one of the supported
- * vocabularies is {@link org.phenotips.vocabulary.Vocabulary#reindex(String) reindexed}, first
- * {@link #indexingStarted(String)} is called, so that the extension can prepare its needed resources, if any. Then, for
- * each term parsed from its source the {@link #extendTerm(VocabularyInputTerm, String)} method is called, and new
- * fields can be added to it. Once all the terms have been indexed, {@link #indexingEnded(String)} is called, and any
- * resources can be freed.
+ * vocabularies, identified by the {@link #isVocabularySupported} method. Every time one of the supported vocabularies
+ * is {@link org.phenotips.vocabulary.Vocabulary#reindex(String) reindexed}, first {@link #indexingStarted} is called,
+ * so that the extension can prepare its needed resources, if any. Then, for each term parsed from its source the
+ * {@link #extendTerm} method is called, and new fields can be added to it. Once all the terms have been indexed,
+ * {@link #indexingEnded} is called, and any resources can be freed.
  *
  * @version $Id$
  * @since 1.3M1
