@@ -11,7 +11,7 @@ var XWiki = (function(XWiki) {
       this.selector = selector;
       this.message = message;
 
-      if (!this.input.__validation && !this.input.type == "hidden") {
+      if (!this.input.__validation && !(this.input.type == "hidden")) {
         try {
           this.input.__validation = new LiveValidation(this.input, {validMessage: '', wait : 500});
         }
