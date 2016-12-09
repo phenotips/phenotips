@@ -20,6 +20,8 @@ package org.phenotips.vocabulary;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
+import org.apache.solr.client.solrj.SolrQuery;
+
 /**
  * Allows extending a base vocabulary with additional annotations. A vocabulary extension can support one or more base
  * vocabularies, identified by the {@link #isVocabularySupported} method. Every time one of the supported vocabularies
@@ -67,4 +69,13 @@ public interface VocabularyExtension
      * @param vocabulary the vocabulary that was indexed
      */
     void indexingEnded(Vocabulary vocabulary);
+
+    /**
+     * Called for each query on the vocabulary, this method modifies the query terms by changing, adding or removing
+     * fields.
+     *
+     * @param query the query to process
+     * @param vocabulary the the vocabulary being queried
+     */
+    void extendQuery(SolrQuery query, Vocabulary vocabulary);
 }
