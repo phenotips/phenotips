@@ -286,15 +286,15 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         try {
             List<Map<String, String>> accumulatedGenes = new LinkedList<>();
 
-            Set<String> collectedGeneNames = parseGenesJson(json, accumulatedGenes);
+            parseGenesJson(json, accumulatedGenes);
 
             // v1.2.x json compatibility
-            parseRejectedGenes(json, collectedGeneNames, accumulatedGenes);
-            parseSolvedGene(json, collectedGeneNames, accumulatedGenes);
+            parseRejectedGenes(json, accumulatedGenes);
+            parseSolvedGene(json, accumulatedGenes);
 
             return new IndexedPatientData<>(getName(), accumulatedGenes);
         } catch (Exception e) {
-            this.logger.error("Could not load genes from JSON", e.getMessage());
+            this.logger.error("Could not load genes from JSON: [{}]", e.getMessage(), e);
             return null;
         }
     }
@@ -306,7 +306,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
      * 1.3-old format:
      *   {"gene": HGNC_Symbol [, ...] }
      */
-    private Set<String> parseGenesJson(JSONObject json, List<Map<String, String>> allGenes)
+    private void parseGenesJson(JSONObject json, List<Map<String, String>> allGenes)
     {
         JSONArray genesJson = json.optJSONArray(this.getJsonPropertyName());
 
@@ -321,6 +321,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                 if (StringUtils.isBlank(geneId)) {
                     geneId = geneJson.optString(JSON_GENE_SYMBOL);
                 }
+                geneId = getEnsemblId(geneId);
 
                 // discard it if gene id is not present in the geneJson or is empty or is a duplicate
                 // of an id that has been parsed and added to the list already
@@ -339,25 +340,26 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                 alreadyCollectedGeneNames.add(geneId);
             }
         }
-        return alreadyCollectedGeneNames;
     }
 
-    private void parseRejectedGenes(JSONObject json, Set<String> existingGenes, List<Map<String, String>> allGenes)
+    private void parseRejectedGenes(JSONObject json, List<Map<String, String>> allGenes)
     {
+        Set<String> rejectedGeneNames = new HashSet<>();
+
         JSONArray rejectedGenes = json.optJSONArray(JSON_REJECTEDGENES_KEY);
         if (rejectedGenes != null && rejectedGenes.length() > 0) {
             for (int i = 0; i < rejectedGenes.length(); ++i) {
                 JSONObject rejectedGeneJson = rejectedGenes.getJSONObject(i);
 
-                String geneSymbol = rejectedGeneJson.optString(JSON_DEPRECATED_GENE_ID);
+                String geneId = getEnsemblId(rejectedGeneJson.optString(JSON_DEPRECATED_GENE_ID));
 
                 // discard it if gene symbol is blank or empty or duplicate
-                if (StringUtils.isBlank(geneSymbol) || existingGenes.contains(geneSymbol)) {
+                if (StringUtils.isBlank(geneId) || rejectedGeneNames.contains(geneId)) {
                     continue;
                 }
 
                 Map<String, String> singleGene = new LinkedHashMap<>();
-                singleGene.put(INTERNAL_GENE_KEY, getEnsemblId(geneSymbol));
+                singleGene.put(INTERNAL_GENE_KEY, geneId);
                 singleGene.put(INTERNAL_STATUS_KEY, INTERNAL_REJECTED_VALUE);
 
                 if (rejectedGeneJson.has(JSON_COMMENTS_KEY)
@@ -365,28 +367,44 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                     singleGene.put(INTERNAL_COMMENTS_KEY, rejectedGeneJson.getString(JSON_COMMENTS_KEY));
                 }
 
-                allGenes.add(singleGene);
-                existingGenes.add(rejectedGeneJson.getString(JSON_DEPRECATED_GENE_ID));
+                // overwrite the same gene if it was found to be a candidate
+                addOrReplaceGene(allGenes, geneId, singleGene);
+
+                rejectedGeneNames.add(rejectedGeneJson.getString(JSON_DEPRECATED_GENE_ID));
             }
         }
     }
 
-    private void parseSolvedGene(JSONObject json, Set<String> existingGenes, List<Map<String, String>> allGenes)
+    private void parseSolvedGene(JSONObject json, List<Map<String, String>> allGenes)
     {
         JSONObject solvedGene = json.optJSONObject(JSON_SOLVED_KEY);
         if (solvedGene == null) {
             return;
         }
 
-        String geneSymbol = solvedGene.optString(JSON_DEPRECATED_GENE_ID);
+        String geneId = getEnsemblId(solvedGene.optString(JSON_DEPRECATED_GENE_ID));
 
-        if (!StringUtils.isBlank(geneSymbol)
-            && !existingGenes.contains(geneSymbol)) {
+        if (!StringUtils.isBlank(geneId)) {
             Map<String, String> singleGene = new LinkedHashMap<>();
-            singleGene.put(INTERNAL_GENE_KEY, getEnsemblId(geneSymbol));
+            singleGene.put(INTERNAL_GENE_KEY, geneId);
             singleGene.put(INTERNAL_STATUS_KEY, INTERNAL_SOLVED_VALUE);
-            allGenes.add(singleGene);
+
+            // overwrite the same gene if it was found to be a candidate or rejected
+            addOrReplaceGene(allGenes, geneId, singleGene);
         }
+    }
+
+    private void addOrReplaceGene(List<Map<String, String>> allGenes, String geneId, Map<String, String> newGene)
+    {
+        // need index for replacement; performanc eis not critical since this code is only
+        // used for old 1.2.x. patient JSONs
+        for (int i = 0; i < allGenes.size(); i++) {
+            if (StringUtils.equals(allGenes.get(i).get(INTERNAL_GENE_KEY), geneId)) {
+                allGenes.set(i, newGene);
+                return;
+            }
+        }
+        allGenes.add(newGene);
     }
 
     // geneId has been parsed already by this point, so no need to parse it out again
@@ -394,7 +412,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     {
         Map<String, String> geneData = new LinkedHashMap<>();
 
-        geneData.put(INTERNAL_GENE_KEY, getEnsemblId(geneId));
+        geneData.put(INTERNAL_GENE_KEY, geneId);
 
         addStringValue(geneJson, JSON_STATUS_KEY, geneData, INTERNAL_STATUS_KEY, STATUS_VALUES);
 

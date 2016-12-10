@@ -99,6 +99,11 @@ public class GeneListControllerTest
 
     private static final String JSON_COMMENTS_KEY = COMMENTS_KEY;
 
+    private static final String JSON_OLD_REJECTED_GENE_KEY = "rejectedGenes";
+
+    private static final String JSON_OLD_SOLVED_GENE_KEY = "solved";
+
+
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Map<String, String>>> mocker =
         new MockitoComponentMockingRule<PatientDataController<Map<String, String>>>(GeneListController.class);
@@ -510,6 +515,56 @@ public class GeneListControllerTest
         Assert.assertEquals("ENSG00000098765", gene.get(GENE_KEY));
         // any incorrect status should be replaced with "candidate"
         Assert.assertEquals("candidate", gene.get(STATUS_KEY));
+    }
+
+    @Test
+    public void readParsedsOldJSONCorrectly() throws ComponentLookupException
+    {
+        JSONArray data = new JSONArray();
+        JSONObject item = new JSONObject();
+        item.put(JSON_GENE_SYMBOL, "GENE_1");
+        item.put(JSON_STATUS_KEY, "candidate");
+        data.put(item);
+        item = new JSONObject();
+        // thi sgene is duplicated 2 times - in candidate and in rejected sections. Should become rejected
+        item.put(JSON_GENE_SYMBOL, "GENE_TO_BECOME_REJECTED");
+        item.put(JSON_STATUS_KEY, "candidate");
+        data.put(item);
+        item = new JSONObject();
+        // thi sgene is duplicated 3 times - in candidate, rejected and solved sections. Should become solved
+        item.put(JSON_GENE_SYMBOL, "GENE_TO_BECOME_SOLVED");
+        item.put(JSON_STATUS_KEY, "candidate");
+        data.put(item);
+        JSONObject json = new JSONObject();
+        json.put(CONTROLLER_NAME, data);
+        data = new JSONArray();
+        item = new JSONObject();
+        item.put(JSON_GENE_SYMBOL, "GENE_TO_BECOME_REJECTED");
+        item.put(JSON_STATUS_KEY, "rejected");
+        data.put(item);
+        item = new JSONObject();
+        item.put(JSON_GENE_SYMBOL, "GENE_TO_BECOME_SOLVED");
+        item.put(JSON_STATUS_KEY, "rejected");
+        data.put(item);
+        json.put(JSON_OLD_REJECTED_GENE_KEY, data);
+        item = new JSONObject();
+        item.put(JSON_GENE_SYMBOL, "GENE_TO_BECOME_SOLVED");
+        json.put(JSON_OLD_SOLVED_GENE_KEY, item);
+
+        PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().readJSON(json);
+        Assert.assertNotNull(result);
+        Assert.assertEquals(3, result.size());
+        Assert.assertTrue(result.isIndexed());
+        Iterator<Map<String, String>> it = result.iterator();
+        Map<String, String> gene = it.next();
+        Assert.assertEquals("GENE_1", gene.get(GENE_KEY));
+        Assert.assertEquals("candidate", gene.get(STATUS_KEY));
+        gene = it.next();
+        Assert.assertEquals("GENE_TO_BECOME_REJECTED", gene.get(GENE_KEY));
+        Assert.assertEquals("rejected", gene.get(STATUS_KEY));
+        gene = it.next();
+        Assert.assertEquals("GENE_TO_BECOME_SOLVED", gene.get(GENE_KEY));
+        Assert.assertEquals("solved", gene.get(STATUS_KEY));
     }
 
     @Test
