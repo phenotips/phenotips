@@ -17,43 +17,46 @@
  */
 package org.phenotips.security.encryption.internal;
 
+import org.phenotips.security.encryption.SystemPasswordConfiguration;
+
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.configuration.ConfigurationSource;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.phenotips.security.encryption.SystemPasswordConfiguration;
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.configuration.ConfigurationSource;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import static org.mockito.Mockito.when;
 
-public class XWikiPropertiesSystemPasswordConfigurationModuleTest {
+public class XWikiPropertiesSystemPasswordConfigurationModuleTest
+{
+    @Rule
+    public MockitoComponentMockingRule<SystemPasswordConfiguration.ConfigurationModule> mocker =
+        new MockitoComponentMockingRule<SystemPasswordConfiguration.ConfigurationModule>(
+            XWikiPropertiesSystemPasswordConfigurationModule.class);
 
-	@Rule
-	public MockitoComponentMockingRule<SystemPasswordConfiguration.ConfigurationModule> mocker = 
-		new MockitoComponentMockingRule<SystemPasswordConfiguration.ConfigurationModule>
-		(XWikiPropertiesSystemPasswordConfigurationModule.class);
-	
-	@Mock
-	private ConfigurationSource config;
-	
-	@Mock
-	private SystemPasswordConfiguration pW;
-	
-	
-	private static final String PROPERTY = "crypto.encryption.systemPassword";
-	
-	@Before
-	public void initMocks(){
-		MockitoAnnotations.initMocks(this);
-	}
-	@Test
-	public void getsCorrectSystemPassword() throws ComponentLookupException{	
-		when(this.config.getProperty(PROPERTY)).thenReturn(this.pW);
-		Assert.assertEquals("xwikiproperties", this.mocker.getComponentUnderTest().getSystemPassword());
-	}
+    @Mock
+    private ConfigurationSource config;
 
+    @Mock
+    private SystemPasswordConfiguration pW;
+
+    private static final String PROPERTY = "crypto.encryption.systemPassword";
+
+    @Before
+    public void initMocks()
+    {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void getsCorrectSystemPassword() throws ComponentLookupException
+    {
+        when(this.config.getProperty(PROPERTY)).thenReturn(this.pW);
+        Assert.assertEquals("xwikiproperties", this.mocker.getComponentUnderTest().getSystemPassword());
+    }
 }

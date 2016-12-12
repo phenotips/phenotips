@@ -17,42 +17,32 @@
  */
 package org.phenotips.security.encryption.internal;
 
-import static org.junit.Assert.*;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockito.MockitoAnnotations;
-import org.phenotips.security.encryption.CryptoUtils;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
+
 import com.xpn.xwiki.objects.BaseStringProperty;
 
-public class EncryptedPropertyTest {
-	@Rule
-	public MockitoComponentMockingRule<BaseStringProperty> mocker = new 
-		MockitoComponentMockingRule<BaseStringProperty>(EncryptedProperty.class);
-	
-	private static final long serialVersionUID = 8082063682046892242L;
+public class EncryptedPropertyTest
+{
+    @Rule
+    public MockitoComponentMockingRule<BaseStringProperty> mocker =
+        new MockitoComponentMockingRule<BaseStringProperty>(EncryptedProperty.class);
 
-	private static final String ENCRYPTED_IDENTIFIER = "e:";
-	
-	@Test
-	public void getsNullValueTest() throws ComponentLookupException
-	{
-		String val = null;
-		
-		Assert.assertNotNull(this.mocker.getComponentUnderTest().getValue());
-	}	
-	
-	@Test
-	public void setsNullValueTest() throws ComponentLookupException
-	{
-		//Object value = null;
-		this.mocker.getComponentUnderTest().setValue(null);
-		//Assert.assertNull(value);
-	}
-	
+    @Test
+    public void getsNullValueTest() throws ComponentLookupException
+    {
+        String val = null;
+
+        Assert.assertNotNull(this.mocker.getComponentUnderTest().getValue());
+    }
+
+    @Test
+    public void setsNullValueTest() throws ComponentLookupException
+    {
+        this.mocker.getComponentUnderTest().setValue(null);
+    }
 }

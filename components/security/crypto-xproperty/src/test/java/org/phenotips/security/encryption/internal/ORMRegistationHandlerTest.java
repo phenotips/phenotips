@@ -19,12 +19,6 @@
  */
 package org.phenotips.security.encryption.internal;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.junit.Assert;
-import org.junit.Before;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.observation.EventListener;
@@ -32,44 +26,46 @@ import org.xwiki.observation.event.ApplicationStartedEvent;
 import org.xwiki.observation.event.Event;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import com.xpn.xwiki.store.hibernate.HibernateSessionFactory;
-
 import java.util.List;
 
-import javax.inject.Inject;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
+import com.xpn.xwiki.store.hibernate.HibernateSessionFactory;
 
-public class ORMRegistationHandlerTest {
-	
-	@Rule
+public class ORMRegistationHandlerTest
+{
+    @Rule
     public final MockitoComponentMockingRule<EventListener> mocker =
         new MockitoComponentMockingRule<EventListener>(ORMRegistrationHandler.class);
 
-	@Mock
+    @Mock
     private HibernateSessionFactory sessionFactory;
-	
-	private static final String HANDLER_NAME = "phenotips-encrypted-xproperty-orm-registration";
-	
-	@Before
-	public void setUp()throws InitializationException
-	{
-		MockitoAnnotations.initMocks(this);
-	}
-	
-	@Test
+
+    private static final String HANDLER_NAME = "phenotips-encrypted-xproperty-orm-registration";
+
+    @Before
+    public void setUp() throws InitializationException
+    {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
     public void hasProperName() throws ComponentLookupException
     {
         Assert.assertEquals(HANDLER_NAME, this.mocker.getComponentUnderTest().getName());
     }
-	
-	@Test
+
+    @Test
     public void listensForApplicationStartedEvents() throws ComponentLookupException
     {
         List<Event> events = this.mocker.getComponentUnderTest().getEvents();
         Assert.assertFalse(events.isEmpty());
         Assert.assertEquals(1, events.size());
         Assert.assertTrue(events.iterator().next().matches(new ApplicationStartedEvent()));
-      
     }
-
 }

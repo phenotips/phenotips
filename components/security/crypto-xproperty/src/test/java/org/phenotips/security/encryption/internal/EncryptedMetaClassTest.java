@@ -17,38 +17,32 @@
  */
 package org.phenotips.security.encryption.internal;
 
-import static org.junit.Assert.*;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import static org.mockito.Mockito.when;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import com.xpn.xwiki.objects.classes.NumberClass;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
 import com.xpn.xwiki.objects.classes.PropertyClassInterface;
 import com.xpn.xwiki.objects.meta.PropertyMetaClass;
 
-public class EncryptedMetaClassTest {
+import static org.mockito.Mockito.when;
 
-	@Rule
-	public MockitoComponentMockingRule<PropertyMetaClass> mocker = new 
-		MockitoComponentMockingRule<PropertyMetaClass>(EncryptedMetaClass.class);	
-	
-	@Mock
-	private PropertyClassInterface pci;
-	
-	@Test
-	public void PropertyClassInterfaceTest() throws ComponentLookupException
-	{
-		// TODO
-		MockitoAnnotations.initMocks(this);
-		when(this.mocker.getComponentUnderTest().getInstance()).thenReturn(pci);
-		
-	//	Assert.assertEquals(new NumberClass);
-	}
+public class EncryptedMetaClassTest
+{
+    @Rule
+    public MockitoComponentMockingRule<PropertyMetaClass> mocker =
+        new MockitoComponentMockingRule<PropertyMetaClass>(EncryptedMetaClass.class);
+
+    @Mock
+    private PropertyClassInterface pci;
+
+    @Test
+    public void PropertyClassInterfaceTest() throws ComponentLookupException
+    {
+        MockitoAnnotations.initMocks(this);
+        when(this.mocker.getComponentUnderTest().getInstance()).thenReturn(this.pci);
+    }
 }
