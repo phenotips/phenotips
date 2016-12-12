@@ -308,6 +308,7 @@
     switch(key) {
       // Ignore special keys, which are treated in onKeyPress
       case Event.KEY_RETURN:
+      case Event.KEY_TAB:
       case Event.KEY_ESC:
       case Event.KEY_UP:
       case Event.KEY_DOWN:
@@ -363,6 +364,9 @@
       case Event.KEY_RETURN:
         this.setHighlightedValue();
         Event.stop(event);
+        break;
+      case Event.KEY_TAB:
+        this.clearSuggestions();
         break;
       case Event.KEY_ESC:
         this.clearSuggestions();
