@@ -27,7 +27,6 @@ import org.phenotips.vocabulary.VocabularyTerm;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.reference.ObjectPropertyReference;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,6 +40,7 @@ import java.util.Map.Entry;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
@@ -48,11 +48,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.BaseProperty;
-import com.xpn.xwiki.objects.DBStringListProperty;
+import com.xpn.xwiki.objects.BaseStringProperty;
+import com.xpn.xwiki.objects.ListProperty;
+import com.xpn.xwiki.objects.PropertyInterface;
 import com.xpn.xwiki.objects.StringProperty;
+import com.xpn.xwiki.objects.classes.BaseClass;
+import com.xpn.xwiki.objects.classes.PropertyClass;
 
 /**
  * Handles the patient's global qualifiers, such as global age of onset.
@@ -80,6 +84,9 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
     @Inject
     private VocabularyManager vocabularyManager;
 
+    @Inject
+    private Provider<XWikiContext> xcontextProvider;
+
     @Override
     public PatientData<List<VocabularyTerm>> load(Patient patient)
     {
@@ -91,19 +98,18 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
             }
             Map<String, List<VocabularyTerm>> result = new LinkedHashMap<>();
             for (String propertyName : getProperties()) {
-                Object propertyValue = data.get(propertyName);
+                PropertyInterface propertyValue = data.get(propertyName);
                 List<VocabularyTerm> holder = new LinkedList<>();
                 if (propertyValue instanceof StringProperty) {
-                    String propertyValueString = data.getStringValue(propertyName);
+                    String propertyValueString = ((StringProperty) propertyValue).getValue();
                     addTerms(propertyValueString, holder);
-                } else if (propertyValue instanceof DBStringListProperty) {
-                    for (String item : ((DBStringListProperty) propertyValue).getList()) {
+                } else if (propertyValue instanceof ListProperty) {
+                    for (String item : ((ListProperty) propertyValue).getList()) {
                         addTerms(item, holder);
                     }
                 }
                 result.put(propertyName, holder);
             }
-
             return new DictionaryPatientData<>(DATA_NAME, result);
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen"
@@ -112,31 +118,31 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void save(Patient patient, DocumentModelBridge doc)
     {
-
         PatientData<List<VocabularyTerm>> data = patient.getData(this.getName());
+        XWikiContext context = this.xcontextProvider.get();
 
-        BaseObject dataHolder = ((XWikiDocument) doc).getXObject(Patient.CLASS_REFERENCE);
+        BaseObject dataHolder =
+            ((XWikiDocument) doc).getXObject(Patient.CLASS_REFERENCE, true, context);
         if (data == null || dataHolder == null) {
             return;
         }
+        BaseClass xclass = dataHolder.getXClass(context);
         for (String propertyName : getProperties()) {
             List<VocabularyTerm> terms = data.get(propertyName);
             if (terms == null) {
                 continue;
             }
-            BaseProperty<ObjectPropertyReference> field =
-                (BaseProperty<ObjectPropertyReference>) dataHolder.getField(propertyName);
-            if (field != null) {
-                String fieldType = field.getClassType();
-                if (StringUtils.equals(fieldType, "com.xpn.xwiki.objects.StringProperty")) {
-                    /* there should be only one term present; just taking the head of the list */
-                    field.setValue(terms.isEmpty() ? null : termsToXWikiFormat(terms).get(0));
-                } else if (StringUtils.equals(fieldType, "com.xpn.xwiki.objects.DBStringListProperty")) {
-                    ((DBStringListProperty) field).setList(termsToXWikiFormat(terms));
+            PropertyClass xpropertyClass = (PropertyClass) xclass.get(propertyName);
+            if (xpropertyClass != null) {
+                PropertyInterface xproperty = xpropertyClass.newProperty();
+                if (xproperty instanceof BaseStringProperty) {
+                    // there should be only one term present; just taking the head of the list
+                    dataHolder.set(propertyName, terms.isEmpty() ? null : termsToXWikiFormat(terms).get(0), context);
+                } else if (xproperty instanceof ListProperty) {
+                    dataHolder.set(propertyName, termsToXWikiFormat(terms), context);
                 }
             }
         }
@@ -160,10 +166,13 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        Iterator<Entry<String, List<VocabularyTerm>>> data =
-            patient.<List<VocabularyTerm>>getData(DATA_NAME).dictionaryIterator();
-        while (data.hasNext()) {
-            Entry<String, List<VocabularyTerm>> datum = data.next();
+        PatientData<List<VocabularyTerm>> data = patient.getData(DATA_NAME);
+        if (data == null) {
+            return;
+        }
+        Iterator<Entry<String, List<VocabularyTerm>>> iterator = data.dictionaryIterator();
+        while (iterator.hasNext()) {
+            Entry<String, List<VocabularyTerm>> datum = iterator.next();
             if (selectedFieldNames == null || selectedFieldNames.contains(datum.getKey())) {
                 List<VocabularyTerm> terms = datum.getValue();
                 if (terms == null || terms.isEmpty()) {
