@@ -74,6 +74,7 @@ define([], function(){
         uncertainShape:      {'font-size': '45px', 'font-family': 'Arial', 'fill': '#696969', 'font-weight': 'bold'},
         uncertainSmallShape: {'font-size': '30px', 'font-family': 'Arial', 'fill': '#696969', 'font-weight': 'bold'},
         evaluationShape: {'font-size': 40, 'font-family': 'Arial'},
+        aliveAndWellShape: {'font-size': 16, 'font-family': 'Arial', 'font-weight': 'bold'},
         nodeShapeFemale: PedigreeEditorParameters.styles.blackAndWhite.nodeShapeFemale,
         nodeShapeMale:   PedigreeEditorParameters.styles.blackAndWhite.nodeShapeMale,
         nodeShapeOther:  PedigreeEditorParameters.styles.blackAndWhite.nodeShapeOther,

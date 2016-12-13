@@ -48,6 +48,7 @@ define([
             this._isSelected = false;
             this._carrierGraphic = null;
             this._evalLabel = null;
+            this._awLabel = null;
             //timer.printSinceLast("Person visuals time");
         },
 
@@ -163,7 +164,7 @@ define([
                 } else if (this.getNode().getGender() == 'F') {
                     x += 6;
                     y -= 6;
-                } else if (this.getNode().getGender() == 'U') {
+                } else if (this.getNode().getGender() == 'U' || this.getNode().getGender() == 'O') {
                     x += 2;
                     y -= 2;
                 }
@@ -552,6 +553,7 @@ define([
          */
         updateEvaluationLabel: function() {
             this._evalLabel && this._evalLabel.remove();
+            var gender = this.getNode().getGender();
             if (this.getNode().getEvaluated()) {
                 if (this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
                     var x = this.getX() + this._shapeRadius * 1.6;
@@ -559,11 +561,11 @@ define([
                 }
                 else {
                     var mult = 1.1;
-                    if (this.getNode().getGender() == 'U') mult = 1.3;
-                    else if (this.getNode().getGender() == 'M') mult = 1.4;
-                    if (this.getNode().isProband) mult *= 1.1;
-                    var x = this.getX() + this._shapeRadius*mult - 5;
-                    var y = this.getY() + this._shapeRadius*mult;
+                    if (gender == 'U' || gender == 'O') {mult = 1.3;}
+                    else if (gender == 'M') {mult = 1.4;}
+                    if (this.getNode().isProband) {mult *= 1.1;}
+                    var x = this.getX() + this._shapeRadius*mult;
+                    var y = this.getY() + this._shapeRadius*mult - 10;
                 }
                 this._evalLabel = editor.getPaper().text(x, y, "*").attr(PedigreeEditorParameters.attributes.evaluationShape).toBack();
             } else {
@@ -579,6 +581,25 @@ define([
          */
         getEvaluationGraphics: function() {
             return this._evalLabel;
+        },
+
+        /**
+         * Draws the "alive and well" status symbol for this Person
+         *
+         * @method updateAliveAndWellLabel
+         */
+        updateAliveAndWellLabel: function(isAliveAndWell) {
+            this._awLabel && this._awLabel.remove();
+            var gender = this.getNode().getGender();
+            if (isAliveAndWell) {
+                var mult = 1.1;
+                if (gender == 'U' || gender == 'O') {mult = 1.3;}
+                else if (gender == 'M') {mult = 1.4;}
+                if (this.getNode().isProband) {mult *= 1.1;}
+                var x = this.getX() + this._shapeRadius*mult - 10;
+                var y = this.getY() + this._shapeRadius*mult;
+                this._awLabel = editor.getPaper().text(x, y, "A&W").attr(PedigreeEditorParameters.attributes.aliveAndWellShape).toBack();
+            }
         },
 
         /**
