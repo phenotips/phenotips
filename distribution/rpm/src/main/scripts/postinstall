@@ -38,18 +38,18 @@ then
   echo $CURRENT | grep -i g >/dev/null 2>&1 && CURRENT=`echo ${CURRENT}\*1024*1024*1024 | sed -e 's/[gG]//' | bc`
   echo $CURRENT | grep -i m >/dev/null 2>&1 && CURRENT=`echo ${CURRENT}\*1024*1024 | sed -e 's/[mM]//' | bc`
   echo $CURRENT | grep -i k >/dev/null 2>&1 && CURRENT=`echo ${CURRENT}\*1024 | sed -e 's/[kK]//' | bc`
-  if [ "`echo "$CURRENT > 1073741823" | bc`" = "0" ]
+  if [ "`echo "$CURRENT > 2147483647" | bc`" = "0" ]
   then
     # Not large enough, update the value in place
-    sed -i -r -e 's/^(\s*JAVA_OPTS.*-Xmx)([^" ]+)(.*)/\11g\3/' /etc/tomcat/tomcat.conf
+    sed -i -r -e 's/^(\s*JAVA_OPTS.*-Xmx)([^" ]+)(.*)/\12g\3/' /etc/tomcat/tomcat.conf
   fi
 elif `cat /etc/tomcat/tomcat.conf | grep -E '^\s*JAVA_OPTS=' >/dev/null 2>&1`
 then
   # No Xmx configured, but there is a JAVA_OPTS setting, update it
-  sed -i -r -e 's/^(\s*JAVA_OPTS=")(.*)/\1-Xmx1g \2/' /etc/tomcat/tomcat.conf
+  sed -i -r -e 's/^(\s*JAVA_OPTS=")(.*)/\1-Xmx2g \2/' /etc/tomcat/tomcat.conf
 else
   # No JAVA_OPTS setting, add one with both Xmx and MaxPermSize
-  echo -e -n '\nJAVA_OPTS="-Xmx1g -XX:MaxPermSize=192m"' >> /etc/tomcat/tomcat.conf
+  echo -e -n '\nJAVA_OPTS="-Xmx2g -XX:MaxPermSize=192m"' >> /etc/tomcat/tomcat.conf
 fi
 
 # Increase the amount of permgen memory allocated for Tomcat, if needed
