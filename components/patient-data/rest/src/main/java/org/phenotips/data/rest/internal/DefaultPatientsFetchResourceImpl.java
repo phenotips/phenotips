@@ -19,8 +19,10 @@ package org.phenotips.data.rest.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.PatientsFetchResource;
 import org.phenotips.entities.PrimaryEntity;
+import org.phenotips.rest.Autolinker;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.container.Container;
@@ -29,10 +31,6 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.rest.XWikiResource;
-import org.xwiki.security.authorization.AuthorizationManager;
-import org.xwiki.security.authorization.Right;
-import org.xwiki.users.User;
-import org.xwiki.users.UserManager;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,11 +38,14 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -68,28 +69,27 @@ import com.google.common.collect.ImmutableSet;
 public class DefaultPatientsFetchResourceImpl extends XWikiResource implements PatientsFetchResource
 {
     /** Jackson object mapper to facilitate array serialization. */
-    private static final ObjectMapper OBJECT_MAPPER = getCustomObjectMapper();
-
-    private static final String SERIALIZER_LABEL = "PrimaryEntitySerializer";
+    private final ObjectMapper objectMapper = getCustomObjectMapper();
 
     /** Logging helper object. */
     @Inject
     private Logger logger;
 
+    /** The query manager for patient retrieval. */
     @Inject
     private QueryManager qm;
 
+    /** The secure patient repository. */
     @Inject
+    @Named("secure")
     private PatientRepository repository;
 
-    @Inject
-    private AuthorizationManager access;
-
-    @Inject
-    private UserManager users;
-
+    /** XWiki request container. */
     @Inject
     private Container container;
+
+    @Inject
+    private Provider<Autolinker> autolinker;
 
     @Override
     public Response fetchPatients()
@@ -99,20 +99,22 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
         final List<Object> eids = request.getProperties("eid");
         final List<Object> ids = request.getProperties("id");
 
-        this.logger.debug("Retrieving patient records with external IDs [{}] and patient IDs [{}] via REST", eids, ids);
+        this.logger.debug("Retrieving patient records with external IDs [{}] and internal IDs [{}]", eids, ids);
 
         // Build a set of patients from the provided external and/or internal ID data.
         final ImmutableSet.Builder<PrimaryEntity> patientsBuilder = ImmutableSet.builder();
 
-        addEids(patientsBuilder, eids);
-        addIds(patientsBuilder, ids);
-
         try {
+            addEids(patientsBuilder, eids);
+            addIds(patientsBuilder, ids);
             // Generate JSON for all retrieved patients.
-            final String json = OBJECT_MAPPER.writeValueAsString(patientsBuilder.build());
+            final String json = objectMapper.writeValueAsString(patientsBuilder.build());
             return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
         } catch (final JsonProcessingException ex) {
-            logger.warn("Failed to serialize patients [{}] to JSON: {}", eids, ex.getMessage());
+            logger.error("Failed to serialize patients [{}] to JSON: {}", eids, ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (final QueryException ex) {
+            logger.error("Failed to retrieve patients with external ids [{}]: {}", eids, ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -122,14 +124,13 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
      *
      * @param patientsBuilder a patient entity set builder
      * @param eids a list of external patient IDs, as strings
+     * @throws QueryException if the query fails
      */
     private void addEids(@Nonnull final ImmutableSet.Builder<PrimaryEntity> patientsBuilder,
-        @Nonnull final List<Object> eids)
+        @Nonnull final List<Object> eids) throws QueryException
     {
-        for (final Object eid : eids) {
-            if (StringUtils.isNotBlank((String) eid)) {
-                collectPatientsFromEid(patientsBuilder, eid);
-            }
+        if (CollectionUtils.isNotEmpty(eids)) {
+            collectPatientsFromEids(patientsBuilder, eids);
         }
     }
 
@@ -137,19 +138,17 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
      * Retrieves and collects patient entities that correspond to the provided external ID.
      *
      * @param patientsBuilder a patient entity set builder
-     * @param eid an external patient ID, as string
+     * @param eids external patient IDs, as a list
+     * @throws QueryException if the query fails
      */
-    private void collectPatientsFromEid(@Nonnull final ImmutableSet.Builder<PrimaryEntity> patientsBuilder,
-        @Nonnull final Object eid)
+    private void collectPatientsFromEids(@Nonnull final ImmutableSet.Builder<PrimaryEntity> patientsBuilder,
+        @Nonnull final List<Object> eids) throws QueryException
     {
-        try {
-            final Query q = qm.createQuery("where doc.object(PhenoTips.PatientClass).external_id = :eid", Query.XWQL);
-            q.bindValue("eid", eid);
-            final List<Object> patientIds = q.execute();
-            addIds(patientsBuilder, patientIds);
-        } catch (final QueryException ex) {
-            logger.warn("Failed to retrieve patient with external id [{}]: {}", eid, ex.getMessage());
-        }
+        final Query q = qm.createQuery("from doc.object(PhenoTips.PatientClass) p where p.external_id in (:eids)",
+            Query.XWQL);
+        q.bindValue("eids", eids);
+        final List<Object> patientIds = q.execute();
+        addIds(patientsBuilder, patientIds);
     }
 
     /**
@@ -181,14 +180,11 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
         try {
             // Try to get the patient entity.
             final PrimaryEntity patient = this.repository.get((String) id);
-            // Get the current user.
-            final User currentUser = this.users.getCurrentUser();
             // If user has view rights and patient with the provided ID exists, add patient to patient set.
-            if (patient != null && this.access.hasAccess(Right.VIEW, currentUser == null ? null
-                : currentUser.getProfileDocument(), patient.getDocument())) {
+            if (patient != null) {
                 patientsBuilder.add(patient);
             }
-        } catch (final IllegalArgumentException ex) {
+        } catch (final SecurityException ex) {
             logger.warn("Failed to retrieve patient with ID [{}]: {}", id, ex.getMessage());
         }
     }
@@ -198,25 +194,29 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
      *
      * @return an object mapper that can serialize {@link Patient} objects
      */
-    private static ObjectMapper getCustomObjectMapper()
+    private ObjectMapper getCustomObjectMapper()
     {
-        final ObjectMapper objectMapper = new ObjectMapper();
-        SimpleModule m = new SimpleModule(SERIALIZER_LABEL, new Version(1, 0, 0, "", SERIALIZER_LABEL, "json"));
+        final ObjectMapper mapper = new ObjectMapper();
+        SimpleModule m = new SimpleModule("PrimaryEntitySerializer", new Version(1, 0, 0, "", "org.phenotips",
+            "PatientReferenceSerializer"));
         m.addSerializer(PrimaryEntity.class, new PrimaryEntitySerializer());
-        objectMapper.registerModule(m);
-        return objectMapper;
+        mapper.registerModule(m);
+        return mapper;
     }
 
     /**
      * A custom serializer for primary entities.
      */
-    private static final class PrimaryEntitySerializer extends JsonSerializer<PrimaryEntity>
+    private final class PrimaryEntitySerializer extends JsonSerializer<PrimaryEntity>
     {
         @Override
         public void serialize(final PrimaryEntity primaryEntity, final JsonGenerator jgen,
             final SerializerProvider provider) throws IOException
         {
-            jgen.writeRawValue(primaryEntity.toJSON().toString());
+            final JSONObject json = primaryEntity.toJSON();
+            json.put("links", autolinker.get().forSecondaryResource(PatientResource.class, uriInfo)
+                .withExtraParameters("patient-id", primaryEntity.getId()).build());
+            jgen.writeRawValue(json.toString());
         }
     }
 }
