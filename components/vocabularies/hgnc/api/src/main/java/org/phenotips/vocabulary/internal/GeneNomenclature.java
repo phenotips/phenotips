@@ -44,13 +44,12 @@ import javax.inject.Singleton;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.DisMaxParams;
-import org.apache.solr.common.params.ModifiableSolrParams;
-import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.params.SpellingParams;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
@@ -224,13 +223,16 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         return requestTerm(ALTERNATIVE_ID_FIELD_NAME + ':' + id, null);
     }
 
-    private SolrParams produceDynamicSolrParams(String originalQuery, Integer rows, String sort, String customFilter)
+    private SolrQuery produceDynamicSolrParams(Map<String, String> staticOptions, String originalQuery, Integer rows,
+        String sort, String customFilter)
     {
         String escapedQuery = ClientUtils.escapeQueryChars(originalQuery.trim());
 
-        ModifiableSolrParams params = new ModifiableSolrParams();
-        params.add(CommonParams.Q, escapedQuery);
-        params.add(CommonParams.ROWS, rows.toString());
+        SolrQuery params = new SolrQuery(escapedQuery);
+        for (Map.Entry<String, String> option : staticOptions.entrySet()) {
+            params.set(option.getKey(), option.getValue());
+        }
+        params.setRows(rows);
         if (StringUtils.isNotBlank(sort)) {
             params.add(CommonParams.SORT, sort);
         }
@@ -256,9 +258,9 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
 
     private List<VocabularyTerm> searchIdentifiers(String input, int maxResults, String sort, String customFilter)
     {
-        SolrParams params = produceDynamicSolrParams(input, maxResults, sort, customFilter);
+        SolrQuery params = produceDynamicSolrParams(IDENTIFIER_SEARCH_OPTIONS, input, maxResults, sort, customFilter);
         List<VocabularyTerm> result = new LinkedList<>();
-        for (SolrDocument doc : this.search(params, IDENTIFIER_SEARCH_OPTIONS)) {
+        for (SolrDocument doc : this.search(params)) {
             result.add(new SolrVocabularyTerm(doc, this));
         }
         return result;
@@ -266,9 +268,9 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
 
     private List<VocabularyTerm> searchText(String input, int maxResults, String sort, String customFilter)
     {
-        SolrParams params = produceDynamicSolrParams(input, maxResults, sort, customFilter);
+        SolrQuery params = produceDynamicSolrParams(TEXT_SEARCH_OPTIONS, input, maxResults, sort, customFilter);
         List<VocabularyTerm> result = new LinkedList<>();
-        for (SolrDocument doc : this.search(params, TEXT_SEARCH_OPTIONS)) {
+        for (SolrDocument doc : this.search(params)) {
             result.add(new SolrVocabularyTerm(doc, this));
         }
         return result;
@@ -276,9 +278,10 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
 
     private List<VocabularyTerm> searchTextSpellchecked(String input, int maxResults, String sort, String customFilter)
     {
-        SolrParams params = produceDynamicSolrParams(input, maxResults, sort, customFilter);
+        SolrQuery params =
+            produceDynamicSolrParams(SPELLCHECKED_TEXT_SEARCH_OPTIONS, input, maxResults, sort, customFilter);
         List<VocabularyTerm> result = new LinkedList<>();
-        for (SolrDocument doc : this.search(params, SPELLCHECKED_TEXT_SEARCH_OPTIONS)) {
+        for (SolrDocument doc : this.search(params)) {
             result.add(new SolrVocabularyTerm(doc, this));
         }
         return result;

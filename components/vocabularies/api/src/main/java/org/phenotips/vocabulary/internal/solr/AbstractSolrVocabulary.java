@@ -37,13 +37,11 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.common.params.CommonParams;
-import org.apache.solr.common.params.ModifiableSolrParams;
-import org.apache.solr.common.params.SolrParams;
 import org.slf4j.Logger;
 
 /**
@@ -103,9 +101,8 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
         }
         VocabularyTerm result = this.externalServicesAccess.getTermCache().get(id);
         if (result == null) {
-            ModifiableSolrParams params = new ModifiableSolrParams();
-            params.set(CommonParams.Q, ID_FIELD_NAME + ':' + ClientUtils.escapeQueryChars(id));
-            SolrDocumentList allResults = this.search(params);
+            SolrQuery query = new SolrQuery(ID_FIELD_NAME + ':' + ClientUtils.escapeQueryChars(id));
+            SolrDocumentList allResults = this.search(query);
             if (allResults != null && !allResults.isEmpty()) {
                 result = new SolrVocabularyTerm(allResults.get(0), this);
                 this.externalServicesAccess.getTermCache().set(id, result);
@@ -136,7 +133,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
 
         // There's at least one more term not found in the cache
         if (query.length() > 5) {
-            for (SolrDocument doc : this.search(SolrQueryUtils.transformQueryToSolrParams(query.toString()))) {
+            for (SolrDocument doc : this.search(new SolrQuery(query.toString()))) {
                 VocabularyTerm term = new SolrVocabularyTerm(doc, this);
                 rawResult.put(term.getId(), term);
             }
@@ -159,8 +156,8 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     public List<VocabularyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions)
     {
         List<VocabularyTerm> result = new LinkedList<>();
-        for (SolrDocument doc : this.search(
-            SolrQueryUtils.transformQueryToSolrParams(generateLuceneQuery(fieldValues)), queryOptions)) {
+        for (SolrDocument doc : this
+            .search(SolrQueryUtils.generateQuery(new SolrQuery(generateLuceneQuery(fieldValues)), queryOptions))) {
             result.add(new SolrVocabularyTerm(doc, this));
         }
         return result;
@@ -215,38 +212,22 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
      * Perform a search, falling back on the suggested spellchecked query if the original query fails to return any
      * results.
      *
-     * @param params the Solr parameters to use, should contain at least a value for the "q" parameter
+     * @param query the Solr query to use, should contain at least a value for the "q" parameter
      * @return the list of matching documents, empty if there are no matching terms
      */
-    protected SolrDocumentList search(SolrParams params)
-    {
-        return search(params, null);
-    }
-
-    /**
-     * Perform a search, falling back on the suggested spellchecked query if the original query fails to return any
-     * results.
-     *
-     * @param params the Solr parameters to use, should contain at least a value for the "q" parameter
-     * @param queryOptions extra options to include in the query; these override the default values, but don't override
-     *            values already set in the query
-     * @return the list of matching documents, empty if there are no matching terms
-     */
-    protected SolrDocumentList search(SolrParams params, Map<String, String> queryOptions)
+    protected SolrDocumentList search(SolrQuery query)
     {
         try {
-            SolrParams enhancedParams = SolrQueryUtils.enhanceParams(params, queryOptions);
-            this.logger.debug("Searching [{}] with query [{}]", getCoreName(), enhancedParams);
-            QueryResponse response = this.externalServicesAccess.getSolrConnection().query(enhancedParams);
+            this.logger.debug("Searching [{}] with query [{}]", getCoreName(), query);
+            QueryResponse response = this.externalServicesAccess.getSolrConnection().query(query);
             SolrDocumentList results = response.getResults();
             if (response.getSpellCheckResponse() != null && !response.getSpellCheckResponse().isCorrectlySpelled()
                 && StringUtils.isNotEmpty(response.getSpellCheckResponse().getCollatedResult())) {
-                enhancedParams =
-                    SolrQueryUtils.applySpellcheckSuggestion(enhancedParams, response.getSpellCheckResponse()
-                        .getCollatedResult());
-                this.logger.debug("Searching [{}] with spellchecked query [{}]", getCoreName(), enhancedParams);
+                SolrQueryUtils.applySpellcheckSuggestion(query,
+                    response.getSpellCheckResponse().getCollatedResult());
+                this.logger.debug("Searching [{}] with spellchecked query [{}]", getCoreName(), query);
                 SolrDocumentList spellcheckResults =
-                    this.externalServicesAccess.getSolrConnection().query(enhancedParams).getResults();
+                    this.externalServicesAccess.getSolrConnection().query(query).getResults();
                 if (results.getMaxScore() < spellcheckResults.getMaxScore()) {
                     results = spellcheckResults;
                 }
@@ -261,15 +242,14 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     /**
      * Get the number of entries that match a specific Lucene query.
      *
-     * @param query a valid the Lucene query as string
+     * @param query a valid Lucene query as string
      * @return the number of entries matching the query
      */
     protected long count(String query)
     {
-        ModifiableSolrParams params = new ModifiableSolrParams();
-        params.set(CommonParams.Q, query);
-        params.set(CommonParams.START, "0");
-        params.set(CommonParams.ROWS, "0");
+        SolrQuery params = new SolrQuery(query);
+        params.setStart(0);
+        params.setRows(0);
         SolrDocumentList results;
         try {
             this.logger.debug("Counting terms matching [{}] in [{}]", query, getCoreName());
@@ -344,5 +324,4 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
         }
         return result;
     }
-
 }

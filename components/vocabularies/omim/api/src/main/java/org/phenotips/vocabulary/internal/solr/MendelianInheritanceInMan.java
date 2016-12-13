@@ -25,11 +25,9 @@ import org.xwiki.component.annotation.Component;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -38,6 +36,7 @@ import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
@@ -47,8 +46,6 @@ import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.DisMaxParams;
-import org.apache.solr.common.params.ModifiableSolrParams;
-import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.params.SpellingParams;
 
 /**
@@ -94,10 +91,10 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
         if (StringUtils.isBlank(input)) {
             return Collections.emptyList();
         }
-        Map<String, String> options = this.getStaticSolrParams();
-        options.putAll(this.getStaticFieldSolrParams());
+        SolrQuery query = new SolrQuery();
+        addFieldQueryParameters(addGlobalQueryParameters(query));
         List<VocabularyTerm> result = new LinkedList<>();
-        for (SolrDocument doc : this.search(produceDynamicSolrParams(input, maxResults, sort, customFilter), options)) {
+        for (SolrDocument doc : search(addDynamicQueryParameters(input, maxResults, sort, customFilter, query))) {
             result.add(new SolrVocabularyTerm(doc, this));
         }
         return result;
@@ -144,48 +141,48 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
         return OmimSourceParser.OMIM_SOURCE_URL;
     }
 
-    private Map<String, String> getStaticSolrParams()
+    private SolrQuery addGlobalQueryParameters(SolrQuery query)
     {
-        Map<String, String> params = new HashMap<>();
-        params.put("spellcheck", Boolean.toString(true));
-        params.put(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
-        params.put(SpellingParams.SPELLCHECK_COUNT, "100");
-        params.put(SpellingParams.SPELLCHECK_MAX_COLLATION_TRIES, "3");
-        params.put("lowercaseOperators", Boolean.toString(false));
-        params.put("defType", "edismax");
-        return params;
+        query.set("spellcheck", Boolean.toString(true));
+        query.set(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
+        query.set(SpellingParams.SPELLCHECK_COUNT, "100");
+        query.set(SpellingParams.SPELLCHECK_MAX_COLLATION_TRIES, "3");
+        query.set("lowercaseOperators", Boolean.toString(false));
+        query.set("defType", "edismax");
+        return query;
     }
 
-    private Map<String, String> getStaticFieldSolrParams()
+    private SolrQuery addFieldQueryParameters(SolrQuery query)
     {
-        Map<String, String> params = new HashMap<>();
-        params.put(DisMaxParams.PF, "name^40 nameSpell^70 synonym^15 synonymSpell^25 text^3 textSpell^5");
-        params.put(DisMaxParams.QF,
+        query.set(DisMaxParams.PF, "name^40 nameSpell^70 synonym^15 synonymSpell^25 text^3 textSpell^5");
+        query.set(DisMaxParams.QF,
             "name^10 nameSpell^18 nameStub^5 synonym^6 synonymSpell^10 synonymStub^3 text^1 textSpell^2 textStub^0.5");
-        return params;
+        return query;
     }
 
-    private SolrParams produceDynamicSolrParams(String originalQuery, Integer rows, String sort, String customFq)
+    private SolrQuery addDynamicQueryParameters(String originalQuery, Integer rows, String sort, String customFq,
+        SolrQuery query)
     {
-        String query = originalQuery.trim();
-        ModifiableSolrParams params = new ModifiableSolrParams();
-        String escapedQuery = ClientUtils.escapeQueryChars(query);
-        params.add(CommonParams.FQ,
-            StringUtils.defaultIfBlank(customFq, "-(nameSort:\\** nameSort:\\+* nameSort:\\^*)"));
-        params.add(CommonParams.Q, escapedQuery);
-        params.add(SpellingParams.SPELLCHECK_Q, query);
+        String queryString = originalQuery.trim();
+        String escapedQuery = ClientUtils.escapeQueryChars(queryString);
+        query.setFilterQueries(StringUtils.defaultIfBlank(customFq, "-(nameSort:\\** nameSort:\\+* nameSort:\\^*)"));
+        query.setQuery(escapedQuery);
+        query.set(SpellingParams.SPELLCHECK_Q, queryString);
         String lastWord = StringUtils.substringAfterLast(escapedQuery, " ");
         if (StringUtils.isBlank(lastWord)) {
             lastWord = escapedQuery;
         }
         lastWord += "*";
-        params.add(DisMaxParams.BQ,
+        query.set(DisMaxParams.BQ,
             String.format("nameSpell:%1$s^20 keywords:%1$s^2 text:%1$s^1 textSpell:%1$s^2", lastWord));
-        params.add(CommonParams.ROWS, rows.toString());
+        query.setRows(rows);
         if (StringUtils.isNotBlank(sort)) {
-            params.add(CommonParams.SORT, sort);
+            for (String sortItem : sort.split("\\s*,\\s*")) {
+                query.addSort(StringUtils.substringBefore(sortItem, " "),
+                    sortItem.endsWith(" desc") || sortItem.startsWith("-") ? ORDER.desc : ORDER.asc);
+            }
         }
-        return params;
+        return query;
     }
 
     @Override

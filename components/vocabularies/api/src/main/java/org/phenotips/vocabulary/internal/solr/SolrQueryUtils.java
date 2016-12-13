@@ -17,16 +17,13 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.params.CommonParams;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.common.params.DisMaxParams;
-import org.apache.solr.common.params.ModifiableSolrParams;
-import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.params.SpellingParams;
 
 /**
@@ -49,33 +46,6 @@ public final class SolrQueryUtils
     }
 
     /**
-     * Convert a Lucene query string into Solr parameters. More specifically, places the input query under the "q"
-     * parameter.
-     *
-     * @param query the lucene query string to use
-     * @return the obtained parameters
-     */
-    public static SolrParams transformQueryToSolrParams(String query)
-    {
-        ModifiableSolrParams result = new ModifiableSolrParams();
-        result.add(CommonParams.Q, query);
-        return result;
-    }
-
-    /**
-     * Adds extra parameters to a Solr query for better term searches. More specifically, adds parameters for requesting
-     * the score to be included in the results, for requesting a spellcheck result, and sets the {@code start} and
-     * {@code rows} parameters when missing.
-     *
-     * @param originalParams the original Solr parameters to enhance
-     * @return the enhanced parameters
-     */
-    public static SolrParams enhanceParams(SolrParams originalParams)
-    {
-        return enhanceParams(originalParams, null);
-    }
-
-    /**
      * Adds extra parameters to a Solr query for better term searches, including custom options. More specifically, adds
      * parameters for requesting the score to be included in the results, for requesting a spellcheck result, and sets
      * the {@code start} and {@code rows} parameters when missing.
@@ -85,95 +55,82 @@ public final class SolrQueryUtils
      *            values already set in the query
      * @return the enhanced parameters
      */
-    public static SolrParams enhanceParams(SolrParams originalParams, Map<String, String> queryOptions)
+    public static SolrQuery generateQuery(SolrQuery originalParams, Map<String, String> queryOptions)
     {
         if (originalParams == null) {
             return null;
         }
-        ModifiableSolrParams newParams = new ModifiableSolrParams();
-        newParams.set(CommonParams.START, "0");
-        newParams.set(CommonParams.ROWS, "1000");
-        newParams.set(CommonParams.FL, "* score");
+        SolrQuery result = new SolrQuery();
+
+        // Default values
+        result.setStart(0);
+        result.setRows(1000);
+        result.setIncludeScore(true);
+
+        // Add the generic query options
         if (queryOptions != null) {
             for (Map.Entry<String, String> item : queryOptions.entrySet()) {
-                newParams.set(item.getKey(), item.getValue());
+                result.set(item.getKey(), item.getValue());
             }
         }
+
+        // Add the original query parameters
         for (Map.Entry<String, Object> item : originalParams.toNamedList()) {
             if (item.getValue() != null && item.getValue() instanceof String[]) {
-                newParams.set(item.getKey(), (String[]) item.getValue());
+                result.set(item.getKey(), (String[]) item.getValue());
             } else {
-                newParams.set(item.getKey(), String.valueOf(item.getValue()));
+                result.set(item.getKey(), String.valueOf(item.getValue()));
             }
         }
-        if (newParams.get(SPELLCHECK) == null) {
-            newParams.set(SPELLCHECK, Boolean.toString(true));
-            newParams.set(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
+
+        if (result.get(SPELLCHECK) == null) {
+            result.set(SPELLCHECK, Boolean.toString(true));
+            result.set(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
         }
-        return newParams;
+
+        return result;
     }
 
     /**
      * Replaces the original query in the Solr parameters with the suggested spellchecked query. It also fixes the boost
      * query, if any.
      *
-     * @param originalParams the original Solr parameters to fix
-     * @param suggestedQuery the suggested query
-     * @return new Solr parameters with the query and boost query fixed
+     * @param originalQuery the original Solr query to fix
+     * @param suggestedQuery the suggested query string
+     * @return new Solr query with the query and boost query fixed
      */
-    public static SolrParams applySpellcheckSuggestion(SolrParams originalParams, String suggestedQuery)
+    public static SolrQuery applySpellcheckSuggestion(SolrQuery originalQuery, String suggestedQuery)
     {
-        if (originalParams == null) {
+        if (originalQuery == null) {
             return null;
         }
         if (StringUtils.isBlank(suggestedQuery)) {
-            return originalParams;
+            return originalQuery;
         }
-        ModifiableSolrParams newParams = new ModifiableSolrParams(originalParams);
-        String newQuery = suggestedQuery;
+        String newQueryString = suggestedQuery;
 
         // Since the spelling suggestion might not be that good, also search for the original user input
-        if (StringUtils.isNotEmpty(originalParams.get(SpellingParams.SPELLCHECK_Q))) {
-            newQuery = originalParams.get(CommonParams.Q) + "^10 " + suggestedQuery;
+        if (StringUtils.isNotEmpty(originalQuery.get(SpellingParams.SPELLCHECK_Q))) {
+            newQueryString = "(" + originalQuery.getQuery() + ")^10 " + suggestedQuery;
         }
 
         // Check if the last term in the query is a word stub search which, in case the request comes from a
         // user-triggered search for terms from the UI, is a prefix search for the last typed word
-        Matcher originalStub = WORD_STUB.matcher(newParams.get(CommonParams.Q));
+        Matcher originalStub = WORD_STUB.matcher(originalQuery.getQuery());
         Matcher newStub = WORD_STUB.matcher(suggestedQuery);
         if (originalStub.find() && newStub.find() && !StringUtils.equals(originalStub.group(2), newStub.group(2))) {
             // Since word stubs aren't complete words, they may wrongly be "corrected" to a full word that doesn't match
             // what the user started typing; include both the original stub and the "corrected" stub in the query
-            newQuery += ' ' + originalStub.group() + "^1.5";
+            newQueryString += ' ' + originalStub.group() + "^1.5";
             // Also fix the boost query
-            String boostQuery = newParams.get(DisMaxParams.BQ);
+            String boostQuery = originalQuery.get(DisMaxParams.BQ);
             if (StringUtils.isNotEmpty(boostQuery)) {
-                newParams.add(DisMaxParams.BQ, boostQuery.replace(originalStub.group(2), newStub.group(2)));
+                originalQuery.add(DisMaxParams.BQ, boostQuery.replace(originalStub.group(2), newStub.group(2)));
             }
         }
         // Replace the query
-        newParams.set(CommonParams.Q, newQuery);
+        originalQuery.setQuery(newQueryString);
 
-        return newParams;
-    }
-
-    /**
-     * Serialize Solr parameters into a String.
-     *
-     * @param params the parameters to serialize
-     * @return a String serialization of the parameters
-     */
-    public static String getCacheKey(SolrParams params)
-    {
-        StringBuilder out = new StringBuilder();
-        out.append('{');
-        Iterator<String> parameterNames = params.getParameterNamesIterator();
-        while (parameterNames.hasNext()) {
-            String parameter = parameterNames.next();
-            out.append(parameter).append(":[").append(StringUtils.join(params.getParams(parameter), ", "))
-                .append("]\n");
-        }
-        out.append('}');
-        return out.toString();
+        return originalQuery;
     }
 }
