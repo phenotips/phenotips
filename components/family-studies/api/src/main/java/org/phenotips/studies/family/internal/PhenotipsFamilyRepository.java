@@ -698,6 +698,8 @@ public class PhenotipsFamilyRepository implements FamilyRepository
             newFamilyDoc.setContentAuthorReference(creatorRef);
         }
 
+        this.updateFamilyPermissions(new PhenotipsFamily(newFamilyDoc), context, false);
+
         wiki.saveDocument(newFamilyDoc, context);
 
         return newFamilyDoc;
