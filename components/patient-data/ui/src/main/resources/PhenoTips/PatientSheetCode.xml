@@ -432,32 +432,24 @@ document.observe('xwiki:dom:loaded', function()
   date_of_death.__validation.displayMessageWhenEmpty = true;
 
   // show/hide dates of birth and death depending on life status selection
-  var displayDates = function(life_status) {
-     var birth_date_entered = $$("[id$='date_of_birth_entered']")[0];
-     var death_date_entered = $$("[id$='date_of_death_entered']")[0];
+  var life_status = $$("[id$='life_status']")[0];
+  if (typeof life_status == "undefined") {
+     return;
+  }
 
-     var date_of_birth_block = $('date-of-birth-block');
+  var displayDates = function(life_status) {
+     var death_date_entered = $$("[id$='date_of_death_entered']")[0];
      var date_of_death_block = $('date-of-death-block');
 
      if (life_status == 'alive') {
-        date_of_birth_block.show();
         date_of_death_block.hide();
         date_of_death.value = "";
         death_date_entered.value="{}"
      } else if (life_status == 'deceased') {
-        date_of_birth_block.show();
         date_of_death_block.show();
-     } else {
-        date_of_birth_block.hide();
-        date_of_death_block.hide();
-        date_of_death.value = "";
-        death_date_entered.value="{}"
-        date_of_birth.value = "";
-        birth_date_entered.value="{}"
      }
   }
 
-  var life_status = $$("[id$='life_status']")[0];
   displayDates(life_status.value);
   life_status.addEventListener('change', function(event) {
      var status = event.element().value;
