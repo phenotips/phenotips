@@ -20,29 +20,29 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>UIX_Field__omim_suggestions</name>
+  <name>UIX_Field__gene_suggestions</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1401822209000</creationDate>
+  <creationDate>1479759756000</creationDate>
   <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822209000</date>
-  <contentUpdateDate>1401822209000</contentUpdateDate>
+  <date>1479918007000</date>
+  <contentUpdateDate>1479918007000</contentUpdateDate>
   <version>1.1</version>
-  <title>$services.localization.render('phenotips.UIXField.diagnosisSuggestions')</title>
+  <title>$services.localization.render('phenotips.UIXField.geneSuggestions')</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>PhenoTips.UIX_Field__omim_suggestions</name>
+    <name>PhenoTips.UIX_Field__gene_suggestions</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>04c45346-b203-4fd8-a60f-1b32e0cd72ff</guid>
+    <guid>c41503c1-c3b7-447d-8f21-308886f42019</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -100,7 +100,7 @@
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators>|, </separators>
+        <separators> ,|</separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -108,58 +108,37 @@
       </scope>
     </class>
     <property>
-      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
-
-{{velocity}}
-#set ($patient = $services.patients.get($doc.name))
-#set ($phenotypesSummary = [])
-#set($qualifiers = $patient.getData('global-qualifiers'))
-#foreach ($q in ['global_age_of_onset', 'global_mode_of_inheritance'])
-  #foreach ($t in $qualifiers.get($q))
-    #set ($discard = $phenotypesSummary.add({"key"  : $t.id, "text" : $t.name, "type" : 'symptom'}))
-  #end
-#end
-#foreach ($f in $patient.features)
-  #set ($discard = $phenotypesSummary.add({
-    "key"  : "#if($f.id == '')$f.name#{else}$f.id#end",
-    "text" : $f.name,
-    "type" : "#if (!$f.isPresent())not_#elseif($f.id == '')free_#{end}symptom"
-  }))
-#end
-
-#set ($hasSymptoms = ($phenotypesSummary.size() &gt; 0))
-#if ($xcontext.action == 'edit' || $hasSymptoms)
-  (% class="instant-search ncbi-search-box" %)(((
-    === $services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch')===
-
-    (% class="ncbi-search-box-content"%)(((
-      (% class="hint"%)$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.Hint')(%%)##
-      {{html wiki=false clean=false}}&lt;input type="hidden" id="defaultSearchTermsInput" value="" /&gt;&lt;input type="hidden" id="defaultSearchTermIDsInput" value="" /&gt;{{/html}}##
-      {{html wiki=false clean=false}}&lt;input type="hidden" id="phenotypes-summary" value="$escapetool.xml($jsontool.serialize($phenotypesSummary))" /&gt;{{/html}}##
-      (% id="defaultSearchTerms" %)((()))
-      ##(% class="hint"%)$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.defaultTerms')(%%)
-      ## {{html wiki=false clean=false}}&lt;input type="text" id="customSearchTermsInput" value="" /&gt;{{/html}}
-      (% class="background-search omim-search hidden" %)(((
-        ====$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.matchingDisorders')====
-        (% id="omim-search-results" class="background-suggestions" %)((()))
+      <content>{{velocity}}
+#if ($xcontext.action == 'edit')
+$xwiki.jsx.use('PhenoTips.PanelsDisplay')##
+$xwiki.ssx.use('PhenoTips.PanelsDisplay')##
+  (% class="instant-search gene-panels-search-box" %)(((
+    === $services.localization.render('phenotips.UIXField.geneSuggestions.geneSearch')===
+    (% class="gene-search-box-content"%)(((
+      (% class="hint"%)$services.localization.render('phenotips.UIXField.geneSuggestions.geneSearch.Hint')(%%)
+      {{html wiki=false clean=false}}&lt;input type="hidden" id="panelsSearchTermsInput" value="" /&gt;&lt;input type="hidden" id="panelsSearchTermIDsInput" value="" /&gt;{{/html}}
+      (% id="panelsSearchTerms" %)((()))
+      (% class="background-search gene-search hidden" %)(((
+        ====$services.localization.render('phenotips.UIXField.geneSuggestions.geneSearch.matchingGenes')  {{html wiki=false clean=false}}&lt;span class="buttonwrapper"&gt;&lt;a href="#" id="genePanelsExport" class="button gene-panels-button csv-export-button"&gt;&lt;span class="fa fa-fw fa-download"&gt;&lt;/span&gt; Download&lt;/a&gt;&lt;/span&gt;{{/html}}====
+        (% id="gene-search-results" class="background-suggestions" %)((()))
       )))
     )))
-  )))## ncbi-search-box
+  )))## gene-search-box
   (% class="clear" %)((()))
 #end
 {{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.section.diagnosis-info</extensionPointId>
+      <extensionPointId>org.phenotips.patientSheet.section.gene-panels</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.field.omim_suggestions</name>
+      <name>org.phenotips.patientSheet.field.gene_suggestions</name>
     </property>
     <property>
-      <parameters>title=$services.localization.render('phenotips.UIXField.diagnosisSuggestions')
+      <parameters>title=$services.localization.render('phenotips.UIXField.geneSuggestions')
 enabled=true
 required=
-order=4
+order=1
 fields=</parameters>
     </property>
     <property>

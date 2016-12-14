@@ -2302,92 +2302,162 @@ document.observe('xwiki:dom:loaded', function()
       <cache>long</cache>
     </property>
     <property>
-      <code>document.observe('xwiki:dom:loading', function() {
+      <code>var PhenoTips = (function(PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
 
-  var defaultSearchTerms = $('defaultSearchTerms');
-  var defaultSearchTermsInput = $('defaultSearchTermsInput');
-  var defaultSearchTermIDsInput = $('defaultSearchTermIDsInput');
-  var customSearchTermsInput = $('customSearchTermsInput');
-
-  var omimField = $('prefix') &amp;&amp; $($('prefix').value + 'omim_id');
-
-  var services = {
-    'omim' : {
-       'script' : new XWiki.Document('DiseasePredictService', 'PhenoTips').getURL('get', 'format=html') + "&amp;q=",
-       'source' : [defaultSearchTermIDsInput],
-       'target' : $('omim-search-results'),
-       'suggestFor' : omimField,
-       'tooltip': 'omim-disease-info'
+  widgets.InstantSearch = Class.create({
+    'searchServices' : {
+      'ncbi-search-box' : {
+        'cache' : {'all' : {}, 'displayed' : {}},
+        'searchTerms' : $('defaultSearchTerms'),
+        'searchTermsInput' : $('defaultSearchTermsInput'),
+        'searchTermIDsInput' : $('defaultSearchTermIDsInput'),
+        'customSearchTermsInput' : $('customSearchTermsInput'),
+        'containersInitialized' : function(searchBox) {
+          var containersInit;
+          if (searchBox.searchTerms &amp;&amp; searchBox.searchTermsInput &amp;&amp; (searchBox.omim.target
+            || searchBox.diffDiagnosis.target)) {
+            containersInit = true;
+          }
+          return containersInit;
+        },
+        'doSearch' : function(service) {
+          service.doAjaxSearch('omim');
+          service.doAjaxSearch('diffDiagnosis');
+        },
+        'firePhenotypeChanged' : function(content) {
+          document.fire('phenotips:phenotypeChanged', content);
+        },
+        'buildQueryString' : function(data, parameters) {
+          var queryString = '';
+          data.source.each(function(source) {
+            queryString += ((source &amp;&amp; source.value.strip()) + ' ') || '';
+          });
+          return data.script + encodeURIComponent(queryString.strip()) + "&amp;reqNo=" + ++data.expectedReqNo;
+        },
+        'submitAjaxRequest' : function(searchBox, data, queryString, parameters) {
+          new Ajax.Updater(data.target, queryString, {
+            parameters: parameters,
+            onCreate : searchBox.requestCreated.bind(this, data),
+            onSuccess : searchBox.responseReceived.bind(this, data),
+            onComplete : searchBox.updateDone.bind(searchBox, data)
+          });
+        },
+        'omim' : {
+          'script' : new XWiki.Document('DiseasePredictService', 'PhenoTips').getURL('get', 'format=html') + "&amp;q=",
+          'source' : [$('defaultSearchTermIDsInput')],
+          'target' : $('omim-search-results'),
+          'suggestFor' : $('prefix') &amp;&amp; $($('prefix').value + 'omim_id'),
+          'tooltip': 'omim-disease-info'
+        },
+        'diffDiagnosis' : {
+          'script' : new XWiki.Document('DiffDiagnosisService', 'PhenoTips').getURL('get', 'format=html') + "&amp;q=",
+          'source' : [$('defaultSearchTermIDsInput')],
+          'target' : $('diffDiagnosis-search-results'),
+          'suggestFor' : $('quick-phenotype-search'),
+          'tooltip': 'phenotype-info'
+        }
+      },
+      'gene-panels-search-box' : {
+        'cache' : {'all' : {}, 'displayed' : {}},
+        'searchTerms' : $('panelsSearchTerms'),
+        'searchTermsInput' : $('panelsSearchTermsInput'),
+        'searchTermIDsInput' : $('panelsSearchTermIDsInput'),
+        'containersInitialized' : function(searchBox) {
+          var containersInit;
+          if (searchBox.searchTerms &amp;&amp; searchBox.searchTermsInput &amp;&amp; searchBox.genePanels.target) {
+            searchBox.panelsDisplay = new PhenoTips.widgets.PanelsDisplay(searchBox.genePanels, $('genePanelsExport'));
+            containersInit = true;
+          }
+          return containersInit;
+        },
+        'doSearch' : function(service) {
+          service.doAjaxSearch('genePanels');
+        },
+        'firePhenotypeChanged' : function(content) {
+          return;
+        },
+        'buildQueryString' : function(data, parameters) {
+          var queryString = parameters.symptom ? "?id=" + parameters.symptom.join('&amp;id=') : "";
+          return data.script + queryString.strip();
+        },
+        'submitAjaxRequest' : function(searchBox, data, queryString, parameters) {
+          searchBox._builder.panelsDisplay.paginate(queryString, 1, 10);
+        },
+        'genePanels' : {
+          'script' : XWiki.webapppath + 'rest/panels',
+          'source' : [$('panelsSearchTermIDsInput')],
+          'target' : $('gene-search-results'),
+          'tooltip' : 'gene-info'
+        }
+      }
     },
-    'diffDiagnosis' : {
-       'script' : new XWiki.Document('DiffDiagnosisService', 'PhenoTips').getURL('get', 'format=html') + "&amp;q=",
-       'source' : [defaultSearchTermIDsInput],
-       'target' : $('diffDiagnosis-search-results'),
-       'suggestFor' : $('quick-phenotype-search'),
-       'tooltip': 'phenotype-info'
-    }
-  };
 
-  if (!defaultSearchTerms || !defaultSearchTermsInput || (!services.omim.target &amp;&amp; !services.diffDiagnosis.target)) {return;}
+    updateSearchValue : function() {
+      var prevValue = this._builder.searchTermsInput.value;
 
-  var cache = {'all' : {}, 'displayed' : {}};
+      this._builder.searchTermsInput.value = '';
+      this._builder.searchTermIDsInput.value = '';
 
-  var updateSearchValue = function() {
-    var prevValue = defaultSearchTermsInput.value;
-    defaultSearchTermsInput.value = '';
-    defaultSearchTermIDsInput.value = '';
-    var termNames = [];
-    defaultSearchTerms.select('.search-term:not(.disabled)').each(function(term) {
-      termNames.push(term.innerHTML);
-      defaultSearchTermsInput.value += ' "' + term.innerHTML + '"';
-      defaultSearchTermIDsInput.value += term.__key + ' ';
-    });
-    if (defaultSearchTermsInput.value != prevValue) {
-      document.fire('phenotips:phenotypeChanged', {phenotype: cache});
-      doSearch('omim');
-      doSearch('diffDiagnosis');
-    }
-  }
+      var _this = this;
+      this._builder.searchTerms.select('.search-term:not(.disabled)').each(function(term) {
+        _this._builder.searchTermsInput.value += ' "' + term.innerHTML + '"';
+        _this._builder.searchTermIDsInput.value += term.__key + ' ';
+      });
 
-  var updateDefaultSearchTerms = function() {
-    var container = new Element('div', { 'class' : 'default-search-terms-container'});
-    for (var k in cache.displayed) {
-       var obj = cache.all[k];
-       if (obj) {
+      if (this._builder.searchTermsInput.value != prevValue) {
+        _this._builder.firePhenotypeChanged({phenotype: _this._builder.cache});
+        _this._builder.doSearch(_this);
+      }
+    },
+
+    updateDefaultSearchTerms : function() {
+      var container = this.createSearchTermsContainer();
+      this._builder.searchTerms.update(container);
+      this.updateSearchValue();
+    },
+
+    createSearchTermsContainer : function() {
+      var container = new Element('div', { 'class' : 'default-search-terms-container'});
+      var _this = this;
+      for (var k in this._builder.cache.displayed) {
+        var obj = this._builder.cache.all[k];
+        if (obj) {
           var elt = new Element('span', {'class' : 'search-term ' + obj.type}).update(obj.text);
           elt.__key = obj.key;
-          elt.title = obj.disabled &amp;&amp; "$services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToEnable')" || "$services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToDisable')";
+          elt.title = obj.disabled &amp;&amp; "$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToEnable'))" || "$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToDisable'))";
           if (obj.disabled) {
             elt.addClassName('disabled');
           }
           container.insert(elt);
           elt.observe('click', function(event) {
-             var target = event.element();
-             target.toggleClassName('disabled');
-             cache.all[target.__key].disabled = target.hasClassName('disabled');
-             target.title = cache.all[target.__key].disabled &amp;&amp; "$services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToEnable')" || "$services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToDisable')";
-             updateSearchValue();
-          })
-       }
-    }
-    defaultSearchTerms.update(container);
-    updateSearchValue();
-  }
+            var target = event.element();
+            target.toggleClassName('disabled');
+            _this._builder.cache.all[target.__key].disabled = target.hasClassName('disabled');
+            target.title = _this._builder.cache.all[target.__key].disabled &amp;&amp; "$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToEnable'))" || "$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToDisable'))";
+            _this.updateSearchValue();
+          });
+        }
+      }
+      return container;
+    },
 
-  var requestCreated = function(service, request) {
-    service.target.addClassName('loading');
-    service.target.select('li').each(function(element){element.update(' ')});
-  }
-  var responseReceived = function(service, request) {
-    if (request &amp;&amp; request.getHeader('X-ReqNo') == service.expectedReqNo) {
-      service.target.removeClassName('loading');
-    } else {
-      request.request.container = {};
-    }
-  }
+    requestCreated : function(service, request) {
+      service.target.addClassName('loading');
+      service.target.select('li').each(function(element){element.update(' ')});
+    },
 
-  var updateDone = function(service) {
-    if (service.suggestFor  &amp;&amp; service.suggestFor._suggestPicker) {
+    responseReceived : function(service, request) {
+      if (request &amp;&amp; request.getHeader('X-ReqNo') == service.expectedReqNo) {
+        service.target.removeClassName('loading');
+      } else {
+        request.request.container = {};
+      }
+    },
+
+    updateDone : function(service) {
+      var _this = this;
+      if (service.suggestFor &amp;&amp; service.suggestFor._suggestPicker) {
         service.target.select('li').each(function (item) {
           if (item.down('input[type=checkbox]')) {return;}
           var idElt = item.down('.id');
@@ -2401,9 +2471,9 @@ document.observe('xwiki:dom:loaded', function()
               var positiveName = service.suggestFor.name.replace(/__suggested$/, '');
               var negativeName = positiveName.replace(/(_\d+)_/, "$1_negative_");
               var ynpicker = YesNoPicker.generatePickerElement([
-                    {type: 'yes', name: positiveName, id: '', selected: isValueSelected(positiveName, id)},
-                    {type: 'no' , name: negativeName, id: '', selected: isValueSelected(negativeName, id)}
-                  ], id, name, true, nameElt);
+                  {type: 'yes', name: positiveName, id: '', selected: isValueSelected(positiveName, id)},
+                  {type: 'no' , name: negativeName, id: '', selected: isValueSelected(negativeName, id)}
+                ], id, name, true, nameElt);
               item.insert({top: ynpicker});
 
               ynpicker.up().select('label, .yes-no-picker-label').invoke('observe', 'click', function(event) {
@@ -2414,23 +2484,21 @@ document.observe('xwiki:dom:loaded', function()
                  var negative = option.hasClassName('no');
                  var categoryClone = categoryElt.clone(true);
                  if (negative) {
-                     categoryClone.insert(new Element('input', {type: 'hidden', name : 'fieldName', value : input.name}));
+                   categoryClone.insert(new Element('input', {type: 'hidden', name : 'fieldName', value : input.name}));
                  }
                  service.suggestFor._suggestPicker.silent = true;
                  service.suggestFor._suggestPicker.acceptSuggestion({'id' : id, 'value' : name, 'category' : categoryClone, 'negative' : negative});
                  service.suggestFor._suggestPicker.silent = false;
-                 new XWiki.widgets.Notification("$services.localization.render('phenotips.PatientSheetCode.added')".replace("__name__", name), 'done');
+                 new XWiki.widgets.Notification("$escapetool.javascript($services.localization.render('phenotips.PatientSheetCode.added'))".replace("__name__", name), 'done');
                } else {
                  var existingValue = $(service.suggestFor.id + '_' + input.value);
                  if (existingValue) {
                    existingValue.checked = false;
-                   new XWiki.widgets.Notification("$services.localization.render('phenotips.PatientSheetCode.removed')".replace("__name__", name), 'done');
+                   new XWiki.widgets.Notification("$escapetool.javascript($services.localization.render('phenotips.PatientSheetCode.removed'))".replace("__name__", name), 'done');
                  }
                }
             });
 
-            // enableHighlightChecked(ynpicker.down('.yes input'));
-            // enableHighlightChecked(ynpicker.down('.no input'));
             } else {
             // generate simple checkboxes
             var trigger = new Element('input', {'type' :  'checkbox', 'value' : id, 'title' : 'Select', id : 'result__' + id});
@@ -2447,12 +2515,12 @@ document.observe('xwiki:dom:loaded', function()
                  service.suggestFor._suggestPicker.silent = true;
                  service.suggestFor._suggestPicker.acceptSuggestion(input.__suggestion);
                  service.suggestFor._suggestPicker.silent = false;
-                 new XWiki.widgets.Notification("$services.localization.render('phenotips.PatientSheetCode.added')".replace("__name__", input.__suggestion.value ), 'done');
+                 new XWiki.widgets.Notification("$escapetool.javascript($services.localization.render('phenotips.PatientSheetCode.added'))".replace("__name__", input.__suggestion.value ), 'done');
                } else {
                  var existingValue = $(service.suggestFor.id + '_' + input.value);
                  if (existingValue) {
                    existingValue.up('li').remove();
-                   new XWiki.widgets.Notification("$services.localization.render('phenotips.PatientSheetCode.removed')".replace("__name__", input.__suggestion.value), 'done');
+                   new XWiki.widgets.Notification("$escapetool.javascript($services.localization.render('phenotips.PatientSheetCode.removed'))".replace("__name__", input.__suggestion.value), 'done');
                  }
                }
             });
@@ -2466,139 +2534,163 @@ document.observe('xwiki:dom:loaded', function()
             // Enable navigation by pages for trait suggestions
             service.target.select(".navigation").each(function(navButton){
               navButton.observe("click", function(event) {
-                doSearch('diffDiagnosis', navButton.select("input")[0].value, 0);
+                _this.doAjaxSearch('diffDiagnosis', navButton.select("input")[0].value, 0);
               });
             });
           } //End of ID and Name conditional
         }); //End of loop over all li
-    }
-    if (service.target.__hiddenParent) {
-      if (service.target.down('li')) {
-         //has results
-         service.target.__hiddenParent.removeClassName('hidden');
-      } else {
-         service.target.__hiddenParent.addClassName('hidden');
+      }
+      if (service.target.__hiddenParent) {
+        if (service.target.down('li')) {
+          //has results
+          service.target.__hiddenParent.removeClassName('hidden');
+        } else {
+          service.target.__hiddenParent.addClassName('hidden');
+        }
+      }
+      Event.fire (document, 'xwiki:dom:updated', {'elements' : [service.target]});
+    },
+
+    doAjaxSearch : function(service, page, searchDelay) {
+      var _this = this;
+      var data = this._builder[service];
+      if (!data || !data.target || !data.script) {return;}
+      if (data.__pendingRequest !== undefined) {
+        window.clearTimeout(data.__pendingRequest);
+        data.__pendingRequest = undefined;
+      }
+      data.target.__initialized || (data.target.__initialized = true) &amp;&amp; (data.target.__hiddenParent = data.target.up('.background-search.hidden'));
+      if (!data.expectedReqNo) {
+        data.expectedReqNo = 0;
+      }
+      var parameters = {};
+      for (var k in this._builder.cache.displayed) {
+        var obj = this._builder.cache.all[k];
+        if (obj &amp;&amp; !obj.disabled) {
+          var list = parameters[obj.type];
+          if (!list) {
+            list = [];
+            parameters[obj.type] = list;
+          }
+          list.push(obj.key);
+        }
+      }
+
+      if (page !== undefined) {
+        parameters['page'] = page;
+      }
+
+      var queryString = _this._builder.buildQueryString(data, parameters);
+
+      searchDelay = (searchDelay === undefined) ? 0.8 : searchDelay;
+
+      data.__pendingRequest = function() {
+        data.__pendingRequest = undefined;
+        _this._builder.submitAjaxRequest(_this, data, queryString, parameters);
+      }.bind(this).delay(searchDelay);
+    },
+
+    initialize : function(searchBox) {
+      this.searchBox = searchBox;
+      for (var label in this.searchServices) {
+        if (this.searchBox.hasClassName(label)) {
+          this._builder = this.searchServices[label];
+        }
+      }
+      if (!this._builder || !this._builder.containersInitialized(this._builder)) {
+        return;
+      }
+
+      this.attachObservers();
+    },
+        
+    attachObservers : function() {
+      var _this = this;
+      document.observe('phenotype:selected', function(event) {
+        if (!event.memo || !event.memo.key || !event.memo.element) {return;}
+        var key = event.memo.key;
+        var text = event.memo.text || event.memo.key;
+        var obj = _this._builder.cache.all[key];
+        var yesSelected = event.memo.element.up('.yes-no-picker').down('.yes input').checked;
+        var noSelected = event.memo.element.up('.yes-no-picker').down('.no input').checked;
+        if (yesSelected || noSelected) {
+          if (!obj) {
+            obj = {'key' : key, 'text' : text};
+            _this._builder.cache.all[key] = obj;
+          } else {
+            obj.hidden = false;
+          }
+          obj.type = noSelected ? 'not_symptom' : (key.startsWith('HP:') ? 'symptom' : 'free_symptom');
+          _this._builder.cache.displayed[key] = true;
+        } else {
+          if (obj) {
+            obj.hidden = true;
+            delete _this._builder.cache.displayed[key];
+          }
+        }
+        _this.updateDefaultSearchTerms();
+      });
+
+      // Add global mode of inheritance and global age of onset to the search
+      document.observe('global-phenotype-meta:selected', function(event) {
+        if (!event.memo || !event.memo.key || !event.memo.element) {return;}
+        var key = event.memo.key;
+        var text = event.memo.text || event.memo.key;
+        var obj = _this._builder.cache.all[key];
+        if (event.memo.enable) {
+          if (!obj) {
+            obj = {'key' : key, 'text' : text, 'type' : 'symptom'};
+            _this._builder.cache.all[key] = obj;
+          } else {
+            obj.hidden = false;
+          }
+          _this._builder.cache.displayed[key] = true;
+        } else {
+          if (obj) {
+            obj.hidden = true;
+            delete _this._builder.cache.displayed[key];
+          }
+        }
+        _this.updateDefaultSearchTerms();
+      });
+
+      document.observe('xwiki:dom:loaded', function() {
+        if ($('phenotypes-summary')) {
+          var phenotypes = JSON.parse($('phenotypes-summary').value);
+          phenotypes.each (function (p) {
+            _this._builder.cache.all[p.key] = p;
+            _this._builder.cache.displayed[p.key] = true;
+          });
+          _this.updateDefaultSearchTerms();
+        }
+      });
+
+      if (this._builder.customSearchTermsInput) {
+        this._builder.customSearchTermsInput.observe('keyup', function(event) {
+           _this._builder.doSearch(_this);
+        });
       }
     }
-    Event.fire (document, 'xwiki:dom:updated', {'elements' : [service.target]});
+  });
+
+  var init = function(event) {
+    ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      (element.hasClassName("instant-search") ? [element] : element.select(".instant-search")).each(function(searchBox) {
+        if (!searchBox.__boxController) {
+          searchBox.__boxController = new PhenoTips.widgets.InstantSearch(searchBox);
+        }
+      });
+    });
+    return true;
   };
 
-  var doSearch = function(service, page, searchDelay) {
-    var data = services[service];
-    if (!data || !data.target || !data.script) {return;}
-    if (data.__pendingRequest !== undefined) {
-      window.clearTimeout(data.__pendingRequest);
-      data.__pendingRequest = undefined;
-    }
-    data.target.__initialized || (data.target.__initialized = true) &amp;&amp; (data.target.__hiddenParent = data.target.up('.background-search.hidden'));
-    if (!data.expectedReqNo) {
-      data.expectedReqNo = 0;
-    }
-    //var queryString = (customSearchTermsInput &amp;&amp; (customSearchTermsInput.value.strip() + ' ') || '') + defaultSearchTermsInput.value.strip();
-    var queryString = '';
-    var parameters = {};
-    for (var k in cache.displayed) {
-      var obj = cache.all[k];
-      if (obj &amp;&amp; !obj.disabled) {
-        var list = parameters[obj.type];
-        if (!list) {
-          list = [];
-          parameters[obj.type] = list;
-        }
-        list.push(obj.key);
-      }
-    }
+  document.observe('xwiki:dom:loading', init) || (XWiki.domIsLoaded &amp;&amp; init());
 
-    if (page !==  undefined) {
-      parameters['page'] = page;
-    }
-
-    data.source.each(function(source) {
-       queryString += ((source &amp;&amp; source.value.strip()) + ' ') || '';
-    });
-
-    searchDelay = (searchDelay === undefined) ? 0.8 : searchDelay;
-
-    data.__pendingRequest = function() {
-      data.__pendingRequest = undefined;
-      new Ajax.Updater(data.target, data.script + encodeURIComponent(queryString.strip()) + "&amp;reqNo=" + ++data.expectedReqNo, {
-        parameters: parameters,
-        onCreate : requestCreated.bind(this, data),
-        onSuccess : responseReceived.bind(this, data),
-        onComplete : updateDone.bind(this, data)
-      });
-    }.bind(this).delay(searchDelay);
-  }
-
-  document.observe('phenotype:selected', function(event) {
-    if (!event.memo || !event.memo.key || !event.memo.element) {return;}
-    var key = event.memo.key;
-    var text = event.memo.text || event.memo.key;
-    var obj = cache.all[key];
-    var yesSelected = event.memo.element.up('.yes-no-picker').down('.yes input').checked;
-    var noSelected = event.memo.element.up('.yes-no-picker').down('.no input').checked;
-    if (yesSelected || noSelected) {
-      if (!obj) {
-        obj = {'key' : key, 'text' : text};
-        cache.all[key] = obj;
-      } else {
-        obj.hidden = false;
-      }
-      obj.type = noSelected ? 'not_symptom' : (key.startsWith('HP:') ? 'symptom' : 'free_symptom');
-      cache.displayed[key] = true;
-    } else {
-      if (obj) {
-        obj.hidden = true;
-        delete cache.displayed[key];
-      }
-    }
-    updateDefaultSearchTerms();
-  });
-
-  // Add global mode of inheritance and global age of onset to the search
-  document.observe('global-phenotype-meta:selected', function(event) {
-    if (!event.memo || !event.memo.key || !event.memo.element) {return;}
-    var key = event.memo.key;
-    var text = event.memo.text || event.memo.key;
-    var obj = cache.all[key];
-    if (event.memo.enable) {
-      if (!obj) {
-        obj = {'key' : key, 'text' : text, 'type' : 'symptom'};
-        cache.all[key] = obj;
-      } else {
-        obj.hidden = false;
-      }
-      cache.displayed[key] = true;
-    } else {
-      if (obj) {
-        obj.hidden = true;
-        delete cache.displayed[key];
-      }
-    }
-    updateDefaultSearchTerms();
-  });
-
-  document.observe('xwiki:dom:loaded', function() {
-    if ($('phenotypes-summary')) {
-      var phenotypes = JSON.parse($('phenotypes-summary').value);
-      phenotypes.each (function (p) {
-        cache.all[p.key] = p;
-        cache.displayed[p.key] = true;
-      });
-      updateDefaultSearchTerms();
-    }
-  });
-
-  if (customSearchTermsInput) {
-    customSearchTermsInput.observe('keyup', function(event) {
-       doSearch('omim');
-       doSearch('diffDiagnosis');
-    });
-  }
-});</code>
+  return PhenoTips;
+}(PhenoTips || {}));</code>
     </property>
     <property>
-      <name>Instant searches in the Diagnosis zone</name>
+      <name>Instant searches in the Diagnosis and Gene Panels zones</name>
     </property>
     <property>
       <parse>1</parse>
@@ -4785,6 +4877,130 @@ input[type="checkbox"] + .LV_validation_message {
     </property>
     <property>
       <name>Form Validation</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>5</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>c96d593e-478b-4ffa-a2ea-661c4a97908b</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>
+.gene-panels-row {
+  font-weight: bold;
+  font-size: .85em !important;
+  margin: .5em auto !important;
+}
+.gene-panels-row-features dt {
+  font-weight: normal;
+  font-size: .85em;
+  margin: 0 auto;
+}
+#genePanelsExport {
+  font-size: .6em;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name>Instant Gene Search</name>
     </property>
     <property>
       <parse>1</parse>

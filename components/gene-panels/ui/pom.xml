@@ -22,16 +22,27 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
+    <artifactId>gene-panels</artifactId>
     <version>1.3-SNAPSHOT</version>
   </parent>
-  <artifactId>gene-panels</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Gene Panels</name>
+  <artifactId>gene-panels-ui</artifactId>
+  <name>PhenoTips - Gene Panels - UI</name>
+  <packaging>xar</packaging>
 
-  <modules>
-    <module>api</module>
-    <module>rest</module>
-    <module>ui</module>
-  </modules>
+  <properties>
+    <!-- Don't run CLIRR here since there's no Java code. -->
+    <xwiki.clirr.skip>true</xwiki.clirr.skip>
+    <!-- Name to display by the Extension Manager -->
+    <xwiki.extension.name>Gene panels</xwiki.extension.name>
+  </properties>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
+        <version>${xwiki.version}</version>
+      </extension>
+    </extensions>
+  </build>
 </project>
