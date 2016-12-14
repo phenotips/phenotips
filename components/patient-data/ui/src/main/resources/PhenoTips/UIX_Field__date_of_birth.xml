@@ -111,11 +111,9 @@
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-#if ($xcontext.action == 'edit')
-  $xwiki.ssx.use('XWiki.DateTimePicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-  $xwiki.jsx.use('XWiki.DateTimePicker')##
-#end
-#__displayFormatted('2-col' 'date_of_birth' '' 'date' '')
+(% id="date-of-birth-block" %)(((
+  #__displayFormatted('2-col' 'date_of_birth' '' 'date' '')
+)))
 {{/velocity}}</content>
     </property>
     <property>
