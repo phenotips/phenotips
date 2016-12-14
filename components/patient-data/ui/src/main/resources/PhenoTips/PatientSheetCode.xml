@@ -2655,8 +2655,9 @@ document.observe('xwiki:dom:loaded', function()
       });
 
       document.observe('xwiki:dom:loaded', function() {
-        if ($('phenotypes-summary')) {
-          var phenotypes = JSON.parse($('phenotypes-summary').value);
+        var phenotypesSummary = $('panels-phenotypes-summary') || $('phenotypes-summary')
+        if (phenotypesSummary) {
+          var phenotypes = JSON.parse(phenotypesSummary.value);
           phenotypes.each (function (p) {
             _this._builder.cache.all[p.key] = p;
             _this._builder.cache.displayed[p.key] = true;
