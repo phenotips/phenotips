@@ -193,43 +193,10 @@
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </consanguinity>
       <date_of_birth>
-        <customDisplay>{{velocity}}{{html clean=false}}
-#set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
-#set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
-#if ($xcontext.action == 'edit')
-  #if ($value)
-    #set ($value = $services.jodatime.getMutableDateTime($value.time))
-    #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
-  #end
-  &lt;input type='text' id='${prefix}${name}' title="$!escapetool.xml($format)" name='${prefix}${name}' class='hidden fuzzy-date' value="$!services.jodatime.getDateTimeFormatterForPattern($definedFormat).print($value)" alt="$!services.jodatime.ISODateTimeFormatter.print($value)"/&gt;&lt;input type='hidden' name='${prefix}${name}_entered' id='${prefix}${name}_entered' value="$!{escapetool.xml($object.getProperty("${name}_entered").value)}"/&gt;
-#else
-#set ($enteredValue = $object.getProperty("${name}_entered").value)
-#if ("$!enteredValue" != '' &amp;&amp; "$!enteredValue" != '{}')
-  #set ($enteredValue = $jsontool.parseToJSONObject($enteredValue))
-  #if ($enteredValue.range &amp;&amp; $enteredValue.range.years &amp;&amp; $enteredValue.range.years &gt; 1)
-    &lt;span class="date"&gt;$!escapetool.xml($enteredValue.year)s&lt;/span&gt;
-  #else
-    #set ($displayedValue = $format)
-    #if ($enteredValue.year)
-      #set ($displayedValue = $displayedValue.replaceAll('y+', $enteredValue.year))
-      #if ($enteredValue.month)
-        #set ($displayedValue = $displayedValue.replaceAll('M+', $enteredValue.month))
-        #if ($enteredValue.day)
-          #set ($displayedValue = $displayedValue.replaceAll('d+', $enteredValue.day))
-        #end
-      #end
-    #end
-    #set ($displayedValue = $displayedValue.replaceAll('[a-zA-Z]+(\W|$)', '').replaceAll('^\W+|\W+$', ''))
-    ## add leading 0-s to 1-digit month and days, if missing
-    #set ($displayedValue = $displayedValue.replaceAll('(?&lt;=(^|\D))(\d)(\D|$)', '0$2$3'))
-    &lt;span class="date"&gt;$!escapetool.xml($displayedValue)&lt;/span&gt;
-  #end
-#elseif ($value)
-  #set ($value = $services.jodatime.getMutableDateTime($value.time))
-  #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
-  &lt;span class="date"&gt;$!services.jodatime.getDateTimeFormatterForPattern($format).print($value)&lt;/span&gt;
-#end
-#end
+        <customDisplay>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+{{velocity}}{{html clean=false}}
+#__displayDate()
 {{/html}}{{/velocity}}</customDisplay>
         <dateFormat>yyyy-MM-dd</dateFormat>
         <disabled>0</disabled>
@@ -258,43 +225,10 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </date_of_birth_entered>
       <date_of_death>
-        <customDisplay>{{velocity}}{{html clean=false}}
-#set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
-#set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
-#if ($xcontext.action == 'edit')
-  #if ($value)
-    #set ($value = $services.jodatime.getMutableDateTime($value.time))
-    #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
-  #end
-  &lt;input type='text' id='${prefix}${name}' title="$!escapetool.xml($format)" name='${prefix}${name}' class='hidden fuzzy-date' value="$!services.jodatime.getDateTimeFormatterForPattern($definedFormat).print($value)" alt="$!services.jodatime.ISODateTimeFormatter.print($value)"/&gt;&lt;input type='hidden' name='${prefix}${name}_entered' id='${prefix}${name}_entered' value="$!{escapetool.xml($object.getProperty("${name}_entered").value)}"/&gt;
-#else
-#set ($enteredValue = $object.getProperty("${name}_entered").value)
-#if ("$!enteredValue" != '' &amp;&amp; "$!enteredValue" != '{}')
-  #set ($enteredValue = $jsontool.parseToJSONObject($enteredValue))
-  #if ($enteredValue.range &amp;&amp; $enteredValue.range.years &amp;&amp; $enteredValue.range.years &gt; 1)
-    &lt;span class="date"&gt;$!escapetool.xml($enteredValue.year)s&lt;/span&gt;
-  #else
-    #set ($displayedValue = $format)
-    #if ($enteredValue.year)
-      #set ($displayedValue = $displayedValue.replaceAll('y+', $enteredValue.year))
-      #if ($enteredValue.month)
-        #set ($displayedValue = $displayedValue.replaceAll('M+', $enteredValue.month))
-        #if ($enteredValue.day)
-          #set ($displayedValue = $displayedValue.replaceAll('d+', $enteredValue.day))
-        #end
-      #end
-    #end
-    #set ($displayedValue = $displayedValue.replaceAll('[a-zA-Z]+(\W|$)', '').replaceAll('^\W+|\W+$', ''))
-    ## add leading 0-s to 1-digit month and days, if missing
-    #set ($displayedValue = $displayedValue.replaceAll('(?&lt;=(^|\D))(\d)(\D|$)', '0$2$3'))
-    &lt;span class="date"&gt;$!escapetool.xml($displayedValue)&lt;/span&gt;
-  #end
-#elseif ($value)
-  #set ($value = $services.jodatime.getMutableDateTime($value.time))
-  #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
-  &lt;span class="date"&gt;$!services.jodatime.getDateTimeFormatterForPattern($format).print($value)&lt;/span&gt;
-#end
-#end
+        <customDisplay>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+{{velocity}}{{html clean=false}}
+#__displayDate()
 {{/html}}{{/velocity}}</customDisplay>
         <dateFormat>yyyy-MM-dd</dateFormat>
         <disabled>0</disabled>
