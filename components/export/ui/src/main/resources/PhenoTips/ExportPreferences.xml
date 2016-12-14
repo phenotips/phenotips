@@ -167,7 +167,7 @@
        'rejectedGenes_comments': "$services.localization.render('phenotips.exportPreferences.field.rejectGenesComments')"
   })
   #set($ignored = {
-    'fields' : ['family_history', 'pedigree', 'date_of_death_unknown'],
+    'fields' : ['family_history', 'pedigree'],
     'types'  : []
   })
   #set($codeFields = [])
