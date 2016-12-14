@@ -59,8 +59,6 @@ public class LifeStatusControllerTest
 
     private static final String DECEASED = "deceased";
 
-    private static final String UNBORN = "unborn";
-
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
         new MockitoComponentMockingRule<PatientDataController<String>>(LifeStatusController.class);

@@ -58,9 +58,7 @@ public class LifeStatusController implements PatientDataController<String>
 
     private static final String DECEASED = "deceased";
 
-    private static final String UNBORN = "unborn";
-
-    private static final Set<String> ALL_LIFE_STATES = new HashSet<>(Arrays.asList(ALIVE, DECEASED, UNBORN));
+    private static final Set<String> ALL_LIFE_STATES = new HashSet<>(Arrays.asList(ALIVE, DECEASED));
 
     /** Logging helper object. */
     @Inject

@@ -269,7 +269,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>alive|deceased|unborn</values>
+      <values>alive|deceased</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </life_status>
     <diagnosis_notes>
