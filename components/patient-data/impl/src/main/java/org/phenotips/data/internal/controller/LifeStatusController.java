@@ -20,7 +20,6 @@ package org.phenotips.data.internal.controller;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.data.PhenoTipsDate;
 import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
@@ -29,7 +28,6 @@ import org.xwiki.component.annotation.Component;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,7 +35,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.codehaus.plexus.util.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
@@ -57,17 +54,13 @@ public class LifeStatusController implements PatientDataController<String>
 {
     private static final String DATA_NAME = "life_status";
 
-    private static final String PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME = "date_of_death_unknown";
-
-    private static final String PATIENT_DATEOFDEATH_FIELDNAME = DatesController.PATIENT_DATEOFDEATH_FIELDNAME;
-
-    private static final String PATIENT_DATEOFDEATH_ENTERED_FIELDNAME = "date_of_death_entered";
-
     private static final String ALIVE = "alive";
 
     private static final String DECEASED = "deceased";
 
-    private static final Set<String> ALL_LIFE_STATES = new HashSet<>(Arrays.asList(ALIVE, DECEASED));
+    private static final String UNBORN = "unborn";
+
+    private static final Set<String> ALL_LIFE_STATES = new HashSet<>(Arrays.asList(ALIVE, DECEASED, UNBORN));
 
     /** Logging helper object. */
     @Inject
@@ -87,18 +80,8 @@ public class LifeStatusController implements PatientDataController<String>
                 return null;
             }
 
-            String lifeStatus = ALIVE;
-            Date date = data.getDateValue(PATIENT_DATEOFDEATH_FIELDNAME);
-            String dodEntered = data.getStringValue(PATIENT_DATEOFDEATH_ENTERED_FIELDNAME);
-            if (date != null || (StringUtils.isNotBlank(dodEntered) && !"{}".equals(dodEntered))) {
-                lifeStatus = DECEASED;
-            } else {
-                // check if "unknown death date" checkbox is checked
-                Integer deathDateUnknown = data.getIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME);
-                if (deathDateUnknown == 1) {
-                    lifeStatus = DECEASED;
-                }
-            }
+            String lifeStatus = data.getStringValue(DATA_NAME);
+
             return new SimpleValuePatientData<>(DATA_NAME, lifeStatus);
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen"
@@ -116,21 +99,7 @@ public class LifeStatusController implements PatientDataController<String>
         }
 
         PatientData<String> lifeStatus = patient.getData(DATA_NAME);
-        PatientData<PhenoTipsDate> dates = patient.getData("dates");
-
-        Integer deathDateUnknown = 0;
-        if (lifeStatus != null && DECEASED.equals(lifeStatus.getValue())) {
-            deathDateUnknown = 1;
-        }
-        if (dates != null && dates.isNamed()) {
-            PhenoTipsDate deathDate = dates.get(PATIENT_DATEOFDEATH_FIELDNAME);
-            // check if date_of_death is set - if it is unknown_death_date should be unset
-            if (deathDate != null && deathDate.isSet()) {
-                deathDateUnknown = 0;
-            }
-        }
-
-        data.setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, deathDateUnknown);
+        data.setStringValue(DATA_NAME, lifeStatus.getValue());
     }
 
     @Override
