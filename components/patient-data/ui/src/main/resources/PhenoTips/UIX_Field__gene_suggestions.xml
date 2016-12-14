@@ -110,6 +110,7 @@
     <property>
       <content>{{velocity}}
 #if ($xcontext.action == 'edit')
+$xwiki.jsx.use('PhenoTips.PanelsExport')##
 $xwiki.jsx.use('PhenoTips.PanelsDisplay')##
 $xwiki.ssx.use('PhenoTips.PanelsDisplay')##
   (% class="instant-search gene-panels-search-box" %)(((
