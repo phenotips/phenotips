@@ -28,15 +28,12 @@ import org.xwiki.container.Container;
 import org.xwiki.container.Request;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.query.internal.DefaultQuery;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,7 +52,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -71,8 +67,6 @@ import static org.mockito.Mockito.when;
 
 public class DefaultPatientsFetchResourceImplTest
 {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
     private static final String EID1 = "EID1";
 
     private static final String EID2 = "EID2";
@@ -84,6 +78,12 @@ public class DefaultPatientsFetchResourceImplTest
     private static final String ID_3 = "P0000003";
 
     private static final String ID_4 = "P0000004";
+
+    private static final String EID_LABEL = "eid";
+
+    private static final String ID_LABEL = "id";
+
+    private static final String LINKS_LABEL = "links";
 
     @Rule
     public final MockitoComponentMockingRule<PatientsFetchResource> mocker =
@@ -103,30 +103,25 @@ public class DefaultPatientsFetchResourceImplTest
 
     private PatientRepository repository;
 
-    private Container container;
-
-    private QueryManager qm;
-
     private DefaultPatientsFetchResourceImpl component;
 
-    private final DocumentReference patientReference1 = new DocumentReference("wiki", "data", ID_1);
+    private Request request;
 
-    private final DocumentReference patientReference2 = new DocumentReference("wiki", "data", ID_2);
+    private Query query;
 
-    private final DocumentReference patientReference3 = new DocumentReference("wiki", "data", ID_1);
+    private final JSONObject patient1JSON = new JSONObject().put(ID_LABEL, ID_1);
 
-    private final JSONObject patient1JSON = new JSONObject().put("id", ID_1);
+    private final JSONObject patient2JSON = new JSONObject().put(ID_LABEL, ID_2);
 
-    private final JSONObject patient2JSON = new JSONObject().put("id", ID_2);
-
-    private final JSONObject patient3JSON = new JSONObject().put("id", ID_3);
+    private final JSONObject patient3JSON = new JSONObject().put(ID_LABEL, ID_3);
 
     private final Collection<String> uriList = ImmutableList.of("http://uri");
 
     @Before
-    public void setUp() throws ComponentLookupException, URISyntaxException
+    public void setUp() throws ComponentLookupException, QueryException
     {
         MockitoAnnotations.initMocks(this);
+
         final Execution execution = mock(Execution.class);
         final ExecutionContext executionContext = mock(ExecutionContext.class);
         final ComponentManager componentManager = this.mocker.getInstance(ComponentManager.class, "context");
@@ -134,32 +129,43 @@ public class DefaultPatientsFetchResourceImplTest
         doReturn(executionContext).when(execution).getContext();
         doReturn(mock(XWikiContext.class)).when(executionContext).getProperty("xwikicontext");
 
-        this.qm = this.mocker.getInstance(QueryManager.class);
-        this.container = this.mocker.getInstance(Container.class);
         this.component = (DefaultPatientsFetchResourceImpl) this.mocker.getComponentUnderTest();
+
         this.logger = this.mocker.getMockedLogger();
         this.repository = this.mocker.getInstance(PatientRepository.class, "secure");
 
         when(this.patient1.getId()).thenReturn(ID_1);
-        when(this.patient1.getDocument()).thenReturn(this.patientReference1);
         when(this.patient2.getId()).thenReturn(ID_2);
-        when(this.patient2.getDocument()).thenReturn(this.patientReference2);
         when(this.patient3.getId()).thenReturn(ID_3);
-        when(this.patient3.getDocument()).thenReturn(this.patientReference3);
 
         final Autolinker autolinker = this.mocker.getInstance(Autolinker.class);
         when(autolinker.forSecondaryResource(any(Class.class), any(UriInfo.class))).thenReturn(autolinker);
         when(autolinker.withExtraParameters(any(String.class), any(String.class))).thenReturn(autolinker);
         doReturn(this.uriList).when(autolinker).build();
+
+        final Container container = this.mocker.getInstance(Container.class);
+        this.request = mock(Request.class);
+        doReturn(this.request).when(container).getRequest();
+
+        this.query = mock(DefaultQuery.class);
+        final QueryManager qm = this.mocker.getInstance(QueryManager.class);
+        doReturn(this.query).when(qm).createQuery(Matchers.anyString(), Matchers.anyString());
+
+        when(this.patient1.toJSON()).thenReturn(this.patient1JSON);
+        when(this.patient2.toJSON()).thenReturn(this.patient2JSON);
+        when(this.patient3.toJSON()).thenReturn(this.patient3JSON);
+
+        when(this.repository.get(ID_1)).thenReturn(this.patient1);
+        when(this.repository.get(ID_2)).thenReturn(this.patient2);
+        when(this.repository.get(ID_3)).thenReturn(this.patient3);
+        when(this.repository.get(ID_4)).thenReturn(null);
     }
 
     @Test
-    public void getPatientsWithEmptyEidAndId() throws ComponentLookupException
+    public void getPatientsWithEmptyEidAndId()
     {
-        final Request request = mock(Request.class);
-        doReturn(request).when(this.container).getRequest();
-        doReturn(Collections.emptyList()).when(request).getProperties("eid");
-        doReturn(Collections.emptyList()).when(request).getProperties("id");
+        doReturn(Collections.emptyList()).when(this.request).getProperties(EID_LABEL);
+        doReturn(Collections.emptyList()).when(this.request).getProperties(ID_LABEL);
 
         final Response response = this.component.fetchPatients();
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -167,186 +173,106 @@ public class DefaultPatientsFetchResourceImplTest
     }
 
     @Test
-    public void getPatientsPerformsCorrectlyOnePatientRecordByEidNoneById()
-        throws ComponentLookupException, QueryException, IOException
+    public void getPatientsPerformsCorrectlyOnePatientRecordByEidNoneById() throws QueryException
     {
         final List<Object> eidList = ImmutableList.<Object>of(EID1);
 
-        final Request request = mock(Request.class);
-        doReturn(request).when(this.container).getRequest();
-        doReturn(eidList).when(request).getProperties("eid");
-        doReturn(Collections.emptyList()).when(request).getProperties("id");
+        doReturn(eidList).when(this.request).getProperties(EID_LABEL);
+        doReturn(Collections.emptyList()).when(this.request).getProperties(ID_LABEL);
 
-        final Query query = mock(DefaultQuery.class);
-        doReturn(this.patient1JSON).when(this.patient1).toJSON();
-        doReturn(query).when(this.qm).createQuery(Matchers.anyString(), Matchers.anyString());
-        doReturn(ImmutableList.<Object>of(ID_1)).when(query).execute();
-
-        doReturn(this.patient1).when(this.repository).get(ID_1);
-        doReturn(ID_1).when(this.patient1).getId();
+        doReturn(ImmutableList.<Object>of(ID_1)).when(this.query).execute();
 
         final Response response = this.component.fetchPatients();
 
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        final JSONArray expected = new JSONArray().put(new JSONObject().put(ID_LABEL, ID_1).put(LINKS_LABEL, this.uriList));
 
-        final String expectedStr = new JSONArray().put(new JSONObject().put("id", ID_1).put("links", this.uriList))
-            .toString();
-        @SuppressWarnings("unchecked")
-        final List<String> expected = (List<String>) (OBJECT_MAPPER.readValue(expectedStr, List.class));
-        @SuppressWarnings("unchecked")
-        final List<String> actual = (List<String>) (OBJECT_MAPPER.readValue((String) response.getEntity(), List.class));
-        assertTrue(expected.containsAll(actual) && actual.containsAll(expected));
+        final JSONArray actual = new JSONArray(response.getEntity().toString());
+        assertTrue(expected.similar(actual));
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
     @Test
-    public void getPatientsPerformsCorrectlySeveralPatientRecordsAccessToAll() throws ComponentLookupException,
-        QueryException, IOException
-    {
-        final List<Object> eidList = new ArrayList<>();
-        eidList.add(EID1);
-        eidList.add(EID2);
-
-        final List<String> idList = new ArrayList<>();
-        idList.add(ID_3);
-
-        final Request request = mock(Request.class);
-        doReturn(request).when(this.container).getRequest();
-        doReturn(eidList).when(request).getProperties("eid");
-        doReturn(idList).when(request).getProperties("id");
-
-        final Query query = mock(DefaultQuery.class);
-        when(this.patient1.toJSON()).thenReturn(this.patient1JSON);
-        when(this.patient2.toJSON()).thenReturn(this.patient2JSON);
-        when(this.patient3.toJSON()).thenReturn(this.patient3JSON);
-
-        when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
-        when(query.execute()).thenReturn(ImmutableList.<Object>of(ID_1, ID_2));
-        doReturn(this.patient1).when(this.repository).get(ID_1);
-        doReturn(this.patient2).when(this.repository).get(ID_2);
-        doReturn(this.patient3).when(this.repository).get(ID_3);
-
-        final Response response = this.component.fetchPatients();
-
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-
-        final String expectedStr = new JSONArray().put(new JSONObject().put("id", ID_1).put("links", this.uriList))
-            .put(new JSONObject().put("id", ID_3).put("links", this.uriList))
-            .put(new JSONObject().put("id", ID_2).put("links", this.uriList))
-            .toString();
-        @SuppressWarnings("unchecked")
-        final List<String> expected = (List<String>) (OBJECT_MAPPER.readValue(expectedStr, List.class));
-        @SuppressWarnings("unchecked")
-        final List<String> actual = (List<String>) (OBJECT_MAPPER.readValue((String) response.getEntity(), List.class));
-
-        assertTrue(expected.containsAll(actual) && actual.containsAll(expected));
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-    }
-
-    @Test
-    public void getPatientsPerformsCorrectlySeveralPatientRecordsAccessToSome() throws ComponentLookupException,
-        QueryException, IOException
-    {
-        //TODO: Check logger output
-        final List<Object> eidList = new ArrayList<>();
-        eidList.add(EID1);
-        eidList.add(EID2);
-
-        final List<String> idList = new ArrayList<>();
-        idList.add(ID_3);
-
-        final Request request = mock(Request.class);
-        doReturn(request).when(this.container).getRequest();
-        doReturn(eidList).when(request).getProperties("eid");
-        doReturn(idList).when(request).getProperties("id");
-
-        final Query query = mock(DefaultQuery.class);
-        when(this.patient1.toJSON()).thenReturn(this.patient1JSON);
-        when(this.patient2.toJSON()).thenReturn(this.patient2JSON);
-        when(this.patient3.toJSON()).thenReturn(this.patient3JSON);
-
-        when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
-
-        when(query.execute()).thenReturn(ImmutableList.<Object>of(ID_1, ID_2));
-        doReturn(this.patient1).when(this.repository).get(ID_1);
-        doThrow(SecurityException.class).when(this.repository).get(ID_2);
-        doReturn(this.patient3).when(this.repository).get(ID_3);
-
-        final Response response = this.component.fetchPatients();
-
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-
-        final String expectedStr = new JSONArray().put(new JSONObject().put("id", ID_1).put("links", this.uriList))
-            .put(new JSONObject().put("id", ID_3).put("links", this.uriList))
-            .toString();
-        @SuppressWarnings("unchecked")
-        final List<String> expected = (List<String>) (OBJECT_MAPPER.readValue(expectedStr, List.class));
-        @SuppressWarnings("unchecked")
-        final List<String> actual = (List<String>) (OBJECT_MAPPER.readValue((String) response.getEntity(), List.class));
-        assertTrue(expected.containsAll(actual) && actual.containsAll(expected));
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-    }
-
-    @Test
-    public void getPatientsPerformsCorrectlyOnePatientIdDoesNotExist()
-        throws ComponentLookupException, QueryException, IOException
+    public void getPatientsPerformsCorrectlySeveralPatientRecordsAccessToAll() throws QueryException
     {
         final List<Object> eidList = ImmutableList.<Object>of(EID1, EID2);
 
-        final Request request = mock(Request.class);
-        doReturn(request).when(this.container).getRequest();
-        doReturn(eidList).when(request).getProperties("eid");
-        doReturn(ImmutableList.of(ID_4)).when(request).getProperties("id");
+        final List<String> idList = ImmutableList.of(ID_3);
 
-        final Query query = mock(DefaultQuery.class);
-        when(this.patient1.toJSON()).thenReturn(this.patient1JSON);
-        when(this.patient2.toJSON()).thenReturn(this.patient2JSON);
-        when(this.patient3.toJSON()).thenReturn(this.patient3JSON);
+        doReturn(eidList).when(this.request).getProperties(EID_LABEL);
+        doReturn(idList).when(this.request).getProperties(ID_LABEL);
 
-        when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
-        when(query.execute()).thenReturn(ImmutableList.<Object>of(ID_1, ID_2, ID_3));
-
-        doReturn(this.patient1).when(this.repository).get(ID_1);
-        doReturn(this.patient2).when(this.repository).get(ID_2);
-        doReturn(this.patient3).when(this.repository).get(ID_3);
-        doReturn(null).when(this.repository).get(ID_4);
+        when(this.query.execute()).thenReturn(ImmutableList.<Object>of(ID_1, ID_2));
 
         final Response response = this.component.fetchPatients();
 
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        final JSONArray expected = new JSONArray()
+            .put(new JSONObject().put(ID_LABEL, ID_1).put(LINKS_LABEL, this.uriList))
+            .put(new JSONObject().put(ID_LABEL, ID_2).put(LINKS_LABEL, this.uriList))
+            .put(new JSONObject().put(ID_LABEL, ID_3).put(LINKS_LABEL, this.uriList));
+        final JSONArray actual = new JSONArray(response.getEntity().toString());
 
-        final String expectedStr = new JSONArray().put(new JSONObject().put("id", ID_1).put("links", this.uriList))
-            .put(new JSONObject().put("id", ID_3).put("links", this.uriList))
-            .put(new JSONObject().put("id", ID_2).put("links", this.uriList))
-            .toString();
-        @SuppressWarnings("unchecked")
-        final List<String> expected = (List<String>) (OBJECT_MAPPER.readValue(expectedStr, List.class));
-        @SuppressWarnings("unchecked")
-        final List<String> actual = (List<String>) (OBJECT_MAPPER.readValue((String) response.getEntity(), List.class));
-        assertTrue(expected.containsAll(actual) && actual.containsAll(expected));
+        assertTrue(expected.similar(actual));
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
     @Test
-    public void getPatientsPerformsCorrectlyIfQueryExceptionIsThrown()
-        throws ComponentLookupException, QueryException, IOException
+    public void getPatientsPerformsCorrectlySeveralPatientRecordsAccessToSome() throws QueryException
+    {
+        final List<Object> eidList = ImmutableList.<Object>of(EID1, EID2);
+
+        final List<String> idList = ImmutableList.of(ID_3);
+
+        doReturn(eidList).when(this.request).getProperties(EID_LABEL);
+        doReturn(idList).when(this.request).getProperties(ID_LABEL);
+
+        when(this.query.execute()).thenReturn(ImmutableList.<Object>of(ID_1, ID_2));
+        doThrow(SecurityException.class).when(this.repository).get(ID_2);
+
+        final Response response = this.component.fetchPatients();
+
+        final JSONArray expected = new JSONArray().put(new JSONObject().put(ID_LABEL, ID_1).put(LINKS_LABEL, this.uriList))
+            .put(new JSONObject().put(ID_LABEL, ID_3).put(LINKS_LABEL, this.uriList));
+        final JSONArray actual = new JSONArray(response.getEntity().toString());
+        verify(this.logger).warn("Failed to retrieve patient with ID [{}]: {}", ID_2, null);
+        assertTrue(expected.similar(actual));
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void getPatientsPerformsCorrectlyOnePatientIdDoesNotExist() throws QueryException
+    {
+        final List<Object> eidList = ImmutableList.<Object>of(EID1, EID2);
+
+        doReturn(eidList).when(this.request).getProperties(EID_LABEL);
+        doReturn(ImmutableList.of(ID_4)).when(this.request).getProperties(ID_LABEL);
+
+        when(this.query.execute()).thenReturn(ImmutableList.<Object>of(ID_1, ID_2, ID_3));
+
+        final Response response = this.component.fetchPatients();
+
+        final JSONArray expected = new JSONArray().put(new JSONObject().put(ID_LABEL, ID_1).put(LINKS_LABEL, this.uriList))
+            .put(new JSONObject().put(ID_LABEL, ID_2).put(LINKS_LABEL, this.uriList))
+            .put(new JSONObject().put(ID_LABEL, ID_3).put(LINKS_LABEL, this.uriList));
+        final JSONArray actual = new JSONArray(response.getEntity().toString());
+        assertTrue(expected.similar(actual));
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void getPatientsPerformsCorrectlyIfQueryExceptionIsThrown() throws QueryException
     {
         final List<Object> eidList = new ArrayList<>();
         eidList.add(EID1);
 
-        final Request request = mock(Request.class);
-        doReturn(request).when(this.container).getRequest();
-        doReturn(eidList).when(request).getProperties("eid");
-        doReturn(Collections.emptyList()).when(request).getProperties("id");
-        final Query query = mock(DefaultQuery.class);
+        doReturn(eidList).when(this.request).getProperties(EID_LABEL);
+        doReturn(Collections.emptyList()).when(this.request).getProperties(ID_LABEL);
 
-        when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
-        when(query.execute()).thenThrow(new QueryException("Exception when executing query", query,
+        when(this.query.execute()).thenThrow(new QueryException("Exception when executing query", this.query,
             new XWikiException()));
 
         final Response response = this.component.fetchPatients();
 
-        verify(this.logger).warn("Failed to retrieve patients with external ids [{}]: {}", eidList,
+        verify(this.logger).error("Failed to retrieve patients with external ids [{}]: {}", eidList,
             "Exception when executing query. Query statement = [null]");
 
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
