@@ -60,6 +60,10 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
 
     private static final String PEDIGREE_JSON_KEY_FAMILY_HISTORY = PATIENT_JSON_KEY_FAMILY_HISTORY;
 
+    private static final String PATIENT_ALIVE_STATUS = "alive";
+
+    private static final String PATIENT_DECEASED_STATUS = "deceased";
+
     @Inject
     private Logger logger;
 
@@ -160,9 +164,9 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
     {
         String pedigreeLifeStatus = pedigreePatient.optString("lifeStatus", "alive");
 
-        String lifeStatus = "alive";
+        String lifeStatus = PATIENT_ALIVE_STATUS;
         if (!StringUtils.equalsIgnoreCase(pedigreeLifeStatus, "alive")) {
-            lifeStatus = "deceased";
+            lifeStatus = PATIENT_DECEASED_STATUS;
         }
 
         phenotipsPatientJSON.put("life_status", lifeStatus);
@@ -183,7 +187,12 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
                 logger.error("Could not convert date of birth: {}", ex.getMessage());
             }
         }
-        if (pedigreePatient.has(dod)) {
+
+        String lifeStatus = phenotipsPatientJSON.optString("life_status", PATIENT_ALIVE_STATUS);
+        if (StringUtils.equalsIgnoreCase(lifeStatus, PATIENT_ALIVE_STATUS)) {
+            // if patient is alive, date of death should be explicitly blanked
+            phenotipsPatientJSON.put("date_of_death", "");
+        } else if (pedigreePatient.has(dod)) {
             try {
                 phenotipsPatientJSON.put("date_of_death",
                     PedigreeProcessorImpl.pedigreeDateToDate(pedigreePatient.getJSONObject(dod)));

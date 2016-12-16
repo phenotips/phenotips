@@ -49,7 +49,9 @@ define([], function(){
         radius: 40,
         orbRadius: 6,
         touchOrbRadius: 8,
-        personHoverBoxRadius: 90,  // 80    for old handles, 90 for new
+        personHoverBoxWidth: 180,  // 160 for old handles
+        personHoverBoxHeight: 180, // 160 for old handles
+        personHoverBoxAWExtensionHeight: 63,
         newHandles: true,          // false for old handles
         personHandleLength: 75,    // 60    for old handles, 75 for new
         personHandleBreakX: 55,
@@ -94,6 +96,8 @@ define([], function(){
         pedNumberLabel: {'font-size': 19, 'font-family': 'Serif'},
         descendantGroupLabel: {'font-size': 21, 'font-family': 'Tahoma'},
         label: {'font-size': 20, 'font-family': 'Arial'},
+        awLabel: {'font-size': 17, 'font-family': 'Arial', 'text-anchor': 'start'},
+        awRect: {'fill': '#000000', 'cursor' : 'pointer', 'stroke': 'none', 'fill-opacity':0},
         nameLabels: {'font-size': 20, 'font-family': 'Arial'},
         commentLabel: {'font-size': 19, 'font-family': 'Arial' },
         cancerAgeOfOnsetLabels: {'font-size': 19, 'font-family': 'Arial' },

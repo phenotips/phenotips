@@ -72,6 +72,9 @@ define ([], function(){
         if (typeof obj !== 'object' || Object.prototype.toString.call(obj) === '[object Array]') {
             throw "cloneObject() aplied to a non-object or an array";
         }
+        if (obj === null) {
+            return null;
+        }
         var target = {};
         for (var i in obj) {
             if (obj.hasOwnProperty(i))
