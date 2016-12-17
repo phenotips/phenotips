@@ -325,6 +325,8 @@ define([
                         setUndoEventPropertyIfNotSet("setGestationAge", node.getGestationAge());
                         setUndoEventPropertyIfNotSet("setBirthDate", node.getBirthDate());
                         setUndoEventPropertyIfNotSet("setAdopted", node.getAdopted());
+                        setUndoEventPropertyIfNotSet("setDeceasedAge", node.getDeceasedAge());
+                        setUndoEventPropertyIfNotSet("setDeceasedCause", node.getDeceasedCause());
                     }
                     if (propertySetFunction == "setDeathDate") {
                         setUndoEventPropertyIfNotSet("setAliveAndWell", node.getAliveAndWell());

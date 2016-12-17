@@ -75,6 +75,8 @@ define([
             this._pedNumber = "";
             this._lostContact = false;
             this._aliveandwell = false;
+            this._deceasedAge = "";
+            this._deceasedCause = "";
         },
 
         /**
@@ -378,6 +380,48 @@ define([
         },
 
         /**
+         * Returns the age of person death
+         *
+         * @method getDeceasedAge
+         * @return {String} the age of person's death
+         */
+        getDeceasedAge: function() {
+            return this._deceasedAge;
+        },
+
+        /**
+         * Returns the cause of person's death
+         *
+         * @method getDeceasedCause
+         * @return {String} the cause of person's death
+         */
+        getDeceasedCause: function() {
+            return this._deceasedCause;
+        },
+
+        /**
+         * Changes the age of person death
+         *
+         * @method setDeceasedAge
+         * @param {String} age the age of person's death
+         */
+        setDeceasedAge: function(age) {
+            this._deceasedAge = age;
+            this.getGraphics().updateDeathDetailsLabel();
+        },
+
+        /**
+         * Changes the cause of person's death
+         *
+         * @method setDeceasedCause
+         * @param {String} cause the cause of person's death
+         */
+        setDeceasedCause: function(cause) {
+            this._deceasedCause = cause;
+            this.getGraphics().updateDeathDetailsLabel();
+        },
+
+        /**
          * Returns True if this node's status is not 'alive' or 'deceased'.
          *
          * @method isFetus
@@ -416,7 +460,11 @@ define([
 
                 this._lifeStatus = newStatus;
 
-                (newStatus != 'deceased') && this.setDeathDate("");
+                if (newStatus != 'deceased') {
+                    this.setDeathDate("");
+                    this.setDeceasedAge("");
+                    this.setDeceasedCause("");
+                }
                 (newStatus == 'alive') && this.setGestationAge();
                 (newStatus != 'alive') && this.setAliveAndWell(false);
                 this.getGraphics().updateSBLabel();
@@ -1124,6 +1172,8 @@ define([
 
             var rejectedGeneList = this.getRejectedGenes();
 
+            var disabledDeathDetails = (this.getLifeStatus() != 'stillborn' && this.getLifeStatus() != 'miscarriage' && this.getLifeStatus() != 'deceased');
+
             // TODO: only suggest posible birth dates which are after the latest
             //       birth date of any ancestors; only suggest death dates which are after birth date
 
@@ -1144,6 +1194,8 @@ define([
                 adopted:       {value : this.getAdopted(), inactive: cantChangeAdopted},
                 state:         {value : this.getLifeStatus(), inactive: inactiveStates, disabled: disabledStates},
                 aliveandwell:  {value : this.getAliveAndWell(), inactive: this.isFetus()},
+                deceasedAge:  {value : this.getDeceasedAge(), inactive: this.isFetus(), disabled : disabledDeathDetails},
+                deceasedCause:  {value : this.getDeceasedCause(), disabled : disabledDeathDetails},
                 date_of_death: {value : this.getDeathDate(), inactive: this.isFetus(), disabled: false},
                 commentsClinical:{value : this.getComments(), inactive: false},
                 commentsPersonal:{value : this.getComments(), inactive: false},  // so far the same set of comments is displayed on all tabs
@@ -1209,6 +1261,10 @@ define([
                 info['lifeStatus'] = this.getLifeStatus();
             if (this.getAliveAndWell())
                 info['aliveandwell'] = this.getAliveAndWell();
+            if (this.getDeceasedAge() != "")
+                info['deceasedAge'] = this.getDeceasedAge();
+            if (this.getDeceasedCause() != "")
+                info['deceasedCause'] = this.getDeceasedCause();
             if (this.getDeathDate() != null)
                 info['dod'] = this.getDeathDate().getSimpleObject();
             if (this.getGestationAge() != null)
@@ -1526,6 +1582,20 @@ define([
                     }
                 } else {
                     this.setAliveAndWell(false);
+                }
+                if(info.hasOwnProperty('deceasedAge')) {
+                    if (this.getDeceasedAge() != info.deceasedAge) {
+                        this.setDeceasedAge(info.deceasedAge);
+                    }
+                } else {
+                    this.setDeceasedAge("");
+                }
+                if(info.hasOwnProperty('deceasedCause')) {
+                    if (this.getDeceasedCause() != info.deceasedCause) {
+                        this.setDeceasedCause(info.deceasedCause);
+                    }
+                } else {
+                    this.setDeceasedCause("");
                 }
                 if(info.gestationAge) {
                     if (this.getGestationAge() != info.gestationAge) {

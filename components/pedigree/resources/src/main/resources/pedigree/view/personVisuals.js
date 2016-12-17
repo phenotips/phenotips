@@ -279,6 +279,34 @@ define([
         },
 
         /**
+         * Updates the death details label for this Person
+         *
+         * @method updateDeathDetailsLabel
+         */
+        updateDeathDetailsLabel: function() {
+            this._deathDetailsLabel && this._deathDetailsLabel.remove();
+            var text = (this.getNode().getDeceasedAge() != "" || this.getNode().getDeceasedCause() != "") ? "d." : "";
+            text += (this.getNode().getDeceasedAge() != "") ? " " + this.getNode().getDeceasedAge() + " y" : "";
+            text += (this.getNode().getDeceasedCause() != "") ? " (" + this.getNode().getDeceasedCause() + ")" : "";
+            if (text != "") {
+                this._deathDetailsLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditorParameters.attributes.radius, text).attr(PedigreeEditorParameters.attributes.externalIDLabels);
+            } else {
+                this._deathDetailsLabel = null;
+            }
+            this.drawLabels();
+        },
+
+        /**
+         * Returns the Person's death details label
+         *
+         * @method getDeathDetailsLabel
+         * @return {Raphael.el}
+         */
+        getDeathDetailsLabel: function() {
+            return this._deathDetailsLabel;
+        },
+
+        /**
          * Returns colored blocks representing disorders
          *
          * @method getDisorderShapes
@@ -922,11 +950,16 @@ define([
                     this.getExternalIDLabel().show();
                     labels.push(this.getExternalIDLabel());
                 }
+                if (this.getDeathDetailsLabel()) {
+                    this.getDeathDetailsLabel().show();
+                    labels.push(this.getDeathDetailsLabel());
+                }
             } else {
                 this.getLinkLabel() && this.getLinkLabel().hide();
                 this.getNameLabel() && this.getNameLabel().hide();
                 this.getAgeLabel() && this.getAgeLabel().hide();
                 this.getExternalIDLabel() && this.getExternalIDLabel().hide();
+                this.getDeathDetailsLabel() && this.getDeathDetailsLabel().hide();
             }
             if (!this._anonymized.hasOwnProperty("removeComments") || !this._anonymized.removeComments) {
                 if (this.getCommentsLabel()) {

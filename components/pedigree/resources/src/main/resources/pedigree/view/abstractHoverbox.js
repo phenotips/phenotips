@@ -737,6 +737,7 @@ define([
          */
         onWidgetHide: function() {
             this._isMenuToggled  = false;
+            this._isDeceasedToggled = false;
             // prevent menu from closing and opening right away upon a click on the menu button while menu is open
             this._justClosedMenu = true;
             var me = this;

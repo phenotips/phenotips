@@ -243,6 +243,14 @@ define([
                     buttons[i].hasOwnProperty("aw") && (properties["setAliveAndWell"] = buttons[i].aw) && this.getNode().getGraphics().updateAliveAndWellLabel(buttons[i].aw);
                     properties["setLifeStatus"] = buttons[i].lifeStatus;
                     var event = { "nodeID": this.getNode().getID(), "properties": properties };
+
+                    if (buttons[i].lifeStatus == 'deceased') {
+                        this._isDeceasedToggled = true;
+                        var x = tick.getBBox().x;
+                        var y = tick.getBBox().y2;
+                        var position = editor.getWorkspace().canvasToDiv(x, y);
+                        editor.getDeceasedMenu().show(node, position.x, position.y + 10);
+                    }
                     document.fire("pedigree:node:setproperty", event);
                 }.bind(this, index));
 
@@ -278,6 +286,16 @@ define([
          */
         isMenuToggled: function() {
             return this._isMenuToggled;
+        },
+
+        /**
+         * Returns true if the deceased menu for this node is open
+         *
+         * @method isDeceasedToggled
+         * @return {Boolean}
+         */
+        isDeceasedToggled: function() {
+            return this._isDeceasedToggled;
         },
 
         /**
@@ -327,7 +345,7 @@ define([
          */
         animateHideHoverZone: function($super, event, x, y) {
             this._hidden = true;
-            if(!this.isMenuToggled()){
+            if(!this.isMenuToggled() && !this.isDeceasedToggled()){
                 var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
                 //console.log("Node: " + this.getNode().getID() + ", parentPartnershipNode: " + parentPartnershipNode);
                 if (parentPartnershipNode && editor.getNode(parentPartnershipNode))

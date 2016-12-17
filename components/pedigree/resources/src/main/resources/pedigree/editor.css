@@ -606,6 +606,28 @@
   width: 48%;
   float: right;
 }
+.menu-box .field-deceasedAge {
+  width: 47%;
+  float: left;
+}
+.menu-box .field-deceasedCause {
+  width: 48%;
+  float: right;
+}
+.menu-box .field-deceasedAge {
+  padding-top: 0;
+  padding-bottom: 0.8em;
+}
+.menu-box .field-deceasedCause {
+  padding-top: 0;
+  padding-bottom: 0.8em;
+}
+.menu-box .field-deceasedAge .field-name {
+  font-weight: normal;
+}
+.menu-box .field-deceasedCause .field-name {
+  font-weight: normal;
+}
 .menu-box .field-last_name_birth {
   width: 47%;
   float: left;
@@ -656,6 +678,9 @@
 }
 .menu-box .field-evaluated .field-name {
   font-weight: normal;
+}
+.menu-box .field-aliveandwell{
+  padding-top: 0;
 }
 .menu-box .field-aliveandwell .field-name {
   font-weight: normal;
@@ -786,7 +811,7 @@
   background: #EEE;
   text-align: center;
   white-space: nowrap !important;
-  box-shadow: 0 0 6px #FF9, 0 0 25px #DDDDDD inset;
+  box-shadow: 0 0 6px #8f8f8f, 0 0 25px #DDDDDD inset;
 }
 .callout .callout-handle {
   position: absolute;
@@ -1175,4 +1200,17 @@
   z-index: 10000;
   min-width: 200px;
   max-width: 550px;
+}
+.at-age-input, .cause-input {
+    margin-top: 3px;
+    width: 120px !important;
+    height: 15px !important;
+}
+.deceased-node-type-options {
+    width: 125px;
+    height: 40px;
+    border: 1px solid #e0e0e0;
+}
+.deceased .callout-handle {
+  margin-left: 0px;
 }
