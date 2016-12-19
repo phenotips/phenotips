@@ -274,6 +274,11 @@ define([
                 hasCausalGenes && this._addPedOption("causalGenes", causalGenes, traitsContainner, "confirmed causal genes");
 
                 pedContainer.insert(traitsContainner.wrap('div', {'id': 'scrollable-container'}).wrap('td').wrap('tr', {'class': 'ped-special-options'}));
+
+                var exportType = $$('input:checked[type=radio][name="export-type"]')[0];
+                if (exportType && exportType.value != "ped") {
+                    $$('.ped-special-options').each( function(item) {item.hide();});
+                }
             }
             this.dialog.show();
             GraphicHelpers.adjustPreviewWindowHeight('pedigree-import-chooser', 'scrollable-container', this._minPreviewHeight, this._maxPreviewHeight);
