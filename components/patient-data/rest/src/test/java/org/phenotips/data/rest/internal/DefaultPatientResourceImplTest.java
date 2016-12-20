@@ -135,7 +135,7 @@ public class DefaultPatientResourceImplTest
 
         this.patientDocument = new DocumentReference("wiki", "data", "P0000001");
         doReturn(this.patient).when(this.repository).get(this.id);
-        doReturn(this.patientDocument).when(this.patient).getDocument();
+        doReturn(this.patientDocument).when(this.patient).getDocumentReference();
 
         doReturn(new URI(this.uriString)).when(this.uriInfo).getRequestUri();
         ReflectionUtils.setFieldValue(this.patientResource, "uriInfo", this.uriInfo);
@@ -351,12 +351,11 @@ public class DefaultPatientResourceImplTest
         XWiki wiki = mock(XWiki.class);
         XWikiDocument patientXWikiDoc = mock(XWikiDocument.class);
         doReturn(wiki).when(this.context).getWiki();
-        doReturn(patientXWikiDoc).when(wiki).getDocument(this.patientDocument, this.context);
+        doReturn(patientXWikiDoc).when(this.patient).getXDocument();
         doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
 
         Response response = this.patientResource.deletePatient(this.id);
 
-        verify(wiki).getDocument(this.patientDocument, this.context);
         verify(wiki).deleteDocument(patientXWikiDoc, this.context);
         Assert.assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }

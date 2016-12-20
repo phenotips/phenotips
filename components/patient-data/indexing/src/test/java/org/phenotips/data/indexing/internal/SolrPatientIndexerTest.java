@@ -35,6 +35,7 @@ import org.phenotips.vocabulary.VocabularyTerm;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -112,6 +113,9 @@ public class SolrPatientIndexerTest
         this.patientRepository = this.mocker.getInstance(PatientRepository.class);
         this.patientDocReference = new DocumentReference("wiki", "patient", "P0000001");
         this.patientIndexer = this.mocker.getComponentUnderTest();
+        EntityReferenceSerializer<String> referenceSerializer =
+            this.mocker.getInstance(EntityReferenceSerializer.TYPE_STRING);
+        when(referenceSerializer.serialize(this.patientDocReference)).thenReturn("wiki:patient.P0000001");
         this.logger = this.mocker.getMockedLogger();
 
         ReflectionUtils.setFieldValue(this.patientIndexer, "server", this.server);
@@ -125,7 +129,7 @@ public class SolrPatientIndexerTest
 
         // Setup mock term
         String[] ancestorIds = { "HP:0011842", "HP:0000924", "HP:0000118", "HP:0000001" };
-        Set<VocabularyTerm> ancestors = new HashSet<VocabularyTerm>();
+        Set<VocabularyTerm> ancestors = new HashSet<>();
         for (String id : ancestorIds) {
             VocabularyTerm ancestor = mock(VocabularyTerm.class);
             when(ancestor.getId()).thenReturn(id);
@@ -162,7 +166,7 @@ public class SolrPatientIndexerTest
         CapturingMatcher<SolrInputDocument> capturedArgument = new CapturingMatcher<>();
         when(this.server.add(argThat(capturedArgument))).thenReturn(mock(UpdateResponse.class));
 
-        doReturn(this.patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
         doReturn(reporterReference).when(this.patient).getReporter();
         doReturn(patientAccess).when(this.permissions).getPatientAccess(this.patient);
         doReturn(patientVisibility).when(patientAccess).getVisibility();
@@ -190,34 +194,34 @@ public class SolrPatientIndexerTest
         CapturingMatcher<SolrInputDocument> capturedArgument = new CapturingMatcher<>();
         when(this.server.add(argThat(capturedArgument))).thenReturn(mock(UpdateResponse.class));
 
-        doReturn(patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
         doReturn(reporterReference).when(this.patient).getReporter();
 
         doReturn(Collections.EMPTY_SET).when(this.patient).getFeatures();
 
-        List<Map<String, String>> fakeGenes = new ArrayList<Map<String, String>>();
-        Map<String, String> fakeGene = new HashMap<String, String>();
+        List<Map<String, String>> fakeGenes = new ArrayList<>();
+        Map<String, String> fakeGene = new HashMap<>();
         fakeGene.put("gene", "CANDIDATE1");
         fakeGenes.add(fakeGene);
-        fakeGene = new HashMap<String, String>();
+        fakeGene = new HashMap<>();
         fakeGene.put("gene", "CANDIDATE2");
         fakeGene.put("status", "candidate");
         fakeGenes.add(fakeGene);
-        fakeGene = new HashMap<String, String>();
+        fakeGene = new HashMap<>();
         fakeGene.put("gene", "REJECTED1");
         fakeGene.put("status", "rejected");
         fakeGenes.add(fakeGene);
-        fakeGene = new HashMap<String, String>();
+        fakeGene = new HashMap<>();
         fakeGene.put("gene", "SOLVED1");
         fakeGene.put("status", "solved");
         fakeGenes.add(fakeGene);
-        fakeGene = new HashMap<String, String>();
+        fakeGene = new HashMap<>();
         fakeGene.put("gene", "");
         fakeGene.put("status", "candidate");
         fakeGenes.add(fakeGene);
 
         PatientData<Map<String, String>> fakeGeneData =
-            new IndexedPatientData<Map<String, String>>("genes", fakeGenes);
+            new IndexedPatientData<>("genes", fakeGenes);
         doReturn(fakeGeneData).when(this.patient).getData("genes");
 
         doReturn(patientAccess).when(this.permissions).getPatientAccess(this.patient);
@@ -253,7 +257,7 @@ public class SolrPatientIndexerTest
         PatientAccess patientAccess = mock(DefaultPatientAccess.class);
         Visibility patientVisibility = new PublicVisibility();
 
-        doReturn(this.patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
         doReturn(reporterReference).when(this.patient).getReporter();
 
         doReturn(patientFeatures).when(this.patient).getFeatures();
@@ -281,7 +285,7 @@ public class SolrPatientIndexerTest
         PatientAccess patientAccess = mock(DefaultPatientAccess.class);
         Visibility patientVisibility = new PublicVisibility();
 
-        doReturn(this.patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
         doReturn(reporterReference).when(this.patient).getReporter();
 
         doReturn(patientFeatures).when(this.patient).getFeatures();
@@ -312,7 +316,7 @@ public class SolrPatientIndexerTest
         CapturingMatcher<SolrInputDocument> capturedArgument = new CapturingMatcher<>();
         when(this.server.add(argThat(capturedArgument))).thenReturn(mock(UpdateResponse.class));
 
-        doReturn(this.patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
         doReturn(null).when(this.patient).getReporter();
 
         doReturn(patientFeatures).when(this.patient).getFeatures();
@@ -332,7 +336,7 @@ public class SolrPatientIndexerTest
     @Test
     public void deleteDefaultBehaviourTest() throws IOException, SolrServerException
     {
-        doReturn(this.patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
         this.patientIndexer.delete(this.patient);
         verify(this.server).deleteByQuery("document:"
             + ClientUtils.escapeQueryChars(this.patientDocReference.toString()));
@@ -342,7 +346,7 @@ public class SolrPatientIndexerTest
     @Test
     public void deleteThrowsSolrException() throws IOException, SolrServerException
     {
-        doReturn(this.patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
         doThrow(new SolrServerException("commit failed")).when(this.server).commit();
         this.patientIndexer.delete(this.patient);
         verify(this.logger).warn("Failed to delete from Solr: {}", "commit failed");
@@ -351,7 +355,7 @@ public class SolrPatientIndexerTest
     @Test
     public void deleteThrowsIOException() throws IOException, SolrServerException
     {
-        doReturn(this.patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
         doThrow(new IOException("commit failed")).when(this.server).commit();
         this.patientIndexer.delete(this.patient);
         verify(this.logger).warn("Error occurred while deleting Solr documents: {}", "commit failed");
@@ -375,7 +379,7 @@ public class SolrPatientIndexerTest
         PatientAccess patientAccess = mock(DefaultPatientAccess.class);
         Visibility patientVisibility = new PublicVisibility();
 
-        doReturn(this.patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
         doReturn(reporterReference).when(this.patient).getReporter();
 
         doReturn(patientFeatures).when(this.patient).getFeatures();

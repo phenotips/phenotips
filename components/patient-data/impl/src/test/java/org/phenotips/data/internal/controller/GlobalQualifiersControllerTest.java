@@ -24,7 +24,6 @@ import org.phenotips.data.PatientDataController;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -79,8 +78,6 @@ public class GlobalQualifiersControllerTest
     public MockitoComponentMockingRule<PatientDataController<List<VocabularyTerm>>> mocker =
         new MockitoComponentMockingRule<PatientDataController<List<VocabularyTerm>>>(GlobalQualifiersController.class);
 
-    private DocumentAccessBridge documentAccessBridge;
-
     private DocumentReference patientDocument = new DocumentReference("wiki", "patient", "P0000001");
 
     private PatientDataController<List<VocabularyTerm>> tested;
@@ -131,10 +128,7 @@ public class GlobalQualifiersControllerTest
         this.xWikiContext = this.provider.get();
         doReturn(this.xwiki).when(this.xWikiContext).getWiki();
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
-        doReturn(this.patientDocument).when(this.patient).getDocument();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(this.patientDocument);
+        doReturn(this.doc).when(this.patient).getXDocument();
 
         VocabularyManager vocabularyManager = this.mocker.getInstance(VocabularyManager.class);
         when(this.neonatalTerm.getId()).thenReturn(NEONATAL);
@@ -233,7 +227,7 @@ public class GlobalQualifiersControllerTest
         this.tested.load(this.patient);
 
         verify(this.logger).error("Could not find requested document or some unforeseen"
-            + " error has occurred during controller loading ", "Test Exception");
+            + " error has occurred during controller loading: [{}]", "Test Exception");
     }
 
     @Test
@@ -241,7 +235,7 @@ public class GlobalQualifiersControllerTest
     {
         when(this.patient.getData(this.tested.getName())).thenReturn(null);
 
-        this.tested.save(this.patient, this.doc);
+        this.tested.save(this.patient);
 
         verifyNoMoreInteractions(this.data);
     }
@@ -254,7 +248,7 @@ public class GlobalQualifiersControllerTest
 
         doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE, true, this.xWikiContext);
 
-        this.tested.save(this.patient, this.doc);
+        this.tested.save(this.patient);
         verify(this.data).set(ONSET, NEONATAL, this.xWikiContext);
         verify(this.data).set(INHERITANCE, Arrays.asList(GONOSOMAL, MITOCHONDRIAL), this.xWikiContext);
     }
