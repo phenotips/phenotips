@@ -199,7 +199,7 @@
 #end## field not configured as inactive, field not empty in view mode
 #end
 
-#macro (__displayDate)
+#macro (__displayPropertyAsDate)
 #set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
 #set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
 #if ($xcontext.action == 'edit')

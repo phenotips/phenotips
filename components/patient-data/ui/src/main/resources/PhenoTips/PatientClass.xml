@@ -191,7 +191,7 @@
       <customDisplay>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}{{html clean=false}}
-#__displayDate()
+#__displayPropertyAsDate()
 {{/html}}{{/velocity}}</customDisplay>
       <dateFormat>yyyy-MM-dd</dateFormat>
       <disabled>0</disabled>
@@ -223,7 +223,7 @@
       <customDisplay>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}{{html clean=false}}
-#__displayDate()
+#__displayPropertyAsDate()
 {{/html}}{{/velocity}}</customDisplay>
       <dateFormat>yyyy-MM-dd</dateFormat>
       <disabled>0</disabled>
