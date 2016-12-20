@@ -1179,8 +1179,6 @@
           //-------------- push multiple
           var exportTool = $('phenotips_export');
           if (!exportTool) return;
-          var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': "$services.localization.render('phenotips.pushPatient.selectFieldsAndPatientsTitle')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
-          dialog.showDialog();
 
           var pushPreferencesFail = function() {
             alert("Failed to get the list of patients to be pushed");
@@ -1191,8 +1189,9 @@
           new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1] + '&amp;push=true&amp;multipatient=true&amp;remoteserver='+this._selectedServer), {
             parameters : {"enabledFields": this._lastLoginResponse.serverfields},
             onSuccess: function(transport) {
+              var dialog = new PhenoTips.widgets.ModalPopup(transport.responseText, false, {'title': "$services.localization.render('phenotips.pushPatient.selectFieldsAndPatientsTitle')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
+              dialog.showDialog();
               var content = dialog.dialogBox._x_contentPlug;
-              content.update(transport.responseText);
               content.__dialog = dialog;
               document.fire('xwiki:dom:updated', {'elements': [content],
                                                   'pushPreferences': content,
@@ -1203,8 +1202,6 @@
           });
         } else {
           //-------------- push single
-          var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': "$services.localization.render('phenotips.pushPatient.selectFieldsTitle')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'narrow-export-dialog export-dialog'});
-          dialog.showDialog();
 
           var singlePushPreferencesFail = function() {
             alert("Failed to get the list of fields to be pushed");
@@ -1219,8 +1216,9 @@
           new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'push=true&amp;singlepatient=false&amp;remoteserver='+this._selectedServer), {
             parameters : {"enabledFields": this._lastLoginResponse.serverfields},
             onSuccess: function(transport) {
+              var dialog = new PhenoTips.widgets.ModalPopup(transport.responseText, false, {'title': "$services.localization.render('phenotips.pushPatient.selectFieldsTitle')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'narrow-export-dialog export-dialog'});
+              dialog.showDialog();
               var content = dialog.dialogBox._x_contentPlug;
-              content.update(transport.responseText);
               content.__dialog = dialog;
               document.fire('xwiki:dom:updated', {'elements': [content],
                                                   'pushPreferences': content,

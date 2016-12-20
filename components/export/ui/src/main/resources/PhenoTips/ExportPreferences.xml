@@ -93,7 +93,7 @@
 
  &lt;div class="checkbox_tree_container"&gt;
  &lt;h5&gt;&lt;label for=""&gt;&lt;input type="checkbox" name="" id="" value="" /&gt;&lt;span class="section-name-header field-no-user-select"&gt;$section.name&lt;/span&gt;&lt;/label&gt;&lt;/h5&gt;
- &lt;ul class="field-list"&gt;
+ &lt;ul class="field-list#if ($foreach.index &gt; 0) v-collapsed#end"&gt;
  $sectionContent
  &lt;/ul&gt;
  &lt;/div&gt;
@@ -230,15 +230,18 @@
 #end
 
 #if ($request.push)
+  #set($selectionTools = "&lt;div class='selection-tools'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.label') &lt;span class='selection-tool select-all'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.all')&lt;/span&gt; · &lt;span class='selection-tool select-none'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.none')&lt;/span&gt; · &lt;span class='selection-tool select-invert'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.invert')&lt;/span&gt; · &lt;span class='selection-tool select-restore'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.restore')&lt;/span&gt;&lt;/div&gt;")
   #if ($request.multipatient)
     (% class="push-fields section columns"%)(((
     === (% class="step" %)2(%%) $services.localization.render('phenotips.exportPreferences.selectFields') ===
+    {{html clean="false"}}$selectionTools{{/html}}##
     #__export__displayOrganizedFieldList()
     #set($exportTitle = "$services.localization.render('phenotips.exportPreferences.push.submit', [$request.remoteserver])")
     #set($exportButtonID = "push-multiple-patients")
   #else
     (% class="push-fields section columns singlepatient"%)(((
     === $services.localization.render('phenotips.exportPreferences.selectFields') ===
+    {{html clean="false"}}$selectionTools{{/html}}##
     #__export__displayOrganizedFieldList()
     #set($exportTitle = "$services.localization.render('phenotips.exportPreferences.push.submit', [$request.remoteserver])")
     #set($exportButtonID = "push-patient")
