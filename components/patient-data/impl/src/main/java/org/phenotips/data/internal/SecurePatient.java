@@ -125,10 +125,16 @@ public class SecurePatient implements Patient
         return this.patient.getType();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @deprecated use {@link #getDocumentReference()} instead
+     */
+    @Deprecated
     @Override
     public DocumentReference getDocument()
     {
-        return this.patient.getDocument();
+        return this.patient.getDocumentReference();
     }
 
     @Override

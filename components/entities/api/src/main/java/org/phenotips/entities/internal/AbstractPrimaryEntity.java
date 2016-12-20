@@ -67,12 +67,11 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
     }
 
     /**
-     * Returns a reference to the document where the entity is stored.
+     * {@inheritDoc}
      *
-     * @return a valid document reference
-     *
-     * @deprecated as implementing a deprecated mehtod. use {@link getDocumentReference()} instead
+     * @deprecated since 1.3 use {@link #getDocumentReference()} instead
      */
+    @Override
     @Deprecated
     public DocumentReference getDocument()
     {

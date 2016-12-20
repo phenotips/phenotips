@@ -45,6 +45,10 @@ public class RecordLockingService implements ScriptService
     @Inject
     private PatientRecordLockManager lockManager;
 
+    /**
+     * Since Patients coming from scripts are secured and don't allow access to {@code getXDocument()}, we must
+     * re-retrieve patients from the default patient repository.
+     */
     @Inject
     private PatientRepository pr;
 
@@ -56,7 +60,11 @@ public class RecordLockingService implements ScriptService
      */
     public int lockPatient(Patient patient)
     {
-        return this.lockManager.lockPatientRecord(patient) ? HttpStatus.SC_OK : HttpStatus.SC_BAD_REQUEST;
+        if (patient == null) {
+            return HttpStatus.SC_BAD_REQUEST;
+        }
+        return this.lockManager.lockPatientRecord(this.pr.get(patient.getDocumentReference())) ? HttpStatus.SC_OK
+            : HttpStatus.SC_BAD_REQUEST;
     }
 
     /**
@@ -67,7 +75,11 @@ public class RecordLockingService implements ScriptService
      */
     public int unlockPatient(Patient patient)
     {
-        return this.lockManager.unlockPatientRecord(patient) ? HttpStatus.SC_OK : HttpStatus.SC_BAD_REQUEST;
+        if (patient == null) {
+            return HttpStatus.SC_BAD_REQUEST;
+        }
+        return this.lockManager.unlockPatientRecord(this.pr.get(patient.getDocumentReference())) ? HttpStatus.SC_OK
+            : HttpStatus.SC_BAD_REQUEST;
     }
 
     /**
@@ -102,6 +114,9 @@ public class RecordLockingService implements ScriptService
      */
     public boolean isLocked(Patient patient)
     {
-        return this.lockManager.isLocked(patient);
+        if (patient == null) {
+            return false;
+        }
+        return this.lockManager.isLocked(this.pr.get(patient.getDocumentReference()));
     }
 }

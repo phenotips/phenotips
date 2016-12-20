@@ -227,7 +227,7 @@ public class GlobalQualifiersControllerTest
         this.tested.load(this.patient);
 
         verify(this.logger).error("Could not find requested document or some unforeseen"
-            + " error has occurred during controller loading ", "Test Exception");
+            + " error has occurred during controller loading: [{}]", "Test Exception");
     }
 
     @Test

@@ -108,14 +108,14 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
         User currentUser = this.users.getCurrentUser();
         Right grantedRight;
         if (!this.access.hasAccess(Right.VIEW, currentUser == null ? null : currentUser.getProfileDocument(),
-            patient.getDocument())) {
+            patient.getDocumentReference())) {
             this.logger.debug("View access denied to user [{}] on patient record [{}]", currentUser, patient.getId());
             return Response.status(Status.FORBIDDEN).build();
         } else {
             grantedRight = Right.VIEW;
         }
         if (this.access.hasAccess(Right.EDIT, currentUser == null ? null : currentUser.getProfileDocument(),
-            patient.getDocument())) {
+            patient.getDocumentReference())) {
             grantedRight = Right.EDIT;
         }
 
@@ -137,7 +137,7 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
         }
         User currentUser = this.users.getCurrentUser();
         if (!this.access.hasAccess(Right.EDIT, currentUser == null ? null : currentUser.getProfileDocument(),
-            patient.getDocument())) {
+            patient.getDocumentReference())) {
             this.logger.debug("Edit access denied to user [{}] on patient record [{}]", currentUser, patient.getId());
             throw new WebApplicationException(Status.FORBIDDEN);
         }
@@ -171,14 +171,14 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
         }
         User currentUser = this.users.getCurrentUser();
         if (!this.access.hasAccess(Right.DELETE, currentUser == null ? null : currentUser.getProfileDocument(),
-            patient.getDocument())) {
+            patient.getDocumentReference())) {
             this.logger.debug("Delete access denied to user [{}] on patient record [{}]", currentUser, patient.getId());
             return Response.status(Status.FORBIDDEN).build();
         }
         XWikiContext context = this.getXWikiContext();
         XWiki xwiki = context.getWiki();
         try {
-            xwiki.deleteDocument(xwiki.getDocument(patient.getDocument(), context), context);
+            xwiki.deleteDocument(patient.getXDocument(), context);
         } catch (XWikiException ex) {
             this.logger.warn("Failed to delete patient record with external id [{}]: {}", eid, ex.getMessage());
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);

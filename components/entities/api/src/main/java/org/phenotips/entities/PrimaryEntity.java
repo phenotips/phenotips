@@ -55,8 +55,7 @@ public interface PrimaryEntity
      * Returns a reference to the document where the entity is stored.
      *
      * @return a valid document reference
-     *
-     * @deprecated use {@link getDocumentReference()} instead
+     * @deprecated use {@link #getDocumentReference()} instead
      */
     @Deprecated
     DocumentReference getDocument();
@@ -76,12 +75,10 @@ public interface PrimaryEntity
     XWikiDocument getXDocument();
 
     /**
-     * For use in script services which should use com.xpn.xwiki.api.Document instead of
-     * com.xpn.xwiki.doc.XWikiDocument.
+     * For use in script services which should use {@code com.xpn.xwiki.api.Document} instead of
+     * {@code com.xpn.xwiki.doc.XWikiDocument}.
      *
-     * @return a "secure" Document which is safe for use i nscripts bcause it does permission
-     *         checks in various getter methods and does not expose any functionality which may
-     *         modify any data unless the user has programming rights.
+     * @return a "secure" Document which is safe for use in scripts because it does permission checks in various methods
      */
     Document getSecureDocument();
 
