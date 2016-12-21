@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
- 
+
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>DiseasePredictService</name>
@@ -40,7 +40,6 @@
   <content>{{velocity filter="indent" wiki="false"}}
 #if ($xcontext.action == 'get')
   $response.setContentType("application/json")##
-  ##$response.setHeader("X-ReqNo", "$!request.reqNo")##
   $response.setContentType("application/json")
 
   #if ("$!request.q" != '')##
@@ -82,9 +81,6 @@
 
 
 
-
-
-
     #set($results = $services.diagnosis.get($symptoms, $freeSymptoms, $limit))
     #if ($results.size() &gt; 0)
 
@@ -95,8 +91,13 @@
         #set($s = [])
         #foreach ($hpoTermString in $mimTerm.get("actual_symptom"))
           #set($hpoTerm = $services.vocabularies.resolveTerm($hpoTermString))
-          #set($phenotype = {'key' : $hpoTerm.id , 'text' : $hpoTerm.name, 'matches': []} )
-          ###set($discard = $s.add($phenotype))
+          #set($phenotype = {'key' : $hpoTerm.id , 'text' : $hpoTerm.name, 'matches': [], 'isPhenotypicAbnormality': true})
+
+
+          #set($phenotypicAbormality = $services.vocabularies.resolveTerm("HP:0000118"))
+          #if(!$hpoTerm.ancestors.contains($phenotypicAbormality))
+            #set($phenotype.isPhenotypicAbnormality = false)
+          #end
 
           ## store ancestors of currrent phenotype
           #set($hpoAncestors = [])
@@ -205,5 +206,6 @@
 #end## get action
 
 
-{{/velocity}}</content>
+{{/velocity}}
+</content>
 </xwikidoc>
