@@ -2503,7 +2503,7 @@ document.observe('xwiki:dom:loaded', function()
                     },
 
                     // Gaussian blur and shades for cell symbol
-                    _createCellFilter() {
+                    _createCellFilter: function() {
 
                         var defs = d3.select("#middleSVG").append("defs");
 
