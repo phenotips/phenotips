@@ -191,9 +191,12 @@ define([
          * @method containsXY
          */
         containsXY: function(x,y) {
-            if ( Math.abs(x - this.getX()) <= PedigreeEditorParameters.attributes.personHoverBoxRadius &&
-                 Math.abs(y - this.getY()) <= PedigreeEditorParameters.attributes.personHoverBoxRadius )
-                return true;
+            // this works with hoverboxes of any size and shape
+            var hoverArea = this.getHoverBox().getFrontElements().getBBox();
+            if (x >= hoverArea.x && x <= hoverArea.x2 &&
+                y >= hoverArea.y && y <= hoverArea.y2) {
+                    return true;
+            }
             return false;
         },
 
@@ -357,9 +360,10 @@ define([
         setHighlightBox: function() {
             this._highlightBox && this._highlightBox.remove();
 
-            var radius = PedigreeEditorParameters.attributes.personHoverBoxRadius;
-            this._highlightBox = editor.getPaper().rect(this.getX()-radius, this.getY()-radius,
-                                                        radius*2, radius*2, 5).attr(PedigreeEditorParameters.attributes.boxOnHover);
+            var width = PedigreeEditorParameters.attributes.personHoverBoxWidth;
+            var height = PedigreeEditorParameters.attributes.personHoverBoxHeight;
+            this._highlightBox = editor.getPaper().rect(this.getX()-width/2, this.getY()-height/2,
+                                                        width, height, 5).attr(PedigreeEditorParameters.attributes.boxOnHover);
             this._highlightBox.attr({fill: 'black', opacity: 0, 'fill-opacity': 0});
             this._highlightBox.insertBefore(this.getGenderGraphics().flatten());
         },

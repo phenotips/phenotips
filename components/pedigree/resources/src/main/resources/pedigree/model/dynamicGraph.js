@@ -252,7 +252,7 @@ define([
             // TODO: review
             var keepProperties = [ 'lNameAtB', 'adoptedStatus', 'childlessStatus', 'childlessReason',
                                    'cancers', 'ethnicities', 'twinGroup', 'monozygotic', 'evaluated',
-                                   'carrierStatus', 'lostContact', 'nodeNumber', 'comments' ];
+                                   'carrierStatus', 'lostContact', 'nodeNumber', 'comments', 'aliveandwell'];
 
             var result = {};
             for (var i = 0; i < keepProperties.length; i++) {
@@ -271,8 +271,15 @@ define([
 
             this.DG.GG.properties[id] = {"phenotipsId": patientObject.id };
 
-            // Note: we can't blank all patient properties here, since some are pedigree-specific
-            // and not available in patient document and should be preserved in saved pedigree JSON
+            // pedigree-specific properties (added to patientObject by pedigree controller
+            // to preserve them when a patient is assigned to an existing pedigree node)
+            if (patientObject.hasOwnProperty("pedigreeProperties")) {
+                for (var prop in patientObject.pedigreeProperties) {
+                    if (patientObject.pedigreeProperties.hasOwnProperty(prop)) {
+                        this.DG.GG.properties[id][prop] = patientObject.pedigreeProperties[prop];
+                    }
+                }
+            }
 
             // Fields which are loaded from the patient document are:
             // - first_name
@@ -316,6 +323,9 @@ define([
             if (patientObject.hasOwnProperty("date_of_death")) {
                 var deathDate = new PedigreeDate(patientObject.date_of_death);
                 this.DG.GG.properties[id].dod = deathDate.getSimpleObject();
+                if (deathDate.isSet()) {
+                    delete this.DG.GG.properties[id].aliveandwell;
+                }
             } else {
                 delete this.DG.GG.properties[id].dod;
             }
@@ -323,6 +333,10 @@ define([
                 var lifeStatus = patientObject["life_status"];
                 if (lifeStatus == "deceased" || lifeStatus == "alive") {
                     this.DG.GG.properties[id].lifeStatus = lifeStatus;
+                }
+                if (lifeStatus != "alive") {
+                    // if not removed, it will overwrite the life status to 'alive' and thus remove death date
+                    delete this.DG.GG.properties[id].aliveandwell;
                 }
             } else {
                 delete this.DG.GG.properties[id].lifeStatus;
@@ -380,15 +394,6 @@ define([
                 this.DG.GG.properties[id].genes = patientObject.genes;
             } else {
                 delete this.DG.GG.properties[id].genes;
-            }
-
-            // pedigree-specific properties (may be added by pedigree controller)
-            if (patientObject.hasOwnProperty("pedigreeProperties")) {
-                for (var prop in patientObject.pedigreeProperties) {
-                    if (patientObject.pedigreeProperties.hasOwnProperty(prop)) {
-                        this.DG.GG.properties[id][prop] = patientObject.pedigreeProperties[prop];
-                    }
-                }
             }
 
             if (patientObject.hasOwnProperty("family_history")) {

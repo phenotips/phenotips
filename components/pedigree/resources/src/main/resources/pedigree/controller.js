@@ -249,7 +249,7 @@ define([
             //console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
             var nodeID     = event.memo.nodeID;
             var properties = event.memo.properties;
-            var undoEvent  = {"eventName": event.eventName, "memo": {"nodeID": nodeID, "properties": Helpers.cloneObject(event.memo.properties)}};
+            var undoEvent  = {"eventName": event.eventName, "memo": {"nodeID": nodeID, "properties": {}}};
 
             var node = editor.getView().getNode(nodeID);
 
@@ -274,6 +274,15 @@ define([
 
             var changedValue = false;
 
+            // some events trigger multiple property setting at once. We want to save only the original value, not
+            // the intermediate value after some properties have been set, but other have not
+            // (e.g. setLifeStatus + setAliveAndWell, both may change life status
+            var setUndoEventPropertyIfNotSet = function(propKey, propValue) {
+                if (!undoEvent.memo.properties.hasOwnProperty(propKey)) {
+                    undoEvent.memo.properties[propKey] = propValue;
+                }
+            }
+
             for (var propertySetFunction in properties) {
                 if (properties.hasOwnProperty(propertySetFunction)) {
                     var propValue = properties[propertySetFunction];
@@ -288,14 +297,14 @@ define([
                         (propertySetFunction == "setDeathDate" || propertySetFunction == "setBirthDate")) {
                         // compare Date objects
                         try {
-                            if ( oldValue.range == Helpers.cloneObject(propValue.range) &&
-                                 oldValue.year  == propValue.year &&
+                            if ( oldValue.year  == propValue.year &&
                                  oldValue.month == propValue.month &&
-                                 oldValue.day   == propValue.day )
+                                 oldValue.day   == propValue.day &&
+                                 oldValue.range.years == propValue.range.years )
                                 continue;
                         } catch (err) {
-                            // fine, one of the objects is in some other format, maybe date picker has changed
-                            // and this code was not updated
+                            // fine, one of the objects is blank or in some other format
+                            // (maybe date picker has changed and this code was not updated
                         }
                     }
                     if (Object.prototype.toString.call(oldValue) === '[object Array]') {
@@ -304,31 +313,35 @@ define([
                         oldValue = Helpers.cloneObject(oldValue);
                     }
 
-                    undoEvent.memo.properties[propertySetFunction] = oldValue;
+                    setUndoEventPropertyIfNotSet(propertySetFunction, oldValue);
 
                     // sometimes UNDO includes more then the property itself: e.g. changing life status
                     // from "dead" to "alive" also clears the death date. Need to add it to the "undo" event
-                    if (propertySetFunction == "setLifeStatus") {
-                        undoEvent.memo.properties["setDeathDate"]    = node.getDeathDate();
-                        undoEvent.memo.properties["setGestationAge"] = node.getGestationAge();
-                        undoEvent.memo.properties["setBirthDate"]    = node.getBirthDate();
-                        undoEvent.memo.properties["setAdopted"]      = node.getAdopted();
+                    if (propertySetFunction == "setLifeStatus" || propertySetFunction == "setAliveAndWell") {
+
+                        setUndoEventPropertyIfNotSet("setAliveAndWell", node.getAliveAndWell());
+                        setUndoEventPropertyIfNotSet("setLifeStatus", node.getLifeStatus());
+                        setUndoEventPropertyIfNotSet("setDeathDate", node.getDeathDate());
+                        setUndoEventPropertyIfNotSet("setGestationAge", node.getGestationAge());
+                        setUndoEventPropertyIfNotSet("setBirthDate", node.getBirthDate());
+                        setUndoEventPropertyIfNotSet("setAdopted", node.getAdopted());
                     }
                     if (propertySetFunction == "setDeathDate") {
-                        undoEvent.memo.properties["setLifeStatus"] = node.getLifeStatus();
+                        setUndoEventPropertyIfNotSet("setAliveAndWell", node.getAliveAndWell());
+                        setUndoEventPropertyIfNotSet("setLifeStatus", node.getLifeStatus());
                     }
                     if (propertySetFunction == "setChildlessStatus") {
-                        undoEvent.memo.properties["setChildlessReason"] = node.getChildlessReason();
+                        setUndoEventPropertyIfNotSet("setChildlessReason", node.getChildlessReason());
                     }
                     if (propertySetFunction == "setDisorders") {
-                        undoEvent.memo.properties["setCarrierStatus"] = node.getCarrierStatus();
+                        setUndoEventPropertyIfNotSet("setCarrierStatus", node.getCarrierStatus());
                     }
                     if (propertySetFunction == "setCarrierStatus") {
-                        undoEvent.memo.properties["setDisorders"] = node.getDisorders().slice(0);
+                        setUndoEventPropertyIfNotSet("setDisorders", node.getDisorders().slice(0));
                     }
                     if (propertySetFunction == "setCausalGenes" || propertySetFunction == "setCandidateGenes") {
-                        undoEvent.memo.properties["setCausalGenes"]  = node.getCausalGenes();
-                        undoEvent.memo.properties["setCandidateGenes"]  = node.getCandidateGenes();
+                        setUndoEventPropertyIfNotSet("setCausalGenes", node.getCausalGenes());
+                        setUndoEventPropertyIfNotSet("setCandidateGenes", node.getCandidateGenes());
                     }
 
                     node[propertySetFunction](propValue);

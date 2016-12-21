@@ -17,6 +17,7 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
+import org.phenotips.vocabulary.VocabularyExtension;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.stability.Unstable;
@@ -63,8 +64,19 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
     @Override
     public int reindex(String sourceUrl)
     {
-        this.clear();
-        return this.index(sourceUrl);
+        int retval = 1;
+        try {
+            for (VocabularyExtension ext : this.extensions) {
+                ext.indexingStarted(this);
+            }
+            this.clear();
+            retval = this.index(sourceUrl);
+        } finally {
+            for (VocabularyExtension ext : this.extensions) {
+                ext.indexingEnded(this);
+            }
+        }
+        return retval;
     }
 
     /**
@@ -97,6 +109,7 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
                     batchCounter = 0;
                 }
                 SolrInputDocument item = dataIterator.next();
+                extendTerm(new SolrVocabularyInputTerm(item, this));
                 termBatch.add(item);
                 batchCounter++;
             }

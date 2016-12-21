@@ -30,12 +30,18 @@ import org.junit.Test;
 
 public class DefaultConsentTest
 {
-    private final String ID_STRING = "ID_STRING";
-    private final String LABEL_STRING = "LABEL_STRING";
-    private final String DESCRIPTION_STRING = "Sample consent explanation <a href=\"http://abc.def\">sample link</a>";
-    private final List<String> FORM_FIELDS = Arrays.asList("field1", "field2", "field3");
-    private final List<String> FORM_FIELDS_ALL = new LinkedList<String>();
-    private final String EXCLUDED_FIELD = "field4";
+    private static final String ID_STRING = "ID_STRING";
+
+    private static final String LABEL_STRING = "LABEL_STRING";
+
+    private static final String DESCRIPTION_STRING =
+        "Sample consent explanation <a href=\"http://abc.def\">sample link</a>";
+
+    private static final List<String> FORM_FIELDS = Arrays.asList("field1", "field2", "field3");
+
+    private static final List<String> FORM_FIELDS_ALL = new LinkedList<>();
+
+    private static final String EXCLUDED_FIELD = "field4";
 
     @Test
     public void testNormalInitialization()
@@ -59,25 +65,25 @@ public class DefaultConsentTest
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testImproperInitialization_IdNull()
+    public void testImproperInitializationWhenIdIsNull()
     {
         new DefaultConsent(null, LABEL_STRING, DESCRIPTION_STRING, true, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testImproperInitialization_IdEmpty()
+    public void testImproperInitializationWhenIdIsEmpty()
     {
         new DefaultConsent("", LABEL_STRING, DESCRIPTION_STRING, true, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testImproperInitialization_LabelNull()
+    public void testImproperInitializationWhenLabelIsNull()
     {
         new DefaultConsent(ID_STRING, null, DESCRIPTION_STRING, true, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testImproperInitialization_LabelEmpty()
+    public void testImproperInitializationWhenLabelIsEmpty()
     {
         new DefaultConsent(ID_STRING, "", DESCRIPTION_STRING, true, null);
     }

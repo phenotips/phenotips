@@ -47,6 +47,11 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
+import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.DATA_NAME;
+import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_1;
+import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_2;
+import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_3;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
@@ -54,10 +59,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.DATA_NAME;
-import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_1;
-import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_2;
-import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_3;
 
 /**
  * Test for the {@link AbstractSimpleController} defined methods (load, save, writeJSON, readJSON). These methods are
@@ -71,8 +72,6 @@ public class AbstractSimpleControllerTest
         new MockitoComponentMockingRule<PatientDataController<String>>(
             AbstractSimpleControllerTestImplementation.class);
 
-    private DocumentAccessBridge documentAccessBridge;
-
     @Mock
     protected XWiki xWiki;
 
@@ -84,6 +83,8 @@ public class AbstractSimpleControllerTest
 
     @Mock
     protected BaseObject data;
+
+    private DocumentAccessBridge documentAccessBridge;
 
     @Before
     public void setUp() throws Exception

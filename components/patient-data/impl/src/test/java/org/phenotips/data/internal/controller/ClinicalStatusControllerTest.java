@@ -45,7 +45,7 @@ import static org.mockito.Mockito.doReturn;
 
 /**
  * Test for the {@link ClinicalStatusController} component, implementation of the
- * {@link org.phenotips.data.PatientDataController} interface
+ * {@link org.phenotips.data.PatientDataController} interface.
  */
 public class ClinicalStatusControllerTest
 {
@@ -70,7 +70,7 @@ public class ClinicalStatusControllerTest
     private XWikiDocument doc;
 
     @Mock
-    private BaseObject data;
+    private BaseObject dataHolder;
 
     @Before
     public void setUp() throws Exception
@@ -82,7 +82,7 @@ public class ClinicalStatusControllerTest
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
         doReturn(patientDocument).when(this.patient).getDocument();
         doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
-        doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
+        doReturn(this.dataHolder).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class ClinicalStatusControllerTest
     @Test
     public void loadReturnsNullWhenGivenUnexpectedIntValue() throws ComponentLookupException
     {
-        doReturn(7314862).when(this.data).getIntValue(UNAFFECTED);
+        doReturn(7314862).when(this.dataHolder).getIntValue(UNAFFECTED);
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
@@ -108,7 +108,7 @@ public class ClinicalStatusControllerTest
     @Test
     public void loadReturnsAffectedString() throws ComponentLookupException
     {
-        doReturn(0).when(this.data).getIntValue(UNAFFECTED);
+        doReturn(0).when(this.dataHolder).getIntValue(UNAFFECTED);
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
@@ -118,7 +118,7 @@ public class ClinicalStatusControllerTest
     @Test
     public void loadReturnsUnaffectedString() throws ComponentLookupException
     {
-        doReturn(1).when(this.data).getIntValue(UNAFFECTED);
+        doReturn(1).when(this.dataHolder).getIntValue(UNAFFECTED);
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 

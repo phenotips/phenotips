@@ -979,7 +979,11 @@ define([
                 this._linkArea && this._linkArea.remove();
                 var boundingBox = this._linkLabel.getBBox();
                 var patientURL = this.getNode().getPhenotipsPatientURL();
-                this._linkArea = editor.getPaper().rect(boundingBox.x-50, boundingBox.y-3, boundingBox.width+100, boundingBox.height+6).attr({
+                // the hack should cover the bottom part of the hoverbox to make sure mouse can be moved to the link from
+                // the left, right and the bottom without making the hoverbox trigger and move the link
+                var startY = boundingBox.y-3;
+                var hackHeight = Math.max(boundingBox.height+6, this.getHoverBox().getY() + this.getHoverBox().getHeight() - startY);
+                this._linkArea = editor.getPaper().rect(this.getHoverBox().getX(), startY, this.getHoverBox().getWidth(), hackHeight).attr({
                     fill: "#F00",
                     opacity: 0
                   });
@@ -995,7 +999,8 @@ define([
         },
 
         _labelSelectionOffset: function() {
-            var selectionOffset = this.isSelected() ? PedigreeEditorParameters.attributes.radius/1.4 : 0;
+            var labelsOffset = this.getHoverBox().getBottomExtensionHeight();
+            var selectionOffset = this.isSelected() ? PedigreeEditorParameters.attributes.radius/1.4 + labelsOffset : 0;
 
             if (this.isSelected() && this.getNode().isPersonGroup())
                 selectionOffset += PedigreeEditorParameters.attributes.radius * (1-PedigreeEditorParameters.attributes.groupNodesScale) + 5;

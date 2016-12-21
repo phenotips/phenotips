@@ -69,10 +69,23 @@ import static org.mockito.Mockito.when;
 
 /**
  * Test for the {@link GeneListController} Component, only the overridden methods from {@link AbstractComplexController}
- * are tested here
+ * are tested here.
  */
 public class GeneListControllerTest
 {
+    private static final String GENES_STRING = "genes";
+
+    private static final String CONTROLLER_NAME = GENES_STRING;
+
+    private static final String GENES_ENABLING_FIELD_NAME = GENES_STRING;
+
+    private static final String GENE_KEY = "gene";
+
+    private static final String STATUS_KEY = "status";
+
+    private static final String STRATEGY_KEY = "strategy";
+
+    private static final String COMMENTS_KEY = "comments";
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Map<String, String>>> mocker =
@@ -87,20 +100,6 @@ public class GeneListControllerTest
     private XWikiDocument doc;
 
     private List<BaseObject> geneXWikiObjects;
-
-    private static final String GENES_STRING = "genes";
-
-    private static final String CONTROLLER_NAME = GENES_STRING;
-
-    private static final String GENES_ENABLING_FIELD_NAME = GENES_STRING;
-
-    private static final String GENE_KEY = "gene";
-
-    private static final String STATUS_KEY = "status";
-
-    private static final String STRATEGY_KEY = "strategy";
-
-    private static final String COMMENTS_KEY = "comments";
 
     @Before
     public void setUp() throws Exception

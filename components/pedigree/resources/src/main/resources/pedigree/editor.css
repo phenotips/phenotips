@@ -237,8 +237,6 @@
   z-index: 10000;
   min-width: 140px;
   max-width: 255px;
-  max-height: 100%;
-  overflow-y: scroll;
 }
 .legend-container span {
   font-family: Arial,Verdana,sans-serif;
@@ -521,6 +519,11 @@
   display: block;
   font-weight: bold;
 }
+.menu-box .field-checkbox {
+  cursor: pointer;
+  display: inline-block;
+  padding-right: 1.5em;
+}
 .menu-box .accepted-suggestions li {
   line-height: 1em;
   padding: .2em 1em .1em 0;
@@ -653,6 +656,10 @@
 }
 .menu-box .field-evaluated .field-name {
   font-weight: normal;
+}
+.menu-box .field-aliveandwell .field-name {
+  font-weight: normal;
+  cursor: pointer;
 }
 .menu-box .field-carrier {
   padding-top: 0.8em;

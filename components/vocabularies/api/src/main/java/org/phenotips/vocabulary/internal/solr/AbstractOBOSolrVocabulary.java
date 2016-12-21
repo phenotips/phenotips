@@ -20,6 +20,7 @@ package org.phenotips.vocabulary.internal.solr;
 import org.phenotips.obo2solr.ParameterPreparer;
 import org.phenotips.obo2solr.SolrUpdateGenerator;
 import org.phenotips.obo2solr.TermData;
+import org.phenotips.vocabulary.VocabularyExtension;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import java.io.IOException;
@@ -82,8 +83,19 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     @Override
     public int reindex(String sourceUrl)
     {
-        this.clear();
-        return this.index(sourceUrl);
+        int retval = 1;
+        try {
+            for (VocabularyExtension ext : this.extensions) {
+                ext.indexingStarted(this);
+            }
+            this.clear();
+            retval = this.index(sourceUrl);
+        } finally {
+            for (VocabularyExtension ext : this.extensions) {
+                ext.indexingEnded(this);
+            }
+        }
+        return retval;
     }
 
     /**
@@ -122,6 +134,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
                         doc.addField(name, value, ParameterPreparer.DEFAULT_BOOST.floatValue());
                     }
                 }
+                extendTerm(new SolrVocabularyInputTerm(doc, this));
                 termBatch.add(doc);
                 batchCounter++;
             }

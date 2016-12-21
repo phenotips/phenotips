@@ -4041,16 +4041,16 @@ document.observe('xwiki:dom:loaded', function()
         updateDefaultSearchTerms();
     });
 
-    document.observe('xwiki:dom:loaded', function() {
-        if ($('phenotypes-summary')) {
-            var phenotypes = JSON.parse($('phenotypes-summary').value);
-            phenotypes.each(function(p) {
-                cache.all[p.key] = p;
-                cache.displayed[p.key] = true;
-            });
-            updateDefaultSearchTerms()
-        }
-    });
+  document.observe('xwiki:dom:loaded', function() {
+    if ($('phenotypes-summary')) {
+      var phenotypes = JSON.parse($('phenotypes-summary').value);
+      phenotypes.each (function (p) {
+        cache.all[p.key] = p;
+        cache.displayed[p.key] = true;
+      });
+      updateDefaultSearchTerms();
+    }
+  });
 
     if (customSearchTermsInput) {
         customSearchTermsInput.observe('keyup', function(event) {

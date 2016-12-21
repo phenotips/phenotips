@@ -38,7 +38,7 @@ import java.util.Set;
 
 import javax.inject.Provider;
 
-import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -63,7 +63,7 @@ public class PhenoTipsPatientConsentManagerTest
     public final MockitoComponentMockingRule<ConsentManager> mocker =
         new MockitoComponentMockingRule<ConsentManager>(PhenoTipsPatientConsentManager.class);
 
-    /** Sets up initialization of the component with the given `baseObjects` */
+    /** Sets up initialization of the component with the given {@code baseObjects}. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private DocumentModelBridge setUpInitialization(List<BaseObject> baseObjects) throws Exception
     {
@@ -137,69 +137,69 @@ public class PhenoTipsPatientConsentManagerTest
 
     private class ConsentConfigurationMocks
     {
-        static final String ID_KEY = "id";
+        private static final String ID_KEY = "id";
 
-        static final String LABEL_KEY = "label";
+        private static final String LABEL_KEY = "label";
 
-        static final String DESCRIPTION_KEY = "description";
+        private static final String DESCRIPTION_KEY = "description";
 
-        static final String REQUIRED_KEY = "required";
+        private static final String REQUIRED_KEY = "required";
 
-        static final String FIELDS_KEY = "fields";
+        private static final String FIELDS_KEY = "fields";
 
-        static final String AFFECTS_FIELDS_KEY = "affectsFields";
+        private static final String AFFECTS_FIELDS_KEY = "affectsFields";
 
-        static final String TEST_ID1 = "id1";
+        private static final String TEST_ID1 = "id1";
 
-        static final String TEST_LABEL1 = "clean label";
+        private static final String TEST_LABEL1 = "clean label";
 
-        static final String TEST_DESCRIPTION1 = "description";
+        private static final String TEST_DESCRIPTION1 = "description";
 
-        final List<String> formFields1 = Arrays.asList("field1", "field2", "field3");
+        private static final int TEST_AFFECTS1 = 1;
 
-        static final int TEST_AFFECTS1 = 1;
+        private static final int TEST_REQUIRED1 = 1;
 
-        static final int TEST_REQUIRED1 = 1;
+        private static final boolean TEST_REQUIRED_BOOL = true;
 
-        static final boolean TEST_REQUIRED_BOOL = true;
+        private static final String TEST_ID2 = "id2";
 
-        static final String TEST_ID2 = "id2";
+        private static final String TEST_LABEL2 = "non <div>clean</div> <p>label</p>";
 
-        static final String TEST_LABEL2 = "non <div>clean</div> <p>label</p>";
+        private static final String TEST_LABEL2_EXPECTED = "non clean label";
 
-        static final String TEST_LABEL2_EXPECTED = "non clean label";
+        private static final String TEST_DESCRIPTION2 = "";
 
-        static final String TEST_DESCRIPTION2 = "";
+        private static final int TEST_AFFECTS2 = 0;
 
-        final List<String> formFields2 = null;
+        private static final int TEST_REQUIRED2 = 0;
 
-        static final int TEST_AFFECTS2 = 0;
+        private static final boolean TEST_REQUIRED2_BOOL = false;
 
-        static final int TEST_REQUIRED2 = 0;
+        private static final String TEST_ID3 = "id3";
 
-        static final boolean TEST_REQUIRED2_BOOL = false;
+        private static final String TEST_LABEL3 = "blah";
 
-        static final String TEST_ID3 = "id3";
+        private static final String TEST_DESCRIPTION3 = "Long description with a link [[link>>http://abc.com]]";
 
-        static final String TEST_LABEL3 = "blah";
+        private static final int TEST_AFFECTS3 = 1;
 
-        static final String TEST_DESCRIPTION3 = "Long description with a link [[link>>http://abc.com]]";
+        private static final int TEST_REQUIRED3 = 1;
 
-        final List<String> formFields3 = new LinkedList<>();
+        private static final boolean TEST_REQUIRED3_BOOL = true;
 
-        static final int TEST_AFFECTS3 = 1;
+        private static final int NUM_CONSENTS = 3;
 
-        static final int TEST_REQUIRED3 = 1;
+        private final List<String> formFields1 = Arrays.asList("field1", "field2", "field3");
 
-        static final boolean TEST_REQUIRED3_BOOL = true;
+        private final List<String> formFields2 = null;
 
-        BaseObject consentConfig1 = mock(BaseObject.class);
+        private final List<String> formFields3 = new LinkedList<>();
 
-        BaseObject consentConfig2 = mock(BaseObject.class);
+        private BaseObject consentConfig1 = mock(BaseObject.class);
 
-        BaseObject consentConfig3 = mock(BaseObject.class);
+        private BaseObject consentConfig2 = mock(BaseObject.class);
 
-        public static final int NUM_CONSENTS = 3;
+        private BaseObject consentConfig3 = mock(BaseObject.class);
     }
 
     @Test
@@ -238,7 +238,8 @@ public class PhenoTipsPatientConsentManagerTest
                 Assert
                     .assertTrue(StringUtils.equals(consent.getLabel(), ConsentConfigurationMocks.TEST_LABEL2_EXPECTED));
                 Assert.assertSame(consent.isRequired(), ConsentConfigurationMocks.TEST_REQUIRED2_BOOL);
-                Assert.assertSame(consent.getDescription(), null); // expect to get null instead of empty descriptions
+                // expect to get null instead of empty descriptions
+                Assert.assertSame(consent.getDescription(), null);
                 Assert.assertSame(consent.getFields(), null);
             } else if (ConsentConfigurationMocks.TEST_ID3.equals(consent.getId())) {
                 Assert.assertTrue(StringUtils.equals(consent.getLabel(), ConsentConfigurationMocks.TEST_LABEL3));
@@ -289,13 +290,13 @@ public class PhenoTipsPatientConsentManagerTest
     }
 
     @Test
-    public void testLoadingConsentFromPatient_hasNone() throws Exception
+    public void testLoadingConsentFromPatientWithNoConsents() throws Exception
     {
         this.testPatientConsents(new LinkedList<String>());
     }
 
     @Test
-    public void testLoadingConsentsFromPatient_someGranted() throws Exception
+    public void testLoadingConsentsFromPatientWithSomeGranted() throws Exception
     {
         List<String> ids = new LinkedList<>();
         ids.add(ConsentConfigurationMocks.TEST_ID1);
@@ -304,7 +305,7 @@ public class PhenoTipsPatientConsentManagerTest
     }
 
     @Test
-    public void testLoadingConsentsFromPatient_nullList() throws Exception
+    public void testLoadingConsentsFromPatientWithNullList() throws Exception
     {
         this.testPatientConsents(null);
     }
@@ -362,7 +363,7 @@ public class PhenoTipsPatientConsentManagerTest
     }
 
     @Test
-    public void testSettingConsentsOnARecord_normal() throws Exception
+    public void testSettingConsentsOnARecord() throws Exception
     {
         BaseObject idsHolder = mock(BaseObject.class);
         Patient patient = mock(Patient.class);
@@ -382,7 +383,7 @@ public class PhenoTipsPatientConsentManagerTest
     }
 
     @Test
-    public void testSettingConsentsOnARecord_xwikiObjectDoesNotExist() throws Exception
+    public void testSettingConsentsOnARecordWithoutPriorXObject() throws Exception
     {
         BaseObject idsHolder = mock(BaseObject.class);
         Patient patient = mock(Patient.class);
@@ -406,7 +407,7 @@ public class PhenoTipsPatientConsentManagerTest
     }
 
     @Test
-    public void testSettingConsentsOnARecord_nonExistentConsents() throws Exception
+    public void testSettingConsentsOnARecordWithNonExistentConsents() throws Exception
     {
         BaseObject idsHolder = mock(BaseObject.class);
         Patient patient = mock(Patient.class);

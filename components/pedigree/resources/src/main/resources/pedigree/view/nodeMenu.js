@@ -418,6 +418,9 @@ define([
             if (data.type == "radio") {
                 fieldNameClass += ' field-no-user-select';
             }
+            if (data.type == "checkbox") {
+                fieldNameClass += ' field-checkbox field-no-user-select';
+            }
             if (data.addCSS && typeof data.addCSS === 'object') {
                 for(var styleName in data.addCSS) {
                     result.style[styleName] = data.addCSS[styleName];

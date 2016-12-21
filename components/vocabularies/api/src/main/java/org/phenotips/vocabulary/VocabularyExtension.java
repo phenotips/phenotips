@@ -20,16 +20,13 @@ package org.phenotips.vocabulary;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
-import java.util.Collection;
-
 /**
  * Allows extending a base vocabulary with additional annotations. A vocabulary extension can support one or more base
- * vocabularies, identified by the {@link #getSupportedVocabularies()} method. Every time one of the supported
- * vocabularies is {@link org.phenotips.vocabulary.Vocabulary#reindex(String) reindexed}, first
- * {@link #indexingStarted(String)} is called, so that the extension can prepare its needed resources, if any. Then, for
- * each term parsed from its source the {@link #extendTerm(VocabularyInputTerm, String)} method is called, and new
- * fields can be added to it. Once all the terms have been indexed, {@link #indexingEnded(String)} is called, and any
- * resources can be freed.
+ * vocabularies, identified by the {@link #isVocabularySupported} method. Every time one of the supported vocabularies
+ * is {@link org.phenotips.vocabulary.Vocabulary#reindex(String) reindexed}, first {@link #indexingStarted} is called,
+ * so that the extension can prepare its needed resources, if any. Then, for each term parsed from its source the
+ * {@link #extendTerm} method is called, and new fields can be added to it. Once all the terms have been indexed,
+ * {@link #indexingEnded} is called, and any resources can be freed.
  *
  * @version $Id$
  * @since 1.3M1
@@ -39,36 +36,35 @@ import java.util.Collection;
 public interface VocabularyExtension
 {
     /**
-     * List the vocabularies that this extension can enhance. This extension's other methods will only be called when
-     * indexing one of these vocabularies.
+     * Checks if a vocabulary is supported by this extension. This extension's other methods will only be called when
+     * indexing a supported vocabulary.
      *
-     * @return a collection of vocabulary identifiers, the {@code @Named} hints used for their implementation
+     * @param vocabulary the vocabulary to check
+     * @return {@code true} if the target vocabulary is supported, {@code false} if not and this extension should no
+     *         longer be invoked when processing that vocabulary
      */
-    Collection<String> getSupportedVocabularies();
+    boolean isVocabularySupported(Vocabulary vocabulary);
 
     /**
      * Called when a vocabulary reindex begins, so that this extension can prepare its needed resources, if any.
      *
-     * @param vocabulary the identifier of the vocabulary being indexed, the {@code @Named} hint used for its
-     *            implementation
+     * @param vocabulary the vocabulary being indexed
      */
-    void indexingStarted(String vocabulary);
+    void indexingStarted(Vocabulary vocabulary);
 
     /**
      * Called for each term during vocabulary reindexing, this method modifies the parsed terms by changing, adding or
      * removing fields.
      *
      * @param term the parsed term which can be altered
-     * @param vocabulary the identifier of the vocabulary being indexed, the {@code @Named} hint used for its
-     *            implementation
+     * @param vocabulary the the vocabulary being indexed
      */
-    void extendTerm(VocabularyInputTerm term, String vocabulary);
+    void extendTerm(VocabularyInputTerm term, Vocabulary vocabulary);
 
     /**
      * Called when a vocabulary reindex is done, so that this extension can clean up its resources, if any.
      *
-     * @param vocabulary the identifier of the vocabulary that was indexed, the {@code @Named} hint used for its
-     *            implementation
+     * @param vocabulary the vocabulary that was indexed
      */
-    void indexingEnded(String vocabulary);
+    void indexingEnded(Vocabulary vocabulary);
 }

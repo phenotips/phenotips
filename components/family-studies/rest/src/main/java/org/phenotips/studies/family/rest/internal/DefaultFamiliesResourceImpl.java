@@ -257,7 +257,7 @@ public class DefaultFamiliesResourceImpl extends XWikiResource implements Famili
 
     private boolean hasViewRights(String familyID, DocumentReference userProfileDocument)
     {
-        DocumentReference doc = this.stringResolver.resolve(String.valueOf(familyID));
+        DocumentReference doc = this.stringResolver.resolve(String.valueOf(familyID), Family.DATA_SPACE);
         if (!this.access.hasAccess(Right.VIEW, userProfileDocument, doc)) {
             return false;
         }
