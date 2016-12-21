@@ -162,6 +162,7 @@ public class PhenoTipsFeatureTest
         Assert.assertEquals(HP0000100, f.getId());
         Assert.assertEquals("Nephrosis", f.getName());
         Assert.assertEquals(TYPE_PHENOTYPE, f.getType());
+        Assert.assertEquals(TYPE_PHENOTYPE, f.getPropertyName());
         Assert.assertTrue(f.isPresent());
         Assert.assertEquals("Some comments", f.getNotes());
 
@@ -243,6 +244,7 @@ public class PhenoTipsFeatureTest
         Assert.assertEquals(HP0000100, f.getId());
         Assert.assertEquals("Nephrosis", f.getName());
         Assert.assertEquals(TYPE_PHENOTYPE, f.getType());
+        Assert.assertEquals(TYPE_NEGATIVE_PHENOTYPE, f.getPropertyName());
         Assert.assertFalse(f.isPresent());
         Assert.assertEquals("Some comments", f.getNotes());
 
