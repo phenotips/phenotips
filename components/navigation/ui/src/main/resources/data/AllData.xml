@@ -317,7 +317,7 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
       <groups>XWiki.XWikiAdminGroup</groups>
     </property>
     <property>
-      <levels>edit</levels>
+      <levels>edit,comment</levels>
     </property>
     <property>
       <users/>

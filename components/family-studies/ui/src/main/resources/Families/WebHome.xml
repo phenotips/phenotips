@@ -698,7 +698,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
       <groups>XWiki.XWikiAdminGroup</groups>
     </property>
     <property>
-      <levels>edit</levels>
+      <levels>edit,comment</levels>
     </property>
     <property>
       <users/>

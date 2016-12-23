@@ -2349,7 +2349,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
       <groups>XWiki.XWikiAdminGroup,</groups>
     </property>
     <property>
-      <levels>edit,delete</levels>
+      <levels>edit,comment,delete</levels>
     </property>
     <property>
       <users/>

@@ -115,7 +115,7 @@
       <groups>XWiki.XWikiAllGroup</groups>
     </property>
     <property>
-      <levels>edit</levels>
+      <levels>edit,comment</levels>
     </property>
   </object>
   <object>
@@ -1389,7 +1389,7 @@
       <groups>XWiki.XWikiAdminGroup</groups>
     </property>
     <property>
-      <levels>edit</levels>
+      <levels>edit,comment</levels>
     </property>
     <property>
       <users/>
