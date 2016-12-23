@@ -1547,7 +1547,7 @@
       <groups>XWiki.XWikiAdminGroup</groups>
     </property>
     <property>
-      <levels>admin,edit,undelete,delete,programming</levels>
+      <levels>admin,comment,edit,undelete,delete,programming</levels>
     </property>
     <property>
       <users/>
@@ -1630,7 +1630,7 @@
       <groups>XWiki.XWikiAllGroup</groups>
     </property>
     <property>
-      <levels>view,comment</levels>
+      <levels>view</levels>
     </property>
     <property>
       <users/>
