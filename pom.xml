@@ -695,7 +695,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.5.201505241946</version>
+        <version>0.7.8</version>
         <executions>
           <execution>
             <id>jacoco-prepare</id>
@@ -839,7 +839,7 @@
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.11</version>
+          <version>3.0</version>
           <configuration>
             <skip>${license.skip}</skip>
             <header>license.txt</header>
@@ -900,7 +900,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.7</version>
+          <version>3.0.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -928,19 +928,19 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.6.1</version>
+          <version>3.0.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.4</version>
+          <version>3.0.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-plugin-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.4</version>
+          <version>3.5</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -952,7 +952,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.3</version>
+          <version>3.6.0</version>
           <!-- Java 1.7 is required -->
           <configuration>
             <source>1.7</source>
@@ -963,7 +963,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.19</version>
+          <version>2.19.1</version>
           <!-- Rule is to put tests in *Test classes -->
           <configuration>
             <includes>
@@ -1027,7 +1027,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.6</version>
+          <version>3.0.2</version>
           <configuration>
             <!-- Add some useful information about the extension in the manifest file. -->
             <archive>
@@ -1041,19 +1041,19 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.6</version>
+          <version>3.0.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.10</version>
+          <version>3.0.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-war-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.6</version>
+          <version>3.0.0</version>
           <configuration>
             <!-- Add some useful information about the extension in the manifest file. -->
             <archive>
@@ -1086,13 +1086,13 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.8.1</version>
+          <version>2.9</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>clirr-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.7</version>
+          <version>2.8</version>
           <executions>
             <execution>
               <id>clirr-check</id>
@@ -1117,7 +1117,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.10.3</version>
+          <version>2.10.4</version>
           <configuration>
             <!-- Always exclude the internal package since it's not user-public -->
             <excludePackageNames>*.internal.*</excludePackageNames>
@@ -1148,7 +1148,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.4</version>
+          <version>3.6</version>
           <!-- Site Plugin doesn't automatically pull the Apache Wagon implementation -->
           <dependencies>
             <dependency>
@@ -1299,13 +1299,13 @@
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>exec-maven-plugin</artifactId>
               <!-- Lock down plugin version for build reproducibility -->
-              <version>1.4.0</version>
+              <version>1.5.0</version>
             </plugin>
             <plugin>
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>build-helper-maven-plugin</artifactId>
               <!-- Lock down plugin version for build reproducibility -->
-              <version>1.9.1</version>
+              <version>1.12</version>
             </plugin>
           </plugins>
         </pluginManagement>
