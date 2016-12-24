@@ -30,7 +30,7 @@
   <packaging>pom</packaging>
   <description>Packages a Jetty installation for use in the standalone distribution</description>
   <properties>
-    <jetty.version>8.1.19.v20160209</jetty.version>
+    <jetty.version>8.2.0.v20160908</jetty.version>
   </properties>
   <modules>
     <module>log-writer</module>
