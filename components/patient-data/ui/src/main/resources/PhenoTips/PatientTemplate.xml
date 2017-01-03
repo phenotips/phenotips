@@ -205,7 +205,7 @@
 #else
 #set ($enteredValue = $object.getProperty("${name}_entered").value)
 #if ("$!enteredValue" != '' &amp;&amp; "$!enteredValue" != '{}')
-  #set ($enteredValue = $jsontool.parse($enteredValue))
+  #set ($enteredValue = $jsontool.parseToJSONObject($enteredValue))
   #if ($enteredValue.range &amp;&amp; $enteredValue.range.years &amp;&amp; $enteredValue.range.years &gt; 1)
     &lt;span class="date"&gt;$!escapetool.xml($enteredValue.year)s&lt;/span&gt;
   #else
@@ -270,7 +270,7 @@
 #else
 #set ($enteredValue = $object.getProperty("${name}_entered").value)
 #if ("$!enteredValue" != '' &amp;&amp; "$!enteredValue" != '{}')
-  #set ($enteredValue = $jsontool.parse($enteredValue))
+  #set ($enteredValue = $jsontool.parseToJSONObject($enteredValue))
   #if ($enteredValue.range &amp;&amp; $enteredValue.range.years &amp;&amp; $enteredValue.range.years &gt; 1)
     &lt;span class="date"&gt;$!escapetool.xml($enteredValue.year)s&lt;/span&gt;
   #else

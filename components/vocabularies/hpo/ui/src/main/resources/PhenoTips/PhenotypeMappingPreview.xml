@@ -57,7 +57,7 @@ $xwiki.jsx.use('PhenoTips.PatientSheetCode')##
     #set ($def = $mapping.content.replaceAll('\{\{/?velocity[^}]*}}', ''))
     #set ($discard = "#evaluate($def)")
   #else
-    #set ($mappings = $jsontool.parse($mapping.content))
+    #set ($mappings = $jsontool.parseToJSONObject($mapping.content))
     #set ($phenotype = $mappings.phenotype)
   #end
   #if ("$!{phenotype}" != '')
