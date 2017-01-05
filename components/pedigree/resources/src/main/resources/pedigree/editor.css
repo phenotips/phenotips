@@ -1204,11 +1204,10 @@
 .at-age-input, .cause-input {
     margin-top: 3px;
     width: 120px !important;
-    height: 15px !important;
+    padding: 0;
 }
 .deceased-node-type-options {
     width: 125px;
-    height: 40px;
     border: 1px solid #e0e0e0;
 }
 .deceased .callout-handle {

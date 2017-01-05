@@ -593,7 +593,7 @@ define([
                     else if (gender == 'M') {mult = 1.4;}
                     if (this.getNode().isProband) {mult *= 1.1;}
                     var x = this.getX() + this._shapeRadius*mult;
-                    var y = this.getY() + this._shapeRadius*mult - 10;
+                    var y = this.getY() + this._shapeRadius*mult - 10; // adjusting position not to collide with A&W status
                 }
                 this._evalLabel = editor.getPaper().text(x, y, "*").attr(PedigreeEditorParameters.attributes.evaluationShape).toBack();
             } else {
@@ -624,7 +624,7 @@ define([
                 if (gender == 'U' || gender == 'O') {mult = 1.3;}
                 else if (gender == 'M') {mult = 1.4;}
                 if (this.getNode().isProband) {mult *= 1.1;}
-                var x = this.getX() + this._shapeRadius*mult - 10;
+                var x = this.getX() + this._shapeRadius*mult - 10; // adjusting position not to collide with evaluation status
                 var y = this.getY() + this._shapeRadius*mult;
                 this._awLabel = editor.getPaper().text(x, y, "A&W").attr(PedigreeEditorParameters.attributes.aliveAndWellShape).toBack();
             }
