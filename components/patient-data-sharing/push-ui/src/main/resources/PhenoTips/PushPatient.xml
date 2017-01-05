@@ -1188,6 +1188,9 @@
           // Generate the dialog content
           new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1] + '&amp;push=true&amp;multipatient=true&amp;remoteserver='+this._selectedServer), {
             parameters : {"enabledFields": this._lastLoginResponse.serverfields},
+            onCreate : function() {
+              $('push_patient_button').up().insert(new Element('span', {'class' : "fa fa-lg fa-spinner fa-spin", id:'push-spinner'}));
+            },
             onSuccess: function(transport) {
               var dialog = new PhenoTips.widgets.ModalPopup(transport.responseText, false, {'title': "$services.localization.render('phenotips.pushPatient.selectFieldsAndPatientsTitle')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
               dialog.showDialog();
@@ -1198,6 +1201,9 @@
                                                   'pushMulti': true,
                                                   'callbackOK': pushCallBack,
                                                   'callbackFail': pushPreferencesFail});
+            },
+            onComplete : function() {
+              $('push-spinner').remove();
             }
           });
         } else {
@@ -1215,6 +1221,9 @@
           // Generate the dialog content
           new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'push=true&amp;singlepatient=false&amp;remoteserver='+this._selectedServer), {
             parameters : {"enabledFields": this._lastLoginResponse.serverfields},
+            onCreate : function() {
+              $('push_patient_button').up().insert(new Element('span', {'class' : "fa fa-lg fa-spinner fa-spin", id:'push-spinner'}));
+            },
             onSuccess: function(transport) {
               var dialog = new PhenoTips.widgets.ModalPopup(transport.responseText, false, {'title': "$services.localization.render('phenotips.pushPatient.selectFieldsTitle')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'narrow-export-dialog export-dialog'});
               dialog.showDialog();
@@ -1225,6 +1234,9 @@
                                                   'pushMulti': false,
                                                   'callbackOK': singlePushCallBack,
                                                   'callbackFail': singlePushPreferencesFail});
+            },
+            onComplete : function() {
+              $('push-spinner').remove();
             }
           });
 
