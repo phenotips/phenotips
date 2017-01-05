@@ -1097,6 +1097,18 @@
           <artifactId>maven-dependency-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>3.0.0</version>
+          <configuration>
+            <ignoredUsedUndeclaredDependencies>
+              <ignoredUsedUndeclaredDependency>javax.inject:javax.inject</ignoredUsedUndeclaredDependency>
+              <ignoredUsedUndeclaredDependency>org.xwiki.commons:xwiki-commons-stability</ignoredUsedUndeclaredDependency>
+              <ignoredUsedUndeclaredDependency>org.mockito:mockito-core</ignoredUsedUndeclaredDependency>
+              <ignoredUsedUndeclaredDependency>junit:junit</ignoredUsedUndeclaredDependency>
+              <ignoredUsedUndeclaredDependency>org.hamcrest:hamcrest-library</ignoredUsedUndeclaredDependency>
+            </ignoredUsedUndeclaredDependencies>
+            <ignoredUnusedDeclaredDependencies>
+              <ignoredUnusedDeclaredDependency>javax.servlet:javax.servlet-api</ignoredUnusedDeclaredDependency>
+            </ignoredUnusedDeclaredDependencies>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
