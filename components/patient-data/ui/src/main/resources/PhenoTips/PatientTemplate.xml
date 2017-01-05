@@ -1177,9 +1177,6 @@
       <apgar5>unknown</apgar5>
     </property>
     <property>
-      <life_status>alive</life_status>
-    </property>
-    <property>
       <date_of_birth/>
     </property>
     <property>
@@ -1244,6 +1241,9 @@
     </property>
     <property>
       <last_name/>
+    </property>
+    <property>
+      <life_status>alive</life_status>
     </property>
     <property>
       <maternal_ethnicity/>
