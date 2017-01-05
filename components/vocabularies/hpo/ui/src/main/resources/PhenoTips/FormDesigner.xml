@@ -264,7 +264,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
   #set ($formSubmit = "update_extensions")
   #set ($formParams = {
     "update_extensions" : "1",
-    "sections" : "" 
+    "sections" : ""
   })
 #else
   #set ($prefix = "${studyConfig.xWikiClass.name}_${studyConfig.number}_")
@@ -337,7 +337,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 #end
 
 ## ----------------------------------------------------------------------
-## Display one section extension 
+## Display one section extension
 ## ----------------------------------------------------------------------
 #macro(_formDesigner__displaySection $section $showTools)
 (% class="section-maquette #if ($showTools &amp;&amp; !$section.enabled) disabled #end" id="${section.id}"%)(((
@@ -348,7 +348,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 #end
 
 ## ----------------------------------------------------------------------
-## Display section extensions 
+## Display section extensions
 ## ----------------------------------------------------------------------
 #macro(_formDesigner__displaySections)
   #set ($sectionsData = [])
@@ -360,7 +360,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 
 ## ----------------------------------------------------------------------
 ## Display the section with a specific id suffix
-## ---------------------------------------------------------------------- 
+## ----------------------------------------------------------------------
 #macro (_formDesigner__displaySectionWithId $id)
   #set ($sectionsData = [])
   #_formDesigner__getExtensionsData('section', 'name', "${sectionExtensionIdPrefix}${id}", $sectionExtensionPointId, $!studyConfig.getProperty('sections').value, $sectionsData)
@@ -557,7 +557,7 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##
 
     _ENHANCED_TOOL_CSS_CLASS : 'initialized',
     _NEW_TOOL_SELECTOR: ':not(.initialized)',
-    
+
     initialize : function (element) {
       if (!element) return;
       this._element = element;
@@ -737,7 +737,7 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##
          });
        });
     },
-   
+
     _updateOrder : function (container, updateContainer) {
        var i = 0;
        container.select ((updateContainer ? '.extension' : '.section') + '-title input.uix-order').each(function(item) {

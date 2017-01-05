@@ -3573,7 +3573,7 @@ hr {
     padding: 0.5em 10px;
     text-shadow: 1px 1px 0 #FFFFFF;
 }
-.space-data .bottombuttons, 
+.space-data .bottombuttons,
 .space-Families .bottombuttons {
    margin: 3em -10px -3em;
 }

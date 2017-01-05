@@ -313,7 +313,7 @@
   display: none;
 }
 #mainContentArea {
-  margin: 0 !important; 
+  margin: 0 !important;
 }
 .main {
   padding: 0 0 4em !important;

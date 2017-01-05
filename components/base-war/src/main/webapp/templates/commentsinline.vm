@@ -4,18 +4,18 @@
  *
  * $replyTo (Integer) - If set then the comment form will appear ready to make a reply to the comment with the id number given.
  *                      If not set and request parameter 'replyto' is set then $replyTo is set to parameter 'replyto', if
- *                      no replyto request parameter and $replyTo isn't set, and $fillInFields is true and 
+ *                      no replyto request parameter and $replyTo isn't set, and $fillInFields is true and
  *                      'XWiki.XWikiComments_replyto' is set then $replyTo is set to that.
  *
  * $hideCaptcha (boolean) - If true then the captcha is hidden and then shown by javascript when the user focuses on the comment
- *                          textarea. If not set and $captchaAnswerWrong is true or 'X-Requested-With' equals 'XMLHttpRequest' then 
+ *                          textarea. If not set and $captchaAnswerWrong is true or 'X-Requested-With' equals 'XMLHttpRequest' then
  *                          it is set true.
  *
- * $captchaAnswerWrong (boolean) - If true then a message is displayed next to the captcha window telling the user that the captcha 
+ * $captchaAnswerWrong (boolean) - If true then a message is displayed next to the captcha window telling the user that the captcha
  *                                 answer is incorrect. If not set then this template will check for a request parameter by the same
  *                                 name and sets this true if that equals 1.
  *
- * $fillInFields (boolean) - If true then author, and comment fields are filled in from request parameters of the same names 
+ * $fillInFields (boolean) - If true then author, and comment fields are filled in from request parameters of the same names
  *                           as the fields, also if $replyTo is set the form appears under the comment corresponding to the $replyTo
  *                           number. If not set and $captchaAnswerWrong is true then this is set to true.
  *
@@ -25,7 +25,7 @@
  *
  *###
 ##
-## These are used when this page is accessed directly but are useless when the page is pulled in with ajax using 
+## These are used when this page is accessed directly but are useless when the page is pulled in with ajax using
 ## bin/view/Space/Page?xpage=xpart&vm=commentsinline.vm
 $xwiki.jsfx.use('uicomponents/viewers/comments.js', {'forceSkinAction': true, 'language': ${xcontext.language}})
 $xwiki.ssfx.use('uicomponents/viewers/comments.css', true)

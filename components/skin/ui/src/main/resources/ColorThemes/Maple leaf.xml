@@ -916,7 +916,7 @@
 #phenotips-globalTools .rightmenu label span,
 #phenotips-globalTools .rightmenu input[type="submit"],
 .rightmenu #create-patient-record,
-#phenotips-mainmenu .rightmenu .topmenuentry, 
+#phenotips-mainmenu .rightmenu .topmenuentry,
 #phenotips-mainmenu .rightmenu .topmenuentry a {
     color: #FFF !important;
 }

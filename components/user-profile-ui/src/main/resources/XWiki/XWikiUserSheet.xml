@@ -71,7 +71,7 @@
 ## Setting automaticaly url &amp; css fields of each category
 #foreach($category in $userMenu)
   #foreach($subcategory in $category.get('children'))
-    #set($id = $subcategory.get('id')) 
+    #set($id = $subcategory.get('id'))
     #set($discard = $subcategory.put('url', "?category=${id}"))
     #set($discard = $subcategory.put('cssClass', "user-menu-$id category-tab"))
   #end
@@ -109,7 +109,7 @@
 (((
   #foreach($category in $userMenu)
     #foreach($subcategory in $category.get('children'))
-      #set($tabKey = $subcategory.get('id')) 
+      #set($tabKey = $subcategory.get('id'))
       (% id="${tabKey}Pane" class="user-page-pane#if($tabKey != $currentCategory) hidden#end" %)
       (((
         #set($tabInclude = $subcategory.get('sheet'))
@@ -487,7 +487,7 @@ return XWiki;
       {'color':$theme.menuContentGradientColor,    'position': '0%'},
       {'color':$theme.menuContentBackgroundColor, 'position': '100%'}
     ]
-  })  
+  })
 }
 
 .profile-menu .group, .profile-menu .group:hover {
@@ -519,7 +519,7 @@ return XWiki;
 }
 
 div.profile-section,
-div.userInfo, div.userRecentChanges, div.userPreferences, div.passwordManagement, div.watchlistManagement, div.watchlistRss, div.watchlistElements, 
+div.userInfo, div.userRecentChanges, div.userPreferences, div.passwordManagement, div.watchlistManagement, div.watchlistRss, div.watchlistElements,
 div.userDashboard, #dashboardPane .dashboard {
   margin: 5px 10px 10px;
   padding: 5px 10px 10px;
@@ -535,7 +535,7 @@ td.recentChangesRight {
 }
 
 div.profile-section,
-div.userInfo, div.userRecentChanges, div.userPreferences, div.passwordManagement, div.watchlistManagement, div.watchlistRss, div.watchlistElements, 
+div.userInfo, div.userRecentChanges, div.userPreferences, div.passwordManagement, div.watchlistManagement, div.watchlistRss, div.watchlistElements,
 div.userDashboard, #dashboardPane .dashboard {
   margin: 5px 10px 10px;
   padding: 5px 10px 10px;
@@ -657,7 +657,7 @@ span#avatarUpload {
 ## --------------------------------------
 ## Dashboard
 /* prevent the clearfloats between buttons &amp; dashboard gadgets from clearing the tabs as well, only the buttons float */
-.dashboard .clearfloats, 
+.dashboard .clearfloats,
 .dashboard .clearfloats:after, .dashboard .clearfloats:before {
   clear: right;
 }</code>
