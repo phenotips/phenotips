@@ -19,7 +19,6 @@ package org.phenotips.data.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.security.authorization.AuthorizationService;
-
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.security.authorization.Right;
@@ -35,7 +34,12 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.xpn.xwiki.doc.XWikiDocument;
+
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for the {@link SecurePatientRepository} component.
@@ -71,9 +75,9 @@ public class SecurePatientIteratorTest
     {
         MockitoAnnotations.initMocks(this);
 
-        when(this.p1.getDocument()).thenReturn(this.p1Reference);
-        when(this.p2.getDocument()).thenReturn(this.p2Reference);
-        when(this.p3.getDocument()).thenReturn(this.p3Reference);
+        when(this.p1.getDocumentReference()).thenReturn(this.p1Reference);
+        when(this.p2.getDocumentReference()).thenReturn(this.p2Reference);
+        when(this.p3.getDocumentReference()).thenReturn(this.p3Reference);
     }
 
     @Test
@@ -132,11 +136,21 @@ public class SecurePatientIteratorTest
         when(this.access.hasAccess(this.currentUser, Right.VIEW, this.p2Reference)).thenReturn(true);
         when(this.access.hasAccess(this.currentUser, Right.VIEW, this.p3Reference)).thenReturn(true);
 
-        SecurePatientIterator iterator = new SecurePatientIterator(input.iterator(), this.access, this.currentUser);
+        SecurePatientIterator iterator = spy(new SecurePatientIterator(input.iterator(), this.access, this.currentUser));
+
+        // mock SecurePatient creation
+        SecurePatient sp1 = mock(SecurePatient.class);
+        SecurePatient sp2 = mock(SecurePatient.class);
+        SecurePatient sp3 = mock(SecurePatient.class);
+
+        doReturn(sp1).when(iterator).createSecurePatient(this.p1);
+        doReturn(sp2).when(iterator).createSecurePatient(this.p2);
+        doReturn(sp3).when(iterator).createSecurePatient(this.p3);
+
         Assert.assertTrue(iterator.hasNext());
-        Assert.assertSame(this.p2, iterator.next());
+        Assert.assertSame(sp2, iterator.next());
         Assert.assertTrue(iterator.hasNext());
-        Assert.assertSame(this.p3, iterator.next());
+        Assert.assertSame(sp3, iterator.next());
         Assert.assertFalse(iterator.hasNext());
     }
 }

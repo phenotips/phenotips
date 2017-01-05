@@ -74,7 +74,7 @@ public class SecurePatientIterator implements Iterator<Patient>
         Patient toReturn = this.nextPatient;
         this.findNextPatient();
 
-        return toReturn;
+        return this.createSecurePatient(toReturn);
     }
 
     @Override
@@ -92,9 +92,22 @@ public class SecurePatientIterator implements Iterator<Patient>
 
         while (this.patientIterator.hasNext() && this.nextPatient == null) {
             Patient potentialNextPatient = this.patientIterator.next();
-            if (this.access.hasAccess(this.currentUser, Right.VIEW, potentialNextPatient.getDocument())) {
+            if (this.access.hasAccess(this.currentUser, Right.VIEW, potentialNextPatient.getDocumentReference())) {
                 this.nextPatient = potentialNextPatient;
             }
         }
+    }
+
+    /**
+     * Returns a SecurePatient wrapper around a given patient.
+     *
+     * TODO: see comments for {@link SecurePatientRepository.createSecurePatient(Patient patient)}
+     *
+     * @param patient a patient object
+     * @return a SecurePatient wrapper around the given patient
+     */
+    protected SecurePatient createSecurePatient(Patient patient)
+    {
+        return new SecurePatient(patient);
     }
 }

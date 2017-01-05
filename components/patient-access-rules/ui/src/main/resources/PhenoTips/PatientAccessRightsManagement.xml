@@ -57,7 +57,7 @@
     ## ===========================================================
     ## Get information about access levels and collaborators
     ## -----------------------------------------------------------
-    #set ($patientAccess = $_service.getPatientAccess($patient))
+    #set ($patientAccess = $_service.getPatientAccess($patient.getId()))
     #set ($discard = $response.setContentType('application/json'))
     #set ($collaborators = $patientAccess.getCollaborators())
     #set ($visibility =  $patientAccess.getVisibility())
@@ -127,7 +127,7 @@
     #set ($discard = $response.setStatus(400))## The user cannot make the specified transfer
     $services.localization.render('phenotips.patientAccessRightsManagement.noPermissionError')
   #else
-    #set ($patientAccess = $_service.getPatientAccess($patient))
+    #set ($patientAccess = $_service.getPatientAccess($patient.getId()))
     #foreach ($collaborator in $collaborators)
       #set ($discard = $data.put($services.model.resolveDocument($collaborator), $_service.resolveAccessLevel($accessLevels.get($foreach.index))))
     #end
@@ -144,7 +144,7 @@
       #set ($discard = $response.setStatus(400))## unable to do the update
       $services.localization.render('phenotips.patientAccessRightsManagement.updateError')
     #end
-    $_service.fireRightsUpdateEvent($patient)
+    $_service.fireRightsUpdateEvent($patient.getId())
   #end## Patient exists and user/level parameters match
 #end
 {{/velocity}}</content>
@@ -1126,7 +1126,7 @@ $xwiki.ssx.use($serviceDocName)
 #set ($patient = $services.patients.get($doc.documentReference))
 #if ("$!patient.id" != '')
   #set ($_service = $services.permissions)
-  #set ($patientAccess = $_service.getPatientAccess($patient))
+  #set ($patientAccess = $_service.getPatientAccess($patient.getId()))
   ## ===========================================================
   ## Display access summary for this patient and enable changing
   ## -----------------------------------------------------------

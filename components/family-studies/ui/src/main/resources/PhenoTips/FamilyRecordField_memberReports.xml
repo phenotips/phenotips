@@ -116,9 +116,9 @@
 #end
 #foreach ($patient in $family.members)
   #if ($patient)
-    #set ($patientDoc = $xwiki.getDocument($patient.document))
+    #set ($patientDoc = $patient.getSecureDocument())
     #set ($patientReports = $patientDoc.getObject('PhenoTips.PatientClass').getProperty('reports_history').value)
-    #if ($patientReports.size() &gt; 0)
+    #if ($patientReports &amp;&amp; $patientReports.size() &gt; 0)
       #set ($id = "$!patient.externalId")
       #if ($id == '')
         #set ($id = $patient.id)

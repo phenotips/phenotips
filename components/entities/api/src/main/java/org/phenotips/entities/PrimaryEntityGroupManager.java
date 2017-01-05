@@ -73,7 +73,8 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntityGroup<E>, E ex
     /**
      * Retrieves a {@link PrimaryEntityGroup group} from the specified document.
      *
-     * @param reference reference of the {@link PrimaryEntity#getDocument() document where the entity is stored}
+     * @param reference reference of the {@link PrimaryEntity#getDocumentReference() document where
+     *        the entity is stored}
      * @return the requested group
      * @throws IllegalArgumentException if the document doesn't contain a proper group
      */

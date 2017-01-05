@@ -23,7 +23,6 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.PhenoTipsDate;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
@@ -69,8 +68,6 @@ public class DatesControllerTest
     public MockitoComponentMockingRule<PatientDataController<PhenoTipsDate>> mocker =
         new MockitoComponentMockingRule<PatientDataController<PhenoTipsDate>>(DatesController.class);
 
-    private DocumentAccessBridge documentAccessBridge;
-
     @Mock
     private ExecutionContext executionContext;
 
@@ -97,11 +94,9 @@ public class DatesControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
-        DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocument();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
+        DocumentReference patientDocRef = new DocumentReference("wiki", "patient", "00000001");
+        doReturn(patientDocRef).when(this.patient).getDocumentReference();
+        doReturn(this.doc).when(this.patient).getXDocument();
         doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
         doReturn(this.xWikiContext).when(this.executionContext).getProperty("xwikicontext");
@@ -223,7 +218,7 @@ public class DatesControllerTest
         doReturn(this.dateData).when(this.patient).getData(DATA_NAME);
         doReturn(false).when(this.dateData).isNamed();
 
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.data, never()).setDateValue(anyString(), any(Date.class));
     }
@@ -236,7 +231,7 @@ public class DatesControllerTest
         doReturn(true).when(this.dateData).containsKey(anyString());
         doReturn(null).when(this.dateData).get(anyString());
 
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         String deathAsEnteredField =
             DatesController.CORRESPONDING_ASENTERED_FIELDNAMES.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME);
@@ -253,7 +248,7 @@ public class DatesControllerTest
         doReturn(true).when(this.dateData).isNamed();
         doReturn(false).when(this.dateData).containsKey(anyString());
 
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verifyZeroInteractions(this.data);
     }
@@ -273,7 +268,7 @@ public class DatesControllerTest
         PatientData<PhenoTipsDate> datesData = new DictionaryPatientData<>(DATA_NAME, datesMap);
         doReturn(datesData).when(this.patient).getData(DATA_NAME);
 
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         // birth date and death date have "date_as_entered" companion fields, both field+companion should be set
         String deathAsEnteredField =

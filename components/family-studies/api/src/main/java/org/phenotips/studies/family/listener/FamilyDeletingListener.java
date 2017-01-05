@@ -24,7 +24,6 @@ import org.phenotips.studies.family.FamilyTools;
 
 import org.xwiki.bridge.event.DocumentDeletingEvent;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
 
@@ -108,10 +107,9 @@ public class FamilyDeletingListener implements EventListener
                 this.familyTools.removeMember(documentId);
 
                 // clear the proband field if and only if the deleted patient was indeed the proband
-                DocumentReference familyDocumentRef = family.getDocumentReference();
-                XWikiDocument familyDocument = xwiki.getDocument(familyDocumentRef, context);
+                XWikiDocument familyDocument = family.getXDocument();
                 BaseObject familyClassObject = familyDocument.getXObject(Family.CLASS_REFERENCE);
-                if (familyClassObject.getStringValue("proband_id").equals(patient.getDocument().toString())) {
+                if (familyClassObject.getStringValue("proband_id").equals(patient.getDocumentReference().toString())) {
                     familyClassObject.setStringValue("proband_id", "");
                     xwiki.saveDocument(familyDocument, "Proband was deleted", true, context);
                 }

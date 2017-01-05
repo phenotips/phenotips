@@ -191,8 +191,8 @@ public class SpecificityControllerTest
     @Test
     public void saveDoesNothing() throws ComponentLookupException
     {
-        this.mocker.getComponentUnderTest().save(this.patient, null);
-        this.mocker.getComponentUnderTest().save(null, null);
+        this.mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(null);
         Mockito.verifyZeroInteractions(this.service);
     }
 

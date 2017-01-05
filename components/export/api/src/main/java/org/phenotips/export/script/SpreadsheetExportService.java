@@ -18,14 +18,19 @@
 package org.phenotips.export.script;
 
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientRepository;
 import org.phenotips.export.internal.SpreadsheetExporter;
+import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.script.service.ScriptService;
+import org.xwiki.security.authorization.Right;
 import org.xwiki.stability.Unstable;
+import org.xwiki.users.UserManager;
 
 import java.io.OutputStream;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -53,19 +58,46 @@ public class SpreadsheetExportService implements ScriptService
     @Named("current")
     private DocumentReferenceResolver<String> referenceResolver;
 
+    @Inject
+    private PatientRepository patientRepository;
+
+    /** Used for obtaining the current user. */
+    @Inject
+    private UserManager userManager;
+
+    /** Used for checking access rights. */
+    @Inject
+    private AuthorizationService access;
+
     /**
      * Export the provided list of patients into an Excel file, containing the specified columns. The resulting binary
      * filled will be sent through the provided output stream, usually the {@code $response}'s output stream.
      *
-     * @param patients the patients to export
+     * @param patientIds list of patient IDs of the the patients to export
      * @param enabledFields a list of field names to export; these are internal names, which will be turned into human
      *            readable labels
      * @param outputStream the output stream where the resulting binary {@code .xlsx} file will be sent
      */
-    public void export(List<Patient> patients, String[] enabledFields, OutputStream outputStream)
+    public void export(List<String> patientIds, String[] enabledFields, OutputStream outputStream)
     {
         SpreadsheetExporter exporter = new SpreadsheetExporter();
         try {
+            // since scripts do not have access to a non-secure versionof the patient, need to
+            // get the actual Patient objects here, and check access rights here
+            //
+            // FIXME: once new version of entities is in, need to refactor PrimaryEntityManager and incorporate
+            //        security features into the entities framework to avoid doing permission checks in client code
+            //        that requires non-secure versions of the Patient object
+            List<Patient> patients = new LinkedList<>();
+            for (String patientId : patientIds) {
+                Patient patient = this.patientRepository.get(patientId);
+                if (patient == null || !this.access.hasAccess(
+                        this.userManager.getCurrentUser(), Right.VIEW, patient.getDocumentReference())) {
+                    continue;
+                }
+                patients.add(patient);
+            }
+
             exporter.export(enabledFields, patients, outputStream);
         } catch (Exception ex) {
             this.logger.error("Error caught while generating an export spreadsheet", ex);

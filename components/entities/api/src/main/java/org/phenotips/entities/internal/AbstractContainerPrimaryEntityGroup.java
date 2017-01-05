@@ -97,7 +97,7 @@ public abstract class AbstractContainerPrimaryEntityGroup<E extends PrimaryEntit
 
             q.bindValue("memberClass", getLocalSerializer().serialize(getMembershipClass()));
             q.bindValue("referenceProperty", getMembershipProperty());
-            q.bindValue("selfReference", getFullSerializer().serialize(getDocument()));
+            q.bindValue("selfReference", getFullSerializer().serialize(getDocumentReference()));
             q.bindValue("entityType", getLocalSerializer().serialize(type));
             List<String> memberIds = q.execute();
             for (String memberId : memberIds) {
@@ -114,13 +114,13 @@ public abstract class AbstractContainerPrimaryEntityGroup<E extends PrimaryEntit
     {
         try {
             BaseObject obj = this.document.getXObject(getMembershipClass(), getMembershipProperty(),
-                getFullSerializer().serialize(member.getDocument()), false);
+                getFullSerializer().serialize(member.getDocumentReference()), false);
             if (obj != null) {
                 return true;
             }
             obj = this.document.newXObject(getMembershipClass(), getXContext());
-            obj.setStringValue(getMembershipProperty(), getFullSerializer().serialize(member.getDocument()));
-            getXContext().getWiki().saveDocument(this.document, "Added member " + member.getDocument(), true,
+            obj.setStringValue(getMembershipProperty(), getFullSerializer().serialize(member.getDocumentReference()));
+            getXContext().getWiki().saveDocument(this.document, "Added member " + member.getDocumentReference(), true,
                 getXContext());
             return true;
         } catch (Exception ex) {
@@ -134,13 +134,13 @@ public abstract class AbstractContainerPrimaryEntityGroup<E extends PrimaryEntit
     {
         try {
             BaseObject obj = this.document.getXObject(getMembershipClass(), getMembershipProperty(),
-                getFullSerializer().serialize(member.getDocument()), false);
+                getFullSerializer().serialize(member.getDocumentReference()), false);
             if (obj == null) {
                 return true;
             }
             this.document.removeXObject(obj);
-            getXContext().getWiki().saveDocument(this.document, "Removed member " + member.getDocument(), true,
-                getXContext());
+            getXContext().getWiki().saveDocument(this.document, "Removed member " + member.getDocumentReference(),
+                    true, getXContext());
             return true;
         } catch (Exception ex) {
             this.logger.warn("Failed to remove member from group: {}", ex.getMessage());

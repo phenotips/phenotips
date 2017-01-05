@@ -30,6 +30,7 @@ import org.phenotips.vocabulary.VocabularyTerm;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -104,6 +105,9 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     @Named("hpo")
     private Vocabulary ontologyService;
 
+    @Inject
+    private EntityReferenceSerializer<String> referenceSerializer;
+
     @Override
     public void initialize() throws InitializationException
     {
@@ -114,7 +118,7 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     public void index(Patient patient)
     {
         SolrInputDocument input = new SolrInputDocument();
-        input.setField("document", patient.getDocument().toString());
+        input.setField("document", this.referenceSerializer.serialize(patient.getDocumentReference()));
         String reporter = "";
         if (patient.getReporter() != null) {
             reporter = patient.getReporter().toString();
@@ -158,7 +162,8 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     public void delete(Patient patient)
     {
         try {
-            this.server.deleteByQuery("document:" + ClientUtils.escapeQueryChars(patient.getDocument().toString()));
+            this.server.deleteByQuery("document:"
+                + ClientUtils.escapeQueryChars(this.referenceSerializer.serialize(patient.getDocumentReference())));
             this.server.commit();
         } catch (SolrServerException ex) {
             this.logger.warn("Failed to delete from Solr: {}", ex.getMessage());

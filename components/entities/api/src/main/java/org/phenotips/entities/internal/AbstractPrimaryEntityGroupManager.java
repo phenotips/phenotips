@@ -77,7 +77,7 @@ public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntityG
                     + ":', gdoc.fullName) and edoc.fullName = :name order by gdoc.fullName asc",
                 Query.XWQL);
             q.bindValue("gspace", this.getDataSpace().getName());
-            q.bindValue("name", this.localSerializer.serialize(entity.getDocument()));
+            q.bindValue("name", this.localSerializer.serialize(entity.getDocumentReference()));
             List<String> docNames = q.execute();
             Collection<G> result = new ArrayList<>(docNames.size());
             for (String docName : docNames) {

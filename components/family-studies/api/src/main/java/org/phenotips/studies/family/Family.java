@@ -59,7 +59,7 @@ public interface Family
     /**
      * @return the copy o family document held in memory by this Family instance.
      */
-    XWikiDocument getDocument();
+    XWikiDocument getXDocument();
 
     /**
      * @return reference to family document

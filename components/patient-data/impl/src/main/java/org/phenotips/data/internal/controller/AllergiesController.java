@@ -23,8 +23,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
-import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
@@ -71,10 +69,6 @@ public class AllergiesController implements PatientDataController<String>
     @Inject
     private Provider<XWikiContext> xcontext;
 
-    /** Provides access to the underlying data storage. */
-    @Inject
-    private DocumentAccessBridge documentAccessBridge;
-
     @Override
     public String getName()
     {
@@ -85,7 +79,7 @@ public class AllergiesController implements PatientDataController<String>
     public PatientData<String> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getXDocument();
             BaseObject data = doc.getXObject(CLASS_REFERENCE);
             if (data == null) {
                 return null;
@@ -107,14 +101,13 @@ public class AllergiesController implements PatientDataController<String>
 
             return new IndexedPatientData<>(DATA_NAME, result);
         } catch (Exception e) {
-            this.logger.error("Could not find requested document or some unforeseen"
-                + " error has occurred during controller loading ", e.getMessage());
+            this.logger.error(ERROR_MESSAGE_LOAD_FAILED, e.getMessage());
         }
         return null;
     }
 
     @Override
-    public void save(Patient patient, DocumentModelBridge doc)
+    public void save(Patient patient)
     {
         PatientData<String> data = patient.getData(DATA_NAME);
         if (data == null || !data.isIndexed()) {
@@ -131,7 +124,7 @@ public class AllergiesController implements PatientDataController<String>
             }
         }
 
-        BaseObject xobject = ((XWikiDocument) doc).getXObject(CLASS_REFERENCE, true, this.xcontext.get());
+        BaseObject xobject = patient.getXDocument().getXObject(CLASS_REFERENCE, true, this.xcontext.get());
         xobject.setIntValue(NKDA, nkda ? 1 : 0);
         xobject.setDBStringListValue(DATA_NAME, allergies);
     }

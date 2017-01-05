@@ -65,11 +65,11 @@
 #end
 #if ("$!request.id" != '')
   #set ($patient = $services.patients.get($request.id))
-  #set ($docReference = $patient.document)
+  #set ($docReference = $patient.getDocumentReference())
   #set ($isPatient = true)
 #elseif ("$!request.eid" != '')
   #set ($patient = $services.patients.getPatientByExternalId($request.eid))
-  #set ($docReference = $patient.document)
+  #set ($docReference = $patient.getDocumentReference())
   #set ($isPatient = true)
 #elseif ("$!request.fid" != '')
   #set ($family = $services.families.getFamilyById($request.fid))
