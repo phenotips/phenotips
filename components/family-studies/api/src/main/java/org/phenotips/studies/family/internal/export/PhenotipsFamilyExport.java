@@ -237,7 +237,7 @@ public class PhenotipsFamilyExport
 
         // Process family query results
         for (String queryResult : queryResults) {
-            Patient patient = this.patientRepository.getPatientById(queryResult);
+            Patient patient = this.patientRepository.get(queryResult);
             if (patient == null) {
                 continue;
             }
