@@ -28,14 +28,4 @@
   <artifactId>users-ui</artifactId>
   <name>PhenoTips - Users and Groups - Wiki Documents</name>
   <packaging>xar</packaging>
-
-  <build>
-    <extensions>
-      <extension>
-        <groupId>org.xwiki.commons</groupId>
-        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
-        <version>${xwiki.version}</version>
-      </extension>
-    </extensions>
-  </build>
 </project>

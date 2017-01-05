@@ -35,14 +35,4 @@
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Family studies</xwiki.extension.name>
   </properties>
-
-  <build>
-    <extensions>
-      <extension>
-        <groupId>org.xwiki.commons</groupId>
-        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
-        <version>${xwiki.version}</version>
-      </extension>
-    </extensions>
-  </build>
 </project>

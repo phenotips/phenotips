@@ -33,14 +33,4 @@
     <!-- Old name for this module -->
     <xwiki.extension.features>org.phenotips:ontology-access-ui</xwiki.extension.features>
   </properties>
-
-  <build>
-    <extensions>
-      <extension>
-        <groupId>org.xwiki.commons</groupId>
-        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
-        <version>${xwiki.version}</version>
-      </extension>
-    </extensions>
-  </build>
 </project>

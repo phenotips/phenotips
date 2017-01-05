@@ -416,11 +416,17 @@
         <artifactId>wagon-webdav-jackrabbit</artifactId>
         <version>2.6</version>
       </extension>
-      <!-- Needed to add support for the "functional-tests" packaging -->
+      <!-- Adds support for the "functional-tests" packaging -->
       <extension>
         <groupId>org.phenotips</groupId>
         <artifactId>phenotips-functional-tests-lifecycle</artifactId>
         <version>${testframework.version}</version>
+      </extension>
+      <!-- Adds support for the "xar" packaging -->
+      <extension>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
+        <version>${xwiki.version}</version>
       </extension>
     </extensions>
     <plugins>
