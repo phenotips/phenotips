@@ -49,14 +49,12 @@
     <dependency>
       <groupId>antlr</groupId>
       <artifactId>antlr</artifactId>
-      <version>2.7.6</version>
     </dependency>
 
     <!-- The new version of HTMLCleaner is required for PDFs to work properly -->
     <dependency>
       <groupId>net.sourceforge.htmlcleaner</groupId>
       <artifactId>htmlcleaner</artifactId>
-      <version>2.18</version>
     </dependency>
 
     <!-- The Big Old Core -->

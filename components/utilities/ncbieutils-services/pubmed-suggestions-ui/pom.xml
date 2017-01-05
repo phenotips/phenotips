@@ -28,14 +28,4 @@
   <artifactId>ncbieutils-services-pubmed-ui</artifactId>
   <name>PhenoTips - NCBI eUtils Services - Documents providing PubMed relevant articles suggestions</name>
   <packaging>xar</packaging>
-
-  <build>
-    <extensions>
-      <extension>
-        <groupId>org.xwiki.commons</groupId>
-        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
-        <version>${xwiki.version}</version>
-      </extension>
-    </extensions>
-  </build>
 </project>

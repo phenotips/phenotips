@@ -28,14 +28,4 @@
   <artifactId>application-configuration-ui</artifactId>
   <name>PhenoTips - Application configuration - Documents providing the configuration classes and their display code</name>
   <packaging>xar</packaging>
-
-  <build>
-    <extensions>
-      <extension>
-        <groupId>org.xwiki.commons</groupId>
-        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
-        <version>${xwiki.version}</version>
-      </extension>
-    </extensions>
-  </build>
 </project>

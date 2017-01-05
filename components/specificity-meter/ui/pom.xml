@@ -28,14 +28,4 @@
   <artifactId>specificity-meter-ui</artifactId>
   <name>PhenoTips - Specificity Meter - Documents providing the UI</name>
   <packaging>xar</packaging>
-
-  <build>
-    <extensions>
-      <extension>
-        <groupId>org.xwiki.commons</groupId>
-        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
-        <version>${xwiki.version}</version>
-      </extension>
-    </extensions>
-  </build>
 </project>

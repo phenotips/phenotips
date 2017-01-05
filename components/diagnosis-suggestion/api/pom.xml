@@ -76,6 +76,11 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
+    <dependency>
+      <groupId>de.charite.compbio</groupId>
+      <artifactId>ontologizer-core</artifactId>
+      <version>2.1.1</version>
+    </dependency>
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
