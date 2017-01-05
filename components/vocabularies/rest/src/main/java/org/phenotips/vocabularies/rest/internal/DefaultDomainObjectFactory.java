@@ -63,7 +63,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         VocabularyTermSummary rep = new VocabularyTermSummary();
         rep.withId(term.getId());
         rep.withName(term.getName());
-        JSONObject jsonObject = (JSONObject) term.toJSON();
+        JSONObject jsonObject = term.toJSON();
         String symbolKey = "symbol";
         if (jsonObject != null && jsonObject.opt(symbolKey) != null) {
             rep.withSymbol(jsonObject.get(symbolKey).toString());
