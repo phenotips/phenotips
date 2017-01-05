@@ -55,7 +55,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * property
  *
  * @version $Id$
- * @since 1.3M6
+ * @since 1.3M5
  */
 @Component
 @Named("R71501PhenoTips#2991")
@@ -150,8 +150,8 @@ public class R71501PhenoTips2991DataMigration extends AbstractHibernateDataMigra
 
                 patientXDocument.setComment(this.getDescription());
                 patientXDocument.setMinorEdit(true);
-            } catch (Exception e) {
-                this.logger.warn("Failed to update a global mode of inheritance property: {}", e.getMessage());
+            } catch (Exception ex) {
+                this.logger.warn("Failed to update life_status for patient record {}: {}", docName, ex.getMessage());
             }
 
             try {
@@ -183,5 +183,4 @@ public class R71501PhenoTips2991DataMigration extends AbstractHibernateDataMigra
         }
         return lifeStatus;
     }
-
 }
