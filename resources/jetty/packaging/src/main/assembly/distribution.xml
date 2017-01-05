@@ -28,7 +28,7 @@
     <dependencySet>
       <!-- Remove versions so that the shell script used to start Jetty can always refer to start.jar -->
       <outputFileNameMapping>start.jar</outputFileNameMapping>
-      <outputDirectory>/jetty</outputDirectory>
+      <outputDirectory>jetty</outputDirectory>
       <includes>
         <include>org.eclipse.jetty:jetty-start</include>
       </includes>
@@ -36,7 +36,7 @@
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
     <dependencySet>
-      <outputDirectory>/jetty/lib</outputDirectory>
+      <outputDirectory>jetty/lib</outputDirectory>
       <excludes>
         <exclude>org.eclipse.jetty:jetty-start</exclude>
         <exclude>org.phenotips:jetty-*</exclude>
@@ -54,7 +54,7 @@
          we need to rename it. -->
     <dependencySet>
       <outputFileNameMapping>servlet-api-3.0.jar</outputFileNameMapping>
-      <outputDirectory>/jetty/lib</outputDirectory>
+      <outputDirectory>jetty/lib</outputDirectory>
       <includes>
         <include>org.eclipse.jetty.orbit:javax.servlet</include>
       </includes>
@@ -62,7 +62,7 @@
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
     <dependencySet>
-      <outputDirectory>/jetty/lib/ext</outputDirectory>
+      <outputDirectory>jetty/lib/ext</outputDirectory>
       <includes>
         <include>org.phenotips:jetty-*</include>
         <include>commons-io:commons-io</include>
@@ -75,7 +75,7 @@
     <!-- Copy shell scripts and set execute permissions -->
     <fileSet>
       <directory>${basedir}/src/main/resources</directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory></outputDirectory>
       <includes>
         <include>**/*.sh</include>
       </includes>
@@ -84,7 +84,7 @@
     <!-- Copy non shell scripts -->
     <fileSet>
       <directory>${basedir}/src/main/resources</directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory></outputDirectory>
       <excludes>
         <exclude>**/*.sh</exclude>
       </excludes>
