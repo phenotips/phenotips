@@ -438,24 +438,26 @@ document.observe('xwiki:dom:loaded', function()
   }
 
   var displayDates = function(life_status) {
-     var death_date_entered = $$("[id$='date_of_death_entered']")[0];
-     var date_of_death_block = $('date-of-death-block');
+    var death_date_entered = $$("[id$='date_of_death_entered']")[0];
+    var date_of_death_block = $('date-of-death-block');
+    if (!date_of_death_block || !death_date_entered) {
+      return;
+    }
 
-     if (life_status == 'alive') {
-        date_of_death_block.hide();
-        date_of_death.value = "";
-        death_date_entered.value="{}"
-     } else if (life_status == 'deceased') {
-        date_of_death_block.show();
-     }
-  }
+    if (life_status == 'alive') {
+      date_of_death_block.hide();
+      date_of_death.value = "";
+      death_date_entered.value="{}"
+    } else if (life_status == 'deceased') {
+      date_of_death_block.show();
+    }
+  };
 
   displayDates(life_status.value);
   life_status.addEventListener('change', function(event) {
-     var status = event.element().value;
-     displayDates(status);
+    var status = event.element().value;
+    displayDates(status);
   });
-
 });
 
 </code>
