@@ -129,7 +129,7 @@ $obj.set('gender','U')
       <parameters>title=$services.localization.render('phenotips.UIXField.gender')
 enabled=true
 required=
-order=7
+order=8
 fields=gender</parameters>
     </property>
     <property>
