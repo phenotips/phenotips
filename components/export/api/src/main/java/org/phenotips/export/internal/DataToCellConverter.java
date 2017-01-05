@@ -68,7 +68,7 @@ public class DataToCellConverter
 
     private ConversionHelpers prenatalPhenotypeHelper;
 
-    public static final Integer charactersPerLine = 100;
+    public static final Integer MAX_CHARACTERS_PER_LINE = 100;
 
     private TranslationManager translationManager;
 

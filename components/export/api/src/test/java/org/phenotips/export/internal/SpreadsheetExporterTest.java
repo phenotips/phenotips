@@ -149,7 +149,6 @@ public class SpreadsheetExporterTest
         verifyNoMoreInteractions(sheet);
     }
 
-    @SuppressWarnings("static-access")
     @Test
     public void commitTest() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException,
         ComponentLookupException
@@ -183,8 +182,7 @@ public class SpreadsheetExporterTest
         } finally {
             field.setAccessible(isAccessible);
         }
-        DataToCellConverter conv = mock(DataToCellConverter.class);
-        doReturn(conv.charactersPerLine * 210 + 1).when(sheet).getColumnWidth(anyInt());
+        doReturn(DataToCellConverter.MAX_CHARACTERS_PER_LINE * 210 + 1).when(sheet).getColumnWidth(anyInt());
 
         spy.commit(section, sheet);
         order.verify(sheet, atLeastOnce()).autoSizeColumn(anyInt());
