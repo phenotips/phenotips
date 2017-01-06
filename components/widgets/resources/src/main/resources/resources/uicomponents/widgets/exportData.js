@@ -313,7 +313,6 @@ document.observe('xwiki:dom:loading', function() {
     var checkboxList = content.select('.section.columns input[type=checkbox]');
     var columnList = content.down('.section.columns h3');
     if (columnList && checkboxList) {
-
       var all = $$('.selection-tool.select-all')[0];
       var none = $$('.selection-tool.select-none')[0];
       var invert = $$('.selection-tool.select-invert')[0];
@@ -339,7 +338,6 @@ document.observe('xwiki:dom:loading', function() {
           elt.indeterminate = elt._originallyIndeterminate;
         });
       });
-      columnList.insert({'after' : selectionTools});
     }
 
 
