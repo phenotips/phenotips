@@ -212,15 +212,15 @@
 #set ($enteredValue = $object.getProperty("${name}_entered").value)
 #if ("$!enteredValue" != '' &amp;&amp; "$!enteredValue" != '{}')
   #set ($enteredValue = $jsontool.parseToJSONObject($enteredValue))
-  #if ($enteredValue.range &amp;&amp; $enteredValue.range.years &amp;&amp; $enteredValue.range.years &gt; 1)
-    &lt;span class="date"&gt;$!escapetool.xml($enteredValue.year)s&lt;/span&gt;
+  #if ($enteredValue.opt('range') &amp;&amp; $enteredValue.opt('range').opt('years') &amp;&amp; $enteredValue.range.years &gt; 1)
+    &lt;span class="date"&gt;$!escapetool.xml($enteredValue.opt('year'))s&lt;/span&gt;
   #else
     #set ($displayedValue = $format)
-    #if ($enteredValue.year)
+    #if ($enteredValue.opt('year'))
       #set ($displayedValue = $displayedValue.replaceAll('y+', $enteredValue.year))
-      #if ($enteredValue.month)
+      #if ($enteredValue.opt('month'))
         #set ($displayedValue = $displayedValue.replaceAll('M+', $enteredValue.month))
-        #if ($enteredValue.day)
+        #if ($enteredValue.opt('day'))
           #set ($displayedValue = $displayedValue.replaceAll('d+', $enteredValue.day))
         #end
       #end
