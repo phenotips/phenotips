@@ -123,7 +123,7 @@
  * Macro which produces HTML for pedigree legend
  *#
 #macro(pedigreeLegend $pedigreeData $header)
-  #set ($pedigreeDataJSON = $jsontool.parseToJSONObject($pedigreeData))
+  #set ($pedigreeDataJSON = $jsontool.parse($pedigreeData))
   #set ($disorderColors = $pedigreeDataJSON.settings.colors.disorders)
   #set ($candidateGeneColors = $pedigreeDataJSON.settings.colors.candidateGenes)
   #set ($causalGeneColors = $pedigreeDataJSON.settings.colors.causalGenes)
