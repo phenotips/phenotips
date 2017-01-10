@@ -250,7 +250,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
         }
         if (value instanceof Boolean) {
             return (Boolean) value ? 1 : 0;
-        } else if (NumberUtils.isNumber(String.valueOf(value))) {
+        } else if (NumberUtils.isCreatable(String.valueOf(value))) {
             try {
                 return Integer.valueOf(value.toString());
             } catch (Exception ex) {

@@ -18,6 +18,7 @@
 package org.phenotips.data.internal.controller;
 
 import org.phenotips.data.VocabularyProperty;
+
 import org.xwiki.component.annotation.Component;
 
 import java.util.Arrays;
@@ -28,10 +29,9 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Implementation of {@link AbstractComplexController} used for testing.
- * Specifically, this Implementation overrides the isCodeFieldsOnly() method to return true
- * in order to test the functionality of {@link AbstractComplexController} when all fields can be
- * converted to vocabulary objects
+ * Implementation of {@link AbstractComplexController} used for testing. Specifically, this Implementation overrides the
+ * isCodeFieldsOnly() method to return true in order to test the functionality of {@link AbstractComplexController} when
+ * all fields can be converted to vocabulary objects
  */
 @Component
 @Named("codeFieldsTest")
@@ -39,7 +39,6 @@ import javax.inject.Singleton;
 public class AbstractComplexControllerCodeFieldsTestImplementation
     extends AbstractComplexController<List<VocabularyProperty>>
 {
-
     protected static String DATA_NAME = "codeFieldsTest";
 
     protected static String PROPERTY_1 = AbstractSimpleControllerTestImplementation.PROPERTY_1;

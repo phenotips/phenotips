@@ -26,6 +26,7 @@ import org.phenotips.data.SimpleValuePatientData;
 import org.phenotips.data.VocabularyProperty;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -65,9 +66,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test for the {@link AbstractComplexController} defined methods (load, save, writeJSON, readJSON).
- * These methods are tested using a mock implementation of {@link AbstractComplexController} that provides
- * simple definitions of the abstract methods getName, getProperties, and getJsonPropertyName
+ * Test for the {@link AbstractComplexController} defined methods (load, save, writeJSON, readJSON). These methods are
+ * tested using a mock implementation of {@link AbstractComplexController} that provides simple definitions of the
+ * abstract methods getName, getProperties, and getJsonPropertyName
  */
 public class AbstractComplexControllerTest
 {
@@ -75,12 +76,12 @@ public class AbstractComplexControllerTest
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
         new MockitoComponentMockingRule<PatientDataController<String>>(
-        AbstractComplexControllerTestImplementation.class);
+            AbstractComplexControllerTestImplementation.class);
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<List<VocabularyProperty>>> codeFieldImplMocker =
         new MockitoComponentMockingRule<PatientDataController<List<VocabularyProperty>>>(
-        AbstractComplexControllerCodeFieldsTestImplementation.class);
+            AbstractComplexControllerCodeFieldsTestImplementation.class);
 
     private DocumentAccessBridge documentAccessBridge;
 
@@ -110,20 +111,19 @@ public class AbstractComplexControllerTest
     @Mock
     private BaseProperty<ObjectPropertyReference> baseProperty5;
 
-    private final String DATA_NAME = AbstractComplexControllerTestImplementation.DATA_NAME;
+    private static final String DATA_NAME = AbstractComplexControllerTestImplementation.DATA_NAME;
 
-    private final String CODE_FIELDS_DATA_NAME = AbstractComplexControllerCodeFieldsTestImplementation.DATA_NAME;
+    private static final String CODE_FIELDS_DATA_NAME = AbstractComplexControllerCodeFieldsTestImplementation.DATA_NAME;
 
-    private final String PROPERTY_1 = AbstractComplexControllerTestImplementation.PROPERTY_1;
+    private static final String PROPERTY_1 = AbstractComplexControllerTestImplementation.PROPERTY_1;
 
-    private final String PROPERTY_2 = AbstractComplexControllerTestImplementation.PROPERTY_2;
+    private static final String PROPERTY_2 = AbstractComplexControllerTestImplementation.PROPERTY_2;
 
-    private final String PROPERTY_3 = AbstractComplexControllerTestImplementation.PROPERTY_3;
+    private static final String PROPERTY_3 = AbstractComplexControllerTestImplementation.PROPERTY_3;
 
-    private final String PROPERTY_4 = AbstractComplexControllerTestImplementation.PROPERTY_4;
+    private static final String PROPERTY_4 = AbstractComplexControllerTestImplementation.PROPERTY_4;
 
-    private final String PROPERTY_5 = AbstractComplexControllerTestImplementation.PROPERTY_5;
-
+    private static final String PROPERTY_5 = AbstractComplexControllerTestImplementation.PROPERTY_5;
 
     @Before
     public void setUp() throws Exception
@@ -133,15 +133,15 @@ public class AbstractComplexControllerTest
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
 
         this.patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocument();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
+        doReturn(this.patientDocument).when(this.patient).getDocument();
+        doReturn(this.doc).when(this.documentAccessBridge).getDocument(this.patientDocument);
         doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
-        doReturn(baseProperty1).when(this.data).getField(PROPERTY_1);
-        doReturn(baseProperty2).when(this.data).getField(PROPERTY_2);
-        doReturn(baseProperty3).when(this.data).getField(PROPERTY_3);
-        doReturn(baseProperty4).when(this.data).getField(PROPERTY_4);
-        doReturn(baseProperty5).when(this.data).getField(PROPERTY_5);
+        doReturn(this.baseProperty1).when(this.data).getField(PROPERTY_1);
+        doReturn(this.baseProperty2).when(this.data).getField(PROPERTY_2);
+        doReturn(this.baseProperty3).when(this.data).getField(PROPERTY_3);
+        doReturn(this.baseProperty4).when(this.data).getField(PROPERTY_4);
+        doReturn(this.baseProperty5).when(this.data).getField(PROPERTY_5);
     }
 
     @Test
@@ -153,19 +153,20 @@ public class AbstractComplexControllerTest
     @Test
     public void verifyDefaultTestImplementationIsNotCodeFieldsOnly() throws ComponentLookupException
     {
-        AbstractComplexController controller = (AbstractComplexController) this.mocker.getComponentUnderTest();
+        AbstractComplexController<String> controller =
+            (AbstractComplexController<String>) this.mocker.getComponentUnderTest();
         Assert.assertFalse(controller.isCodeFieldsOnly());
     }
-
 
     @Test
     public void verifyCodeFieldsOnlyImplementationIsCodeFieldsOnly() throws ComponentLookupException
     {
-        AbstractComplexController controller = (AbstractComplexController) this.codeFieldImplMocker.getComponentUnderTest();
+        AbstractComplexController<List<VocabularyProperty>> controller =
+            (AbstractComplexController<List<VocabularyProperty>>) this.codeFieldImplMocker.getComponentUnderTest();
         Assert.assertTrue(controller.isCodeFieldsOnly());
     }
 
-    //-----------------------------------load() tests-----------------------------------
+    // -----------------------------------load() tests-----------------------------------
 
     @Test
     public void loadCatchesExceptionFromDocumentAccess() throws Exception
@@ -297,7 +298,7 @@ public class AbstractComplexControllerTest
         Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_1, datum1);
         map.put(PROPERTY_2, datum2);
-        PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
@@ -318,7 +319,7 @@ public class AbstractComplexControllerTest
         Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_1, datum1);
         map.put(PROPERTY_2, datum2);
-        PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -341,7 +342,7 @@ public class AbstractComplexControllerTest
         map.put(PROPERTY_3, "1");
         map.put(PROPERTY_4, "0");
         map.put(PROPERTY_5, "SOME_NON_BOOL_STRING");
-        PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
@@ -361,7 +362,7 @@ public class AbstractComplexControllerTest
         Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_3, "1");
         map.put(PROPERTY_4, "0");
-        PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -385,7 +386,7 @@ public class AbstractComplexControllerTest
         Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_1, datum1);
         map.put(PROPERTY_2, datum2);
-        PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -402,14 +403,14 @@ public class AbstractComplexControllerTest
 
     @Test
     public void writeJSONWithSelectedFieldsAddsContainerWithAllValuesWhenSelectedFieldsNull()
-            throws ComponentLookupException
+        throws ComponentLookupException
     {
         String datum1 = "datum1";
         String datum2 = "datum2";
         Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_1, datum1);
         map.put(PROPERTY_2, datum2);
-        PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
@@ -430,7 +431,7 @@ public class AbstractComplexControllerTest
         Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_1, datum1);
         map.put(PROPERTY_2, datum2);
-        PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -481,10 +482,9 @@ public class AbstractComplexControllerTest
         list = new LinkedList<>();
         list.add(new AbstractComplexController.QuickVocabularyProperty("HP:0002223"));
         map.put(PROPERTY_2, list);
-        PatientData<List<VocabularyProperty>> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
+        PatientData<List<VocabularyProperty>> patientData = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(CODE_FIELDS_DATA_NAME);
         JSONObject json = new JSONObject();
-
 
         this.codeFieldImplMocker.getComponentUnderTest().writeJSON(this.patient, json, null);
 

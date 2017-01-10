@@ -18,6 +18,7 @@
 package org.phenotips.data.internal.controller;
 
 import org.phenotips.data.PatientDataController;
+
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -29,8 +30,8 @@ import org.junit.Rule;
 import org.junit.Test;
 
 /**
- * Test for the {@link PrenatalPerinatalHistoryController} Component,
- * only the overridden methods from {@link AbstractComplexController} are tested here
+ * Test for the {@link PrenatalPerinatalHistoryController} Component, only the overridden methods from
+ * {@link AbstractComplexController} are tested here
  */
 public class PrenatalPerinatalHistoryControllerTest
 {
@@ -67,7 +68,7 @@ public class PrenatalPerinatalHistoryControllerTest
     public void checkGetJsonPropertyName() throws ComponentLookupException
     {
         Assert.assertEquals("prenatal_perinatal_history",
-            ((AbstractComplexController) this.mocker.getComponentUnderTest()).getJsonPropertyName());
+            ((AbstractComplexController<String>) this.mocker.getComponentUnderTest()).getJsonPropertyName());
     }
 
     @Test
@@ -109,6 +110,7 @@ public class PrenatalPerinatalHistoryControllerTest
     @Test
     public void checkGetCodeFields() throws ComponentLookupException
     {
-        Assert.assertTrue(((AbstractComplexController) this.mocker.getComponentUnderTest()).getCodeFields().isEmpty());
+        Assert.assertTrue(
+            ((AbstractComplexController<String>) this.mocker.getComponentUnderTest()).getCodeFields().isEmpty());
     }
 }
