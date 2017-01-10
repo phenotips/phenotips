@@ -234,7 +234,7 @@ define([
                 var circle = this._generateRadioTickCircle(this.getX()+15, computeItemPosition(index), false);
                 var text = editor.getPaper().text(this.getX()+25, computeItemPosition(index), buttons[index].label).attr(PedigreeEditorParameters.attributes.awLabel);
                 text.node.setAttribute("class", "field-no-user-select");
-                var rect = editor.getPaper().rect(this.getX()+5, computeItemPosition(index)-itemHeight/2, this._width-10, itemHeight, 1).attr(PedigreeEditorParameters.attributes.awRect);
+                var rect = editor.getPaper().rect(this.getX(), computeItemPosition(index)-itemHeight/2, this._width-10, itemHeight, 1).attr(PedigreeEditorParameters.attributes.awRect);
 
                 rect.click(function(i) {
                     tick.attr({'cy' : computeItemPosition(i)});
@@ -253,8 +253,6 @@ define([
                     }
                     document.fire("pedigree:node:setproperty", event);
                 }.bind(this, index));
-
-                //TODO: generate 'age' and 'cause' inputs for deceased option
 
                 animatedElements.push(circle, text);
                 aliveAndWell.push(rect);
