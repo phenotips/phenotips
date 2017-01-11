@@ -61,7 +61,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * from HGNC symbol to the Ensembl ID.
  *
  * @version $Id$
- * @since 1.3M4
+ * @since 1.3M5
  */
 @Component
 @Named("R71499-PT-2777")

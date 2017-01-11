@@ -60,7 +60,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * Migration for PhenoTips issue PT-2944: translate existing gene data in pedigree from gene name to Ensembl gene IDs.
  *
  * @version $Id$
- * @since 1.3M4
+ * @since 1.3M5
  */
 @Component
 @Named("R71500-PT-2944")

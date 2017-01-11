@@ -526,12 +526,12 @@ public class GeneListControllerTest
         item.put(JSON_STATUS_KEY, "candidate");
         data.put(item);
         item = new JSONObject();
-        // thi sgene is duplicated 2 times - in candidate and in rejected sections. Should become rejected
+        // this gene is duplicated 2 times - in candidate and in rejected sections. Should become rejected
         item.put(JSON_GENE_SYMBOL, "GENE_TO_BECOME_REJECTED");
         item.put(JSON_STATUS_KEY, "candidate");
         data.put(item);
         item = new JSONObject();
-        // thi sgene is duplicated 3 times - in candidate, rejected and solved sections. Should become solved
+        // this gene is duplicated 3 times - in candidate, rejected and solved sections. Should become solved
         item.put(JSON_GENE_SYMBOL, "GENE_TO_BECOME_SOLVED");
         item.put(JSON_STATUS_KEY, "candidate");
         data.put(item);
