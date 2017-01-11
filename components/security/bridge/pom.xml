@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-security</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-5</version>
   </parent>
   <artifactId>phenotips-security-bridge</artifactId>
   <name>PhenoTips - Security - Bridge between the old XWiki security interfaces and the new security components</name>

@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>vocabularies</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-5</version>
   </parent>
   <artifactId>vocabularies-ui</artifactId>
   <name>PhenoTips - Vocabularies - Documents providing the patient class, sheet and display code</name>

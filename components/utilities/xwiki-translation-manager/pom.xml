@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-utilities</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-5</version>
   </parent>
   <artifactId>xwiki-translation-manager</artifactId>
   <name>XWiki Translation Manager</name>
