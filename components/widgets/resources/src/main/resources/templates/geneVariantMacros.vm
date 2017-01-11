@@ -14,8 +14,8 @@
 #end
 ##
 ##
-#macro (__variant_addTool $classname $genesymbol)
-{{html clean="false"}}<span class="actions"><label class="create-button-label" style="top: .14em;">+</label><span class="buttonwrapper"><a class="button add-variant add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;xpage=plain&amp;xaction=lastentry&amp;withLabel=false&amp;${classname}_genesymbol=$genesymbol&amp;form_token=$!{services.csrf.getToken()}")" title="$services.localization.render("${classname}.variantTable.newEntry")"> $services.localization.render("${classname}.variantTable.newEntry")</a></span></span>{{/html}} {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}.add.hint").replace('"', '~~~"')"/}}
+#macro (__variant_addTool $classname $genename)
+{{html clean="false"}}<span class="actions"><label class="create-button-label" style="top: .14em;">+</label><span class="buttonwrapper"><a class="button add-variant add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;xpage=plain&amp;xaction=lastentry&amp;withLabel=false&amp;${classname}_gene=$genename&amp;form_token=$!{services.csrf.getToken()}")" title="$services.localization.render("${classname}.variantTable.newEntry")"> $services.localization.render("${classname}.variantTable.newEntry")</a></span></span>{{/html}} {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}.add.hint").replace('"', '~~~"')"/}}
 #end
 ##
 #macro (__variant__deleteTool $object)
@@ -29,7 +29,7 @@
 #macro(__variant_head_empty $classname $options)##
 #set($count = 'ZZVARIANT_COUNT_PLACEHOLDERZZ')
 #set($geneObjNumber = 'ZZGENE_INDEX_PLACEHOLDERZZ')
-#set($geneName = 'ZZGENE_SYMBOL_PLACEHOLDERZZ')
+#set($geneName = 'ZZGENE_NAME_PLACEHOLDERZZ')
 |(%class="pseudoindent"%)##
 |=(% colspan="4" class="variant variant-title gene-$geneObjNumber" %)$services.localization.render("${classname}.variantTable.title", [$geneName, $count]) \\
 (%class="variant-gene-$geneObjNumber variant-title-row variant-hide-heading-$geneObjNumber"%)##
@@ -43,8 +43,14 @@
 ##
 ##
 #macro(__variant_head $count $geneObjNumber $geneName $classname $options)##
+#set ($term = $services.vocabularies.hgnc.getTerm("${geneName}"))
+#if ($term)
+  #set ($geneSymbol = $term.symbol)
+#else
+  #set ($geneSymbol = $gene.id)
+#end
 |(%class="pseudoindent"%)##
-|=(% colspan="4" class="variant variant-title gene-$geneObjNumber" %)$services.localization.render("${classname}.variantTable.title", [$!{services.rendering.escape($geneName, $doc.syntax)}, $count]) \\
+|=(% colspan="4" class="variant variant-title gene-$geneObjNumber" %)$services.localization.render("${classname}.variantTable.title", [$!{services.rendering.escape($geneSymbol, $doc.syntax)}, $count]) \\
 (%class="variant-gene-$geneObjNumber variant-title-row variant-hide-heading-$geneObjNumber"%)##
 |(%class="pseudoindent"%)##
 |=(% class="variant var-row-number"  %) #(%%)##
@@ -61,7 +67,7 @@
 #set($variantIndex = 'ZZVARIANT_INDEX_PLACEHOLDERZZ')
 #set($geneObjNumber = 'ZZGENE_INDEX_PLACEHOLDERZZ')
 #set($count = 'ZZVRCOUNT_PLACEHOLDERZZ')
-|(% class="v-collapsed" %) $doc.display('genesymbol', $options.mode, $fakeObj)##
+|(% class="v-collapsed" %) $doc.display('gene', $options.mode, $fakeObj)##
 |(% class="pseudoindent" %) ##
 |(% class="variant-row-count variant-${variantIndex} variant" %)$count##
 #foreach($propName in $options.defaultProperties)
@@ -73,7 +79,7 @@
 |(% class = "variant" %)##
 |(% colspan="3" class="variant moreinfo" %)(% class="variant-moreinfo-editbutton-row variant-$variantIndex" %)(((##
 #foreach ($prop in $fakeObj.xWikiClass.properties)
-#if ($prop.getName() != 'genesymbol' && !$options.defaultProperties.contains($prop.getName()))
+#if ($prop.getName() != 'gene' && !$options.defaultProperties.contains($prop.getName()))
 
 #set ($isInputString = $options.inputStrings.contains($prop.getName()))
 #set($rawValue = "")
@@ -94,7 +100,7 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 ##
 #macro (__variant_row $variantObj $count $variantIndex $geneObjNumber $options)
 #if ($options.mode == 'edit')
-|(% class="v-collapsed" %) $doc.display('genesymbol', $options.mode, $variantObj)##
+|(% class="v-collapsed" %) $doc.display('gene', $options.mode, $variantObj)##
 #end
 |(% class="pseudoindent" %) |(% class="variant-row-count variant-${variantIndex} variant" %)$count##
 #foreach($propName in $options.defaultProperties)
@@ -105,7 +111,7 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 |(% class="pseudoindent" %)|(% class = "variant" %)|(% colspan="3" class="variant moreinfo" %)##
 #if ($options.mode == 'edit')(% class="variant-moreinfo-editbutton-row variant-$variantIndex" %)#end(((##
 #foreach ($prop in $variantObj.xWikiClass.properties)
-#if ($prop.getName() != 'genesymbol' && !$options.defaultProperties.contains($prop.getName()))
+#if ($prop.getName() != 'gene' && !$options.defaultProperties.contains($prop.getName()))
 #set($rawValue = $variantObj.getValue($prop.getName()))
 #set($isValueEmpty = "$!{rawValue}" == '' || $rawValue == 'NA' || $rawValue == [])
 #if ($options.mode == 'edit' || ($options.mode != 'edit' && !$isValueEmpty))
@@ -122,9 +128,9 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 ##
 ##
 ##
-#macro(__variant_table $variantObjects $geneNumber $geneObjNumber $options $genesymbol $variantClassName)##
+#macro(__variant_table $variantObjects $geneNumber $geneObjNumber $options $genename $variantClassName)##
 #if ($variantObjects.size() > 0)##
-(%class="variant-gene-$geneObjNumber variant-title-row"%)#__variant_head($variantObjects.size() $geneObjNumber $genesymbol $variantClassName $options)
+(%class="variant-gene-$geneObjNumber variant-title-row"%)#__variant_head($variantObjects.size() $geneObjNumber $genename $variantClassName $options)
 #foreach ($o in $variantObjects)
 #set ($variantIndex = $o.number)
 #set ($variantCount = $foreach.count)
@@ -133,14 +139,14 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 #end
 #if ($options.mode == 'edit')
 (%class="variant-gene-$geneObjNumber variant-footer##
-#if ($genesymbol == "") v-collapsed#end"%)#__variant_foot($options $geneObjNumber $genesymbol $variantClassName)#end
+#if ($genename == "") v-collapsed#end"%)#__variant_foot($options $geneObjNumber $genename $variantClassName)#end
 #end
 ##
 ##
-#macro(__variant_foot $options $geneObjNumber $genesymbol $variantClassName)##
+#macro(__variant_foot $options $geneObjNumber $genename $variantClassName)##
 #if ($options.mode == 'edit')
 |(%class="pseudoindent"%)##
-|(% colspan="4" class="variant variant-footer-$geneObjNumber" style="background : inherit;" %) #__variant_addTool($variantClassName $genesymbol)##
+|(% colspan="4" class="variant variant-footer-$geneObjNumber" style="background : inherit;" %) #__variant_addTool($variantClassName $genename)##
 #end\\
 #end
 ##
@@ -148,7 +154,7 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 ##
 #macro (__gene_row $geneObj $geneNumber $variantClass $options)##
 #set($geneObjNumber = $geneObj.number)
-#set($variantObjects = $doc.getObjects($variantClass.name, "genesymbol", $geneObj.getProperty('gene').value))
+#set($variantObjects = $doc.getObjects($variantClass.name, "gene", $geneObj.getProperty('gene').value))
 |(% class="row-count" %)$geneNumber##
 #foreach($prop in $geneObj.xWikiClass.properties)##
 |(% class="$prop.translatedPrettyName gene #if ($prop.name == 'gene')mandatory#end gene-$geneObjNumber"##
@@ -167,7 +173,7 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 #set($fakeObj = $doc.newObject($geneClassName))
 #set($geneNumber = 'ZZGENE_NUMBER_PLACEHOLDERZZ')
 #set($geneObjNumber = 'ZZGENE_INDEX_PLACEHOLDERZZ')
-#set($genesymbol = 'ZZGENE_SYMBOL_PLACEHOLDERZZ')
+#set($geneName = 'ZZGENE_NAME_PLACEHOLDERZZ')
 |(% class="row-count" %)$geneNumber##
 #foreach($prop in $xwiki.getDocument($geneClassName).xWikiClass.properties)
 |(% class="$prop.translatedPrettyName gene #if ($prop.name == 'gene')mandatory#end gene-$geneObjNumber"##
@@ -175,7 +181,7 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 #end
 |(% class="gene delete-gene-button-$geneObjNumber" %)#__gene__deleteWithVariants__tool($fakeObj $variantClassName)
 
-(%class="variant-gene-$geneObjNumber variant-footer"%)#__variant_foot($options $geneObjNumber $genesymbol $variantClassName)
+(%class="variant-gene-$geneObjNumber variant-footer"%)#__variant_foot($options $geneObjNumber $geneName $variantClassName)
 #end
 ##
 ##
@@ -212,7 +218,7 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 ##
 #if ($xcontext.action == 'get' && $request.action == 'deletegene' && "$!{request.gene}" != '' && "$!{request.objnumber}" != '' && $services.csrf.isTokenValid("$!{request.form_token}"))
   #set ($geneObject = $doc.getObject($!{request.geneclassname}, $!{request.objnumber}))
-  #set ($variantObjects = $doc.getObjects($!{request.variantclassname}, 'genesymbol', $request.gene))
+  #set ($variantObjects = $doc.getObjects($!{request.variantclassname}, 'gene', $request.gene))
   ## delete gene
   $doc.removeObject($geneObject)
   ## delete variants

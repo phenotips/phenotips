@@ -56,14 +56,16 @@ define([
             try {
                 var parsed = JSON.parse(response.responseText);
                 //console.log(Helpers.stringifyObject(parsed));
-                console.log("LOADED HPO TERM: id = " + this._hpoID + ", name = " + parsed.rows[0].name);
                 if (parsed.hasOwnProperty("rows") && parsed.rows.length > 0) {
+                    console.log("LOADED TERM INFO: id = " + this._hpoID + ", name = " + parsed.rows[0].name);
                     this._name = parsed.rows[0].name;
+                } else {
+                    console.log("LOADED TERM INFO: id = " + this._hpoID + " -> NO DATA");
                 }
             } catch (err) {
-                console.log("[LOAD HPO TERM] Parse Error: " +  err);
+                console.log("[LOAD TERM] Parse Error: " +  err);
             }
-            document.fire('hpoTerm:name', {'id' : this._hpoID, 'name': this._name});
+            document.fire('term:name', {'id' : this._hpoID, 'name': this._name});
         }
     });
 

@@ -26,6 +26,7 @@ define([
         "pedigree/view/exportSelector",
         "pedigree/view/candidateGeneLegend",
         "pedigree/view/causalGeneLegend",
+        "pedigree/view/rejectedGeneLegend",
         "pedigree/view/hpoLegend",
         "pedigree/view/patientDropLegend",
         "pedigree/view/importSelector",
@@ -59,6 +60,7 @@ define([
         ExportSelector,
         CandidateGeneLegend,
         CausalGeneLegend,
+        RejectedGeneLegend,
         HPOLegend,
         PatientDropLegend,
         ImportSelector,
@@ -118,6 +120,7 @@ define([
             this._disorderLegend = new DisorderLegend();
             this._candidateGeneLegend = new CandidateGeneLegend();
             this._causalGeneLegend = new CausalGeneLegend();
+            this._rejectedGeneLegend = new RejectedGeneLegend();
             this._hpoLegend = new HPOLegend();
             this._cancerLegend = new CancerLegend();
             this._patientLegend = new PatientDropLegend();
@@ -549,13 +552,15 @@ define([
                 return this.getCandidateGeneLegend();
             } else if (geneStatus == "solved") {
                 return this.getCausalGeneLegend();
+            } else if (geneStatus == "rejected") {
+                return this.getRejectedGeneLegend();
             }
             return null;
         },
 
         /**
          * @method getCausalGeneLegend
-         * @return {Legend} Responsible for managing and displaying the causal genes legend
+         * @return {Legend} Responsible for managing and displaying the causal genes
          */
         getCausalGeneLegend: function() {
             return this._causalGeneLegend;
@@ -563,14 +568,23 @@ define([
 
         /**
          * @method getCandidateGeneLegend
-         * @return {Legend} Responsible for managing and displaying the candidate genes legend
+         * @return {Legend} Responsible for managing and displaying the candidate genes
          */
         getCandidateGeneLegend: function() {
             return this._candidateGeneLegend;
         },
 
         /**
-         * Returns the color of the gene for a given person.
+         * @method getRejectedGeneLegend
+         * @return {Legend} Responsible for managing rejected genes
+         */
+        getRejectedGeneLegend: function() {
+            return this._rejectedGeneLegend;
+        },
+
+        /**
+         * Returns the color of the gene for a given person (the color may be different for different people
+         * because the same gene my be causal for one person and candidate or rejected for another).
          * If a gene does not belong to any legend "undefined" is returned.
          */
         getGeneColor: function(geneId, nodeID) {

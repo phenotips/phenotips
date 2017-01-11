@@ -22,22 +22,25 @@ import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -70,6 +73,12 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     protected static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("GeneClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
+    private static final String HGNC = "HGNC";
+
+    private static final String ENSEMBL_ID_PROPERTY_NAME = "ensembl_gene_id";
+
+    private static final String SYMBOL_PROPERTY_NAME = "symbol";
+
     private static final String GENES_STRING = "genes";
 
     private static final String CONTROLLER_NAME = GENES_STRING;
@@ -84,13 +93,17 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
     private static final String INTERNAL_COMMENTS_KEY = "comments";
 
-    private static final String INTERNAL_CANDIDATE_KEY = "candidate";
+    private static final String INTERNAL_CANDIDATE_VALUE = "candidate";
 
-    private static final String INTERNAL_REJECTED_KEY = "rejected";
+    private static final String INTERNAL_REJECTED_VALUE = "rejected";
 
-    private static final String INTERNAL_SOLVED_KEY = "solved";
+    private static final String INTERNAL_SOLVED_VALUE = "solved";
 
-    private static final String JSON_GENE_KEY = INTERNAL_GENE_KEY;
+    private static final String JSON_GENE_ID = "id";
+
+    private static final String JSON_GENE_SYMBOL = INTERNAL_GENE_KEY;
+
+    private static final String JSON_DEPRECATED_GENE_ID = JSON_GENE_SYMBOL;
 
     private static final String JSON_STATUS_KEY = INTERNAL_STATUS_KEY;
 
@@ -98,15 +111,20 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
     private static final String JSON_COMMENTS_KEY = INTERNAL_COMMENTS_KEY;
 
-    private static final String JSON_SOLVED_KEY = INTERNAL_SOLVED_KEY;
+    private static final String JSON_SOLVED_KEY = INTERNAL_SOLVED_VALUE;
 
     private static final String JSON_REJECTEDGENES_KEY = "rejectedGenes";
 
-    private static final List<String> STATUS_VALUES = Arrays.asList(INTERNAL_CANDIDATE_KEY, INTERNAL_REJECTED_KEY,
-        INTERNAL_SOLVED_KEY);
+    private static final List<String> STATUS_VALUES = Arrays.asList(INTERNAL_CANDIDATE_VALUE, INTERNAL_REJECTED_VALUE,
+        INTERNAL_SOLVED_VALUE);
 
     private static final List<String> STRATEGY_VALUES = Arrays.asList("sequencing", "deletion", "familial_mutation",
         "common_mutations");
+
+    @Inject
+    private VocabularyManager vocabularyManager;
+
+    private Vocabulary hgnc;
 
     @Inject
     private Logger logger;
@@ -209,46 +227,52 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
         PatientData<Map<String, String>> data = patient.getData(getName());
         if (data == null || !data.isIndexed() || data.size() == 0) {
-            if (selectedFieldNames != null && selectedFieldNames.contains(GENES_ENABLING_FIELD_NAME)) {
+            if (selectedFieldNames == null || selectedFieldNames.contains(GENES_ENABLING_FIELD_NAME)) {
                 json.put(getJsonPropertyName(), new JSONArray());
             }
             return;
         }
 
+        // by this point we know there is some data since data.size() != 0
+        JSONArray geneArray = new JSONArray();
+
         Iterator<Map<String, String>> iterator = data.iterator();
-        // put() is placed here because we want to create the property iff at least one field is set/enabled
-        // (by this point we know there is some data since iterator.hasNext() == true)
-        json.put(getJsonPropertyName(), new JSONArray());
-        JSONArray container = json.getJSONArray(getJsonPropertyName());
-
-        Map<String, String> internalToJSONkeys = new HashMap<>();
-        internalToJSONkeys.put(JSON_GENE_KEY, INTERNAL_GENE_KEY);
-        internalToJSONkeys.put(JSON_STATUS_KEY, INTERNAL_STATUS_KEY);
-        internalToJSONkeys.put(JSON_STRATEGY_KEY, INTERNAL_STRATEGY_KEY);
-        internalToJSONkeys.put(JSON_COMMENTS_KEY, INTERNAL_COMMENTS_KEY);
-
         while (iterator.hasNext()) {
             Map<String, String> item = iterator.next();
             if (!StringUtils.isBlank(item.get(INTERNAL_GENE_KEY))) {
-                JSONObject nextGene = assebleGene(internalToJSONkeys, item);
-                container.put(nextGene);
+                geneArray.put(generateGeneJSON(item));
             }
+        }
+
+        json.put(getJsonPropertyName(), geneArray);
+    }
+
+    private JSONObject generateGeneJSON(Map<String, String> data)
+    {
+        JSONObject newGene = new JSONObject();
+        String geneId = data.get(INTERNAL_GENE_KEY).toString();
+        newGene.put(JSON_GENE_ID, geneId);
+        newGene.put(JSON_GENE_SYMBOL, getSymbol(geneId));
+        setStringValueIfNotBlank(newGene, JSON_COMMENTS_KEY, data.get(INTERNAL_COMMENTS_KEY), null);
+        setStringValueIfNotBlank(newGene, JSON_STATUS_KEY, data.get(INTERNAL_STATUS_KEY), INTERNAL_CANDIDATE_VALUE);
+        setArrayValueIfNotBlank(newGene, JSON_STRATEGY_KEY, data.get(INTERNAL_STRATEGY_KEY));
+        return newGene;
+    }
+
+    private void setStringValueIfNotBlank(JSONObject object, String key, String value, String defaultValue)
+    {
+        if (!StringUtils.isBlank(value)) {
+            object.put(key, value);
+        } else if (defaultValue != null) {
+            object.put(key, defaultValue);
         }
     }
 
-    private JSONObject assebleGene(Map<String, String> internalToJSONkeys, Map<String, String> data)
+    private void setArrayValueIfNotBlank(JSONObject object, String key, String listString)
     {
-        JSONObject newGene = new JSONObject();
-        for (String key : internalToJSONkeys.keySet()) {
-            if (!StringUtils.isBlank(data.get(key))) {
-                if (INTERNAL_STRATEGY_KEY.equals(key)) {
-                    newGene.put(key, new JSONArray(data.get(internalToJSONkeys.get(key)).split("\\|")));
-                } else {
-                    newGene.put(key, data.get(internalToJSONkeys.get(key)));
-                }
-            }
+        if (!StringUtils.isBlank(listString)) {
+            object.put(key, new JSONArray(listString.split("\\|")));
         }
-        return newGene;
     }
 
     @Override
@@ -259,123 +283,168 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             return null;
         }
 
-        Map<String, List<String>> enumValues = new LinkedHashMap<>();
-        enumValues.put(INTERNAL_STATUS_KEY, STATUS_VALUES);
-        enumValues.put(INTERNAL_STRATEGY_KEY, STRATEGY_VALUES);
-
         try {
-            JSONArray genesJson = json.optJSONArray(this.getJsonPropertyName());
-
-            // 1.2.* json compatibility
-            JSONArray rejectedGenes = json.optJSONArray(JSON_REJECTEDGENES_KEY);
-            JSONObject solvedGene = json.optJSONObject(JSON_SOLVED_KEY);
-
             List<Map<String, String>> accumulatedGenes = new LinkedList<>();
-            List<String> geneSymbols = new ArrayList<>();
 
-            parseGenesJson(genesJson, geneSymbols, accumulatedGenes, enumValues);
+            parseGenesJson(json, accumulatedGenes);
 
-            // 1.2.* json compatibility
-            parseRejectedGenes(rejectedGenes, geneSymbols, accumulatedGenes);
-            parseSolvedGene(solvedGene, geneSymbols, accumulatedGenes);
+            // v1.2.x json compatibility
+            parseRejectedGenes(json, accumulatedGenes);
+            parseSolvedGene(json, accumulatedGenes);
 
             return new IndexedPatientData<>(getName(), accumulatedGenes);
         } catch (Exception e) {
-            this.logger.error("Could not load genes from JSON", e.getMessage());
+            this.logger.error("Could not load genes from JSON: [{}]", e.getMessage(), e);
+            return null;
         }
-        return null;
     }
 
-    private void parseGenesJson(JSONArray genesJson, List<String> geneSymbols, List<Map<String, String>> allGenes,
-        Map<String, List<String>> enumValues)
+    /**
+     * Supports both 1.3-m5 and older 1.3-xx format.
+     * 1.3-m5 and newer format:
+     *   {"id": ENSEMBL_Id [[, "gene": HGNC_Symbol] , ...] }
+     * 1.3-old format:
+     *   {"gene": HGNC_Symbol [, ...] }
+     */
+    private void parseGenesJson(JSONObject json, List<Map<String, String>> allGenes)
     {
+        JSONArray genesJson = json.optJSONArray(this.getJsonPropertyName());
+
+        Set<String> alreadyCollectedGeneNames = new HashSet<>();
+
         if (genesJson != null) {
             for (int i = 0; i < genesJson.length(); ++i) {
                 JSONObject geneJson = genesJson.getJSONObject(i);
 
-                // discard it if gene symbol is not present in the geneJson, or is whitespace, empty or duplicate
-                if (!geneJson.has(JSON_GENE_KEY) || StringUtils.isBlank(geneJson.getString(JSON_GENE_KEY))
-                    || geneSymbols.contains(geneJson.getString(JSON_GENE_KEY))) {
+                // gene ID is either the "id" field, or, if missing, the "gene" field
+                String geneId = geneJson.optString(JSON_GENE_ID);
+                if (StringUtils.isBlank(geneId)) {
+                    geneId = geneJson.optString(JSON_GENE_SYMBOL);
+                }
+                geneId = getEnsemblId(geneId);
+
+                // discard it if gene id is not present in the geneJson or is empty or is a duplicate
+                // of an id that has been parsed and added to the list already
+                if (StringUtils.isBlank(geneId) || alreadyCollectedGeneNames.contains(geneId)) {
                     continue;
                 }
 
-                Map<String, String> singleGene = new LinkedHashMap<>();
-                for (String property : this.getProperties()) {
-                    if (geneJson.has(property)) {
-                        parseGeneProperty(property, geneJson, enumValues, singleGene);
-                    }
-                }
+                Map<String, String> singleGene = parseOneGene(geneId, geneJson);
+
+                // every gene should have a status; assume candidate if not specified in the input JSON
                 if (!singleGene.containsKey(INTERNAL_STATUS_KEY)) {
-                    singleGene.put(INTERNAL_STATUS_KEY, INTERNAL_CANDIDATE_KEY);
+                    singleGene.put(INTERNAL_STATUS_KEY, INTERNAL_CANDIDATE_VALUE);
                 }
 
                 allGenes.add(singleGene);
-                geneSymbols.add(geneJson.getString(JSON_GENE_KEY));
+                alreadyCollectedGeneNames.add(geneId);
             }
         }
     }
 
-    private void parseRejectedGenes(JSONArray rejectedGenes, List<String> geneSymbols,
-        List<Map<String, String>> allGenes)
+    private void parseRejectedGenes(JSONObject json, List<Map<String, String>> allGenes)
     {
+        Set<String> rejectedGeneNames = new HashSet<>();
+
+        JSONArray rejectedGenes = json.optJSONArray(JSON_REJECTEDGENES_KEY);
         if (rejectedGenes != null && rejectedGenes.length() > 0) {
             for (int i = 0; i < rejectedGenes.length(); ++i) {
                 JSONObject rejectedGeneJson = rejectedGenes.getJSONObject(i);
 
-                // discard it if gene symbol is not present in the geneJson, or is whitespace, empty or duplicate
-                if (!rejectedGeneJson.has(JSON_GENE_KEY)
-                    || StringUtils.isBlank(rejectedGeneJson.getString(JSON_GENE_KEY))
-                    || geneSymbols.contains(rejectedGeneJson.getString(JSON_GENE_KEY))) {
+                String geneId = getEnsemblId(rejectedGeneJson.optString(JSON_DEPRECATED_GENE_ID));
+
+                // discard it if gene symbol is blank or empty or duplicate
+                if (StringUtils.isBlank(geneId) || rejectedGeneNames.contains(geneId)) {
                     continue;
                 }
+
                 Map<String, String> singleGene = new LinkedHashMap<>();
-                singleGene.put(INTERNAL_GENE_KEY, rejectedGeneJson.getString(JSON_GENE_KEY));
-                singleGene.put(INTERNAL_STATUS_KEY, INTERNAL_REJECTED_KEY);
+                singleGene.put(INTERNAL_GENE_KEY, geneId);
+                singleGene.put(INTERNAL_STATUS_KEY, INTERNAL_REJECTED_VALUE);
 
                 if (rejectedGeneJson.has(JSON_COMMENTS_KEY)
                     && !StringUtils.isBlank(rejectedGeneJson.getString(JSON_COMMENTS_KEY))) {
                     singleGene.put(INTERNAL_COMMENTS_KEY, rejectedGeneJson.getString(JSON_COMMENTS_KEY));
                 }
 
-                allGenes.add(singleGene);
-                geneSymbols.add(rejectedGeneJson.getString(JSON_GENE_KEY));
+                // overwrite the same gene if it was found to be a candidate
+                addOrReplaceGene(allGenes, geneId, singleGene);
+
+                rejectedGeneNames.add(rejectedGeneJson.getString(JSON_DEPRECATED_GENE_ID));
             }
         }
     }
 
-    private void parseSolvedGene(JSONObject solvedGene, List<String> geneSymbols, List<Map<String, String>> allGenes)
+    private void parseSolvedGene(JSONObject json, List<Map<String, String>> allGenes)
     {
-        if (solvedGene != null && solvedGene.has(JSON_GENE_KEY)
-            && !StringUtils.isBlank(solvedGene.getString(JSON_GENE_KEY))
-            && !geneSymbols.contains(solvedGene.getString(JSON_GENE_KEY))) {
+        JSONObject solvedGene = json.optJSONObject(JSON_SOLVED_KEY);
+        if (solvedGene == null) {
+            return;
+        }
+
+        String geneId = getEnsemblId(solvedGene.optString(JSON_DEPRECATED_GENE_ID));
+
+        if (!StringUtils.isBlank(geneId)) {
             Map<String, String> singleGene = new LinkedHashMap<>();
-            singleGene.put(INTERNAL_GENE_KEY, solvedGene.getString(JSON_GENE_KEY));
-            singleGene.put(INTERNAL_STATUS_KEY, INTERNAL_SOLVED_KEY);
-            allGenes.add(singleGene);
+            singleGene.put(INTERNAL_GENE_KEY, geneId);
+            singleGene.put(INTERNAL_STATUS_KEY, INTERNAL_SOLVED_VALUE);
+
+            // overwrite the same gene if it was found to be a candidate or rejected
+            addOrReplaceGene(allGenes, geneId, singleGene);
         }
     }
 
-    private void parseGeneProperty(String property, JSONObject geneJson, Map<String, List<String>> enumValues,
-        Map<String, String> singleGene)
+    private void addOrReplaceGene(List<Map<String, String>> allGenes, String geneId, Map<String, String> newGene)
     {
-        String field = "";
-        if (INTERNAL_STRATEGY_KEY.equals(property) && geneJson.getJSONArray(property).length() > 0) {
-            JSONArray fieldArray = geneJson.getJSONArray(property);
-            for (Object value : fieldArray) {
-                if (enumValues.get(property).contains(value)) {
-                    field += "|" + value;
+        // need index for replacement; performanc eis not critical since this code is only
+        // used for old 1.2.x. patient JSONs
+        for (int i = 0; i < allGenes.size(); i++) {
+            if (StringUtils.equals(allGenes.get(i).get(INTERNAL_GENE_KEY), geneId)) {
+                allGenes.set(i, newGene);
+                return;
+            }
+        }
+        allGenes.add(newGene);
+    }
+
+    // geneId has been parsed already by this point, so no need to parse it out again
+    private Map<String, String> parseOneGene(String geneId, JSONObject geneJson)
+    {
+        Map<String, String> geneData = new LinkedHashMap<>();
+
+        geneData.put(INTERNAL_GENE_KEY, geneId);
+
+        addStringValue(geneJson, JSON_STATUS_KEY, geneData, INTERNAL_STATUS_KEY, STATUS_VALUES);
+
+        // pass `null` since any value is accepted for the "comments" field
+        addStringValue(geneJson, JSON_COMMENTS_KEY, geneData, INTERNAL_COMMENTS_KEY, null);
+
+        addListValue(geneJson, JSON_STRATEGY_KEY, geneData, INTERNAL_STRATEGY_KEY, STRATEGY_VALUES);
+
+        return geneData;
+    }
+
+    private void addStringValue(JSONObject geneJson, String jsonKey,
+            Map<String, String> geneData, String internalKey, List<String> acceptedValues)
+    {
+        String value = geneJson.optString(jsonKey);
+        if (!StringUtils.isBlank(value) && (acceptedValues == null || acceptedValues.contains(value))) {
+            geneData.put(internalKey, value);
+        }
+    }
+
+    private void addListValue(JSONObject geneJson, String jsonKey,
+            Map<String, String> geneData, String internalKey, List<String> acceptedValues)
+    {
+        JSONArray valuesArray = geneJson.optJSONArray(jsonKey);
+        if (valuesArray != null) {
+            String internalValue = "";
+            for (Object value : valuesArray) {
+                if (acceptedValues.contains(value)) {
+                    internalValue += "|" + value;
                 }
             }
-            singleGene.put(property, field);
-        } else if (INTERNAL_STATUS_KEY.equals(property)
-            && !StringUtils.isBlank(geneJson.getString(property))) {
-            field = geneJson.getString(property);
-            if (enumValues.get(property).contains(field.toLowerCase())) {
-                singleGene.put(property, field);
-            }
-        } else if (!StringUtils.isBlank(geneJson.getString(property))) {
-            field = geneJson.getString(property);
-            singleGene.put(property, field);
+            geneData.put(internalKey, internalValue);
         }
     }
 
@@ -407,6 +476,58 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             } catch (Exception e) {
                 this.logger.error("Failed to save a specific gene: [{}]", e.getMessage());
             }
+        }
+    }
+
+    /**
+     * Gets EnsemblID corresponding to the HGNC symbol.
+     *
+     * FIXME: refactor HGNC vocabulary to have "ensembl_gene_id" as a single value not a list?
+     * FIXME: if done, refactor VocabularyTerm to simplify access to a String value using getString() instead of get()?
+     *        currently VocabularyTerm.get() is only ever used here and in gene migrator
+     * FIXME: in any case refactoring vocabulary code in _some_ way to avoid code duplication every time we need
+     *        to convert geneSymbol to ensembleID?
+     *
+     * @param gene the string representation a gene, either geneSymbol (e.g. NOD2) or some other kind of ID
+     * @return if gene is a vlaid geneSymbol, the corresponding Ensembl ID. Otherwise the original gene value
+     */
+    private String getEnsemblId(String gene)
+    {
+        final VocabularyTerm term = this.getTerm(gene);
+        @SuppressWarnings("unchecked")
+        final List<String> ensemblIdList = term != null ? (List<String>) term.get(ENSEMBL_ID_PROPERTY_NAME) : null;
+        final String ensemblId = ensemblIdList != null && !ensemblIdList.isEmpty() ? ensemblIdList.get(0) : null;
+        // retain information as is if we can't find Ensembl ID.
+        return StringUtils.isBlank(ensemblId) ? gene : ensemblId;
+    }
+
+    private String getSymbol(String gene)
+    {
+        final VocabularyTerm term = this.getTerm(gene);
+        final String symbol = (term != null) ? (String) term.get(SYMBOL_PROPERTY_NAME) : null;
+        return StringUtils.isBlank(symbol) ? gene : symbol;
+    }
+
+    private VocabularyTerm getTerm(String gene)
+    {
+        // lazy-initialize HGNC
+        if (this.hgnc == null) {
+            this.hgnc = getHGNCVocabulary();
+            if (this.hgnc == null) {
+                return null;
+            }
+        }
+        return this.hgnc.getTerm(gene);
+    }
+
+    private Vocabulary getHGNCVocabulary()
+    {
+        try {
+            return vocabularyManager.getVocabulary(HGNC);
+        } catch (Exception ex) {
+            // this should not happen except when mocking, but does not hurt to catch in any case
+            this.logger.error("Error loading component [{}]", ex.getMessage(), ex);
+            return null;
         }
     }
 }

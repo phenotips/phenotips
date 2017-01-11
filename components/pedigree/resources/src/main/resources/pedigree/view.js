@@ -51,7 +51,9 @@ define([
                                "candidateGenes": editor.getCandidateGeneLegend().getAllColors(),
                                "causalGenes": editor.getCausalGeneLegend().getAllColors(),
                                "cancers": editor.getCancerLegend().getAllColors() },
-                    "names": {"disorders": editor.getDisorderLegend().getAllNames() } };
+                    "names": {"disorders": editor.getDisorderLegend().getAllNames(),
+                              "candidateGenes": editor.getCandidateGeneLegend().getAllNames(),
+                              "causalGenes": editor.getCausalGeneLegend().getAllNames()} };
         },
 
         /**
