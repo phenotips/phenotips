@@ -695,6 +695,9 @@ define([
      *   - "lifeStatus": one of {"alive", "deceased", "aborted", "miscarriage", "stillborn", "unborn"}.
      *                   (default: "alive". If death date is given status defaults to "deceased" and overwrites
      *                             the explicitly given status if it were "alive")
+     *   - "aliveandwell": boolean (default: flase), indicated whether individual is alive and well
+     *   - "deceasedAge": string (default: none) the age of death
+     *   - "deceasedCause": string (default: none) the cause of death
      *   - "disorders": array of strings or integers (a string representing an integer is considered to be an integer), integers treated as OMIM IDs. (default: none)
      *   - "carrierStatus": one of {'', 'carrier', 'affected', 'presymptomatic'}
      *                      (default: if a disorder is given, default is 'affected', otherwise: none.
@@ -1379,7 +1382,10 @@ define([
             "birthdate":       "dob",
             "deathdate":       "dod",
             "gestationage":    "gestationAge",
+            "aliveandwell":    "aliveandwell",
             "lifestatus":      "lifeStatus",
+            "deceasedage":     "deceasedAge",
+            "deceasedcause":   "deceasedCause",
             "disorders":       "disorders",
             "features":        "features",
             "nonstandard_features": "nonstandard_features",

@@ -228,24 +228,31 @@ define([
                         (buttons[index].hasOwnProperty("aw") && buttons[index].aw == awStatus)) {
                         yTickIndex = index;
                     }
+                    this.getNode().getGraphics().updateAliveAndWellLabel(awStatus);
                 }
 
                 var circle = this._generateRadioTickCircle(this.getX()+15, computeItemPosition(index), false);
                 var text = editor.getPaper().text(this.getX()+25, computeItemPosition(index), buttons[index].label).attr(PedigreeEditorParameters.attributes.awLabel);
                 text.node.setAttribute("class", "field-no-user-select");
-                var rect = editor.getPaper().rect(this.getX()+5, computeItemPosition(index)-itemHeight/2, this._width-10, itemHeight, 1).attr(PedigreeEditorParameters.attributes.awRect);
+                var rect = editor.getPaper().rect(this.getX(), computeItemPosition(index)-itemHeight/2, this._width-10, itemHeight, 1).attr(PedigreeEditorParameters.attributes.awRect);
 
                 rect.click(function(i) {
                     tick.attr({'cy' : computeItemPosition(i)});
 
                     var properties = {};
-                    buttons[i].hasOwnProperty("aw") && (properties["setAliveAndWell"] = buttons[i].aw);
+                    buttons[i].hasOwnProperty("aw") && (properties["setAliveAndWell"] = buttons[i].aw) && this.getNode().getGraphics().updateAliveAndWellLabel(buttons[i].aw);
                     properties["setLifeStatus"] = buttons[i].lifeStatus;
                     var event = { "nodeID": this.getNode().getID(), "properties": properties };
+
+                    if (buttons[i].lifeStatus == 'deceased') {
+                        this._isDeceasedToggled = true;
+                        var x = tick.getBBox().x;
+                        var y = tick.getBBox().y2;
+                        var position = editor.getWorkspace().canvasToDiv(x, y);
+                        editor.getDeceasedMenu().show(node, position.x, position.y + 10);
+                    }
                     document.fire("pedigree:node:setproperty", event);
                 }.bind(this, index));
-
-                //TODO: generate 'age' and 'cause' inputs for deceased option
 
                 animatedElements.push(circle, text);
                 aliveAndWell.push(rect);
@@ -277,6 +284,16 @@ define([
          */
         isMenuToggled: function() {
             return this._isMenuToggled;
+        },
+
+        /**
+         * Returns true if the deceased menu for this node is open
+         *
+         * @method isDeceasedToggled
+         * @return {Boolean}
+         */
+        isDeceasedToggled: function() {
+            return this._isDeceasedToggled;
         },
 
         /**
@@ -326,7 +343,7 @@ define([
          */
         animateHideHoverZone: function($super, event, x, y) {
             this._hidden = true;
-            if(!this.isMenuToggled()){
+            if(!this.isMenuToggled() && !this.isDeceasedToggled()){
                 var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
                 //console.log("Node: " + this.getNode().getID() + ", parentPartnershipNode: " + parentPartnershipNode);
                 if (parentPartnershipNode && editor.getNode(parentPartnershipNode))

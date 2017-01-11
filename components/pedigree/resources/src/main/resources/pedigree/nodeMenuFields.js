@@ -193,6 +193,20 @@ define([
                 'function' : 'setAliveAndWell'
             },
             {
+                'name' : 'deceasedAge',
+                'label' : 'Deceased at age',
+                'type' : 'text',
+                'tab': 'Personal',
+                'function' : 'setDeceasedAge'
+            },
+            {
+                'name' : 'deceasedCause',
+                'label' : 'Cause of death',
+                'type' : 'text',
+                'tab': 'Personal',
+                'function' : 'setDeceasedCause'
+            },
+            {
                 'label' : 'Heredity options',
                 'name' : 'childlessSelect',
                 'values' : [{'actual': 'none', displayed: 'None'},

@@ -31,6 +31,7 @@ define([
         "pedigree/view/importSelector",
         "pedigree/view/cancersLegend",
         "pedigree/view/nodeMenu",
+        "pedigree/view/deceasedMenu",
         "pedigree/view/nodetypeSelectionBubble",
         "pedigree/view/okCancelDialogue",
         "pedigree/view/saveLoadIndicator",
@@ -63,6 +64,7 @@ define([
         ImportSelector,
         CancerLegend,
         NodeMenu,
+        DeceasedMenu,
         NodetypeSelectionBubble,
         OkCancelDialogue,
         SaveLoadIndicator,
@@ -159,6 +161,7 @@ define([
 
                     // generate various dialogues after preferences have been loaded
                     this._nodeMenu = this.generateNodeMenu();
+                    this._deceasedMenu = this.generateDeceasedMenu();
                     this._nodeGroupMenu = this.generateNodeGroupMenu();
                     this._partnershipMenu = this.generatePartnershipMenu();
                     this._exportSelector = new ExportSelector();
@@ -755,11 +758,30 @@ define([
         },
 
         /**
+         * Creates the deceased inputs menu for Person nodes
+         *
+         * @method generateDeceasedMenu
+         * @return {DeceasedMenu}
+         */
+        generateDeceasedMenu: function() {
+            if (this.isReadOnlyMode()) return null;
+            return new DeceasedMenu();
+        },
+
+        /**
          * @method getNodeMenu
          * @return {NodeMenu} Context menu for nodes
          */
         getNodeMenu: function() {
             return this._nodeMenu;
+        },
+
+        /**
+         * @method getDeceasedMenu
+         * @return {DeceasedMenu} Deceased inputs menu for nodes
+         */
+        getDeceasedMenu: function() {
+            return this._deceasedMenu;
         },
 
         /**
