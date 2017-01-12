@@ -47,8 +47,8 @@ define([
             this._childlessShape = null;
             this._isSelected = false;
             this._carrierGraphic = null;
-            this._evalLabel = null;
-            this._awLabel = null;
+            this._evalGraphic = null;
+            this._awGraphic = null;
             //timer.printSinceLast("Person visuals time");
         },
 
@@ -139,7 +139,7 @@ define([
             }
             this.updateDisorderShapes();
             this.updateCarrierGraphic();
-            this.updateEvaluationLabel();
+            this.updateEvaluationGraphic();
             if (this.getNode().getLifeStatus() == "unborn"){
                 this.updateLifeStatusShapes("unborn");
             }
@@ -577,10 +577,10 @@ define([
         /**
          * Draws the evaluation status symbol for this Person
          *
-         * @method updateEvaluationLabel
+         * @method updateEvaluationGraphic
          */
-        updateEvaluationLabel: function() {
-            this._evalLabel && this._evalLabel.remove();
+        updateEvaluationGraphic: function() {
+            this._evalGraphic && this._evalGraphic.remove();
             var gender = this.getNode().getGender();
             if (this.getNode().getEvaluated()) {
                 if (this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
@@ -595,9 +595,9 @@ define([
                     var x = this.getX() + this._shapeRadius*mult;
                     var y = this.getY() + this._shapeRadius*mult - 10; // adjusting position not to collide with A&W status
                 }
-                this._evalLabel = editor.getPaper().text(x, y, "*").attr(PedigreeEditorParameters.attributes.evaluationShape).toBack();
+                this._evalGraphic = editor.getPaper().text(x, y, "*").attr(PedigreeEditorParameters.attributes.evaluationShape).toBack();
             } else {
-                this._evalLabel = null;
+                this._evalGraphic = null;
             }
         },
 
@@ -608,16 +608,16 @@ define([
          * @return {Raphael.el}
          */
         getEvaluationGraphics: function() {
-            return this._evalLabel;
+            return this._evalGraphic;
         },
 
         /**
          * Draws the "alive and well" status symbol for this Person
          *
-         * @method updateAliveAndWellLabel
+         * @method updateAliveAndWellGraphic
          */
-        updateAliveAndWellLabel: function(isAliveAndWell) {
-            this._awLabel && this._awLabel.remove();
+        updateAliveAndWellGraphic: function(isAliveAndWell) {
+            this._awGraphic && this._awGraphic.remove();
             var gender = this.getNode().getGender();
             if (isAliveAndWell) {
                 var mult = 1.1;
@@ -626,7 +626,9 @@ define([
                 if (this.getNode().isProband) {mult *= 1.1;}
                 var x = this.getX() + this._shapeRadius*mult - 10; // adjusting position not to collide with evaluation status
                 var y = this.getY() + this._shapeRadius*mult;
-                this._awLabel = editor.getPaper().text(x, y, "A&W").attr(PedigreeEditorParameters.attributes.aliveAndWellShape).toBack();
+                this._awGraphic = editor.getPaper().text(x, y, "A&W").attr(PedigreeEditorParameters.attributes.aliveAndWellShape).toBack();
+            } else {
+                this._awGraphic = null;
             }
         },
 
@@ -1100,7 +1102,7 @@ define([
          */
         getAllGraphics: function($super) {
             //console.log("Node " + this.getNode().getID() + " getAllGraphics");
-            return $super().push(this.getHoverBox().getBackElements(), this.getLabels(), this._linkArea, this.getCarrierGraphics(), this.getEvaluationGraphics(), this.getHoverBox().getFrontElements());
+            return $super().push(this.getHoverBox().getBackElements(), this.getLabels(), this._awGraphic, this._linkArea, this.getCarrierGraphics(), this.getEvaluationGraphics(), this.getHoverBox().getFrontElements());
         },
 
         /**
