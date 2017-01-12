@@ -222,6 +222,9 @@ public class R71499PhenoTips2777DataMigration extends AbstractHibernateDataMigra
         }
 
         final StringProperty oldBaseObjProp = (StringProperty) baseObject.get(propertyName);
+        if (oldBaseObjProp == null) {
+            return null;
+        }
         // Want to return oldBaseObjProp in case it is not null, that way it can still be renamed if the
         // genesymbol property, for whatever reason, contains no value.
         final String geneSymbol = oldBaseObjProp.getValue();
