@@ -55,10 +55,9 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 
 /**
  * Migration for PhenoTips issue PT-2777: Currently genes are being stored internally as gene symbols, it is better to
- * store them using Ensembl ID, as this is more stable.
- * For each {@code gene} field in {@code GeneClass}, switch the value from the HGNC symbol to the Ensembl ID.
- * For each {@code genesymbol} field in {@code GeneVariantClass}, rename the field to {@code gene} and switch the value
- * from HGNC symbol to the Ensembl ID.
+ * store them using Ensembl ID, as this is more stable. For each {@code gene} field in {@code GeneClass}, switch the
+ * value from the HGNC symbol to the Ensembl ID. For each {@code genesymbol} field in {@code GeneVariantClass}, rename
+ * the field to {@code gene} and switch the value from HGNC symbol to the Ensembl ID.
  *
  * @version $Id$
  * @since 1.3M5
@@ -131,7 +130,7 @@ public class R71499PhenoTips2777DataMigration extends AbstractHibernateDataMigra
         this.hgnc = this.vocabularies.getVocabulary(HGNC);
 
         final Query q =
-                session.createQuery("select distinct o.name from BaseObject o where o.className = '"
+            session.createQuery("select distinct o.name from BaseObject o where o.className = '"
                 + this.serializer.serialize(geneClassReference) + "' or o.className = '"
                 + this.serializer.serialize(geneVariantClassReference)
                 + "' and exists(from StringProperty p where p.id.id = o.id and p.id.name = '"
@@ -239,10 +238,12 @@ public class R71499PhenoTips2777DataMigration extends AbstractHibernateDataMigra
 
     /**
      * Gets EnsemblID corresponding to the HGNC symbol.
+     *
      * @param geneSymbol the string representation of a gene symbol (e.g. NOD2).
      * @return the string representation of the corresponding Ensembl ID.
      */
-    private String getEnsemblId(final String geneSymbol) {
+    private String getEnsemblId(final String geneSymbol)
+    {
         final VocabularyTerm term = this.hgnc.getTerm(geneSymbol);
         @SuppressWarnings("unchecked")
         final List<String> ensemblIdList = term != null ? (List<String>) term.get("ensembl_gene_id") : null;
