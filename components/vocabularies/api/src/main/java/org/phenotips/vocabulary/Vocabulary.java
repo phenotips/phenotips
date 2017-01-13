@@ -88,19 +88,38 @@ public interface Vocabulary
     List<VocabularyTerm> search(String input);
 
     /**
-     * Suggest the terms that best match the user's input.
+     * Suggest the terms that best match the user's input. This may either search in all
+     * {@link #getSupportedCategories() supported categories}, or in a "default" category, depending on the vocabulary
+     * implementation.
      *
-     * @param input the text to match
+     * @param input the text that the user entered
      * @param maxResults the maximum number of terms to be returned
      * @param sort an optional sort parameter, in a format that depends on the actual engine that stores the vocabulary;
      *            usually a property name followed by {@code asc} or {@code desc}; may be {@code null}
-     * @param customFilter a custom filter query to further restrict which terms may be returned, in a format that
-     *            depends on the actual engine that stores the vocabulary; some vocabularies may not support a filter
-     *            query; may be {@code null}
+     * @param customFilter an optional custom filter query to further restrict which terms may be returned, in a format
+     *            that depends on the actual engine that stores the vocabulary; some vocabularies may not support a
+     *            filter query; may be {@code null}
      * @return a list of suggestions, possibly empty.
      * @since 1.1-rc-1
      */
     List<VocabularyTerm> search(String input, int maxResults, String sort, String customFilter);
+
+    /**
+     * Suggest the terms that best match the user's input, in a specific sub-category of this vocabulary.
+     *
+     * @param input the text that the user entered
+     * @param category the category of terms to search in, one of the {@link #getSupportedCategories() supported
+     *            categories}
+     * @param maxResults the maximum number of terms to be returned
+     * @param sort an optional sort parameter, in a format that depends on the actual engine that stores the vocabulary;
+     *            usually a property name followed by {@code asc} or {@code desc}; may be {@code null}
+     * @param customFilter an optional custom filter query to further restrict which terms may be returned, in a format
+     *            that depends on the actual engine that stores the vocabulary; some vocabularies may not support a
+     *            filter query; may be {@code null}
+     * @return a list of suggestions, possibly empty.
+     * @since 1.4
+     */
+    List<VocabularyTerm> search(String input, String category, int maxResults, String sort, String customFilter);
 
     /**
      * Get the number of terms that match a specific query.
@@ -162,6 +181,18 @@ public interface Vocabulary
      * @return a set of identifiers which can be used to reference this vocabulary, including the official name
      */
     Set<String> getAliases();
+
+    /**
+     * Reports the categories of terms supported by this vocabulary. For every supported category, the
+     * {@link #search(String, String, int, String, String)} method will be called whenever suggestions/matches for a
+     * specify type of terms are requested. If no categories are reported as supported, then this vocabulary must be
+     * used explicitly to search for terms.
+     *
+     * @return a collection of vocabulary term categories, as short names, for example {@code disorder},
+     *         {@code feature}, or {@code feature-qualifier}; may be empty
+     * @since 1.4
+     */
+    Collection<String> getSupportedCategories();
 
     /**
      * Get the size (i.e. total number of terms) in this vocabulary.

@@ -20,8 +20,8 @@ package org.phenotips.vocabularies.rest.internal;
 import org.phenotips.Constants;
 import org.phenotips.rest.Autolinker;
 import org.phenotips.security.authorization.AuthorizationService;
+import org.phenotips.vocabularies.rest.CategoryResource;
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
-import org.phenotips.vocabularies.rest.VocabularyResource;
 import org.phenotips.vocabularies.rest.model.Category;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
@@ -36,7 +36,9 @@ import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import java.util.List;
+import java.util.Set;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -44,18 +46,25 @@ import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+
 /**
- * Default implementation of {@link VocabularyResource} using XWiki's support for REST resources.
+ * Default implementation of {@link CategoryResource} using XWiki's support for REST resources.
  *
- * @version $Id$
- * @since 1.3M1
+ * @version $Id $
+ * @since 1.4M1
  */
 @Component
-@Named("org.phenotips.vocabularies.rest.internal.DefaultVocabularyResource")
+@Named("org.phenotips.vocabularies.rest.internal.DefaultCategoryResource")
 @Singleton
 @Unstable
-public class DefaultVocabularyResource extends XWikiResource implements VocabularyResource
+public class DefaultCategoryResource extends XWikiResource implements CategoryResource
 {
+    @Inject
+    private Logger logger;
+
     @Inject
     private VocabularyManager vm;
 
@@ -63,67 +72,50 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
     private DomainObjectFactory objectFactory;
 
     @Inject
-    private AuthorizationService authorizationService;
+    private Provider<Autolinker> autolinker;
 
     @Inject
     private UserManager users;
 
     @Inject
+    private AuthorizationService authorizationService;
+
+    @Inject
     @Named("default")
     private DocumentReferenceResolver<EntityReference> resolver;
 
-    @Inject
-    private Provider<Autolinker> autolinker;
-
     @Override
-    public org.phenotips.vocabularies.rest.model.Vocabulary getVocabulary(String vocabularyId)
+    public Category getCategory(@Nonnull final String categoryName)
     {
-        Vocabulary vocabulary = this.vm.getVocabulary(vocabularyId);
-        if (vocabulary == null) {
+        if (StringUtils.isBlank(categoryName)) {
+            this.logger.error("The category should not be blank.");
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+        final Set<Vocabulary> vocabularies = this.vm.getVocabularies(categoryName);
+        // List identifiers for vocabularies associated with the provided category.
+        if (CollectionUtils.isEmpty(vocabularies)) {
+            this.logger.error("Could not find specified category: {}", categoryName);
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
-        org.phenotips.vocabularies.rest.model.Vocabulary rep =
-            this.objectFactory.createVocabularyRepresentation(vocabulary);
-        final List<Category> categories = this.objectFactory.createCategoriesList(vocabulary.getSupportedCategories(),
-            this.autolinker.get(), this.uriInfo, userIsAdmin());
-        rep.withCategories(categories)
+        // Create the category representation, and add vocabularies, links, and rights data.
+        final Category category = this.objectFactory.createCategoryRepresentation(categoryName);
+        final List<org.phenotips.vocabularies.rest.model.Vocabulary> vocabReps = this.objectFactory
+            .createVocabulariesList(vocabularies, this.autolinker.get(), this.uriInfo, userIsAdmin());
+        category.withVocabularies(vocabReps)
             .withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo)
-            .withGrantedRight(userIsAdmin() ? Right.ADMIN : Right.VIEW).build());
-        return rep;
+                .withGrantedRight(userIsAdmin() ? Right.ADMIN : Right.VIEW)
+                .build());
+        return category;
     }
 
-    @Override
-    public Response reindex(String vocabularyId, String url)
-    {
-        // Check permissions, the user must have admin rights on the entire wiki
-        if (!this.userIsAdmin()) {
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }
-        Vocabulary vocabulary = this.vm.getVocabulary(vocabularyId);
-        if (vocabulary == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
-        Response result;
-        try {
-            int reindexStatus = vocabulary.reindex(url);
-
-            if (reindexStatus == 0) {
-                result = Response.ok().build();
-            } else if (reindexStatus == 1) {
-                result = Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-            } else {
-                result = Response.status(Response.Status.BAD_REQUEST).build();
-            }
-        } catch (UnsupportedOperationException e) {
-            result = Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
-        }
-        return result;
-    }
-
+    /**
+     * Returns true if the user has admin rights.
+     *
+     * @return true iff the user has admin rights, false otherwise
+     */
     private boolean userIsAdmin()
     {
-        User user = this.users.getCurrentUser();
+        final User user = this.users.getCurrentUser();
         return this.authorizationService.hasAccess(user, Right.ADMIN,
             this.resolver.resolve(Constants.XWIKI_SPACE_REFERENCE));
     }

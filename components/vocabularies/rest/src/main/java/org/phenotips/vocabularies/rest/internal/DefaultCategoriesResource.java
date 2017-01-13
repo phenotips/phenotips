@@ -20,12 +20,12 @@ package org.phenotips.vocabularies.rest.internal;
 import org.phenotips.Constants;
 import org.phenotips.rest.Autolinker;
 import org.phenotips.security.authorization.AuthorizationService;
+import org.phenotips.vocabularies.rest.CategoriesResource;
+import org.phenotips.vocabularies.rest.CategoryResource;
+import org.phenotips.vocabularies.rest.CategoryTermSuggestionsResource;
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
-import org.phenotips.vocabularies.rest.VocabulariesResource;
-import org.phenotips.vocabularies.rest.VocabularyResource;
-import org.phenotips.vocabularies.rest.VocabularyTermSuggestionsResource;
+import org.phenotips.vocabularies.rest.model.Categories;
 import org.phenotips.vocabularies.rest.model.Category;
-import org.phenotips.vocabularies.rest.model.Vocabularies;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 
@@ -39,6 +39,7 @@ import org.xwiki.users.UserManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -46,16 +47,18 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 /**
- * Default implementation for {@link VocabulariesResource} using XWiki's support for REST resources.
+ * Default implementation for {@link CategoriesResource} using XWiki's support for REST resources.
  *
- * @version $Id$
- * @since 1.3M1
+ * @version $Id $
+ * @since 1.4M1
  */
 @Component
-@Named("org.phenotips.vocabularies.rest.internal.DefaultVocabulariesResource")
+@Named("org.phenotips.vocabularies.rest.internal.DefaultCategoriesResource")
 @Singleton
-public class DefaultVocabulariesResource extends XWikiResource implements VocabulariesResource
+public class DefaultCategoriesResource extends XWikiResource implements CategoriesResource
 {
+    private static final String CATEGORY_LABEL = "category";
+
     @Inject
     private VocabularyManager vm;
 
@@ -72,39 +75,46 @@ public class DefaultVocabulariesResource extends XWikiResource implements Vocabu
     private AuthorizationService authorizationService;
 
     @Inject
-
     @Named("default")
     private DocumentReferenceResolver<EntityReference> resolver;
 
     @Override
-    public Vocabularies getAllVocabularies()
+    public Categories getAllCategories()
     {
-        Vocabularies result = new Vocabularies();
-        List<String> vocabularyIDs = this.vm.getAvailableVocabularies();
-        List<org.phenotips.vocabularies.rest.model.Vocabulary> availableVocabs = new ArrayList<>();
-
-        for (String vocabularyID : vocabularyIDs) {
-            Vocabulary vocab = this.vm.getVocabulary(vocabularyID);
-            org.phenotips.vocabularies.rest.model.Vocabulary rep =
-                this.objectFactory.createVocabularyRepresentation(vocab);
-            final List<Category> categories = this.objectFactory.createCategoriesList(vocab.getSupportedCategories(),
-                this.autolinker.get(), this.uriInfo, userIsAdmin());
-            rep.withCategories(categories)
-                .withLinks(this.autolinker.get().forSecondaryResource(VocabularyResource.class, this.uriInfo)
-                .withActionableResources(VocabularyTermSuggestionsResource.class)
-                .withExtraParameters("vocabulary-id", vocabularyID)
+        final Categories result = new Categories();
+        // A list of available category identifiers.
+        final List<String> categoryNames = this.vm.getAvailableCategories();
+        // A list of vocabulary category objects.
+        final List<Category> categories = new ArrayList<>();
+        // Add category data, such as associated vocabularies, links, and granted rights.
+        for (final String categoryName : categoryNames) {
+            final Set<Vocabulary> vocabularies = this.vm.getVocabularies(categoryName);
+            final List<org.phenotips.vocabularies.rest.model.Vocabulary> vocabularyReps =
+                this.objectFactory.createVocabulariesList(vocabularies, this.autolinker.get(), this.uriInfo,
+                    userIsAdmin());
+            final Category category = this.objectFactory.createCategoryRepresentation(categoryName);
+            // Add links and other data to category.
+            category.withVocabularies(vocabularyReps)
+                .withLinks(this.autolinker.get().forSecondaryResource(CategoryResource.class, this.uriInfo)
+                .withActionableResources(CategoryTermSuggestionsResource.class)
+                .withExtraParameters(CATEGORY_LABEL, categoryName)
                 .withGrantedRight(userIsAdmin() ? Right.ADMIN : Right.VIEW)
                 .build());
-            availableVocabs.add(rep);
+            categories.add(category);
         }
-        result.withVocabularies(availableVocabs);
+        result.withCategories(categories);
         result.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo).build());
         return result;
     }
 
+    /**
+     * Returns true if the user has admin rights.
+     *
+     * @return true iff the user has admin rights, false otherwise
+     */
     private boolean userIsAdmin()
     {
-        User user = this.users.getCurrentUser();
+        final User user = this.users.getCurrentUser();
         return this.authorizationService.hasAccess(user, Right.ADMIN,
             this.resolver.resolve(Constants.XWIKI_SPACE_REFERENCE));
     }
