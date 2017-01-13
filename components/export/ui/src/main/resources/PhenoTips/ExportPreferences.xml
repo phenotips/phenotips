@@ -229,8 +229,8 @@
  )))##section filters
 #end
 
+#set($selectionTools = "&lt;div class='selection-tools'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.label') &lt;span class='selection-tool select-all'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.all')&lt;/span&gt; · &lt;span class='selection-tool select-none'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.none')&lt;/span&gt; · &lt;span class='selection-tool select-invert'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.invert')&lt;/span&gt; · &lt;span class='selection-tool select-restore'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.restore')&lt;/span&gt;&lt;/div&gt;")
 #if ($request.push)
-  #set($selectionTools = "&lt;div class='selection-tools'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.label') &lt;span class='selection-tool select-all'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.all')&lt;/span&gt; · &lt;span class='selection-tool select-none'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.none')&lt;/span&gt; · &lt;span class='selection-tool select-invert'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.invert')&lt;/span&gt; · &lt;span class='selection-tool select-restore'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.restore')&lt;/span&gt;&lt;/div&gt;")
   #if ($request.multipatient)
     (% class="push-fields section columns"%)(((
     === (% class="step" %)2(%%) $services.localization.render('phenotips.exportPreferences.selectFields') ===
@@ -249,6 +249,7 @@
 #else
   (% class="section columns"%)(((
   === (% class="step" %)2(%%) $services.localization.render('phenotips.exportPreferences.selectFields') ===
+  {{html clean="false"}}$selectionTools{{/html}}##
   #__export__displayFieldList( "PhenoTips.PatientClass" 'columns' $customValues $ignored $codeFields $selectedValues $simple)
   #set($exportTitle = "$services.localization.render('phenotips.exportPreferences.export')")
   #set($exportButtonID = "export-multiple-patients")
