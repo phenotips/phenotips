@@ -56,7 +56,7 @@ public class DefaultVocabularyManager implements VocabularyManager, Initializabl
     @Override
     public void initialize() throws InitializationException
     {
-        this.aliasVocabularies = new HashMap<String, Vocabulary>();
+        this.aliasVocabularies = new HashMap<>();
         for (Vocabulary vocabulary : this.vocabularies.values()) {
             for (String alias : vocabulary.getAliases()) {
                 this.aliasVocabularies.put(alias, vocabulary);
@@ -83,7 +83,7 @@ public class DefaultVocabularyManager implements VocabularyManager, Initializabl
     @Override
     public List<String> getAvailableVocabularies()
     {
-        return new ArrayList<String>(this.vocabularies.keySet());
+        return new ArrayList<>(this.vocabularies.keySet());
     }
 
     /**
