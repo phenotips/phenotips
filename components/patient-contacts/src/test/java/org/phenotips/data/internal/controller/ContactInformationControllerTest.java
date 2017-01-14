@@ -18,6 +18,7 @@
 package org.phenotips.data.internal.controller;
 
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientContactsManager;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.permissions.Owner;
@@ -78,8 +79,8 @@ public class ContactInformationControllerTest
     private static final String GROUP_EMAIL = "contact@hospital.org";
 
     @Rule
-    public final MockitoComponentMockingRule<PatientDataController<String>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<String>>(
+    public final MockitoComponentMockingRule<PatientDataController<PatientContactsManager>> mocker =
+        new MockitoComponentMockingRule<PatientDataController<PatientContactsManager>>(
             ContactInformationController.class);
 
     @Mock
@@ -89,7 +90,7 @@ public class ContactInformationControllerTest
     private PatientData<String> data;
 
     @Before
-    public void setupComponents()
+    public void setupComponents() throws ComponentLookupException
     {
         MockitoAnnotations.initMocks(this);
         when(this.patient.<String>getData("contact")).thenReturn(this.data);
@@ -115,7 +116,7 @@ public class ContactInformationControllerTest
         when(user.getAttribute("email")).thenReturn(USER_EMAIL);
         when(user.getAttribute("company")).thenReturn(USER_INSTITUTION);
 
-        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<PatientContactsManager> result = this.mocker.getComponentUnderTest().load(this.patient);
         Assert.assertNotNull(result);
         Assert.assertEquals("contact", result.getName());
         Assert.assertEquals(USER_NAME, result.get("name"));
@@ -143,7 +144,7 @@ public class ContactInformationControllerTest
         when(user.getAttribute("email")).thenReturn("");
         when(user.getAttribute("company")).thenReturn(" ");
 
-        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<PatientContactsManager> result = this.mocker.getComponentUnderTest().load(this.patient);
         Assert.assertNotNull(result);
         Assert.assertEquals("contact", result.getName());
         Assert.assertNull(result.get("name"));
@@ -152,7 +153,7 @@ public class ContactInformationControllerTest
         Assert.assertNull(result.get("institution"));
 
         // Recoding Assert.assertEquals(1, result.size())
-        Iterator<String> resultIterator = result.iterator();
+        Iterator<PatientContactsManager> resultIterator = result.iterator();
         Assert.assertTrue(resultIterator.hasNext());
         resultIterator.next();
         Assert.assertTrue(!resultIterator.hasNext());
@@ -172,7 +173,7 @@ public class ContactInformationControllerTest
         UserManager users = this.mocker.getInstance(UserManager.class);
         when(users.getUser(USER_STR)).thenReturn(null);
 
-        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<PatientContactsManager> result = this.mocker.getComponentUnderTest().load(this.patient);
         Assert.assertNull(result);
     }
 
@@ -198,7 +199,7 @@ public class ContactInformationControllerTest
         when(doc.getXObject(Group.CLASS_REFERENCE)).thenReturn(obj);
         when(obj.getStringValue("contact")).thenReturn(GROUP_EMAIL);
 
-        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<PatientContactsManager> result = this.mocker.getComponentUnderTest().load(this.patient);
         Assert.assertNotNull(result);
         Assert.assertEquals("contact", result.getName());
         Assert.assertEquals(GROUP.getName(), result.get("name"));
@@ -221,7 +222,7 @@ public class ContactInformationControllerTest
         GroupManager groups = this.mocker.getInstance(GroupManager.class);
         when(groups.getGroup(GROUP)).thenReturn(null);
 
-        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<PatientContactsManager> result = this.mocker.getComponentUnderTest().load(this.patient);
         Assert.assertNull(result);
     }
 
@@ -234,7 +235,7 @@ public class ContactInformationControllerTest
         when(permissions.getPatientAccess(this.patient)).thenReturn(access);
         when(access.getOwner()).thenReturn(null);
 
-        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<PatientContactsManager> result = this.mocker.getComponentUnderTest().load(this.patient);
         Assert.assertNull(result);
     }
 
@@ -249,7 +250,7 @@ public class ContactInformationControllerTest
         when(access.getOwner()).thenReturn(owner);
         when(owner.getUser()).thenReturn(null);
 
-        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<PatientContactsManager> result = this.mocker.getComponentUnderTest().load(this.patient);
         Assert.assertNull(result);
     }
 

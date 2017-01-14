@@ -22,41 +22,16 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>patient-access-rules</artifactId>
+    <artifactId>phenotips-components</artifactId>
     <version>1.3-SNAPSHOT</version>
   </parent>
-  <artifactId>patient-access-rules-api</artifactId>
-  <name>PhenoTips - Patient access rules - Java APIs</name>
-
-  <properties>
-    <checkstyle.skip>true</checkstyle.skip>
-    <coverage.instructionRatio>0.7</coverage.instructionRatio>
-  </properties>
-
+  <artifactId>patient-contacts</artifactId>
+  <name>PhenoTips - Patient contacts info</name>
+  <description>Component for providing contacts info of patient records</description>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-component-api</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-script</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-observation-api</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-context</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-security-api</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
@@ -79,18 +54,13 @@
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.rendering</groupId>
-      <artifactId>xwiki-rendering-api</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>phenotips-constants</artifactId>
+      <artifactId>patient-data-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>patient-data-api</artifactId>
+      <artifactId>patient-access-rules-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -100,7 +70,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>xwiki-translation-manager</artifactId>
+      <artifactId>component-registry</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -128,17 +98,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <!-- Some test classes are using an instance mock which is reused by individual methods. -->
-          <parallel>classes</parallel>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
