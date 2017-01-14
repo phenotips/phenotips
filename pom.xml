@@ -145,7 +145,7 @@
     <poi.version>3.11</poi.version>
     <selenium.version>2.53.1</selenium.version>
     <jackson.codehaus.version>1.9.13</jackson.codehaus.version>
-    <jackson.fasterxml.version>2.8.5</jackson.fasterxml.version>
+    <jackson.fasterxml.version>2.8.6</jackson.fasterxml.version>
     <restlet.version>2.0.15</restlet.version>
     <buildtools.version>1.6</buildtools.version>
     <testframework.version>1.1</testframework.version>
@@ -181,7 +181,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-collections4</artifactId>
-        <version>4.0</version>
+        <version>4.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
