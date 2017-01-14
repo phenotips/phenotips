@@ -589,11 +589,15 @@ define([
                 }
                 else {
                     var mult = 1.1;
-                    if (gender == 'U' || gender == 'O') {mult = 1.3;}
-                    else if (gender == 'M') {mult = 1.4;}
+                    if (gender != 'F') {mult = 1.3;}
                     if (this.getNode().isProband) {mult *= 1.1;}
                     var x = this.getX() + this._shapeRadius*mult;
                     var y = this.getY() + this._shapeRadius*mult - 10; // adjusting position not to collide with A&W status
+                    if (this.getNode().getAdopted() != "") { // to avoid intersection with adopted status brackets
+                        if (gender == 'F') {y += 4; x -= 6;}
+                        if (gender == 'M') {x += 3;}
+                        if (gender == 'U' || gender == 'O') {y += 7; x -= 2;}
+                    }
                 }
                 this._evalGraphic = editor.getPaper().text(x, y, "*").attr(PedigreeEditorParameters.attributes.evaluationShape).toBack();
             } else {
@@ -619,13 +623,17 @@ define([
         updateAliveAndWellGraphic: function(isAliveAndWell) {
             this._awGraphic && this._awGraphic.remove();
             var gender = this.getNode().getGender();
-            if (isAliveAndWell) {
-                var mult = 1.1;
-                if (gender == 'U' || gender == 'O') {mult = 1.3;}
-                else if (gender == 'M') {mult = 1.4;}
+            if (this.getNode().getAliveAndWell()) {
+                var mult = 1.2;
+                if (gender != 'F') {mult = 1.4;}
                 if (this.getNode().isProband) {mult *= 1.1;}
                 var x = this.getX() + this._shapeRadius*mult - 10; // adjusting position not to collide with evaluation status
                 var y = this.getY() + this._shapeRadius*mult;
+                if (this.getNode().getAdopted() != "") { // to avoid intersection with adopted status brackets
+                    if (gender == 'F') {y += 13; x -= 3;}
+                    if (gender == 'M') {y += 4; x -= 6;}
+                    if (gender == 'U' || gender == 'O') {y += 17;}
+                }
                 this._awGraphic = editor.getPaper().text(x, y, "A&W").attr(PedigreeEditorParameters.attributes.aliveAndWellShape).toBack();
             } else {
                 this._awGraphic = null;

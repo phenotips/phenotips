@@ -81,6 +81,7 @@ define(["pedigree/view/abstractNode", "pedigree/view/abstractPersonVisuals"], fu
                 this.getGraphics().setGenderGraphics();
                 this.getGraphics().getHoverBox().regenerateHandles();
                 this.getGraphics().getHoverBox().regenerateButtons();
+                this.getGraphics().updateAliveAndWellGraphic();
             }
         },
 
@@ -99,6 +100,8 @@ define(["pedigree/view/abstractNode", "pedigree/view/abstractPersonVisuals"], fu
                 this.getGraphics().setGenderGraphics();
                 this.getGraphics().drawAdoptedShape();
                 this.getGraphics().getHoverBox().regenerateHandles();
+                this.getGraphics().updateAliveAndWellGraphic();
+                this.getGraphics().updateEvaluationGraphic();
             }
         },
 

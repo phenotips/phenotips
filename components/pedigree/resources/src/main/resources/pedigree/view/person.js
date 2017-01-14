@@ -496,6 +496,7 @@ define([
                         this.setLifeStatus("alive");
                 }
                 this.getGraphics().getHoverBox().regenerateButtons();
+                this.getGraphics().updateAliveAndWellGraphic();
             }
         },
 
