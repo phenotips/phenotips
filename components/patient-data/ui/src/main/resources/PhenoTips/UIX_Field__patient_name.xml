@@ -119,7 +119,7 @@
       #__displayFormatted('half-width' 'first_name')
      (% class="clear" %)((()))
     #else
-      (% class="displayed-value"%)$!{services.rendering.escape($doc.getValue('last_name'), $doc.syntax)}(%%), $!{services.rendering.escape($doc.getValue('first_name'), $doc.syntax)}##
+      (% class="displayed-value"%)$!{services.rendering.escape($doc.getValue('last_name'), $doc.syntax)}, $!{services.rendering.escape($doc.getValue('first_name'), $doc.syntax)}(%%)##
     #end
   )))##fieldset
 #end
