@@ -235,7 +235,6 @@ define([], function(){
             }.bind(this);
 
             expandArrow.observe("click", function() {
-                console.log("observe2");
                 if(expandArrow.hasClassName("collapsed")) {
                     expandArrow.expand();
                 }
@@ -363,7 +362,7 @@ define([], function(){
          * @private
          */
         _incrementNumNodes: function() {
-            return this.numPersonsInGroup < 9 ? ++this.numPersonsInGroup : this.numPersonsInGroup;
+            return this.numPersonsInGroup < 99 ? ++this.numPersonsInGroup : this.numPersonsInGroup;
         },
 
         /**
@@ -385,7 +384,7 @@ define([], function(){
          * @private
          */
         _incrementNumTwins: function() {
-            return this.numTwinNodes < 9 ? ++this.numTwinNodes : this.numTwinNodes;
+            return this.numTwinNodes < 99 ? ++this.numTwinNodes : this.numTwinNodes;
         },
 
         /**
@@ -394,17 +393,13 @@ define([], function(){
          * @method expandPersonGroup
          */
         expandPersonGroup: function(personGroupMenuInfo) {
-            //create rhombus icon
-            // put counter on top of rhombus
-            //add plus minus buttons on the sides
-            //add ok button
-            //var icon = '<svg <desc>Number of children</desc><text x="250" y="150" font-family="Verdana" font-size="12" fill="blue" >n</text></svg>';
+            // create rhombus icon + counter inside the rhombus
+            // add plus minus buttons on the sides
+            // add ok button
             var me = this;
             var generateIcon = function(){
                     var iconText = (me.numPersonsInGroup > 1) ? String(me.numPersonsInGroup) : "n";
-                    return '<svg version="1.1" viewBox="0.0 0.0 100.0 100.0" width=50 height=50 fill="none" stroke="none" stroke-linecap="square" stroke-miterlimit="10" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><clipPath id="p.0"><path d="m0 0l960.0 0l0 720.0l-960.0 0l0 -720.0z" clip-rule="nonzero"></path></clipPath><g clip-path="url(#p.0)"><path fill="#000000" fill-opacity="0.0" d="m0 0l960.0 0l0 720.0l-960.0 0z" fill-rule="nonzero"></path><path fill="#cfe2f3" d="m1.2283465 49.97113l48.53543 -48.535435l48.53543 48.535435l-48.53543 48.53543z" fill-rule="nonzero"></path><path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m1.2283465 49.97113l48.53543 -48.535435l48.53543 48.535435l-48.53543 48.53543z" fill-rule="nonzero"></path><path fill="#000000" fill-opacity="0.0" d="m20.661417 22.068241l58.204727 0l0 48.000004l-58.204727 0z" fill-rule="nonzero"></path></g><desc>Number of children</desc><text x="35" y="60" font-family="Verdana" font-size="40" fill="black">'
-                        + iconText + '</text></svg>';
-
+                    return me.generateSelectedNumberIcon(iconText);
             };
             var createBtn = new Element("input", {'type': 'button', 'value': 'create', 'class': 'button'});
             var svgContainer = new Element('span').update(generateIcon());
@@ -436,8 +431,7 @@ define([], function(){
             var generateIcon = function(){
                 var oneTwinMode = me._siblingMode && (me._node.getType() != "Partnership");
                 var displayNumber = oneTwinMode ? (me.numTwinNodes - 1) : me.numTwinNodes;
-                return '<svg version="1.1" viewBox="0.0 0.0 100.0 100.0" width=50 height=50 fill="none" stroke="none" stroke-linecap="square" stroke-miterlimit="10" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><clipPath id="p.0"><path d="m0 0l960.0 0l0 720.0l-960.0 0l0 -720.0z" clip-rule="nonzero"></path></clipPath><g clip-path="url(#p.0)"><path fill="#000000" fill-opacity="0.0" d="m0 0l960.0 0l0 720.0l-960.0 0z" fill-rule="nonzero"></path><path fill="#cfe2f3" d="m1.2283465 49.97113l48.53543 -48.535435l48.53543 48.535435l-48.53543 48.53543z" fill-rule="nonzero"></path><path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m1.2283465 49.97113l48.53543 -48.535435l48.53543 48.535435l-48.53543 48.53543z" fill-rule="nonzero"></path><path fill="#000000" fill-opacity="0.0" d="m20.661417 22.068241l58.204727 0l0 48.000004l-58.204727 0z" fill-rule="nonzero"></path></g><desc>Number of children</desc><text x="35" y="60" font-family="Verdana" font-size="40" fill="black">'
-                    + displayNumber + '</text></svg>';
+                return me.generateSelectedNumberIcon(String(displayNumber));
             };
             if (this._siblingMode) {
                 var createBtn = new Element("input", {'type': 'button', 'value': 'add twins', 'class': 'button'});
@@ -460,6 +454,16 @@ define([], function(){
             this.expandedOptionsContainer.insert(svgContainer);
             this.expandedOptionsContainer.insert(plusBtn);
             this.expandedOptionsContainer.insert(createBtn);
+        },
+
+        generateSelectedNumberIcon: function(text) {
+            var textX = 35;
+            if (text.length > 1) {
+                textX = 25;
+            }
+            return '<svg version="1.1" viewBox="0.0 0.0 100.0 100.0" width=50 height=50 fill="none" stroke="none" stroke-linecap="square" stroke-miterlimit="10" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><clipPath id="p.0"><path d="m0 0l960.0 0l0 720.0l-960.0 0l0 -720.0z" clip-rule="nonzero"></path></clipPath><g clip-path="url(#p.0)"><path fill="#000000" fill-opacity="0.0" d="m0 0l960.0 0l0 720.0l-960.0 0z" fill-rule="nonzero"></path><path fill="#cfe2f3" d="m1.2283465 49.97113l48.53543 -48.535435l48.53543 48.535435l-48.53543 48.53543z" fill-rule="nonzero"></path><path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m1.2283465 49.97113l48.53543 -48.535435l48.53543 48.535435l-48.53543 48.53543z" fill-rule="nonzero"></path><path fill="#000000" fill-opacity="0.0" d="m20.661417 22.068241l58.204727 0l0 48.000004l-58.204727 0z" fill-rule="nonzero"></path></g><desc>Number of children</desc>'
+            + '<text x="' + textX + '" y="60" font-family="Verdana" font-size="40" fill="black">'
+            + text + '</text></svg>';
         }
     });
     return NodetypeSelectionBubble;
