@@ -791,6 +791,7 @@ define([
                      //Event.fire(patientPicker, 'custom:selection:changed', { "useValue": { "phenotipsid": event.memo.id } });
                     Event.fire(patientPicker, 'custom:selection:changed', { "useValue": event.memo.id });
                     _this.reposition();
+                    _this.refresh();
                 });
                 this._attachFieldEventListeners(patientPicker, ['custom:selection:changed']);
                 return result;
@@ -1085,6 +1086,10 @@ define([
             this.menuBox.show();
             this.reposition(x, y);
             document.observe('mousedown', this._onClickOutside);
+        },
+
+        refresh : function() {
+            this.targetNode && this._setCrtData(this.targetNode.getSummary()) || this._clearCrtData();
         },
 
         hide : function() {
