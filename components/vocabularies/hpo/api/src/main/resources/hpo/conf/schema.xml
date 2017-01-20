@@ -83,6 +83,14 @@
       </analyzer>
     </fieldType>
 
+    <!-- Field for matching the start of words, useful for matching partial words typed by the user.
+         The input text is lowercased and split into tokens,
+         then each token is decomposed into prefixes of increasing size,
+         starting with the first two letters up to at most 10 letters.
+         For example, "example" is indexed as:
+         ex exa exam examp exampl example
+         The query is also lowecased and tokenized,
+         and each such token is matched against the index. -->
     <fieldType name="text_prefix" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.LowerCaseTokenizerFactory"/>
@@ -93,6 +101,7 @@
       </analyzer>
     </fieldType>
 
+    <!-- Field for matching the entire text exactly, useful for boosting up terms that match the user's input exactly. -->
     <fieldtype name="exact_match" class="solr.TextField" positionIncrementGap="1000">
       <analyzer type="index">
         <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="^(.*)$" replacement="SOLR_START_MARKER $1 SOLR_END_MARKER"/>
@@ -109,6 +118,7 @@
       </analyzer>
     </fieldtype>
 
+    <!-- Field for matching the text from the start up to a point exactly, useful for boosting up terms that start with the user's input exactly. -->
     <fieldtype name="prefix_match" class="solr.TextField" positionIncrementGap="1000">
       <analyzer type="index">
         <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="^(.*)$" replacement="SOLR_START_MARKER $1"/>
