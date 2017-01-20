@@ -77,7 +77,7 @@ public final class EthnicityParser
                     //Do nothing
                 }
 
-                outputXml.println("<doc boost=\"" + Math.log10(number) + "\"><field name=\"id\">ETHNO:"
+                outputXml.println("<doc boost=\"" + Math.log(number) + "\"><field name=\"id\">ETHNO:"
                     + URLEncoder.encode(ethnicity.toLowerCase(), "UTF-8").replaceAll("[^a-z]", "")
                     + "</field><field name=\"name\">" + ethnicity + "</field><field name=\"popsize\">" + number
                     + "</field></doc>");
