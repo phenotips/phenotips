@@ -61,7 +61,7 @@ public class EthnicityOntology extends AbstractSolrVocabulary
     {
         Map<String, String> searchMap = new HashMap<>();
         Map<String, String> optionsMap = new HashMap<>();
-        searchMap.put("nameGram", input);
+        searchMap.put("nameStub", input);
 
         // Order by population size:
         if (StringUtils.isBlank(sort)) {

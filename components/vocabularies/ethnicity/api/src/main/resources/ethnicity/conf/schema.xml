@@ -31,53 +31,22 @@
     <!-- The StrField type is not analyzed, but indexed/stored verbatim. -->
     <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
 
-    <!-- A text field that only splits on whitespace for exact matching of words -->
-    <fieldType name="text_ws" class="solr.TextField" positionIncrementGap="100">
-      <analyzer>
-        <tokenizer class="solr.WhitespaceTokenizerFactory"/>
-      </analyzer>
-    </fieldType>
-
-    <!-- A general text field: it tokenizes with StandardTokenizer, down cases,
-         and stems words using the possessive (remove 's) and the
-         Porter English stemmer. At query time only, it also applies synonyms. -->
+    <!-- A general text field: it tokenizes with ClassicTokenizer,
+         down cases,
+         and stems words using the possessive (remove 's)
+         and the Porter English stemmer. -->
     <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
-        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
         <filter class="solr.LowerCaseFilterFactory"/>
         <filter class="solr.EnglishPossessiveFilterFactory"/>
         <filter class="solr.PorterStemFilterFactory"/>
       </analyzer>
       <analyzer type="query">
-        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
         <filter class="solr.LowerCaseFilterFactory"/>
         <filter class="solr.EnglishPossessiveFilterFactory"/>
         <filter class="solr.PorterStemFilterFactory"/>
-      </analyzer>
-    </fieldType>
-
-    <fieldType name="text_general_edge_ngram" class="solr.TextField" positionIncrementGap="100">
-      <analyzer type="index">
-        <tokenizer class="solr.LowerCaseTokenizerFactory"/>
-        <filter class="solr.EdgeNGramFilterFactory" minGramSize="1" maxGramSize="10"/>
-      </analyzer>
-      <analyzer type="query">
-        <tokenizer class="solr.LowerCaseTokenizerFactory"/>
-      </analyzer>
-    </fieldType>
-
-    <!-- Just like text_general except it reverses the characters of
-         each token, to enable more efficient leading wildcard queries. -->
-    <fieldType name="text_general_rev" class="solr.TextField" positionIncrementGap="100">
-      <analyzer type="index">
-        <tokenizer class="solr.StandardTokenizerFactory"/>
-        <filter class="solr.LowerCaseFilterFactory"/>
-        <filter class="solr.ReversedWildcardFilterFactory" withOriginal="true"
-           maxPosAsterisk="3" maxPosQuestion="2" maxFractionAsterisk="0.33"/>
-      </analyzer>
-      <analyzer type="query">
-        <tokenizer class="solr.StandardTokenizerFactory"/>
-        <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
     </fieldType>
 
@@ -88,43 +57,54 @@
          valid words. -->
     <fieldType name="text_spell" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
-        <tokenizer class="solr.StandardTokenizerFactory"/>
-        <filter class="solr.StandardFilterFactory"/>
-        <filter class="solr.LowerCaseFilterFactory" />
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
+        <filter class="solr.ClassicFilterFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
       <analyzer type="query">
-        <tokenizer class="solr.StandardTokenizerFactory"/>
-        <filter class="solr.StandardFilterFactory"/>
-        <filter class="solr.LowerCaseFilterFactory" />
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
+        <filter class="solr.ClassicFilterFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
     </fieldType>
 
+    <!-- Field for matching the start of words, useful for matching partial words typed by the user.
+         The input text is lowercased and split into tokens,
+         then each token is decomposed into prefixes of increasing size,
+         starting with the first letter up to at most 10 letters.
+         For example, "example" is indexed as:
+         e ex exa exam examp exampl example
+         The query is also lowecased and tokenized,
+         and each such token is matched against the index. -->
+    <fieldType name="text_prefix" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+        <tokenizer class="solr.LowerCaseTokenizerFactory"/>
+        <filter class="solr.EdgeNGramFilterFactory" minGramSize="1" maxGramSize="10"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.LowerCaseTokenizerFactory"/>
+      </analyzer>
+    </fieldType>
+
     <!-- Since fields of this type are by default not stored or indexed,
-         any data added to them will be ignored outright.  -->
-    <fieldtype name="ignored" stored="false" indexed="false" multiValued="true" class="solr.StrField" />
+         any data added to them will be ignored outright. -->
+    <fieldtype name="ignored" stored="false" indexed="false" multiValued="true" class="solr.StrField"/>
   </types>
 
   <fields>
-    <field name="id" type="string" indexed="true" stored="true" required="true"/>
-    <field name="name" type="text_general" indexed="false" stored="true"/>
-    <field name="nameGram" type="text_general_edge_ngram" indexed="true" stored="false"/>
+    <field name="version" type="string" indexed="true" stored="true" omitNorms="true"/>
+    <field name="id" type="string" indexed="true" stored="true" required="true" omitNorms="true"/>
+    <field name="name" type="text_general" indexed="true" stored="true"/>
     <field name="nameSpell" type="text_spell" indexed="true" stored="false"/>
+    <field name="nameStub" type="text_prefix" indexed="true" stored="false" omitNorms="true"/>
     <field name="nameSort" type="string" indexed="true" stored="false"/>
 
     <field name="popsize" type="tlong" indexed="true" stored="false" omitNorms="true"/>
 
-    <!-- Catchall field, containing all other searchable text fields (implemented
-         via copyField further on in this schema).  -->
-    <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
-    <field name="textSpell" type="text_spell" indexed="true" stored="false" multiValued="true"/>
-
-    <!-- Catchall text field that indexes tokens both normally and in reverse for efficient
-         leading wildcard queries. -->
-    <field name="text_rev" type="text_general_rev" indexed="true" stored="false" multiValued="true"/>
-
-    <dynamicField name="*" type="ignored" multiValued="true" omitNorms="false"/>
+    <!-- Discard all other fields -->
+    <dynamicField name="*" type="ignored" multiValued="true"/>
   </fields>
 
   <!-- Field to use to determine and enforce document uniqueness.
@@ -134,7 +114,5 @@
 
   <copyField source="name" dest="nameSort"/>
   <copyField source="name" dest="nameSpell"/>
-  <copyField source="name" dest="nameGram"/>
-  <copyField source="*" dest="text"/>
-  <copyField source="*" dest="textSpell"/>
+  <copyField source="name" dest="nameStub"/>
 </schema>
