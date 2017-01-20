@@ -29,24 +29,44 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- * Parses the HTML table obtained from https://en.wikipedia.org/wiki/List_of_contemporary_ethnic_groups and generate a
- * document tha can be sent to Solr for indexing.
+ * Parses the HTML table obtained from {@link https://en.wikipedia.org/wiki/List_of_contemporary_ethnic_groups} and
+ * generate a document that can be sent to Solr for indexing.
  *
  * @version $Id$
  * @since 1.3
  */
 public final class EthnicityParser
 {
+    /**
+     * Regular expression used for parsing the population size. Possible value formats in this version:
+     * <ul>
+     * <li>100,000</li>
+     * <li>{@code <} 100,000</li>
+     * <li>100,000 - 200,000 (sometimes with another type of dash)</li>
+     * </ul>
+     * Regexp says:
+     * <ol>
+     * <li>may start with {@code <}</li>
+     * <li>optional whitespace</li>
+     * <li>digits and commas (captured as group 1)</li>
+     * <li>something other than digits (optional)</li>
+     * <li>another set of digits and commas (captured as group 2, optional)</li>
+     * </ol>
+     * If the regexp matches, we'll use either the mean between the two numbers, or the first number if the second one
+     * doesn't exist
+     */
+    private static final Pattern POPSIZE_PATTERN = Pattern.compile("^<?\\s*([0-9,]+)(?:[^0-9]+)?([0-9,]+)?");
+
     private EthnicityParser()
     {
         // Hidden constructor to prevent initialization
     }
 
     /**
-     * Main method, parses ListEthnicGroups.csv from the current directory and generates a .csv file (for debugging) and
-     * a .xml file that can be sent to Solr for indexing.
+     * Main method, parses {@code ListEthnicGroups.html} from the current directory and generates a {@code .csv} file
+     * (for debugging) and a {@code .xml} file that can be sent to Solr for indexing.
      *
-     * @param args ignored, requied for an executable class signature
+     * @param args ignored, required for an executable class signature
      */
     public static void main(String[] args)
     {
@@ -65,30 +85,15 @@ public final class EthnicityParser
                 String ethnicity = row.select("a").get(0).text();
                 int number = 1000;
                 try {
-                    // Possible value formats in this version:
-                    // 100,000
-                    // < 100,000
-                    // 100,000 - 200,000 (sometimes with another type of dash)
-                    //
-                    // Regexp says:
-                    // - may start with <
-                    // - optional whitespace
-                    // - digits and commas (captured as group 1)
-                    // - something other than digits (optional)
-                    // - another set of digits and commas (captured as group 3, optional)
-                    //
-                    // If the regexp matches, we'll use either the mean between the two numbers,
-                    // or the first number if the second one doesn't exist
-                    Matcher matcher = Pattern.compile("^<?\\s*([0-9,]+)([^0-9]+)?([0-9,]+)?")
-                        .matcher(row.select("td").get(3).ownText());
+                    Matcher matcher = POPSIZE_PATTERN.matcher(row.select("td").get(3).ownText());
                     if (matcher.find()) {
                         number = Integer.parseInt(matcher.group(1).replaceAll(",", ""));
-                        if (matcher.group(3) != null) {
-                            number = (number + Integer.parseInt(matcher.group(3).replaceAll(",", ""))) / 2;
+                        if (matcher.group(2) != null) {
+                            number = (number + Integer.parseInt(matcher.group(2).replaceAll(",", ""))) / 2;
                         }
                     }
                 } catch (Exception ex) {
-                    //Do nothing
+                    // Do nothing
                 }
 
                 outputXml.println("<doc boost=\"" + Math.log(number) + "\"><field name=\"id\">ETHNO:"
