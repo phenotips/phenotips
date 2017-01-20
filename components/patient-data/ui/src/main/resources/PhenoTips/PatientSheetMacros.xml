@@ -377,5 +377,124 @@
     #set ($discard = $genesSummary.add({"key" : $g.gene, "status" : $g.status}))
   #end
 #end
+
+## Labeled External ID data
+##
+##
+
+#macro (__externalIdentifier_updatePresets $presets)
+  #set ($presetLabelParam = 'label')
+  #set ($eidLabelParam = 'eidLabel')
+  #set ($preferencesClassName = 'XWiki.XWikiPreferences')
+  #set ($presetEidClassName = 'PhenoTips.LabeledIdentifierSettings')
+  #set ($targetClassName = 'PhenoTips.LabeledIdentifierClass')
+  #set ($presetEidObj = $xwiki.getDocument($preferencesClassName).getObjects($presetEidClassName))
+  #foreach ($obj in $presetEidObj)
+    #set ($propertyLabel = $obj.getValue($presetLabelParam))
+    #if ($propertyLabel &amp;&amp; $propertyLabel != '')
+      #set ($discard = $presets.put($propertyLabel, $obj))
+      #if (!$doc.getObject($targetClassName, $eidLabelParam, $propertyLabel))
+        #set ($presetEid = $doc.newObject($targetClassName))
+        #set ($discard = $presetEid.set($eidLabelParam, $propertyLabel))
+        #set ($discard = $doc.save('Added a preset external identifier label', true))
+      #end
+    #end
+  #end
+#end
+
+#macro (__externalIdentifier_displayTable $dataClassName $presets)
+  #set ($labelParam = 'eidLabel')
+  #set ($valueParam = 'eidValue')
+  #set ($allowOthersParam = 'allowOtherEids')
+  #set ($allowDuplicatesParam = 'allowDuplicateEids')
+  #set ($formatParam = 'format')
+  #set ($formatHintParam = 'formatHint')
+  #set ($preferencesClassName = 'XWiki.XWikiPreferences')
+  #set ($globalEidPresets = 'PhenoTips.LabeledIdentifierGlobalSettings')
+  #set ($presetEidClassName = 'PhenoTips.LabeledIdentifierSettings')
+  #set ($dataClass = $xwiki.getDocument($dataClassName).xWikiClass)
+  #set ($dataObjects = $doc.getObjects($dataClassName))
+  #set ($allowOtherEids = $xwiki.getDocument($preferencesClassName).getObject($globalEidPresets).getValue($allowOthersParam))
+  (% class="extradata-list labeled-eid-list" id="extradata-list-${dataClassName}" %)
+  #if ($xcontext.action == 'edit')
+    #foreach ($o in $dataObjects)
+      #set ($identifierFormat = $presets.get($o.getValue($labelParam)))
+      #set ($displayMode = "edit")
+      #set ($uniqueEidVal = "")
+      #set ($format = "")
+      #set ($formatHint = "")
+      #if ($identifierFormat)
+        #set ($displayMode = "view")
+        #set ($uniqueEidVal = "#if($identifierFormat.getValue($allowDuplicatesParam) == 0)unique-value#end")
+        #set ($format = $identifierFormat.getValue($formatParam))
+        #set ($formatHint = $identifierFormat.getValue($formatHintParam))
+      #end##
+      #__externalIdentifier_eidRow($o $dataClassName $uniqueEidVal $format $formatHint $displayMode)
+    #end## foreach object
+    #if ($allowOtherEids == 1)
+      #__externalIdentifier_eidEmptyRow($dataClassName)
+      (% class="list-actions" %)(((#__externalIdentifier_addTool($dataClassName "extradata-${dataClassName}" {'mode' : $xcontext.action}))))
+    #end
+  #else
+    #foreach ($o in $dataObjects)
+      #set ($eidValue = "$!{o.getValue($valueParam)}")
+      #if ($eidValue != '')
+        {{html clean="false"}}
+          &lt;div&gt;
+            &lt;p&gt;
+              &lt;span class="label"&gt;${o.getValue($labelParam)}:&lt;/span&gt;
+              &lt;span class="displayed-value"&gt;$!eidValue&lt;/span&gt;
+            &lt;/p&gt;
+          &lt;/div&gt;
+        {{/html}}##
+      #end
+    #end
+  #end
+#end
+
+#macro (__externalIdentifier_eidEmptyRow $dataClassName)
+  #set ($eidNumber = 'ZZEID_NUMBER_PLACEHOLDERZZ')
+  #set ($labelParam = 'eidLabel')
+  #set ($valueParam = 'eidValue')
+  #set ($cssClassName = "${dataClassName}_${eidNumber}_")
+  #set ($fakeObj = $doc.newObject($dataClassName))
+  |(% class="labeled-eid label checked eid-$eidNumber" %)##
+  {{html clean=false wiki=false}}
+  &lt;input class="eid-label" name="${cssClassName}${labelParam}" type="text" value="" /&gt;{{/html}}##
+  |(% class="labeled-eid value checked eid-$eidNumber" %)##
+  {{html clean=false wiki=false}}
+  &lt;input name="${cssClassName}${valueParam}" class="eid-value" value="" type="text" placeholder=" " /&gt;
+  &lt;input name="${cssClassName}index" class="eid-index" value="$eidNumber" type="hidden" /&gt;{{/html}}##
+  |(% class="actions" %)#__externalIdentifier_deleteTool($fakeObj "extradata-${dataClassName}")
+
+
+#end
+
+#macro (__externalIdentifier_eidRow $o $dataClassName $uniqueValue $format $formatHint $displayMode)
+  #set ($labelParam = 'eidLabel')
+  #set ($valueParam = 'eidValue')
+  #set ($eidLabel = "$!{o.getValue($labelParam)}")
+  #if ($eidLabel != '')
+    #set ($cssClassName = "${dataClassName}_$!{o.number}_")
+    |(% class="labeled-eid label eid-$!{o.number}" %)##
+    {{html clean=false wiki=false}}
+    &lt;label class="section eid-label ${cssClassName}${labelParam}"&gt;$eidLabel&lt;/label&gt;&lt;label class="section"&gt;:&lt;/label&gt;{{/html}}##
+    |(% class="labeled-eid value checked eid-$!{o.number}" %)##
+    {{html clean=false wiki=false}}
+    &lt;input name="${cssClassName}${valueParam}" class="eid-value $uniqueValue" value="$!{o.getValue($valueParam)}" type="text" placeholder="$!{formatHint} " /&gt;
+    &lt;input name="${cssClassName}format" class="eid-format" value="$!format" type="hidden" /&gt;
+    &lt;input name="${cssClassName}index" class="eid-index" value="$!{o.number}" type="hidden" /&gt;{{/html}}##
+    #if ($displayMode == 'edit')|(% class="actions" %)#__externalIdentifier_deleteTool($o "extradata-${dataClassName}")#end
+
+  #end##
+#end
+
+#macro (__externalIdentifier_addTool $classname $anchor $options)
+{{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="button add-labeled-eid add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;xpage=plain&amp;xaction=lastentry&amp;withLabel=false&amp;form_token=$!{services.csrf.getToken()}")" title="$services.localization.render('PhenoTips.LabeledIdentifierClass.labeledEidTable.newEntry')"&gt;$services.localization.render('PhenoTips.LabeledIdentifierClass.labeledEidTable.newEntry')&lt;/a&gt;&lt;/span&gt;{{/html}} {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}_hint").replace('"', '~~~"')"/}}
+#end
+
+#macro (__externalIdentifier_deleteTool $object $anchor)
+{{html clean="false"}}&lt;span class="buttonwrapper actions"&gt;&lt;a class="action delete-eid button secondary" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;classid=${object.number}&amp;form_token=$!{services.csrf.getToken()}")" title="$services.localization.render('phenotips.tableMacros.delete')"&gt;✖&lt;/a&gt;&lt;/span&gt;{{/html}}##
+#end
 {{/velocity}}</content>
 </xwikidoc>
