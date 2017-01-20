@@ -65,6 +65,20 @@ public final class EthnicityParser
                 String ethnicity = row.select("a").get(0).text();
                 int number = 1000;
                 try {
+                    // Possible value formats in this version:
+                    // 100,000
+                    // < 100,000
+                    // 100,000 - 200,000 (sometimes with another type of dash)
+                    //
+                    // Regexp says:
+                    // - may start with <
+                    // - optional whitespace
+                    // - digits and commas (captured as group 1)
+                    // - something other than digits (optional)
+                    // - another set of digits and commas (captured as group 3, optional)
+                    //
+                    // If the regexp matches, we'll use either the mean between the two numbers,
+                    // or the first number if the second one doesn't exist
                     Matcher matcher = Pattern.compile("^<?\\s*([0-9,]+)([^0-9]+)?([0-9,]+)?")
                         .matcher(row.select("td").get(3).ownText());
                     if (matcher.find()) {
