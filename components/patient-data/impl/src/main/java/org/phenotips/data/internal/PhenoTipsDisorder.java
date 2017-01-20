@@ -46,13 +46,18 @@ public class PhenoTipsDisorder extends AbstractPhenoTipsVocabularyProperty imple
      * @param value the specific value from the property represented by this object
      * @throws IllegalArgumentException if one of the arguments is {@code null} or otherwise malformed for the ontology
      */
-    PhenoTipsDisorder(ListProperty property, String value)
+    public PhenoTipsDisorder(ListProperty property, String value)
     {
         super((value != null && StringUtils.equals(property.getName(), "omim_id") && OMIM_TERM_PATTERN.matcher(
             value).matches()) ? MIM_PREFIX + value : value);
     }
 
-    PhenoTipsDisorder(JSONObject json)
+    /**
+     * Constructor for initializing from a JSON Object.
+     *
+     * @param json JSON object describing this property
+     */
+    public PhenoTipsDisorder(JSONObject json)
     {
         super(json);
     }
