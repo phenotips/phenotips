@@ -53,7 +53,7 @@ public final class EthnicityParser
      * <li>another set of digits and commas (captured as group 2, optional)</li>
      * </ol>
      * If the regexp matches, we'll use either the mean between the two numbers, or the first number if the second one
-     * doesn't exist
+     * doesn't exist.
      */
     private static final Pattern POPSIZE_PATTERN = Pattern.compile("^<?\\s*([0-9,]+)(?:[^0-9]+)?([0-9,]+)?");
 
@@ -83,6 +83,9 @@ public final class EthnicityParser
             outputXml.println("<add>");
             for (Element row : rows) {
                 String ethnicity = row.select("a").get(0).text();
+                // If no population information is present, then assume a low, but not 0 population size, so that the
+                // term isn't completely ignored by queries; since most ethncities without a known population size in
+                // the input file tend to be small, that's a probably good average
                 int number = 1000;
                 try {
                     Matcher matcher = POPSIZE_PATTERN.matcher(row.select("td").get(3).ownText());
