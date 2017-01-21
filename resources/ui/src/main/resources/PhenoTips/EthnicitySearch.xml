@@ -39,14 +39,14 @@
   <hidden>true</hidden>
   <content>{{velocity}}
 #if ($xcontext.action == 'get')
-  #set ($input = $request.getParameter("input").toLowerCase())
+  #set ($input = $request.getParameter('input').toLowerCase())
   #set ($finalResults = [])
   #set ($lowercaseResults = [])
 
   ##Get existing ethnicities
   ##------------------------
 
-  #foreach($res in $services.vocabularies.ethnicity.getMatchingEthnicities($input))
+  #foreach($res in $services.vocabularies.ethnicity.search($input, 10, '', ''))
     #set ($discard = $finalResults.add($res.name))
     #set ($discard = $lowercaseResults.add($res.name.toLowerCase()))
   #end
