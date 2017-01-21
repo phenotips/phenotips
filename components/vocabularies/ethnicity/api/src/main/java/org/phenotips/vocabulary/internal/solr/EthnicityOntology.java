@@ -21,17 +21,24 @@ import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 
-import java.util.HashMap;
+import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.params.CommonParams;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.client.solrj.util.ClientUtils;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.params.DisMaxParams;
+import org.apache.solr.common.params.SpellingParams;
 
 /**
  * Provides access to searching ethnicity Solr index. Currently the implementation is very basic, but will be extended
@@ -45,6 +52,9 @@ import org.apache.solr.common.params.CommonParams;
 @Singleton
 public class EthnicityOntology extends AbstractSolrVocabulary
 {
+    /** For determining if a query is a an id. */
+    private static final Pattern ID_PATTERN = Pattern.compile("^ETHNO:\\w+$", Pattern.CASE_INSENSITIVE);
+
     /**
      * @param input part of full ethnicity name
      * @return set of strings that are full ethnicity names that match the partial string
@@ -59,20 +69,21 @@ public class EthnicityOntology extends AbstractSolrVocabulary
     @Override
     public List<VocabularyTerm> search(String input, int maxResults, String sort, String customFilter)
     {
-        Map<String, String> searchMap = new HashMap<>();
-        Map<String, String> optionsMap = new HashMap<>();
-        searchMap.put("nameStub", input);
-
-        // Order by population size:
-        if (StringUtils.isBlank(sort)) {
-            searchMap.put("_val_", "popsize");
-        } else {
-            optionsMap.put(CommonParams.SORT, sort);
+        if (StringUtils.isBlank(input)) {
+            return Collections.emptyList();
         }
-
-        optionsMap.put(CommonParams.ROWS, Integer.toString(maxResults));
-
-        return search(searchMap, optionsMap);
+        boolean isId = this.isId(input);
+        SolrQuery query = new SolrQuery();
+        this.addGlobalQueryParameters(query);
+        if (!isId) {
+            this.addFieldQueryParameters(query);
+        }
+        List<VocabularyTerm> result = new LinkedList<>();
+        for (SolrDocument doc : this.search(addDynamicQueryParameters(input, maxResults, sort, customFilter, isId,
+            query))) {
+            result.add(new SolrVocabularyTerm(doc, this));
+        }
+        return result;
     }
 
     @Override
@@ -118,5 +129,49 @@ public class EthnicityOntology extends AbstractSolrVocabulary
     public String getCitation()
     {
         return "";
+    }
+
+    private SolrQuery addGlobalQueryParameters(SolrQuery query)
+    {
+        query.set("spellcheck", Boolean.toString(true));
+        query.set(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
+        query.set(SpellingParams.SPELLCHECK_COUNT, "100");
+        query.set(SpellingParams.SPELLCHECK_MAX_COLLATION_TRIES, "3");
+        query.set("lowercaseOperators", Boolean.toString(false));
+        query.set("defType", "edismax");
+        return query;
+    }
+
+    private SolrQuery addFieldQueryParameters(SolrQuery query)
+    {
+        query.set(DisMaxParams.PF, "name^20 nameSpell^36 nameStub^10");
+        query.set(DisMaxParams.QF, "name^10 nameSpell^18 nameStub^5");
+        query.set(DisMaxParams.BF, "log(popsize)^10");
+        return query;
+    }
+
+    private SolrQuery addDynamicQueryParameters(String originalQuery, Integer rows, String sort, String customFq,
+        boolean isId, SolrQuery query)
+    {
+        String queryString = originalQuery.trim();
+        String escapedQuery = ClientUtils.escapeQueryChars(queryString);
+        if (isId) {
+            query.setFilterQueries(new MessageFormat("id:{0}").format(new String[] { escapedQuery }));
+        }
+        query.setQuery(escapedQuery);
+        query.set(SpellingParams.SPELLCHECK_Q, queryString);
+        query.setRows(rows);
+        if (StringUtils.isNotBlank(sort)) {
+            for (String sortItem : sort.split("\\s*,\\s*")) {
+                query.addSort(StringUtils.substringBefore(sortItem, " "),
+                    sortItem.endsWith(" desc") || sortItem.startsWith("-") ? ORDER.desc : ORDER.asc);
+            }
+        }
+        return query;
+    }
+
+    private boolean isId(String query)
+    {
+        return ID_PATTERN.matcher(query).matches();
     }
 }
