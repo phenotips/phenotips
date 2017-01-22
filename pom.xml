@@ -1274,9 +1274,22 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>${testframework.version}</version>
         </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.5.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.12</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
+
   <profiles>
     <profile>
       <!-- Use this ( mvn install -Pquick ) when trying to get a quicker test build, without running any quality control checks. -->
@@ -1347,35 +1360,6 @@
             </executions>
           </plugin>
         </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>mac</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-        <os>
-          <family>mac</family>
-          <name>mac os x</name>
-        </os>
-      </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>exec-maven-plugin</artifactId>
-              <!-- Lock down plugin version for build reproducibility -->
-              <version>1.5.0</version>
-            </plugin>
-            <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>build-helper-maven-plugin</artifactId>
-              <!-- Lock down plugin version for build reproducibility -->
-              <version>1.12</version>
-            </plugin>
-          </plugins>
-        </pluginManagement>
       </build>
     </profile>
 
