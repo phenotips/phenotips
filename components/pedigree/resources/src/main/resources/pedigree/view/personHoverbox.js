@@ -228,7 +228,6 @@ define([
                         (buttons[index].hasOwnProperty("aw") && buttons[index].aw == awStatus)) {
                         yTickIndex = index;
                     }
-                    this.getNode().getGraphics().updateAliveAndWellLabel(awStatus);
                 }
 
                 var circle = this._generateRadioTickCircle(this.getX()+15, computeItemPosition(index), false);
@@ -240,7 +239,7 @@ define([
                     tick.attr({'cy' : computeItemPosition(i)});
 
                     var properties = {};
-                    buttons[i].hasOwnProperty("aw") && (properties["setAliveAndWell"] = buttons[i].aw) && this.getNode().getGraphics().updateAliveAndWellLabel(buttons[i].aw);
+                    buttons[i].hasOwnProperty("aw") && (properties["setAliveAndWell"] = buttons[i].aw);
                     properties["setLifeStatus"] = buttons[i].lifeStatus;
                     var event = { "nodeID": this.getNode().getID(), "properties": properties };
 

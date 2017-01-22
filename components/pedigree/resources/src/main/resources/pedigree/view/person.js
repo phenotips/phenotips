@@ -314,7 +314,7 @@ define([
         setEvaluated: function(evaluationStatus) {
             if (evaluationStatus == this._evaluated) return;
             this._evaluated = evaluationStatus;
-            this.getGraphics().updateEvaluationLabel();
+            this.getGraphics().updateEvaluationGraphic();
         },
 
         /**
@@ -496,6 +496,7 @@ define([
                         this.setLifeStatus("alive");
                 }
                 this.getGraphics().getHoverBox().regenerateButtons();
+                this.getGraphics().updateAliveAndWellGraphic();
             }
         },
 

@@ -47,8 +47,8 @@ define([
             this._childlessShape = null;
             this._isSelected = false;
             this._carrierGraphic = null;
-            this._evalLabel = null;
-            this._awLabel = null;
+            this._evalGraphic = null;
+            this._awGraphic = null;
             //timer.printSinceLast("Person visuals time");
         },
 
@@ -139,7 +139,7 @@ define([
             }
             this.updateDisorderShapes();
             this.updateCarrierGraphic();
-            this.updateEvaluationLabel();
+            this.updateEvaluationGraphic();
             if (this.getNode().getLifeStatus() == "unborn"){
                 this.updateLifeStatusShapes("unborn");
             }
@@ -577,10 +577,10 @@ define([
         /**
          * Draws the evaluation status symbol for this Person
          *
-         * @method updateEvaluationLabel
+         * @method updateEvaluationGraphic
          */
-        updateEvaluationLabel: function() {
-            this._evalLabel && this._evalLabel.remove();
+        updateEvaluationGraphic: function() {
+            this._evalGraphic && this._evalGraphic.remove();
             var gender = this.getNode().getGender();
             if (this.getNode().getEvaluated()) {
                 if (this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
@@ -589,15 +589,19 @@ define([
                 }
                 else {
                     var mult = 1.1;
-                    if (gender == 'U' || gender == 'O') {mult = 1.3;}
-                    else if (gender == 'M') {mult = 1.4;}
+                    if (gender != 'F') {mult = 1.3;}
                     if (this.getNode().isProband) {mult *= 1.1;}
                     var x = this.getX() + this._shapeRadius*mult;
                     var y = this.getY() + this._shapeRadius*mult - 10; // adjusting position not to collide with A&W status
+                    if (this.getNode().getAdopted() != "") { // to avoid intersection with adopted status brackets
+                        if (gender == 'F') {y += 4; x -= 6;}
+                        if (gender == 'M') {x += 3;}
+                        if (gender == 'U' || gender == 'O') {y += 7; x -= 2;}
+                    }
                 }
-                this._evalLabel = editor.getPaper().text(x, y, "*").attr(PedigreeEditorParameters.attributes.evaluationShape).toBack();
+                this._evalGraphic = editor.getPaper().text(x, y, "*").attr(PedigreeEditorParameters.attributes.evaluationShape).toBack();
             } else {
-                this._evalLabel = null;
+                this._evalGraphic = null;
             }
         },
 
@@ -608,25 +612,31 @@ define([
          * @return {Raphael.el}
          */
         getEvaluationGraphics: function() {
-            return this._evalLabel;
+            return this._evalGraphic;
         },
 
         /**
          * Draws the "alive and well" status symbol for this Person
          *
-         * @method updateAliveAndWellLabel
+         * @method updateAliveAndWellGraphic
          */
-        updateAliveAndWellLabel: function(isAliveAndWell) {
-            this._awLabel && this._awLabel.remove();
+        updateAliveAndWellGraphic: function(isAliveAndWell) {
+            this._awGraphic && this._awGraphic.remove();
             var gender = this.getNode().getGender();
-            if (isAliveAndWell) {
-                var mult = 1.1;
-                if (gender == 'U' || gender == 'O') {mult = 1.3;}
-                else if (gender == 'M') {mult = 1.4;}
+            if (this.getNode().getAliveAndWell()) {
+                var mult = 1.2;
+                if (gender != 'F') {mult = 1.4;}
                 if (this.getNode().isProband) {mult *= 1.1;}
                 var x = this.getX() + this._shapeRadius*mult - 10; // adjusting position not to collide with evaluation status
                 var y = this.getY() + this._shapeRadius*mult;
-                this._awLabel = editor.getPaper().text(x, y, "A&W").attr(PedigreeEditorParameters.attributes.aliveAndWellShape).toBack();
+                if (this.getNode().getAdopted() != "") { // to avoid intersection with adopted status brackets
+                    if (gender == 'F') {y += 13; x -= 3;}
+                    if (gender == 'M') {y += 4; x -= 6;}
+                    if (gender == 'U' || gender == 'O') {y += 17;}
+                }
+                this._awGraphic = editor.getPaper().text(x, y, "A&W").attr(PedigreeEditorParameters.attributes.aliveAndWellShape).toBack();
+            } else {
+                this._awGraphic = null;
             }
         },
 
@@ -1100,7 +1110,7 @@ define([
          */
         getAllGraphics: function($super) {
             //console.log("Node " + this.getNode().getID() + " getAllGraphics");
-            return $super().push(this.getHoverBox().getBackElements(), this.getLabels(), this._linkArea, this.getCarrierGraphics(), this.getEvaluationGraphics(), this.getHoverBox().getFrontElements());
+            return $super().push(this.getHoverBox().getBackElements(), this.getLabels(), this._awGraphic, this._linkArea, this.getCarrierGraphics(), this.getEvaluationGraphics(), this.getHoverBox().getFrontElements());
         },
 
         /**
