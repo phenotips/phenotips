@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocumentBase;
 import org.json.JSONArray;
@@ -343,7 +344,7 @@ public abstract class AbstractSolrVocabularyTerm implements VocabularyTerm
         if (CollectionUtils.isEmpty(values)) {
             return null;
         }
-        return CollectionUtils.get(values, 0);
+        return IterableUtils.get(values, 0);
     }
 
     /**
