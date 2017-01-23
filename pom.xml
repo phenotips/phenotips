@@ -491,6 +491,12 @@
               <method>java.lang.String getCitation()</method>
               <justification>New methods for better vocabulary identification</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/vocabulary/Vocabulary</className>
+              <differenceType>7012</differenceType>
+              <method>java.util.List search(java.lang.String)</method>
+              <justification>New search method for a simpler API</justification>
+            </difference>
 
             <difference>
               <className>org/phenotips/data/permissions/PermissionsManager</className>

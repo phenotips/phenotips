@@ -238,6 +238,12 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
     }
 
     @Override
+    public List<VocabularyTerm> search(String input)
+    {
+        return search(input, 10, null, null);
+    }
+
+    @Override
     public List<VocabularyTerm> search(String input, int maxResults, String sort, String customFilter)
     {
         // ignoring sort and customFq

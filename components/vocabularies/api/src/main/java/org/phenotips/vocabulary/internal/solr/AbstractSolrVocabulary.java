@@ -203,6 +203,12 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     }
 
     @Override
+    public List<VocabularyTerm> search(String input)
+    {
+        return search(input, 10, null, null);
+    }
+
+    @Override
     public List<VocabularyTerm> search(String input, int maxResults, String sort, String customFilter)
     {
         throw new UnsupportedOperationException();
