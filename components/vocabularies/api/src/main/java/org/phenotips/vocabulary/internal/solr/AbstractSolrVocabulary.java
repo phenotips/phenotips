@@ -224,6 +224,10 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     protected SolrDocumentList search(SolrQuery query)
     {
         try {
+            this.logger.debug("Extending query [{}] for vocabulary [{}]", query, getCoreName());
+            for (VocabularyExtension extension : this.extensions) {
+                extension.extendQuery(query, this);
+            }
             this.logger.debug("Searching [{}] with query [{}]", getCoreName(), query);
             QueryResponse response = this.externalServicesAccess.getSolrConnection().query(query);
             SolrDocumentList results = response.getResults();
