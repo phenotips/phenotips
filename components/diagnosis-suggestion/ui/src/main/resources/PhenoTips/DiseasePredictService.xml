@@ -37,57 +37,175 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{velocity filter="indent"}}
+  <content>{{velocity filter="indent" wiki="false"}}
 #if ($xcontext.action == 'get')
-  $response.setHeader("X-ReqNo", "$!request.reqNo")##
+  $response.setContentType("application/json")##
+  $response.setContentType("application/json")
+
   #if ("$!request.q" != '')##
-    #set ($limit = $mathtool.toInteger("$!{request.limit}"))
+    #set($limit = $mathtool.toInteger("$!{request.limit}"))
     #if (!$limit || $limit &lt; 0)
-      #set ($limit = 20)
+      #set($limit = 20)
     #end
-    #set ($symptoms = [])
-    #set ($freeSymptoms = [])
+
+    ## array of strings
+    #set($symptoms = [])
+    #set($notSymptoms = [])
+    #set($freeSymptoms = [])
+    #set($symptomsAncestors = {})
+    #set($notsymptomsAncestors = {})
+
     #foreach ($piece in $!request.getParameterValues('symptom'))
       #set($discard = $symptoms.add($piece))
+
+      ## get ancestors for user-selected symptoms and store in $symptomsAncestors
+      #set($ancestors = [])
+      #foreach ($ancestor in $services.vocabularies.resolveTerm($piece).ancestors)
+        #set($discard = $ancestors.add($ancestor.id))
+      #end
+      #set($symptomsAncestors[$piece] = $ancestors)
+    #end
+    #foreach ($piece in $!request.getParameterValues('not_symptom'))
+      #set($discard = $notSymptoms.add($piece))
+
+      ## get ancestors for user-selected not_symptoms and store in $notsymptomsAncestors
+      #set($ancestors = [])
+      #foreach ($ancestor in $services.vocabularies.resolveTerm($piece).ancestors)
+        #set($discard = $ancestors.add($ancestor.id))
+      #end
+      #set($notsymptomsAncestors[$piece] = $ancestors)
     #end
     #foreach ($piece in $!request.getParameterValues('free_symptom'))
       #set($discard = $freeSymptoms.add($piece))
     #end
-#if ("$!{request.format}" == 'html')
-#set ($results = $services.diagnosis.get($symptoms, $freeSymptoms, $limit))
-#if ($results.size() &gt; 0)
-{{html clean="false"  wiki="false"}}##
-&lt;ul&gt;
-#foreach($term in $results)
-  #set($name = $term.getName())
-  #set ($indexOfSeparator = $name.indexOf(';'))
-  #if ($indexOfSeparator &gt; 0)
-    #set($shortName = $name.substring(0, $indexOfSeparator))
-    #set($fullName = $name.replaceAll(';;', ';'))
-  #else
-    #set($shortName = $name)
-    #set($fullName = $name)
-  #end
-  #set($id = $term.getId())
-  &lt;li class="disorder"&gt;
-    &lt;span class="id" title="${id}"&gt;&lt;a href="http://www.omim.org/entry/${id}" target="_blank" title="Read about this disorder on OMIM"&gt;[MIM:${id}]&lt;/a&gt;&lt;/span&gt;
-    &lt;span class="title" title="${fullName}"&gt;${shortName}&lt;/span&gt;
-  &lt;/li&gt;
-#end ## foreach item
-&lt;/ul&gt;
-{{/html}}
-   #set ($hasOutput = true)
-#else
-   #set ($hasOutput = false)
-#end## results.size() &gt; 0
-    #end## html format
-  #else
-    #set ($hasOutput = false)
+
+
+
+    #set($results = $services.diagnosis.get($symptoms, $freeSymptoms, $limit))
+    #if ($results.size() &gt; 0)
+
+      #set($disorders = [])
+      #foreach ($mimTerm in $results)
+
+        ## Get HPO id/name for every symptom of disorder
+        #set($s = [])
+        #foreach ($hpoTermString in $mimTerm.get("actual_symptom"))
+          #set($hpoTerm = $services.vocabularies.resolveTerm($hpoTermString))
+          #set($phenotype = {'key' : $hpoTerm.id , 'text' : $hpoTerm.name, 'matches': [], 'isPhenotypicAbnormality': true})
+
+
+          #set($phenotypicAbormality = $services.vocabularies.resolveTerm("HP:0000118"))
+          #if(!$hpoTerm.ancestors.contains($phenotypicAbormality))
+            #set($phenotype.isPhenotypicAbnormality = false)
+          #end
+
+          ## store ancestors of currrent phenotype
+          #set($hpoAncestors = [])
+          #foreach ($ancestor in $hpoTerm.ancestors)
+            #set($discard = $hpoAncestors.add($ancestor.id))
+          #end
+
+
+          ## consider relationship between use-selected-yes / disorder-associated symptoms
+          #foreach ($i in $symptoms)
+            #set($matchingSymptom = {'key': $i, 'text':  $services.vocabularies.resolveTerm($i).name, 'type': 'symptom', 'category': 'unknown'})
+
+            ## evaluate if user selects an exact match
+            #if ($phenotype.key == $i)
+              #set($matchingSymptom.category = 'match')
+            #end
+
+            ## evaluate if user selects a more specific symptom
+            #foreach ($j in $symptomsAncestors[$i])
+              #if ($phenotype.key == $j)
+                #set($matchingSymptom.category = 'match')
+              #end
+            #end
+
+            ## evaluate if user selects a more general symptom
+            #if($hpoAncestors.contains($i))
+              #set($matchingSymptom.category = 'ancestor')
+            #end
+
+            #if ($matchingSymptom.category != 'unknown')
+              #set($discard = $phenotype.matches.add($matchingSymptom))
+            #end
+          #end
+
+
+
+          ## consider relationship between use-selected-no / disorder-associated symptoms
+          #foreach ($i in $notSymptoms)
+            #set($matchingNotSymptom = {'key': $i, 'text':  $services.vocabularies.resolveTerm($i).name, 'type': 'not_symptom', 'category': 'unknown'})
+
+            ## evaluate if user selects an exact missmatch
+            #if ($phenotype.key == $i)
+              #set($matchingNotSymptom.category = 'missmatch')
+            #end
+
+            ## evaluate if user selects a not_symptom that is more specific
+            ## do nothing here; still unknown
+
+            ## evaluate if user selects a not_symptom that is more general
+            #if($hpoAncestors.contains($i))
+              #set($matchingNotSymptom.category = 'missmatch')
+            #end
+
+            #if ($matchingNotSymptom.category != 'unknown')
+              #set($discard = $phenotype.matches.add($matchingNotSymptom))
+            #end
+          #end
+
+
+          ##
+          ###foreach($match in $phenotype.matches)
+            ###if(!$s.contains($match))
+              ###set($discard = $s.add($match))
+            ###end
+          ###end
+
+          #set($discard = $s.add($phenotype))
+
+        #end ## end foreach actual_symptom for one disorder
+
+
+
+
+
+
+        ## Get MIM id/name for current disorder
+        #set($name = $mimTerm.getName())
+        #set($indexOfSeparator = $name.indexOf(';'))
+        #if ($indexOfSeparator &gt; 0)
+          #set($shortName = $name.substring(0, $indexOfSeparator))
+          #set($fullName = $name.replaceAll(';;', ';'))
+        #else
+          #set($shortName = $name)
+          #set($fullName = $name)
+        #end
+        #set($id = $mimTerm.getId())
+
+
+        ## Push current disorder to $disorders array
+        #set( $disregard = $disorders.add({
+          'key': $id,
+          'text': $shortName,
+          'symptom': $s
+        }))
+
+      #end ## foreach item
+
+
+      $jsontool.serialize(${disorders})
+
+    #end## results.size() &gt; 0
+
+
+
   #end## non-empty query
 #end## get action
-##
-#if (!$hasOutput)
-(% class="hint" %)No matches found
-#end
-{{/velocity}}</content>
+
+
+{{/velocity}}
+</content>
 </xwikidoc>
