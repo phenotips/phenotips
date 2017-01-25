@@ -110,7 +110,7 @@
   </build>
 
   <properties>
-    <!-- todo. Used to be 0.94. Since the module needs redisgin, it would be wasteful to write tests now. -->
+    <!-- TODO: Used to be 0.94. Since the module needs redesign, it would be wasteful to write tests now. -->
     <coverage.instructionRatio>0.76</coverage.instructionRatio>
   </properties>
 </project>
