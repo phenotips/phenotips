@@ -22,43 +22,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
+    <artifactId>vocabularies</artifactId>
     <version>1.3-SNAPSHOT</version>
   </parent>
-  <artifactId>vocabularies</artifactId>
+  <artifactId>vocabulary-translations</artifactId>
   <packaging>pom</packaging>
-  <name>PhenoTips - Vocabularies</name>
+  <name>PhenoTips - Vocabularies - Support for translating vocabularies</name>
 
   <modules>
-    <module>api</module>
-    <module>translations</module>
-    <module>ui</module>
-    <module>hpo</module>
-    <module>omim</module>
-    <module>rest</module>
-    <module>hgnc</module>
-    <module>hgnc-remote</module>
-    <module>chebi</module>
-    <module>ethnicity</module>
+    <module>xliff</module>
   </modules>
-
-  <build>
-    <resources>
-      <resource>
-        <directory>${basedir}/src/main/resources</directory>
-        <!-- Filter solrcore.properties -->
-        <filtering>true</filtering>
-        <includes>
-          <include>**/solrcore.properties</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>${basedir}/src/main/resources</directory>
-        <filtering>false</filtering>
-        <excludes>
-          <exclude>**/solrcore.properties</exclude>
-        </excludes>
-      </resource>
-    </resources>
-  </build>
 </project>
