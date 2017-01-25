@@ -21,35 +21,51 @@ import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.stability.Unstable;
 
+import java.util.Set;
+
 import org.json.JSONObject;
 
 /**
- * A DTO containing a set of features associated with a specific gene.
+ * A DTO containing a set of {@link #getTerms() terms} associated with a specific {@link #getGeneId() gene}.
  *
  * @version $Id$
- * @since 1.3M5
+ * @since 1.3M6
  */
 @Unstable("New API introduced in 1.3")
-public interface PhenotypesForGene
+public interface TermsForGene
 {
     /**
-     * Adds the HPO {@link VocabularyTerm} to the set.
+     * Gets the total number of {@link #getTerms() terms} associated with {@link #getGeneId()}.
      *
-     * @param term the HPO term to be added
-     */
-    void addTerm(final VocabularyTerm term);
-
-    /**
-     * Gets the total size of the set of HPO terms.
-     *
-     * @return the total size of the HPO terms set
+     * @return the total number of {@link #getTerms() terms} associated with {@link #getGeneId()}
      */
     int getCount();
 
     /**
-     * Creates a {@link JSONObject} from stored data.
+     * Gets the preferred gene ID as string.
      *
-     * @return a JSON representation of the class
+     * @return preferred gene ID as string
+     */
+    String getGeneId();
+
+    /**
+     * Gets the gene symbol as string.
+     *
+     * @return the gene symbol as string
+     */
+    String getGeneSymbol();
+
+    /**
+     * Get an unmodifiable set of {@link VocabularyTerm} terms associated with {@link #getGeneId()} gene.
+     *
+     * @return an unmodifiable set of {@link VocabularyTerm} terms
+     */
+    Set<VocabularyTerm> getTerms();
+
+    /**
+     * Creates a {@link JSONObject} of itself.
+     *
+     * @return a JSON representation of itself
      */
     JSONObject toJSON();
 }

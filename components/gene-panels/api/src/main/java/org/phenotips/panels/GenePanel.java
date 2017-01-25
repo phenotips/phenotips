@@ -27,39 +27,60 @@ import java.util.Set;
 import org.json.JSONObject;
 
 /**
- * An object containing methods for manipulating and displaying gene panels related data.
+ * A Gene Panel links {@link #getPresentTerms() a collection of observed symptoms} to {@link #getTermsForGeneList()
+ * a list of genes} frequently associated with these symptoms, in descending order of relevance.
  *
  * @version $Id$
- * @since 1.3M5
+ * @since 1.3M6
  */
 @Unstable("New API introduced in 1.3")
 public interface GenePanel
 {
     /**
-     * Returns the set of provided features.
+     * Returns a set of {@link VocabularyTerm} objects observed to be present.
      *
-     * @return the user provided set of features
+     * @return the set of present {@link VocabularyTerm} objects
      */
-    Set<VocabularyTerm> getPresentFeatures();
+    Set<VocabularyTerm> getPresentTerms();
 
     /**
-     * Returns an ordered list of objects containing gene symbol, ID, and counts data.
+     * Returns the set of {@link VocabularyTerm} objects observed to be absent.
      *
-     * @return an ordered list containing gene data
+     * @return the set of absent {@link VocabularyTerm} objects
      */
-    List<PhenotypesForGene> getPhenotypesForGeneList();
+    Set<VocabularyTerm> getAbsentTerms();
 
     /**
-     * Creates a {@link JSONObject} representation of itself.
+     * Returns a list of {@link TermsForGene} objects generated for {@link #getPresentTerms()} and
+     * {@link #getAbsentTerms()}, in descending order of relevance.
+     *
+     * @return an ordered list of {@link TermsForGene} objects, in descending order of relevance.
+     */
+    List<TermsForGene> getTermsForGeneList();
+
+    /**
+     * Creates a {@link JSONObject} representation of {@link GenePanel#getTermsForGeneList() a list of genes}.
      *
      * @return a JSON representation of itself
      */
     JSONObject toJSON();
 
     /**
-     * The number of genes represented by the gene panel.
+     * Creates a {@link JSONObject} representation of {@link GenePanel#getTermsForGeneList() a list of genes} from
+     * {@code fromIndex}, inclusive, to {@code toIndex}, exclusive.
      *
-     * @return the number of genes
+     * @param fromIndex the starting index (inclusive)
+     * @param toIndex the last index (exclusive)
+     * @return a {@link JSONObject} containing data from {@code fromIndex}, inclusive, to {@code toIndex}, exclusive
+     * @throws IndexOutOfBoundsException if (<tt>fromIndex &lt; 0 || toIndex &gt; {@link #size()} ||
+     *         fromIndex &gt; toIndex</tt>)
+     */
+    JSONObject toJSON(final int fromIndex, final int toIndex);
+
+    /**
+     * Returns the number of genes represented by the gene panel.
+     *
+     * @return the number of genes represented by the gene panel
      */
     int size();
 }

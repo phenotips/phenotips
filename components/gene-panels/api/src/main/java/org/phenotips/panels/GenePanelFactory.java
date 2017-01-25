@@ -17,27 +17,51 @@
  */
 package org.phenotips.panels;
 
-import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.data.Feature;
+import org.phenotips.data.Patient;
+import org.phenotips.vocabulary.VocabularyTerm;
 
+import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
 import java.util.Collection;
+
+import javax.annotation.Nullable;
 
 /**
  * A factory for objects of {@link GenePanel} type.
  *
  * @version $Id$
- * @since 1.3M5
+ * @since 1.3M6
  */
+@Role
 @Unstable("New API introduced in 1.3")
 public interface GenePanelFactory
 {
     /**
-     * Created an object of {@link GenePanel} class.
+     * Create an object of {@link GenePanel} class, given a collection of {@link Feature} objects.
      *
-     * @param presentFeatures the features of interest
-     * @param vocabularyManager the vocabulary manager
-     * @return a new {@link GenePanel} object
+     * @param features a collection of {@link Feature} objects, both observed to be present and observed to be absent
+     * @return a new {@link GenePanel} object for the collection of features
      */
-    GenePanel makeGenePanel(final Collection<String> presentFeatures, final VocabularyManager vocabularyManager);
+    GenePanel build(@Nullable final Collection<? extends Feature> features);
+
+    /**
+     * Creates an object of {@link GenePanel} class, given a collection of present and absent {@link VocabularyTerm}
+     * objects.
+     *
+     * @param presentTerms present {@link VocabularyTerm} objects
+     * @param absentTerms absent {@link VocabularyTerm} objects
+     * @return a new {@link GenePanel} object for the collection of present and absent {@link VocabularyTerm} objects
+     */
+    GenePanel build(@Nullable final Collection<VocabularyTerm> presentTerms,
+        @Nullable final Collection<VocabularyTerm> absentTerms);
+
+    /**
+     * Create an object of {@link GenePanel} class for a given {@link Patient} object.
+     *
+     * @param patient the {@link Patient} of interest
+     * @return a new {@link GenePanel} object for the patient
+     */
+    GenePanel build(@Nullable final Patient patient);
 }

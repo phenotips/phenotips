@@ -15,29 +15,52 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.panels.rest;
+package org.phenotips.panels.rest.internal;
+
+import org.phenotips.panels.GenePanel;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
-import org.json.JSONObject;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
-import com.google.common.cache.LoadingCache;
+import javax.annotation.Nonnull;
 
 /**
  * Provides access to the available vocabularies and their terms.
  *
  * @version $Id$
- * @since 1.3M5
+ * @since 1.3M6
  */
 @Unstable
 @Role
-public interface GenePanelsLoadingCache
+interface GenePanelLoader
 {
     /**
-     * Gets the stored {@link LoadingCache} instance.
+     * Get the {@link GenePanel} object based on a {@code termList} of IDs.
      *
-     * @return the stored {@link LoadingCache} instance
+     * @param termList a list of term IDs as strings, must not be null
+     * @return a {@link GenePanel} object
      */
-    LoadingCache<String, JSONObject> getCache();
+    GenePanel get(@Nonnull final List<String> termList) throws ExecutionException;
+
+    /**
+     * Discards all cached entries.
+     */
+    void invalidateAll();
+
+    /**
+     * Discards any cached value for {@code key}.
+     *
+     * @param key a key to be discarded, must not be null
+     */
+    void invalidate(@Nonnull final Object key);
+
+    /**
+     * Returns the size of the cache.
+     *
+     * @return the size of the cache
+     */
+    long size();
 }

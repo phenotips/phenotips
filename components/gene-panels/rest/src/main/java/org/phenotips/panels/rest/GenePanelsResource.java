@@ -19,9 +19,14 @@ package org.phenotips.panels.rest;
 
 import org.xwiki.stability.Unstable;
 
-import javax.ws.rs.GET;
+import java.util.List;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -29,18 +34,31 @@ import javax.ws.rs.core.Response;
  * Root resource for working with gene panels.
  *
  * @version $Id$
- * @since 1.3M5
+ * @since 1.3M6
  */
 @Unstable("New API introduced in 1.3")
-@Path("/panels")
+@Path("/suggested-gene-panels")
 public interface GenePanelsResource
 {
     /**
-     * Retrieves a JSON representation of genes associated with provided HPO terms, as well as the counts for each gene.
+     * Given a json string containing the HPO term ID data, for example:
      *
-     * @return gene counts data if successful, an error code otherwise
+     * Retrieves a JSON representation of genes associated with provided terms and counts for each gene.
+     *
+     * @param presentTerms a list of term IDs that are observed to be present (e.g. HP:0001154)
+     * @param absentTerms a list of term IDs that are observed to be absent
+     * @param startPage the start page from which to display the results, numbering starts from 1
+     * @param numResults get the number of results to display, must be an integer
+     * @param reqNo the request number, must be an integer
+     * @return associated genes and counts data if successful, an error code otherwise
      */
-    @GET
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    Response getGeneCountsFromPhenotypes();
+    Response getGeneCountsFromPhenotypes(
+        @QueryParam("present-term") final List<String> presentTerms,
+        @QueryParam("absent-term") final List<String> absentTerms,
+        @QueryParam("startPage") @DefaultValue("1") final Integer startPage,
+        @QueryParam("numResults") @DefaultValue("-1") final Integer numResults,
+        @QueryParam("reqNo") final Integer reqNo);
 }

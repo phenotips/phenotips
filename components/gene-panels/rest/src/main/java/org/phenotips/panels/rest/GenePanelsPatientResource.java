@@ -27,23 +27,23 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- * Patient resource for working with gene panels.
+ * Patient resource for working with gene panels data.
  *
  * @version $Id$
- * @since 1.3M5
+ * @since 1.3M6
  */
 @Unstable("New API introduced in 1.3")
-@Path("/panels/{id}")
+@Path("/patients/{patient-id}/suggested-gene-panels")
 public interface GenePanelsPatientResource
 {
     /**
-     * Retrieves a JSON representation of genes associated with HPO terms for with a patient of interest, as
-     * well as the counts for each gene.
+     * Retrieves a JSON representation of genes associated with the stored HPO terms for a patient that has the given
+     * {@code patientId internal ID}, as well as the count of the number of phenotypes each gene may be associated with.
      *
-     * @param patientId the ID of the patient of interest
-     * @return gene counts data if successful, an error code otherwise
+     * @param patientId the internal ID of the patient of interest
+     * @return a JSON representation of genes and their counts data if successful, an error code otherwise
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    Response getPatientGeneCounts(@PathParam("id") final String patientId);
+    Response getPatientGeneCounts(@PathParam("patient-id") final String patientId);
 }

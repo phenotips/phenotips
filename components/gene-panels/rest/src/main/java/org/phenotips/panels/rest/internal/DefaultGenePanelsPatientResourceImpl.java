@@ -17,22 +17,13 @@
  */
 package org.phenotips.panels.rest.internal;
 
-import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
-import org.phenotips.panels.internal.DefaultGenePanelFactoryImpl;
+import org.phenotips.panels.GenePanelFactory;
 import org.phenotips.panels.rest.GenePanelsPatientResource;
-import org.phenotips.vocabulary.VocabularyManager;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rest.XWikiResource;
-import org.xwiki.security.authorization.AuthorizationManager;
-import org.xwiki.security.authorization.Right;
-import org.xwiki.users.User;
-import org.xwiki.users.UserManager;
-
-import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -40,75 +31,58 @@ import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
-
-import com.google.common.collect.ImmutableList;
 
 /**
  * Default implementation of the {@link GenePanelsPatientResource}.
  *
  * @version $Id$
- * @since 1.3M5
+ * @since 1.3M6
  */
 @Component
 @Named("org.phenotips.panels.rest.internal.DefaultGenePanelsPatientResourceImpl")
 @Singleton
 public class DefaultGenePanelsPatientResourceImpl extends XWikiResource implements GenePanelsPatientResource
 {
+    /** A factory for gene panels. */
     @Inject
-    private VocabularyManager vocabularyManager;
+    private GenePanelFactory genePanelFactory;
 
+    /** The logging object. */
     @Inject
     private Logger logger;
 
+    /** The secure patient repository. */
     @Inject
+    @Named("secure")
     private PatientRepository repository;
-
-    @Inject
-    private AuthorizationManager access;
-
-    @Inject
-    private UserManager users;
 
     @Override
     public Response getPatientGeneCounts(final String patientId)
     {
-        final Patient patient = repository.get(patientId);
-        final User currentUser = this.users.getCurrentUser();
-
-        if (patient == null) {
-            this.logger.warn("Could not find patient with ID {}", patientId);
+        // Check if patient ID is provided.
+        if (StringUtils.isBlank(patientId)) {
+            this.logger.error("No patient ID was provided.");
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        if (!this.access.hasAccess(Right.VIEW, currentUser == null ? null : currentUser.getProfileDocument(),
-            patient.getDocument())) {
-            this.logger.warn("View access denied to user [{}] on patient record [{}]", currentUser, patientId);
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }
-
-        final Set<? extends Feature> features = patient.getFeatures();
-        final List<String> presentTerms = getPresentTerms(features);
-        final JSONObject genePanels = new DefaultGenePanelFactoryImpl()
-            .makeGenePanel(presentTerms, this.vocabularyManager)
-            .toJSON();
-        return Response.ok(genePanels, MediaType.APPLICATION_JSON_TYPE).build();
-    }
-
-    /**
-     * Extracts present terms from the provided set of features.
-     *
-     * @param features the features recorded for a patient
-     */
-    private List<String> getPresentTerms(final Set<? extends Feature> features)
-    {
-        final ImmutableList.Builder<String> presentFeaturesBuilder = ImmutableList.builder();
-        for (final Feature feature : features) {
-            if (feature.isPresent()) {
-                presentFeaturesBuilder.add(feature.getValue());
+        // Patient ID is provided, get the gene panel for the patient if user has access and if the patient exists.
+        try {
+            // Try to get the patient object.
+            final Patient patient = this.repository.get(patientId);
+            // Check if the patient exists.
+            if (patient == null) {
+                this.logger.error("Could not find patient with ID {}", patientId);
+                return Response.status(Response.Status.NOT_FOUND).build();
             }
+            final JSONObject genePanel = this.genePanelFactory.build(patient).toJSON();
+            return Response.ok(genePanel, MediaType.APPLICATION_JSON_TYPE).build();
+        } catch (final SecurityException ex) {
+            // The user has no access rights for the requested patient.
+            this.logger.error("View access denied on patient record [{}]: {}", patientId, ex.getMessage());
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        return presentFeaturesBuilder.build();
     }
 }

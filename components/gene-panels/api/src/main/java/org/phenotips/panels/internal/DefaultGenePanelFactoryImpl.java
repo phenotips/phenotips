@@ -17,13 +17,20 @@
  */
 package org.phenotips.panels.internal;
 
+import org.phenotips.data.Feature;
+import org.phenotips.data.Patient;
 import org.phenotips.panels.GenePanel;
 import org.phenotips.panels.GenePanelFactory;
 import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
-import org.xwiki.stability.Unstable;
+import org.xwiki.component.annotation.Component;
 
 import java.util.Collection;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.apache.commons.lang3.Validate;
 
@@ -31,16 +38,36 @@ import org.apache.commons.lang3.Validate;
  * Default implementation of the {@link GenePanelFactory}.
  *
  * @version $Id$
- * @since 1.3M5
+ * @since 1.3M6
  */
-@Unstable("New API introduced in 1.3")
+@Component
+@Singleton
 public class DefaultGenePanelFactoryImpl implements GenePanelFactory
 {
+    /** The vocabulary manager required for accessing various available ontologies. */
+    @Inject
+    private VocabularyManager vocabularyManager;
+
     @Override
-    public GenePanel makeGenePanel(final Collection<String> presentFeatures, final VocabularyManager vocabularyManager)
+    public GenePanel build(@Nullable final Collection<VocabularyTerm> presentTerms,
+        @Nullable final Collection<VocabularyTerm> absentTerms)
     {
-        Validate.notNull(vocabularyManager);
-        Validate.notNull(presentFeatures);
-        return new DefaultGenePanelImpl(presentFeatures, vocabularyManager);
+        Validate.notNull(presentTerms);
+        Validate.notNull(absentTerms);
+        return new DefaultGenePanelImpl(presentTerms, absentTerms, this.vocabularyManager);
+    }
+
+    @Override
+    public GenePanel build(@Nullable final Collection<? extends Feature> features)
+    {
+        Validate.notNull(features);
+        return new DefaultGenePanelImpl(features, this.vocabularyManager);
+    }
+
+    @Override
+    public GenePanel build(@Nullable final Patient patient)
+    {
+        Validate.notNull(patient);
+        return new DefaultGenePanelImpl(patient, this.vocabularyManager);
     }
 }
