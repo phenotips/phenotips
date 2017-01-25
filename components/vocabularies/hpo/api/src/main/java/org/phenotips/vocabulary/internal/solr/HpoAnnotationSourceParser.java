@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.commons.csv.CSVFormat;
@@ -59,8 +60,10 @@ public class HpoAnnotationSourceParser
     private final Logger logger = LoggerFactory.getLogger(HpoAnnotationSourceParser.class);
 
     /**
-     * Constructor that parses phenotype to genes annotations and adds them to the default HPO vocabulary data.
-     * @param hpoData the HPO vocabulary data
+     * Default constructor that takes a {@link Map} containing {@link TermData} for the HPO vocabulary, and adds
+     * gene annotations to relevant HPO terms.
+     *
+     * @param hpoData a {@link Map} containing HPO vocabulary data
      */
     HpoAnnotationSourceParser(@Nullable final Map<String, TermData> hpoData)
     {
@@ -72,17 +75,17 @@ public class HpoAnnotationSourceParser
     }
 
     /**
-     * Loads phenotype-gene information and creates HPO-gene links.
+     * Reads a CSV file containing phenotype to gene annotations, and adds this data to {@link #data}.
      */
     private void loadGenes()
     {
-        try (BufferedReader in = new BufferedReader(
+        try (final BufferedReader in = new BufferedReader(
                 new InputStreamReader(
                         new URL(PHENOTYPE_TO_GENES_ANNOTATIONS_URL).openConnection().getInputStream(), ENCODING))) {
             for (final CSVRecord row : CSVFormat.TDF.withHeader().parse(in)) {
-                final String termName = row.get(0);
+                final String termName = getRowItem(row, 0);
                 final TermData termData = this.data.get(termName);
-                final String geneSymbol = row.get(3);
+                final String geneSymbol = getRowItem(row, 3);
                 linkGeneToPhenotype(termData, geneSymbol);
             }
         } catch (final IOException e) {
@@ -91,9 +94,10 @@ public class HpoAnnotationSourceParser
     }
 
     /**
-     * Links a gene to its corresponding HPO term.
-     * @param termData HPO term data
-     * @param geneSymbol the name of the gene to be added to the HPO term data set
+     * Links a {@code geneSymbol gene} to its corresponding {@code termData} object containing HPO term data.
+     *
+     * @param termData {@link TermData} object containing HPO term data
+     * @param geneSymbol the name of the gene to be added to the {@link #data} data set
      */
     private void linkGeneToPhenotype(@Nullable final TermData termData, @Nullable final String geneSymbol)
     {
@@ -103,11 +107,26 @@ public class HpoAnnotationSourceParser
     }
 
     /**
-     * Gets the vocabulary data, following the addition of all necessary annotations.
-     * @return the HPO vocabulary data
+     * Returns the {@link #data HPO vocabulary data}.
+     * @return the HPO vocabulary {@link #data}
      */
     public Map<String, TermData> getData()
     {
         return this.data;
+    }
+
+    /**
+     * Gets the row item specified by {@code colName}.
+     *
+     * @param row the {@link CSVRecord} currently being processed
+     * @param colNumber the number of the column of interest
+     * @return the value associated with {@code colName} for {@code row}, if such value exists, null otherwise
+     */
+    private String getRowItem(@Nonnull final CSVRecord row, final int colNumber)
+    {
+        if (colNumber < row.size()) {
+            return row.get(colNumber);
+        }
+        return null;
     }
 }
