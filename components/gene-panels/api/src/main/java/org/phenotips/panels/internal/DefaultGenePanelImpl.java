@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -213,8 +214,7 @@ public class DefaultGenePanelImpl implements GenePanel
                 // Second, if firstTerm and secondTerm have the same count, compare by natural order.
                 return (countComparison != 0)
                     ? countComparison
-                    : getTermName(firstTerm.getTerms().iterator().next()).compareTo(
-                        getTermName(secondTerm.getTerms().iterator().next()));
+                    : compareByTermList(firstTerm.getTerms().iterator(), secondTerm.getTerms().iterator());
             }
         });
 
@@ -223,6 +223,33 @@ public class DefaultGenePanelImpl implements GenePanel
             sortedGeneCountsList.add(entry.getValue());
         }
         return Collections.unmodifiableList(sortedGeneCountsList);
+    }
+
+    /**
+     * Compares two {@link Iterator<VocabularyTerm>} alphabetically.
+     *
+     * @param first the {@link Iterator<VocabularyTerm>} that {@code second} is being compared to
+     * @param second the {@link Iterator<VocabularyTerm>} that is being compared
+     * @return {@code 0} if {@code first} and {@code second} are equivalent, a value less than {@code 0} if
+     *         {@code first} should be ahead of {@code second}, a value greater than {@code 0} if {@code second}
+     *         should be ahead of {@code first}
+     */
+    private int compareByTermList(final Iterator<VocabularyTerm> first, final Iterator<VocabularyTerm> second)
+    {
+        // The two lists are equivalent.
+        if (!first.hasNext()) {
+            return 0;
+        }
+        // Both our iterators are of the same size.
+        final String firstName = getTermName(first.next());
+        final String secondName = getTermName(second.next());
+        final int compValue = firstName.compareTo(secondName);
+        // If compValue is 0 then we need to compare by next item.
+        if (compValue == 0) {
+            return compareByTermList(first, second);
+        }
+        // If compValue is not 0, then we figured out which item should be sorted ahead.
+        return compValue;
     }
 
     /**
