@@ -132,7 +132,7 @@
 
     /**
      * Generates results for the first page based on new data provided.
-     * @param queryString the incomplete query string, containing only the phenotype information
+     * @param queryString the incomplete query string, containing only the term information
      * @param page the page number to render
      * @param resultsToShow the number of results to show; uses the default value if null
      */
@@ -161,7 +161,7 @@
         ++this.service.expectedReqNo].join("");
 
       new Ajax.Request(query, {
-        method : 'GET',
+        method : 'POST',
         onCreate : function() {
           _this.service.target.addClassName('loading');
         },
@@ -185,6 +185,9 @@
       this.size = json.size;
       this.totalPages = json.totalPages;
       this.data = json.genes;
+      this.firstItemRangeNo = (this.page - 1) * this.resultsToShow + 1;
+      this.lastItemRangeNo = this.firstItemRangeNo + this.size - 1;
+      this.totalSize = json.totalSize;
       // Generate the results page
       this.renderResults();
       this.service.target.__hiddenParent &amp;&amp; this.service.target.__hiddenParent.removeClassName('hidden');
@@ -211,16 +214,16 @@
     buildGeneRow : function(geneObj) {
       var geneName = geneObj.gene_symbol;
       var geneId = geneObj.gene_id;
-      var phenotypes = geneObj.phenotypes;
+      var terms = geneObj.terms;
       var count = geneObj.count;
       var geneSymbolElem = new Element('span', {'class' : 'gene-symbol', 'title' : geneName})
         .insert(geneName);
       var geneIdElem = new Element('span', {'class' : 'gene-id hidden'})
         .insert(geneId);
       var associatedFeaturesElem = new Element('dl', {'class' : 'gene-panels-row-features'})
-        .insert(new Element('dt').insert(this.getFeatureNames(phenotypes)));
+        .insert(new Element('dt').insert(this.getFeatureNames(terms)));
       var associatedFeatureIDsElem = new Element('span', {'class' : 'gene-panels-row-feature-ids hidden'})
-        .insert(this.getFeatureIDs(phenotypes));
+        .insert(this.getFeatureIDs(terms));
       var countElem = new Element('span', {'class' : 'gene-count hidden'})
         .insert(count);
       var geneRow = new Element('li', {'class' : 'gene-panels-row'})
@@ -240,23 +243,23 @@
 
     /**
      * Retrieves the features' names.
-     * @param phenotypes a list of phenotype objects
+     * @param terms a list of term objects
      * @return {string} a list of features' names as a semicolon separated string
      */
-    getFeatureNames : function(phenotypes) {
-      return phenotypes.map(function(phenotype) {
-        return phenotype.name;
+    getFeatureNames : function(terms) {
+      return terms.map(function(term) {
+        return term.name;
       }).join("; ");
     },
 
     /**
      * Retrieves the features' HPO IDs.
-     * @param phenotypes a list of phenotype objects
+     * @param terms a list of term objects
      * @return {string} a list of HPO IDs as a semicolon separated string
      */
-    getFeatureIDs : function(phenotypes) {
-      return phenotypes.map(function(phenotype) {
-        return phenotype.id;
+    getFeatureIDs : function(terms) {
+      return terms.map(function(term) {
+        return term.id;
       }).join("; ");
     },
 
@@ -282,7 +285,7 @@
       }
 
       var pageCount = "$escapetool.javascript($services.localization.render('phenotips.panels.panelsDisplay.pageCount'))";
-      pageCount = pageCount.replace(/___number___/g, this.page).replace(/___total___/g, this.totalPages);
+      pageCount = pageCount.replace(/___number_range___/g, this.firstItemRangeNo + "-" + this.lastItemRangeNo).replace(/___total___/g, this.totalSize);
       this.curPage.update(pageCount);
     },
 
@@ -290,11 +293,11 @@
      * Creates the containers for displaying the results.
      */
     createResultsContainers : function() {
-      this.toFirst = new Element('span', {'class' : 'fa fa-angle-double-left hidden'});
-      this.prevArrow = new Element('span', {'class' : 'fa fa-chevron-left hidden'});
+      this.toFirst = new Element('span', {'class' : 'fa fa-angle-double-left fa-lg fa-fw hidden'});
+      this.prevArrow = new Element('span', {'class' : 'fa fa-angle-left fa-lg fa-fw hidden'});
       this.curPage = new Element('span', {'class' : 'current-page'});
-      this.nextArrow = new Element('span', {'class' : 'fa fa-chevron-right hidden'});
-      this.toLast = new Element('span', {'class' : 'fa fa-angle-double-right hidden'});
+      this.nextArrow = new Element('span', {'class' : 'fa fa-angle-right fa-lg fa-fw hidden'});
+      this.toLast = new Element('span', {'class' : 'fa fa-angle-double-right fa-lg fa-fw hidden'});
       this.resultsContainer = new Element('div', {'class' : 'gene-search-page'});
       this.pageSwitcher = new Element('div', {'id' : 'genePanelsPagination', 'class' : 'pagination-navigation'})
         .insert(this.toFirst)
@@ -476,14 +479,6 @@
 
 #genePanelsPagination {
   font-size: .85em;
-}
-
-#genePanelsPagination .fa-chevron-left, #genePanelsPagination .fa-angle-double-left {
-  margin-right: 0.5em;
-}
-
-#genePanelsPagination .fa-chevron-right, #genePanelsPagination .fa-angle-double-right {
-  margin-left: 0.5em;
 }
 
 #genePanelsPagination > .fa:hover {

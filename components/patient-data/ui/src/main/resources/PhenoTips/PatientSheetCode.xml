@@ -2378,14 +2378,14 @@ document.observe('xwiki:dom:loaded', function()
           return;
         },
         'buildQueryString' : function(data, parameters) {
-          var queryString = parameters.symptom ? "?id=" + parameters.symptom.join('&amp;id=') : "";
+          var queryString = parameters.symptom ? "?present-term=" + parameters.symptom.join('&amp;present-term=') : "";
           return data.script + queryString.strip();
         },
         'submitAjaxRequest' : function(searchBox, data, queryString, parameters) {
           searchBox._builder.panelsDisplay.paginate(queryString, 1, 10);
         },
         'genePanels' : {
-          'script' : XWiki.webapppath + 'rest/panels',
+          'script' : XWiki.webapppath + 'rest/suggested-gene-panels',
           'source' : [$('panelsSearchTermIDsInput')],
           'target' : $('gene-search-results'),
           'tooltip' : 'gene-info'
