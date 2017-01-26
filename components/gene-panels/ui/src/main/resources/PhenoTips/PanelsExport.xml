@@ -126,7 +126,7 @@
     var query = [queryStr, "&amp;reqNo=", ++service.expectedReqNo].join("");
 
     new Ajax.Request(query, {
-      method : 'GET',
+      method : 'POST',
       onSuccess : function(response) {
         saveData(response.responseJSON);
       },
@@ -163,12 +163,12 @@
     lineArray.push(element.gene_id);
     lineArray.push(element.count);
     lineArray.push(
-      element.phenotypes.map(function(phenotype) {
-        return phenotype.name;
+      element.terms.map(function(term) {
+        return term.name;
       }).join("; "));
     lineArray.push(
-      element.phenotypes.map(function(phenotype) {
-        return phenotype.id;
+      element.terms.map(function(term) {
+        return term.id;
       }).join("; "));
     return lineArray.join("\t");
   };
@@ -198,7 +198,7 @@
       <name>Download gene panels data as TSV</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
