@@ -1,6 +1,5 @@
 files:
-  - 
-    source: /**/*.properties
+  - source: /**/*.properties
     ignore:
       - /**/*core.properties
       - /**/jetty-logging.properties
@@ -8,4 +7,4 @@ files:
     translation: /**/%file_name%_%two_letters_code%.properties
     languages_mapping:
       two_letters_code:
-        en-CA: en_CA
+        en-UD: en_UD
