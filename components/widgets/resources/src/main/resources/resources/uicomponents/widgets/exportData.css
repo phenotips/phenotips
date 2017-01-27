@@ -22,10 +22,10 @@
   display: block;
 }
 
-.date-range {
+.date-range, .labeled-eids {
   clear: both;
 }
-.date-range label {
+.date-range label, .labeled-eids label {
   box-sizing: border-box;
   display: inline-block;
   font-size: .9em;
@@ -33,7 +33,10 @@
   width: 50%;
   padding-left: 0.5em;
 }
-.date-range label:first-child {
+.labeled-eids label {
+  display: inline-table;
+}
+.date-range label:first-child, .labeled-eids label:first-child {
   padding-left: 0;
   padding-right: 0.5em;
 }

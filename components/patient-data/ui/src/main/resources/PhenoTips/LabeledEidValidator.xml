@@ -142,8 +142,7 @@
           //console.log(err);
         }
       }
-      if (this.input.__validation)
-        this.input.__validation.add(this.validate.bind(this));
+      this.input.__validation &amp;&amp; this.input.__validation.add(this.validate.bind(this));
     },
 
     check : function() {
