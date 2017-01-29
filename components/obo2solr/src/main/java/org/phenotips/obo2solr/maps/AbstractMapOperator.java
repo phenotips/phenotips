@@ -26,7 +26,7 @@ public abstract class AbstractMapOperator<K, N extends Number> implements MapOpe
         if (!a.keySet().equals(b.keySet())) {
             return null;
         }
-        DoubleMap<K> result = new DoubleMap<K>();
+        DoubleMap<K> result = new DoubleMap<>();
         for (K key : a.keySet()) {
             result.put(key, this.applyToValues(a.get(key), b.get(key)));
         }

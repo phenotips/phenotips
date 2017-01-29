@@ -41,7 +41,7 @@ public class SolrUpdateGenerator
 
     private TermData crtTerm = new TermData();
 
-    private Map<String, TermData> data = new LinkedHashMap<String, TermData>();
+    private Map<String, TermData> data = new LinkedHashMap<>();
 
     private Map<String, Double> fieldSelection;
 

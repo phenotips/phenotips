@@ -27,7 +27,6 @@ public class SetMap<K, V> extends AbstractCollectionMap<K, V>
     @Override
     protected Collection<V> getEmptyCollection()
     {
-        return new LinkedHashSet<V>();
+        return new LinkedHashSet<>();
     }
-
 }

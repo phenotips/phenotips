@@ -99,7 +99,7 @@ public abstract class AbstractCollectionMap<K, V> extends LinkedHashMap<K, Colle
                 }
             }
         });
-        List<K> result = new LinkedList<K>();
+        List<K> result = new LinkedList<>();
         for (K key : sortedKeys) {
             result.add(key);
         }

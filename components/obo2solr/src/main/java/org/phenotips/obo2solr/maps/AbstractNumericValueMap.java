@@ -91,7 +91,7 @@ public abstract class AbstractNumericValueMap<K, N extends Number> extends Linke
                 }
             }
         });
-        List<K> result = new LinkedList<K>();
+        List<K> result = new LinkedList<>();
         for (K key : sortedKeys) {
             result.add(key);
         }
