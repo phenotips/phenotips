@@ -536,11 +536,11 @@
       }
 
       _getResultFieldValue = function(data, fieldName) {
-        return data &amp;&amp; data[fieldName] || '';
+        return data &amp;&amp; (data[fieldName + "_" + document.documentElement.getAttribute("lang")] || data[fieldName]) || '';
       };
 
       _getResultFieldValueAsArray = function(data, fieldName) {
-        return new Array(data &amp;&amp; data[fieldName] || '').flatten();
+        return new Array(data &amp;&amp; (data[fieldName + "_" + document.documentElement.getAttribute("lang")] || data[fieldName]) || '').flatten();
       };
     } else {
       var result = response.responseXML;
@@ -749,11 +749,11 @@
       var results = jsondata[source.resultsParameter || this.options.resultsParameter];
 
       var _getResultFieldValue = function(data, fieldName) {
-        return data &amp;&amp; data[fieldName] || '';
+        return data &amp;&amp; (data[fieldName + "_" + document.documentElement.getAttribute("lang")] || data[fieldName]) || '';
       }
 
       var _getResultFieldValueAsArray = function(data, fieldName) {
-        return new Array(data &amp;&amp; data[fieldName] || '').flatten();
+        return new Array(data &amp;&amp; (data[fieldName + "_" + document.documentElement.getAttribute("lang")] || data[fieldName]) || '').flatten();
       };
     } else {
       var xmldata = req.responseXML;
@@ -2774,10 +2774,10 @@ return PhenoTips;
     return data &amp;&amp; data[fieldName] || [];
   },
   _getResultFieldValue_json : function(data, fieldName) {
-    return data &amp;&amp; data[fieldName] || '';
+    return data &amp;&amp; (data[fieldName + "_" + document.documentElement.getAttribute("lang")] || data[fieldName]) || '';
   },
   _getResultFieldValueAsArray_json : function(data, fieldName) {
-    return new Array(data &amp;&amp; data[fieldName] || '').flatten();
+    return new Array(data &amp;&amp; (data[fieldName + "_" + document.documentElement.getAttribute("lang")] || data[fieldName]) || '').flatten();
   },
   _getResultset_xml : function(data, selector) {
     var elements = data &amp;&amp; data.getElementsByTagName(selector);

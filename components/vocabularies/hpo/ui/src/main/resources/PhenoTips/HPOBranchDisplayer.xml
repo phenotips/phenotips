@@ -81,7 +81,11 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
       #else
         #set ($childrenExpandSymbol = '')
       #end
-      &lt;li class="term-entry"&gt;$!childrenExpandSymbol#_displayItem("${foreach.item.id}", "${foreach.item.name}", $foreach.item)$!childrenHtml&lt;/li&gt;
+      #set ($foreach.itemName = $foreach.item.get("name_${xcontext.language}"))
+      #if (!$foreach.itemName)
+        #set ($foreach.itemName = $foreach.item.name)
+      #end
+      &lt;li class="term-entry"&gt;$!childrenExpandSymbol#_displayItem("${foreach.item.id}", "${foreach.itemName}", $foreach.item)$!childrenHtml&lt;/li&gt;
     #end
   #end
   &lt;/ul&gt;
