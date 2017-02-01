@@ -208,7 +208,7 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.1.8</version>
+        <version>1.1.9</version>
       </dependency>
       <!-- Most plugins depend on the servlet API -->
       <dependency>
@@ -1013,7 +1013,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.6.0</version>
+          <version>3.6.1</version>
           <!-- Java 1.7 is required -->
           <configuration>
             <source>1.7</source>
