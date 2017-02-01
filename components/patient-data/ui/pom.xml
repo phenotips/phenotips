@@ -95,5 +95,11 @@
       <version>${project.version}</version>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>d3js</artifactId>
+      <version>4.2.1</version>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
 </project>
