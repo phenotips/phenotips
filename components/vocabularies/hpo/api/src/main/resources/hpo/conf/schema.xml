@@ -160,6 +160,7 @@
     <field name="xref" type="text_ws" indexed="true" stored="true" multiValued="true"/>
     <field name="is_a" type="text_ws" indexed="true" stored="true" multiValued="true"/>
     <field name="term_category" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="associated_genes" type="string" indexed="true" stored="true" multiValued="true"/>
 
     <!-- Catchall field, containing all other searchable text fields (implemented
          via copyField further on in this schema). -->

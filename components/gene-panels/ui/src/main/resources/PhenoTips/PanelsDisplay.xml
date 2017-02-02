@@ -1,0 +1,504 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>PanelsDisplay</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1480524466000</creationDate>
+  <parent>PhenoTips.PatientSheet</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1480615212000</date>
+  <contentUpdateDate>1480533935000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <object>
+    <name>PhenoTips.PanelsDisplay</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>83165d91-a3fd-47e6-bdb0-dceef275f8e8</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function(PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+
+  widgets.PanelsDisplay = Class.create({
+    'data' : {},
+    'size' : 0,
+    'resultsToShow' : 6,
+    'page' : 1,
+    'startPageParam' : '&amp;startPage=',
+    'numResultsParam' : '&amp;numResults=',
+    'reqNoParam' : "&amp;reqNo=",
+
+    /**
+     * Generates results for the first page based on new data provided.
+     * @param queryString the incomplete query string, containing only the term information
+     * @param page the page number to render
+     * @param resultsToShow the number of results to show; uses the default value if null
+     */
+    paginate : function(queryString, page, resultsToShow) {
+      this.requestPageData(queryString, page, resultsToShow)
+    },
+
+    requestPageData : function(queryStr, page, resultsToShow) {
+      var _this = this;
+      this.page = page;
+      resultsToShow &amp;&amp; (this.resultsToShow = resultsToShow);
+
+      if (queryStr === this.service.script) {
+        this.updateDataContainer(null);
+        return;
+      }
+
+      this.queryString = queryStr;
+
+      var query = [this.queryString,
+        this.startPageParam,
+        this.page,
+        this.numResultsParam,
+        this.resultsToShow,
+        this.reqNoParam,
+        ++this.service.expectedReqNo].join("");
+
+      new Ajax.Request(query, {
+        method : 'POST',
+        onCreate : function() {
+          _this.service.target.addClassName('loading');
+        },
+        onSuccess : function(response) {
+          _this.updateDataContainer(response.responseJSON);
+        },
+        onComplete : function() {
+          _this.service.target.removeClassName('loading');
+        }
+      });
+    },
+
+    updateDataContainer : function(json) {
+      if (!json || json.reqNo != this.service.expectedReqNo || !json.genes || !json.size) {
+        // Empty the results service, and hide section objects.
+        this.resultsContainer.update(' ');
+        this.service.target.__hiddenParent &amp;&amp; this.service.target.__hiddenParent.addClassName('hidden');
+        return;
+      }
+      // Reset the data values.
+      this.size = json.size;
+      this.totalPages = json.totalPages;
+      this.data = json.genes;
+      this.firstItemRangeNo = (this.page - 1) * this.resultsToShow + 1;
+      this.lastItemRangeNo = this.firstItemRangeNo + this.size - 1;
+      this.totalSize = json.totalSize;
+      // Generate the results page
+      this.renderResults();
+      this.service.target.__hiddenParent &amp;&amp; this.service.target.__hiddenParent.removeClassName('hidden');
+    },
+
+    /**
+     * Creates results for a calculated range of indexes.
+     */
+    renderResults : function() {
+      this.setDataRanges();
+      var container = new Element('ul');
+      for (var i = 0; i &lt;= this.size - 1; i++) {
+        var geneRow = this.buildGeneRow(this.data[i]);
+        container.insert(geneRow);
+      }
+      this.resultsContainer.update(container);
+    },
+
+    /**
+     * Builds a gene row, given an object that contains gene data.
+     * @param geneObj an objects that contains gene data
+     * @return {*} an html object describing the gene row
+     */
+    buildGeneRow : function(geneObj) {
+      var geneName = geneObj.gene_symbol;
+      var geneId = geneObj.gene_id;
+      var terms = geneObj.terms;
+      var count = geneObj.count;
+      var geneSymbolElem = new Element('span', {'class' : 'gene-symbol', 'title' : geneName})
+        .insert(geneName);
+      var geneIdElem = new Element('span', {'class' : 'gene-id hidden'})
+        .insert(geneId);
+      var associatedFeaturesElem = new Element('dl', {'class' : 'gene-panels-row-features'})
+        .insert(new Element('dt').insert(this.getFeatureNames(terms)));
+      var associatedFeatureIDsElem = new Element('span', {'class' : 'gene-panels-row-feature-ids hidden'})
+        .insert(this.getFeatureIDs(terms));
+      var countElem = new Element('span', {'class' : 'gene-count hidden'})
+        .insert(count);
+      var geneRow = new Element('li', {'class' : 'gene-panels-row'})
+        .insert(geneSymbolElem)
+        .insert(geneIdElem)
+        .insert(countElem);
+
+      if (typeof(this.service.tooltip) != 'undefined') {
+        var icon = new Element('span', {'class' : 'xHelpButton fa fa-info-circle ' + this.service.tooltip, 'title' : geneName});
+        new PhenoTips.widgets.HelpButton(icon);
+        geneRow.insert(icon);
+      }
+      geneRow.insert(associatedFeaturesElem);
+      geneRow.insert(associatedFeatureIDsElem);
+      return geneRow;
+    },
+
+    /**
+     * Retrieves the features' names.
+     * @param terms a list of term objects
+     * @return {string} a list of features' names as a semicolon separated string
+     */
+    getFeatureNames : function(terms) {
+      return terms.map(function(term) {
+        return term.name;
+      }).join("; ");
+    },
+
+    /**
+     * Retrieves the features' HPO IDs.
+     * @param terms a list of term objects
+     * @return {string} a list of HPO IDs as a semicolon separated string
+     */
+    getFeatureIDs : function(terms) {
+      return terms.map(function(term) {
+        return term.id;
+      }).join("; ");
+    },
+
+    /**
+     * Sets the ranges for the data that will be displayed.
+     */
+    setDataRanges : function()
+    {
+      if (this.page &gt; 1) {
+        this.prevArrow.removeClassName('hidden');
+        this.toFirst.removeClassName('hidden');
+      } else {
+        this.prevArrow.addClassName('hidden');
+        this.toFirst.addClassName('hidden');
+      }
+
+      if (this.page &lt; this.totalPages) {
+        this.nextArrow.removeClassName('hidden');
+        this.toLast.removeClassName('hidden');
+      } else {
+        this.nextArrow.addClassName('hidden');
+        this.toLast.addClassName('hidden');
+      }
+
+      var pageCount = "$escapetool.javascript($services.localization.render('phenotips.panels.panelsDisplay.pageCount'))";
+      pageCount = pageCount.replace(/___number_range___/g, this.firstItemRangeNo + "-" + this.lastItemRangeNo).replace(/___total___/g, this.totalSize);
+      this.curPage.update(pageCount);
+    },
+
+    /**
+     * Creates the containers for displaying the results.
+     */
+    createResultsContainers : function() {
+      this.toFirst = new Element('span', {'class' : 'fa fa-angle-double-left fa-lg fa-fw hidden'});
+      this.prevArrow = new Element('span', {'class' : 'fa fa-angle-left fa-lg fa-fw hidden'});
+      this.curPage = new Element('span', {'class' : 'current-page'});
+      this.nextArrow = new Element('span', {'class' : 'fa fa-angle-right fa-lg fa-fw hidden'});
+      this.toLast = new Element('span', {'class' : 'fa fa-angle-double-right fa-lg fa-fw hidden'});
+      this.resultsContainer = new Element('div', {'class' : 'gene-search-page'});
+      this.pageSwitcher = new Element('div', {'id' : 'genePanelsPagination', 'class' : 'pagination-navigation'})
+        .insert(this.toFirst)
+        .insert(this.prevArrow)
+        .insert(this.curPage)
+        .insert(this.nextArrow)
+        .insert(this.toLast);
+      this.service.target.insert(this.resultsContainer);
+      this.service.target.insert(this.pageSwitcher);
+      this.attachNavigationListeners();
+      this.attachDownloadListeners();
+    },
+
+    /**
+     * Attach listeners to the navigation arrows.
+     */
+    attachNavigationListeners : function() {
+      var _this = this;
+      this.prevArrow.observe('click', function() {
+        _this.page--;
+        _this.requestPageData(_this.queryString, _this.page, _this.resultsToShow);
+        _this.renderResults();
+      });
+
+      this.nextArrow.observe('click', function() {
+        _this.page++;
+        _this.requestPageData(_this.queryString, _this.page, _this.resultsToShow);
+        _this.renderResults();
+      });
+
+      this.toFirst.observe('click', function() {
+        _this.page = 1;
+        _this.requestPageData(_this.queryString, _this.page, _this.resultsToShow);
+        _this.renderResults();
+      });
+
+      this.toLast.observe('click', function() {
+        _this.page = _this.totalPages;
+        _this.requestPageData(_this.queryString, _this.page, _this.resultsToShow);
+        _this.renderResults();
+      });
+    },
+
+    attachDownloadListeners : function() {
+      var _this = this;
+      this.saveButton &amp;&amp; this.saveButton.observe('click', function(event) {
+        event.stop();
+        Event.fire(document, 'panels:export:requested', {'query' : _this.queryString, 'service' : _this.service});
+      });
+    },
+
+    /**
+     * Creates the results containers inside of the specified parent container.
+     *
+     * @param service the search service linking to all the relevant data objects
+     * @param saveButton for the data
+     */
+    initialize : function(service, saveButton) {
+      if (!service) {return;}
+      this.service = service;
+      this.saveButton = saveButton;
+      this.createResultsContainers();
+    }
+  });
+  return PhenoTips;
+}(PhenoTips || {}));
+</code>
+    </property>
+    <property>
+      <name>Gene panels paginated display of data</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.PanelsDisplay</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>21f274de-6339-4c80-ab4e-4970d98a24d9</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>
+.pagination-navigation {
+  text-align: right;
+}
+
+#genePanelsPagination {
+  font-size: .85em;
+}
+
+#genePanelsPagination > .fa:hover {
+  background-color: rgba(0,0,0,0.1);
+  color: $theme.linkColor;
+  cursor: pointer;
+  transition: all 0.2s linear;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name>Gene panels paginated data display styles</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+</xwikidoc>

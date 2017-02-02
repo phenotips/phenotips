@@ -118,7 +118,7 @@
     </property>
     <property>
       <parameters>enabled=true
-order=11
+order=12
 title=$services.localization.render('phenotips.UIXSection.solved')</parameters>
     </property>
     <property>
