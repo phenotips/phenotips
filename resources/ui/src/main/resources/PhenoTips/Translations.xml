@@ -54,7 +54,7 @@ XWiki.XWikiUsers_comment=About
 core.widgets.confirmationBox.button.cancel=Cancel
 
 phenotips.globalHeader.allData=Browse all patients
-phenotips.globalHeader.search.placeholder=Search for a patient record...
+phenotips.globalHeader.search.placeholder=Search for a patient record…
 
 phenotips.OmimPredictService.linkToDisorder=Read about this disorder on OMIM
 phenotips.OmimPredictService.noMatches=No matches found

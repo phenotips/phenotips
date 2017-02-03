@@ -2634,7 +2634,7 @@ return PhenoTips;
   initialize: function(suggest, container, options) {
     this.options = Object.extend(Object.clone(this.options), options || { });
     this.suggest = suggest;
-    this.loadingMessage = new Element('div', {'class' : 'plainmessage loading'}).update("Loading...");
+    this.loadingMessage = new Element('div', {'class' : 'plainmessage loading'}).update("$escapetool.javascript($services.localization.render('phenotips.widgets.vocabularyBrowser.loading'))");
     if (container) {
       this.container = container;
     } else {
@@ -2677,7 +2677,7 @@ return PhenoTips;
           }
         }.bind(this),
         onFailure: function (response) {
-          this.setContent("Failed to retrieve data : " + response.statusText);
+          this.setContent("$escapetool.javascript($services.localization.render('phenotips.widgets.vocabularyBrowser.loading.error'))" + response.statusText);
           this.__crtRoot = '';
         }.bind(this)
       });
@@ -2761,7 +2761,7 @@ return PhenoTips;
           Event.fire(document, "ms:popup:content-updated", {popup: this.container});
         }.bind(this),
         onFailure: function (response) {
-          Event.fire(element, 'obrowser:expand:failed', {data: new Element('div', {'class' : 'error'}).update("Failed to retrieve data : " + response.statusText), count: -1});
+          Event.fire(element, 'obrowser:expand:failed', {data: new Element('div', {'class' : 'error'}).update("$escapetool.javascript($services.localization.render('phenotips.widgets.vocabularyBrowser.expand.error'))" + response.statusText), count: -1});
         },
         onComplete: function() {this._unlockExpandTool(element)}.bind(this)
       });
@@ -3585,7 +3585,7 @@ return PhenoTips;
 
       // Generate and insert the "add" button, edit mode only
       if (element.down('input.xwiki-free-multiselect-value')) {
-        var addTool = new Element('a', {'title' : 'add', 'href' : '#' + element.id}).update('+...');
+        var addTool = new Element('a', {'title' : 'add', 'href' : '#' + element.id}).update('+…');
         element.insert(addTool.wrap('li'));
         addTool.observe('click', function(event) {
           event.stop();
@@ -4341,7 +4341,7 @@ document.observe("xwiki:dom:updated", init);
             window.open(viewButton.href);
           });
           if (json.gene_reviews_link) {
-            var geneReviewsButton = new Element('a', {'class' : 'button', href : json.gene_reviews_link, 'target' : '_blank'}).update('Read about it on Gene Reviews...');
+            var geneReviewsButton = new Element('a', {'class' : 'button', href : json.gene_reviews_link, 'target' : '_blank'}).update("$services.localization.render('phenotips.widgets.helpButtons.omimDisease.linkToGeneReviews')");
             c.insert(elt('div', 'term-tools').insert(geneReviewsButton.wrap('span', {'class' : 'buttonwrapper'})));
             geneReviewsButton.observe('click', function(event) {
               event.stop();

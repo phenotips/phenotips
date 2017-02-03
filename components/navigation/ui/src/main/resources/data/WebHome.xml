@@ -1560,7 +1560,7 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
 #end
 
 (% class="mappingPreviewContainer side" %)(((
-(% class="hint side" %)(((Preview)))
+(% class="hint side" %)((({{translation key="phenotips.patientSheet.mapping.configuration.preview" /}})))
 (% id="mappingPreview"%)((()))
 )))
 $xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$!{themeDocFullName}"})##

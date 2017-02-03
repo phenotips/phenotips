@@ -46,11 +46,11 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
 ##
 ##
 #macro (__extradata_deleteTool $object $anchor)
-  {{html clean="false"}}&lt;a class="action delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="$services.localization.render('phenotips.tableMacros.delete')"&gt;✖&lt;/a&gt;{{/html}}##
+  {{html clean="false"}}&lt;a class="action delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="$escapetool.xml($services.localization.render('phenotips.tableMacros.delete'))"&gt;✖&lt;/a&gt;{{/html}}##
 #end
 
 #macro (__extradata_addTool $classname $anchor $options)
-  {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url(${doc.getURL($options.mode)})&amp;amp;propertyName=$!{options.propertyName}&amp;amp;propertyValue=$!escapetool.url($!{options.propertyValue})#foreach($d in $options.defaults.keySet())&amp;amp;${classname}_${escapetool.url($d)}=$!{escapetool.url($options.defaults.get($d))}#end&amp;amp;addedDisplaySheet=$!escapetool.url($!{options.addedDisplaySheet})&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="$services.localization.render('phenotips.tableMacros.newEntry')"&gt;$services.localization.render('phenotips.tableMacros.newEntry')&lt;/a&gt;&lt;/span&gt;{{/html}}#if ($services.localization.get("$!{classname}_hint")) {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}_hint").replace('"', '~~~"')"/}}#end
+  {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url(${doc.getURL($options.mode)})&amp;amp;propertyName=$!{options.propertyName}&amp;amp;propertyValue=$!escapetool.url($!{options.propertyValue})#foreach($d in $options.defaults.keySet())&amp;amp;${classname}_${escapetool.url($d)}=$!{escapetool.url($options.defaults.get($d))}#end&amp;amp;addedDisplaySheet=$!escapetool.url($!{options.addedDisplaySheet})&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="$escapetool.xml($services.localization.render('phenotips.tableMacros.newEntry'))"&gt;$escapetool.xml($services.localization.render('phenotips.tableMacros.newEntry'))&lt;/a&gt;&lt;/span&gt;{{/html}}#if ($services.localization.get("$!{classname}_hint")) {{icon name="question-circle" cssClass="xHelpButton" title="$escapetool.xml($services.localization.render("${classname}_hint")).replace('"', '~~~"')"/}}#end
 #end
 
 #macro (__extradata_displayTable $dataClassName $options)
@@ -232,7 +232,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
         }
       },
       {
-         confirmationText : "$services.localization.render('phenotips.tableMacros.rowDeleteConfirmation')"
+         confirmationText : "$escapetool.javascript($services.localization.render('phenotips.tableMacros.rowDeleteConfirmation'))"
       });
     },
     ajaxAddData : function (event) {
@@ -245,12 +245,12 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
       try {
         var classname = /classname=([^&amp;]+)/.exec(addTrigger.href)[1];
       } catch (err) {
-         new XWiki.widgets.Notification('Cannot add data: type not found', 'error');
+         new XWiki.widgets.Notification("$escapetool.javascript($services.localization.render('phenotips.tableMacros.error.typeNotFound'))", 'error');
          return;
       }
       var dataTable = addTrigger.up('.list-actions').previous('table[id^="extradata-list-' + classname + '"]');
       if (!dataTable) {
-        new XWiki.widgets.Notification("$services.localization.render('phenotips.tableMacros.listNotFound')" + ' ' + classname, 'error');
+        new XWiki.widgets.Notification("$escapetool.javascript($services.localization.render('phenotips.tableMacros.listNotFound'))" + ' ' + classname, 'error');
       }
       var propertyName = addTrigger.href.replace(/.*&amp;xredirect=.*propertyName=([^&amp;]*).*/, '$1') || '';
       var propertyValue = addTrigger.href.replace(/.*&amp;xredirect=.*propertyValue=([^&amp;]*).*/, '$1') || '';
@@ -259,7 +259,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
       new Ajax.Request(url, {
         onCreate : function() {
           addTrigger.disabled = true
-          addTrigger._x_notif = new XWiki.widgets.Notification('Adding...', 'inprogress');
+          addTrigger._x_notif = new XWiki.widgets.Notification("$escapetool.javascript($services.localization.render('phenotips.tableMacros.newEntry.progressNotification'))", 'inprogress');
         },
         onSuccess : function (response) {
           addTrigger._x_notif.hide();
@@ -280,7 +280,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
             failureReason = 'Server not responding';
           }
           if (addTrigger._x_notif) {
-            addTrigger._x_notif.replace(new XWiki.widgets.Notification("Failed: " + failureReason, "error"));
+            addTrigger._x_notif.replace(new XWiki.widgets.Notification("$escapetool.javascript($services.localization.render('phenotips.tableMacros.newEntry.error'))" + failureReason, "error"));
           } else {
             new XWiki.widgets.Notification(this.interactionParameters.failureMessageText + failureReason, "error");
           }

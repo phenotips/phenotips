@@ -322,13 +322,13 @@ document.observe('xwiki:dom:loaded', function() {
         if (!element.__validation) {
           element.__validation = new LiveValidation(element, {validMessage: '', wait : 500});
         }
-        element.__validation.add(Validate.Presence, {failureMessage: "$services.localization.render('phenotips.PatientSheetCode.failureEnterValue')"});
+        element.__validation.add(Validate.Presence, {failureMessage: "$escapetool.javascript($services.localization.render('phenotips.PatientSheetCode.failureEnterValue'))"});
       });
       element.select(".mandatory input[type='checkbox']").each(function(element) {
         if (!element.__validation) {
           element.__validation = new LiveValidation(element, {validMessage: '', wait : 500});
         }
-        element.__validation.add(Validate.Acceptance, {failureMessage: "$services.localization.render('phenotips.PatientSheetCode.failureTickCheck')"});
+        element.__validation.add(Validate.Acceptance, {failureMessage: "$escapetool.javascript($services.localization.render('phenotips.PatientSheetCode.failureTickCheck'))"});
       });
     });
     return true;
@@ -401,7 +401,7 @@ var is_death_date_after_birth_date = function () {
    var birth_date = $$("[id$='date_of_birth_entered']")[0].value.evalJSON();
    var death_date = $$("[id$='date_of_death_entered']")[0].value.evalJSON();
    if (isDateAfter(birth_date,death_date) == false) {
-      Validate.fail("$services.localization.render('phenotips.PatientSheetCode.birthDate.afterDeathDate')");
+      Validate.fail("$escapetool.javascript($services.localization.render('phenotips.PatientSheetCode.birthDate.afterDeathDate'))");
    } else {
       return true;
    }
@@ -759,7 +759,7 @@ document.observe('xwiki:dom:loaded', function()
                noPreview = new Element('dd', {'class' : 'no-preview preview' });
                pdItem.insert({bottom: noPreview});
             }
-            noPreview.update("$services.localization.render('phenotips.patientSheetCode.termSuggest.noAdditionalInfo')");
+            noPreview.update("$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.noAdditionalInfo'))");
           } else {
             noPreview &amp;&amp; noPreview.update('');
           }
@@ -827,12 +827,12 @@ document.observe('xwiki:dom:loaded', function()
                   })
                );
                if (isCustomEntry) {
-                 newItem.insert({top: new Element('span', {'class': "fa fa-exclamation-triangle", title: "$services.localization.render('phenotips.patientSheetCode.termSuggest.nonStandardPhenotype')"}).update(' ')})
+                 newItem.insert({top: new Element('span', {'class': "fa fa-exclamation-triangle", title: "$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.nonStandardPhenotype'))"}).update(' ')})
                }
                newItem.__source = inputElt;
                var tools = new Element('span', {'class' : 'tools hint'});
                var deleteTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
-                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.delete')")
+                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.delete'))")
                );
 
                tools.insert(deleteTool);
@@ -847,19 +847,19 @@ document.observe('xwiki:dom:loaded', function()
                var detailsUrl = $('phenotype-meta-add-action') &amp;&amp; $('phenotype-meta-add-action').value;
              if (detailsUrl) {
                var detailsTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
-                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.addDetails')")
+                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.addDetails'))")
                );
                var clearTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
-                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.clearDetails')")
+                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.clearDetails'))")
                );
                var editTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
-                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.editDetails')")
+                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.editDetails'))")
                );
                var editClearTools = new Element('span').insert(editTool).insert(clearTool);
                tools.insert(detailsTool).insert(editClearTools);
                detailsTool.observe('click', function(event) {
                  var source = event.findElement('.summary-item');
-                 var detailsElt = new Element('div', {'class' : 'phenotype-details loading'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.loading')");
+                 var detailsElt = new Element('div', {'class' : 'phenotype-details loading'}).update("$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.loading'))");
                  source.insert(detailsElt);
                  var addTrigger = event.findElement('.buttonwrapper');
                  addTrigger.hide();
@@ -874,7 +874,7 @@ document.observe('xwiki:dom:loaded', function()
                  new Ajax.Request(url, {
                    onCreate : function() {
                      addTrigger.disabled = true
-                     addTrigger._x_notif = new XWiki.widgets.Notification('Adding...', 'inprogress');
+                     addTrigger._x_notif = new XWiki.widgets.Notification("$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.addDetails.progressNotification'))", 'inprogress');
                    },
                    onSuccess : function (response) {
                      addTrigger._x_notif.hide();
@@ -961,7 +961,7 @@ document.observe('xwiki:dom:loaded', function()
                      }
                    },
                    {
-                      confirmationText : "$services.localization.render('phenotips.PatientSheetCode.deleteConfirmation')"
+                      confirmationText : "$escapetool.javascript($services.localization.render('phenotips.PatientSheetCode.deleteConfirmation'))"
                    });
                  }
                });// clearTool.observe('click'
@@ -2149,7 +2149,7 @@ document.observe('xwiki:dom:loaded', function()
       if (!warningInsertionPoint) { return; }
       if (!birthdate &amp;&amp; !$('no-birth-date-warning')) {
         warningInsertionPoint.insert({
-          after:"&lt;div id ='no-birth-date-warning' class='box warningmessage'&gt;$services.localization.render('phenotips.patientSheetCode.noBirthdateWarning')&lt;/div&gt;"
+          after:"&lt;div id ='no-birth-date-warning' class='box warningmessage'&gt;$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.noBirthdateWarning'))&lt;/div&gt;"
         });
       } else if (birthdate &amp;&amp; $('no-birth-date-warning')) {
         $('no-birth-date-warning').remove();
@@ -3264,7 +3264,7 @@ document.observe('xwiki:dom:loaded', function()
     },
     validate : function(value) {
       if (this.state == 'DONE') {
-        this.value == value &amp;&amp; (this.valid || Validate.fail("$services.localization.render('phenotips.PatientSheetCode.identifierExists')"));
+        this.value == value &amp;&amp; (this.valid || Validate.fail("$escapetool.javascript($services.localization.render('phenotips.PatientSheetCode.identifierExists'))"));
       }
       this.check();
       return true;
