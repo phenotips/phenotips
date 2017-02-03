@@ -30,6 +30,7 @@
   <name>PhenoTips - Vocabularies - Support for translating vocabularies</name>
 
   <modules>
+    <module>machine</module>
     <module>xliff</module>
   </modules>
 </project>

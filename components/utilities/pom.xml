@@ -32,6 +32,7 @@
   <modules>
     <module>component-registry</module>
     <module>jodatime-service</module>
+    <module>machine-translator</module>
     <module>ncbieutils-services</module>
     <module>proxy-authentication</module>
     <module>xliff12</module>
