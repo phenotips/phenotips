@@ -2606,12 +2606,9 @@ return PhenoTips;
     resultValue : "name",
     resultCategory : "term_category",
     resultParent : {
-      selector : 'is_a',
-      processingFunction : function (text){
-        var data = {};
-        data.id = text.replace(/\s+/gm, ' ').replace(/(HP:[0-9]+)\s*!\s*(.*)/m, "$1");
-        data.value = text.replace(/\s+/gm, ' ').replace(/(HP:[0-9]+)\s*!\s*(.*)/m, "$2");
-        return data;
+      selector : 'parents',
+      processingFunction : function (parent) {
+        return {'id': parent.id, 'value': parent.name};
       }
     },
     noresults: "No sub-terms",

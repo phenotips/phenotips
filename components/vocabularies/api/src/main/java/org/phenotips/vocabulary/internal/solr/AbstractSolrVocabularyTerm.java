@@ -251,6 +251,16 @@ public abstract class AbstractSolrVocabularyTerm implements VocabularyTerm
         for (Map.Entry<String, ? extends Object> field : getEntrySet()) {
             addAsCorrectType(json, field.getKey(), field.getValue());
         }
+        if (this.parents != null && !this.parents.isEmpty()) {
+            JSONArray parentsJson = new JSONArray();
+            for (VocabularyTerm parent : this.parents) {
+                JSONObject parentJSON = new JSONObject();
+                parentJSON.put(ID_KEY, parent.getId());
+                parentJSON.put(NAME_KEY, parent.getName());
+                parentsJson.put(parentJSON);
+            }
+            json.put("parents", parentsJson);
+        }
 
         return json;
     }
