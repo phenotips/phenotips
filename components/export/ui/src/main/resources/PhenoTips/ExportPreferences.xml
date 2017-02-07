@@ -175,7 +175,7 @@
   #set($selectedValues = ['external_id', 'gender', 'phenotype', 'negative_phenotype', 'omim_id'])
 #else
   #set($ignored = {
-    'fields' : ['reports_history', 'pedigree', 'extended_negative_phenotype', 'extended_phenotype', 'extended_prenatal_phenotype', 'extended_negative_prenatal_phenotype'],
+    'fields' : ['reports_history', 'pedigree', 'extended_negative_phenotype', 'extended_phenotype', 'extended_prenatal_phenotype', 'extended_negative_prenatal_phenotype', 'genetic_notes'],
     'types'  : []
   })
   #if (${request.export_id} == 'phenotips_json_export')
@@ -195,6 +195,7 @@
        'genes_status' : "$services.localization.render('phenotips.exportPreferences.field.genesStatus')",
        'genes_strategy' : "$services.localization.render('phenotips.exportPreferences.field.genesStrategy')",
        'genes_comments' : "$services.localization.render('phenotips.exportPreferences.field.genesComments')",
+       'genetic_notes' : "$services.localization.render('phenotips.exportPreferences.field.geneticNotes')",
        'variants' : "$services.localization.render('phenotips.exportPreferences.field.variants')",
        'variants_protein' : "$services.localization.render('phenotips.exportPreferences.field.variantsProtein')",
        'variants_transcript' : "$services.localization.render('phenotips.exportPreferences.field.variantsTranscript')",

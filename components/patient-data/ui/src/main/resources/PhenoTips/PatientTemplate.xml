@@ -1155,6 +1155,22 @@
         <values>Unknown|A|B|Other</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </twinNumber>
+      <genetic_notes>
+        <contenttype>PureText</contenttype>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>genetic_notes</name>
+        <number>55</number>
+        <picker>0</picker>
+        <prettyName>Additional genetic notes</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </genetic_notes>
       <unaffected>
         <customDisplay/>
         <defaultValue/>
@@ -1220,6 +1236,9 @@
     </property>
     <property>
       <gender/>
+    </property>
+    <property>
+      <genetic_notes/>
     </property>
     <property>
       <gestation/>

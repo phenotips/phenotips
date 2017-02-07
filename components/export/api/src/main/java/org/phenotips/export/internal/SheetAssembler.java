@@ -121,6 +121,7 @@ public class SheetAssembler
             patientSections.add(converter.isNormalBody(patient));
             patientSections.add(converter.phenotypeBody(patient));
             patientSections.add(converter.genesBody(patient));
+            patientSections.add(converter.geneticNotesBody(patient));
             patientSections.add(converter.variantsBody(patient));
             patientSections.add(converter.disordersBody(patient));
             patientSections.add(converter.isSolvedBody(patient));
@@ -155,6 +156,7 @@ public class SheetAssembler
         headerSections.add(converter.isNormalHeader(enabledFields));
         headerSections.add(converter.phenotypeHeader());
         headerSections.add(converter.genesHeader());
+        headerSections.add(converter.geneticNotesHeader(enabledFields));
         headerSections.add(converter.variantsHeader());
         headerSections.add(converter.disordersHeaders(enabledFields));
         headerSections.add(converter.isSolvedHeader(enabledFields));
@@ -215,8 +217,8 @@ public class SheetAssembler
     }
 
     /**
-     * @return a {@link org.phenotips.export.internal.DataSection} that contains all {@link
-     * org.phenotips.export.internal.DataCell}s
+     * @return a {@link org.phenotips.export.internal.DataSection} that contains all
+     *         {@link org.phenotips.export.internal.DataCell}s
      */
     public DataSection getAssembled()
     {

@@ -349,6 +349,29 @@ public class DataToCellConverter
         return section;
     }
 
+    public DataSection geneticNotesHeader(Set<String> enabledFields) throws Exception
+    {
+        String sectionName = "genetic_notes";
+        Set<String> present = new LinkedHashSet<>();
+        if (enabledFields.remove(sectionName)) {
+            present.add(sectionName);
+        }
+        this.enabledHeaderIdsBySection.put(sectionName, present);
+
+        DataSection headerSection = new DataSection();
+        if (present.isEmpty()) {
+            return null;
+        }
+
+        DataCell headerCell =
+            new DataCell(this.translationManager.translate("phenotips.exportPreferences.field.geneticNotes"),
+                0, 0, StyleOption.LARGE_HEADER);
+        headerCell.addStyle(StyleOption.HEADER);
+        headerSection.addCell(headerCell);
+
+        return headerSection;
+    }
+
     public DataSection variantsHeader() throws Exception
     {
         String sectionName = "variants";
@@ -501,6 +524,27 @@ public class DataToCellConverter
         }
 
         return section;
+    }
+
+    public DataSection geneticNotesBody(Patient patient)
+    {
+        String sectionName = "genetic_notes";
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
+        if (present == null || present.isEmpty()) {
+            return null;
+        }
+        DataSection bodySection = new DataSection();
+
+        if (present.contains("genetic_notes")) {
+            PatientData<String> notes = patient.getData("notes");
+            String comments = notes != null ? notes.get("genetic_notes") : "";
+            for (DataCell gcell : ConversionHelpers.preventOverflow(comments, 0, 0)) {
+                gcell.setMultiline();
+                bodySection.addCell(gcell);
+            }
+        }
+
+        return bodySection;
     }
 
     public DataSection idHeader(Set<String> enabledFields) throws Exception
