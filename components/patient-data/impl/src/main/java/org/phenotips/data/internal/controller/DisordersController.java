@@ -141,7 +141,7 @@ public class DisordersController extends AbstractComplexController<Disorder>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null && !selectedFieldNames.contains(DISORDER_PROPERTIES)) {
+        if (!isFieldIncluded(selectedFieldNames, DISORDER_PROPERTIES)) {
             return;
         }
 
@@ -164,6 +164,19 @@ public class DisordersController extends AbstractComplexController<Disorder>
             }
         }
         return diseasesJSON;
+    }
+
+    private boolean isFieldIncluded(Collection<String> selectedFields, String[] fieldNames)
+    {
+        if (selectedFields == null) {
+            return true;
+        }
+        for (String fieldName : fieldNames) {
+            if (selectedFields.contains(fieldName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -200,8 +213,8 @@ public class DisordersController extends AbstractComplexController<Disorder>
     @Override
     public void save(Patient patient, DocumentModelBridge doc)
     {
-        PatientData<Disorder> features = patient.getData(this.getName());
-        if (features == null || !features.isIndexed()) {
+        PatientData<Disorder> disorders = patient.getData(this.getName());
+        if (disorders == null || !disorders.isIndexed()) {
             return;
         }
 
@@ -215,7 +228,7 @@ public class DisordersController extends AbstractComplexController<Disorder>
         // new disorders list (for setting values in the Wiki document)
         List<String> disorderValues = new LinkedList<>();
 
-        Iterator<Disorder> iterator = features.iterator();
+        Iterator<Disorder> iterator = disorders.iterator();
         while (iterator.hasNext()) {
             Disorder disorder = iterator.next();
             disorderValues.add(disorder.getValue());
