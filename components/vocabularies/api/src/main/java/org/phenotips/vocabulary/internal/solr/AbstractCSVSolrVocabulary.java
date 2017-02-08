@@ -66,14 +66,18 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
     {
         int retval = 1;
         try {
-            for (VocabularyExtension ext : this.extensions) {
-                ext.indexingStarted(this);
+            for (VocabularyExtension ext : this.extensions.get()) {
+                if (ext.isVocabularySupported(this)) {
+                    ext.indexingStarted(this);
+                }
             }
             this.clear();
             retval = this.index(sourceUrl);
         } finally {
-            for (VocabularyExtension ext : this.extensions) {
-                ext.indexingEnded(this);
+            for (VocabularyExtension ext : this.extensions.get()) {
+                if (ext.isVocabularySupported(this)) {
+                    ext.indexingEnded(this);
+                }
             }
         }
         return retval;

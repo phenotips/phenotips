@@ -23,8 +23,6 @@ import org.phenotips.vocabulary.VocabularyExtension;
 import org.phenotips.vocabulary.VocabularyInputTerm;
 import org.phenotips.vocabulary.VocabularyTerm;
 
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -35,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -52,7 +51,7 @@ import org.slf4j.Logger;
  * @version $Id$
  * @since 1.2M4 (under different names since 1.0M8)
  */
-public abstract class AbstractSolrVocabulary implements Vocabulary, Initializable
+public abstract class AbstractSolrVocabulary implements Vocabulary
 {
     /** The name of the ID field. */
     protected static final String ID_FIELD_NAME = "id";
@@ -73,14 +72,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
 
     /** The extensions that apply to this vocabulary. */
     @Inject
-    protected List<VocabularyExtension> extensions;
-
-    @Override
-    public void initialize() throws InitializationException
-    {
-        this.externalServicesAccess.initialize(this.getCoreName());
-        this.extensions = filterSupportedExtensions();
-    }
+    protected Provider<List<VocabularyExtension>> extensions;
 
     // Dilemma:
     // In an ideal world there should be a getter methods for server and cache instances.
@@ -226,8 +218,10 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
         try {
             query.setIncludeScore(true);
             this.logger.debug("Extending query [{}] for vocabulary [{}]", query, getCoreName());
-            for (VocabularyExtension extension : this.extensions) {
-                extension.extendQuery(query, this);
+            for (VocabularyExtension extension : this.extensions.get()) {
+                if (extension.isVocabularySupported(this)) {
+                    extension.extendQuery(query, this);
+                }
             }
             this.logger.debug("Searching [{}] with query [{}]", getCoreName(), query);
             QueryResponse response = this.externalServicesAccess.getSolrConnection(getCoreName()).query(query);
@@ -315,24 +309,10 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
      */
     protected void extendTerm(VocabularyInputTerm term)
     {
-        for (VocabularyExtension extension : this.extensions) {
-            extension.extendTerm(term, this);
-        }
-    }
-
-    /**
-     * Gets only the list of extensions that this vocabulary supports.
-     *
-     * @return the list of supported extensions, may be empty
-     */
-    private List<VocabularyExtension> filterSupportedExtensions()
-    {
-        List<VocabularyExtension> result = new LinkedList<>();
-        for (VocabularyExtension extension : this.extensions) {
+        for (VocabularyExtension extension : this.extensions.get()) {
             if (extension.isVocabularySupported(this)) {
-                result.add(extension);
+                extension.extendTerm(term, this);
             }
         }
-        return result;
     }
 }

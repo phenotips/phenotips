@@ -82,6 +82,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
 
     /**
      * Load vocabulary data from a provided source url.
+     *
      * @param sourceUrl the address from where to get the vocabulary source file
      * @return vocabulary data, if exists
      */
@@ -99,14 +100,18 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     {
         int retval = 1;
         try {
-            for (VocabularyExtension ext : this.extensions) {
-                ext.indexingStarted(this);
+            for (VocabularyExtension ext : this.extensions.get()) {
+                if (ext.isVocabularySupported(this)) {
+                    ext.indexingStarted(this);
+                }
             }
             this.clear();
             retval = this.index(sourceUrl);
         } finally {
-            for (VocabularyExtension ext : this.extensions) {
-                ext.indexingEnded(this);
+            for (VocabularyExtension ext : this.extensions.get()) {
+                if (ext.isVocabularySupported(this)) {
+                    ext.indexingEnded(this);
+                }
             }
         }
         return retval;
