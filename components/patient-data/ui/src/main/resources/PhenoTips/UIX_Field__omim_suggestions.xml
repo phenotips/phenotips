@@ -111,6 +111,9 @@
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
+#if ($xcontext.action == 'export')
+  #break
+#end
 #set ($phenotypesSummary = [])
 #set ($hasSymptoms = 0)
 #__phenotypeSummary_create( $phenotypeSummary $hasSymptoms )
