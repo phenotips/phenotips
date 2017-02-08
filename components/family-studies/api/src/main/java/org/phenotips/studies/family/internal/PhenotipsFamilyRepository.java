@@ -670,15 +670,15 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     {
         XWikiContext context = this.provider.get();
         XWiki wiki = context.getWiki();
-        long nextId = getLastUsedId() + 1;
-        String nextStringId = String.format("%s%07d", PREFIX, nextId);
+        long nextId = getLastUsedId();
 
-        EntityReference newFamilyRef =
-            new EntityReference(nextStringId, EntityType.DOCUMENT, Family.DATA_SPACE);
+        DocumentReference newFamilyRef;
+        do {
+            newFamilyRef = this.entityReferenceResolver.resolve(new EntityReference(
+                String.format("%s%07d", PREFIX, ++nextId), EntityType.DOCUMENT, Family.DATA_SPACE));
+        } while (wiki.exists(newFamilyRef, context));
+
         XWikiDocument newFamilyDoc = wiki.getDocument(newFamilyRef, context);
-        if (!newFamilyDoc.isNew()) {
-            throw new IllegalArgumentException("The new family id was already taken.");
-        }
 
         // Copying all objects from template to family
         newFamilyDoc.readFromTemplate(
