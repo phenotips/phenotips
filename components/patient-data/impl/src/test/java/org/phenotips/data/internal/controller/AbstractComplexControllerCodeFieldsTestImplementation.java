@@ -39,11 +39,11 @@ import javax.inject.Singleton;
 public class AbstractComplexControllerCodeFieldsTestImplementation
     extends AbstractComplexController<List<VocabularyProperty>>
 {
-    protected static String DATA_NAME = "codeFieldsTest";
+    protected static final String DATA_NAME = "codeFieldsTest";
 
-    protected static String PROPERTY_1 = AbstractSimpleControllerTestImplementation.PROPERTY_1;
+    protected static final String PROPERTY_1 = AbstractSimpleControllerTestImplementation.PROPERTY_1;
 
-    protected static String PROPERTY_2 = AbstractSimpleControllerTestImplementation.PROPERTY_2;
+    protected static final String PROPERTY_2 = AbstractSimpleControllerTestImplementation.PROPERTY_2;
 
     @Override
     protected List<String> getBooleanFields()

@@ -445,7 +445,8 @@ public class VariantListController extends AbstractComplexController<Map<String,
                 for (String property : this.getProperties()) {
                     String value = variant.get(property);
                     if (value != null) {
-                        if (INTERNAL_START_POSITION_KEY.equals(property) || INTERNAL_END_POSITION_KEY.equals(property)) {
+                        if (INTERNAL_START_POSITION_KEY.equals(property)
+                            || INTERNAL_END_POSITION_KEY.equals(property)) {
                             xwikiObject.setIntValue(property, Integer.valueOf(value));
                         } else {
                             xwikiObject.set(property, value, context);

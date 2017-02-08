@@ -72,6 +72,19 @@ import static org.mockito.Mockito.verify;
  */
 public class AbstractComplexControllerTest
 {
+    private static final String DATA_NAME = AbstractComplexControllerTestImplementation.DATA_NAME;
+
+    private static final String CODE_FIELDS_DATA_NAME = AbstractComplexControllerCodeFieldsTestImplementation.DATA_NAME;
+
+    private static final String PROPERTY_1 = AbstractComplexControllerTestImplementation.PROPERTY_1;
+
+    private static final String PROPERTY_2 = AbstractComplexControllerTestImplementation.PROPERTY_2;
+
+    private static final String PROPERTY_3 = AbstractComplexControllerTestImplementation.PROPERTY_3;
+
+    private static final String PROPERTY_4 = AbstractComplexControllerTestImplementation.PROPERTY_4;
+
+    private static final String PROPERTY_5 = AbstractComplexControllerTestImplementation.PROPERTY_5;
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
@@ -110,20 +123,6 @@ public class AbstractComplexControllerTest
 
     @Mock
     private BaseProperty<ObjectPropertyReference> baseProperty5;
-
-    private static final String DATA_NAME = AbstractComplexControllerTestImplementation.DATA_NAME;
-
-    private static final String CODE_FIELDS_DATA_NAME = AbstractComplexControllerCodeFieldsTestImplementation.DATA_NAME;
-
-    private static final String PROPERTY_1 = AbstractComplexControllerTestImplementation.PROPERTY_1;
-
-    private static final String PROPERTY_2 = AbstractComplexControllerTestImplementation.PROPERTY_2;
-
-    private static final String PROPERTY_3 = AbstractComplexControllerTestImplementation.PROPERTY_3;
-
-    private static final String PROPERTY_4 = AbstractComplexControllerTestImplementation.PROPERTY_4;
-
-    private static final String PROPERTY_5 = AbstractComplexControllerTestImplementation.PROPERTY_5;
 
     @Before
     public void setUp() throws Exception
@@ -176,8 +175,8 @@ public class AbstractComplexControllerTest
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen error has " +
-            "occurred during controller loading ", exception.getMessage());
+        verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen error has "
+            + "occurred during controller loading ", exception.getMessage());
         Assert.assertNull(result);
     }
 

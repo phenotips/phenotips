@@ -31,15 +31,10 @@ import org.junit.Test;
 
 /**
  * Test for the {@link PrenatalPerinatalHistoryController} Component, only the overridden methods from
- * {@link AbstractComplexController} are tested here
+ * {@link AbstractComplexController} are tested here.
  */
 public class PrenatalPerinatalHistoryControllerTest
 {
-
-    @Rule
-    public MockitoComponentMockingRule<PatientDataController<String>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<String>>(PrenatalPerinatalHistoryController.class);
-
     private static final String IVF = "ivf";
 
     private static final String ICSI = "icsi";
@@ -57,6 +52,10 @@ public class PrenatalPerinatalHistoryControllerTest
     private static final String MULTIPLE_GESTATION = "multipleGestation";
 
     private static final String GESTATION_TWIN = "twinNumber";
+
+    @Rule
+    public MockitoComponentMockingRule<PatientDataController<String>> mocker =
+        new MockitoComponentMockingRule<PatientDataController<String>>(PrenatalPerinatalHistoryController.class);
 
     @Test
     public void checkGetName() throws ComponentLookupException

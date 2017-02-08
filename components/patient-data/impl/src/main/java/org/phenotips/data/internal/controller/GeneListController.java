@@ -425,7 +425,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     }
 
     private void addStringValue(JSONObject geneJson, String jsonKey,
-            Map<String, String> geneData, String internalKey, List<String> acceptedValues)
+        Map<String, String> geneData, String internalKey, List<String> acceptedValues)
     {
         String value = geneJson.optString(jsonKey);
         if (!StringUtils.isBlank(value) && (acceptedValues == null || acceptedValues.contains(value))) {
@@ -434,7 +434,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     }
 
     private void addListValue(JSONObject geneJson, String jsonKey,
-            Map<String, String> geneData, String internalKey, List<String> acceptedValues)
+        Map<String, String> geneData, String internalKey, List<String> acceptedValues)
     {
         JSONArray valuesArray = geneJson.optJSONArray(jsonKey);
         if (valuesArray != null) {
@@ -523,7 +523,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     private Vocabulary getHGNCVocabulary()
     {
         try {
-            return vocabularyManager.getVocabulary(HGNC);
+            return this.vocabularyManager.getVocabulary(HGNC);
         } catch (Exception ex) {
             // this should not happen except when mocking, but does not hurt to catch in any case
             this.logger.error("Error loading component [{}]", ex.getMessage(), ex);

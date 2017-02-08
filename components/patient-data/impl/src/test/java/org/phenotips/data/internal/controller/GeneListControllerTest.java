@@ -83,6 +83,8 @@ public class GeneListControllerTest
 
     private static final String GENE_KEY = "gene";
 
+    private static final String GENE_VALUE = "GENE";
+
     private static final String STATUS_KEY = "status";
 
     private static final String STRATEGY_KEY = "strategy";
@@ -102,7 +104,6 @@ public class GeneListControllerTest
     private static final String JSON_OLD_REJECTED_GENE_KEY = "rejectedGenes";
 
     private static final String JSON_OLD_SOLVED_GENE_KEY = "solved";
-
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Map<String, String>>> mocker =
@@ -408,10 +409,8 @@ public class GeneListControllerTest
     {
         List<Map<String, String>> internalList = new LinkedList<>();
 
-        final String GENE_SYMBOL = "GENE";
-
         Map<String, String> item = new LinkedHashMap<>();
-        item.put(GENE_KEY, GENE_SYMBOL);
+        item.put(GENE_KEY, GENE_VALUE);
         item.put(STATUS_KEY, "Status");
         item.put(STRATEGY_KEY, "Strategy");
         item.put(COMMENTS_KEY, "Comment");
@@ -428,13 +427,14 @@ public class GeneListControllerTest
         Assert.assertNotNull(json.get(CONTROLLER_NAME));
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
         JSONObject result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
-        Assert.assertEquals(GENE_SYMBOL, result.get(JSON_GENE_SYMBOL));
-        Assert.assertEquals(GENE_SYMBOL, result.get(JSON_GENE_ID));
+        Assert.assertEquals(GENE_VALUE, result.get(JSON_GENE_SYMBOL));
+        Assert.assertEquals(GENE_VALUE, result.get(JSON_GENE_ID));
         Assert.assertEquals("Status", result.get(JSON_STATUS_KEY));
         String[] strategyArray = { "Strategy" };
         Assert.assertEquals(new JSONArray(strategyArray).get(0), ((JSONArray) result.get(JSON_STRATEGY_KEY)).get(0));
         Assert.assertEquals("Comment", result.get(JSON_COMMENTS_KEY));
-        Assert.assertEquals(5, result.length()); // id, gene, status, strategy, comment
+        // id, gene, status, strategy, comment
+        Assert.assertEquals(5, result.length());
     }
 
     @Test

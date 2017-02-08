@@ -32,19 +32,19 @@ import javax.inject.Singleton;
 @Component
 @Named("complexTest")
 @Singleton
-public class AbstractComplexControllerTestImplementation extends AbstractComplexController<String> {
+public class AbstractComplexControllerTestImplementation extends AbstractComplexController<String>
+{
+    protected static final String DATA_NAME = "test";
 
-    protected static String DATA_NAME = "test";
+    protected static final String PROPERTY_1 = "property1";
 
-    protected static String PROPERTY_1 = "property1";
+    protected static final String PROPERTY_2 = "property2";
 
-    protected static String PROPERTY_2 = "property2";
+    protected static final String PROPERTY_3 = "property3";
 
-    protected static String PROPERTY_3 = "property3";
+    protected static final String PROPERTY_4 = "property4";
 
-    protected static String PROPERTY_4 = "property4";
-
-    protected static String PROPERTY_5 = "property5";
+    protected static final String PROPERTY_5 = "property5";
 
     @Override
     protected List<String> getBooleanFields()

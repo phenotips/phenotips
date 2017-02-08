@@ -18,6 +18,7 @@
 package org.phenotips.data.internal.controller;
 
 import org.phenotips.data.PatientDataController;
+
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -29,21 +30,20 @@ import org.junit.Rule;
 import org.junit.Test;
 
 /**
- * Test for the {@link FamilyHistoryController} Component,
- * only the overridden methods from {@link AbstractComplexController} are tested here
+ * Test for the {@link FamilyHistoryController} Component, only the overridden methods from
+ * {@link AbstractComplexController} are tested here.
  */
 public class FamilyHistoryControllerTest
 {
-
-    @Rule
-    public MockitoComponentMockingRule<PatientDataController<Integer>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<Integer>>(FamilyHistoryController.class);
-
     private static final String CONSANGUINITY = "consanguinity";
 
     private static final String MISCARRIAGES = "miscarriages";
 
     private static final String AFFECTED_RELATIVES = "affectedRelatives";
+
+    @Rule
+    public MockitoComponentMockingRule<PatientDataController<Integer>> mocker =
+        new MockitoComponentMockingRule<PatientDataController<Integer>>(FamilyHistoryController.class);
 
     @Test
     public void checkGetName() throws ComponentLookupException
@@ -55,7 +55,7 @@ public class FamilyHistoryControllerTest
     public void checkGetJsonPropertyName() throws ComponentLookupException
     {
         Assert.assertEquals("family_history",
-            ((AbstractComplexController) this.mocker.getComponentUnderTest()).getJsonPropertyName());
+            ((AbstractComplexController<Integer>) this.mocker.getComponentUnderTest()).getJsonPropertyName());
     }
 
     @Test
@@ -85,6 +85,7 @@ public class FamilyHistoryControllerTest
     @Test
     public void checkGetCodeFields() throws ComponentLookupException
     {
-        Assert.assertTrue(((AbstractComplexController) this.mocker.getComponentUnderTest()).getCodeFields().isEmpty());
+        Assert.assertTrue(
+            ((AbstractComplexController<Integer>) this.mocker.getComponentUnderTest()).getCodeFields().isEmpty());
     }
 }

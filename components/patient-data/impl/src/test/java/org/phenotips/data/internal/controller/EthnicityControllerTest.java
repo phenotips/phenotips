@@ -18,6 +18,7 @@
 package org.phenotips.data.internal.controller;
 
 import org.phenotips.data.PatientDataController;
+
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -29,12 +30,11 @@ import org.junit.Rule;
 import org.junit.Test;
 
 /**
- * Test for the {@link EthnicityController} Component,
- * only the overridden methods from {@link AbstractComplexController} are tested here
+ * Test for the {@link EthnicityController} Component, only the overridden methods from
+ * {@link AbstractComplexController} are tested here.
  */
 public class EthnicityControllerTest
 {
-
     @Rule
     public MockitoComponentMockingRule<PatientDataController<List<String>>> mocker =
         new MockitoComponentMockingRule<PatientDataController<List<String>>>(EthnicityController.class);
@@ -49,7 +49,7 @@ public class EthnicityControllerTest
     public void checkGetJsonPropertyName() throws ComponentLookupException
     {
         Assert.assertEquals("ethnicity",
-            ((AbstractComplexController) this.mocker.getComponentUnderTest()).getJsonPropertyName());
+            ((AbstractComplexController<List<String>>) this.mocker.getComponentUnderTest()).getJsonPropertyName());
     }
 
     @Test
@@ -67,12 +67,14 @@ public class EthnicityControllerTest
     public void checkGetBooleanFields() throws ComponentLookupException
     {
         Assert.assertTrue(
-            ((AbstractComplexController) this.mocker.getComponentUnderTest()).getBooleanFields().isEmpty());
+            ((AbstractComplexController<List<String>>) this.mocker.getComponentUnderTest()).getBooleanFields()
+                .isEmpty());
     }
 
     @Test
     public void checkGetCodeFields() throws ComponentLookupException
     {
-        Assert.assertTrue(((AbstractComplexController) this.mocker.getComponentUnderTest()).getCodeFields().isEmpty());
+        Assert.assertTrue(
+            ((AbstractComplexController<List<String>>) this.mocker.getComponentUnderTest()).getCodeFields().isEmpty());
     }
 }
