@@ -596,6 +596,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>vocabulary-hpo-translation-spanish</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>vocabulary-chebi-api</artifactId>
       <version>${project.version}</version>
     </dependency>

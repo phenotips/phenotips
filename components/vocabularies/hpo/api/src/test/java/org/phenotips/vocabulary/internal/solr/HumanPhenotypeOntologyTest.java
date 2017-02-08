@@ -78,9 +78,9 @@ public class HumanPhenotypeOntologyTest
         this.cache = mock(Cache.class);
         SolrVocabularyResourceManager externalServicesAccess =
             this.mocker.getInstance(SolrVocabularyResourceManager.class);
-        when(externalServicesAccess.getTermCache()).thenReturn(this.cache);
+        when(externalServicesAccess.getTermCache("hpo")).thenReturn(this.cache);
         this.server = mock(SolrClient.class);
-        when(externalServicesAccess.getSolrConnection()).thenReturn(this.server);
+        when(externalServicesAccess.getSolrConnection("hpo")).thenReturn(this.server);
         this.ontologyService = this.mocker.getComponentUnderTest();
         this.ontologyServiceResult =
             this.ontologyService.reindex(this.getClass().getResource("/hpo-test.obo").toString());

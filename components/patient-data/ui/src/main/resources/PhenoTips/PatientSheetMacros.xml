@@ -321,9 +321,14 @@
     #end
   #end
   #foreach ($f in $patient.features)
+    #set ($foreach.fterm = $services.vocabularies.resolveTerm($f.id))
+    #set ($foreach.fname = $foreach.fterm.get("name_${xcontext.language}"))
+    #if (!$foreach.fname)
+      #set ($foreach.fname = $foreach.fterm.name)
+    #end
     #set ($discard = $phenotypesSummary.add({
-      "key"  : "#if($f.id == '')$f.name#{else}$f.id#end",
-      "text" : $f.name,
+      "key"  : "#if($f.id == '')$foreach.fname#{else}$f.id#end",
+      "text" : "$foreach.fname",
       "type" : "#if (!$f.isPresent())not_#elseif($f.id == '')free_#{end}symptom"
     }))
   #end

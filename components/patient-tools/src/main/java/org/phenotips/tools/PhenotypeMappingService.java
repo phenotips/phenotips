@@ -26,6 +26,7 @@ import org.xwiki.bridge.event.DocumentUpdatedEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.localization.LocalizationContext;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
@@ -79,6 +80,9 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
      * Cached mappings for faster responses.
      */
     private Map<String, Map<String, Object>> cache = new HashMap<>();
+
+    @Inject
+    private LocalizationContext lc;
 
     /**
      * Reference serializer used for converting entities into strings.
@@ -212,7 +216,8 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
         Object result = getMapping(mappingDoc, mappingName);
         if (result == null) {
             try {
-                String mappingContent = this.bridge.getDocumentContentForDefaultLanguage(mappingDoc);
+                String mappingContent =
+                    this.bridge.getDocumentContent(mappingDoc, this.lc.getCurrentLocale().toString());
                 if (mappingContent.startsWith("{{velocity")) {
                     result = parseVelocityMapping(mappingDoc).get(mappingName);
                 } else {

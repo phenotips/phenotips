@@ -106,8 +106,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     public void initialize() throws InitializationException
     {
         try {
-            this.initializer.initialize(getName());
-            this.server = this.initializer.getSolrConnection();
+            this.server = this.initializer.getSolrConnection(getName());
             this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
         } catch (RuntimeException ex) {
             throw new InitializationException("Invalid URL specified for the Solr server: {}");

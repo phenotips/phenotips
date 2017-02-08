@@ -192,7 +192,7 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
         query.setQuery("version:*");
         query.set(CommonParams.ROWS, "1");
         try {
-            QueryResponse response = this.externalServicesAccess.getSolrConnection().query(query);
+            QueryResponse response = this.externalServicesAccess.getSolrConnection(getCoreName()).query(query);
             SolrDocumentList termList = response.getResults();
             if (!termList.isEmpty()) {
                 return termList.get(0).getFieldValue("version").toString();
@@ -216,9 +216,9 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
             if (clear() == 1) {
                 return 1;
             }
-            this.externalServicesAccess.getSolrConnection().add(data);
-            this.externalServicesAccess.getSolrConnection().commit();
-            this.externalServicesAccess.getTermCache().removeAll();
+            this.externalServicesAccess.getSolrConnection(getCoreName()).add(data);
+            this.externalServicesAccess.getSolrConnection(getCoreName()).commit();
+            this.externalServicesAccess.getTermCache(getCoreName()).removeAll();
         } catch (SolrServerException | IOException ex) {
             this.logger.error("Failed to reindex OMIM: {}", ex.getMessage(), ex);
             return 1;
@@ -234,7 +234,7 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
     private int clear()
     {
         try {
-            this.externalServicesAccess.getSolrConnection().deleteByQuery("*:*");
+            this.externalServicesAccess.getSolrConnection(getCoreName()).deleteByQuery("*:*");
             return 0;
         } catch (SolrServerException ex) {
             this.logger.error("SolrServerException while clearing the Solr index", ex);

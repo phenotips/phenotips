@@ -34,6 +34,7 @@
     <module>jodatime-service</module>
     <module>ncbieutils-services</module>
     <module>proxy-authentication</module>
+    <module>xliff12</module>
     <module>xwiki-platform-svg</module>
     <module>xwiki-translation-manager</module>
   </modules>
