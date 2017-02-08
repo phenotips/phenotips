@@ -18,18 +18,19 @@
 package org.phenotips.data.internal.controller;
 
 import org.phenotips.data.ContactInfo;
+import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientContactsManager;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.data.SimpleValuePatientData;
-import org.phenotips.data.internal.DefaultPatientContactsManager;
 
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 
 import java.util.Collection;
+import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -37,7 +38,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Handle's the patient owner's contact information.
+ * Handles the contact information for people responsible for a patient record.
  *
  * @version $Id$
  * @since 1.0M11
@@ -45,24 +46,27 @@ import org.json.JSONObject;
 @Component(roles = { PatientDataController.class })
 @Named("owner-contact")
 @Singleton
-public class ContactInformationController implements PatientDataController<PatientContactsManager>
+public class ContactInformationController implements PatientDataController<ContactInfo>
 {
     private static final String DATA_CONTACT = "contact";
 
+    @Inject
+    private PatientContactsManager contactsManager;
+
     @Override
-    public PatientData<PatientContactsManager> load(Patient patient)
+    public PatientData<ContactInfo> load(Patient patient)
     {
-        PatientContactsManager contactsManager = new DefaultPatientContactsManager(patient);
-        if (contactsManager.size() == 0) {
+        List<ContactInfo> contacts = this.contactsManager.getAll(patient);
+        if (contacts == null || contacts.isEmpty()) {
             return null;
         }
-        return new SimpleValuePatientData<>(getName(), contactsManager);
+        return new IndexedPatientData<>(getName(), contacts);
     }
 
     @Override
     public void save(Patient patient, DocumentModelBridge doc)
     {
-        throw new UnsupportedOperationException();
+        // This is a read-only controller, at least for the moment, so nothing to do
     }
 
     @Override
@@ -74,16 +78,11 @@ public class ContactInformationController implements PatientDataController<Patie
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null && !selectedFieldNames.contains(getEnablingFieldName())) {
+        if (selectedFieldNames != null && !selectedFieldNames.contains(DATA_CONTACT)) {
             return;
         }
-        PatientData<PatientContactsManager> data = patient.getData(DATA_CONTACT);
-        if (data == null) {
-            return;
-        }
-
-        Collection<ContactInfo> contacts = data.getValue().getAll();
-        if (contacts == null) {
+        PatientData<ContactInfo> data = patient.getData(DATA_CONTACT);
+        if (data == null || !data.isIndexed() || data.size() == 0) {
             return;
         }
 
@@ -92,30 +91,20 @@ public class ContactInformationController implements PatientDataController<Patie
             json.put(DATA_CONTACT, new JSONArray());
             container = json.optJSONArray(DATA_CONTACT);
         }
-        for (ContactInfo info : contacts) {
+        for (ContactInfo info : data) {
             container.put(info.toJSON());
         }
     }
 
     @Override
-    public PatientData<PatientContactsManager> readJSON(JSONObject json)
+    public PatientData<ContactInfo> readJSON(JSONObject json)
     {
-        throw new UnsupportedOperationException();
+        // This is a read-only controller, at least for the moment, so nothing to do
+        return null;
     }
 
     @Override
     public String getName()
-    {
-        return DATA_CONTACT;
-    }
-
-    /**
-     * Unlike all other controllers, there is no field name controlling presence of version information in JSON output.
-     * This method returns a name which can be used instead.
-     *
-     * @return a name which can be included in the list of enabled fields to enable version info in JSON output
-     */
-    public static String getEnablingFieldName()
     {
         return DATA_CONTACT;
     }

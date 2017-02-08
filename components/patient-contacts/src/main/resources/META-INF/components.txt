@@ -1,4 +1,4 @@
 org.phenotips.data.internal.DefaultPatientContactsManager
-500:org.phenotips.data.internal.OwnerContactProvider
+org.phenotips.data.internal.PatientContactProviderListProvider
 org.phenotips.data.internal.ReporterContactProvider
 org.phenotips.data.internal.controller.ContactInformationController

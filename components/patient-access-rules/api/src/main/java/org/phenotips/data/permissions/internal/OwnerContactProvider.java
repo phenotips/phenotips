@@ -15,10 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data.internal;
+package org.phenotips.data.permissions.internal;
 
 import org.phenotips.data.ContactInfo;
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientContactProvider;
 import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
@@ -28,6 +29,7 @@ import org.phenotips.groups.GroupManager;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
@@ -47,12 +49,12 @@ import com.xpn.xwiki.objects.BaseObject;
  * The representation of the case owner as the primary contact for a record.
  *
  * @version $Id$
- * @since 1.3M5
+ * @since 1.3
  */
 @Component
 @Named("default")
 @Singleton
-public class OwnerContactProvider extends AbstractContactProvider
+public class OwnerContactProvider implements PatientContactProvider
 {
     private static final String ATTRIBUTE_INSTITUTION = "company";
 
@@ -75,11 +77,8 @@ public class OwnerContactProvider extends AbstractContactProvider
     @Inject
     private DocumentAccessBridge documentAccessBridge;
 
-    @Override
-    public String getName()
-    {
-        return "owner";
-    }
+    @Inject
+    private EntityReferenceSerializer<String> serializer;
 
     @Override
     public int getPriority()
@@ -92,12 +91,16 @@ public class OwnerContactProvider extends AbstractContactProvider
     {
         PatientAccess referenceAccess = this.permissionsManager.getPatientAccess(patient);
         Owner owner = referenceAccess.getOwner();
-        return Arrays.asList(getContactInfo(owner));
+        ContactInfo result = getContactInfo(owner);
+        if (result == null) {
+            return null;
+        }
+        return Arrays.asList(result);
     }
 
     private ContactInfo getContactInfo(Owner owner)
     {
-        DefaultContactInfo contactInfo = new DefaultContactInfo();
+        ContactInfo.Builder contactInfo = new ContactInfo.Builder();
         if (owner == null || owner.getUser() == null) {
             return null;
         }
@@ -114,31 +117,32 @@ public class OwnerContactProvider extends AbstractContactProvider
             }
             populateUserInfo(contactInfo, user);
         }
-        return contactInfo;
+        return contactInfo.build();
     }
 
-    private void populateUserInfo(DefaultContactInfo contactInfo, User user)
+    private void populateUserInfo(ContactInfo.Builder contactInfo, User user)
     {
         String email = (String) user.getAttribute(ATTRIBUTE_EMAIL_USER);
         String institution = (String) user.getAttribute(ATTRIBUTE_INSTITUTION);
 
-        contactInfo.setUserId(user.getId());
-        contactInfo.setName(user.getName());
-        contactInfo.setEmails(Arrays.asList(email));
-        contactInfo.setInstitution(institution);
+        contactInfo.withUserId(user.getId());
+        contactInfo.withName(user.getName());
+        contactInfo.withEmail(email);
+        contactInfo.withInstitution(institution);
     }
 
-    private void populateGroupInfo(DefaultContactInfo contactInfo, Group group)
+    private void populateGroupInfo(ContactInfo.Builder contactInfo, Group group)
     {
-        contactInfo.setName(group.getReference().getName());
+        contactInfo.withUserId(this.serializer.serialize(group.getReference()));
+        contactInfo.withName(group.getReference().getName());
 
         DocumentReference documentReference = group.getReference();
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(documentReference);
             BaseObject data = doc.getXObject(Group.CLASS_REFERENCE);
-            contactInfo.setEmails(Arrays.asList(data.getStringValue(ATTRIBUTE_EMAIL_GROUP)));
-        } catch (Exception e) {
-            this.logger.error("Could not find requested document");
+            contactInfo.withEmail(data.getStringValue(ATTRIBUTE_EMAIL_GROUP));
+        } catch (Exception ex) {
+            this.logger.error("Could not load group information: {}", ex.getMessage(), ex);
         }
     }
 }

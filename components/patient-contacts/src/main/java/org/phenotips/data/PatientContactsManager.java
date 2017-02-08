@@ -20,43 +20,31 @@ package org.phenotips.data;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Information about the users and organization contacts responsible for a patient.
  *
  * @version $Id$
- * @since 1.3M5
+ * @since 1.3
  */
-@Unstable
+@Unstable("New API introduced in 1.3")
 @Role
 public interface PatientContactsManager
 {
     /**
-     * Get the number of contacts for the patient.
+     * Get all available contacts.
      *
-     * @return the number of contacts
+     * @param patient the target patient record
+     * @return a potentially-empty list of {@link ContactInfo} objects, ordered by their relevance
      */
-    int size();
+    List<ContactInfo> getAll(Patient patient);
 
     /**
-     * Get the highest-priority non-empty contact.
+     * Get the highest-priority contact, if any.
      *
-     * @return the highest-priority non-empty {@link ContactInfo}, or {@code null}
+     * @param patient the target patient record
+     * @return the highest-priority {@link ContactInfo}, or {@code null}
      */
-    ContactInfo getFirst();
-
-    /**
-     * Get all available non-empty contacts.
-     *
-     * @return a potentially-empty collection of non-empty {@link ContactInfo} objects
-     */
-    Collection<ContactInfo> getAll();
-
-    /**
-     * Get all available email addresses.
-     *
-     * @return a potentially-empty collection of email addresses from all {@link ContactInfo} objects
-     */
-    Collection<String> getEmails();
+    ContactInfo getFirst(Patient patient);
 }

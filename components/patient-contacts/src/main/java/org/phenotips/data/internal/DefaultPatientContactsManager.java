@@ -19,137 +19,52 @@ package org.phenotips.data.internal;
 
 import org.phenotips.data.ContactInfo;
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientContactProvider;
 import org.phenotips.data.PatientContactsManager;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.component.manager.ComponentManager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
-
-import org.slf4j.Logger;
 
 /**
  * Straightforward implementation of {@link PatientContactsManager}.
  *
  * @version $Id$
- * @since 1.3M5
+ * @since 1.3
  */
 @Component
 @Singleton
 public class DefaultPatientContactsManager implements PatientContactsManager
 {
-    @Inject
-    @Named("wiki")
-    private ComponentManager componentManager;
-
-    @Inject
-    private Logger logger;
-
     /** The set of PatientContactProvider implementations, ordered by priority. */
-    private Set<PatientContactProvider> providers = new TreeSet<PatientContactProvider>();
-
-    private Patient patient;
-
-    /**
-     * Simple constructor given a patient.
-     *
-     * @param patient the patient to get contacts for
-     */
-    public DefaultPatientContactsManager(Patient patient)
-    {
-        this.patient = patient;
-
-        try {
-            List<PatientContactProvider> availableProviders =
-                this.componentManager.<PatientContactProvider>getInstanceList(PatientContactProvider.class);
-            Collections.sort(availableProviders, PatientContactProviderComparator.INSTANCE);
-            for (PatientContactProvider provider : availableProviders) {
-                this.providers.add(provider);
-            }
-        } catch (ComponentLookupException ex) {
-            this.logger.error("Failed to lookup serializers", ex);
-        }
-    }
+    @Inject
+    private Provider<List<PatientContactProvider>> providers;
 
     @Override
-    public int size()
+    public List<ContactInfo> getAll(Patient patient)
     {
-        return this.providers.size();
-    }
-
-    @Override
-    public ContactInfo getFirst()
-    {
-        try {
-            // Get first non-empty, in order of decreasing priority
-            return getAll().iterator().next();
-        } catch (NoSuchElementException e) {
-            return null;
-        }
-    }
-
-    @Override
-    public Collection<ContactInfo> getAll()
-    {
-        List<ContactInfo> contactInfos = new ArrayList<ContactInfo>();
-        for (PatientContactProvider provider : this.providers) {
+        List<ContactInfo> contactInfos = new LinkedList<>();
+        for (PatientContactProvider provider : this.providers.get()) {
             List<ContactInfo> info = provider.getContacts(patient);
             if (info != null && !info.isEmpty()) {
                 contactInfos.addAll(info);
             }
         }
-        if (contactInfos.isEmpty()) {
-            return null;
-        }
         return contactInfos;
     }
 
     @Override
-    public Collection<String> getEmails()
+    public ContactInfo getFirst(Patient patient)
     {
-        Collection<ContactInfo> allInfo = getAll();
-        List<String> allEmails = new ArrayList<String>();
-        if (allInfo != null) {
-            for (ContactInfo info : allInfo) {
-                List<String> emails = info.getEmails();
-                if (!emails.isEmpty()) {
-                    allEmails.addAll(emails);
-                }
-            }
+        List<ContactInfo> all = getAll(patient);
+        if (!all.isEmpty()) {
+            return all.get(0);
         }
-        return allEmails;
-    }
-
-    /**
-     * Sorts the available patient contact providers in descending order of their priority, then alphabetically if two
-     * or more modules have the same priority.
-     */
-    private static final class PatientContactProviderComparator implements Comparator<PatientContactProvider>
-    {
-        /** Singleton instance. */
-        private static final PatientContactProviderComparator INSTANCE = new PatientContactProviderComparator();
-
-        @Override
-        public int compare(PatientContactProvider o1, PatientContactProvider o2)
-        {
-            int result = o2.compareTo(o1);
-            // If the happen to have the same priority, to avoid randomness, order them alphabetically by their name
-            if (result == 0) {
-                result = o1.getClass().getSimpleName().compareTo(o2.getClass().getSimpleName());
-            }
-            return result;
-        }
+        return null;
     }
 }

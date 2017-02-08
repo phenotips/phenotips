@@ -15,12 +15,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data.internal;
-
-import org.phenotips.data.ContactInfo;
-import org.phenotips.data.Patient;
+package org.phenotips.data;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 import java.util.List;
 
@@ -28,18 +26,12 @@ import java.util.List;
  * A provider of users and organization contacts responsible for patient records.
  *
  * @version $Id$
- * @since 1.3M5
+ * @since 1.3
  */
+@Unstable("New API introduced in 1.3")
 @Role
-public interface PatientContactProvider extends Comparable<PatientContactProvider>
+public interface PatientContactProvider
 {
-    /**
-     * Get the name of this contact provider.
-     *
-     * @return the String name of the contact provider (should be unique across providers)
-     */
-    String getName();
-
     /**
      * Get the relative priority of the contact provider ({@code 0} is the highest priority and {@code 1000} is the
      * lowest).
@@ -52,7 +44,7 @@ public interface PatientContactProvider extends Comparable<PatientContactProvide
      * Get the contact information for the given patient.
      *
      * @param patient the patient
-     * @return a list of {@link ContactInfo} object, or {@code null}
+     * @return a list of {@link ContactInfo} objects, nay be empty or {@code null}
      */
     List<ContactInfo> getContacts(Patient patient);
 }

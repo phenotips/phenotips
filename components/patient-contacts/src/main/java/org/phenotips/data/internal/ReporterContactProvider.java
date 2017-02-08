@@ -19,44 +19,38 @@ package org.phenotips.data.internal;
 
 import org.phenotips.data.ContactInfo;
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientContactProvider;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.slf4j.Logger;
-
 /**
- * The representation of the case owner as the primary contact for a record.
+ * The representation of the case reporter (document creator) as the contact for a record.
  *
  * @version $Id$
- * @since 1.3M5
+ * @since 1.3
  */
 @Component
 @Named("default")
 @Singleton
-public class ReporterContactProvider extends AbstractContactProvider
+public class ReporterContactProvider implements PatientContactProvider
 {
-    @Inject
-    protected Logger logger;
-
     @Inject
     private UserManager userManager;
 
-    @Override
-    public String getName()
-    {
-        return "reporter";
-    }
+    @Inject
+    private EntityReferenceSerializer<String> serializer;
 
     @Override
     public int getPriority()
@@ -67,22 +61,28 @@ public class ReporterContactProvider extends AbstractContactProvider
     @Override
     public List<ContactInfo> getContacts(Patient patient)
     {
-        List<ContactInfo> list = new ArrayList<>();
-        DefaultContactInfo contactInfo = new DefaultContactInfo();
         DocumentReference reporter = patient.getReporter();
-        if (reporter != null) {
-            contactInfo.setUserId(reporter.getName());
+        if (reporter == null) {
+            return Collections.emptyList();
+        }
 
-            User user = this.userManager.getUser(reporter.getName());
+        List<ContactInfo> list = new ArrayList<>();
+        ContactInfo.Builder contactInfo = new ContactInfo.Builder();
+        contactInfo.withUserId(this.serializer.serialize(reporter));
 
+        User user = this.userManager.getUser(reporter.toString());
+        if (user != null) {
             String email = (String) user.getAttribute("email");
             String institution = (String) user.getAttribute("company");
 
-            contactInfo.setName(user.getName());
-            contactInfo.setEmails(Arrays.asList(email));
-            contactInfo.setInstitution(institution);
+            contactInfo.withName(user.getName());
+            contactInfo.withEmail(email);
+            contactInfo.withInstitution(institution);
+            // FIXME URL is missing
         }
-        list.add(contactInfo);
+        // Otherwise, if null user -> user is no longer valid, all we know is the username, already added before the if
+
+        list.add(contactInfo.build());
         return list;
     }
 }

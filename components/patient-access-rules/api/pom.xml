@@ -30,7 +30,7 @@
 
   <properties>
     <checkstyle.skip>true</checkstyle.skip>
-    <coverage.instructionRatio>0.7</coverage.instructionRatio>
+    <coverage.instructionRatio>0.71</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -106,6 +106,11 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>users-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>patient-contacts</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
