@@ -19,7 +19,6 @@ package org.phenotips.vocabulary;
 
 import org.xwiki.cache.Cache;
 import org.xwiki.component.annotation.Role;
-import org.xwiki.component.phase.InitializationException;
 import org.xwiki.stability.Unstable;
 
 import org.apache.solr.client.solrj.SolrClient;
@@ -35,25 +34,18 @@ import org.apache.solr.client.solrj.SolrClient;
 public interface SolrVocabularyResourceManager
 {
     /**
-     * Initializes the resources needed by a Solr-indexed vocabulary. This method must be called once before using the
-     * resources it exposes.
+     * Get the cache instance created for handling vocabulary terms.
      *
-     * @param vocabularyName the name of the vocabulary being managed
-     * @throws InitializationException if an error happens during initialization
-     */
-    void initialize(String vocabularyName) throws InitializationException;
-
-    /**
-     * Get the cache instance created for the target vocabulary.
-     *
+     * @param vocabularyId the identifier of the target vocabulary
      * @return a cache instance
      */
-    Cache<VocabularyTerm> getTermCache();
+    Cache<VocabularyTerm> getTermCache(String vocabularyId);
 
     /**
-     * Get the Solr core used for the target vocabulary.
+     * Get the Solr core used for a vocabulary.
      *
+     * @param vocabularyId the identifier of the target vocabulary
      * @return a Solr client for communication with the target core
      */
-    SolrClient getSolrConnection();
+    SolrClient getSolrConnection(String vocabularyId);
 }

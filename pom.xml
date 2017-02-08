@@ -502,6 +502,26 @@
               <method>java.util.List search(java.lang.String)</method>
               <justification>New search method for a simpler API</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/vocabulary/SolrVocabularyResourceManager</className>
+              <differenceType>7002</differenceType>
+              <method>void initialize(java.lang.String)</method>
+              <justification>Transformed the class into a singleton</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/vocabulary/SolrVocabularyResourceManager</className>
+              <differenceType>7004</differenceType>
+              <method>org.xwiki.cache.Cache getTermCache()</method>
+              <to>org.xwiki.cache.Cache getTermCache(String)</to>
+              <justification>Transformed the class into a singleton</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/vocabulary/SolrVocabularyResourceManager</className>
+              <differenceType>7004</differenceType>
+              <method>org.apache.solr.client.solrj.SolrClient getSolrConnection()</method>
+              <to>org.apache.solr.client.solrj.SolrClient getSolrConnection(String)</to>
+              <justification>Transformed the class into a singleton</justification>
+            </difference>
 
             <difference>
               <className>org/phenotips/data/permissions/PermissionsManager</className>

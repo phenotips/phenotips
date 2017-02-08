@@ -26,8 +26,6 @@ import org.xwiki.cache.CacheException;
 import org.xwiki.cache.CacheManager;
 import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.InstantiationStrategy;
-import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.distribution.internal.DistributionManager;
@@ -39,9 +37,12 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
@@ -55,7 +56,7 @@ import org.apache.solr.core.SolrCore;
  * @since 1.2M4 (under different names since 1.0M10)
  */
 @Component
-@InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
+@Singleton
 public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResourceManager
 {
     /** List of config Solr files. */
@@ -64,14 +65,14 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
         "/core.properties");
 
     /** @see #getSolrConnection() */
-    private SolrClient core;
+    private Map<String, SolrClient> cores = new HashMap<>();
 
     /** @see #getTermCache() */
-    private Cache<VocabularyTerm> cache;
+    private Map<String, Cache<VocabularyTerm>> caches = new HashMap<>();
 
     /** Provides access to the Solr cores. */
     @Inject
-    private SolrCoreContainerHandler cores;
+    private SolrCoreContainerHandler coreContainer;
 
     /** Cache factory needed for creating the term cache. */
     @Inject
@@ -83,10 +84,9 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
     @Inject
     private DistributionManager distribution;
 
-    @Override
-    public void initialize(String vocabularyName) throws InitializationException
+    private void initialize(String vocabularyName) throws InitializationException
     {
-        CoreContainer container = this.cores.getContainer();
+        CoreContainer container = this.coreContainer.getContainer();
         SolrCore solrCore = container.getCore(vocabularyName);
 
         String phenotipsCoreVersion =
@@ -120,8 +120,10 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
                 }
             }
 
-            this.core = new EmbeddedSolrServer(container, vocabularyName);
-            this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
+            SolrClient core = new EmbeddedSolrServer(container, vocabularyName);
+            this.cores.put(vocabularyName, core);
+            Cache<VocabularyTerm> cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
+            this.caches.put(vocabularyName, cache);
         } catch (final CacheException ex) {
             throw new InitializationException("Cannot create cache: " + ex.getMessage(), ex);
         } catch (IOException ex) {
@@ -134,14 +136,28 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
     }
 
     @Override
-    public Cache<VocabularyTerm> getTermCache()
+    public Cache<VocabularyTerm> getTermCache(String vocabularyId)
     {
-        return this.cache;
+        if (!this.caches.containsKey(vocabularyId)) {
+            try {
+                initialize(vocabularyId);
+            } catch (InitializationException ex) {
+                return null;
+            }
+        }
+        return this.caches.get(vocabularyId);
     }
 
     @Override
-    public SolrClient getSolrConnection()
+    public SolrClient getSolrConnection(String vocabularyId)
     {
-        return this.core;
+        if (!this.cores.containsKey(vocabularyId)) {
+            try {
+                initialize(vocabularyId);
+            } catch (InitializationException ex) {
+                return null;
+            }
+        }
+        return this.cores.get(vocabularyId);
     }
 }

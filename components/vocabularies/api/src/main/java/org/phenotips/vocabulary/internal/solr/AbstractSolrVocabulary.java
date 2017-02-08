@@ -99,15 +99,15 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
         if (StringUtils.isBlank(id)) {
             return null;
         }
-        VocabularyTerm result = this.externalServicesAccess.getTermCache().get(id);
+        VocabularyTerm result = this.externalServicesAccess.getTermCache(getCoreName()).get(id);
         if (result == null) {
             SolrQuery query = new SolrQuery(ID_FIELD_NAME + ':' + ClientUtils.escapeQueryChars(id));
             SolrDocumentList allResults = this.search(query);
             if (allResults != null && !allResults.isEmpty()) {
                 result = new SolrVocabularyTerm(allResults.get(0), this);
-                this.externalServicesAccess.getTermCache().set(id, result);
+                this.externalServicesAccess.getTermCache(getCoreName()).set(id, result);
             } else {
-                this.externalServicesAccess.getTermCache().set(id, EMPTY_MARKER);
+                this.externalServicesAccess.getTermCache(getCoreName()).set(id, EMPTY_MARKER);
             }
         }
         return (result == EMPTY_MARKER) ? null : result;
@@ -119,7 +119,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
         Map<String, VocabularyTerm> rawResult = new HashMap<>();
         StringBuilder query = new StringBuilder("id:(");
         for (String id : ids) {
-            VocabularyTerm cachedTerm = this.externalServicesAccess.getTermCache().get(id);
+            VocabularyTerm cachedTerm = this.externalServicesAccess.getTermCache(getCoreName()).get(id);
             if (cachedTerm != null) {
                 if (cachedTerm != EMPTY_MARKER) {
                     rawResult.put(id, cachedTerm);
@@ -230,7 +230,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
                 extension.extendQuery(query, this);
             }
             this.logger.debug("Searching [{}] with query [{}]", getCoreName(), query);
-            QueryResponse response = this.externalServicesAccess.getSolrConnection().query(query);
+            QueryResponse response = this.externalServicesAccess.getSolrConnection(getCoreName()).query(query);
             SolrDocumentList results = response.getResults();
             if (response.getSpellCheckResponse() != null && !response.getSpellCheckResponse().isCorrectlySpelled()
                 && StringUtils.isNotEmpty(response.getSpellCheckResponse().getCollatedResult())) {
@@ -238,7 +238,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
                     response.getSpellCheckResponse().getCollatedResult());
                 this.logger.debug("Searching [{}] with spellchecked query [{}]", getCoreName(), query);
                 SolrDocumentList spellcheckResults =
-                    this.externalServicesAccess.getSolrConnection().query(query).getResults();
+                    this.externalServicesAccess.getSolrConnection(getCoreName()).query(query).getResults();
                 if (results.getMaxScore() < spellcheckResults.getMaxScore()) {
                     results = spellcheckResults;
                 }
@@ -264,7 +264,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
         SolrDocumentList results;
         try {
             this.logger.debug("Counting terms matching [{}] in [{}]", query, getCoreName());
-            results = this.externalServicesAccess.getSolrConnection().query(params).getResults();
+            results = this.externalServicesAccess.getSolrConnection(getCoreName()).query(params).getResults();
             return results.getNumFound();
         } catch (Exception ex) {
             this.logger.error("Failed to count vocabulary terms: {}", ex.getMessage(), ex);

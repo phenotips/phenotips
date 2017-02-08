@@ -129,9 +129,9 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
     protected void commitTerms(Collection<SolrInputDocument> batch)
         throws SolrServerException, IOException, OutOfMemoryError
     {
-        this.externalServicesAccess.getSolrConnection().add(batch);
-        this.externalServicesAccess.getSolrConnection().commit();
-        this.externalServicesAccess.getTermCache().removeAll();
+        this.externalServicesAccess.getSolrConnection(getCoreName()).add(batch);
+        this.externalServicesAccess.getSolrConnection(getCoreName()).commit();
+        this.externalServicesAccess.getTermCache(getCoreName()).removeAll();
     }
 
     /**
@@ -142,7 +142,7 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
     protected int clear()
     {
         try {
-            this.externalServicesAccess.getSolrConnection().deleteByQuery("*:*");
+            this.externalServicesAccess.getSolrConnection(getCoreName()).deleteByQuery("*:*");
             return 0;
         } catch (SolrServerException ex) {
             this.logger.error("SolrServerException while clearing the Solr index", ex);
@@ -165,7 +165,7 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
         }
 
         try {
-            response = this.externalServicesAccess.getSolrConnection().query(query);
+            response = this.externalServicesAccess.getSolrConnection(getCoreName()).query(query);
             termList = response.getResults();
 
             if (!termList.isEmpty()) {
@@ -191,7 +191,7 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
         query.setQuery("version:*");
         query.set(CommonParams.ROWS, "1");
         try {
-            response = this.externalServicesAccess.getSolrConnection().query(query);
+            response = this.externalServicesAccess.getSolrConnection(getCoreName()).query(query);
             termList = response.getResults();
 
             if (!termList.isEmpty()) {

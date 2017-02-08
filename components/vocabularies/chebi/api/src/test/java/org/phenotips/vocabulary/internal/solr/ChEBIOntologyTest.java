@@ -72,9 +72,9 @@ public class ChEBIOntologyTest
         this.cache = mock(Cache.class);
         SolrVocabularyResourceManager externalServicesAccess =
             this.mocker.getInstance(SolrVocabularyResourceManager.class);
-        when(externalServicesAccess.getTermCache()).thenReturn(this.cache);
+        when(externalServicesAccess.getTermCache("chebi")).thenReturn(this.cache);
         this.server = mock(SolrClient.class);
-        when(externalServicesAccess.getSolrConnection()).thenReturn(this.server);
+        when(externalServicesAccess.getSolrConnection("chebi")).thenReturn(this.server);
         this.ontologyService = this.mocker.getComponentUnderTest();
         this.ontologyServiceResult =
             this.ontologyService.reindex(this.getClass().getResource("/chebi-test.obo").toString());
