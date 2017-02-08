@@ -22,6 +22,9 @@ import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
@@ -113,6 +116,9 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
     private static final String JSON_GENE_KEY = INTERNAL_GENE_KEY;
 
+    // older 1.3-xx gene key in variant json
+    private static final String JSON_OLD_GENE_KEY = "genesymbol";
+
     private static final String JSON_PROTEIN_KEY = INTERNAL_PROTEIN_KEY;
 
     private static final String JSON_TRANSCRIPT_KEY = INTERNAL_TRANSCRIPT_KEY;
@@ -164,8 +170,14 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
     private static final List<String> REFERENCE_GENOME_VALUES = Arrays.asList("GRCh37", "GRCh38", "NCBI36");
 
+    /** The vocabulary manager that actually does all the work. */
+    @Inject
+    private VocabularyManager vocabularyManager;
+
     @Inject
     private Logger logger;
+
+    private Vocabulary hgnc;
 
     /** Provides access to the current execution context. */
     @Inject
@@ -355,10 +367,12 @@ public class VariantListController extends AbstractComplexController<Map<String,
             for (int i = 0; i < variantsJson.length(); ++i) {
                 JSONObject variantJson = variantsJson.getJSONObject(i);
 
-                // discard it if variant cDNA is not present in the geneJson, or is whitespace, empty or duplicate
-                if (!variantJson.has(INTERNAL_VARIANT_KEY)
-                    || StringUtils.isBlank(variantJson.getString(INTERNAL_VARIANT_KEY))
-                    || variantSymbols.contains(variantJson.getString(INTERNAL_VARIANT_KEY))) {
+                // discard it if variant cDNA is not present in the variantJson, or is whitespace, empty or duplicate
+                if (StringUtils.isBlank(variantJson.optString(INTERNAL_VARIANT_KEY))
+                    || variantSymbols.contains(variantJson.getString(INTERNAL_VARIANT_KEY))
+                    // storing variant without gene name is pointless as it can not be displayed
+                    || StringUtils.isBlank(variantJson.optString(JSON_GENE_KEY))
+                    && StringUtils.isBlank(variantJson.optString(JSON_OLD_GENE_KEY))) {
                     continue;
                 }
 
@@ -382,11 +396,23 @@ public class VariantListController extends AbstractComplexController<Map<String,
         return null;
     }
 
+    /**
+     * Supports both 1.3-m5 and older 1.3-xx format. 1.3-m5 and newer variant JSON format: {"gene": ENSEMBL_Id [, ...] }
+     * 1.3-old format: {"genesymbol": HGNC_Symbol [, ...] }
+     */
     private Map<String, String> parseVariantJson(JSONObject variantJson, Map<String, List<String>> enumValues,
         List<String> enumValueKeys)
     {
         Map<String, String> singleVariant = new LinkedHashMap<>();
-        for (String property : this.getProperties()) {
+        // v1.2.x json compatibility
+        // gene ID is either the "gene" field, or, if missing, the "genesymbol" field
+        String geneId = variantJson.optString(JSON_GENE_KEY);
+        if (StringUtils.isBlank(geneId)) {
+            geneId = variantJson.optString(JSON_OLD_GENE_KEY);
+            geneId = getEnsemblId(geneId);
+        }
+        singleVariant.put(INTERNAL_GENE_KEY, geneId);
+        for (String property : this.getJSONProperties()) {
             if (variantJson.has(property)) {
                 parseVariantProperty(property, variantJson, enumValues, singleVariant, enumValueKeys);
             }
@@ -420,6 +446,53 @@ public class VariantListController extends AbstractComplexController<Map<String,
         } else if (!StringUtils.isBlank(variantJson.getString(property))) {
             field = variantJson.getString(property);
             singleVariant.put(property, field);
+        }
+    }
+
+    private List<String> getJSONProperties()
+    {
+        return Arrays.asList(JSON_VARIANT_KEY, JSON_PROTEIN_KEY, JSON_TRANSCRIPT_KEY, JSON_DBSNP_KEY,
+            JSON_ZYGOSITY_KEY, JSON_EFFECT_KEY, JSON_INTERPRETATION_KEY, JSON_INHERITANCE_KEY, JSON_EVIDENCE_KEY,
+            JSON_SEGREGATION_KEY, JSON_SANGER_KEY, JSON_CHROMOSOME_KEY, JSON_START_POSITION_KEY, JSON_END_POSITION_KEY,
+            JSON_REFERENCE_GENOME_KEY);
+    }
+
+    /**
+     * Gets EnsemblID corresponding to the HGNC symbol.
+     *
+     * @param gene the string representation a gene, either geneSymbol (e.g. NOD2) or some other kind of ID
+     * @return if gene is a valid geneSymbol, the corresponding Ensembl ID. Otherwise the original gene value
+     */
+    private String getEnsemblId(String gene)
+    {
+        final VocabularyTerm term = this.getTerm(gene);
+        @SuppressWarnings("unchecked")
+        final List<String> ensemblIdList = term != null ? (List<String>) term.get("ensembl_gene_id") : null;
+        final String ensemblId = ensemblIdList != null && !ensemblIdList.isEmpty() ? ensemblIdList.get(0) : null;
+        // retain information as is if we can't find Ensembl ID.
+        return StringUtils.isBlank(ensemblId) ? gene : ensemblId;
+    }
+
+    private VocabularyTerm getTerm(String gene)
+    {
+        // lazy-initialize HGNC
+        if (this.hgnc == null) {
+            this.hgnc = getHGNCVocabulary();
+            if (this.hgnc == null) {
+                return null;
+            }
+        }
+        return this.hgnc.getTerm(gene);
+    }
+
+    private Vocabulary getHGNCVocabulary()
+    {
+        try {
+            return vocabularyManager.getVocabulary("HGNC");
+        } catch (Exception ex) {
+            // this should not happen except when mocking, but does not hurt to catch in any case
+            this.logger.error("Error loading component [{}]", ex.getMessage(), ex);
+            return null;
         }
     }
 

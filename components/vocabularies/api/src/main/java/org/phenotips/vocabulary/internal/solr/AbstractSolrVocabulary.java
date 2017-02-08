@@ -141,7 +141,9 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
 
         Set<VocabularyTerm> result = new LinkedHashSet<>();
         for (String id : ids) {
-            result.add(rawResult.get(id));
+            if (rawResult.containsKey(id) && rawResult.get(id) != null) {
+                result.add(rawResult.get(id));
+            }
         }
         return result;
     }
