@@ -224,10 +224,10 @@
         if (typeof elem.selectionEnd !== "undefined") {
             return elem.selectionEnd;
         } else if (elem.createTextRange && document.selection) {
-    		var r = document.selection.createRange();
-    		r.moveStart('character', -elem.value.length);
-    		return r.text.length;
-    	} else return null;
+            var r = document.selection.createRange();
+            r.moveStart('character', -elem.value.length);
+            return r.text.length;
+        } else return null;
     }
 
     GraphicHelpers.setCaretPosition = function(ctrl, pos)
@@ -314,6 +314,34 @@
         });
         return newSet;
     };
+
+    /**
+     * Attempts to make resizableElement in the dialog modal fit on screen by adjusting the resizableElement height
+     *
+     * @param {String} dialogSelectorClass
+     * @param {String} resizableElementId
+     * @param {Number} minResizableElementHeight
+     * @param {Number} maxResizableElementHeight
+     */
+    GraphicHelpers.adjustPreviewWindowHeight = function(dialogSelectorClass, resizableElementId, minResizableElementHeight, maxResizableElementHeight) {
+        var pedigreeDialogue = $$('.'+dialogSelectorClass)[0];
+        var resizableElement = $(resizableElementId);
+        if (!pedigreeDialogue || !resizableElement) {
+            return;
+        }
+        var screenHeight = window.innerHeight - 10;
+        var dialogueHeight = pedigreeDialogue.getHeight();
+        var freeSpace = screenHeight - dialogueHeight;
+        var resizableElementHeight = resizableElement.getHeight();
+        if (freeSpace < 0) {
+            var newHeight = Math.max(minResizableElementHeight, resizableElementHeight + freeSpace);
+            resizableElement.style.height = newHeight + "px";
+        }
+        if (freeSpace > 0 && resizableElementHeight < maxResizableElementHeight && resizableElementHeight < resizableElement.scrollHeight) {
+            var newHeight = Math.min(maxResizableElementHeight, resizableElementHeight + freeSpace);
+            resizableElement.style.height = newHeight + "px";
+        }
+    },
 
     //Animation helpers
     window.requestAnimFrame = (function(){

@@ -494,7 +494,7 @@
 }
 .ped-special-options .export-config-header {
   margin-top: 0.5em;
-  margin-left: 4em;
+  margin-left: 1em;
   text-transform: capitalize;
 }
 .ped-special-options .export-config-header.ped-header{
@@ -502,7 +502,7 @@
   text-transform: none;
 }
 .ped-special-options .export-subconfig-label {
-  margin-left: 5em;
+  margin-left: 2em;
 }
 .import-mark-label1 {
   float: left;
@@ -1212,4 +1212,11 @@
 }
 .deceased .callout-handle {
   margin-left: 0px;
+}
+#scrollable-container {
+  overflow: auto;
+  margin-left: 3em;
+  margin-top: 0.5em;
+  background-color: #fdfeff;
+  padding-bottom: 0.5em;
 }
