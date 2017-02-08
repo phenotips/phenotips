@@ -260,6 +260,11 @@ define([
                 hasCancers && this._addPedOption("cancers", cancers, pedContainer);
                 hasCandidateGenes && this._addPedOption("candidateGenes", candidateGenes, pedContainer, "candidate genes");
                 hasCausalGenes && this._addPedOption("causalGenes", causalGenes, pedContainer, "confirmed causal genes");
+
+                var exportType = $$('input:checked[type=radio][name="export-type"]')[0];
+                if (exportType && exportType.value != "ped") {
+                    $$('.ped-special-options').each( function(item) {item.hide();});
+                }
             }
 
             this.dialog.show();
