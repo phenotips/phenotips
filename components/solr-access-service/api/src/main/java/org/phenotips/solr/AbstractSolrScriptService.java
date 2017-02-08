@@ -294,7 +294,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
      */
     public SolrDocument get(final String id)
     {
-        Map<String, String> queryParameters = new HashMap<String, String>();
+        Map<String, String> queryParameters = new HashMap<>();
         queryParameters.put(ID_FIELD_NAME, id);
         return get(queryParameters);
     }
@@ -420,7 +420,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
      */
     private Map<String, String> getSolrQuery(String query, String sort, int rows, int start)
     {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         result.put(CommonParams.START, start + "");
         if (rows > 0) {
             result.put(CommonParams.ROWS, rows + "");
