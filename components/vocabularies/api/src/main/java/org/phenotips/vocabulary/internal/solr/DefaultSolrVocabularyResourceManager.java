@@ -62,7 +62,7 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
     /** List of config Solr files. */
     public static final List<String> CONFIG_FILES = Arrays.asList("/conf/schema.xml", "/conf/solrconfig.xml",
         "/conf/solrcore.properties", "/conf/protwords.txt", "/conf/stopwords.txt", "/conf/synonyms.txt",
-        "/core.properties");
+        "/conf/managed-schema.xml", "/core.properties");
 
     /** @see #getSolrConnection() */
     private Map<String, SolrClient> cores = new HashMap<>();
