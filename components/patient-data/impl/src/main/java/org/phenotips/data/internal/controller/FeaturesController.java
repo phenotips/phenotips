@@ -88,7 +88,7 @@ public class FeaturesController extends AbstractComplexController<Feature>
         + PRENATAL_PHENOTYPE_PROPERTY;
 
     private static final String[] PHENOTYPE_PROPERTIES = new String[] { PHENOTYPE_POSITIVE_PROPERTY,
-    PHENOTYPE_NEGATIVE_PROPERTY, PRENATAL_PHENOTYPE_PROPERTY, NEGATIVE_PRENATAL_PHENOTYPE_PROPERTY };
+        PHENOTYPE_NEGATIVE_PROPERTY, PRENATAL_PHENOTYPE_PROPERTY, NEGATIVE_PRENATAL_PHENOTYPE_PROPERTY };
 
     @Inject
     private Logger logger;
@@ -203,7 +203,8 @@ public class FeaturesController extends AbstractComplexController<Feature>
             Iterator<Feature> iterator = data.iterator();
             while (iterator.hasNext()) {
                 Feature phenotype = iterator.next();
-                if (StringUtils.isNotBlank(phenotype.getId()) || !isFieldIncluded(selectedFields, phenotype.getType())) {
+                if (StringUtils.isNotBlank(phenotype.getId())
+                    || !isFieldIncluded(selectedFields, phenotype.getType())) {
                     continue;
                 }
                 JSONObject featureJSON = phenotype.toJSON();
