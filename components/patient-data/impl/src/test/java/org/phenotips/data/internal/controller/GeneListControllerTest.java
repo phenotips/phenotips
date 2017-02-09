@@ -17,14 +17,19 @@
  */
 package org.phenotips.data.internal.controller;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.SimpleValuePatientData;
+import org.phenotips.data.internal.PhenoTipsGene;
+import org.phenotips.vocabulary.VocabularyManager;
 
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -33,12 +38,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Provider;
 
@@ -58,6 +59,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
 import com.xpn.xwiki.objects.StringListProperty;
+import com.xpn.xwiki.web.Utils;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -109,8 +111,8 @@ public class GeneListControllerTest
     private static final String JSON_OLD_SOLVED_GENE_KEY = "solved";
 
     @Rule
-    public MockitoComponentMockingRule<PatientDataController<Map<String, String>>> mocker =
-        new MockitoComponentMockingRule<>(GeneListController.class);
+    public MockitoComponentMockingRule<PatientDataController<List<PhenoTipsGene>>> mocker =
+        new MockitoComponentMockingRule<PatientDataController<List<PhenoTipsGene>>>(GeneListController.class);
 
     @Mock
     private Patient patient;
@@ -121,9 +123,24 @@ public class GeneListControllerTest
     @Mock
     private XWikiContext context;
 
+    @Mock
+    private ComponentManager cm;
+
+    @Mock
+    private Provider<ComponentManager> mockProvider;
+
+    @Mock
+    private VocabularyManager vm;
+
+    @Mock
+    private XWiki xwiki;
+
+    @Mock
+    private Provider<XWikiContext> provider;
+
     private List<BaseObject> geneXWikiObjects;
 
-    private PatientDataController<Map<String, String>> component;
+    private PatientDataController<List<PhenoTipsGene>> component;
 
     @Before
     public void setUp() throws Exception
@@ -138,6 +155,11 @@ public class GeneListControllerTest
         doReturn(patientDocRef).when(this.patient).getDocumentReference();
         doReturn(this.doc).when(this.patient).getXDocument();
 
+        Utils.setComponentManager(this.cm);
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
+        when(this.mockProvider.get()).thenReturn(this.cm);
+        when(this.cm.getInstance(VocabularyManager.class)).thenReturn(this.vm);
+
         this.geneXWikiObjects = new LinkedList<>();
         doReturn(this.geneXWikiObjects).when(this.doc).getXObjects(any(EntityReference.class));
     }
@@ -147,44 +169,6 @@ public class GeneListControllerTest
     {
         Assert.assertEquals(CONTROLLER_NAME, this.component.getName());
     }
-
-    @Test
-    public void checkGetJsonPropertyName() throws ComponentLookupException
-    {
-        Assert.assertEquals(CONTROLLER_NAME,
-            ((AbstractComplexController<Map<String, String>>) this.component)
-                .getJsonPropertyName());
-    }
-
-    @Test
-    public void checkGetProperties() throws ComponentLookupException
-    {
-        List<String> result =
-            ((AbstractComplexController<Map<String, String>>) this.component).getProperties();
-
-        Assert.assertTrue(result.contains(GENE_KEY));
-        Assert.assertTrue(result.contains(STATUS_KEY));
-        Assert.assertTrue(result.contains(STRATEGY_KEY));
-        Assert.assertTrue(result.contains(COMMENTS_KEY));
-        Assert.assertEquals(4, result.size());
-    }
-
-    @Test
-    public void checkGetBooleanFields() throws ComponentLookupException
-    {
-        Assert.assertTrue(
-            ((AbstractComplexController<Map<String, String>>) this.component).getBooleanFields()
-                .isEmpty());
-    }
-
-    @Test
-    public void checkGetCodeFields() throws ComponentLookupException
-    {
-        Assert.assertTrue(((AbstractComplexController<Map<String, String>>) this.component)
-            .getCodeFields().isEmpty());
-    }
-
-    // --------------------load() is Overridden from AbstractSimpleController--------------------
 
     @Test
     public void loadWorks() throws Exception
@@ -213,17 +197,16 @@ public class GeneListControllerTest
             doReturn(Arrays.asList(geneString, statusString, commentString, strategyString)).when(gene).getFieldList();
         }
 
-        PatientData<Map<String, String>> result = this.component.load(this.patient);
+        PatientData<List<PhenoTipsGene>> result = this.component.load(this.patient);
 
         Assert.assertNotNull(result);
-        Assert.assertTrue(result.isIndexed());
-        Assert.assertEquals(3, result.size());
+        Assert.assertEquals(3, result.getValue().size());
         for (int i = 0; i < 3; ++i) {
-            Map<String, String> item = result.get(i);
-            Assert.assertEquals("gene" + i, item.get(GENE_KEY));
-            Assert.assertEquals("status" + i, item.get(STATUS_KEY));
-            Assert.assertEquals("comment" + i, item.get(COMMENTS_KEY));
-            Assert.assertEquals("strategy" + i, item.get(STRATEGY_KEY));
+            PhenoTipsGene item = result.getValue().get(i);
+            Assert.assertEquals("gene" + i, item.getName());
+            Assert.assertEquals(null, item.getStatus());
+            Assert.assertEquals("comment" + i, item.getComment());
+            Assert.assertEquals("strategy" + i, item.getStrategy());
         }
     }
 
@@ -233,7 +216,7 @@ public class GeneListControllerTest
         Exception exception = new RuntimeException();
         doThrow(exception).when(this.patient).getXDocument();
 
-        PatientData<Map<String, String>> result = this.component.load(this.patient);
+        PatientData<List<PhenoTipsGene>> result = this.component.load(this.patient);
 
         Assert.assertNull(result);
         verify(this.mocker.getMockedLogger()).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), anyString());
@@ -244,7 +227,7 @@ public class GeneListControllerTest
     {
         doReturn(null).when(this.doc).getXObjects(any(EntityReference.class));
 
-        PatientData<Map<String, String>> result = this.component.load(this.patient);
+        PatientData<List<PhenoTipsGene>> result = this.component.load(this.patient);
 
         Assert.assertNull(result);
     }
@@ -254,7 +237,7 @@ public class GeneListControllerTest
     {
         doReturn(new LinkedList<BaseObject>()).when(this.doc).getXObjects(any(EntityReference.class));
 
-        PatientData<Map<String, String>> result = this.component.load(this.patient);
+        PatientData<List<PhenoTipsGene>> result = this.component.load(this.patient);
 
         Assert.assertNull(result);
     }
@@ -266,7 +249,7 @@ public class GeneListControllerTest
         doReturn(null).when(obj).getField(anyString());
         this.geneXWikiObjects.add(obj);
 
-        PatientData<Map<String, String>> result = this.component.load(this.patient);
+        PatientData<List<PhenoTipsGene>> result = this.component.load(this.patient);
 
         Assert.assertNull(result);
     }
@@ -277,22 +260,23 @@ public class GeneListControllerTest
         // Deleted objects appear as nulls in XWikiObjects list
         this.geneXWikiObjects.add(null);
         addGeneFields(GENE_KEY, new String[] { "SRCAP" });
-        PatientData<Map<String, String>> result = this.component.load(this.patient);
+        PatientData<List<PhenoTipsGene>> result = this.component.load(this.patient);
 
-        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(1, result.getValue().size());
     }
 
     @Test
     public void checkLoadParsingOfGeneKey() throws ComponentLookupException
     {
-        String[] genes = new String[] { "A", "<!'>;", "two words", " ", "" };
+        String[] genes = new String[] { "A", "<!'>;", "two words" };
         addGeneFields(GENE_KEY, genes);
 
-        PatientData<Map<String, String>> result = this.component.load(this.patient);
+        PatientData<List<PhenoTipsGene>> result = this.component.load(this.patient);
 
         Assert.assertNotNull(result);
         for (int i = 0; i < genes.length; i++) {
-            Assert.assertEquals(genes[i], result.get(i).get(GENE_KEY));
+            PhenoTipsGene gene = result.getValue().get(i);
+            Assert.assertEquals(genes[i], gene.getName());
         }
     }
 
@@ -302,15 +286,14 @@ public class GeneListControllerTest
         String[] comments = new String[] { "Hello world!", "<script></script>", "", "{{html}}" };
         addGeneFields(COMMENTS_KEY, comments);
 
-        PatientData<Map<String, String>> result = this.component.load(this.patient);
+        PatientData<List<PhenoTipsGene>> result = this.component.load(this.patient);
 
         Assert.assertNotNull(result);
         for (int i = 0; i < comments.length; i++) {
-            Assert.assertEquals(comments[i], result.get(i).get(COMMENTS_KEY));
+            PhenoTipsGene gene = result.getValue().get(i);
+            Assert.assertEquals(comments[i], gene.getComment());
         }
     }
-
-    // --------------------writeJSON() is Overridden from AbstractSimpleController--------------------
 
     @Test
     public void writeJSONReturnsWhenGetDataReturnsNotNull() throws ComponentLookupException
@@ -329,8 +312,8 @@ public class GeneListControllerTest
     @Test
     public void writeJSONReturnsWhenDataIsEmpty() throws ComponentLookupException
     {
-        List<Map<String, String>> internalList = new LinkedList<>();
-        PatientData<Map<String, String>> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
+        List<PhenoTipsGene> internalList = new LinkedList<>();
+        PatientData<List<PhenoTipsGene>> patientData = new SimpleValuePatientData<>(CONTROLLER_NAME, internalList);
         doReturn(patientData).when(this.patient).getData(CONTROLLER_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -349,8 +332,8 @@ public class GeneListControllerTest
     @Test
     public void writeJSONReturnsWhenSelectedFieldsDoesNotContainGeneEnabler() throws ComponentLookupException
     {
-        List<Map<String, String>> internalList = new LinkedList<>();
-        PatientData<Map<String, String>> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
+        List<PhenoTipsGene> internalList = new LinkedList<>();
+        PatientData<List<PhenoTipsGene>> patientData = new SimpleValuePatientData<>(CONTROLLER_NAME, internalList);
         doReturn(patientData).when(this.patient).getData(CONTROLLER_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -362,20 +345,13 @@ public class GeneListControllerTest
         Assert.assertFalse(json.has(CONTROLLER_NAME));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void writeJSONIgnoresItemsWhenGeneIsBlank() throws ComponentLookupException
     {
-        List<Map<String, String>> internalList = new LinkedList<>();
-
-        Map<String, String> item = new LinkedHashMap<>();
-        item.put(GENE_KEY, "");
-        internalList.add(item);
-
-        item = new LinkedHashMap<>();
-        item.put(GENE_KEY, null);
-        internalList.add(item);
-
-        PatientData<Map<String, String>> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
+        List<PhenoTipsGene> internalList = new LinkedList<>();
+        PhenoTipsGene gene = new PhenoTipsGene("", null, null, null, null);
+        internalList.add(gene);
+        PatientData<List<PhenoTipsGene>> patientData = new SimpleValuePatientData<>(CONTROLLER_NAME, internalList);
         doReturn(patientData).when(this.patient).getData(CONTROLLER_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -391,16 +367,12 @@ public class GeneListControllerTest
     @Test
     public void writeJSONAddsContainerWithAllValuesWhenSelectedFieldsNull() throws ComponentLookupException
     {
-        List<Map<String, String>> internalList = new LinkedList<>();
+        List<PhenoTipsGene> internalList = new LinkedList<>();
 
-        Map<String, String> item = new LinkedHashMap<>();
-        item.put(GENE_KEY, "geneName");
-        item.put(STATUS_KEY, "");
-        item.put(STRATEGY_KEY, "");
-        item.put(COMMENTS_KEY, null);
+        PhenoTipsGene item = new PhenoTipsGene(null, "geneName", "", "", null);
         internalList.add(item);
 
-        PatientData<Map<String, String>> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
+        PatientData<List<PhenoTipsGene>> patientData = new SimpleValuePatientData<>(CONTROLLER_NAME, internalList);
         doReturn(patientData).when(this.patient).getData(CONTROLLER_NAME);
         JSONObject json = new JSONObject();
 
@@ -415,16 +387,12 @@ public class GeneListControllerTest
     @Test
     public void writeJSONWorksCorrectly() throws ComponentLookupException
     {
-        List<Map<String, String>> internalList = new LinkedList<>();
+        List<PhenoTipsGene> internalList = new LinkedList<>();
 
-        Map<String, String> item = new LinkedHashMap<>();
-        item.put(GENE_KEY, GENE_VALUE);
-        item.put(STATUS_KEY, "Status");
-        item.put(STRATEGY_KEY, "Strategy");
-        item.put(COMMENTS_KEY, "Comment");
+        PhenoTipsGene item = new PhenoTipsGene(null, GENE_VALUE, "Status", "Strategy", "Comment");
         internalList.add(item);
 
-        PatientData<Map<String, String>> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
+        PatientData<List<PhenoTipsGene>> patientData = new SimpleValuePatientData<>(CONTROLLER_NAME, internalList);
         doReturn(patientData).when(this.patient).getData(CONTROLLER_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -437,12 +405,12 @@ public class GeneListControllerTest
         JSONObject result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
         Assert.assertEquals(GENE_VALUE, result.get(JSON_GENE_SYMBOL));
         Assert.assertEquals(GENE_VALUE, result.get(JSON_GENE_ID));
-        Assert.assertEquals("Status", result.get(JSON_STATUS_KEY));
-        String[] strategyArray = { "Strategy" };
+        Assert.assertEquals(null, result.opt(JSON_STATUS_KEY));
+        String[] strategyArray = { "strategy" };
         Assert.assertEquals(new JSONArray(strategyArray).get(0), ((JSONArray) result.get(JSON_STRATEGY_KEY)).get(0));
         Assert.assertEquals("Comment", result.get(JSON_COMMENTS_KEY));
-        // id, gene, status, strategy, comment
-        Assert.assertEquals(5, result.length());
+        // id, gene, strategy, comment
+        Assert.assertEquals(4, result.length());
     }
 
     @Test
@@ -462,9 +430,11 @@ public class GeneListControllerTest
     {
         JSONObject json = new JSONObject();
         json.put(CONTROLLER_NAME, "No");
-        PatientData<Map<String, String>> result = this.component.readJSON(json);
+
+        PatientData<List<PhenoTipsGene>> result = this.component.readJSON(json);
+
         Assert.assertNotNull(result);
-        Assert.assertEquals(0, result.size());
+        Assert.assertEquals(0, result.getValue().size());
     }
 
     @Test
@@ -472,9 +442,11 @@ public class GeneListControllerTest
     {
         JSONObject json = new JSONObject();
         json.put(CONTROLLER_NAME, new JSONArray());
-        PatientData<Map<String, String>> result = this.component.readJSON(json);
+
+        PatientData<List<PhenoTipsGene>> result = this.component.readJSON(json);
+
         Assert.assertNotNull(result);
-        Assert.assertEquals(0, result.size());
+        Assert.assertEquals(0, result.getValue().size());
     }
 
     @Test
@@ -498,31 +470,29 @@ public class GeneListControllerTest
         data.put(item);
         JSONObject json = new JSONObject();
         json.put(CONTROLLER_NAME, data);
-        PatientData<Map<String, String>> result = this.component.readJSON(json);
+
+        PatientData<List<PhenoTipsGene>> result = this.component.readJSON(json);
+
         Assert.assertNotNull(result);
-        Assert.assertEquals(4, result.size());
-        Assert.assertTrue(result.isIndexed());
-        Iterator<Map<String, String>> it = result.iterator();
-        Map<String, String> gene = it.next();
-        Assert.assertEquals("GENE1", gene.get(GENE_KEY));
-        Assert.assertEquals("Notes1", gene.get(COMMENTS_KEY));
-        // "candidate" is the default status added to any gene without explicitly specified status
-        Assert.assertEquals("candidate", gene.get(STATUS_KEY));
-        Assert.assertFalse(gene.containsKey(STRATEGY_KEY));
-        gene = it.next();
-        Assert.assertEquals("GENE2", gene.get(GENE_KEY));
-        Assert.assertEquals("rejected", gene.get(STATUS_KEY));
-        Assert.assertFalse(gene.containsKey(COMMENTS_KEY));
-        Assert.assertFalse(gene.containsKey(STRATEGY_KEY));
-        gene = it.next();
-        Assert.assertEquals("ENSG00000123456", gene.get(GENE_KEY));
-        Assert.assertEquals("candidate", gene.get(STATUS_KEY));
-        Assert.assertFalse(gene.containsKey(COMMENTS_KEY));
-        Assert.assertFalse(gene.containsKey(STRATEGY_KEY));
-        gene = it.next();
-        Assert.assertEquals("ENSG00000098765", gene.get(GENE_KEY));
+        Assert.assertEquals(4, result.getValue().size());
+        PhenoTipsGene gene = result.getValue().get(0);
+        Assert.assertEquals("GENE1", gene.getName());
+        Assert.assertEquals("Notes1", gene.getComment());
+        Assert.assertNull(gene.getStrategy());
+        gene = result.getValue().get(1);
+        Assert.assertEquals("GENE2", gene.getName());
+        Assert.assertEquals("rejected", gene.getStatus());
+        Assert.assertNull(gene.getComment());
+        Assert.assertNull(gene.getStrategy());
+        gene = result.getValue().get(2);
+        Assert.assertEquals("ENSG00000123456", gene.getName());
+        Assert.assertNull(gene.getStatus());
+        Assert.assertNull(gene.getComment());
+        Assert.assertNull(gene.getStrategy());
+        gene = result.getValue().get(3);
+        Assert.assertEquals("ENSG00000098765", gene.getName());
         // any incorrect status should be replaced with "candidate"
-        Assert.assertEquals("candidate", gene.get(STATUS_KEY));
+        Assert.assertNull(gene.getStatus());
     }
 
     @Test
@@ -559,20 +529,19 @@ public class GeneListControllerTest
         item.put(JSON_GENE_SYMBOL, "GENE_TO_BECOME_SOLVED");
         json.put(JSON_OLD_SOLVED_GENE_KEY, item);
 
-        PatientData<Map<String, String>> result = this.component.readJSON(json);
+        PatientData<List<PhenoTipsGene>> result = this.component.readJSON(json);
+
         Assert.assertNotNull(result);
-        Assert.assertEquals(3, result.size());
-        Assert.assertTrue(result.isIndexed());
-        Iterator<Map<String, String>> it = result.iterator();
-        Map<String, String> gene = it.next();
-        Assert.assertEquals("GENE_1", gene.get(GENE_KEY));
-        Assert.assertEquals("candidate", gene.get(STATUS_KEY));
-        gene = it.next();
-        Assert.assertEquals("GENE_TO_BECOME_REJECTED", gene.get(GENE_KEY));
-        Assert.assertEquals("rejected", gene.get(STATUS_KEY));
-        gene = it.next();
-        Assert.assertEquals("GENE_TO_BECOME_SOLVED", gene.get(GENE_KEY));
-        Assert.assertEquals("solved", gene.get(STATUS_KEY));
+        Assert.assertEquals(3, result.getValue().size());
+        PhenoTipsGene gene = result.getValue().get(0);
+        Assert.assertEquals("GENE_1", gene.getName());
+        Assert.assertEquals("candidate", gene.getStatus());
+        gene = result.getValue().get(1);
+        Assert.assertEquals("GENE_TO_BECOME_REJECTED", gene.getName());
+        Assert.assertEquals("rejected", gene.getStatus());
+        gene = result.getValue().get(2);
+        Assert.assertEquals("GENE_TO_BECOME_SOLVED", gene.getName());
+        Assert.assertEquals("solved", gene.getStatus());
     }
 
     @Test
@@ -672,16 +641,13 @@ public class GeneListControllerTest
     @Test
     public void saveUpdatesGenesWhenPolicyIsUpdate() throws XWikiException
     {
-        List<Map<String, String>> data = new LinkedList<>();
-        Map<String, String> item = new HashMap<>();
-        item.put(GENE_KEY, "GENE1");
-        item.put(COMMENTS_KEY, "Notes1");
+        List<PhenoTipsGene> data = new LinkedList<>();
+        PhenoTipsGene item = new PhenoTipsGene(null, "GENE1", null, null, "Notes1");
         data.add(item);
-        item = new HashMap<>();
-        item.put(GENE_KEY, "GENE2");
+        item = new PhenoTipsGene(null, "GENE2", null, null, null);
         data.add(item);
-        when(this.patient.<Map<String, String>>getData(CONTROLLER_NAME))
-            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, data));
+        when(this.patient.<List<PhenoTipsGene>>getData(CONTROLLER_NAME))
+            .thenReturn(new SimpleValuePatientData<>(CONTROLLER_NAME, data));
 
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
 
@@ -701,15 +667,12 @@ public class GeneListControllerTest
     @Test
     public void saveReplacesGenesWhenPolicyIsReplace() throws XWikiException
     {
-        List<Map<String, String>> data = new LinkedList<>();
-        Map<String, String> item = new HashMap<>();
-        item.put(GENE_KEY, "GENE1");
-        item.put(COMMENTS_KEY, "Notes1");
-        data.add(item);
-        item = new HashMap<>();
-        item.put(GENE_KEY, "GENE2");
-        data.add(item);
-        when(this.patient.<Map<String, String>>getData(CONTROLLER_NAME))
+        List<PhenoTipsGene> data = new LinkedList<>();
+        PhenoTipsGene gene = new PhenoTipsGene("GENE1", null, null, null, "Notes1");
+        PhenoTipsGene gene2 = new PhenoTipsGene("GENE2", null, null, null, null);
+        data.add(gene);
+        data.add(gene2);
+        when(this.patient.<PhenoTipsGene>getData(CONTROLLER_NAME))
             .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, data));
 
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
@@ -730,15 +693,12 @@ public class GeneListControllerTest
     @Test
     public void saveMergesGenesWhenPolicyIsMerge() throws XWikiException
     {
-        List<Map<String, String>> data = new LinkedList<>();
-        Map<String, String> item = new HashMap<>();
-        item.put(GENE_KEY, "GENE1");
-        item.put(COMMENTS_KEY, "Notes1");
-        data.add(item);
-        item = new HashMap<>();
-        item.put(GENE_KEY, "GENE2");
-        data.add(item);
-        when(this.patient.<Map<String, String>>getData(CONTROLLER_NAME))
+        List<PhenoTipsGene> data = new LinkedList<>();
+        PhenoTipsGene gene = new PhenoTipsGene("GENE1", null, null, null, "Notes1");
+        PhenoTipsGene gene2 = new PhenoTipsGene("GENE2", null, null, null, null);
+        data.add(gene);
+        data.add(gene2);
+        when(this.patient.<PhenoTipsGene>getData(CONTROLLER_NAME))
             .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, data));
 
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));

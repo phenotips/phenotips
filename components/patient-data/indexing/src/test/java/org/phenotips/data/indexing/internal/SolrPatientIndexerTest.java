@@ -17,12 +17,14 @@
  */
 package org.phenotips.data.indexing.internal;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Feature;
-import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.data.SimpleValuePatientData;
 import org.phenotips.data.indexing.PatientIndexer;
+import org.phenotips.data.internal.PhenoTipsGene;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
@@ -30,9 +32,11 @@ import org.phenotips.data.permissions.internal.DefaultEntityAccess;
 import org.phenotips.data.permissions.internal.visibility.PublicVisibility;
 import org.phenotips.vocabulary.SolrCoreContainerHandler;
 import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
@@ -45,11 +49,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+
+import javax.inject.Provider;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -65,6 +70,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.internal.matchers.CapturingMatcher;
 import org.slf4j.Logger;
+
+import com.xpn.xwiki.web.Utils;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
@@ -87,6 +94,15 @@ public class SolrPatientIndexerTest
     @Mock
     private SolrClient server;
 
+    @Mock
+    private ComponentManager cm;
+
+    @Mock
+    private Provider<ComponentManager> mockProvider;
+
+    @Mock
+    private VocabularyManager vm;
+
     private PatientIndexer patientIndexer;
 
     private Logger logger;
@@ -107,6 +123,11 @@ public class SolrPatientIndexerTest
 
         SolrCoreContainerHandler cores = this.mocker.getInstance(SolrCoreContainerHandler.class);
         doReturn(mock(CoreContainer.class)).when(cores).getContainer();
+
+        Utils.setComponentManager(this.cm);
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
+        when(this.mockProvider.get()).thenReturn(this.cm);
+        when(this.cm.getInstance(VocabularyManager.class)).thenReturn(this.vm);
 
         this.permissions = this.mocker.getInstance(EntityPermissionsManager.class);
         this.qm = this.mocker.getInstance(QueryManager.class);
@@ -199,33 +220,20 @@ public class SolrPatientIndexerTest
 
         doReturn(Collections.EMPTY_SET).when(this.patient).getFeatures();
 
-        List<Map<String, String>> fakeGenes = new ArrayList<>();
-        Map<String, String> fakeGene = new HashMap<>();
-        fakeGene.put("gene", "CANDIDATE1");
+        List<PhenoTipsGene> fakeGenes = new LinkedList<>();
+        PhenoTipsGene fakeGene = new PhenoTipsGene(null, "CANDIDATE1", null, null, null);
         fakeGenes.add(fakeGene);
-        fakeGene = new HashMap<>();
-        fakeGene.put("gene", "CANDIDATE2");
-        fakeGene.put("status", "candidate");
+        fakeGene = new PhenoTipsGene(null, "CANDIDATE2", "candidate", null, null);
         fakeGenes.add(fakeGene);
-        fakeGene = new HashMap<>();
-        fakeGene.put("gene", "REJECTED1");
-        fakeGene.put("status", "rejected");
+        fakeGene = new PhenoTipsGene(null, "REJECTED1", "rejected", null, null);
         fakeGenes.add(fakeGene);
-        fakeGene = new HashMap<>();
-        fakeGene.put("gene", "SOLVED1");
-        fakeGene.put("status", "solved");
+        fakeGene = new PhenoTipsGene(null, "CARRIER1", "carrier", null, null);
         fakeGenes.add(fakeGene);
-        fakeGene = new HashMap<>();
-        fakeGene.put("gene", "CARRIER1");
-        fakeGene.put("status", "carrier");
-        fakeGenes.add(fakeGene);
-        fakeGene = new HashMap<>();
-        fakeGene.put("gene", "");
-        fakeGene.put("status", "candidate");
+        fakeGene = new PhenoTipsGene(null, "SOLVED1", "solved", null, null);
         fakeGenes.add(fakeGene);
 
-        PatientData<Map<String, String>> fakeGeneData =
-            new IndexedPatientData<>("genes", fakeGenes);
+        PatientData<List<PhenoTipsGene>> fakeGeneData =
+            new SimpleValuePatientData<>("genes", fakeGenes);
         doReturn(fakeGeneData).when(this.patient).getData("genes");
 
         doReturn(entityAccess).when(this.permissions).getEntityAccess(this.patient);
