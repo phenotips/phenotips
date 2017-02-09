@@ -174,6 +174,7 @@ public class XWikiServletURLFactory extends XWikiDefaultURLFactory
      *            needed as well as access the xwiki server document if in virtual mode.
      * @return a URL containing the protocol, host, and port (if applicable) of the server to use for the given
      *         database.
+     * @throws MalformedURLException never
      */
     public URL getServerURL(String xwikidb, XWikiContext context) throws MalformedURLException
     {
@@ -661,18 +662,21 @@ public class XWikiServletURLFactory extends XWikiDefaultURLFactory
      * Encodes the passed URL and offers the possibility for Servlet Filter to perform URL rewriting (this is used for
      * example by Tuckey's URLRewriteFilter for rewriting outbound URLs, see
      * http://platform.xwiki.org/xwiki/bin/view/Main/ShortURLs).
-     * <p/>
+     * <p>
      * However Servlet Container will also add a ";jsessionid=xxx" content to the URL while encoding the URL and we
      * strip it since we don't want to have that in our URLs as it can cause issues with:
+     * </p>
      * <ul>
      *   <li>security</li>
      *   <li>SEO</li>
      *   <li>clients not expecting jsessionid in URL, for example RSS feed readers which will think that articles are
      *       different as they'll get different URLs everytime they call the XWiki server</li>
      * </ul>
+     * <p>
      * See why jsessionid are considered harmful
      * <a href="https://randomcoder.org/articles/jsessionid-considered-harmful">here</a> and
      * <a href="http://java.dzone.com/articles/java-jsessionid-harmful">here</a>
+     * </p>
      *
      * @param url the URL to encode and normalize
      * @param context the XWiki Context used to get access to the Response for encoding the URL
@@ -688,18 +692,21 @@ public class XWikiServletURLFactory extends XWikiDefaultURLFactory
      * Encodes the passed URL and offers the possibility for Servlet Filter to perform URL rewriting (this is used for
      * example by Tuckey's URLRewriteFilter for rewriting outbound URLs, see
      * http://platform.xwiki.org/xwiki/bin/view/Main/ShortURLs).
-     * <p/>
+     * <p>
      * However Servlet Container will also add a ";jsessionid=xxx" content to the URL while encoding the URL and we
      * strip it since we don't want to have that in our URLs as it can cause issues with:
+     * </p>
      * <ul>
      *   <li>security</li>
      *   <li>SEO</li>
      *   <li>clients not expecting jsessionid in URL, for example RSS feed readers which will think that articles are
      *       different as they'll get different URLs everytime they call the XWiki server</li>
      * </ul>
+     * <p>
      * See why jsessionid are considered harmful
      * <a href="https://randomcoder.org/articles/jsessionid-considered-harmful">here</a> and
      * <a href="http://java.dzone.com/articles/java-jsessionid-harmful">here</a>
+     * </p>
      *
      * @param url the URL to encode and normalize
      * @param context the XWiki Context used to get access to the Response for encoding the URL
