@@ -38,12 +38,13 @@ import org.apache.solr.client.solrj.response.schema.SchemaResponse.UpdateRespons
 
 /**
  * Implements {@link VocabularyExtension} to provide translation services for Solr-based vocabularies. Works with XLIFF
- * translations similar to the files up at {@link https://github.com/Human-Phenotype-Ontology/HPO-translations}. This
- * base class adds a new field type to the Solr schema for indexing and storing text in {@link #getTargetLocale() the
- * target language}, as a {@code TextField} with basic tokenization and {@link #getAnalyzerType() an analyzer specific
- * to the target language}, and sets up translations of the {@code name}, {@code def} and {@code synonym} fields. If a
- * more complex field definition is required, the {@link #addFieldType()} method should be overridden. If other fields
- * must be set up, the {@link #addFields()} or {@link #addField(String, boolean)} methods should be overridden.
+ * translations similar to the files up at <a href="https://github.com/Human-Phenotype-Ontology/HPO-translations">
+ * https://github.com/Human-Phenotype-Ontology/HPO-translations</a>. This base class adds a new field type to the Solr
+ * schema for indexing and storing text in {@link #getTargetLocale() the target language}, as a {@code TextField} with
+ * basic tokenization and {@link #getAnalyzerType() an analyzer specific to the target language}, and sets up
+ * translations of the {@code name}, {@code def} and {@code synonym} fields. If a more complex field definition is
+ * required, the {@link #addFieldType()} method should be overridden. If other fields must be set up, the
+ * {@link #addFields()} or {@link #addField(String, boolean)} methods should be overridden.
  *
  * @version $Id$
  * @since 1.3

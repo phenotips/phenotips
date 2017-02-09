@@ -45,10 +45,11 @@ import org.slf4j.Logger;
 
 /**
  * Implements {@link VocabularyExtension} to provide translation services. Works with XLIFF translations similar to the
- * files up at {@link https://github.com/Human-Phenotype-Ontology/HPO-translations}. By default, when indexing it adds
- * translated fields in the {@link #getTargetLocale() target language} for {@code name}, {@code def} and
- * {@code synonym}, and when querying it includes these translated fields in the query, if
- * {@link #isCurrentLocaleTargeted() the current language is supported}.
+ * files up at <a href="https://github.com/Human-Phenotype-Ontology/HPO-translations">
+ * https://github.com/Human-Phenotype-Ontology/HPO-translations</a>. By default, when indexing it adds translated fields
+ * in the {@link #getTargetLocale() target language} for {@code name}, {@code def} and {@code synonym}, and when
+ * querying it includes these translated fields in the query, if {@link #isCurrentLocaleTargeted() the current language
+ * is supported}.
  *
  * @version $Id$
  * @since 1.3
