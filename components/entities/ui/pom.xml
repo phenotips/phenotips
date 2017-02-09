@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-entities</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-6</version>
   </parent>
   <artifactId>phenotips-entities-ui</artifactId>
   <name>PhenoTips - Entities - Documents</name>

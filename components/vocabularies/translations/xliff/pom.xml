@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>vocabulary-translations</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-6</version>
   </parent>
   <artifactId>vocabulary-translations-xliff</artifactId>
   <name>PhenoTips - Vocabularies - Support for translating vocabularies - XLIFF translations</name>

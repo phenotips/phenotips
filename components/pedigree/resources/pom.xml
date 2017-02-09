@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-pedigree</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-6</version>
   </parent>
   <artifactId>pedigree-editor</artifactId>
   <name>PhenoTips - Pedigree - JS and CSS Resources</name>

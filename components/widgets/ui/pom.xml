@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-widgets</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-6</version>
   </parent>
   <artifactId>phenotips-widgets-ui</artifactId>
   <name>PhenoTips - UI Widgets - Documents providing various widgets</name>

@@ -23,11 +23,11 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-widgets</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-6</version>
   </parent>
   <artifactId>phenotips-widgets-api</artifactId>
   <name>PhenoTips - Widget - Java APIs</name>
   <properties>
-    <checkstyle.resourceIncludes></checkstyle.resourceIncludes>
+    <checkstyle.resourceIncludes />
   </properties>
 </project>

@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>application-configuration</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-6</version>
   </parent>
   <artifactId>application-configuration-migrations</artifactId>
   <name>PhenoTips - Application configuration - Data migrations</name>
