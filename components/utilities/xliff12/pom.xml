@@ -89,6 +89,14 @@
           </excludes>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <!-- Exclude the generated model, since it's not valid -->
+          <excludePackageNames>*.internal.*,org.phenotips.xliff12.model</excludePackageNames>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
