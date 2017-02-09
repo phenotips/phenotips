@@ -30,6 +30,8 @@
 
   <properties>
     <xwiki.extension.namespaces>{root}</xwiki.extension.namespaces>
+    <!-- Name to display by the Extension Manager -->
+    <xwiki.extension.name>Spanish translation of the Human Phenotype Ontology</xwiki.extension.name>
   </properties>
 
   <dependencies>
