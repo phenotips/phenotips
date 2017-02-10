@@ -30,7 +30,6 @@ import org.xwiki.model.reference.EntityReference;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -150,37 +149,42 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null && !selectedFieldNames.contains(GENES_ENABLING_FIELD_NAME)) {
+        if (skip(patient, json, selectedFieldNames)) {
             return;
         }
 
         PatientData<Map<String, String>> data = patient.getData(getName());
-        if (data == null) {
-            return;
-        }
-        Iterator<Map<String, String>> iterator = data.iterator();
-        if (!iterator.hasNext()) {
-            return;
-        }
 
         // put() is placed here because we want to create the property iff at least one field is set/enabled
         // (by this point we know there is some data since iterator.hasNext() == true)
         json.put(getJsonPropertyName(), new JSONArray());
         JSONArray container = json.getJSONArray(getJsonPropertyName());
 
-        while (iterator.hasNext()) {
-            Map<String, String> item = iterator.next();
-
-            if (!StringUtils.isBlank(item.get(GENE_KEY))) {
+        for (Map<String, String> item : data) {
+            if (!StringUtils.isBlank(item.get(GENE_KEY)) || !StringUtils.isBlank(item.get(COMMENTS_KEY))) {
 
                 if (StringUtils.isBlank(item.get(COMMENTS_KEY))
                     || (selectedFieldNames != null
-                    && !selectedFieldNames.contains(GENES_COMMENTS_ENABLING_FIELD_NAME))) {
+                        && !selectedFieldNames.contains(GENES_COMMENTS_ENABLING_FIELD_NAME))) {
                     item.remove(COMMENTS_KEY);
                 }
 
                 container.add(item);
             }
         }
+    }
+
+    private boolean skip(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
+    {
+        if (selectedFieldNames != null && !selectedFieldNames.contains(GENES_ENABLING_FIELD_NAME)) {
+            return true;
+        }
+
+        PatientData<Map<String, String>> data = patient.getData(getName());
+        if (data == null || data.size() == 0) {
+            return true;
+        }
+
+        return false;
     }
 }
