@@ -429,9 +429,13 @@ public class PropertyDisplayer
                     if (StringUtils.isBlank(str)) {
                         continue;
                     }
-                    str = str.replaceAll("^(<p>)?", "<dd>").replaceAll("(</p>)?$", "</dd>");
-                    str = XMLUtils.escapeElementContent(str);
-                    str = str.replaceAll("&#60;(/?)dd&#62;", "<$1dd>");
+                    str = str.replaceFirst("^(<p>)?", "<dd>").replaceFirst("(</p>)?$", "</dd>");
+                    // Additional images and documents shouldn't be escaped, since they produce a complex HTML fragment
+                    // which already takes care of properly escaping user-entered content
+                    if (!propname.startsWith("supporting_")) {
+                        str = XMLUtils.escapeElementContent(str);
+                        str = str.replaceAll("&#60;(/?)dd&#62;", "<$1dd>");
+                    }
                     value.append(str);
                 }
             }
