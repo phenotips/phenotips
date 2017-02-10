@@ -321,16 +321,26 @@
     #end
   #end
   #foreach ($f in $patient.features)
-    #set ($foreach.fterm = $services.vocabularies.resolveTerm($f.id))
-    #set ($foreach.fname = $foreach.fterm.get("name_${xcontext.language}"))
-    #if (!$foreach.fname)
-      #set ($foreach.fname = $foreach.fterm.name)
+    #if ("$!f.id" != '') 
+      #set ($foreach.fterm = $services.vocabularies.resolveTerm($f.id))
+      #if ($foreach.fterm)
+        #set ($foreach.fname = $foreach.fterm.get("name_${xcontext.language}"))
+        #if (!$foreach.fname)
+          #set ($foreach.fname = $foreach.fterm.name)
+        #end
+      #else
+        #set ($foreach.fname = $f.id)
+      #end
+    #else
+      #set ($foreach.fname = "$!f.name")
     #end
-    #set ($discard = $phenotypesSummary.add({
-      "key"  : "#if($f.id == '')$foreach.fname#{else}$f.id#end",
-      "text" : "$foreach.fname",
-      "type" : "#if (!$f.isPresent())not_#elseif($f.id == '')free_#{end}symptom"
-    }))
+    #if ($foreach.fname != '')
+      #set ($discard = $phenotypesSummary.add({
+        "key"  : "#if($f.id == '')$foreach.fname#{else}$f.id#end",
+        "text" : "$foreach.fname",
+        "type" : "#if (!$f.isPresent())not_#elseif($f.id == '')free_#{end}symptom"
+      }))
+    #end
   #end
 
   #set ($hasSymptoms = ($phenotypesSummary.size() &gt; 0))
