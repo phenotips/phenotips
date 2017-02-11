@@ -108,7 +108,8 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         options = new HashMap<>();
         options.putAll(COMMON_SEARCH_OPTIONS);
         options.put(spellcheck, Boolean.toString(false));
-        options.put(DisMaxParams.QF, "symbol^50 symbolStub^25 alt_id^20 alt_idStub^10");
+        options.put(DisMaxParams.QF,
+            "symbol^50 symbolStub^25 alt_id^20 alt_idStub^10 ensembl_gene_id^40 ensembl_gene_idStub^20");
         IDENTIFIER_SEARCH_OPTIONS = Collections.unmodifiableMap(options);
 
         options = new HashMap<>();

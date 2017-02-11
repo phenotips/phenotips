@@ -52,7 +52,7 @@
       <analyzer type="index">
         <tokenizer class="solr.KeywordTokenizerFactory"/>
         <filter class="solr.LowerCaseFilterFactory"/>
-        <filter class="solr.EdgeNGramFilterFactory" minGramSize="1" maxGramSize="10"/>
+        <filter class="solr.EdgeNGramFilterFactory" minGramSize="1" maxGramSize="20"/>
       </analyzer>
       <analyzer type="query">
         <tokenizer class="solr.ClassicTokenizerFactory"/>
@@ -184,6 +184,9 @@
     <field name="alias_symbol" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
     <field name="alias_symbolStub" type="symbol_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
 
+    <field name="ensembl_gene_id" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
+    <field name="ensembl_gene_idStub" type="symbol_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+
     <!-- The alternate names of the gene -->
     <field name="alias_name" type="text_general" indexed="true" stored="true" multiValued="true"/>
     <field name="alias_nameSpell" type="text_spell" indexed="true" stored="false" multiValued="true"/>
@@ -208,7 +211,6 @@
 
     <!-- Links to other databases/vocabularies -->
     <field name="entrez_id" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
-    <field name="ensembl_gene_id" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
     <field name="vega_id" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
     <field name="ucsc_id" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
     <field name="ena" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
