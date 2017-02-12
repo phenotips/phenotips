@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>OutdatedBrowser</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1438054658000</creationDate>
+  <parent>PhenoTips.Skin</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1439234831000</date>
+  <contentUpdateDate>1439232997000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Outdated Browser</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content/>
+  <object>
+    <name>PhenoTips.OutdatedBrowser</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>3dcd19c0-23ea-47cc-b1fa-7e96f2a077dd</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>default</cache>
+    </property>
+    <property>
+      <code>
+        if (browser.isIE &amp;&amp; browser.versionMajor &lt; 9) {
+
+        // remove html on page
+        document.body.innerHTML = "";
+
+        // make the banner
+        var logo = document.createElement("img");
+        logo.src = "https://ccm.sickkids.ca/wp-content/uploads/2015/02/phenotips-logo-300x56.png";
+        logo.height = "50";
+        logo.id = "outdatedBrowserPhenoTipslogo";
+        var group = document.createElement("div");
+        group.id = "outdatedBrowserContainer";
+        group.appendChild(logo);
+        
+        // add text
+        var text = document.createTextNode("It appears you are using Internet Explorer version 8 or below.\n"
+        + "Please download a newer version or a different browser to continue using PhenoTips using the below links:");
+        var pnode = document.createElement("p");
+        pnode.id = "outdatedBrowserText";
+        pnode.appendChild(text);
+        
+        group.appendChild(pnode);
+        
+        document.body.appendChild(group);
+        
+        // add images
+        var chromeDiv = document.createElement("div");
+        chromeDiv.class = "imagecontainer";
+        var chromeLogo = document.createElement("img");
+        chromeLogo.id = "outdatedBrowserLogoLinks";
+        chromeLogo.src = "http://www.google.com/chrome/assets/common/images/chrome_logo_2x.png";
+        var chromeLink = document.createElement("a");
+        chromeLink.href = "https://www.google.com/chrome/browser/desktop/index.html";
+        chromeLink.appendChild(chromeLogo);
+        chromeDiv.appendChild(chromeLink);
+        
+        var firefoxDiv = document.createElement("div");
+        firefoxDiv.class = "imagecontainer";
+        var firefoxLogo = document.createElement("img");
+        firefoxLogo.id = "outdatedBrowserLogoLinks";
+        firefoxLogo.src = "https://mozorg.cdn.mozilla.net/media/img/firefox/new/header-firefox.98d0a02c957f.png";
+        var firefoxLink = document.createElement("a");
+        firefoxLink.href = "https://www.mozilla.org/en-us/firefox/new/";
+        firefoxLink.appendChild(firefoxLogo);
+        firefoxDiv.appendChild(firefoxLink);
+        
+        var ieDiv = document.createElement("div");
+        ieDiv.class = "imagecontainer";
+        var ieLogo = document.createElement("img");
+        ieLogo.id = "outdatedBrowserLogoLinks";
+        ieLogo.src = "https://c.s-microsoft.com/en-ca/cmsimages/iebluee_0304_70x70_en_us.png?version=8cada7a1-74f4-ebb3-cce0-af842a79ada8";
+        var ieLink = document.createElement("a");
+        ieLink.href = "http://windows.microsoft.com/en-ca/internet-explorer/download-ie";
+        ieLink.appendChild(ieLogo);
+        ieDiv.appendChild(ieLink);
+        
+        var linkContainer = document.createElement("div");
+        pnode.appendChild(linkContainer);
+        var linkNode = document.createElement("div");
+        chromeDiv.id = "outdateBrowserAlign";
+        firefoxDiv.id = "outdateBrowserAlign";
+        ieDiv.id = "outdateBrowserAlign";
+        linkNode.appendChild(chromeDiv);
+        linkNode.appendChild(firefoxDiv);
+        linkNode.appendChild(ieDiv);
+        linkContainer.appendChild(linkNode);
+        }
+      </code>
+    </property>
+    <property>
+      <name>IE Sniff</name>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use>always</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.OutdatedBrowser</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>90b1c295-6b61-42b3-9bdb-0bfcedae4d2f</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>
+        #outdatedBrowserContainer
+        {
+        position: absolute;
+        top: 100px;
+        margin-left: 5%;
+        margin-right: 5%;
+        width: auto;
+        min-width: 700px;
+        height: 300px;
+        border: #000 solid 2px;
+        border-radius: 20px;
+        background: #B3D3F2;
+        }
+        
+        #outdatedBrowserPhenoTipslogo {margin-left: 3%}
+        
+        #outdatedBrowserLogoLinks {margin-top: 10%; vertical-align: top; height: 60px; width: auto;}
+        
+        #outdateBrowserAlign {
+        display: inline-block;
+        zoom: 1;
+        vertical-align: top;
+        width: 30%;
+        }
+        
+        #outdatedBrowserText {
+        margin-left: 3%;
+        margin-right: 3%;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 24px;
+        }
+      </code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use>always</use>
+    </property>
+  </object>
+</xwikidoc>
