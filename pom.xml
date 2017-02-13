@@ -503,6 +503,12 @@
               <justification>New search method for a simpler API</justification>
             </difference>
             <difference>
+              <className>org/phenotips/vocabulary/VocabularyTerm</className>
+              <differenceType>7012</differenceType>
+              <method>* getTranslated*(*)</method>
+              <justification>New methods for vocabulary term translations</justification>
+            </difference>
+            <difference>
               <className>org/phenotips/vocabulary/SolrVocabularyResourceManager</className>
               <differenceType>7002</differenceType>
               <method>void initialize(java.lang.String)</method>

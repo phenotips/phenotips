@@ -29,6 +29,7 @@ import org.xwiki.xml.XMLUtils;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -343,6 +344,24 @@ public class FormFieldTest
             JSONObject json = new JSONObject();
             json.put("id", this.getId());
             return json;
+        }
+
+        @Override
+        public String getTranslatedName()
+        {
+            return null;
+        }
+
+        @Override
+        public String getTranslatedDescription()
+        {
+            return null;
+        }
+
+        @Override
+        public Collection<?> getTranslatedValues(String name)
+        {
+            return null;
         }
     }
 }

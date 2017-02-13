@@ -17,8 +17,11 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
+
+import org.xwiki.localization.LocalizationContext;
 
 import java.util.AbstractMap;
 import java.util.Collection;
@@ -27,6 +30,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,11 +64,25 @@ public abstract class AbstractSolrVocabularyTerm implements VocabularyTerm
     protected static final String NAME_KEY = "name";
 
     /**
+     * The name of the JSON field used for storing the translated name of a term.
+     *
+     * @see #getTranslatedName()
+     */
+    protected static final String TRANSLATED_NAME_KEY = "name_translated";
+
+    /**
      * The name of the Solr field used for storing the description of a term.
      *
      * @see #getDescription()
      */
     protected static final String DESCRIPTION_KEY = "def";
+
+    /**
+     * The name of the JSON field used for storing the translated description of a term.
+     *
+     * @see #getTranslatedDescription()
+     */
+    protected static final String TRANSLATED_DESCRIPTION_KEY = "def_translated";
 
     /**
      * The name of the Solr field used for storing the ancestors of a term.
@@ -147,9 +165,55 @@ public abstract class AbstractSolrVocabularyTerm implements VocabularyTerm
     }
 
     @Override
+    public String getTranslatedName()
+    {
+        Collection<?> translated = getTranslatedValues(NAME_KEY);
+        if (CollectionUtils.isEmpty(translated)) {
+            return null;
+        }
+        return (String) IterableUtils.get(translated, 0);
+    }
+
+    @Override
     public String getDescription()
     {
         return (String) getFirstValue(DESCRIPTION_KEY);
+    }
+
+    @Override
+    public String getTranslatedDescription()
+    {
+        Collection<?> translated = getTranslatedValues(DESCRIPTION_KEY);
+        if (CollectionUtils.isEmpty(translated)) {
+            return null;
+        }
+        return (String) IterableUtils.get(translated, 0);
+    }
+
+    @Override
+    public Collection<?> getTranslatedValues(String property)
+    {
+        Locale currentLocale = getCurrentLocale();
+        if (StringUtils.isEmpty(currentLocale.getLanguage())) {
+            return getValues(property);
+        }
+        Collection<Object> result = getValues(property + '_' + currentLocale.toString());
+        // If the locale has language, country, and variant, try without the variant
+        if (CollectionUtils.isEmpty(result)
+            && StringUtils.isNoneEmpty(currentLocale.getVariant(), currentLocale.getCountry())) {
+            result = getValues(property + '_' + currentLocale.getLanguage() + '_' + currentLocale.getCountry());
+        }
+        // If the locale has language and country, try without the country
+        if (CollectionUtils.isEmpty(result)
+            && StringUtils.isNoneEmpty(currentLocale.getLanguage(), currentLocale.getCountry())) {
+            result = getValues(property + '_' + currentLocale.getLanguage());
+        }
+        // If the locale has no country, then the first call included the language only;
+        // at this point, it's certain that no translation is available, return the untranslated default
+        if (CollectionUtils.isEmpty(result)) {
+            result = getValues(property);
+        }
+        return result;
     }
 
     @Override
@@ -251,12 +315,15 @@ public abstract class AbstractSolrVocabularyTerm implements VocabularyTerm
         for (Map.Entry<String, ? extends Object> field : getEntrySet()) {
             addAsCorrectType(json, field.getKey(), field.getValue());
         }
+        json.put(TRANSLATED_NAME_KEY, getTranslatedName());
+        json.put(TRANSLATED_DESCRIPTION_KEY, getTranslatedDescription());
         if (this.parents != null && !this.parents.isEmpty()) {
             JSONArray parentsJson = new JSONArray();
             for (VocabularyTerm parent : this.parents) {
                 JSONObject parentJSON = new JSONObject();
                 parentJSON.put(ID_KEY, parent.getId());
                 parentJSON.put(NAME_KEY, parent.getName());
+                parentJSON.put(TRANSLATED_NAME_KEY, parent.getTranslatedName());
                 parentsJson.put(parentJSON);
             }
             json.put("parents", parentsJson);
@@ -386,5 +453,20 @@ public abstract class AbstractSolrVocabularyTerm implements VocabularyTerm
             termSet.addAll(getValues(ANCESTORS_KEY));
         }
         return new LazySolrTermSet(termSet, this.vocabulary);
+    }
+
+    protected Locale getCurrentLocale()
+    {
+        try {
+            LocalizationContext lc =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(LocalizationContext.class);
+            Locale result = lc.getCurrentLocale();
+            if (result == null) {
+                result = Locale.ROOT;
+            }
+            return result;
+        } catch (Exception ex) {
+            return Locale.ROOT;
+        }
     }
 }
