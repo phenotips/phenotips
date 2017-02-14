@@ -2608,7 +2608,7 @@ return PhenoTips;
     resultParent : {
       selector : 'parents',
       processingFunction : function (parent) {
-        return {'id': parent.id, 'value': parent.name};
+        return {'id': parent.id, 'value': parent.name_translated || parent.name};
       }
     },
     noresults: "No sub-terms",
