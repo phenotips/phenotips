@@ -193,20 +193,17 @@
 
     _initUI: function() {
       var generateSection = function(id, title, intro) {
-         return new Element('div', {'id': id, 'class' : 'section'})
-                    .insert(title &amp;&amp; new Element('h2').update(title) || '')
-                    .insert(intro &amp;&amp; new Element('p', {'class' : 'intro xHint'}).update(intro) || '')
-                    .insert(new Element ('div', {'class' : 'section-contents'}));
+         var section = new Element('div', {'id': id, 'class' : 'section'});
+         if (title) {section.insert(title &amp;&amp; new Element('h2').update(title) || '');}
+         if (intro) {section.insert(intro &amp;&amp; new Element('p', {'class' : 'intro xHint'}).update(intro) || '');} 
+         section.insert(new Element ('div', {'class' : 'section-contents'}));
+         return section;
       };
 
-      var serverTitle = this._pushManyPatients ? "$services.localization.render('phenotips.patientSharing.push.dialog.serverSelection.label.multiplePatients')":
-                                                "$services.localization.render('phenotips.patientSharing.push.dialog.serverSelection.label.singlePatient')";
-      var serverDesc  = this._pushManyPatients ? "$services.localization.render('phenotips.patientSharing.push.dialog.serverSelection.hint.multiplePatients')":
-                                                 "$services.localization.render('phenotips.patientSharing.push.dialog.serverSelection.hint.singlePatient')";
       this._container = new Element('form', {'id' : 'push-patients-ui', 'class' : 'xform', 'method' : 'post', 'action' : this._serviceURL});
-      this._container.insert(generateSection('server-selection', serverTitle, serverDesc))
-                     .insert(generateSection('user-selection', "$services.localization.render('phenotips.patientSharing.push.dialog.authentication.label')","$services.localization.render('phenotips.patientSharing.push.dialog.authentication.hint')"))
-                     .insert(generateSection('group-selection',"$services.localization.render('phenotips.patientSharing.push.dialog.remoteGroup.label')","$services.localization.render('phenotips.patientSharing.push.dialog.remoteGroup.hint')"));
+      this._container.insert(generateSection('server-selection'))
+                     .insert(generateSection('user-selection', "$!escapetool.javascript($services.localization.render('phenotips.patientSharing.push.dialog.authentication.label'))","$!escapetool.javascript($services.localization.render('phenotips.patientSharing.push.dialog.authentication.hint'))"))
+                     .insert(generateSection('group-selection',"$!escapetool.javascript($services.localization.render('phenotips.patientSharing.push.dialog.remoteGroup.label'))","$!escapetool.javascript($services.localization.render('phenotips.patientSharing.push.dialog.remoteGroup.hint'))"));
 
       this._container.insert(generateSection('consents-section',
         "$services.localization.render('phenotips.patientSharing.push.dialog.consents.label')",
@@ -238,7 +235,7 @@
       this._initServerSelector();
       this._initMainFormActions();
 
-      var title = this._pushManyPatients ? "$services.localization.render('phenotips.patientSharing.push.dialog.title.multiplePatients')" : "$services.localization.render('phenotips.patientSharing.push.dialog.title.singlePatient')".replace("__patientID__", this._patientId);
+      var title = this._pushManyPatients ? "$!escapetool.javascript($services.localization.render('phenotips.patientSharing.push.dialog.title.multiplePatients'))" : "$!escapetool.javascript($services.localization.render('phenotips.patientSharing.push.dialog.title.singlePatient'))";
       this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': title, 'verticalPosition': 'top', 'removeOnClose': false});
     },
 
@@ -678,7 +675,7 @@
                      .insert(authorizeButton.wrap('span', {'class' : 'buttonwrapper'}));
 
       if (this._lastApprovedUser) {
-          userList.insert(_addUserOption(!preApprovedChecked, "user", "$services.localization.render('phenotips.PushPatient.addAnotherUser')", this._onUnapprovedUser.bind(this), userPasswrodBox));
+          userList.insert(_addUserOption(!preApprovedChecked, "user", "$!escapetool.javascript($services.localization.render('phenotips.PushPatient.addAnotherUser'))".replace("__serverID__", this._selectedServer), this._onUnapprovedUser.bind(this), userPasswrodBox));
       } else {
           userList.insert(userPasswrodBox.wrap('td', {'class' : 'controlled-element'}).wrap('tr'));
       }
@@ -828,6 +825,15 @@
         if (this._numAvailableServers == 1) {
             this._serverInfo.update("$services.localization.render('phenotips.PushPatient.oneServerMessage')");
         }
+        
+        var dialogTitle = $('push-patients-ui').up('.msdialog-box').down('.msdialog-title').innerHTML.replace("__serverID__", this._selectedServer).replace("__patientID__", this._patientId);
+        $('push-patients-ui').up('.msdialog-box').down('.msdialog-title').innerHTML = dialogTitle;
+        var userSelection = $$('#user-selection h2')[0].innerHTML.replace("__serverID__", this._selectedServer);
+        $$('#user-selection h2')[0].innerHTML = userSelection;
+        var userSelectionHint = $$('#user-selection p')[0].innerHTML.replace(/__serverID__/g, this._selectedServer);
+        $$('#user-selection p')[0].innerHTML = userSelectionHint;
+        var groupSelection = $$('#group-selection h2')[0].innerHTML.replace("__serverID__", this._selectedServer);
+        $$('#group-selection h2')[0].innerHTML = groupSelection;
 
         var existingPatientDataInfo = '';
 
@@ -835,19 +841,19 @@
            existingPatientDataInfo = new Element('dd');
 
            var description = new Element('p', {'id': 'server-description'});
+           var linkToNew = " &lt;a href='" + serverData.remoteURL + "' target='_blank'&gt;" + serverData.remoteID + "&lt;/a&gt;";
            var lastUpdated = serverData.pushAgeHours;
+           var days = Math.floor(lastUpdated/24);
            description.insert("$services.localization.render('phenotips.PushPatient.patientUploadedMessage')" + " " + this._selectedServer);
            if (lastUpdated &lt; 1) {
-              description.insert(" $services.localization.render('phenotips.PushPatient.patientUploadedLessThanHour')");
+              description.insert(" $!escapetool.javascript($services.localization.render('phenotips.PushPatient.patientUploadedLessThanHour'))".replace("__serverID__", this._selectedServer).replace("__patientID__", linkToNew) +".");
            } else {
               if (lastUpdated &gt;= 48) {
-                  description.insert(" " + Math.floor(lastUpdated/24) + " $services.localization.render('phenotips.PushPatient.patientUploadedDays')");
+                  description.insert(" $!escapetool.javascript($services.localization.render('phenotips.PushPatient.patientUploadedDays'))".replace("__daysN__", days).replace("__serverID__", this._selectedServer).replace("__patientID__", linkToNew) +".");
               } else {
-                  description.insert(" " + lastUpdated + " $services.localization.render('phenotips.PushPatient.patientUploadedHours')");
+                  description.insert(" $!escapetool.javascript($services.localization.render('phenotips.PushPatient.patientUploadedHours'))".replace("__hoursN__", lastUpdated).replace("__serverID__", this._selectedServer).replace("__patientID__", linkToNew) +".");
               }
            }
-
-           description.insert(" $services.localization.render('phenotips.PushPatient.patientUploadedAsID') ").insert(new Element('a', {'href' : serverData.remoteURL, 'target' : '_blank'}).update(serverData.remoteID)).insert('.');
            description.insert("&lt;br/&gt;$services.localization.render('phenotips.PushPatient.patientUploadedUpdate')".replace("__serverID__", this._selectedServer))
            existingPatientDataInfo.insert(description);
 
@@ -1040,9 +1046,11 @@
                         var linkToOld = "(&lt;a href='" + newURL + "' target='_blank'&gt;click here to open remote patient&lt;/a&gt;)";
                         _this._pushResultSection.update(new Element('div', {'class' : 'infomessage'}).update("$services.localization.render('phenotips.PushPatient.successfulUpdate') " + linkToOld));
                     } else {
-                        var linkToNew = "&lt;a href='" + newURL + "' target='_blank'&gt;" + res.patientid + "&lt;/a&gt;";
+                        var linkToNew = " &lt;a href='" + newURL + "' target='_blank'&gt;" + res.patientid + "&lt;/a&gt;";
                         _this._pushResultSection.update(new Element('div', {'class' : 'infomessage'})
-                                                .update("$services.localization.render('phenotips.PushPatient.successfulPush') " + linkToNew));
+                                                .update("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.successfulPush'))"
+                                                .replace("__serverID__", this._selectedServer)
+                                                .replace("__patientID__", res.patientid)+ linkToNew));
                     }
 
                     // update UI to reflect that we have already pushed this patient: default option
@@ -1051,10 +1059,10 @@
                     _this._displayGroupPicker();
                 } else {
                     if (res.updatesdisabled) {
-                        _this._pushResultSection.update(_this._generateFailedToPushPatient("$services.localization.render('phenotips.PushPatient.pushFailedUpdatesDisabled')"));
+                        _this._pushResultSection.update(_this._generateFailedToPushPatient("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.pushFailedUpdatesDisabled'))".replace('__serverID__', this._selectedServer)));
                     } else
                     if (res.invalidguid) {
-                        _this._pushResultSection.update(_this._generateFailedToPushPatient("$services.localization.render('phenotips.PushPatient.pushFailedInvalidGuid')&amp;nbsp;", false, true));
+                        _this._pushResultSection.update(_this._generateFailedToPushPatient("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.pushFailedInvalidGuid'))&amp;nbsp;".replace(/__serverID__/g, this._selectedServer), false, true));
                     } else
                     if (res.accessdeniedguid) {
                         _this._pushResultSection.update(_this._generateFailedToPushPatient("$services.localization.render('phenotips.PushPatient.pushFailedAccessDeniedGuid')"));
@@ -1546,7 +1554,6 @@ function _printObjectInternal(o, level) {
   position: relative;
 }
 
-#server-info:before, #server-info:after,
 #fields-selection dl:before, #fields-selection dl:after {
   content: "";
   display: block;
@@ -1557,7 +1564,6 @@ function _printObjectInternal(o, level) {
   top: -9px;
 }
 
-#server-info:before,
 #fields-selection dl:before {
   border-bottom-color: #AAA;
   top: -10px;
