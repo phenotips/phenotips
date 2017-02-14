@@ -324,10 +324,7 @@
     #if ("$!f.id" != '') 
       #set ($foreach.fterm = $services.vocabularies.resolveTerm($f.id))
       #if ($foreach.fterm)
-        #set ($foreach.fname = $foreach.fterm.get("name_${xcontext.language}"))
-        #if (!$foreach.fname)
-          #set ($foreach.fname = $foreach.fterm.name)
-        #end
+        #set ($foreach.fname = $foreach.fterm.translatedName)
       #else
         #set ($foreach.fname = $f.id)
       #end

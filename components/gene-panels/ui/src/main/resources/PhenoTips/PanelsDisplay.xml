@@ -248,7 +248,7 @@
      */
     getFeatureNames : function(terms) {
       return terms.map(function(term) {
-        return term["name_" + document.documentElement.getAttribute("lang")] || term.name;
+        return term["name_translated"] || term.name;
       }).join("; ");
     },
 
