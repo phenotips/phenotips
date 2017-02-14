@@ -123,45 +123,47 @@
 
   widgets.PanelsDisplay = Class.create({
     'data' : {},
+    'param' : {},
     'size' : 0,
     'resultsToShow' : 6,
     'page' : 1,
-    'startPageParam' : '&amp;startPage=',
-    'numResultsParam' : '&amp;numResults=',
-    'reqNoParam' : "&amp;reqNo=",
+    'startPageParam' : 'startPage',
+    'numResultsParam' : 'numResults',
+    'reqNoParam' : 'reqNo',
+    'presentParam' : 'present-term',
+    'absentParam' : 'absent-term',
 
     /**
      * Generates results for the first page based on new data provided.
-     * @param queryString the incomplete query string, containing only the term information
+     * @param parameters the incomplete parameters, containing only the term information
      * @param page the page number to render
      * @param resultsToShow the number of results to show; uses the default value if null
      */
-    paginate : function(queryString, page, resultsToShow) {
-      this.requestPageData(queryString, page, resultsToShow)
+    paginate : function(parameters, page, resultsToShow) {
+      this.param = {};
+      this.param[this.presentParam] = parameters.symptom || [];
+      this.param[this.absentParam] = parameters.not_symptom || [];
+      this.requestPageData(page, resultsToShow);
     },
 
-    requestPageData : function(queryStr, page, resultsToShow) {
+    requestPageData : function(page, resultsToShow) {
       var _this = this;
       this.page = page;
       resultsToShow &amp;&amp; (this.resultsToShow = resultsToShow);
 
-      if (queryStr === this.service.script) {
+      if (!this.param) {
         this.updateDataContainer(null);
         return;
       }
 
-      this.queryString = queryStr;
+      this.param[this.startPageParam] = this.page;
+      this.param[this.numResultsParam] = this.resultsToShow;
+      this.param[this.reqNoParam] = ++this.service.expectedReqNo;
 
-      var query = [this.queryString,
-        this.startPageParam,
-        this.page,
-        this.numResultsParam,
-        this.resultsToShow,
-        this.reqNoParam,
-        ++this.service.expectedReqNo].join("");
-
-      new Ajax.Request(query, {
+      new Ajax.Request(this.service.script, {
         method : 'POST',
+        parameters: _this.param,
+        contentType: 'application/x-www-form-urlencoded',
         onCreate : function() {
           _this.service.target.addClassName('loading');
         },
@@ -318,25 +320,25 @@
       var _this = this;
       this.prevArrow.observe('click', function() {
         _this.page--;
-        _this.requestPageData(_this.queryString, _this.page, _this.resultsToShow);
+        _this.requestPageData(_this.page, _this.resultsToShow);
         _this.renderResults();
       });
 
       this.nextArrow.observe('click', function() {
         _this.page++;
-        _this.requestPageData(_this.queryString, _this.page, _this.resultsToShow);
+        _this.requestPageData(_this.page, _this.resultsToShow);
         _this.renderResults();
       });
 
       this.toFirst.observe('click', function() {
         _this.page = 1;
-        _this.requestPageData(_this.queryString, _this.page, _this.resultsToShow);
+        _this.requestPageData(_this.page, _this.resultsToShow);
         _this.renderResults();
       });
 
       this.toLast.observe('click', function() {
         _this.page = _this.totalPages;
-        _this.requestPageData(_this.queryString, _this.page, _this.resultsToShow);
+        _this.requestPageData(_this.page, _this.resultsToShow);
         _this.renderResults();
       });
     },
@@ -345,7 +347,10 @@
       var _this = this;
       this.saveButton &amp;&amp; this.saveButton.observe('click', function(event) {
         event.stop();
-        Event.fire(document, 'panels:export:requested', {'query' : _this.queryString, 'service' : _this.service});
+        var parameters = {};
+        parameters[_this.presentParam] = _this.param[_this.presentParam];
+        parameters[_this.absentParam] = _this.param[_this.absentParam];
+        Event.fire(document, 'panels:export:requested', {'param' : parameters, 'service' : _this.service});
       });
     },
 
@@ -472,7 +477,8 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>.pagination-navigation {
+      <code>#template("colorThemeInit.vm")
+.pagination-navigation {
   text-align: right;
 }
 

@@ -25,14 +25,10 @@ import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +36,6 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -48,7 +43,7 @@ import org.json.JSONObject;
  * Default implementation of {@link GenePanel}.
  *
  * @version $Id$
- * @since 1.3M6
+ * @since 1.3
  */
 public class DefaultGenePanelImpl implements GenePanel
 {
@@ -66,9 +61,6 @@ public class DefaultGenePanelImpl implements GenePanel
 
     /** The "ensembl_gene_id" label. */
     private static final String ENSEMBL_ID_LABEL = "ensembl_gene_id";
-
-    /** HPO vocabulary label. */
-    private static final String HPO_LABEL = "hpo";
 
     /** HGNC vocabulary label. */
     private static final String HGNC_LABEL = "hgnc";
@@ -89,16 +81,13 @@ public class DefaultGenePanelImpl implements GenePanel
     /** An ordered list of objects containing gene count data. */
     private final List<TermsForGene> termsForGeneList;
 
-    /** The number of gene objects stored in this gene panel. */
-    private final int panelSize;
-
     /**
      * Simple constructor, passing in a collection of {@code presentTerms} and a collection of {@code absentTerms}, as
      * {@link VocabularyTerm} objects, and a {@link VocabularyManager}.
      *
-     * @param presentTerms a collection of feature identifiers, as string, that are present
-     * @param absentTerms a collection of feature identifiers, as string, that are absent
-     * @param vocabularyManager the {@link VocabularyManager} for accessing the required ontologies
+     * @param presentTerms a collection of {@link VocabularyTerm feature identifiers} that are present
+     * @param absentTerms a collection of {@link VocabularyTerm feature identifiers} that are absent
+     * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
      */
     public DefaultGenePanelImpl(@Nonnull final Collection<VocabularyTerm> presentTerms,
         @Nonnull final Collection<VocabularyTerm> absentTerms, @Nonnull final VocabularyManager vocabularyManager)
@@ -108,27 +97,24 @@ public class DefaultGenePanelImpl implements GenePanel
         this.presentTerms = Collections.unmodifiableSet(new HashSet<>(presentTerms));
         this.absentTerms = Collections.unmodifiableSet(new HashSet<>(absentTerms));
         this.termsForGeneList = buildTermsForGeneList();
-        this.panelSize = this.termsForGeneList.size();
     }
 
     /**
      * Constructor passing a collection of {@link Feature} objects and a {@link VocabularyManager}.
      *
      * @param features a collection of {@link Feature} objects
-     * @param vocabularyManager the {@link VocabularyManager} for accessing the required ontologies
+     * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
      */
     public DefaultGenePanelImpl(@Nonnull final Collection<? extends Feature> features,
         @Nonnull final VocabularyManager vocabularyManager)
     {
-        final Vocabulary featureVocabulary = vocabularyManager.getVocabulary(HPO_LABEL);
-        final Map<String, Set<VocabularyTerm>> termData = buildTermsFromFeatures(features, featureVocabulary);
+        final Map<String, Set<VocabularyTerm>> termData = buildTermsFromFeatures(features, vocabularyManager);
 
         this.hgnc = vocabularyManager.getVocabulary(HGNC_LABEL);
 
         this.presentTerms = termData.get(PRESENT_LABEL);
         this.absentTerms = termData.get(ABSENT_LABEL);
         this.termsForGeneList = buildTermsForGeneList();
-        this.panelSize = this.termsForGeneList.size();
     }
 
     /**
@@ -136,7 +122,7 @@ public class DefaultGenePanelImpl implements GenePanel
      * {@link VocabularyManager}.
      *
      * @param patient a patient of interest
-     * @param vocabularyManager the {@link VocabularyManager} for accessing the required ontologies
+     * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
      */
     public DefaultGenePanelImpl(@Nonnull final Patient patient, @Nonnull final VocabularyManager vocabularyManager)
     {
@@ -148,20 +134,22 @@ public class DefaultGenePanelImpl implements GenePanel
      * {@link #ABSENT_LABEL} {@link VocabularyTerm} objects.
      *
      * @param features a collection of {@link Feature} objects
-     * @param featureVocabulary a {@link Vocabulary} object that feature data belongs to
-     * @return a map containing sets of {@link #PRESENT_LABEL} and {@link #PRESENT_LABEL} {@link VocabularyTerm} objects
+     * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
+     * @return a map containing sets of present and absent {@link VocabularyTerm} objects
      */
     private Map<String, Set<VocabularyTerm>> buildTermsFromFeatures(
-        @Nonnull final Collection<? extends Feature> features, @Nonnull final Vocabulary featureVocabulary)
+        @Nonnull final Collection<? extends Feature> features, @Nonnull final VocabularyManager vocabularyManager)
     {
         final Set<VocabularyTerm> presentTermsFromFeatures = new HashSet<>();
         final Set<VocabularyTerm> absentTermsFromFeatures = new HashSet<>();
         for (final Feature feature : features) {
-            final VocabularyTerm term = featureVocabulary.getTerm(feature.getValue());
-            if (feature.isPresent() && term != null) {
-                presentTermsFromFeatures.add(term);
-            } else {
-                absentTermsFromFeatures.add(term);
+            final VocabularyTerm term = vocabularyManager.resolveTerm(feature.getValue());
+            if (term != null) {
+                if (feature.isPresent()) {
+                    presentTermsFromFeatures.add(term);
+                } else {
+                    absentTermsFromFeatures.add(term);
+                }
             }
         }
         final Map<String, Set<VocabularyTerm>> terms = new HashMap<>();
@@ -178,130 +166,37 @@ public class DefaultGenePanelImpl implements GenePanel
      */
     private List<TermsForGene> buildTermsForGeneList()
     {
-        // Map storing count data for all the genes.
-        final Map<String, TermsForGene> termsForGeneMap = new HashMap<>();
+        // A builder to add and update the count data for all the genes.
+        final TermsForGeneBuilder termsForGeneBuilder = new TermsForGeneBuilder();
 
         // Update the data for all HPO identifiers.
         for (final VocabularyTerm term : getPresentTerms()) {
             final List<String> storedGenes = getGeneDataFromTerm(term);
-            addTermForGene(term, storedGenes, termsForGeneMap);
+            addTermForGenes(term, storedGenes, termsForGeneBuilder);
         }
 
-        return buildSortedGeneDataFromMap(termsForGeneMap);
-    }
-
-    /**
-     * Given a {@code termsForGeneMap map} of gene symbol to {@link TermsForGene} objects, returns a sorted
-     * {@link #getTermsForGeneList() list of genes}, in descending order of relevance.
-     *
-     * @param termsForGeneMap a map containing {@link TermsForGene} objects for each gene
-     * @return a list of {@link TermsForGene} objects, sorted in descending order or relevance
-     */
-    private List<TermsForGene> buildSortedGeneDataFromMap(@Nonnull final Map<String, TermsForGene> termsForGeneMap)
-    {
-        final List<Map.Entry<String, TermsForGene>> phenotypesForGeneEntries =
-            new LinkedList<>(termsForGeneMap.entrySet());
-        Collections.sort(phenotypesForGeneEntries, new Comparator<Map.Entry<String, TermsForGene>>()
-        {
-            @Override
-            public int compare(final Map.Entry<String, TermsForGene> o1,
-                final Map.Entry<String, TermsForGene> o2)
-            {
-                final TermsForGene firstTerm = o1.getValue();
-                final TermsForGene secondTerm = o2.getValue();
-                // First compare by count, in descending order.
-                int result = new Integer(secondTerm.getCount()).compareTo(firstTerm.getCount());
-                // Second, if firstTerm and secondTerm have the same count, compare by natural order.
-                if (result == 0) {
-                    result = compareByTermList(firstTerm.getTerms().iterator(), secondTerm.getTerms().iterator());
-                }
-                if (result == 0) {
-                    result = o1.getKey().compareTo(o2.getKey());
-                }
-                return result;
-            }
-        });
-
-        final List<TermsForGene> sortedGeneCountsList = new ArrayList<>();
-        for (final Map.Entry<String, TermsForGene> entry : phenotypesForGeneEntries) {
-            sortedGeneCountsList.add(entry.getValue());
-        }
-        return Collections.unmodifiableList(sortedGeneCountsList);
-    }
-
-    /**
-     * Compares two {@link Iterator<VocabularyTerm>} alphabetically.
-     *
-     * @param first the {@link Iterator<VocabularyTerm>} that {@code second} is being compared to
-     * @param second the {@link Iterator<VocabularyTerm>} that is being compared
-     * @return {@code 0} if {@code first} and {@code second} are equivalent, a value less than {@code 0} if
-     *         {@code first} should be ahead of {@code second}, a value greater than {@code 0} if {@code second} should
-     *         be ahead of {@code first}
-     */
-    private int compareByTermList(final Iterator<VocabularyTerm> first, final Iterator<VocabularyTerm> second)
-    {
-        // The two lists are equivalent.
-        if (!first.hasNext()) {
-            return 0;
-        }
-        // Both our iterators are of the same size.
-        final String firstName = getTermName(first.next());
-        final String secondName = getTermName(second.next());
-        final int compValue = firstName.compareTo(secondName);
-        // If compValue is 0 then we need to compare by next item.
-        if (compValue == 0) {
-            return compareByTermList(first, second);
-        }
-        // If compValue is not 0, then we figured out which item should be sorted ahead.
-        return compValue;
-    }
-
-    /**
-     * Returns the {@link VocabularyTerm#getName() term name} if it is specified, otherwise returns
-     * {@link VocabularyTerm#getId()}.
-     *
-     * @param term the {@link VocabularyTerm} of interest
-     * @return the name of the term if specified, the ID otherwise
-     */
-    private String getTermName(final VocabularyTerm term)
-    {
-        final String name = term.getName();
-        return StringUtils.isNotBlank(name) ? name : term.getId();
+        return termsForGeneBuilder.build();
     }
 
     /**
      * For each gene in a list of {@code genes}, adds the gene as key and {@code term} as value to the provided
-     * {@code termsForGeneMap}.
+     * {@code termsForGeneBuilder}.
      *
      * @param term the {@link VocabularyTerm HPO vocabulary term} associated with the provided list of {@code genes}
      * @param genes a list of gene symbols associated with {@code term}
-     * @param termsForGeneMap a map containing {@link TermsForGene} objects for each gene
+     * @param termsForGeneBuilder a builder for creating and updating {@link TermsForGene} objects for each gene
      */
-    private void addTermForGene(@Nonnull final VocabularyTerm term, @Nonnull final List<String> genes,
-        @Nonnull final Map<String, TermsForGene> termsForGeneMap)
+    private void addTermForGenes(@Nonnull final VocabularyTerm term, @Nonnull final List<String> genes,
+        @Nonnull final TermsForGeneBuilder termsForGeneBuilder)
     {
         for (final String gene : genes) {
-            final TermsForGene termsForGene = termsForGeneMap.containsKey(gene)
-                ? termsForGeneMap.get(gene)
-                : createTermsForGeneObj(termsForGeneMap, gene);
-            ((DefaultTermsForGeneImpl) termsForGene).addTerm(term);
+            if (termsForGeneBuilder.contains(gene)) {
+                termsForGeneBuilder.update(gene, term);
+            } else {
+                final String geneId = getGeneId(gene);
+                termsForGeneBuilder.add(gene, geneId, term);
+            }
         }
-    }
-
-    /**
-     * Adds a new {@link TermsForGene} object for {@code geneSymbol} to the {@code geneCountsMap map}.
-     *
-     * @param geneCountsMap a {@link Map} containing counts data for each {@code geneSymbol}
-     * @param geneSymbol the GeneCards gene symbol for the gene being counted
-     * @return the newly created {@link TermsForGene} object for {@code geneSymbol}
-     */
-    private TermsForGene createTermsForGeneObj(@Nonnull final Map<String, TermsForGene> geneCountsMap,
-        @Nonnull final String geneSymbol)
-    {
-        final String geneId = getGeneId(geneSymbol);
-        final TermsForGene termsForGene = new DefaultTermsForGeneImpl(geneSymbol, geneId);
-        geneCountsMap.put(geneSymbol, termsForGene);
-        return termsForGene;
     }
 
     /**
@@ -393,6 +288,6 @@ public class DefaultGenePanelImpl implements GenePanel
     @Override
     public int size()
     {
-        return this.panelSize;
+        return this.termsForGeneList.size();
     }
 }

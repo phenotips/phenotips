@@ -42,6 +42,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.mockito.Matchers.anyString;
@@ -52,7 +53,7 @@ import static org.mockito.Mockito.when;
  * Unit tests for {@link DefaultGenePanelFactoryImpl}.
  *
  * @version $Id$
- * @since 1.3M6
+ * @since 1.3
  */
 public class DefaultGenePanelFactoryImplTest
 {
@@ -85,18 +86,20 @@ public class DefaultGenePanelFactoryImplTest
 
     private GenePanelFactory genePanelFactory;
 
+    @Mock
     private Vocabulary hpo;
 
+    @Mock
     private Vocabulary hgnc;
+
+    private VocabularyManager vocabularyManager;
 
     @Before
     public void setUp() throws ComponentLookupException
     {
         MockitoAnnotations.initMocks(this);
         this.genePanelFactory = this.mocker.getComponentUnderTest();
-        final VocabularyManager vocabularyManager = this.mocker.getInstance(VocabularyManager.class);
-        this.hpo = mock(Vocabulary.class);
-        this.hgnc = mock(Vocabulary.class);
+        this.vocabularyManager = this.mocker.getInstance(VocabularyManager.class);
         when(vocabularyManager.getVocabulary(HPO_LABEL)).thenReturn(this.hpo);
         when(vocabularyManager.getVocabulary(HGNC_LABEL)).thenReturn(this.hgnc);
     }
@@ -104,22 +107,22 @@ public class DefaultGenePanelFactoryImplTest
     // ------------------------Test build(Collection<? extends Feature> features)-----------------------//
 
     @Test
-    public void checkBuildThrowsExceptionIfFeaturesIsNull() throws Exception
+    public void buildThrowsExceptionIfFeaturesIsNull() throws Exception
     {
         final Set<Feature> features = null;
-        this.expectedException.expect(NullPointerException.class);
+        this.expectedException.expect(Exception.class);
         this.genePanelFactory.build(features);
     }
 
     @Test
-    public void checkBuildWorksIfFeaturesEmpty()
+    public void buildWorksIfFeaturesEmpty()
     {
         final Set<Feature> features = Collections.emptySet();
         final GenePanel genePanel = this.genePanelFactory.build(features);
         Assert.assertEquals(0, genePanel.size());
-        Assert.assertEquals(Collections.emptySet(), genePanel.getPresentTerms());
-        Assert.assertEquals(Collections.emptySet(), genePanel.getAbsentTerms());
-        Assert.assertEquals(Collections.emptyList(), genePanel.getTermsForGeneList());
+        Assert.assertTrue(genePanel.getPresentTerms().isEmpty());
+        Assert.assertTrue(genePanel.getAbsentTerms().isEmpty());
+        Assert.assertTrue(genePanel.getTermsForGeneList().isEmpty());
 
         final JSONObject expectedJson = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
             .put(GENES_LABEL, new JSONArray());
@@ -127,25 +130,24 @@ public class DefaultGenePanelFactoryImplTest
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void checkBuildWorksIfFeaturesNotEmpty()
+    public void buildWorksIfFeaturesNotEmpty()
     {
         final Set<Feature> features = new HashSet<>();
         final Feature presentFeature = mock(Feature.class);
         final Feature absentFeature = mock(Feature.class);
         final VocabularyTerm presentTerm = mock(VocabularyTerm.class);
         final VocabularyTerm absentTerm = mock(VocabularyTerm.class);
-        final Object associatedGenes = new ArrayList<>();
-        ((List<String>) associatedGenes).add(GENE1);
-        ((List<String>) associatedGenes).add(GENE2);
+        final List<String> associatedGenes = new ArrayList<>();
+        associatedGenes.add(GENE1);
+        associatedGenes.add(GENE2);
         features.add(presentFeature);
         features.add(absentFeature);
         when(presentFeature.isPresent()).thenReturn(Boolean.TRUE);
         when(absentFeature.isPresent()).thenReturn(Boolean.FALSE);
         when(presentFeature.getValue()).thenReturn(HPO_TERM1);
         when(absentFeature.getValue()).thenReturn(HPO_TERM2);
-        when(this.hpo.getTerm(HPO_TERM1)).thenReturn(presentTerm);
-        when(this.hpo.getTerm(HPO_TERM2)).thenReturn(absentTerm);
+        when(this.vocabularyManager.resolveTerm(HPO_TERM1)).thenReturn(presentTerm);
+        when(this.vocabularyManager.resolveTerm(HPO_TERM2)).thenReturn(absentTerm);
         when(presentTerm.get(ASSOCIATED_GENES)).thenReturn(associatedGenes);
         when(presentTerm.getName()).thenReturn(HPO_TERM1);
         when(absentTerm.getName()).thenReturn(HPO_TERM2);
@@ -184,23 +186,23 @@ public class DefaultGenePanelFactoryImplTest
     // -----------------------------------Test build(Patient patient)-----------------------------------//
 
     @Test
-    public void checkBuildThrowsExceptionIfPatientIsNull() throws Exception
+    public void buildThrowsExceptionIfPatientIsNull() throws Exception
     {
         final Patient patient = null;
-        this.expectedException.expect(NullPointerException.class);
+        this.expectedException.expect(Exception.class);
         this.genePanelFactory.build(patient);
     }
 
     @Test
-    public void checkBuildWorksIfPatientEmpty()
+    public void buildWorksIfPatientEmpty()
     {
         final Patient patient = mock(Patient.class);
         Assert.assertEquals(Collections.emptySet(), patient.getFeatures());
         final GenePanel genePanel = this.genePanelFactory.build(patient);
         Assert.assertEquals(0, genePanel.size());
-        Assert.assertEquals(Collections.emptySet(), genePanel.getPresentTerms());
-        Assert.assertEquals(Collections.emptySet(), genePanel.getAbsentTerms());
-        Assert.assertEquals(Collections.emptyList(), genePanel.getTermsForGeneList());
+        Assert.assertTrue(genePanel.getPresentTerms().isEmpty());
+        Assert.assertTrue(genePanel.getAbsentTerms().isEmpty());
+        Assert.assertTrue(genePanel.getTermsForGeneList().isEmpty());
 
         final JSONObject expectedJson = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
             .put(GENES_LABEL, new JSONArray());
@@ -210,25 +212,25 @@ public class DefaultGenePanelFactoryImplTest
     // ---Test build(Collection<VocabularyTerm> presentTerms, Collection<VocabularyTerm> absentTerms)---//
 
     @Test
-    public void checkBuildThrowsExceptionIfAnyVocabularyTermIsNull() throws Exception
+    public void buildThrowsExceptionIfAnyVocabularyTermIsNull() throws Exception
     {
         final List<VocabularyTerm> presentTerms = null;
         final List<VocabularyTerm> absentTerms = Collections.emptyList();
 
-        this.expectedException.expect(NullPointerException.class);
+        this.expectedException.expect(Exception.class);
         this.genePanelFactory.build(presentTerms, absentTerms);
     }
 
     @Test
-    public void checkBuildWorksIfVocabularyTermsAreEmpty()
+    public void buildWorksIfVocabularyTermsAreEmpty()
     {
         final Set<VocabularyTerm> presentTerms = Collections.emptySet();
         final Set<VocabularyTerm> absentTerms = Collections.emptySet();
         final GenePanel genePanel = this.genePanelFactory.build(presentTerms, absentTerms);
         Assert.assertEquals(0, genePanel.size());
-        Assert.assertEquals(Collections.emptySet(), genePanel.getPresentTerms());
-        Assert.assertEquals(Collections.emptySet(), genePanel.getAbsentTerms());
-        Assert.assertEquals(Collections.emptyList(), genePanel.getTermsForGeneList());
+        Assert.assertTrue(genePanel.getPresentTerms().isEmpty());
+        Assert.assertTrue(genePanel.getAbsentTerms().isEmpty());
+        Assert.assertTrue(genePanel.getTermsForGeneList().isEmpty());
 
         final JSONObject expectedJson = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
             .put(GENES_LABEL, new JSONArray());
@@ -236,8 +238,7 @@ public class DefaultGenePanelFactoryImplTest
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void checkBuildWorksIfVocabularyTermsAreNotEmpty()
+    public void buildWorksIfVocabularyTermsAreNotEmpty()
     {
         final VocabularyTerm presentTerm = mock(VocabularyTerm.class);
         final VocabularyTerm absentTerm = mock(VocabularyTerm.class);
@@ -247,9 +248,9 @@ public class DefaultGenePanelFactoryImplTest
         final Set<VocabularyTerm> absentTerms = new HashSet<>();
         absentTerms.add(absentTerm);
 
-        final Object associatedGenes = new ArrayList<>();
-        ((List<String>) associatedGenes).add(GENE1);
-        ((List<String>) associatedGenes).add(GENE2);
+        final List<String> associatedGenes = new ArrayList<>();
+        associatedGenes.add(GENE1);
+        associatedGenes.add(GENE2);
 
         when(presentTerm.get(ASSOCIATED_GENES)).thenReturn(associatedGenes);
         when(presentTerm.getName()).thenReturn(HPO_TERM1);

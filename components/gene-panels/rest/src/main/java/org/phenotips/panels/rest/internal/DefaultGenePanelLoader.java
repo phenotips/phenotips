@@ -49,7 +49,7 @@ import com.google.common.cache.LoadingCache;
  * Default implementation of the {@link GenePanelLoader} component.
  *
  * @version $Id$
- * @since 1.3M6
+ * @since 1.3
  */
 @Component
 @Singleton

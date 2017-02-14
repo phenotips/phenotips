@@ -39,7 +39,7 @@ import org.slf4j.Logger;
  * Default implementation of the {@link GenePanelsPatientResource}.
  *
  * @version $Id$
- * @since 1.3M6
+ * @since 1.3
  */
 @Component
 @Named("org.phenotips.panels.rest.internal.DefaultGenePanelsPatientResourceImpl")

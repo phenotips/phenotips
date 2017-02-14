@@ -29,7 +29,7 @@ import org.json.JSONObject;
  * A DTO containing a set of {@link #getTerms() terms} associated with a specific {@link #getGeneId() gene}.
  *
  * @version $Id$
- * @since 1.3M6
+ * @since 1.3
  */
 @Unstable("New API introduced in 1.3")
 public interface TermsForGene

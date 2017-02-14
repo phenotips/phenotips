@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
  * Provides access to the available vocabularies and their terms.
  *
  * @version $Id$
- * @since 1.3M6
+ * @since 1.3
  */
 @Unstable
 @Role
@@ -43,7 +43,7 @@ interface GenePanelLoader
      * @param termList a list of term IDs as strings, must not be null
      * @return a {@link GenePanel} object
      */
-    GenePanel get(@Nonnull final List<String> termList) throws ExecutionException;
+    GenePanel get(@Nonnull List<String> termList) throws ExecutionException;
 
     /**
      * Discards all cached entries.
@@ -55,7 +55,7 @@ interface GenePanelLoader
      *
      * @param key a key to be discarded, must not be null
      */
-    void invalidate(@Nonnull final Object key);
+    void invalidate(@Nonnull Object key);
 
     /**
      * Returns the size of the cache.
