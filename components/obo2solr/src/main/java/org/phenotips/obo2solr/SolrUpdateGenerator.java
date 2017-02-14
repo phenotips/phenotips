@@ -260,7 +260,7 @@ public class SolrUpdateGenerator
             return;
         }
         this.crtTerm.addTo(name, value.replaceFirst("^\"(.+)\"\\s*?(?:[A-Z]+|\\[).*", "$1")
-            .replaceFirst("\\s+\\{.*$", "").replaceFirst("^(HP:\\d{7}) ! .*$", "$1").replace("\\\"", "\""));
+            .replaceFirst("\\s+\\{.*$", "").replace("\\\"", "\""));
     }
 
     private void propagateAncestors()
