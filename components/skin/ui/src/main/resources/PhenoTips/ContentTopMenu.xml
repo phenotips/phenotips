@@ -758,19 +758,9 @@
   var exportLinks = $$(' .export-link');
   exportLinks.invoke('observe', 'click', function (event) {
     event.stop();
-    if (typeof event.findElement('.editbody') !== "undefined") {
-      // We are in edit mode.
-      var myWindow = window.open("","_blank");
-      var exportAfterSave = function() {
-        myWindow.location = event.findElement().href;
-        document.stopObserving('xwiki:document:saved', exportAfterSave);
-      };
-      document.observe('xwiki:document:saved', exportAfterSave);
-      document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
-    } else {
-      // View mode
+    PhenoTips.widgets.FormUtils.getFormState().saveIfFormDirty(function () {
       window.open(event.findElement().href,"_blank");
-    }
+    });
   });
 });</code>
     </property>

@@ -156,10 +156,6 @@
       // ---------------------------------------------------------------------
       var _this = this;
 
-      this._observeSave = function() {
-          _this._launchUI();
-      }
-
       for (var server = 0; server &lt; pushTargets.length; server++) {
           var nextServer = pushTargets[server];
           var pushLauncher = this._pushManyPatients ? nextServer : nextServer.down('a');
@@ -175,13 +171,8 @@
               _this._selectedServer = serverID;
               //console.log("Initializing push to " + serverID);
 
-              if (event.findElement('.editbody')) {
-                // we're in edit mode
-                document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
-                document.observe('xwiki:document:saved', _this._observeSave);
-              } else {
-                _this._launchUI();
-              }
+              // If there are any unsaved changes, save before pushing
+              PhenoTips.widgets.FormUtils.getFormState().saveIfFormDirty(_this._launchUI.bind(_this));
             }
           }
           pushLauncher.observe('click', createLauncher(serverName));
@@ -380,7 +371,6 @@
 
     _launchUI : function() {
       var _this = this;
-      document.stopObserving('xwiki:document:saved', _this._observeSave);
 
       if (this.__launchUIAjaxInProgress) { return; }
 

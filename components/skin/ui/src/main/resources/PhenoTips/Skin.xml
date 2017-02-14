@@ -507,39 +507,144 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
       <cache>long</cache>
     </property>
     <property>
-      <code>(function () {
-  var init = function() {
-    var form = $('inline');
-    var formData;
-    if (form) {
-      var saveFormData = function() {
-        formData = form.serialize();
-      };
-      // Some form elements are still being modified while "xwiki:dom:loaded" is fired.
-      // If the initial state of the form is recorded immediately, there will likely be
-      // differences with the state of the form when navigating away even if the user
-      // hasn't actually changed any data.
-      // Setting a timeout, even zero, delays the initialization until other
-      // form elements have been modified already.
-      setTimeout(saveFormData, 0);
-      // Record the state of the form again once the form is saved.
-      document.observe('xwiki:document:saved', saveFormData);
-      $$("input[name^='action_']").invoke('observe', 'click', saveFormData);
-      // Upon navigating away, check if anything has changed in the form and warn the user
-      // if it did.
-      window.addEventListener('beforeunload', function(event) {
-        if (formData != form.serialize()) {
-          var message = "$!escapetool.javascript($services.localization.render('phenotips.navigation.beforeunload.warning'))";
-          (event || window.event).returnValue = message;
-          return message;
+      <code>var PhenoTips = (function(PhenoTips) {
+  // Start PhenoTips augmentation
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+
+  /**
+   * PhenoTips.widgets.FormUtils allows to:
+   *  - check if the form displayed on the current page has unsaved changes
+   *  - save that form and do something after saving
+   * It also performs periodical autosave every 10s (only if there are unsaved modifications).
+   *
+   * HOW TO USE:
+   *
+   *  PhenoTips.widgets.FormUtils.getFormState() - returns an object representing the state of the current form
+   *  Notes:
+   *   - it always looks for the form with the id 'inline' (which is the convention for all forms for PhenoTips entities)
+   *   - if there is no $('inline') form on the page, getFormState will still return an object
+   *
+   *  PhenoTips.widgets.FormUtils.getFormState().isFormDirty() - checks if there any unsaved changes
+   *  Note: if there's no form on the page, it will automatically return false; otherwise it will check the actual form for unsaved changes
+
+   *
+   *  PhenoTips.widgets.FormUtils.getFormState().saveForm(successCallback, failureCallback) - saves the form and calls one of the callback
+   *  functions depending on the result of the save attempt.
+   *  Notes:
+   *   - both callbacks are optional
+   *   - if there's no failureCallback, when saving fails the user is prompted if successCallback (if provided) should be pursued anyway
+   *   - if there's no form on the page, none of the callbacks is called
+   *
+   *  PhenoTips.widgets.FormUtils.getFormState().saveIfFormDirty(successCallback, failureCallback) - if there's a form with unsaved changes
+   *  on the page, it behaves like saveForm(successCallback, failureCallback), otherwise it calls successCallback (if provided).
+   *  Note: it is usually preferred to use saveIfFormDirty instead of saveForm, because:
+   *   - it avoids unnecessary versions
+   *   - it it guarantees the successCallback is executed if there aren't any pending modifications.
+   *
+   */
+  widgets.FormUtils = Class.create({
+    config : {
+      // TODO: CONFIGURE IN THE ADMINISTRATION
+      autosave : {
+        enabled: true,
+        frequency : 10 /*seconds */,
+        message: 'Automatic save'
+      }
+    },
+    initialize : function() {
+      this.form = $('inline');
+      if (this.form) {
+        this.isFormDirty = this.isFormDirty.bind(this);
+        this.form._formState = this;
+        var _this = this;
+        var recordFormData = function() {
+          _this.formData = _this.form.serialize();
+        };
+        // Some form elements are still being modified while "xwiki:dom:loaded" is fired.
+        // If the initial state of the form is recorded immediately, there will likely be
+        // differences with the state of the form when navigating away even if the user
+        // hasn't actually changed any data.
+        // Setting a timeout, even zero, delays the initialization until other
+        // form elements have been modified already.
+        setTimeout(recordFormData, 0);
+        // Record the state of the form again once the form is saved.
+        document.observe('xwiki:document:saved', recordFormData);
+        $$("input[name^='action_']").invoke('observe', 'click', recordFormData);
+        // Upon navigating away, check if anything has changed in the form and warn the user
+        // if it did.
+        window.addEventListener('beforeunload', function(event) {
+          if (_this.isFormDirty()) {
+            var message = "$!escapetool.javascript($services.localization.render('phenotips.navigation.beforeunload.warning'))";
+            (event || window.event).returnValue = message;
+            return message;
+          }
+          return undefined;
+        });
+
+        // Set up the smart autosave
+        if (this.config.autosave.enabled) {
+          this.timer = new PeriodicalExecuter(this.saveIfFormDirty.bind(this), this.config.autosave.frequency);
         }
-        return undefined;
+      }
+    },
+    isFormDirty : function() {
+      return this.form ? (this.formData != this.form.serialize()) : false;
+    },
+    saveForm : function(successCallback, failureCallback) {
+      document.fire("xwiki:actions:save", {"continue": true, "form" : this.form});
+      // If there's a callback for there's no unsaved data:
+      if (typeof successCallback == 'function') {
+        // Call the callback function
+        document.observe("xwiki:document:saved", function onSaved() {
+          document.stopObserving("xwiki:document:saved", onSaved);
+          successCallback();
+        });
+        // At the same time, if there's NO callback for when the saving failed, ask user if it's OK to proceed anyway with the successCallback
+        if (typeof failureCallback != 'function') {
+          document.observe("xwiki:document:saveFailed", function onSaveFailed() {
+            document.stopObserving("xwiki:document:saveFailed", onSaveFailed);
+            (new XWiki.widgets.ConfirmationBox({
+              onYes: successCallback,
+              onNo: function(){}
+            },
+            {
+              confirmationText: "$!escapetool.javascript($services.localization.render('phenotips.save.failed.confirmProceed'))", // "Failed to save the latest modifications. Proceed anyway?"
+              showCancelButton: false
+             })).showDialog();
+          });
+        }
+      }
+      // However, if there is a callback for when the saving failed, call that one at the saveFailed event
+      (typeof failureCallback == 'function') &amp;&amp; document.observe("xwiki:document:saveFailed", function onSaveFailed() {
+        document.stopObserving("xwiki:document:saveFailed", onSaveFailed);
+        failureCallback();
       });
+    },
+    saveIfFormDirty : function(successCallback, failureCallback) {
+      if (this.isFormDirty()) {
+        this.saveForm(successCallback, failureCallback);
+      } else {
+        // If there are no unsaved changes, just go straight to calling the successCallback function if one is provided.
+        (typeof successCallback == 'function') &amp;&amp; successCallback();
+      }
     }
+  });
+
+  // Static function to get the form state
+  widgets.FormUtils.getFormState = function() {
+    var form = $('inline');
+    return form &amp;&amp; form._formState;
+  };
+
+  var init = function(event) {
+    new PhenoTips.widgets.FormUtils();
   };
 
   (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
-})();</code>
+
+  // End PhenoTips augmentation.
+  return PhenoTips;
+}(PhenoTips || {}));</code>
     </property>
     <property>
       <name>Warn the user before navigating away from an unsaved form</name>

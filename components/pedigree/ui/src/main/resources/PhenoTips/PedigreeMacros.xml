@@ -307,14 +307,8 @@
     }
 
     if (pedigreeTrigger) {
-       pedigreeTrigger.invoke('observe', 'click', function(event) {
-        if ($('inline')) { //if edit mode
-          event.stop();
-          document.observe("xwiki:document:saved", openPedigreeEditor);
-          document.fire("xwiki:actions:save", {"continue" : true, "form" : $('inline')});
-        } else {
-          openPedigreeEditor();
-        }
+      pedigreeTrigger.invoke('observe', 'click', function(event) {
+        PhenoTips.widgets.FormUtils.getFormState().saveIfFormDirty(openPedigreeEditor);
       });
     }
 
