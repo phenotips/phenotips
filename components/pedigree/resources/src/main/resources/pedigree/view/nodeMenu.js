@@ -1354,7 +1354,7 @@ define([
 
                 var suggestContainer = container.down('div.patient-newlink-container');
                 var suggestInput     = container.down('input[type=text].suggest-patients');
-                suggestInput.placeholder = " type patient name or identifier";
+                suggestInput.placeholder = "type patient name or identifier";
 
                 var linkContainer = container.down('div.patient-link-container');
                 var link          = container.down('a.patient-link-url');
