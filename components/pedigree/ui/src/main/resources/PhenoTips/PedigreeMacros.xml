@@ -293,7 +293,6 @@
     // TODO: check if there is anything to save
     var pedigreeTrigger = $$('.pedigree-edit-trigger');
     var openPedigreeEditor = function() {
-      document.stopObserving("xwiki:document:saved", openPedigreeEditor);
       var familyLink = $('familyId');
       if (XWiki.currentDocument.space == 'data') {
         if (familyLink) {
@@ -346,14 +345,9 @@
               {
                 onYes : function() {
                   var parameters = {"action": "removepatient", "patient_id": XWiki.currentDocument.page};
-                  if ($('inline')) { //if edit mode, save before proceed
-                    document.fire("xwiki:actions:save", {"continue" : true, "form" : $('inline'), 'confirmed' : true});
-                    document.observe("xwiki:document:saved", function () {
-                      sendDeleteRequest(parameters);
-                    });
-                  } else {
+                  PhenoTips.widgets.FormUtils.getFormState().saveIfFormDirty(function () {
                     sendDeleteRequest(parameters);
-                  }
+                  });
                 },
                 onNo : function() { }
               },
