@@ -144,7 +144,7 @@
             this.createFamily.observe('click', this._onOptionSelected.bind(this) );
             this.assignFamily.observe('click', this._onOptionSelected.bind(this) );
 
-            createLabel.insert(this.createFamily).insert("$services.localization.render('phenotips.UIXField.family_membership.create')");
+            createLabel.insert(this.createFamily).insert("$!escapetool.javascript($services.localization.render('phenotips.UIXField.family_membership.create'))");
             assignLabel.insert(this.assignFamily).insert("$services.localization.render('phenotips.UIXField.family_membership.add')");
             var ul = new Element('ul');
             ul.insert(createLabel.wrap('li', {'class' : 'left-aligned'})).insert(assignLabel.wrap('li', {'class' : 'left-aligned'}));
@@ -190,8 +190,8 @@
             });
 
             var buttons = new Element('div', {'class' : 'buttons family-selector-buttons', 'style' : 'margin-top: 10px;'});
-            this.okButton = new Element('input', {'type': 'button', 'name' : 'ok', 'value' : ' $services.localization.render('phenotips.UIXField.family_membership.ok') ', 'class' : 'button family-selector-button-cancel'});
-            this.quitButton = new Element('input', {'type': 'button', 'name' : 'quit', 'value' : ' $services.localization.render('phenotips.UIXField.family_membership.cancel') ', 'class' : 'button secondary family-selector-button-cancel'});
+            this.okButton = new Element('input', {'type': 'button', 'name' : 'ok', 'value' : ' $!escapetool.javascript($services.localization.render('phenotips.UIXField.family_membership.ok')) ', 'class' : 'button family-selector-button-cancel'});
+            this.quitButton = new Element('input', {'type': 'button', 'name' : 'quit', 'value' : ' $!escapetool.javascript($services.localization.render('phenotips.UIXField.family_membership.cancel')) ', 'class' : 'button secondary family-selector-button-cancel'});
             buttons.insert(this.okButton.wrap('span', {'class' : 'buttonwrapper'}));
             buttons.insert(this.quitButton.wrap('span', {'class' : 'buttonwrapper'}));
             mainDiv.insert(buttons);
@@ -201,7 +201,7 @@
             this.okButton.observe('click', this._onSelectOK.bind(this) );
             this.quitButton.observe('click', this._onSelectCancel.bind(this) );
 
-            this.dialog = new PhenoTips.widgets.ModalPopup(mainDiv, {'close': {'method': null, 'keys': []} }, {'extraClassName' : "pedigree-family-chooser", title: "$services.localization.render('phenotips.UIXField.family_membership.assing')", 'displayCloseButton' : false});
+            this.dialog = new PhenoTips.widgets.ModalPopup(mainDiv, {'close': {'method': null, 'keys': []} }, {'extraClassName' : "pedigree-family-chooser", title: "$!escapetool.javascript($services.localization.render('phenotips.UIXField.family_membership.assing'))", 'displayCloseButton' : false});
         },
 
         _onManualInput: function() {
