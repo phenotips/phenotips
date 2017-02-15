@@ -149,7 +149,7 @@
     <restlet.version>2.0.15</restlet.version>
     <buildtools.version>1.6</buildtools.version>
     <testframework.version>1.1</testframework.version>
-    <solr.version>5.5.3</solr.version>
+    <solr.version>5.5.4</solr.version>
     <jaxb2-fluent-api.version>3.0</jaxb2-fluent-api.version>
     <maven-jaxb2-plugin.version>0.12.3</maven-jaxb2-plugin.version>
     <enforcer.skip>false</enforcer.skip>
