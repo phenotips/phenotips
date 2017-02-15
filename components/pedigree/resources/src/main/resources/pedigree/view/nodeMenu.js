@@ -783,7 +783,7 @@ define([
                     Event.fire(patientPicker, 'custom:selection:changed', { "useValue": "" });
                     _this.reposition();
                 });
-                removeLink.insert("Unlink patient record");
+                removeLink.insert("Unlink");
                 patientLinkContainer.insert(patientLink).insert(removeLink);
                 result.insert(patientLinkContainer);
                 var _this = this;
@@ -1354,17 +1354,21 @@ define([
 
                 var suggestContainer = container.down('div.patient-newlink-container');
                 var suggestInput     = container.down('input[type=text].suggest-patients');
+                suggestInput.placeholder = " type patient name or identifier";
 
                 var linkContainer = container.down('div.patient-link-container');
                 var link          = container.down('a.patient-link-url');
                 var linkRemove    = container.down('span.patient-link-remove');
+                var label         = container.down('.field-name');
 
                 suggestInput.value = "";
 
                 if (value == "") {
+                    if (label) {label.update("Link to an existing patient record");}
                     linkContainer.hide();
                     suggestContainer.show();
                 } else {
+                    if (label) {label.update("Linked to patient record");}
                     suggestContainer.hide();
                     link.href = editor.getExternalEndpoint().getPhenotipsPatientURL(value);
                     link.innerHTML = value;
