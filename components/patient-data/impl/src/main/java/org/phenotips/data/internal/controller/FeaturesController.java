@@ -237,7 +237,7 @@ public class FeaturesController extends AbstractComplexController<Feature>
     @Override
     public PatientData<Feature> readJSON(JSONObject json)
     {
-        if (json == null || !json.has(JSON_KEY_FEATURES) || !json.has(JSON_KEY_NON_STANDARD_FEATURES)) {
+        if (json == null || !json.has(JSON_KEY_FEATURES) && !json.has(JSON_KEY_NON_STANDARD_FEATURES)) {
             return null;
         }
 
