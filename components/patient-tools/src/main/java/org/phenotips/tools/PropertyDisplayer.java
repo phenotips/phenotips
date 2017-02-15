@@ -17,12 +17,9 @@
  */
 package org.phenotips.tools;
 
-import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.localization.LocalizationContext;
 import org.xwiki.xml.XMLUtils;
 
 import java.util.ArrayList;
@@ -359,15 +356,7 @@ public class PropertyDisplayer
         }
         VocabularyTerm phObj = this.ontologyService.getTerm(id);
         if (phObj != null) {
-            String translatedName = null;
-            try {
-                LocalizationContext lc =
-                    ComponentManagerRegistry.getContextComponentManager().getInstance(LocalizationContext.class);
-                translatedName = (String) phObj.get("name_" + lc.getCurrentLocale().getLanguage());
-            } catch (ComponentLookupException e) {
-                // Not going to happen
-            }
-            return StringUtils.defaultIfEmpty(translatedName, phObj.getName());
+            return phObj.getTranslatedName();
         }
         return id;
     }

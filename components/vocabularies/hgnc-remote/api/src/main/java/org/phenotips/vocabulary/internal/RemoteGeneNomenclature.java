@@ -475,10 +475,22 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
         }
 
         @Override
+        public String getTranslatedName()
+        {
+            return getName();
+        }
+
+        @Override
         public String getDescription()
         {
             // No description for gene names
             return "";
+        }
+
+        @Override
+        public String getTranslatedDescription()
+        {
+            return getDescription();
         }
 
         @Override
@@ -529,6 +541,16 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
             JSONObject json = new JSONObject();
             json.put("id", this.getId());
             return json;
+        }
+
+        @Override
+        public Collection<?> getTranslatedValues(String name)
+        {
+            Object result = get(name);
+            if (result instanceof Collection) {
+                return (Collection<?>) result;
+            }
+            return Collections.singleton(result);
         }
     }
 }

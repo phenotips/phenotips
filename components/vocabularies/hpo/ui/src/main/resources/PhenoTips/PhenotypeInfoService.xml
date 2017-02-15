@@ -62,19 +62,15 @@
   $jsontool.serialize({"error" : "Term not found."})
   #break
 #end
-#set ($name = $term.get("name_${xcontext.language}"))
-#if (!$name)
-  #set ($name = $term.name)
-#end
 #set ($result = {
   'id' : "$!term.id",
-  'label' : "$!name",
-  'def' : "$!term.def"
+  'label' : "$!term.translatedName",
+  'def' : "$!term.translatedDescription"
 })
 #if (!$term.parents.empty)
   #set ($result.is_a = [])
   #foreach ($p in $term.parents)
-    #set($discard = $result.is_a.add({'id': $p.id, 'label': $p.name}))
+    #set($discard = $result.is_a.add({'id': $p.id, 'label': $p.translatedName}))
   #end
 #end
 #if ("$!term.synonym" != '')
