@@ -4993,8 +4993,8 @@ input[type="checkbox"] + .LV_validation_message {
   font-size: .85em;
   margin: 0 auto;
 }
-#genePanelsExport {
-  font-size: .6em;
+#genePanelsExport, .gene-panels-search-box h4 .xHelpButton, .gene-panels-search-box h4 .xTooltip {
+  font-size: .65em;
 }</code>
     </property>
     <property>
