@@ -61,7 +61,7 @@
     "negative_phenotype" : ["hpo_negative"],
     "omim_id" : ["disorders"],
     "gestation" : ["gestation_age"],
-    "gene" : ["candidate_genes", "causal_genes", "rejected_genes"]
+    "gene" : ["candidate_genes", "causal_genes", "rejected_genes", "carrier_genes"]
   })
   #set ($discard = $disabledFieldNames.retainAll($linkedFields.keySet()))
   #set ($disabled = [])
