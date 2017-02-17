@@ -37,7 +37,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
   <hidden>true</hidden>
-  <content>{{velocity}}
+  <content>{{velocity wiki="false"}}
 #set ($input = "$!request.input.toLowerCase()")
 #if ($input == '')
   #break
@@ -66,7 +66,7 @@
   #if ("$!prettyName" == '')
      #set ($prettyName = $reference.name)
   #end
-  &lt;rs id="$escapetool.xml($reference.name)" icon="$escapetool.xml($avatarURL.url)" info="$prettyName"&gt;$escapetool.xml($stringReference)&lt;/rs&gt;
+  &lt;rs id="$escapetool.xml($reference.name)" icon="$escapetool.xml($avatarURL.url)" info="$escapetool.xml($prettyName)"&gt;$escapetool.xml($stringReference)&lt;/rs&gt;
 #end
 
 $response.setContentType("text/xml")

@@ -37,7 +37,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{velocity}}
+  <content>{{velocity wiki="false"}}
 #set ($_service = $services.permissions)
 #set ($patient = $services.patients.get("$!{request.patient}"))
 #if ("$!{request.xaction}" == 'meta')
@@ -1262,7 +1262,7 @@ $xwiki.ssx.use($serviceDocName)
             &lt;option value="" selected="selected" class="hidden"&gt;$services.localization.render('phenotips.patientAccessRightsManagement.newOwnerGroup')&lt;/option&gt;
             &lt;optgroup label="$services.localization.render('phenotips.patientAccessRightsManagement.newOwnerGroup')"&gt;
             #foreach ($g in $groups.entrySet())
-              &lt;option value="${services.rendering.escape($services.model.serialize($g.key), $doc.syntax)}"#if ("$!{ownerReference}" == "$g.key") selected="selected"#end&gt;${services.rendering.escape($g.value, $doc.syntax)}&lt;/option&gt;
+              &lt;option value="${escapetool.xml($services.rendering.escape($services.model.serialize($g.key), $doc.syntax))}"#if ("$!{ownerReference}" == "$g.key") selected="selected"#end&gt;${escapetool.xml($services.rendering.escape($g.value, $doc.syntax))}&lt;/option&gt;
             #end
             &lt;/optgroup&gt;
           &lt;/select&gt;
