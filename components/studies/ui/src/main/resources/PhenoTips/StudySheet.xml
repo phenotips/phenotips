@@ -312,13 +312,13 @@ $!doc.content
 }
 .group-logo {
   float: left;
-  max-width: 30%;
   margin: 0 10px 10px 0;
+  max-width: 30%;
 }
 .vertical-menu a {
   color: $theme.textColor !important;
-  text-transform: uppercase;
   padding-left: .5em;
+  text-transform: uppercase;
 }
 .vertical-menu i {
   font-size: 1.2em;
@@ -332,6 +332,9 @@ $!doc.content
 .menu-section input[name="action_save"] {
     background-image: none !important;
 }</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
     </property>
     <property>
       <name/>

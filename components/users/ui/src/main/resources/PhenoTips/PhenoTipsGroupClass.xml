@@ -915,7 +915,7 @@ $xwiki.jsx.use($groupClassName)
 #else
 #foreach ($groupDatum in $groupSortedData)#if ($foreach.index &lt; $max)
 |(% class="logo" %) #if ("$!{groupDatum.get('logo')}" != '')[[[[image:${services.rendering.escape($groupDatum.get('logo'), $doc.syntax)}||width="80px"]]&gt;&gt;${services.rendering.escape($groupDatum.get('doc.fullName'), $doc.syntax)}]]#end##
-## We double escape because the label is wiki-interpreted twice
+## We double escape because the link label is wiki-interpreted twice
 |(% class="name" %) [[${services.rendering.escape($services.rendering.escape($groupDatum.get('name'), $doc.syntax), $doc.syntax)}&gt;&gt;${services.rendering.escape($groupDatum.get('doc.fullName'), $doc.syntax)}]] \\(% class="members"%)$services.localization.render('phenotips.group.info.members', [$groupDatum.get('members')])(%%) \\(% class="patients"%)$services.localization.render('phenotips.group.info.cases', [$groupDatum.get('cases')])(%%)##
 #if ($xcontext.macro.params.fullinfo == 'true')|#if ("$!{groupDatum.get('obj').getProperty('description').value.trim()}" != '')(% class="desc" %) ((($groupDatum.get('doc').display('description'))))#end#end
 #if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|(% class="tools" %) (((##

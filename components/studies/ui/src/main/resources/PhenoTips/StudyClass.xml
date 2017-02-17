@@ -351,7 +351,14 @@
     #if ($xwiki.exists($targetDocument))
       #set ($errorMessage = "$services.localization.render('phenotips.studyClass.errorMessage.nameExists', [${request.name}])")
     #else
-      $response.sendRedirect($xwiki.getURL($targetDocument, 'edit', "editor=inline&amp;template=$escapetool.url($!{request.classTemplate})&amp;title=$!escapetool.url($request.name)&amp;parent=$!escapetool.url($request.parent)"))
+      #set ($params = {
+        'template' : $request.classTemplate,
+        'title' : $request.name,
+        'parent' : $request.parent,
+        'form_token' : $request.form_token,
+        'xredirect' : $xwiki.getURL($targetDocument, 'edit', 'editor=inline')
+      })
+      $response.sendRedirect($xwiki.getURL($targetDocument, 'save', "$!escapetool.url($params)"))
       #break
     #end
   #end
@@ -1132,7 +1139,7 @@ $xwiki.jsx.use($studyClassName)
       <contentDescription/>
     </property>
     <property>
-      <contentType>Optional</contentType>
+      <contentType>No content</contentType>
     </property>
     <property>
       <defaultCategory/>
