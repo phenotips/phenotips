@@ -112,20 +112,11 @@
 
 {{velocity}}
 #if($xcontext.action == 'edit' || $doc.display('external_id') != '')
-  #if ($xcontext.action != 'edit')
-    (((#__form_label('external_id')
-       #__form_field('external_id'))))
-  #else
-    (% class="fieldset external_id" %)(((
-      (% class="half-width external_id" %)(((
-        #__form_label('external_id' 'section')
-      )))
-      (% class="half-width external_id" %)(((
-      #__form_field('external_id')
-      )))
-      (% class="clear" %)((()))
-    )))
-  #end
+  (% class="fieldset external_id" %)(((
+    #__form_label('external_id' 'section')
+
+    #__form_field('external_id')
+  )))
 #end
 {{/velocity}}</content>
     </property>
