@@ -122,25 +122,22 @@ $xwiki.jsx.use('PhenoTips.PanelsExport')##
 $xwiki.jsx.use('PhenoTips.PanelsDisplay')##
 $xwiki.ssx.use('PhenoTips.PanelsDisplay')##
   (% class="instant-search gene-panels-search-box" %)(((
-    === $services.localization.render('phenotips.UIXField.geneSuggestions.geneSearch')===
-
+    ====$services.localization.render('phenotips.UIXField.geneSuggestions.geneSearch.matchingGenes')  {{html wiki=false clean=false}}&lt;span class="buttonwrapper"&gt;&lt;a href="#" title="$services.localization.render('phenotips.UIXField.geneSuggestions.download.hint')" id="genePanelsExport" class="button gene-panels-button csv-export-button"&gt;&lt;span class="fa fa-fw fa-download"&gt;&lt;/span&gt; $services.localization.render('phenotips.UIXField.geneSuggestions.download')&lt;/a&gt;&lt;/span&gt;{{/html}}{{icon name="question-circle" title="$services.localization.render('phenotips.UIXField.geneSuggestions.download.hint')" cssClass="xHelpButton"/}}====
     (% class="gene-search-box-content"%)(((
       (% class="hint"%)$services.localization.render('phenotips.UIXField.geneSuggestions.geneSearch.Hint')(%%)##
       {{html wiki=false clean=false}}&lt;input type="hidden" id="panelsSearchTermsInput" value="" /&gt;&lt;input type="hidden" id="panelsSearchTermIDsInput" value="" /&gt;{{/html}}##
       {{html wiki=false clean=false}}&lt;input type="hidden" id="panels-phenotypes-summary" value="$escapetool.xml($jsontool.serialize($phenotypesSummary))" /&gt;{{/html}}##
       (% id="panelsSearchTerms" %)((()))
       (% class="background-search gene-search hidden" %)(((
-        ====$services.localization.render('phenotips.UIXField.geneSuggestions.geneSearch.matchingGenes')  {{html wiki=false clean=false}}&lt;span class="buttonwrapper"&gt;&lt;a href="#" title="$services.localization.render('phenotips.UIXField.geneSuggestions.download.hint')" id="genePanelsExport" class="button gene-panels-button csv-export-button"&gt;&lt;span class="fa fa-fw fa-download"&gt;&lt;/span&gt; $services.localization.render('phenotips.UIXField.geneSuggestions.download')&lt;/a&gt;&lt;/span&gt;{{/html}}{{icon name="question-circle" title="$services.localization.render('phenotips.UIXField.geneSuggestions.download.hint')" cssClass="xHelpButton"/}}====
         (% id="gene-search-results" class="background-suggestions" %)((()))
       )))
     )))
   )))## gene-search-box
-  (% class="clear" %)((()))
 #end
 {{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.section.gene-panels</extensionPointId>
+      <extensionPointId>org.phenotips.patientSheet.section.diagnostic-assistance</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.patientSheet.field.gene_suggestions</name>
@@ -149,7 +146,7 @@ $xwiki.ssx.use('PhenoTips.PanelsDisplay')##
       <parameters>title=$services.localization.render('phenotips.UIXField.geneSuggestions')
 enabled=true
 required=
-order=1
+order=2
 fields=</parameters>
     </property>
     <property>
