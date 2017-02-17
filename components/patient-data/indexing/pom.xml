@@ -29,7 +29,7 @@
   <name>PhenoTips - Patient data - Solr indexing</name>
 
   <properties>
-    <coverage.instructionRatio>0.94</coverage.instructionRatio>
+    <coverage.instructionRatio>0.96</coverage.instructionRatio>
   </properties>
 
   <dependencies>

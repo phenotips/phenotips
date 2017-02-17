@@ -212,6 +212,10 @@ public class SolrPatientIndexerTest
         fakeGene.put("status", "solved");
         fakeGenes.add(fakeGene);
         fakeGene = new HashMap<String, String>();
+        fakeGene.put("gene", "CARRIER1");
+        fakeGene.put("status", "carrier");
+        fakeGenes.add(fakeGene);
+        fakeGene = new HashMap<String, String>();
         fakeGene.put("gene", "");
         fakeGene.put("status", "candidate");
         fakeGenes.add(fakeGene);
@@ -241,6 +245,10 @@ public class SolrPatientIndexerTest
         indexedGenes = inputDoc.getFieldValues("rejected_genes");
         Assert.assertEquals(1, indexedGenes.size());
         Assert.assertEquals("REJECTED1", indexedGenes.iterator().next());
+
+        indexedGenes = inputDoc.getFieldValues("carrier_genes");
+        Assert.assertEquals(1, indexedGenes.size());
+        Assert.assertEquals("CARRIER1", indexedGenes.iterator().next());
     }
 
     @Test
