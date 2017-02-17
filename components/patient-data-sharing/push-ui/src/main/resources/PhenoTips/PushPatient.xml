@@ -845,7 +845,6 @@
            var linkToNew = " &lt;a href='" + serverData.remoteURL + "' target='_blank'&gt;" + serverData.remoteID + "&lt;/a&gt;";
            var lastUpdated = serverData.pushAgeHours;
            var days = Math.floor(lastUpdated/24);
-           description.insert("$services.localization.render('phenotips.PushPatient.patientUploadedMessage')" + " " + this._selectedServer);
            if (lastUpdated &lt; 1) {
               description.insert(" $!escapetool.javascript($services.localization.render('phenotips.PushPatient.patientUploadedLessThanHour'))".replace("__serverID__", this._selectedServer).replace("__patientID__", linkToNew) +".");
            } else {
