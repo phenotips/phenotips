@@ -29,7 +29,7 @@ define([
             },
             {
                 'name' : 'phenotipsid',
-                'label' : 'Patient Record',
+                'label' : 'Link to an existing patient record',
                 'type' : 'phenotipsid-picker',
                 'tab' : 'Personal',
                 'function' : 'trySetPhenotipsPatientId'
