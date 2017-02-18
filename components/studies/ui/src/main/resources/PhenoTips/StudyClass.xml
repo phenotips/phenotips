@@ -1125,7 +1125,8 @@ $xwiki.jsx.use($studyClassName)
 #end
 #else
 #foreach ($studyDatum in $studySortedData)#if ($foreach.index &lt; $max)
-|(% class="name" %) [[${services.rendering.escape($studyDatum.get('name'), $doc.syntax)}&gt;&gt;${services.rendering.escape($studyDatum.get('doc.fullName'), $doc.syntax)}]] \\(% class="members"%)$studyDatum.get('groups') group#if($studyDatum.get('groups') != 1)s#end(%%) \\(% class="patients"%)$studyDatum.get('cases') case#if($studyDatum.get('cases') != 1)s#end(%%)##
+## We double escape because the link label is wiki-interpreted twice
+|(% class="name" %) [[${services.rendering.escape($services.rendering.escape($studyDatum.get('name'), $doc.syntax), $doc.syntax)}&gt;&gt;${services.rendering.escape($studyDatum.get('doc.fullName'), $doc.syntax)}]] \\(% class="members"%)$studyDatum.get('groups') group#if($studyDatum.get('groups') != 1)s#end(%%) \\(% class="patients"%)$studyDatum.get('cases') case#if($studyDatum.get('cases') != 1)s#end(%%)##
 #if ($xcontext.macro.params.fullinfo == 'true')|#if ("$!{studyDatum.get('obj').getProperty('description').value.trim()}" != '')(% class="desc" %) ((($studyDatum.get('doc').display('description'))))#end#end
 #if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|(% class="tools" %) (((##
   [[{{icon name="pencil" title="$services.localization.render('phenotips.studyClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($studyDatum.get('doc.fullName'), 'edit')||class="tool edit"]]##
