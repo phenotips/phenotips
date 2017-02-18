@@ -52,7 +52,7 @@
 #end
 {{/velocity}}
 
-{{velocity}}{{html clean="false" wiki="true"}}
+{{velocity}}
 #if ($mode == 'edit')
 #set ($studiesVisibilityPreference = $xwiki.getDocument('XWiki.XWikiPreferences').getObject('XWiki.ConfigurationClass', 'property', 'study-visibility-option', false).getProperty('value').value)
 #if ($studiesVisibilityPreference == 'unrestricted')
@@ -89,6 +89,7 @@
     #end
   #end
 #end
+{{html clean="false" wiki="false"}}
 &lt;div class="form-template-option"&gt;
 &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value=""#if ("$!{value}" == '') checked="checked"#end/&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption')&lt;/label&gt;
 &lt;p class="xHint"&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption.hint')&lt;/p&gt;
@@ -104,11 +105,12 @@
       #set ($configTitle = "${s.name}")
     #end
     &lt;div class="form-template-option"&gt;
-    &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value="${services.rendering.escape($services.model.serialize($s.documentReference), $doc.syntax)}" #if ("$!{value}" == "${s.documentReference}") checked="checked" #end/&gt;$services.rendering.escape($configTitle, $doc.syntax)&lt;/label&gt;
-    &lt;p class="xHint"&gt;$!{s.content}&lt;/p&gt;
+    &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value="${escapetool.xml($services.model.serialize($s.documentReference))}" #if ("$!{value}" == "${s.documentReference}") checked="checked" #end/&gt;$escapetool.xml($configTitle)&lt;/label&gt;
+    &lt;p class="xHint"&gt;$!{escapetool.xml($s.content)}&lt;/p&gt;
     &lt;/div&gt;
   #end
 #end
+{{/html}}
 #else
   #if ("$!value" == '')
     None
@@ -124,7 +126,7 @@
     [[${configTitle}&gt;&gt;${value}]]
   #end
 #end
-{{/html}}{{/velocity}}
+{{/velocity}}
 </content>
   <class>
     <name>PhenoTips.StudyBindingClass</name>
