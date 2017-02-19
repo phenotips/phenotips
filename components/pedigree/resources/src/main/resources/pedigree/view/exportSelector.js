@@ -45,26 +45,22 @@ define([
             var fileDownload = new Element('a', {"id": 'downloadLink', "style": 'display:none'});
             mainDiv.insert(fileDownload);
 
-            var promptType = new Element('div', {'class': 'import-section'}).update("Data format:");
+            var promptType = new Element('div', {'class': 'import-section'}).update("Format:");
             var dataSection2 = new Element('div', {'class': 'import-block'});
             dataSection2.insert(promptType).insert(typeListElement);
             mainDiv.insert(dataSection2);
 
             var configListElementJSON = new Element('table', {"id": "jsonOptions", "style": 'display:none'});
-            configListElementJSON.insert(this._addConfigOption(true,  "export-options", "import-config-label", "All data", "all"));
-            configListElementJSON.insert(this._addConfigOption(false, "export-options", "import-config-label", "Remove personal information (name and age)", "nopersonal"));
-            configListElementJSON.insert(this._addConfigOption(false, "export-options", "import-config-label", "Remove personal information and free-form comments", "minimal"));
+            configListElementJSON.insert(this._addConfigOption(true,  "export-options", "export-subconfig-label", "All data", "all"));
+            configListElementJSON.insert(this._addConfigOption(false, "export-options", "export-subconfig-label", "Remove personal information (name and age)", "nopersonal"));
+            configListElementJSON.insert(this._addConfigOption(false, "export-options", "export-subconfig-label", "Remove personal information and free-form comments", "minimal"));
 
             var configListElementPED = new Element('table', {"id": "pedOptions"});
-            var label = new Element('label', {'class': 'export-config-header'}).insert("How should person IDs be assigned in the generated file?");
-            configListElementPED.insert(label.wrap('td').wrap('tr'));
-            configListElementPED.insert(this._addConfigOption(true,  "ped-options", "export-subconfig-label", "Using External IDs (when available)", "external"));
-            configListElementPED.insert(this._addConfigOption(false, "ped-options", "export-subconfig-label", "Generate new numeric IDs", "newid"));
-            configListElementPED.insert(this._addConfigOption(false, "ped-options", "export-subconfig-label", "Using Names (when available)", "name"));
+            configListElementPED.insert(this._addConfigOption(true,  "ped-options", "export-subconfig-label", "Use patient identifier, if available", "external"));
+            configListElementPED.insert(this._addConfigOption(false, "ped-options", "export-subconfig-label", "Generate numeric labels instead of personal identifiers", "newid"));
+            configListElementPED.insert(this._addConfigOption(false, "ped-options", "export-subconfig-label", "Use names, if available", "name"));
 
             var configListElementImage = new Element('table', {"id": "imageOptions", "style": 'display:none'});
-            var label = new Element('label', {'class': 'export-config-header'}).insert("Select type of generated pedigree image");
-            configListElementImage.insert(label.wrap('td').wrap('tr'));
             configListElementImage.insert(this._addConfigOption(true,  "image-options", "export-subconfig-label", "Raster image (PNG)", "png"));
             configListElementImage.insert(this._addConfigOption(false, "image-options", "export-subconfig-label", "Scalable image (SVG)", "svg"));
 
