@@ -145,14 +145,14 @@
             this.assignFamily.observe('click', this._onOptionSelected.bind(this) );
 
             createLabel.insert(this.createFamily).insert("$!escapetool.javascript($services.localization.render('phenotips.UIXField.family_membership.create'))");
-            assignLabel.insert(this.assignFamily).insert("$services.localization.render('phenotips.UIXField.family_membership.add')");
+            assignLabel.insert(this.assignFamily).insert("$!escapetool.javascript($services.localization.render('phenotips.UIXField.family_membership.add'))");
             var ul = new Element('ul');
             ul.insert(createLabel.wrap('li', {'class' : 'left-aligned'})).insert(assignLabel.wrap('li', {'class' : 'left-aligned'}));
             mainDiv.insert(ul);
 
             // input field that will suggest families upon typing
             var searchBox = new Element('div', {'class': 'half-width'});
-            this.searchInput = new Element('input', {'type': 'text', 'id' : 'family-search-input', 'class' : 'family-search-input', 'placeholder' : "$services.localization.render('phenotips.UIXField.family_membership.placeholder')"});
+            this.searchInput = new Element('input', {'type': 'text', 'id' : 'family-search-input', 'class' : 'family-search-input', 'placeholder' : "$escapetool.javascript($services.localization.render('phenotips.UIXField.family_membership.placeholder'))"});
             searchBox.insert(this.searchInput).insert(new Element('span', {'class' : 'clear'}).wrap('div', {'class': 'add-to-family-wrapper'}));
             mainDiv.insert(searchBox);
 
