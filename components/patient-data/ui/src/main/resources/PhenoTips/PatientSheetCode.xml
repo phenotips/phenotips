@@ -4408,6 +4408,9 @@ h1, h2, h3, h4 {
 .ncbi-search-box {
   margin-top: 2em;
 }
+.instant-search:not(:last-child) {
+   margin-bottom: 3em;
+}
 /*--------------------------------------------------------------*/
 /** Search terms from phenotypes */
 .default-search-terms-container {
