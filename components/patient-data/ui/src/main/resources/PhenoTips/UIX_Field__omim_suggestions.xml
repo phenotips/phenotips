@@ -119,7 +119,8 @@
 #__phenotypeSummary_create( $phenotypeSummary $hasSymptoms )
 #if ($xcontext.action == 'edit' || $hasSymptoms)
   (% class="instant-search ncbi-search-box" %)(((
-    ====$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.matchingDisorders')====
+    === $services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch')===
+
     (% class="ncbi-search-box-content"%)(((
       (% class="hint"%)$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.Hint')(%%)##
       {{html wiki=false clean=false}}&lt;input type="hidden" id="defaultSearchTermsInput" value="" /&gt;&lt;input type="hidden" id="defaultSearchTermIDsInput" value="" /&gt;{{/html}}##
@@ -128,15 +129,17 @@
       ##(% class="hint"%)$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.defaultTerms')(%%)
       ## {{html wiki=false clean=false}}&lt;input type="text" id="customSearchTermsInput" value="" /&gt;{{/html}}
       (% class="background-search omim-search hidden" %)(((
+        ====$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.matchingDisorders')====
         (% id="omim-search-results" class="background-suggestions" %)((()))
       )))
     )))
   )))## ncbi-search-box
+  (% class="clear" %)((()))
 #end
 {{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.section.diagnostic-assistance</extensionPointId>
+      <extensionPointId>org.phenotips.patientSheet.section.diagnosis-info</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.patientSheet.field.omim_suggestions</name>
@@ -145,7 +148,7 @@
       <parameters>title=$services.localization.render('phenotips.UIXField.diagnosisSuggestions')
 enabled=true
 required=
-order=1
+order=4
 fields=</parameters>
     </property>
     <property>

@@ -20,7 +20,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>UIX_Section__diagnostic-assistance</name>
+  <name>UIX_Section__gene-panels</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -32,17 +32,17 @@
   <date>1479149712000</date>
   <contentUpdateDate>1479146072000</contentUpdateDate>
   <version>1.1</version>
-  <title>$services.localization.render('phenotips.UIXSection.diagnosticAssistance')</title>
+  <title>$services.localization.render('phenotips.UIXSection.genePanels')</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>PhenoTips.UIX_Section__diagnostic-assistance</name>
+    <name>PhenoTips.UIX_Section__gene-panels</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>63a928e5-a9c9-4a18-9d90-0e396b9896fa</guid>
+    <guid>652eb96e-844f-4110-93e2-c3702271d257</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -114,12 +114,13 @@
       <extensionPointId>org.phenotips.patientSheet.content</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.section.diagnostic-assistance</name>
+      <name>org.phenotips.patientSheet.section.gene-panels</name>
     </property>
     <property>
-      <parameters>title=$services.localization.render('phenotips.UIXSection.diagnosticAssistance')
+      <parameters>title=$services.localization.render('phenotips.UIXSection.genePanels')
 enabled=true
-order=9</parameters>
+required=
+order=7</parameters>
     </property>
     <property>
       <scope>wiki</scope>
