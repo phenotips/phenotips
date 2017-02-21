@@ -591,34 +591,33 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
       return this.form ? (this.formData != this.form.serialize()) : false;
     },
     saveForm : function(successCallback, failureCallback) {
-      document.fire("xwiki:actions:save", {"continue": true, "form" : this.form});
-      // If there's a callback for there's no unsaved data:
-      if (typeof successCallback == 'function') {
-        // Call the callback function
-        document.observe("xwiki:document:saved", function onSaved() {
-          document.stopObserving("xwiki:document:saved", onSaved);
-          successCallback();
-        });
-        // At the same time, if there's NO callback for when the saving failed, ask user if it's OK to proceed anyway with the successCallback
-        if (typeof failureCallback != 'function') {
-          document.observe("xwiki:document:saveFailed", function onSaveFailed() {
-            document.stopObserving("xwiki:document:saveFailed", onSaveFailed);
-            (new XWiki.widgets.ConfirmationBox({
-              onYes: successCallback,
-              onNo: function(){}
-            },
-            {
-              confirmationText: "$!escapetool.javascript($services.localization.render('phenotips.save.failed.confirmProceed'))", // "Failed to save the latest modifications. Proceed anyway?"
-              showCancelButton: false
-             })).showDialog();
-          });
-        }
-      }
-      // However, if there is a callback for when the saving failed, call that one at the saveFailed event
-      (typeof failureCallback == 'function') &amp;&amp; document.observe("xwiki:document:saveFailed", function onSaveFailed() {
+      var onSaved = function () {
+        document.stopObserving("xwiki:document:saved", onSaved);
         document.stopObserving("xwiki:document:saveFailed", onSaveFailed);
-        failureCallback();
-      });
+        if (typeof successCallback == 'function') {
+          successCallback();
+        }
+      };
+      var onSaveFailed = function () {
+        document.stopObserving("xwiki:document:saved", onSaved);
+        document.stopObserving("xwiki:document:saveFailed", onSaveFailed);
+        if (typeof failureCallback == 'function') {
+          failureCallback();
+        } else if (typeof successCallback == 'function') {
+          // If there's NO callback for when the saving failed, ask user if it's OK to proceed anyway with the successCallback
+          (new XWiki.widgets.ConfirmationBox({
+            onYes: successCallback,
+            onNo: function(){}
+          },
+          {
+            confirmationText: "$!escapetool.javascript($services.localization.render('phenotips.save.failed.confirmProceed'))", // "Failed to save the latest modifications. Proceed anyway?"
+            showCancelButton: false
+          })).showDialog();
+        }
+      };
+      document.fire("xwiki:actions:save", {"continue": true, "form" : this.form});
+      document.observe("xwiki:document:saved", onSaved);
+      document.observe("xwiki:document:saveFailed", onSaveFailed);
     },
     saveIfFormDirty : function(successCallback, failureCallback) {
       if (this.isFormDirty()) {
@@ -632,12 +631,11 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
 
   // Static function to get the form state
   widgets.FormUtils.getFormState = function() {
-    var form = $('inline');
-    return form &amp;&amp; form._formState;
+    return formState ;
   };
-
+  var formState;
   var init = function(event) {
-    new PhenoTips.widgets.FormUtils();
+    formState = new PhenoTips.widgets.FormUtils();
   };
 
   (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
@@ -647,7 +645,7 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
 }(PhenoTips || {}));</code>
     </property>
     <property>
-      <name>Warn the user before navigating away from an unsaved form</name>
+      <name>Utility class for form state manipulation, including saving on demand, periodic autosave and warning users when they navigate away from a form with unsaved changes</name>
     </property>
     <property>
       <parse>1</parse>

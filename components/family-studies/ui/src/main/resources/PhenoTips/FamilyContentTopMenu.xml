@@ -358,8 +358,9 @@
   var exportLinks = $$(' .export-link');
   exportLinks.invoke('observe', 'click', function (event) {
     event.stop();
+    var newWindow = window.open("", "_blank");
     PhenoTips.widgets.FormUtils.getFormState().saveIfFormDirty(function () {
-      window.open(event.findElement().href,"_blank");
+      newWindow.location = event.findElement().href;
     });
   });
 });</code>
