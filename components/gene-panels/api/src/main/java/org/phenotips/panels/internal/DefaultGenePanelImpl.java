@@ -210,11 +210,15 @@ public class DefaultGenePanelImpl implements GenePanel
                 final TermsForGene firstTerm = o1.getValue();
                 final TermsForGene secondTerm = o2.getValue();
                 // First compare by count, in descending order.
-                final int countComparison = new Integer(secondTerm.getCount()).compareTo(firstTerm.getCount());
+                int result = new Integer(secondTerm.getCount()).compareTo(firstTerm.getCount());
                 // Second, if firstTerm and secondTerm have the same count, compare by natural order.
-                return (countComparison != 0)
-                    ? countComparison
-                    : compareByTermList(firstTerm.getTerms().iterator(), secondTerm.getTerms().iterator());
+                if (result == 0) {
+                    result = compareByTermList(firstTerm.getTerms().iterator(), secondTerm.getTerms().iterator());
+                }
+                if (result == 0) {
+                    result = o1.getKey().compareTo(o2.getKey());
+                }
+                return result;
             }
         });
 

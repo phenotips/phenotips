@@ -166,17 +166,15 @@ public class DefaultGenePanelFactoryImplTest
         // There should only be two objects, one for each gene.
         Assert.assertEquals(2, termsForGene.size());
 
-
-        Assert.assertEquals(GENE2, termsForGene.get(0).getGeneId());
-        Assert.assertEquals(GENE2, termsForGene.get(0).getGeneSymbol());
+        Assert.assertEquals(GENE1, termsForGene.get(0).getGeneId());
+        Assert.assertEquals(GENE1, termsForGene.get(0).getGeneSymbol());
         // The number of terms associated with "gene1" should be 1.
         Assert.assertEquals(1, termsForGene.get(0).getCount());
         // Check the term associated with "gene1" is the one that is expected.
         Assert.assertEquals(presentTerms, termsForGene.get(0).getTerms());
 
-
-        Assert.assertEquals(GENE1, termsForGene.get(1).getGeneId());
-        Assert.assertEquals(GENE1, termsForGene.get(1).getGeneSymbol());
+        Assert.assertEquals(GENE2, termsForGene.get(1).getGeneId());
+        Assert.assertEquals(GENE2, termsForGene.get(1).getGeneSymbol());
         // The number of terms associated with "gene2" should be 1.
         Assert.assertEquals(1, termsForGene.get(1).getCount());
         // Check the term associated with "gene2" is the one that is expected.
@@ -270,17 +268,15 @@ public class DefaultGenePanelFactoryImplTest
         // There should only be two objects, one for each gene.
         Assert.assertEquals(2, termsForGene.size());
 
-
-        Assert.assertEquals(GENE2, termsForGene.get(0).getGeneId());
-        Assert.assertEquals(GENE2, termsForGene.get(0).getGeneSymbol());
+        Assert.assertEquals(GENE1, termsForGene.get(0).getGeneId());
+        Assert.assertEquals(GENE1, termsForGene.get(0).getGeneSymbol());
         // The number of terms associated with "gene1" should be 1.
         Assert.assertEquals(1, termsForGene.get(0).getCount());
         // Check the term associated with "gene1" is the one that is expected.
         Assert.assertEquals(presentTerms, termsForGene.get(0).getTerms());
 
-
-        Assert.assertEquals(GENE1, termsForGene.get(1).getGeneId());
-        Assert.assertEquals(GENE1, termsForGene.get(1).getGeneSymbol());
+        Assert.assertEquals(GENE2, termsForGene.get(1).getGeneId());
+        Assert.assertEquals(GENE2, termsForGene.get(1).getGeneSymbol());
         // The number of terms associated with "gene2" should be 1.
         Assert.assertEquals(1, termsForGene.get(1).getCount());
         // Check the term associated with "gene2" is the one that is expected.
