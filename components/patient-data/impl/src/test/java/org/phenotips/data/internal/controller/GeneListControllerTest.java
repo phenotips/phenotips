@@ -18,6 +18,7 @@
 package org.phenotips.data.internal.controller;
 
 import org.phenotips.components.ComponentManagerRegistry;
+import org.phenotips.data.Gene;
 import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
@@ -31,6 +32,7 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -59,6 +61,8 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
 import com.xpn.xwiki.objects.StringListProperty;
+import com.xpn.xwiki.objects.classes.BaseClass;
+import com.xpn.xwiki.objects.classes.StaticListClass;
 import com.xpn.xwiki.web.Utils;
 
 import static org.mockito.Matchers.any;
@@ -133,6 +137,9 @@ public class GeneListControllerTest
     private VocabularyManager vm;
 
     @Mock
+    private DocumentReferenceResolver<EntityReference> resolver;
+
+    @Mock
     private XWiki xwiki;
 
     @Mock
@@ -141,6 +148,11 @@ public class GeneListControllerTest
     private List<BaseObject> geneXWikiObjects;
 
     private PatientDataController<List<PhenoTipsGene>> component;
+
+    private static List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "solved");
+
+    private static List<String> STRATEGY_VALUES = Arrays.asList("sequencing", "deletion", "familial_mutation",
+        "common_mutations");
 
     @Before
     public void setUp() throws Exception
@@ -159,6 +171,27 @@ public class GeneListControllerTest
         ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
         when(this.mockProvider.get()).thenReturn(this.cm);
         when(this.cm.getInstance(VocabularyManager.class)).thenReturn(this.vm);
+
+        when(this.cm.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current")).thenReturn(this.resolver);
+
+        when(this.cm.getInstance(XWikiContext.TYPE_PROVIDER)).thenReturn(this.provider);
+        XWikiContext context = mock(XWikiContext.class);
+        when(this.provider.get()).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+
+        XWikiDocument geneDoc = mock(XWikiDocument.class);
+        geneDoc.setNew(false);
+        when(this.xwiki.getDocument(Gene.GENE_CLASS, context)).thenReturn(geneDoc);
+        // when(geneDoc == null).thenReturn(false);
+        BaseClass c = mock(BaseClass.class);
+        when(geneDoc.getXClass()).thenReturn(c);
+        StaticListClass lc1 = mock(StaticListClass.class);
+        StaticListClass lc2 = mock(StaticListClass.class);
+        when(c.get(STATUS_KEY)).thenReturn(lc1);
+        when(c.get(STRATEGY_KEY)).thenReturn(lc1);
+        when(lc1.getList(context)).thenReturn(STATUS_VALUES);
+        when(lc2.getList(context)).thenReturn(STRATEGY_VALUES);
 
         this.geneXWikiObjects = new LinkedList<>();
         doReturn(this.geneXWikiObjects).when(this.doc).getXObjects(any(EntityReference.class));
@@ -485,12 +518,12 @@ public class GeneListControllerTest
         Assert.assertNull(gene.getComment());
         Assert.assertNull(gene.getStrategy());
         gene = result.getValue().get(2);
-        Assert.assertEquals("ENSG00000123456", gene.getName());
+        Assert.assertEquals("ENSG00000123456", gene.getId());
         Assert.assertNull(gene.getStatus());
         Assert.assertNull(gene.getComment());
         Assert.assertNull(gene.getStrategy());
         gene = result.getValue().get(3);
-        Assert.assertEquals("ENSG00000098765", gene.getName());
+        Assert.assertEquals("ENSG00000098765", gene.getId());
         // any incorrect status should be replaced with "candidate"
         Assert.assertNull(gene.getStatus());
     }

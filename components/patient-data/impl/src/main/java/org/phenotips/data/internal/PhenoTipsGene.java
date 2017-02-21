@@ -25,14 +25,22 @@ import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
 
-import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+
+import javax.inject.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.classes.BaseClass;
+import com.xpn.xwiki.objects.classes.StaticListClass;
 
 /**
  * Holds gene data for patient.
@@ -58,10 +66,9 @@ public class PhenoTipsGene implements Gene
 
     protected static final String SYMBOL_PROPERTY_NAME = "symbol";
 
-    protected static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "solved");
+    protected static List<String> STATUS_VALUES = new LinkedList<String>();
 
-    protected static final List<String> STRATEGY_VALUES = Arrays.asList("sequencing", "deletion", "familial_mutation",
-        "common_mutations");
+    protected static List<String> STRATEGY_VALUES = new LinkedList<String>();
 
     /** Logging helper object. */
     protected final Logger logger = LoggerFactory.getLogger(PhenoTipsGene.class);
@@ -100,11 +107,12 @@ public class PhenoTipsGene implements Gene
         if (StringUtils.isBlank(id) && StringUtils.isBlank(name)) {
             throw new IllegalArgumentException();
         }
-
+        if (STATUS_VALUES.size() == 0 || STRATEGY_VALUES.size() == 0) {
+            this.getProperties();
+        }
         // gene ID is either the "id" field, or, if missing, the "gene" field
         String geneName = StringUtils.isNotBlank(id) ? id : name;
         this.setNames(geneName);
-
         this.setStatus(status);
         this.setStrategy(strategy);
         this.setComment(comment);
@@ -196,7 +204,7 @@ public class PhenoTipsGene implements Gene
      *
      * @param name gene HGNC vocabulary symbol
      */
-    public void setSymbol(String name)
+    public void setName(String name)
     {
         if (StringUtils.isNotBlank(name)) {
             this.name = name;
@@ -206,7 +214,7 @@ public class PhenoTipsGene implements Gene
     /**
      * Sets gene Ensembl ID and status via HGNC Vocabulary term.
      *
-     * @param geneName either gene ensembl id or gene symbol
+     * @param geneName either gene Ensembl ID or gene symbol
      */
     @SuppressWarnings("unchecked")
     public void setNames(String geneName)
@@ -224,10 +232,10 @@ public class PhenoTipsGene implements Gene
             this.setId(StringUtils.isBlank(ensemblId) ? geneName : ensemblId);
 
             String geneSymbol = (term != null) ? (String) term.get(SYMBOL_PROPERTY_NAME) : null;
-            this.setSymbol(StringUtils.isBlank(geneSymbol) ? geneName : geneSymbol);
+            this.setName(StringUtils.isBlank(geneSymbol) ? geneName : geneSymbol);
         } else {
             this.setId(geneName);
-            this.setSymbol(geneName);
+            this.setName(geneName);
         }
     }
 
@@ -319,6 +327,47 @@ public class PhenoTipsGene implements Gene
             this.logger.error("Error loading component [{}]", ex.getMessage(), ex);
         }
         return null;
+    }
+
+    private void getProperties()
+    {
+        // lazy initialization of properties from the Gene XClass
+        try {
+            XWikiContext context = this.getXContext();
+            XWikiDocument doc = context.getWiki().getDocument(Gene.GENE_CLASS, context);
+            if (doc == null || doc.isNew()) {
+                // Inaccessible or deleted document
+                return;
+            }
+            BaseClass gene = doc.getXClass();
+            if (gene == null) {
+                return;
+            }
+            StaticListClass statusProp = (StaticListClass) gene.get(STATUS_KEY);
+            StaticListClass stategyProp = (StaticListClass) gene.get(STRATEGY_KEY);
+            if (statusProp != null) {
+                STATUS_VALUES = statusProp.getList(context);
+            }
+            if (statusProp != null) {
+                STRATEGY_VALUES = stategyProp.getList(context);
+            }
+        } catch (XWikiException ex) {
+            // Doesn't matter, the hash is just nice to have
+        }
+    }
+
+    private XWikiContext getXContext()
+    {
+        Provider<XWikiContext> xcontextProvider = null;
+        try {
+            xcontextProvider =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiContext.TYPE_PROVIDER);
+        } catch (ComponentLookupException ex) {
+            // Should not happen
+            return null;
+        }
+        XWikiContext context = xcontextProvider.get();
+        return context;
     }
 
 }

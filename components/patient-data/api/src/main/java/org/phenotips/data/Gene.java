@@ -17,6 +17,10 @@
  */
 package org.phenotips.data;
 
+import org.phenotips.Constants;
+
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
 import org.json.JSONObject;
@@ -25,11 +29,15 @@ import org.json.JSONObject;
  * Information about a specific gene recorded for a {@link Patient patient}.
  *
  * @version $Id$
- * @since 1.0M8
+ * @since 1.3M4
  */
 @Unstable
 public interface Gene extends VocabularyProperty
 {
+    /** The Gene XClass reference. */
+    EntityReference GENE_CLASS = new EntityReference("GeneClass", EntityType.DOCUMENT,
+        Constants.CODE_SPACE_REFERENCE);
+
     /**
      * Return gene Ensembl ID.
      *
