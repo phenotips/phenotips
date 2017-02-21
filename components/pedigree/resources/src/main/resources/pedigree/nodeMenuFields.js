@@ -143,7 +143,7 @@ define([
                 'label' : 'Genotype: carrier genes',
                 'type' : 'gene-picker',
                 'tab': 'Clinical',
-                'function' : 'setCarrierGenes' // not needed: read only for now
+                'function' : 'setCarrierGenes'
             },
             {
                 'name' : 'date_of_birth',

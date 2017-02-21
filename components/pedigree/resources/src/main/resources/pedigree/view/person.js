@@ -998,17 +998,14 @@ define([
             return this._getGeneArray("candidate");
         },
 
-        // used by controller in conjuntion with setCandidateGenes
         getCausalGenes: function() {
             return this._getGeneArray("solved");
         },
 
-        // used by controller in conjuntion with setCandidateGenes
         getRejectedGenes: function() {
             return this._getGeneArray("rejected");
         },
 
-        // used by controller in conjuntion with setCandidateGenes
         getCarrierGenes: function() {
             return this._getGeneArray("carrier");
         },
@@ -1237,8 +1234,8 @@ define([
                 ethnicity:       {value : this.getEthnicities()},
                 candidate_genes: {value : this.getCandidateGenes(), disabled: false},
                 causal_genes:    {value : this.getCausalGenes(), disabled: false},
+                carrier_genes:   {value : this.getCarrierGenes(), disabled: false},
                 rejected_genes:  {value : rejectedGeneList, disabled: true, inactive: (rejectedGeneList.length == 0)},
-                carrier_genes:   {value : carrierGeneList, disabled: true, inactive: (carrierGeneList.length == 0)},
                 adopted:         {value : this.getAdopted(), inactive: cantChangeAdopted},
                 state:           {value : this.getLifeStatus(), inactive: inactiveStates, disabled: disabledStates},
                 aliveandwell:    {value : this.getAliveAndWell(), inactive: this.isFetus()},
