@@ -717,6 +717,11 @@
       else {
         this._userGroupsList = groupList;
       }
+      if (groupList.length == 0) {
+        $('group-selection').hide();
+      } else {
+        $('group-selection').show();
+      }
       console.log("Groups: " + stringifyObject(groupList));
 
       var groupListElement = new Element('table', {id : 'user-list'});
@@ -734,11 +739,7 @@
 
       if (!this._updatingExistingPatient())  {
           var noGroupMessage = "&lt;span class ='hint'&gt;$services.localization.render('phenotips.PushPatient.noGroupMessage')&lt;/span&gt;";
-          if (groupList.length == 0) {
-            noGroupMessage += " $services.localization.render('phenotips.PushPatient.noGroupMessageHint')".replace("__lastApprovedUser__", this._lastApprovedUser);
-          }
           groupListElement.insert(_addGroupOption(true, "user", noGroupMessage, "__self"));
-
           groupList.each(function (group) {
                 groupListElement.insert(_addGroupOption(false, "group", group, group));
             });
