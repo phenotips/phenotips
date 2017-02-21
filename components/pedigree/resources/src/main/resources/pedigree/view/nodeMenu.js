@@ -757,19 +757,23 @@ define([
                         });
                     }
 
-                    var processLinking = function(topMessage, notesMessage) {
-                        editor.getOkCancelDialogue().showWithCheckbox("<br><b>" + topMessage + "</b><br>" +
-                            "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
-                            notesMessage + "</div>",
-                            "Add patient to the family?",
-                            "Do not show this warning again<br>", false,
-                            "Confirm", function(checkBoxStatus) { setDoNotShow(checkBoxStatus); processCreatePatient() },
-                            "Cancel",  function(checkBoxStatus) { setDoNotShow(checkBoxStatus); });
-                    }
+                    if (!editor.getPreferencesManager().getConfigurationOption("hideShareConsentDialog")) {
+                        var processLinking = function(topMessage, notesMessage) {
+                            editor.getOkCancelDialogue().showWithCheckbox("<br><b>" + topMessage + "</b><br>" +
+                                "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
+                                notesMessage + "</div>",
+                                "Add patient to the family?",
+                                "Do not show this warning again<br>", false,
+                                "Confirm", function(checkBoxStatus) { setDoNotShow(checkBoxStatus); processCreatePatient() },
+                                "Cancel",  function(checkBoxStatus) { setDoNotShow(checkBoxStatus); });
+                        }
 
-                    processLinking("When you create a new patient and add to this family:<br>",
-                            "1) A copy of this pedigree will be placed in the electronic record of each family member.<br><br>"+
-                            "2) This pedigree can be edited by any user with access to any member of the family.");
+                        processLinking("When you create a new patient and add to this family:<br>",
+                                "1) A copy of this pedigree will be placed in the electronic record of each family member.<br><br>"+
+                                "2) This pedigree can be edited by any user with access to any member of the family.");
+                    } else {
+                        processCreatePatient();
+                    }
 
                     _this.reposition();
                 });
