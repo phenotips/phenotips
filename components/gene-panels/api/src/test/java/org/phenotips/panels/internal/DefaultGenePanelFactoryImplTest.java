@@ -101,7 +101,7 @@ public class DefaultGenePanelFactoryImplTest
         when(vocabularyManager.getVocabulary(HGNC_LABEL)).thenReturn(this.hgnc);
     }
 
-    //------------------------Test build(Collection<? extends Feature> features)-----------------------//
+    // ------------------------Test build(Collection<? extends Feature> features)-----------------------//
 
     @Test
     public void checkBuildThrowsExceptionIfFeaturesIsNull() throws Exception
@@ -183,7 +183,7 @@ public class DefaultGenePanelFactoryImplTest
         Assert.assertEquals(presentTerms, termsForGene.get(1).getTerms());
     }
 
-    //-----------------------------------Test build(Patient patient)-----------------------------------//
+    // -----------------------------------Test build(Patient patient)-----------------------------------//
 
     @Test
     public void checkBuildThrowsExceptionIfPatientIsNull() throws Exception
@@ -209,7 +209,7 @@ public class DefaultGenePanelFactoryImplTest
         Assert.assertTrue(genePanel.toJSON().similar(expectedJson));
     }
 
-    //---Test build(Collection<VocabularyTerm> presentTerms, Collection<VocabularyTerm> absentTerms)---//
+    // ---Test build(Collection<VocabularyTerm> presentTerms, Collection<VocabularyTerm> absentTerms)---//
 
     @Test
     public void checkBuildThrowsExceptionIfAnyVocabularyTermIsNull() throws Exception

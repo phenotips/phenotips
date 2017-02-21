@@ -83,7 +83,7 @@ public class DefaultGenePanelImpl implements GenePanel
     /** The set of terms observed to be present. */
     private final Set<VocabularyTerm> presentTerms;
 
-    /** The set of  terms observed to be absent. */
+    /** The set of terms observed to be absent. */
     private final Set<VocabularyTerm> absentTerms;
 
     /** An ordered list of objects containing gene count data. */
@@ -93,8 +93,8 @@ public class DefaultGenePanelImpl implements GenePanel
     private final int panelSize;
 
     /**
-     * Simple constructor, passing in a collection of {@code presentTerms} and a collection of {@code absentTerms},
-     * as {@link VocabularyTerm} objects, and a {@link VocabularyManager}.
+     * Simple constructor, passing in a collection of {@code presentTerms} and a collection of {@code absentTerms}, as
+     * {@link VocabularyTerm} objects, and a {@link VocabularyManager}.
      *
      * @param presentTerms a collection of feature identifiers, as string, that are present
      * @param absentTerms a collection of feature identifiers, as string, that are absent
@@ -191,8 +191,8 @@ public class DefaultGenePanelImpl implements GenePanel
     }
 
     /**
-     * Given a {@code termsForGeneMap map} of gene symbol to {@link TermsForGene} objects, returns a
-     * sorted {@link #getTermsForGeneList() list of genes}, in descending order of relevance.
+     * Given a {@code termsForGeneMap map} of gene symbol to {@link TermsForGene} objects, returns a sorted
+     * {@link #getTermsForGeneList() list of genes}, in descending order of relevance.
      *
      * @param termsForGeneMap a map containing {@link TermsForGene} objects for each gene
      * @return a list of {@link TermsForGene} objects, sorted in descending order or relevance
@@ -231,8 +231,8 @@ public class DefaultGenePanelImpl implements GenePanel
      * @param first the {@link Iterator<VocabularyTerm>} that {@code second} is being compared to
      * @param second the {@link Iterator<VocabularyTerm>} that is being compared
      * @return {@code 0} if {@code first} and {@code second} are equivalent, a value less than {@code 0} if
-     *         {@code first} should be ahead of {@code second}, a value greater than {@code 0} if {@code second}
-     *         should be ahead of {@code first}
+     *         {@code first} should be ahead of {@code second}, a value greater than {@code 0} if {@code second} should
+     *         be ahead of {@code first}
      */
     private int compareByTermList(final Iterator<VocabularyTerm> first, final Iterator<VocabularyTerm> second)
     {
@@ -392,4 +392,3 @@ public class DefaultGenePanelImpl implements GenePanel
         return this.panelSize;
     }
 }
-
