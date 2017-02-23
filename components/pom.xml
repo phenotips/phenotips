@@ -49,6 +49,7 @@
     <module>patient-data-extra</module>
     <module>security</module>
     <module>patient-access-rules</module>
+    <module>patient-contacts</module>
     <module>patient-data-sharing</module>
     <module>patient-measurements</module>
     <module>xwiki-platform-users</module>
