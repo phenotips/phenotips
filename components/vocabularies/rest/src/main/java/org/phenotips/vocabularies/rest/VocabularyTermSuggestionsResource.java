@@ -35,7 +35,7 @@ import javax.ws.rs.core.MediaType;
  * @version $Id$
  * @since 1.3M1
  */
-@Path("/vocabularies/terms/{vocabulary-id}/suggest")
+@Path("/vocabularies/{vocabulary-id}/suggest")
 @ParentResource(VocabularyResource.class)
 @Relation("https://phenotips.org/rel/suggest")
 public interface VocabularyTermSuggestionsResource
