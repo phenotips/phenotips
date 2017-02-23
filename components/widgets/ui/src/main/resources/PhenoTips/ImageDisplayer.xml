@@ -413,11 +413,10 @@ $content
                                + "&amp;" + this.CHECK_LASTATT_MARKER + "=" + this.getFileName(uploadForm.down('input[type=file]').value)
                                + (this.reloadTargetId ? '#' + this.reloadTargetId : '');
             }
-            document.observe('xwiki:document:saved', function() {
+            PhenoTips.widgets.FormUtils.getFormState().saveIfFormDirty(function() {
               new XWiki.widgets.Notification("$services.localization.render('xe.attachmentSelector.upload.inProgress')", 'inprogress');
               uploadForm.submit();
-            })
-            document.fire('xwiki:actions:save', {'continue': true, form: $('edit') || $('inline')});
+            });
           }
         }.bindAsEventListener(this));
       }
