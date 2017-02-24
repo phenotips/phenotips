@@ -542,13 +542,16 @@ define([
 
         update: function(newTarget) {
             //console.log("Node menu: update");
-            if (newTarget)
+            if (newTarget) {
                 this.targetNode = newTarget;
+            }
 
             if (this.targetNode) {
                 this._updating = true;   // needed to avoid infinite loop: update -> _attachFieldEventListeners -> update -> ...
                 this._setCrtData(this.targetNode.getSummary());
-                this.reposition();
+                if (newTarget) {
+                    this.reposition();
+                }
                 delete this._updating;
             }
         },
