@@ -214,7 +214,7 @@
 #elseif ($xcontext.action == 'view' &amp;&amp; $doc.getObject('PhenoTips.VCF').getProperty('filename').value.isEmpty() == false)
 === $services.localization.render('phenotips.vcf.sheetTitle') ===
 
-[[attach:${doc.getObject('PhenoTips.VCF').getProperty('filename').value}]] (reference genome ${doc.getObject('PhenoTips.VCF').getProperty('reference_genome').value})
+[[attach:${doc.getObject('PhenoTips.VCF').getProperty('filename').value}]] $services.localization.render("phenotips.vcf.referenceGenome", ["$!{doc.getObject('PhenoTips.VCF').getProperty('reference_genome').value}"])
 #end
 {{/velocity}}</content>
     </property>
