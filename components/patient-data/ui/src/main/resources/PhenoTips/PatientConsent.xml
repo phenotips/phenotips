@@ -409,6 +409,14 @@
           }).get();
         },
 
+        allReqiredChecked: function() {
+          if (!this.classVariables.consentsBlock) {
+            return true;
+          }
+          var requiredUnchecked = this.classVariables.consentsBlock.find("li[class*='required'] input[type=checkbox]:not(:checked)");
+          return (requiredUnchecked.length == 0);
+        },
+
         attachStateChangeCallbacks: function(callback)
         {
           var _this = this;
@@ -437,7 +445,7 @@
 
         displayConsentLabel: function (consent)
         {
-          return $("&lt;li class='consent-label'&gt;" + consent.label + "&lt;/li&gt;");
+          return $("&lt;li class='consent-label " + (consent.isRequired ? " required":"") + "'&gt;" + consent.label + "&lt;/li&gt;");
         },
 
         displayConsentDescription: function (consent)
