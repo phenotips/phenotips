@@ -809,7 +809,7 @@
 
         this._serverInfo.update(new Element('dl').insert(serverLink.clone(true).wrap('dt')).insert(serverData.desc &amp;&amp; new Element('dd', {'class' : 'hint'}).update(serverData.desc) || '').insert(existingPatientDataInfo || ''));
 
-        this._approveMessage.update("$!escapetool.javascript($services.localization.render('phenotips.patientSharing.push.dialog.confirmation.label'))".replace("__serverID__", this._selectedServer));
+        this._approveMessage.update("$!escapetool.javascript($services.localization.render('phenotips.patientSharing.push.dialog.confirmation.label'))".replace("__serverID__", this._selectedServer) + " $!escapetool.javascript($services.localization.render('phenotips.PushPatient.required'))");
 
         if (!keepUserAndGroup) {
             this._serverInfo.show();
@@ -1604,6 +1604,9 @@ function _printObjectInternal(o, level) {
 }
 .consent-label.required {
   font-weight: bold;
+}
+li[class*='required']::after {
+    content: " $!escapetool.javascript($services.localization.render('phenotips.PushPatient.required'))";
 }
 </code>
     </property>
