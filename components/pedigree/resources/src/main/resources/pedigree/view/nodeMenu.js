@@ -863,7 +863,13 @@ define([
                 if (data.values) {
                     data.values.each(_generateSelectOption);
                 } else if (data.range) {
-                    $A($R(data.range.start, data.range.end)).each(function(i) {_generateSelectOption({'actual': i, 'displayed' : i + ' ' + data.range.item[+(i!=1)]})});
+                    var createSelectionLabel = function(i, data) {
+                        if (data.range.replacementLabels && data.range.replacementLabels.hasOwnProperty(i)) {
+                            return data.range.replacementLabels[i];
+                        }
+                        return i + (data.range.labelSuffix ? (' ' + data.range.labelSuffix[+(i!=data.range.start)]) : '');
+                    }
+                    $A($R(data.range.start, data.range.end)).each(function(i) {_generateSelectOption({'actual': i, 'displayed' : createSelectionLabel(i, data)})});
                 }
                 optionHTML += "</select>";
                 span.innerHTML = optionHTML;
