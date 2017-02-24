@@ -11,9 +11,9 @@
         initialize: function($super) {
             $super('Carrier Genes', 'genes',
                    "carrier",
-                   [], // these are never displayed in a legend so don't need colours
+                   ['#0684ed', '#6db5f1', '#55c6e7', '#0e5b9b', '#006ff5', '#9ecaff'], // blue palette
                    "getCarrierGenes",
-                   "setCarrierGenes", true); // operation
+                   "setCarrierGenes"); // operation
         }
     });
     return CarrierGeneLegend;

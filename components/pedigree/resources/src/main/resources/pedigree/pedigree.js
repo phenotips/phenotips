@@ -601,7 +601,7 @@ define([
          * If a gene does not belong to any legend "undefined" is returned.
          */
         getGeneColor: function(geneId, nodeID) {
-            var availableLegends = ["solved", "candidate"];
+            var availableLegends = ["solved", "candidate", "carrier"];
             for (var i = 0; i < availableLegends.length; i++) {
                 var colorInLegendForNode = this.getGeneLegend(availableLegends[i]).getGeneColor(geneId, nodeID);
                 if (colorInLegendForNode) {
