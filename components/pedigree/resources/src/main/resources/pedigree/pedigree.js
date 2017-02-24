@@ -296,8 +296,8 @@ define([
                 noPatientsAreLinked = false;
             }
 
-            var noPatientsLinkedMessage = "There are no patients linked to this pedigree and thus family has no members.<br><br>";
-            var currentPatientUnlinkedMessage = "Current patient is not linked to the pedigree and thus not part of the family.<br><br>";
+            var noPatientsLinkedMessage = "There are no patients linked to this pedigree and thus family has no members.<br/><br/>";
+            var currentPatientUnlinkedMessage = "Current patient is not linked to the pedigree and thus not part of the family.<br/><br/>";
 
             //-----------------
             var saveWithChecks = function(quitAfterSave) {

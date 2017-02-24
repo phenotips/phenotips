@@ -225,7 +225,6 @@ define([
                     html += page.svg;
                     html += "</div>";
                 }
-                //html += "<br>";
             }
             html += "</div>";
             return html;

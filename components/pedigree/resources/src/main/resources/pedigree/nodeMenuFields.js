@@ -354,14 +354,14 @@ define([
             },
             {
                 'name' : 'ethnicity',
-                'label' : 'Ethnicities<br>(common to all individuals in the group)',
+                'label' : 'Ethnicities<br/>(common to all individuals in the group)',
                 'type' : 'ethnicity-picker',
                 'tab': 'Personal',
                 'function' : 'setEthnicities'
             },
             {
                 'name' : 'disorders',
-                'label' : 'Known disorders<br>(common to all individuals in the group)',
+                'label' : 'Known disorders<br/>(common to all individuals in the group)',
                 'type' : 'disease-picker',
                 'tab': 'Clinical',
                 'function' : 'setDisorders'

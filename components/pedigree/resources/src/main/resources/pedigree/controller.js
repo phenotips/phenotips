@@ -994,10 +994,10 @@ define([
         } else {
             if (linkID == "") {
                 var oldLinkID = editor.getNode(nodeID).getPhenotipsPatientId();
-                editor.getOkCancelDialogue().showWithCheckbox("<br><b>Do you want to remove the connection between this<br>patient </b>(" + editor.getGraph().getPatientDescription(nodeID, true) +
-                        ")<b> and this pedigree node?</b><br><br><br>" +
+                editor.getOkCancelDialogue().showWithCheckbox("<br/><b>Do you want to remove the connection between this<br/>patient </b>(" + editor.getGraph().getPatientDescription(nodeID, true) +
+                        ")<b> and this pedigree node?</b><br/><br/><br/>" +
                         "<div style='margin-left: 30px; margin-right: 30px; text-align: center'>" +
-                        "Please note that if you do not assign this patient to another pedigree<br>node this patient will be removed from this family</div><br>",
+                        "Please note that if you do not assign this patient to another pedigree<br/>node this patient will be removed from this family</div><br/>",
                         'Remove the connection?', 'Clear data from this pedigree node', true, "Remove link", processLinkCallback, "Cancel", onCancelAssignPatient );
                 return;
             }
@@ -1011,7 +1011,7 @@ define([
                     editor.getView().unmarkAll();
                     onCancelAssignPatient();
                 }
-                editor.getOkCancelDialogue().showWithCheckbox("<br>Patient " + linkID + " is already in this pedigree. Do you want to transfer the record to the pedigree node currently selected?",
+                editor.getOkCancelDialogue().showWithCheckbox("<br/>Patient " + linkID + " is already in this pedigree. Do you want to transfer the record to the pedigree node currently selected?",
                                                        "Re-assign patient " + linkID + " to this node?",
                                                        'Clear data from the pedigree node currently linked to this patient', true,
                                                        "OK", processLinkCallback, "Cancel", onCancel );
@@ -1035,7 +1035,7 @@ define([
                                     // ignore trivial properties: "gender" and empty arrays
                                     if (prop != "gender" && (!Array.isArray(properties[prop]) || properties[prop].length != 0)) {
                                         // found a non-trivial property: need to warn about lost data
-                                        clearPropertiesMsg = "<br><br>3) All data entered for this individual in the pedigree will be replaced by information pulled from the patient record  " + linkID + ".";
+                                        clearPropertiesMsg = "<br/><br/>3) All data entered for this individual in the pedigree will be replaced by information pulled from the patient record  " + linkID + ".";
                                         break;
                                     }
                                 }
@@ -1054,11 +1054,11 @@ define([
                                 if ( !firstPatientInFamily
                                      && !alreadyWasInFamily
                                      && !editor.getPreferencesManager().getConfigurationOption("hideShareConsentDialog")) {
-                                    editor.getOkCancelDialogue().showWithCheckbox("<br><b>" + topMessage + "</b><br>" +
-                                            "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
+                                    editor.getOkCancelDialogue().showWithCheckbox("<br/><b>" + topMessage + "</b><br/>" +
+                                            "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br/><br/>"+
                                             notesMessage + "</div>",
                                             "Adding a patient",
-                                            "Do not show this warning again<br>", false,
+                                            "Do not show this warning again<br/>", false,
                                             "Confirm", function(checkBoxStatus) { setDoNotShow(checkBoxStatus); processLinkCallback() },
                                             "Cancel",  function(checkBoxStatus) { setDoNotShow(checkBoxStatus); onCancelAssignPatient() });
                                 } else {
@@ -1066,8 +1066,8 @@ define([
                                 }
                             }
 
-                            processLinking("Do you approve the addition of patient " + linkID + " to this family?<br>",
-                                    "1) A copy of this pedigree will be placed in the electronic record of each family member.<br><br>"+
+                            processLinking("Do you approve the addition of patient " + linkID + " to this family?<br/>",
+                                    "1) A copy of this pedigree will be placed in the electronic record of each family member.<br/><br/>"+
                                     "2) This pedigree can be edited by any user with access to any member of the family." + clearPropertiesMsg);
                         }
                     } else  {

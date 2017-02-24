@@ -44,7 +44,7 @@ define([], function(){
        */
       showWithCheckbox: function(message, title, checkboxText, defaultState, okButtonText, onOKFunction, cancelButtonText, onCancelFunction) {
           // add checkbox
-          var message = message + '<br><input ' + (defaultState ? 'checked ' : '') + 'type="checkbox" id ="okcancelcheckbox" value="checked">' +
+          var message = message + '<br/><input ' + (defaultState ? 'checked ' : '') + 'type="checkbox" id ="okcancelcheckbox" value="checked">' +
                                   '<label class="field-no-user-select" for="okcancelcheckbox">' + checkboxText + '</label>';
           var onOK = function() {
               // read checkbox state & clal original onOK with the state as the parameter
