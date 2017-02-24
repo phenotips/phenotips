@@ -140,9 +140,7 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
             if (pedigreePatient.has(patientID)) {
                 phenotipsPatientJSON.put("id", pedigreePatient.getString(patientID));
             }
-            if (pedigreePatient.has(externalID)) {
-                phenotipsPatientJSON.put("external_id", pedigreePatient.getString(externalID));
-            }
+            phenotipsPatientJSON.put("external_id", pedigreePatient.optString(externalID, ""));
         } catch (Exception ex) {
             logger.error("Could not convert patient IDs: {}", ex.getMessage());
         }
@@ -186,13 +184,15 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
                 // than in other parts of JSON since we are debating how dates should be stored
                 logger.error("Could not convert date of birth: {}", ex.getMessage());
             }
+        } else {
+            phenotipsPatientJSON.put("date_of_birth", "");
         }
 
         String lifeStatus = phenotipsPatientJSON.optString("life_status", PATIENT_ALIVE_STATUS);
-        if (StringUtils.equalsIgnoreCase(lifeStatus, PATIENT_ALIVE_STATUS)) {
+        if (StringUtils.equalsIgnoreCase(lifeStatus, PATIENT_ALIVE_STATUS) || !pedigreePatient.has(dod)) {
             // if patient is alive, date of death should be explicitly blanked
             phenotipsPatientJSON.put("date_of_death", "");
-        } else if (pedigreePatient.has(dod)) {
+        } else {
             try {
                 phenotipsPatientJSON.put("date_of_death",
                     PedigreeProcessorImpl.pedigreeDateToDate(pedigreePatient.getJSONObject(dod)));
