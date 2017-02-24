@@ -270,7 +270,7 @@ public class R71490PhenoTips1280DataMigration extends AbstractHibernateDataMigra
         // fix for PT-3033: users occasionally used the "rejected genes" section in 1.2 only for comments
         if (StringUtils.isNotBlank(freeComments.toString())) {
             this.commentsFromEmptyGenes +=
-                (CANDIDATE_NAME.equals(status)) ? CANDIDATE_COMMENT_START : REJECTED_COMMENT_START
+                (CANDIDATE_NAME.equals(status) ? CANDIDATE_COMMENT_START : REJECTED_COMMENT_START)
                     + freeComments.toString();
         }
     }
