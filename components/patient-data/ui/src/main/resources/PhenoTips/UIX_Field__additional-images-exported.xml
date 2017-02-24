@@ -125,7 +125,7 @@
       <extensionPointId>org.phenotips.patientSheet.after</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.field.additiona-images-exported</name>
+      <name>org.phenotips.patientSheet.field.additional-images-exported</name>
     </property>
     <property>
       <parameters>title=$services.localization.render('phenotips.UIXField.additionalImageExports')
