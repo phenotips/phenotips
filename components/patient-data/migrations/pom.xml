@@ -85,4 +85,9 @@
       <artifactId>json</artifactId>
     </dependency>
   </dependencies>
-</project>
+
+  <properties>
+    <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
+  </properties>
+
+  </project>

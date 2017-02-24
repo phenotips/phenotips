@@ -555,6 +555,22 @@
       <values>M=Male|F=Female|O=Other|U=Unknown</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </gender>
+    <genetic_notes>
+      <contenttype>PureText</contenttype>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>---</editor>
+      <name>genetic_notes</name>
+      <number>55</number>
+      <picker>0</picker>
+      <prettyName>Additional genetic notes</prettyName>
+      <rows>5</rows>
+      <size>40</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </genetic_notes>
     <gestation>
       <customDisplay>{{velocity}}
 #if ($type == 'edit')
