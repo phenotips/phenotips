@@ -227,7 +227,7 @@ define([
                 return;
             }
             //console.log("null");
-            this.validTargets = editor.getGraph().getPossiblePatientIDTarget(patient.gender);
+            this.validTargets = editor.getGraph().getPossiblePatientIDTarget();
             this.validTargets.forEach(function(nodeID) {
                 var node = editor.getNode(nodeID);
                 if (node) {
@@ -301,10 +301,6 @@ define([
             var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
             var node   = editor.getView().getPersonNodeNear(pos.x, pos.y);
             if (node) {
-                if (node.getGender() != patient.gender && node.getGender() != 'U' && patient.gender != 'U') {
-                    editor.getOkCancelDialogue().showCustomized("Can not drag the patient to a different gender","Can't assign", "OK", null);
-                    return;
-                }
                 if (node.getPhenotipsPatientId() != "") {
                     editor.getOkCancelDialogue().showCustomized("This individual is already linked to another patient","Can't assign", "OK", null);
                     return;
