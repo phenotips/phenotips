@@ -117,12 +117,12 @@ public class PhenotipsFamilyExport
 
     /**
      * Returns a list of families by the input search criteria. The user has to have requiredPermissions on each family.
-     * The list is returned as JSON if returnAsJSON is true or as HTML otherwise.
+     * The list is returned as JSON if returnAsJSON is true or as XML otherwise.
      *
      * @param input criterion to select families by
      * @param resultsLimit maximal number of results for each query
      * @param requiredPermissions permissions a user has to have over each family in the result
-     * @param returnAsJSON if true, the result is returned as JSON, otherwise as HTML
+     * @param returnAsJSON if true, the result is returned as JSON, otherwise as XML
      * @return list of families
      */
     public String searchFamilies(String input, int resultsLimit, String requiredPermissions, boolean returnAsJSON)
@@ -280,15 +280,15 @@ public class PhenotipsFamilyExport
     {
         JSONArray familyArray = null;
         JSONObject jsonResult = null;
-        StringBuilder htmlResult = null;
+        StringBuilder xmlResult = null;
         int count = 0;
 
         if (returnAsJSON) {
             familyArray = new JSONArray();
             jsonResult = new JSONObject();
         } else {
-            htmlResult = new StringBuilder();
-            htmlResult.append("<results>");
+            xmlResult = new StringBuilder();
+            xmlResult.append("<results>");
         }
 
         for (FamilySearchResult searchResult : results) {
@@ -306,12 +306,12 @@ public class PhenotipsFamilyExport
                 String escapedReference = XMLUtils.escapeXMLComment(searchResult.getReference());
                 String escapedDescription = XMLUtils.escapeXMLComment(searchResult.getDescription());
 
-                htmlResult.append("<rs id=\"").append(searchResult.getUrl()).append("\" ");
-                htmlResult.append("info=\"").append(escapedReference).append("\">");
+                xmlResult.append("<rs id=\"").append(searchResult.getUrl()).append("\" ");
+                xmlResult.append("info=\"").append(escapedReference).append("\">");
 
-                htmlResult.append(escapedDescription);
+                xmlResult.append(escapedDescription);
 
-                htmlResult.append("</rs>");
+                xmlResult.append("</rs>");
             }
         }
 
@@ -319,8 +319,8 @@ public class PhenotipsFamilyExport
             jsonResult.put("matchedFamilies", familyArray);
             return jsonResult.toString();
         } else {
-            htmlResult.append("</results>");
-            return htmlResult.toString();
+            xmlResult.append("</results>");
+            return xmlResult.toString();
         }
     }
 
