@@ -157,7 +157,7 @@ define([
                 'label' : 'Gestation age',
                 'type' : 'select',
                 'tab': 'Personal',
-                'range' : {'start': 0, 'end': 50, 'item' : ['week', 'weeks']},
+                'range' : {'start': 1, 'end': 50, 'labelSuffix' : ['week', 'weeks']},  // labelSuffix: [ forFirstItem, forAllOtherItems ]
                 'nullValue' : true,
                 'function' : 'setGestationAge'
             },
@@ -340,9 +340,8 @@ define([
                 'name' : 'numInGroup',
                 'label': 'Number of persons in this group',
                 'type' : 'select',
-                'values' : [{'actual': 1, displayed: 'N'}, {'actual': 2, displayed: '2'}, {'actual': 3, displayed: '3'},
-                            {'actual': 4, displayed: '4'}, {'actual': 5, displayed: '5'}, {'actual': 6, displayed: '6'},
-                            {'actual': 7, displayed: '7'}, {'actual': 8, displayed: '8'}, {'actual': 9, displayed: '9'}],
+                 // there can't be a group of 1 person, so value 1 below is reused to indicate unknwon number of people in the group
+                'range': {'start': 1, 'end': 99, 'replacementLabels' : {1: 'N'}},
                 'tab': 'Personal',
                 'function' : 'setNumPersons'
             },
@@ -355,14 +354,14 @@ define([
             },
             {
                 'name' : 'ethnicity',
-                'label' : 'Ethnicities<br>(common to all individuals in the group)',
+                'label' : 'Ethnicities<br/>(common to all individuals in the group)',
                 'type' : 'ethnicity-picker',
                 'tab': 'Personal',
                 'function' : 'setEthnicities'
             },
             {
                 'name' : 'disorders',
-                'label' : 'Known disorders<br>(common to all individuals in the group)',
+                'label' : 'Known disorders<br/>(common to all individuals in the group)',
                 'type' : 'disease-picker',
                 'tab': 'Clinical',
                 'function' : 'setDisorders'

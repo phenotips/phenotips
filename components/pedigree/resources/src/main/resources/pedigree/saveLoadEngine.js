@@ -364,7 +364,7 @@ define([
     SaveLoadEngine._displayFamilyPedigreeInterfaceError = function(replyJSON, title, messageIntro, callWhenDone)
     {
         var errorMessage = replyJSON.errorMessage ? replyJSON.errorMessage : "Unknown problem";
-        errorMessage = "<font color='#660000'>" + errorMessage + "</font><br><br>";
+        errorMessage = "<font color='#660000'>" + errorMessage + "</font><br/><br/>";
         if (replyJSON.errorType == "familyConflict") {
             //errorMessage += "(for now it is only possible to add persons who is not in another family to a family)";
         }
@@ -375,7 +375,7 @@ define([
             //errorMessage += "(you need to have edit permissions for the patient to be able to add it to a family)";
         }
         //errorMessage = "<font color='#660000'>" + errorMessage + "</font><br><br>";
-        editor.getOkCancelDialogue().showError('<br>' + messageIntro + errorMessage, title, "OK", callWhenDone );
+        editor.getOkCancelDialogue().showError('<br/>' + messageIntro + errorMessage, title, "OK", callWhenDone );
     }
 
     return SaveLoadEngine;

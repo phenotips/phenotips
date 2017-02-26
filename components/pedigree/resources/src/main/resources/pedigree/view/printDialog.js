@@ -31,7 +31,7 @@ define([
 
             var mainDiv = new Element('div', {'class': 'print-preview-selector field-no-user-select cursor-normal'});
 
-            var previewHeader = new Element('div', {'class': 'print-preview-header'}).update("Print preview:<br>(each block indicates a separate printed page; click on a page to exclude/include the page from print job)");
+            var previewHeader = new Element('div', {'class': 'print-preview-header'}).update("Print preview:<br/>(each block indicates a separate printed page; click on a page to exclude/include the page from print job)");
             this.previewContainer = new Element("div", {"id": "preview", "class": "preview-container"});
             var previewFooter = new Element('div', {'class': 'print-preview-footer fa fa-exclamation-triangle'});
             previewFooter.update(new Element('span', {'class': "print-preview-footer-text"}).update("Note: in some browsers you need to manually select correct orientation (landscape or portrait)"));

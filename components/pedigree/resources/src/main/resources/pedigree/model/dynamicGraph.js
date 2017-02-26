@@ -783,22 +783,19 @@ define([
             return result;
         },
 
-        getPossiblePatientIDTarget: function(gender) {
+        getPossiblePatientIDTarget: function() {
             // Valid targets:
             //  1) not currently linked to other patients
-            //  2) gender matches or is unknown
+            //  2) (updated) any gender
 
-            var validGendersSet = (gender == 'U') ? ['M','F','U','O'] : [gender,'U'];
-            var nodesWithValidGender = this._getAllPersonsOfGenders(validGendersSet);
-
+            var allPersonNodes = this.getAllPersonIDs();
             var result = [];
             // exclude those nodes which already have a phenotipsID link
-            for (var i = 0; i < nodesWithValidGender.length; i++) {
-                if (this.getPhenotipsLinkID(nodesWithValidGender[i]) == "") {
-                    result.push(nodesWithValidGender[i]);
+            for (var i = 0; i < allPersonNodes.length; i++) {
+                if (this.getPhenotipsLinkID(allPersonNodes[i]) == "") {
+                    result.push(allPersonNodes[i]);
                 }
             }
-
             return result;
         },
 

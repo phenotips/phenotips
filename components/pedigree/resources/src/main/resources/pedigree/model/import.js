@@ -347,9 +347,6 @@ define([
                 if (typeof fatherID === 'undefined') {
                     throw "Unable to import pedigree: incorrect father link on line " + (i+1) + "; Maybe import data is not in PED format?";
                 }
-                if (newG.properties[fatherID].gender == "F") {
-                    throw "Unable to import pedigree: a person declared as female [id: " + fatherID + "] is also declared as being a father for [id: "+thisPersonName+"]";
-                }
             }
             if (motherID == 0) {
                 motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, newG.defaultPersonNodeWidth );
@@ -357,9 +354,6 @@ define([
                 motherID = nameToId[motherID];
                 if (typeof motherID === 'undefined') {
                     throw "Unable to import pedigree: incorrect mother link on line " + (i+1) + "; Maybe import data is not in PED format?";
-                }
-                if (newG.properties[motherID].gender == "M") {
-                    throw "Unable to import pedigree: a person declared as male [id: " + motherID + "] is also declared as being a mother for [id: "+thisPersonName+"]";
                 }
             }
 
@@ -599,17 +593,11 @@ define([
            fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, newG.defaultPersonNodeWidth );
           } else {
             fatherID = nameToId[fatherID];
-            if (newG.properties[fatherID].gender == "F") {
-              throw "Unable to import pedigree: a person declared as female [id: " + fatherID + "] is also declared as being a father for [id: "+extID+"]";
-            }
           }
           if (motherID == 0) {
             motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, newG.defaultPersonNodeWidth );
           } else {
             motherID = nameToId[motherID];
-            if (newG.properties[motherID].gender == "M") {
-              throw "Unable to import pedigree: a person declared as male [id: " + motherID + "] is also declared as being a mother for [id: "+extID+"]";
-            }
           }
 
           // both motherID and fatherID are now given and represent valid existing nodes in the pedigree
@@ -909,15 +897,11 @@ define([
                var fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, newG.defaultPersonNodeWidth );
            } else {
                var fatherID = findReferencedPerson(fatherLink, "father");
-               if (newG.properties[fatherID].gender == "F")
-                   throw "Unable to import pedigree: a person declared as female is also declared as being a father ("+fatherLink+")";
            }
            if (motherLink == null) {
                var motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, newG.defaultPersonNodeWidth );
            } else {
                var motherID = findReferencedPerson(motherLink, "mother");
-               if (newG.properties[motherID].gender == "M")
-                   throw "Unable to import pedigree: a person declared as male is also declared as being a mother ("+motherLink+")";
            }
 
            if (fatherID == personID || motherID == personID)
@@ -1320,15 +1304,11 @@ define([
                var fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, newG.defaultPersonNodeWidth );
            } else {
                var fatherID = externalIDToID[fatherLink];
-               if (newG.properties[fatherID].gender == "F")
-                   throw "Unable to import pedigree: a person declared as female is also declared as being a father ("+fatherLink+")";
            }
            if (motherLink == null) {
                var motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, newG.defaultPersonNodeWidth );
            } else {
                var motherID = externalIDToID[motherLink];
-               if (newG.properties[motherID].gender == "M")
-                   throw "Unable to import pedigree: a person declared as male is also declared as being a mother ("+motherLink+")";
            }
 
            // both motherID and fatherID are now given and represent valid existing nodes in the pedigree

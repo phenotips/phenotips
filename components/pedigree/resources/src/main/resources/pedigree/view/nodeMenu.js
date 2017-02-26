@@ -542,13 +542,16 @@ define([
 
         update: function(newTarget) {
             //console.log("Node menu: update");
-            if (newTarget)
+            if (newTarget) {
                 this.targetNode = newTarget;
+            }
 
             if (this.targetNode) {
                 this._updating = true;   // needed to avoid infinite loop: update -> _attachFieldEventListeners -> update -> ...
                 this._setCrtData(this.targetNode.getSummary());
-                this.reposition();
+                if (newTarget) {
+                    this.reposition();
+                }
                 delete this._updating;
             }
         },
@@ -757,19 +760,23 @@ define([
                         });
                     }
 
-                    var processLinking = function(topMessage, notesMessage) {
-                        editor.getOkCancelDialogue().showWithCheckbox("<br><b>" + topMessage + "</b><br>" +
-                            "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
-                            notesMessage + "</div>",
-                            "Add patient to the family?",
-                            "Do not show this warning again<br>", false,
-                            "Confirm", function(checkBoxStatus) { setDoNotShow(checkBoxStatus); processCreatePatient() },
-                            "Cancel",  function(checkBoxStatus) { setDoNotShow(checkBoxStatus); });
-                    }
+                    if (!editor.getPreferencesManager().getConfigurationOption("hideShareConsentDialog")) {
+                        var processLinking = function(topMessage, notesMessage) {
+                            editor.getOkCancelDialogue().showWithCheckbox("<br/><b>" + topMessage + "</b><br/>" +
+                                "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br/><br/>"+
+                                notesMessage + "</div>",
+                                "Add patient to the family?",
+                                "Do not show this warning again<br/>", false,
+                                "Confirm", function(checkBoxStatus) { setDoNotShow(checkBoxStatus); processCreatePatient() },
+                                "Cancel",  function(checkBoxStatus) { setDoNotShow(checkBoxStatus); });
+                        }
 
-                    processLinking("When you create a new patient and add to this family:<br>",
-                            "1) A copy of this pedigree will be placed in the electronic record of each family member.<br><br>"+
-                            "2) This pedigree can be edited by any user with access to any member of the family.");
+                        processLinking("When you create a new patient and add to this family:<br/>",
+                                "1) A copy of this pedigree will be placed in the electronic record of each family member.<br/><br/>"+
+                                "2) This pedigree can be edited by any user with access to any member of the family.");
+                    } else {
+                        processCreatePatient();
+                    }
 
                     _this.reposition();
                 });
@@ -856,7 +863,13 @@ define([
                 if (data.values) {
                     data.values.each(_generateSelectOption);
                 } else if (data.range) {
-                    $A($R(data.range.start, data.range.end)).each(function(i) {_generateSelectOption({'actual': i, 'displayed' : i + ' ' + data.range.item[+(i!=1)]})});
+                    var createSelectionLabel = function(i, data) {
+                        if (data.range.replacementLabels && data.range.replacementLabels.hasOwnProperty(i)) {
+                            return data.range.replacementLabels[i];
+                        }
+                        return i + (data.range.labelSuffix ? (' ' + data.range.labelSuffix[+(i!=data.range.start)]) : '');
+                    }
+                    $A($R(data.range.start, data.range.end)).each(function(i) {_generateSelectOption({'actual': i, 'displayed' : createSelectionLabel(i, data)})});
                 }
                 optionHTML += "</select>";
                 span.innerHTML = optionHTML;
