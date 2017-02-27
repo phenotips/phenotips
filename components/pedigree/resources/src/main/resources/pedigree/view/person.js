@@ -983,22 +983,34 @@ define([
             this._setGenes(genes, "rejected");
         },
 
+        /**
+         * Sets the list of carrier genes of this person to the given list
+         *
+         * @method setCarrierGenes
+         * @param {Array} genes List of gene names (as strings)
+         */
+        setCarrierGenes: function(genes) {
+            this._setGenes(genes, "carrier");
+        },
+
         // used by controller in conjuntion with setCandidateGenes
         getCandidateGenes: function() {
             return this._getGeneArray("candidate");
         },
 
-        // used by controller in conjuntion with setCandidateGenes
         getCausalGenes: function() {
             return this._getGeneArray("solved");
         },
 
-        // used by controller in conjuntion with setCandidateGenes
         getRejectedGenes: function() {
             return this._getGeneArray("rejected");
         },
 
-        // returns null if geneID is not presemnt, or gene status if it is
+        getCarrierGenes: function() {
+            return this._getGeneArray("carrier");
+        },
+
+        // returns null if geneID is not present, or gene status if it is
         getGeneStatus: function(geneID) {
             var geneIndex = Person.getGeneIndex(geneID, this.getGenes());
             if (geneIndex == -1) {
@@ -1006,7 +1018,6 @@ define([
             }
             return this.getGenes()[geneIndex].status;
         },
-
 
         // returns an array of Gene objects (as accepted by NodeMenu) of genes which are
         // present in this patient with the given status
@@ -1203,6 +1214,7 @@ define([
             var inactiveLostContact = this.isProband() || !editor.getGraph().isRelatedToProband(this.getID());
 
             var rejectedGeneList = this.getRejectedGenes();
+            var carrierGeneList  = this.getCarrierGenes();
 
             var disabledDeathDetails = (this.getLifeStatus() != 'stillborn' && this.getLifeStatus() != 'miscarriage' && this.getLifeStatus() != 'deceased');
 
@@ -1210,39 +1222,40 @@ define([
             //       birth date of any ancestors; only suggest death dates which are after birth date
 
             var menuData = {
-                identifier:    {value : this.getID()},
-                first_name:    {value : this.getFirstName(), disabled: false},
-                last_name:     {value : this.getLastName(), disabled: false},
+                identifier:      {value : this.getID()},
+                first_name:      {value : this.getFirstName(), disabled: false},
+                last_name:       {value : this.getLastName(), disabled: false},
                 last_name_birth: {value: this.getLastNameAtBirth()}, //, inactive: (this.getGender() != 'F')},
-                external_id:   {value : this.getExternalID(), disabled: false},
-                gender:        {value : this.getGender()},
-                date_of_birth: {value : this.getBirthDate(), inactive: this.isFetus(), disabled: false},
-                carrier:       {value : this.getCarrierStatus(), disabled: inactiveCarriers},
-                disorders:     {value : disorders, disabled: false},
-                ethnicity:     {value : this.getEthnicities()},
+                external_id:     {value : this.getExternalID(), disabled: false},
+                gender:          {value : this.getGender()},
+                date_of_birth:   {value : this.getBirthDate(), inactive: this.isFetus(), disabled: false},
+                carrier:         {value : this.getCarrierStatus(), disabled: inactiveCarriers},
+                disorders:       {value : disorders, disabled: false},
+                ethnicity:       {value : this.getEthnicities()},
                 candidate_genes: {value : this.getCandidateGenes(), disabled: false},
                 causal_genes:    {value : this.getCausalGenes(), disabled: false},
+                carrier_genes:   {value : this.getCarrierGenes(), disabled: false},
                 rejected_genes:  {value : rejectedGeneList, disabled: true, inactive: (rejectedGeneList.length == 0)},
-                adopted:       {value : this.getAdopted(), inactive: cantChangeAdopted},
-                state:         {value : this.getLifeStatus(), inactive: inactiveStates, disabled: disabledStates},
-                aliveandwell:  {value : this.getAliveAndWell(), inactive: this.isFetus()},
-                deceasedAge:  {value : this.getDeceasedAge(), inactive: this.isFetus(), disabled : disabledDeathDetails},
-                deceasedCause:  {value : this.getDeceasedCause(), disabled : disabledDeathDetails},
-                date_of_death: {value : this.getDeathDate(), inactive: this.isFetus(), disabled: false},
+                adopted:         {value : this.getAdopted(), inactive: cantChangeAdopted},
+                state:           {value : this.getLifeStatus(), inactive: inactiveStates, disabled: disabledStates},
+                aliveandwell:    {value : this.getAliveAndWell(), inactive: this.isFetus()},
+                deceasedAge:     {value : this.getDeceasedAge(), inactive: this.isFetus(), disabled : disabledDeathDetails},
+                deceasedCause:   {value : this.getDeceasedCause(), disabled : disabledDeathDetails},
+                date_of_death:   {value : this.getDeathDate(), inactive: this.isFetus(), disabled: false},
                 commentsClinical:{value : this.getComments(), inactive: false},
                 commentsPersonal:{value : this.getComments(), inactive: false},  // so far the same set of comments is displayed on all tabs
                 commentsCancers: {value : this.getComments(), inactive: false},
-                gestation_age: {value : this.getGestationAge(), inactive : !this.isFetus()},
+                gestation_age:   {value : this.getGestationAge(), inactive : !this.isFetus()},
                 childlessSelect: {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none', inactive : childlessInactive},
                 childlessText:   {value : this.getChildlessReason() ? this.getChildlessReason() : undefined, inactive : childlessInactive, disabled : !this.getChildlessStatus()},
-                placeholder:   {value : false, inactive: true },
-                monozygotic:   {value : this.getMonozygotic(), inactive: inactiveMonozygothic, disabled: disableMonozygothic },
-                evaluated:     {value : this.getEvaluated() },
-                hpo_positive:  {value : hpoTerms, disabled: false },
-                nocontact:     {value : this.getLostContact(), inactive: inactiveLostContact },
-                cancers:       {value : this.getCancers() },
-                phenotipsid:   {value : this.getPhenotipsPatientId() },
-                setproband:    {value : "allow", inactive: this.isProband() }
+                placeholder:     {value : false, inactive: true },
+                monozygotic:     {value : this.getMonozygotic(), inactive: inactiveMonozygothic, disabled: disableMonozygothic },
+                evaluated:       {value : this.getEvaluated() },
+                hpo_positive:    {value : hpoTerms, disabled: false },
+                nocontact:       {value : this.getLostContact(), inactive: inactiveLostContact },
+                cancers:         {value : this.getCancers() },
+                phenotipsid:     {value : this.getPhenotipsPatientId() },
+                setproband:      {value : "allow", inactive: this.isProband() }
             };
 
             var extensionParameters = { "menuData": menuData, "node": this };

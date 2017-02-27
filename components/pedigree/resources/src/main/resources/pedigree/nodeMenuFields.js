@@ -139,6 +139,13 @@ define([
                 'function' : 'setRejectedGenes' // not needed: read only for now
             },
             {
+                'name' : 'carrier_genes',
+                'label' : 'Genotype: carrier genes',
+                'type' : 'gene-picker',
+                'tab': 'Clinical',
+                'function' : 'setCarrierGenes'
+            },
+            {
                 'name' : 'date_of_birth',
                 'label' : 'Date of birth',
                 'type' : 'date-picker',

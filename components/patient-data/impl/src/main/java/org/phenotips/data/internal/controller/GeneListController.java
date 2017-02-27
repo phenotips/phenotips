@@ -99,6 +99,8 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
     private static final String INTERNAL_SOLVED_VALUE = "solved";
 
+    private static final String INTERNAL_CARRIER_VALUE = "carrier";
+
     private static final String JSON_GENE_ID = "id";
 
     private static final String JSON_GENE_SYMBOL = INTERNAL_GENE_KEY;
@@ -116,7 +118,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     private static final String JSON_REJECTEDGENES_KEY = "rejectedGenes";
 
     private static final List<String> STATUS_VALUES = Arrays.asList(INTERNAL_CANDIDATE_VALUE, INTERNAL_REJECTED_VALUE,
-        INTERNAL_SOLVED_VALUE);
+        INTERNAL_SOLVED_VALUE, INTERNAL_CARRIER_VALUE);
 
     private static final List<String> STRATEGY_VALUES = Arrays.asList("sequencing", "deletion", "familial_mutation",
         "common_mutations");

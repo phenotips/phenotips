@@ -27,6 +27,7 @@ define([
         "pedigree/view/candidateGeneLegend",
         "pedigree/view/causalGeneLegend",
         "pedigree/view/rejectedGeneLegend",
+        "pedigree/view/carrierGeneLegend",
         "pedigree/view/hpoLegend",
         "pedigree/view/patientDropLegend",
         "pedigree/view/importSelector",
@@ -61,6 +62,7 @@ define([
         CandidateGeneLegend,
         CausalGeneLegend,
         RejectedGeneLegend,
+        CarrierGeneLegend,
         HPOLegend,
         PatientDropLegend,
         ImportSelector,
@@ -121,6 +123,7 @@ define([
             this._candidateGeneLegend = new CandidateGeneLegend();
             this._causalGeneLegend = new CausalGeneLegend();
             this._rejectedGeneLegend = new RejectedGeneLegend();
+            this._carrierGeneLegend = new CarrierGeneLegend();
             this._hpoLegend = new HPOLegend();
             this._cancerLegend = new CancerLegend();
             this._patientLegend = new PatientDropLegend();
@@ -554,6 +557,8 @@ define([
                 return this.getCausalGeneLegend();
             } else if (geneStatus == "rejected") {
                 return this.getRejectedGeneLegend();
+            } else if (geneStatus == "carrier") {
+                return this.getCarrierGeneLegend();
             }
             return null;
         },
@@ -583,12 +588,20 @@ define([
         },
 
         /**
+         * @method getCarrierGeneLegend
+         * @return {Legend} Responsible for managing carrier genes
+         */
+        getCarrierGeneLegend: function() {
+            return this._carrierGeneLegend;
+        },
+
+        /**
          * Returns the color of the gene for a given person (the color may be different for different people
          * because the same gene my be causal for one person and candidate or rejected for another).
          * If a gene does not belong to any legend "undefined" is returned.
          */
         getGeneColor: function(geneId, nodeID) {
-            var availableLegends = ["solved", "candidate"];
+            var availableLegends = ["solved", "candidate", "carrier"];
             for (var i = 0; i < availableLegends.length; i++) {
                 var colorInLegendForNode = this.getGeneLegend(availableLegends[i]).getGeneColor(geneId, nodeID);
                 if (colorInLegendForNode) {

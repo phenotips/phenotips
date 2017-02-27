@@ -196,7 +196,7 @@ define([
       }
       //
       // status == "2" means "affected by one or more of the selected abnormalities"
-      //               (even if some other abnormallities are explicitly selected as "unaffected")
+      //               (even if some other abnormalities are explicitly selected as "unaffected")
       //
       // status == "1" only for nodes which have a phenotype explicitly selected as "not present" or
       //               a cancer explicitly selected as "unaffected" or a gene is explicitly selected as "rejected"
@@ -204,7 +204,7 @@ define([
       //               only if one type of abnormality is selected, e.g. only "phenotypes" or only "cancers"
       //               or only genes (e.g. if both "phenotypes" and "cancers" are selected, code "1" is never used).
       //
-      //               (the reason is it becomes amboiguous what "unaffected" means when multiuple abnormalities
+      //               (the reason is it becomes ambiguous what "unaffected" means when multiple abnormalities
       //               are selected, since with the current datamodel for most abnormalities it is hard to
       //               distinguish "missing data" from "not affected")
       //
@@ -217,7 +217,8 @@ define([
       var cancersSelected       = selectedMap.hasOwnProperty("ped-cancers-options");
       var candidateGeneSelected = selectedMap.hasOwnProperty("ped-candidateGenes-options");
       var causalGeneSelected    = selectedMap.hasOwnProperty("ped-causalGenes-options");
-      var genesSelected         = candidateGeneSelected || causalGeneSelected;
+      var carrierGeneSelected   = selectedMap.hasOwnProperty("ped-carrierGenes-options");
+      var genesSelected         = candidateGeneSelected || causalGeneSelected || carrierGeneSelected;
 
       var atMostOneSelected = function(a, b, c) {
           return a ? (!b && !c) : (!b || !c);
@@ -249,16 +250,20 @@ define([
               var nodeGenes = nodeProperties["genes"];
               var candidateGenes = [];
               var solvedGenes    = [];
-              var negativeGenes = [];
+              var negativeGenes  = [];
+              var carrierGenes   = [];
               nodeGenes.each( function(item) {
                   if (candidateGeneSelected && (item.status == "candidate")) {
                       candidateGenes.push(item.id);
-                  } else
+                  }
                   if (causalGeneSelected && (item.status == "solved")) {
                       solvedGenes.push(item.id);
                   }
                   if (item.status == "rejected") {
                       negativeGenes.push(item.id);
+                  }
+                  if (item.status == "carrier") {
+                      carrierGenes.push(item.id);
                   }
               });
               // if at least one of the possible genes is in the selected list, mark as affected
@@ -266,6 +271,9 @@ define([
                   return 2; // affected
               }
               if (causalGeneSelected && listsIntersect(selectedMap["ped-causalGenes-options"], solvedGenes)) {
+                  return 2; // affected
+              }
+              if (carrierGeneSelected && listsIntersect(selectedMap["ped-carrierGenes-options"], carrierGenes)) {
                   return 2; // affected
               }
               // if not explicitly affected AND all of the selected genes are explicitly not present
@@ -276,6 +284,9 @@ define([
                       allSelectedAreNegative = false;
                   }
                   if (causalGeneSelected && !listIsASubsetOf(selectedMap["ped-causalGenes-options"], negativeGenes)) {
+                      allSelectedAreNegative = false;
+                  }
+                  if (carrierGeneSelected && !listIsASubsetOf(selectedMap["ped-carrierGenes-options"], negativeGenes)) {
                       allSelectedAreNegative = false;
                   }
                   if (allSelectedAreNegative) {

@@ -248,6 +248,7 @@ define([
             var cancers = editor.getCancerLegend().getAllNames();
             var candidateGenes = editor.getCandidateGeneLegend().getAllNames();
             var causalGenes = editor.getCausalGeneLegend().getAllNames();
+            var carrierGenes = editor.getCarrierGeneLegend().getAllNames();
 
             var pedContainer = this.dialog.content.select('#pedOptions')[0];
 
@@ -256,8 +257,9 @@ define([
             var hasCancers = Object.keys(cancers).length > 0;
             var hasCandidateGenes = Object.keys(candidateGenes).length > 0;
             var hasCausalGenes = Object.keys(causalGenes).length > 0;
+            var hasCarrierGenes = Object.keys(carrierGenes).length > 0;
 
-            if (hasDisorders || hasPhenotypes || hasCancers || hasCandidateGenes || hasCausalGenes) {
+            if (hasDisorders || hasPhenotypes || hasCancers || hasCandidateGenes || hasCausalGenes || hasCarrierGenes) {
                 var label = new Element('label', {'class': 'export-config-header ped-header'}).insert("Which of the following should be reflected in the affected column in PED file? ");
                 pedContainer.insert(label.wrap('td').wrap('tr', {'class' : "ped-special-options"}));
 
@@ -268,6 +270,7 @@ define([
                 hasCancers && this._addPedOption("cancers", cancers, traitsContainner);
                 hasCandidateGenes && this._addPedOption("candidateGenes", candidateGenes, traitsContainner, "candidate genes");
                 hasCausalGenes && this._addPedOption("causalGenes", causalGenes, traitsContainner, "confirmed causal genes");
+                hasCarrierGenes && this._addPedOption("carrierGenes", carrierGenes, traitsContainner, "confirmed carrier genes");
 
                 pedContainer.insert(traitsContainner.wrap('div', {'id': 'scrollable-container'}).wrap('td').wrap('tr', {'class': 'ped-special-options'}));
 

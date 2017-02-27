@@ -342,10 +342,11 @@ define([
                         setUndoEventPropertyIfNotSet("setDisorders", node.getDisorders().slice(0));
                     }
                     if (propertySetFunction == "setCausalGenes" || propertySetFunction == "setCandidateGenes"
-                        || propertySetFunction == "setRejectedGenes") {
+                        || propertySetFunction == "setRejectedGenes" || propertySetFunction == "setCarrierGenes") {
                         setUndoEventPropertyIfNotSet("setCausalGenes", node.getCausalGenes());
                         setUndoEventPropertyIfNotSet("setCandidateGenes", node.getCandidateGenes());
                         setUndoEventPropertyIfNotSet("setRejectedGenes", node.getRejectedGenes());
+                        setUndoEventPropertyIfNotSet("setCarrierGenes", node.getCarrierGenes());
                     }
 
                     node[propertySetFunction](propValue);
