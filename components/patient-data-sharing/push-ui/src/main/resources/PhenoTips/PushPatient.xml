@@ -709,6 +709,7 @@
 
         var onConsentStateChange = function(consentName, consentState) {
             this._pushResultSection.update("");
+            this._enablePushButton();
         }.bind(this);
         this._consentsManager.update("");
         this._updateConsentHint(this._selectedServer + " " + "$!escapetool.javascript($services.localization.render('phenotips.patientSharing.push.dialog.consents.hint'))");
@@ -808,7 +809,7 @@
 
         this._serverInfo.update(new Element('dl').insert(serverLink.clone(true).wrap('dt')).insert(serverData.desc &amp;&amp; new Element('dd', {'class' : 'hint'}).update(serverData.desc) || '').insert(existingPatientDataInfo || ''));
 
-        this._approveMessage.update("$!escapetool.javascript($services.localization.render('phenotips.patientSharing.push.dialog.confirmation.label'))".replace("__serverID__", this._selectedServer));
+        this._approveMessage.update("$!escapetool.javascript($services.localization.render('phenotips.patientSharing.push.dialog.confirmation.label'))".replace("__serverID__", this._selectedServer) + " $!escapetool.javascript($services.localization.render('phenotips.PushPatient.required'))");
 
         if (!keepUserAndGroup) {
             this._serverInfo.show();
@@ -868,17 +869,21 @@
       this._pushButton = buttons.down('input[name="submit"]');
       this._checkBoxApprove.observe("click", function(event) {
         _this._pushResultSection.update("");
-        if (_this._checkBoxApprove.checked) {
-          _this._pushButton.enable();
-        } else {
-          _this._pushButton.disable();
-        }
+        _this._enablePushButton();
       });
 
       this._container.observe('submit', function(event) {
         event.stop();
         _this._pushSelectFieldsAndPatients();
       })  // observe('submit')
+    },
+
+    _enablePushButton: function() {
+        if (this._checkBoxApprove.checked &amp;&amp; this._consentsModule.allRequiredChecked()) {
+          this._pushButton.enable();
+        } else {
+          this._pushButton.disable();
+        }
     },
 
     _updatingExistingPatient: function() {
@@ -1596,6 +1601,9 @@ function _printObjectInternal(o, level) {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+.consent-label.required {
+  font-weight: bold;
 }
 </code>
     </property>
