@@ -879,7 +879,7 @@
     },
 
     _enablePushButton: function() {
-        if (this._checkBoxApprove.checked &amp;&amp; this._consentsModule.allReqiredChecked()) {
+        if (this._checkBoxApprove.checked &amp;&amp; this._consentsModule.allRequiredChecked()) {
           this._pushButton.enable();
         } else {
           this._pushButton.disable();
@@ -1604,9 +1604,6 @@ function _printObjectInternal(o, level) {
 }
 .consent-label.required {
   font-weight: bold;
-}
-li[class*='required']::after {
-    content: " $!escapetool.javascript($services.localization.render('phenotips.PushPatient.required'))";
 }
 </code>
     </property>

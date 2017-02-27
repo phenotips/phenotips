@@ -409,11 +409,11 @@
           }).get();
         },
 
-        allReqiredChecked: function() {
+        allRequiredChecked: function() {
           if (!this.classVariables.consentsBlock) {
             return true;
           }
-          var requiredUnchecked = this.classVariables.consentsBlock.find("li[class*='required'] input[type=checkbox]:not(:checked)");
+          var requiredUnchecked = this.classVariables.consentsBlock.find("li.required input[type=checkbox]:not(:checked)");
           return (requiredUnchecked.length == 0);
         },
 
@@ -445,7 +445,7 @@
 
         displayConsentLabel: function (consent)
         {
-          return $("&lt;li class='consent-label " + (consent.isRequired ? " required":"") + "'&gt;" + consent.label + "&lt;/li&gt;");
+          return $("&lt;li class='consent-label " + (consent.isRequired ? " required":"") + "'&gt;" + consent.label + (consent.isRequired ? " $!escapetool.javascript($services.localization.render('phenotips.PushPatient.required'))":"") + "&lt;/li&gt;");
         },
 
         displayConsentDescription: function (consent)
