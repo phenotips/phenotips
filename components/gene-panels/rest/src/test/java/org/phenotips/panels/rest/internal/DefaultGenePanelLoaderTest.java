@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
  * Unit tests for {@link DefaultGenePanelLoader}.
  *
  * @version $Id$
- * @since 1.3M6
+ * @since 1.3
  */
 public class DefaultGenePanelLoaderTest
 {

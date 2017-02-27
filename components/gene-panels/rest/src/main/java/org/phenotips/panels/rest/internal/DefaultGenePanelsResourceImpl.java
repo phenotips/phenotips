@@ -21,14 +21,16 @@ import org.phenotips.panels.GenePanel;
 import org.phenotips.panels.rest.GenePanelsResource;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.container.Container;
+import org.xwiki.container.Request;
 import org.xwiki.rest.XWikiResource;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -36,6 +38,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
@@ -43,7 +46,7 @@ import org.slf4j.Logger;
  * Default implementation of the {@link GenePanelsResource}.
  *
  * @version $Id$
- * @since 1.3M6
+ * @since 1.3
  */
 @Component
 @Named("org.phenotips.panels.rest.internal.DefaultGenePanelsResourceImpl")
@@ -56,33 +59,52 @@ public class DefaultGenePanelsResourceImpl extends XWikiResource implements Gene
 
     private static final String START_PAGE_LABEL = "startPage";
 
+    private static final String RESULTS_LABEL = "numResults";
+
     @Inject
     private Logger logger;
 
     @Inject
     private GenePanelLoader genePanelLoader;
 
+    @Inject
+    private Container container;
+
     @Override
-    public Response getGeneCountsFromPhenotypes(@Nullable final List<String> presentTerms,
-        @Nullable final List<String> absentTerms, final Integer startPage, final Integer numResults,
-        final Integer reqNo)
+    public Response getGeneCountsFromPhenotypes()
     {
+        Request request = this.container.getRequest();
+        List<String> presentTerms = new ArrayList<>();
+        for (Object t : request.getProperties("present-term")) {
+            if (t != null) {
+                presentTerms.add((String) t);
+            }
+        }
+        presentTerms = Collections.unmodifiableList(presentTerms);
+        List<String> absentTerms = new ArrayList<>();
+        for (Object t : request.getProperties("absent-term")) {
+            if (t != null) {
+                absentTerms.add((String) t);
+            }
+        }
+        absentTerms = Collections.unmodifiableList(absentTerms);
+
         if (CollectionUtils.isEmpty(presentTerms) && CollectionUtils.isEmpty(absentTerms)) {
             this.logger.error("No content provided.");
             return Response.status(Response.Status.NO_CONTENT).build();
         }
 
-        final List<String> presentTermList = (presentTerms == null)
-            ? Collections.<String>emptyList()
-            : Collections.unmodifiableList(presentTerms);
+        final int startPage = NumberUtils.toInt((String) request.getProperty(START_PAGE_LABEL), 1);
+        final int numResults = NumberUtils.toInt((String) request.getProperty(RESULTS_LABEL), -1);
+        final int reqNo = NumberUtils.toInt((String) request.getProperty(REQ_NO), 0);
 
         try {
             // Try to generate the JSON for the requested subset of data.
-            final JSONObject panels = getPageData(this.genePanelLoader.get(presentTermList), startPage, numResults);
+            final JSONObject panels = getPageData(this.genePanelLoader.get(presentTerms), startPage, numResults);
             panels.put(REQ_NO, reqNo);
             return Response.ok(panels, MediaType.APPLICATION_JSON_TYPE).build();
         } catch (final ExecutionException e) {
-            this.logger.error("No content associated with [present-term: {}, absent-term: {}].", presentTermList,
+            this.logger.error("No content associated with [present-term: {}, absent-term: {}].", presentTerms,
                 absentTerms);
             return Response.status(Response.Status.NO_CONTENT).build();
         } catch (final IndexOutOfBoundsException e) {

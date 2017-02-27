@@ -20,14 +20,12 @@ package org.phenotips.panels.internal;
 import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
 import org.phenotips.panels.GenePanel;
-import org.phenotips.panels.GenePanelFactory;
 import org.phenotips.panels.TermsForGene;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,8 +36,8 @@ import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
@@ -52,7 +50,7 @@ import static org.mockito.Mockito.when;
  * Unit tests for {@link DefaultGenePanelImpl}.
  *
  * @version $Id$
- * @since 1.3M6
+ * @since 1.3
  */
 public class DefaultGenePanelImplTest
 {
@@ -80,8 +78,6 @@ public class DefaultGenePanelImplTest
 
     private static final String ENSEMBL_ID = "ensembl_gene_id";
 
-    private static final String HPO_LABEL = "hpo";
-
     private static final String HGNC_LABEL = "hgnc";
 
     private static final String SIZE_LABEL = "size";
@@ -100,14 +96,10 @@ public class DefaultGenePanelImplTest
 
     private static final String ID_LABEL = "id";
 
-    @Rule
-    public MockitoComponentMockingRule<GenePanelFactory> mocker =
-        new MockitoComponentMockingRule<GenePanelFactory>(DefaultGenePanelFactoryImpl.class);
+    @Mock
+    private VocabularyManager vocabularyManager;
 
-    private GenePanelFactory genePanelFactory;
-
-    private Vocabulary hpo;
-
+    @Mock
     private Vocabulary hgnc;
 
     private Patient patient;
@@ -138,34 +130,28 @@ public class DefaultGenePanelImplTest
     public void setUp() throws ComponentLookupException
     {
         MockitoAnnotations.initMocks(this);
-        this.genePanelFactory = this.mocker.getComponentUnderTest();
-        final VocabularyManager vocabularyManager = this.mocker.getInstance(VocabularyManager.class);
-        this.hpo = mock(Vocabulary.class);
-        this.hgnc = mock(Vocabulary.class);
-
-        when(vocabularyManager.getVocabulary(HPO_LABEL)).thenReturn(this.hpo);
-        when(vocabularyManager.getVocabulary(HGNC_LABEL)).thenReturn(this.hgnc);
+        when(this.vocabularyManager.getVocabulary(HGNC_LABEL)).thenReturn(this.hgnc);
 
         makeGenePanelMocks();
         makeExpectedTermsForGeneJSON();
 
-        this.patientGenePanel = this.genePanelFactory.build(this.patient);
-        this.termsGenePanel = this.genePanelFactory.build(Collections.unmodifiableList(this.presentTerms),
-            Collections.unmodifiableList(this.absentTerms));
-        this.presentTermsGenePanel = this.genePanelFactory.build(Collections.unmodifiableList(this.presentTerms),
-            Collections.<VocabularyTerm>emptyList());
+        this.patientGenePanel = new DefaultGenePanelImpl(this.patient, this.vocabularyManager);
+        this.termsGenePanel = new DefaultGenePanelImpl(Collections.unmodifiableList(this.presentTerms),
+            Collections.unmodifiableList(this.absentTerms), this.vocabularyManager);
+        this.presentTermsGenePanel = new DefaultGenePanelImpl(Collections.unmodifiableList(this.presentTerms),
+            Collections.<VocabularyTerm>emptyList(), this.vocabularyManager);
     }
 
     //---------------------------------Gene panel from patient---------------------------------//
 
     @Test
-    public void confirmPanelIsEmptyIfEmptyPatient()
+    public void panelIsEmptyIfInputIsEmpty()
     {
-        final GenePanel panel = this.genePanelFactory.build(mock(Patient.class));
+        final GenePanel panel = new DefaultGenePanelImpl(mock(Patient.class), this.vocabularyManager);
         assertEquals(0, panel.size());
-        assertEquals(Collections.<VocabularyTerm>emptySet(), panel.getPresentTerms());
-        assertEquals(Collections.<VocabularyTerm>emptySet(), panel.getAbsentTerms());
-        assertEquals(Collections.<TermsForGene>emptyList(), panel.getTermsForGeneList());
+        assertTrue(panel.getPresentTerms().isEmpty());
+        assertTrue(panel.getAbsentTerms().isEmpty());
+        assertTrue(panel.getTermsForGeneList().isEmpty());
 
         final JSONObject expectedJSON = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
             .put(GENES_LABEL, new JSONArray());
@@ -173,19 +159,19 @@ public class DefaultGenePanelImplTest
     }
 
     @Test
-    public void testGetPresentTermsForPatientObjectThatOnlyHasFeatureData()
+    public void presentTermsExtractedCorrectlyFromPatientFeatureData()
     {
         assertEquals(new HashSet<>(this.presentTerms), this.patientGenePanel.getPresentTerms());
     }
 
     @Test
-    public void testGetAbsentTermsForPatientObjectThatOnlyHasFeatureData()
+    public void absentTermsExtractedCorrectlyFromPatientFeatureData()
     {
         assertEquals(new HashSet<>(this.absentTerms), this.patientGenePanel.getAbsentTerms());
     }
 
     @Test
-    public void testGetTermsForGeneListForPatientObjectThatOnlyHasFeatureData()
+    public void termsForGeneListIsConstructedFromPatientFeatureData()
     {
         final List<TermsForGene> termsForGeneList = this.patientGenePanel.getTermsForGeneList();
         assertEquals(3, termsForGeneList.size());
@@ -242,14 +228,14 @@ public class DefaultGenePanelImplTest
     }
 
     @Test
-    public void testToJSONForPatientObjectThatOnlyHasFeatureData()
+    public void panelJsonIsConstructedFromFromPatientFeatureData()
     {
         assertTrue(this.expectedJSON.similar(this.patientGenePanel.toJSON()));
     }
 
 
     @Test
-    public void testSizeForPatientObjectThatOnlyHasFeatureData()
+    public void panelSizeIsCorrectForPanelConstructedFromPatientFeatureData()
     {
         assertEquals(3, this.patientGenePanel.size());
     }
@@ -257,14 +243,14 @@ public class DefaultGenePanelImplTest
     //----------------------------------Gene panel from terms----------------------------------//
 
     @Test
-    public void confirmPanelIsEmptyIfEmptyTerms()
+    public void panelIsEmptyIfTermsAreEmpty()
     {
-        final GenePanel panel = this.genePanelFactory.build(Collections.<VocabularyTerm>emptyList(),
-            Collections.<VocabularyTerm>emptyList());
+        final GenePanel panel = new DefaultGenePanelImpl(Collections.<VocabularyTerm>emptyList(),
+            Collections.<VocabularyTerm>emptyList(), this.vocabularyManager);
         assertEquals(0, panel.size());
-        assertEquals(Collections.<VocabularyTerm>emptySet(), panel.getPresentTerms());
-        assertEquals(Collections.<VocabularyTerm>emptySet(), panel.getAbsentTerms());
-        assertEquals(Collections.<TermsForGene>emptyList(), panel.getTermsForGeneList());
+        assertTrue(panel.getPresentTerms().isEmpty());
+        assertTrue(panel.getAbsentTerms().isEmpty());
+        assertTrue(panel.getTermsForGeneList().isEmpty());
 
         final JSONObject expectedJSON = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
             .put(GENES_LABEL, new JSONArray());
@@ -272,14 +258,14 @@ public class DefaultGenePanelImplTest
     }
 
     @Test
-    public void confirmPanelIsCorrectIfNonEmptyAbsentTermsAndEmptyPresentTerms()
+    public void panelIsEmptyIfOnlyAbsentTermsProvided()
     {
-        final GenePanel panel = this.genePanelFactory.build(Collections.<VocabularyTerm>emptyList(),
-            Collections.unmodifiableList(this.absentTerms));
+        final GenePanel panel = new DefaultGenePanelImpl(Collections.<VocabularyTerm>emptyList(),
+            Collections.unmodifiableList(this.absentTerms), this.vocabularyManager);
         assertEquals(0, panel.size());
-        assertEquals(Collections.<VocabularyTerm>emptySet(), panel.getPresentTerms());
+        assertTrue(panel.getPresentTerms().isEmpty());
         assertEquals(new HashSet<>(this.absentTerms), panel.getAbsentTerms());
-        assertEquals(Collections.<TermsForGene>emptyList(), panel.getTermsForGeneList());
+        assertTrue(panel.getTermsForGeneList().isEmpty());
 
         final JSONObject expectedJSON = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
             .put(GENES_LABEL, new JSONArray());
@@ -287,19 +273,19 @@ public class DefaultGenePanelImplTest
     }
 
     @Test
-    public void testGetPresentTermsIfOnlyPresentTermsProvided()
+    public void getPresentTermsReturnsStoredPresentTerms()
     {
         assertEquals(new HashSet<>(this.presentTerms), this.presentTermsGenePanel.getPresentTerms());
     }
 
     @Test
-    public void testGetAbsentTermsIfOnlyPresentTermsProvided()
+    public void getAbsentTermsIsEmptyIfNoAbsentTermsStoredForPanel()
     {
         assertEquals(Collections.emptySet(), this.presentTermsGenePanel.getAbsentTerms());
     }
 
     @Test
-    public void testGetTermsForGeneListIfOnlyPresentTermsProvided()
+    public void termsForGeneListWorksCorrectlyWhenOnlyPresentTermsProvided()
     {
         final List<TermsForGene> termsForGeneList = this.presentTermsGenePanel.getTermsForGeneList();
         assertEquals(3, termsForGeneList.size());
@@ -356,33 +342,33 @@ public class DefaultGenePanelImplTest
     }
 
     @Test
-    public void testToJSONIfOnlyPresentTermsProvided()
+    public void toJSONWorksCorrectlyWhenOnlyPresentTermsProvided()
     {
         assertTrue(this.expectedJSON.similar(this.patientGenePanel.toJSON()));
     }
 
 
     @Test
-    public void testSizeIfOnlyPresentTermsProvided()
+    public void panelSizeIsCorrectWhenOnlyPresentTermsProvided()
     {
         assertEquals(3, this.presentTermsGenePanel.size());
     }
 
     @Test
-    public void testGetPresentTermsIfPresentAndAbsentTermsProvided()
+    public void getPresentTermsWorksIfBothPresentAndAbsentTermsProvided()
     {
         assertEquals(new HashSet<>(this.presentTerms), this.termsGenePanel.getPresentTerms());
     }
 
     @Test
-    public void testGetAbsentTermsIfPresentAndAbsentTermsProvided()
+    public void getAbsentTermsWorksWhenBothPresentAndAbsentTermsProvided()
     {
         assertEquals(new HashSet<>(this.absentTerms), this.termsGenePanel.getAbsentTerms());
 
     }
 
     @Test
-    public void testGetTermsForGeneListIfPresentAndAbsentTermsProvided()
+    public void getTermsForGeneListWorksWhenBothPresentAndAbsentTermsProvided()
     {
         final List<TermsForGene> termsForGeneList = this.termsGenePanel.getTermsForGeneList();
         assertEquals(3, termsForGeneList.size());
@@ -439,14 +425,14 @@ public class DefaultGenePanelImplTest
     }
 
     @Test
-    public void testToJSONIfPresentAndAbsentTermsProvided()
+    public void toJSONWorksWhenBothPresentAndAbsentTermsProvided()
     {
         assertTrue(this.expectedJSON.similar(this.patientGenePanel.toJSON()));
     }
 
 
     @Test
-    public void testSizeIfPresentAndAbsentTermsProvided()
+    public void panelSizeIsCorrectWhenBothPresentAndAbsentTermsProvided()
     {
         assertEquals(3, this.termsGenePanel.size());
     }
@@ -454,13 +440,13 @@ public class DefaultGenePanelImplTest
     //--------------------------------Gene panel from features---------------------------------//
 
     @Test
-    public void confirmPanelIsEmptyIfEmptyFeatures()
+    public void panelIsEmptyIfFeatureSetIsEmpty()
     {
-        final GenePanel panel = this.genePanelFactory.build(Collections.<Feature>emptySet());
+        final GenePanel panel = new DefaultGenePanelImpl(Collections.<Feature>emptyList(), this.vocabularyManager);
         assertEquals(0, panel.size());
-        assertEquals(Collections.<VocabularyTerm>emptySet(), panel.getPresentTerms());
-        assertEquals(Collections.<VocabularyTerm>emptySet(), panel.getAbsentTerms());
-        assertEquals(Collections.<TermsForGene>emptyList(), panel.getTermsForGeneList());
+        assertTrue(panel.getPresentTerms().isEmpty());
+        assertTrue(panel.getAbsentTerms().isEmpty());
+        assertTrue(panel.getTermsForGeneList().isEmpty());
 
         final JSONObject expectedJSON = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
             .put(GENES_LABEL, new JSONArray());
@@ -518,9 +504,9 @@ public class DefaultGenePanelImplTest
         when(presentFeature2.getValue()).thenReturn(HPO_TERM2);
         when(absentFeature.getValue()).thenReturn(HPO_TERM3);
 
-        when(this.hpo.getTerm(HPO_TERM1)).thenReturn(this.presentTerm1);
-        when(this.hpo.getTerm(HPO_TERM2)).thenReturn(this.presentTerm2);
-        when(this.hpo.getTerm(HPO_TERM3)).thenReturn(absentTerm);
+        when(this.vocabularyManager.resolveTerm(HPO_TERM1)).thenReturn(this.presentTerm1);
+        when(this.vocabularyManager.resolveTerm(HPO_TERM2)).thenReturn(this.presentTerm2);
+        when(this.vocabularyManager.resolveTerm(HPO_TERM3)).thenReturn(absentTerm);
 
         when(this.presentTerm1.get(ASSOCIATED_GENES)).thenReturn(associatedGenes1);
         when(this.presentTerm2.get(ASSOCIATED_GENES)).thenReturn(associatedGenes2);

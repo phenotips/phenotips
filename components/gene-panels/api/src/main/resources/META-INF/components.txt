@@ -1,3 +1,1 @@
 org.phenotips.panels.internal.DefaultGenePanelFactoryImpl
-org.phenotips.panels.internal.DefaultGenePanelImpl
-org.phenotips.panels.internal.DefaultTermsForGeneImpl

@@ -120,19 +120,24 @@
     <property>
       <code>document.observe('xwiki:dom:loading', function() {
   document.observe('panels:export:requested', function(event) {
-    var queryStr = event.memo &amp;&amp; event.memo.query;
     var service = event.memo &amp;&amp; event.memo.service;
+    if (!service || !service.script) {
+      return;
+    }
+    var queryStr = service.script;
+    var param = event.memo.param || {};
+    param["reqNo"] = ++service.expectedReqNo;
 
-    var query = [queryStr, "&amp;reqNo=", ++service.expectedReqNo].join("");
-
-    new Ajax.Request(query, {
+    new Ajax.Request(queryStr, {
       method : 'POST',
+      parameters: param,
+      contentType: 'application/x-www-form-urlencoded',
       onSuccess : function(response) {
         saveData(response.responseJSON);
       },
       onFailure : function() {
         var errorMsg = "$escapetool.javascript($services.localization.render('phenotips.panels.panelsExport.error.exportFailed'))";
-        this.$body._x_notification = new XWiki.widgets.Notification(errorMsg, "error");
+        new XWiki.widgets.Notification(errorMsg, "error");
       }
     });
   });

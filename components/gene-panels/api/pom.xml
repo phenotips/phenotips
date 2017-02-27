@@ -29,7 +29,7 @@
   <name>PhenoTips - Gene Panels - APIs</name>
 
   <properties>
-    <coverage.instructionRatio>0.90</coverage.instructionRatio>
+    <coverage.instructionRatio>0.96</coverage.instructionRatio>
   </properties>
 
   <dependencies>

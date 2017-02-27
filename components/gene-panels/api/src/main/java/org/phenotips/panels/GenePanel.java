@@ -31,7 +31,7 @@ import org.json.JSONObject;
  * a list of genes} frequently associated with these symptoms, in descending order of relevance.
  *
  * @version $Id$
- * @since 1.3M6
+ * @since 1.3
  */
 @Unstable("New API introduced in 1.3")
 public interface GenePanel
@@ -69,8 +69,8 @@ public interface GenePanel
      * Creates a {@link JSONObject} representation of {@link GenePanel#getTermsForGeneList() a list of genes} from
      * {@code fromIndex}, inclusive, to {@code toIndex}, exclusive.
      *
-     * @param fromIndex the starting index (inclusive)
-     * @param toIndex the last index (exclusive)
+     * @param fromIndex the starting index (inclusive), 0 based
+     * @param toIndex the last index (exclusive), 0 based
      * @return a {@link JSONObject} containing data from {@code fromIndex}, inclusive, to {@code toIndex}, exclusive
      * @throws IndexOutOfBoundsException if (<tt>fromIndex &lt; 0 || toIndex &gt; {@link #size()} ||
      *         fromIndex &gt; toIndex</tt>)

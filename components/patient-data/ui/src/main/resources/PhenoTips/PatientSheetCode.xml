@@ -2378,11 +2378,10 @@ document.observe('xwiki:dom:loaded', function()
           return;
         },
         'buildQueryString' : function(data, parameters) {
-          var queryString = parameters.symptom ? "?present-term=" + parameters.symptom.join('&amp;present-term=') : "";
-          return data.script + queryString.strip();
+          return data.script;
         },
         'submitAjaxRequest' : function(searchBox, data, queryString, parameters) {
-          searchBox._builder.panelsDisplay.paginate(queryString, 1, 10);
+          searchBox._builder.panelsDisplay.paginate(parameters, 1, 10);
         },
         'genePanels' : {
           'script' : XWiki.webapppath + 'rest/suggested-gene-panels',
@@ -4904,7 +4903,7 @@ input[type="checkbox"] + .LV_validation_message {
       <name>Instant Gene Search</name>
     </property>
     <property>
-      <parse>1</parse>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>

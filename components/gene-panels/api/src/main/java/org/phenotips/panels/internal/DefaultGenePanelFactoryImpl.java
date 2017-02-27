@@ -28,7 +28,7 @@ import org.xwiki.component.annotation.Component;
 
 import java.util.Collection;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -38,19 +38,19 @@ import org.apache.commons.lang3.Validate;
  * Default implementation of the {@link GenePanelFactory}.
  *
  * @version $Id$
- * @since 1.3M6
+ * @since 1.3
  */
 @Component
 @Singleton
 public class DefaultGenePanelFactoryImpl implements GenePanelFactory
 {
-    /** The vocabulary manager required for accessing various available ontologies. */
+    /** The vocabulary manager required for accessing the available vocabularies. */
     @Inject
     private VocabularyManager vocabularyManager;
 
     @Override
-    public GenePanel build(@Nullable final Collection<VocabularyTerm> presentTerms,
-        @Nullable final Collection<VocabularyTerm> absentTerms)
+    public GenePanel build(@Nonnull final Collection<VocabularyTerm> presentTerms,
+        @Nonnull final Collection<VocabularyTerm> absentTerms)
     {
         Validate.notNull(presentTerms);
         Validate.notNull(absentTerms);
@@ -58,14 +58,14 @@ public class DefaultGenePanelFactoryImpl implements GenePanelFactory
     }
 
     @Override
-    public GenePanel build(@Nullable final Collection<? extends Feature> features)
+    public GenePanel build(@Nonnull final Collection<? extends Feature> features)
     {
         Validate.notNull(features);
         return new DefaultGenePanelImpl(features, this.vocabularyManager);
     }
 
     @Override
-    public GenePanel build(@Nullable final Patient patient)
+    public GenePanel build(@Nonnull final Patient patient)
     {
         Validate.notNull(patient);
         return new DefaultGenePanelImpl(patient, this.vocabularyManager);

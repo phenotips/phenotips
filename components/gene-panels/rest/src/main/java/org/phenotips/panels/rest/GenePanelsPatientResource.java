@@ -17,6 +17,11 @@
  */
 package org.phenotips.panels.rest;
 
+import org.phenotips.data.rest.PatientResource;
+import org.phenotips.rest.ParentResource;
+import org.phenotips.rest.Relation;
+import org.phenotips.rest.RequiredAccess;
+
 import org.xwiki.stability.Unstable;
 
 import javax.ws.rs.GET;
@@ -30,10 +35,12 @@ import javax.ws.rs.core.Response;
  * Patient resource for working with gene panels data.
  *
  * @version $Id$
- * @since 1.3M6
+ * @since 1.3
  */
 @Unstable("New API introduced in 1.3")
 @Path("/patients/{patient-id}/suggested-gene-panels")
+@Relation("https://phenotips.org/rel/genePanelsPatient")
+@ParentResource(PatientResource.class)
 public interface GenePanelsPatientResource
 {
     /**
@@ -45,5 +52,6 @@ public interface GenePanelsPatientResource
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    Response getPatientGeneCounts(@PathParam("patient-id") final String patientId);
+    @RequiredAccess("view")
+    Response getPatientGeneCounts(@PathParam("patient-id") String patientId);
 }

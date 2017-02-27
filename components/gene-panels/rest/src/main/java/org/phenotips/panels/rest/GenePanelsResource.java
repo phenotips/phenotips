@@ -17,16 +17,16 @@
  */
 package org.phenotips.panels.rest;
 
+import org.phenotips.rest.ParentResource;
+import org.phenotips.rest.Relation;
+
+import org.xwiki.rest.resources.RootResource;
 import org.xwiki.stability.Unstable;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -34,31 +34,34 @@ import javax.ws.rs.core.Response;
  * Root resource for working with gene panels.
  *
  * @version $Id$
- * @since 1.3M6
+ * @since 1.3
  */
 @Unstable("New API introduced in 1.3")
 @Path("/suggested-gene-panels")
+@Relation("https://phenotips.org/rel/genePanels")
+@ParentResource(RootResource.class)
 public interface GenePanelsResource
 {
     /**
-     * Given a json string containing the HPO term ID data, for example:
+     * Retrieves a JSON representation of genes associated with provided terms and counts for each gene. The following
+     * request parameters are used:
+     * <dl>
+     * <dt>presentTerms</dt>
+     * <dd>a list of term IDs that are observed to be present (e.g. HP:0001154)</dd>
+     * <dt>absentTerms</dt>
+     * <dd>a list of term IDs that are observed to be absent</dd>
+     * <dt>startPage</dt>
+     * <dd>the start page from which to display the results, numbering starts from 1</dd>
+     * <dt>numResults</dt>
+     * <dd>get the number of results to display, must be an integer</dd>
+     * <dt>reqNo</dt>
+     * <dd>the request number, must be an integer</dd>
+     * </dl>
      *
-     * Retrieves a JSON representation of genes associated with provided terms and counts for each gene.
-     *
-     * @param presentTerms a list of term IDs that are observed to be present (e.g. HP:0001154)
-     * @param absentTerms a list of term IDs that are observed to be absent
-     * @param startPage the start page from which to display the results, numbering starts from 1
-     * @param numResults get the number of results to display, must be an integer
-     * @param reqNo the request number, must be an integer
      * @return associated genes and counts data if successful, an error code otherwise
      */
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    Response getGeneCountsFromPhenotypes(
-        @QueryParam("present-term") final List<String> presentTerms,
-        @QueryParam("absent-term") final List<String> absentTerms,
-        @QueryParam("startPage") @DefaultValue("1") final Integer startPage,
-        @QueryParam("numResults") @DefaultValue("-1") final Integer numResults,
-        @QueryParam("reqNo") final Integer reqNo);
+    Response getGeneCountsFromPhenotypes();
 }

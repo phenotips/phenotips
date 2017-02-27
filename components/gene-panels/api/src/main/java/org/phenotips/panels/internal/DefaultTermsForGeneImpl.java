@@ -35,7 +35,7 @@ import org.json.JSONObject;
  * Default implementation of {@link TermsForGene}.
  *
  * @version $Id$
- * @since 1.3M6
+ * @since 1.3
  */
 public class DefaultTermsForGeneImpl implements TermsForGene
 {
@@ -52,10 +52,6 @@ public class DefaultTermsForGeneImpl implements TermsForGene
     private final String geneSymbol;
 
     private final Set<VocabularyTerm> terms = newSortedSet();
-
-    private int count;
-
-    private boolean countUpToDate;
 
     /**
      * Default constructor, that takes in a {@code geneSymbol gene symbol} and a {@code geneId preferred gene ID}.
@@ -79,17 +75,12 @@ public class DefaultTermsForGeneImpl implements TermsForGene
     void addTerm(@Nonnull final VocabularyTerm term)
     {
         this.terms.add(term);
-        this.countUpToDate = false;
     }
 
     @Override
     public int getCount()
     {
-        if (!this.countUpToDate) {
-            this.count = this.terms.size();
-            this.countUpToDate = true;
-        }
-        return this.count;
+        return this.terms.size();
     }
 
     @Override
