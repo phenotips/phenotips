@@ -22,14 +22,11 @@ import org.phenotips.vocabulary.VocabularyTerm;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -73,34 +70,20 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
     }
 
     /**
-     * Returns the result from the first attempt at search if not null, otherwise performs an additional search for
-     * the given term ID.
+     * Returns the result from the {@code firstAttempt first attempt} at search if not null, otherwise performs a search
+     * for {@code id} without prefix (if the {@code id} has one).
      *
      * @param id the ID of the term of interest
-     * @param firstAttempt the result of the first search attempt
+     * @param firstAttempt the result of the first search attempt, can be null
      * @return the {@link VocabularyTerm} corresponding with the given ID, null if no such {@link VocabularyTerm} exists
      */
     private VocabularyTerm getTerm(@Nonnull final String id, @Nullable final VocabularyTerm firstAttempt)
     {
-        return firstAttempt != null ? firstAttempt : searchTerm(id);
+        return firstAttempt != null ? firstAttempt : searchTermWithoutPrefix(id);
     }
 
     /**
-     * Perform a search for the {@link VocabularyTerm} that corresponds with the given ID.
-     *
-     * @param id the ID of the term of interest
-     * @return the {@link VocabularyTerm} corresponding with the given ID, null if no such {@link VocabularyTerm} exists
-     */
-    private VocabularyTerm searchTerm(@Nonnull final String id)
-    {
-        final Map<String, String> queryParam = new HashMap<>();
-        queryParam.put(ID_FIELD_NAME, id);
-        final Collection<VocabularyTerm> results = search(Collections.unmodifiableMap(queryParam));
-        return CollectionUtils.isNotEmpty(results) ? results.iterator().next() : searchTermWithoutPrefix(id);
-    }
-
-    /**
-     * If the ID stats with the optional prefix, removes the prefix and performs the search again.
+     * If the {@code id} stats with the optional prefix, removes the prefix and performs the search again.
      *
      * @param id the ID of the term of interest
      * @return the {@link VocabularyTerm} corresponding with the given ID, null if no such {@link VocabularyTerm} exists
@@ -208,6 +191,7 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
 
     /**
      * Adds any of the sub-documents of the specified ontology class.
+     *
      * @param doc the reusable Solr input document
      * @param ontClass the ontology class that should be parsed
      */
@@ -239,7 +223,8 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
     }
 
     @Override
-    public String getVersion() {
+    public String getVersion()
+    {
         final SolrQuery query = new SolrQuery();
         query.setQuery("version:*");
         query.set(CommonParams.ROWS, "1");
@@ -302,12 +287,18 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
         @Nonnull final OntClass ontClass)
     {
         // This will list all superclasses for ontClass.
-        final ExtendedIterator<OntClass> parents = ontClass.listSuperClasses(!DIRECT);
-        while (parents.hasNext()) {
-            final OntClass parent = parents.next();
-            extractClassData(doc, ontClass, parent);
+        final ExtendedIterator<OntClass> allParents = ontClass.listSuperClasses(!DIRECT);
+        // For anonymous classes, we're only interested in the direct parents.
+        final List<OntClass> directParents = ontClass.listSuperClasses(DIRECT).toList();
+        while (allParents.hasNext()) {
+            final OntClass parent = allParents.next();
+            // We're interested in all non-anonymous parents (these are parent disorders), but only the direct anonymous
+            // parents (these are the class properties).
+            if (!parent.isAnon() || directParents.contains(parent)) {
+                extractClassData(doc, ontClass, parent);
+            }
         }
-        parents.close();
+        allParents.close();
     }
 
     /**
@@ -325,7 +316,7 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
             final RDFNode object = statement.getObject();
             final String relation = statement.getPredicate().getLocalName();
 
-            extractProperty(doc, relation, object);
+            writeProperty(doc, relation, object);
         }
         statements.close();
     }
@@ -345,17 +336,17 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
      * @param ontClass the ontology class of interest
      * @param parent the parent of ontClass
      */
-    abstract void extractClassData(@Nonnull final SolrInputDocument doc,
-        @Nonnull final OntClass ontClass, @Nonnull final OntClass parent);
+    abstract void extractClassData(@Nonnull SolrInputDocument doc,
+        @Nonnull OntClass ontClass, @Nonnull OntClass parent);
 
     /**
-     * Get a numerical id string from a localName. Assuming the localName is in the form "Orphanet_XXX". If localName
-     * is an empty string or is null, will return null.
+     * Get a numerical id string from a localName. Assuming the localName is in the form "Orphanet_XXX". If localName is
+     * an empty string or is null, will return null.
      *
      * @param localName the localName of an OWL class if localName is not null or empty, null otherwise.
      * @return the string id.
      */
-    abstract String getFormattedOntClassId(@Nullable final String localName);
+    abstract String getFormattedOntClassId(@Nullable String localName);
 
     /**
      * Adds the property value to the Solr input document, if it is an item of interest.
@@ -364,8 +355,8 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
      * @param relation property name
      * @param object the rdf data node
      */
-    abstract void extractProperty(@Nonnull final SolrInputDocument doc, @Nonnull final String relation,
-        @Nonnull final RDFNode object);
+    abstract void writeProperty(@Nonnull SolrInputDocument doc, @Nonnull String relation,
+        @Nonnull RDFNode object);
 
     /**
      * Get a collection of root classes from the provided ontology model.
@@ -373,7 +364,7 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
      * @param ontModel the provided ontology model
      * @return a collection of root classes
      */
-    abstract Collection<OntClass> getRootClasses(@Nonnull final OntModel ontModel);
+    abstract Collection<OntClass> getRootClasses(@Nonnull OntModel ontModel);
 
     /**
      * The number of documents to be added and committed to Solr at a time.

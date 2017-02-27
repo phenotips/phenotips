@@ -27,6 +27,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -76,7 +78,17 @@ public class Orphanet extends AbstractOWLSolrVocabulary
 
     private static final String ON_PROPERTY_LABEL = "onProperty";
 
+    /** The pattern for prevalence values. Values are expected to be in fraction format, and may include "<" or ">" or
+     * ranges (e.g. "1-9"), or single digits in the numerator.
+     */
+    private static final Pattern PREV_PATTERN =
+        Pattern.compile("^>?<?\\s*([0-9]+)(?:[^0-9]+)?([0-9]+)?(\\s*/\\s*)([0-9\\s]+)");
+
     private Set<OntClass> hierarchyRoots;
+
+    private String region = StringUtils.EMPTY;
+
+    private boolean isIntersection;
 
     @Override
     public String getIdentifier()
@@ -134,7 +146,7 @@ public class Orphanet extends AbstractOWLSolrVocabulary
     @Override
     public String getWebsite()
     {
-        return "http://http://www.orpha.net/";
+        return "http://www.orpha.net/";
     }
 
     @Override
@@ -185,8 +197,8 @@ public class Orphanet extends AbstractOWLSolrVocabulary
      * @param ontClass the ontology class
      * @param parent the parent of the ontology class
      */
-    private void extractNamedClassData(@Nonnull final SolrInputDocument doc,
-        @Nonnull final OntClass ontClass, @Nonnull final OntClass parent)
+    private void extractNamedClassData(@Nonnull final SolrInputDocument doc, @Nonnull final OntClass ontClass,
+        @Nonnull final OntClass parent)
     {
         // Note: in Orphanet, a subclass cannot have parents from different top categories (e.g. phenome and geography).
         if (!this.hierarchyRoots.contains(parent) && !hasHierarchyRootAsParent(parent, DIRECT)) {
@@ -195,11 +207,11 @@ public class Orphanet extends AbstractOWLSolrVocabulary
             final String orphanetId = getFormattedOntClassId(parent.getLocalName());
 
             // All parents are added to "term_category".
-            addField(doc, TERM_CATEGORY_LABEL, orphanetId);
+            addMultivaluedField(doc, TERM_CATEGORY_LABEL, orphanetId);
 
             // If parent is a direct super-class to ontClass, then want to also add the parent to the "is_a" category.
             if (ontClass.hasSuperClass(parent, DIRECT)) {
-                addField(doc, IS_A_LABEL, orphanetId);
+                addMultivaluedField(doc, IS_A_LABEL, orphanetId);
             }
         }
     }
@@ -211,9 +223,10 @@ public class Orphanet extends AbstractOWLSolrVocabulary
      * @param doc the Solr input document
      * @param parent the parent class that contains the intersection class data for the ontologyClass
      */
-    private void extractIntersectionData(@Nonnull final SolrInputDocument doc,
-        @Nonnull final OntClass ontClass, @Nonnull final OntClass parent)
+    private void extractIntersectionData(@Nonnull final SolrInputDocument doc, @Nonnull final OntClass ontClass,
+        @Nonnull final OntClass parent)
     {
+        this.isIntersection = true;
         final IntersectionClass intersection = parent.asIntersectionClass();
         final ExtendedIterator<? extends OntClass> operands = intersection.listOperands();
 
@@ -222,6 +235,8 @@ public class Orphanet extends AbstractOWLSolrVocabulary
             // For Orphanet, there should only be restrictions in intersection classes.
             extractClassData(doc, ontClass, operand);
         }
+        this.region = StringUtils.EMPTY;
+        this.isIntersection = false;
         operands.close();
     }
 
@@ -232,8 +247,7 @@ public class Orphanet extends AbstractOWLSolrVocabulary
      * @param doc the Solr input document
      * @param parent the parent class that contains restriction data for the ontologyClass
      */
-    private void extractRestrictionData(@Nonnull final SolrInputDocument doc,
-        @Nonnull final OntClass parent)
+    private void extractRestrictionData(@Nonnull final SolrInputDocument doc, @Nonnull final OntClass parent)
     {
         final Restriction restriction = parent.asRestriction();
 
@@ -265,7 +279,16 @@ public class Orphanet extends AbstractOWLSolrVocabulary
         final String fieldValue = getSomeValuesFromRestriction(restriction);
 
         if (StringUtils.isNotBlank(fieldName) && StringUtils.isNotBlank(fieldValue)) {
-            addField(doc, fieldName, fieldValue);
+            if ("present_in".equals(fieldName)) {
+                this.region = fieldValue;
+                addMultivaluedField(doc, fieldName, fieldValue);
+                return;
+            }
+            if (!this.isIntersection) {
+                addMultivaluedField(doc, fieldName, fieldValue);
+            } else {
+                writeWorldwideDataFromRestriction(doc, fieldName, fieldValue);
+            }
         } else {
             this.logger.warn("Could not extract data from someValuesFrom restriction {}, onProperty {}, in class {}",
                 restriction.getId(), fieldName, doc.getFieldValue(ID_FIELD_NAME));
@@ -282,11 +305,15 @@ public class Orphanet extends AbstractOWLSolrVocabulary
     private void extractHasValueRestriction(@Nonnull final SolrInputDocument doc,
         @Nonnull final Restriction restriction)
     {
-        // Not all of these have pretty names. Re-map these via schema.xml field configurations.
+        // Not all of these have pretty names. Re-map these via managed-schema.xml field configurations.
         final String fieldName = getOnPropertyFromRestriction(restriction);
         final String fieldValue = restriction.asHasValueRestriction().getHasValue().asLiteral().getLexicalForm();
         if (StringUtils.isNotBlank(fieldName) && StringUtils.isNotBlank(fieldValue)) {
-            addField(doc, fieldName, fieldValue);
+            if (!this.isIntersection) {
+                addMultivaluedField(doc, fieldName, fieldValue);
+            } else {
+                writeWorldwideDataFromRestriction(doc, fieldName, fieldValue);
+            }
         } else {
             this.logger.warn("Could not extract data from hasValue restriction {}, onProperty {}, in class {}",
                 restriction.getId(), fieldName, doc.getFieldValue(ID_FIELD_NAME));
@@ -361,7 +388,7 @@ public class Orphanet extends AbstractOWLSolrVocabulary
             final String externalRef = object.asLiteral().getLexicalForm();
             final String ontology = StringUtils.substringBefore(externalRef, SEPARATOR);
             final String externalId = StringUtils.substringAfter(externalRef, SEPARATOR);
-            addField(doc, ontology.toLowerCase() + "_id", externalId);
+            addMultivaluedField(doc, ontology.toLowerCase() + "_id", externalId);
         }
     }
 
@@ -380,28 +407,119 @@ public class Orphanet extends AbstractOWLSolrVocabulary
         // will be properties like Class or subClassOf. This kind of data is already added via parents.
         if (object.isLiteral()) {
             final String fieldValue = object.asLiteral().getLexicalForm();
-            addField(doc, fieldName, fieldValue);
+            addMultivaluedField(doc, fieldName, fieldValue);
         }
     }
 
     /**
-     * Adds field name and field value to the {@link SolrInputDocument} iff this value isn't already stored in given
-     * field.
+     * Adds field name and multi-valued field value to the {@link SolrInputDocument} iff this value isn't already stored
+     * in given field.
      *
      * @param doc the Solr input document
      * @param fieldName the name of the field to be added
      * @param fieldValue the value of the field being added
      */
-    private void addField(@Nonnull final SolrInputDocument doc, @Nonnull final String fieldName,
-        @Nonnull final String fieldValue)
+    private void addMultivaluedField(@Nonnull final SolrInputDocument doc, @Nonnull final String fieldName,
+        @Nonnull final Object fieldValue)
     {
         if (!Optional.fromNullable(doc.getFieldValues(fieldName)).or(Collections.emptyList()).contains(fieldValue)) {
             doc.addField(fieldName, fieldValue);
         }
     }
 
+    /**
+     * Adds field name and single-valued value to the {@link SolrInputDocument} iff the value isn't already stored in
+     * the given field.
+     *
+     * @param doc the Solr input document
+     * @param fieldName the name of the field to be added
+     * @param fieldValue the value of the field being added
+     */
+    private void addSingleValuedField(@Nonnull final SolrInputDocument doc, @Nonnull final String fieldName,
+        @Nonnull final Object fieldValue)
+    {
+        if (!fieldValue.equals(doc.getFieldValue(fieldName))) {
+            doc.addField(fieldName, fieldValue);
+        }
+    }
+
+    /**
+     * Writes {@code fieldName} and {@code fieldValue} to {@code doc} iff this is worldwide data.
+     *
+     * @param doc the {@link SolrInputDocument} being modified
+     * @param fieldName the name of the field to be added
+     * @param fieldValue the value of the field to be added
+     */
+    private void writeWorldwideDataFromRestriction(@Nonnull final SolrInputDocument doc,
+        @Nonnull final String fieldName, @Nonnull final String fieldValue)
+    {
+        if ("Worldwide".equals(this.region)) {
+            if ("has_point_prevalence_range".equals(fieldName)
+                || "has_birth_prevalence_range".equals(fieldName)
+                || "has_lifetime_prevalence_range".equals(fieldName)) {
+                addSingleValuedField(doc, fieldName + "_numeric", getNumericPrevalenceValue(fieldValue));
+            }
+        }
+
+        final String regionInfo = StringUtils.isNotBlank(this.region) ? " (" + this.region + ")" : StringUtils.EMPTY;
+        // Also add as is, with region data included.
+        addMultivaluedField(doc, fieldName, fieldValue + regionInfo);
+    }
+
+    /**
+     * Calculates numeric prevalence data based on a {@code fieldValue prevalence value} string.
+     *
+     * @param fieldValue the string containing the prevalence data range
+     * @return the calculated prevalence, as double, -1 if an error occurred
+     */
+    private double getNumericPrevalenceValue(@Nonnull final String fieldValue)
+    {
+        try {
+            final Matcher matcher = PREV_PATTERN.matcher(fieldValue);
+            if (matcher.find()) {
+                final double numerator = getNumerator(matcher.group(1), matcher.group(2));
+                final double denominator = getDenominator(matcher.group(4));
+                return numerator / denominator;
+            }
+        } catch (final Exception ex) {
+            // Do nothing.
+            this.logger.error("Regex matching failed: [{}]", ex.getMessage());
+        }
+        this.logger.error("The provided prevalence value: [{}] did not match the expected pattern.", fieldValue);
+        return -1;
+    }
+
+    /**
+     * Retrieves the denominator from {@code rawDenominatorStr} string, as double.
+     *
+     * @param rawDenominatorStr the denominator, as string
+     * @return the denominator, as double
+     */
+    private double getDenominator(@Nonnull final String rawDenominatorStr)
+    {
+        final String denominatorStr = rawDenominatorStr.replaceAll("\\s*", StringUtils.EMPTY);
+        return Double.parseDouble(denominatorStr);
+    }
+
+    /**
+     * Calculates the numerator from {@code firstVal} and {@code secondVal}, expressed as strings.
+     *
+     * @param firstVal the first value in the numerator range
+     * @param secondVal the second value in the numerator range; can be null if the numerator is not a range
+     * @return the calculated numerator, as double
+     */
+    private double getNumerator(@Nonnull final String firstVal, @Nullable final String secondVal)
+    {
+        final double firstNum = Double.parseDouble(firstVal);
+        if (StringUtils.isBlank(secondVal)) {
+            return firstNum;
+        }
+        final double secondNum = Double.parseDouble(secondVal);
+        return (firstNum + secondNum) / 2;
+    }
+
     @Override
-    void extractProperty(@Nonnull final SolrInputDocument doc, @Nonnull final String relation,
+    void writeProperty(@Nonnull final SolrInputDocument doc, @Nonnull final String relation,
         @Nonnull final RDFNode object)
     {
         // hasDBXRef stores references to other databases (e.g. OMIM).
@@ -442,7 +560,8 @@ public class Orphanet extends AbstractOWLSolrVocabulary
         final SolrQuery query = new SolrQuery();
         addGlobalQueryParam(query);
         addFieldQueryParam(query);
-        final List<SolrDocument> searchResults = search(addDynamicQueryParam(input, maxResults, sort, customFilter, query));
+        final List<SolrDocument> searchResults = search(addDynamicQueryParam(input, maxResults, sort, customFilter,
+            query));
         final List<VocabularyTerm> results = new LinkedList<>();
         for (final SolrDocument doc : searchResults) {
             results.add(new SolrVocabularyTerm(doc, this));

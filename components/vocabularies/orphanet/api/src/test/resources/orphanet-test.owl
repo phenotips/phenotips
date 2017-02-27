@@ -219,8 +219,8 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.orpha.net/ORDO/Orphanet_C024"/>
-                <owl:hasValue rdf:datatype="&xsd;string">7.0</owl:hasValue>
+                <owl:onProperty rdf:resource="http://www.orpha.net/ORDO/Orphanet_C023"/>
+                <owl:hasValue rdf:datatype="&xsd;string">7</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
         <efo:definition rdf:datatype="&xsd;string">Ocular albinism with late-onset sensorineural deafness (OASD), is a rare, X-linked inherited type of ocular albinism (see this term) described in one African kindred (7 males over 3 generations) to date, characterized by severe visual impairment, translucent pale-blue iridies, a reduction in the retinal pigment and moderately severe deafness by middle age (fourth to fifth decade of life). It is unclear whether it is allelic to X-linked recessive ocular albinism (see this term) or a contiguous gene syndrome.</efo:definition>

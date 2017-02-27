@@ -62,6 +62,29 @@
   <directoryFactory name="DirectoryFactory"
                     class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}"/>
 
+
+  <!-- To disable dynamic schema REST APIs, use the following for <schemaFactory>:
+
+       <schemaFactory class="ClassicIndexSchemaFactory"/>
+
+       When ManagedIndexSchemaFactory is specified instead, Solr will load the schema from
+       the resource named in 'managedSchemaResourceName', rather than fmanaged-schema.xml.xml.
+       Note that the managed schema resource CANNOT be namanaged-schema.xml.xml.  If the managed
+       schema does not exist, Solr will create it after readmanaged-schema.xml.xml, then rename
+    managed-schema.xml.xml' managed-schema.xml.xml.bak'.
+
+       Do NOT hand edit the managed schema - external modifications will be ignored and
+       overwritten as a result of schema modification REST API calls.
+
+       When ManagedIndexSchemaFactory is specified with mutable = true, schema
+       modification REST API calls will be allowed; otherwise, error responses will be
+       sent back for these requests.
+  -->
+  <schemaFactory class="ManagedIndexSchemaFactory">
+    <bool name="mutable">true</bool>
+    <str name="managedSchemaResourceName">managed-schema.xml</str>
+  </schemaFactory>
+
   <indexConfig>
     <mergeFactor>10</mergeFactor>
     <!-- Sets the amount of RAM that may be used by Lucene indexing
