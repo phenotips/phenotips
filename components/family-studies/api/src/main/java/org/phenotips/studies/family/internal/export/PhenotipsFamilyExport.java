@@ -37,9 +37,10 @@ import org.xwiki.xml.XMLUtils;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -116,20 +117,20 @@ public class PhenotipsFamilyExport
 
     /**
      * Returns a list of families by the input search criteria. The user has to have requiredPermissions on each family.
-     * The list is returned as JSON if returnAsJSON is true or as HTML otherwise.
+     * The list is returned as JSON if returnAsJSON is true or as XML otherwise.
      *
      * @param input criterion to select families by
      * @param resultsLimit maximal number of results for each query
      * @param requiredPermissions permissions a user has to have over each family in the result
-     * @param returnAsJSON if true, the result is returned as JSON, otherwise as HTML
+     * @param returnAsJSON if true, the result is returned as JSON, otherwise as XML
      * @return list of families
      */
     public String searchFamilies(String input, int resultsLimit, String requiredPermissions, boolean returnAsJSON)
     {
-        List<FamilySearchResult> resultsList = new LinkedList<>();
-        queryFamilies(input, requiredPermissions, resultsLimit, resultsList);
-        queryPatients(input, requiredPermissions, resultsLimit, resultsList);
-        return formatResults(resultsList, returnAsJSON);
+        Set<FamilySearchResult> results = new LinkedHashSet<>();
+        queryFamilies(input, requiredPermissions, resultsLimit, results);
+        queryPatients(input, requiredPermissions, resultsLimit, results);
+        return formatResults(results, resultsLimit, returnAsJSON);
     }
 
     /**
@@ -189,7 +190,7 @@ public class PhenotipsFamilyExport
     }
 
     private void queryFamilies(String input, String requiredPermissions, int resultsLimit,
-        List<FamilySearchResult> resultsList)
+        Set<FamilySearchResult> results)
     {
         StringBuilder querySb = new StringBuilder();
         querySb.append("select doc.name ");
@@ -213,12 +214,12 @@ public class PhenotipsFamilyExport
                 continue;
             }
 
-            resultsList.add(new FamilySearchResult(family, requiredPermissions));
+            results.add(new FamilySearchResult(family, requiredPermissions));
         }
     }
 
     private void queryPatients(String input, String requiredPermissions, int resultsLimit,
-        List<FamilySearchResult> resultsList)
+        Set<FamilySearchResult> results)
     {
         StringBuilder querySb = new StringBuilder();
         querySb.append("from doc.object(PhenoTips.PatientClass) as patient, ");
@@ -252,7 +253,7 @@ public class PhenotipsFamilyExport
                 continue;
             }
 
-            resultsList.add(new FamilySearchResult(patient, usePatientName, family, requiredPermissions));
+            results.add(new FamilySearchResult(patient, usePatientName, family, requiredPermissions));
         }
     }
 
@@ -275,21 +276,25 @@ public class PhenotipsFamilyExport
         return queryResults;
     }
 
-    private String formatResults(List<FamilySearchResult> resultsList, boolean returnAsJSON)
+    private String formatResults(Set<FamilySearchResult> results, int resultsLimit, boolean returnAsJSON)
     {
         JSONArray familyArray = null;
         JSONObject jsonResult = null;
-        StringBuilder htmlResult = null;
+        StringBuilder xmlResult = null;
+        int count = 0;
 
         if (returnAsJSON) {
             familyArray = new JSONArray();
             jsonResult = new JSONObject();
         } else {
-            htmlResult = new StringBuilder();
-            htmlResult.append("<results>");
+            xmlResult = new StringBuilder();
+            xmlResult.append("<results>");
         }
 
-        for (FamilySearchResult searchResult : resultsList) {
+        for (FamilySearchResult searchResult : results) {
+            if (count++ > resultsLimit) {
+                break;
+            }
             if (returnAsJSON) {
                 JSONObject familyJson = new JSONObject();
                 familyJson.put(ID, searchResult.getId());
@@ -301,12 +306,12 @@ public class PhenotipsFamilyExport
                 String escapedReference = XMLUtils.escapeXMLComment(searchResult.getReference());
                 String escapedDescription = XMLUtils.escapeXMLComment(searchResult.getDescription());
 
-                htmlResult.append("<rs id=\"").append(searchResult.getUrl()).append("\" ");
-                htmlResult.append("info=\"").append(escapedReference).append("\">");
+                xmlResult.append("<rs id=\"").append(searchResult.getUrl()).append("\" ");
+                xmlResult.append("info=\"").append(escapedReference).append("\">");
 
-                htmlResult.append(escapedDescription);
+                xmlResult.append(escapedDescription);
 
-                htmlResult.append("</rs>");
+                xmlResult.append("</rs>");
             }
         }
 
@@ -314,8 +319,8 @@ public class PhenotipsFamilyExport
             jsonResult.put("matchedFamilies", familyArray);
             return jsonResult.toString();
         } else {
-            htmlResult.append("</results>");
-            return htmlResult.toString();
+            xmlResult.append("</results>");
+            return xmlResult.toString();
         }
     }
 

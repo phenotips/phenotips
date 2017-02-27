@@ -111,7 +111,7 @@ public class FamilyScriptService implements ScriptService
      * @param input beginning of string of family
      * @param resultsLimit maximum number of results
      * @param requiredPermissions only families on which the user has requiredPermissions will be returned
-     * @param returnAsJSON if true, the result is returned as JSON, otherwise as HTML
+     * @param returnAsJSON if true, the result is returned as JSON, otherwise as XML
      * @return list of families
      */
     public String searchFamilies(String input, int resultsLimit, String requiredPermissions, boolean returnAsJSON)
