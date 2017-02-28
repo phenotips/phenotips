@@ -19,7 +19,6 @@ package org.phenotips.data.internal.controller;
 
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Gene;
-import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
@@ -32,7 +31,6 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -114,6 +112,13 @@ public class GeneListControllerTest
 
     private static final String JSON_OLD_SOLVED_GENE_KEY = "solved";
 
+    private static final String JSON_OLD_CANDIDATE_GENE_KEY = "candidate";
+
+    private static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "solved", "carrier");
+
+    private static final List<String> STRATEGY_VALUES = Arrays.asList("sequencing", "deletion", "familial_mutation",
+        "common_mutations");
+
     @Rule
     public MockitoComponentMockingRule<PatientDataController<List<PhenoTipsGene>>> mocker =
         new MockitoComponentMockingRule<PatientDataController<List<PhenoTipsGene>>>(GeneListController.class);
@@ -137,9 +142,6 @@ public class GeneListControllerTest
     private VocabularyManager vm;
 
     @Mock
-    private DocumentReferenceResolver<EntityReference> resolver;
-
-    @Mock
     private XWiki xwiki;
 
     @Mock
@@ -148,11 +150,6 @@ public class GeneListControllerTest
     private List<BaseObject> geneXWikiObjects;
 
     private PatientDataController<List<PhenoTipsGene>> component;
-
-    private static List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "solved");
-
-    private static List<String> STRATEGY_VALUES = Arrays.asList("sequencing", "deletion", "familial_mutation",
-        "common_mutations");
 
     @Before
     public void setUp() throws Exception
@@ -172,26 +169,22 @@ public class GeneListControllerTest
         when(this.mockProvider.get()).thenReturn(this.cm);
         when(this.cm.getInstance(VocabularyManager.class)).thenReturn(this.vm);
 
-        when(this.cm.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current")).thenReturn(this.resolver);
-
         when(this.cm.getInstance(XWikiContext.TYPE_PROVIDER)).thenReturn(this.provider);
-        XWikiContext context = mock(XWikiContext.class);
-        when(this.provider.get()).thenReturn(context);
+        when(this.provider.get()).thenReturn(this.context);
         XWiki x = mock(XWiki.class);
-        when(context.getWiki()).thenReturn(x);
+        when(this.context.getWiki()).thenReturn(x);
 
         XWikiDocument geneDoc = mock(XWikiDocument.class);
+        when(x.getDocument(Gene.GENE_CLASS, this.context)).thenReturn(geneDoc);
         geneDoc.setNew(false);
-        when(this.xwiki.getDocument(Gene.GENE_CLASS, context)).thenReturn(geneDoc);
-        // when(geneDoc == null).thenReturn(false);
         BaseClass c = mock(BaseClass.class);
         when(geneDoc.getXClass()).thenReturn(c);
         StaticListClass lc1 = mock(StaticListClass.class);
         StaticListClass lc2 = mock(StaticListClass.class);
         when(c.get(STATUS_KEY)).thenReturn(lc1);
-        when(c.get(STRATEGY_KEY)).thenReturn(lc1);
-        when(lc1.getList(context)).thenReturn(STATUS_VALUES);
-        when(lc2.getList(context)).thenReturn(STRATEGY_VALUES);
+        when(c.get(STRATEGY_KEY)).thenReturn(lc2);
+        when(lc1.getList(this.context)).thenReturn(STATUS_VALUES);
+        when(lc2.getList(this.context)).thenReturn(STRATEGY_VALUES);
 
         this.geneXWikiObjects = new LinkedList<>();
         doReturn(this.geneXWikiObjects).when(this.doc).getXObjects(any(EntityReference.class));
@@ -215,17 +208,17 @@ public class GeneListControllerTest
             doReturn(geneString).when(gene).getField(GENE_KEY);
 
             BaseStringProperty statusString = mock(BaseStringProperty.class);
-            doReturn("status" + i).when(statusString).getValue();
+            doReturn(STATUS_VALUES.get(i)).when(statusString).getValue();
             doReturn(statusString).when(gene).getField(STATUS_KEY);
+
+            StringListProperty strategyString = mock(StringListProperty.class);
+            doReturn(STRATEGY_VALUES.get(i)).when(strategyString).getTextValue();
+            doReturn(Arrays.asList("strategy" + i)).when(strategyString).getList();
+            doReturn(strategyString).when(gene).getField(STRATEGY_KEY);
 
             BaseStringProperty commentString = mock(BaseStringProperty.class);
             doReturn("comment" + i).when(commentString).getValue();
             doReturn(commentString).when(gene).getField(COMMENTS_KEY);
-
-            StringListProperty strategyString = mock(StringListProperty.class);
-            doReturn("strategy" + i).when(strategyString).getTextValue();
-            doReturn(Collections.singletonList("strategy" + i)).when(strategyString).getList();
-            doReturn(strategyString).when(gene).getField(STRATEGY_KEY);
 
             doReturn(Arrays.asList(geneString, statusString, commentString, strategyString)).when(gene).getFieldList();
         }
@@ -237,9 +230,9 @@ public class GeneListControllerTest
         for (int i = 0; i < 3; ++i) {
             PhenoTipsGene item = result.getValue().get(i);
             Assert.assertEquals("gene" + i, item.getName());
-            Assert.assertEquals(null, item.getStatus());
+            Assert.assertEquals(STATUS_VALUES.get(i), item.getStatus());
+            Assert.assertEquals(STRATEGY_VALUES.get(i), item.getStrategy());
             Assert.assertEquals("comment" + i, item.getComment());
-            Assert.assertEquals("strategy" + i, item.getStrategy());
         }
     }
 
@@ -299,31 +292,35 @@ public class GeneListControllerTest
     }
 
     @Test
-    public void checkLoadParsingOfGeneKey() throws ComponentLookupException
+    public void checkLoadParsingOfGeneAndCommentsKeys() throws ComponentLookupException
     {
         String[] genes = new String[] { "A", "<!'>;", "two words" };
-        addGeneFields(GENE_KEY, genes);
+        String[] comments = new String[] { "Hello world!", "<script></script>", "{{html}}" };
 
-        PatientData<List<PhenoTipsGene>> result = this.component.load(this.patient);
+        for (int i = 0; i < 3; ++i) {
+            BaseObject gene = mock(BaseObject.class);
+            this.geneXWikiObjects.add(gene);
 
-        Assert.assertNotNull(result);
-        for (int i = 0; i < genes.length; i++) {
-            PhenoTipsGene gene = result.getValue().get(i);
-            Assert.assertEquals(genes[i], gene.getName());
+            BaseStringProperty geneString = mock(BaseStringProperty.class);
+            doReturn(genes[i]).when(geneString).getValue();
+            doReturn(geneString).when(gene).getField(GENE_KEY);
+
+            BaseStringProperty commentString = mock(BaseStringProperty.class);
+            doReturn(comments[i]).when(commentString).getValue();
+            doReturn(commentString).when(gene).getField(COMMENTS_KEY);
+
+            when(gene.getField(STRATEGY_KEY)).thenReturn(null);
+            when(gene.getField(STATUS_KEY)).thenReturn(null);
+
+            doReturn(Arrays.asList(geneString, commentString)).when(gene).getFieldList();
         }
-    }
-
-    @Test
-    public void checkLoadParsingOfCommentsKey() throws ComponentLookupException
-    {
-        String[] comments = new String[] { "Hello world!", "<script></script>", "", "{{html}}" };
-        addGeneFields(COMMENTS_KEY, comments);
 
         PatientData<List<PhenoTipsGene>> result = this.component.load(this.patient);
 
         Assert.assertNotNull(result);
         for (int i = 0; i < comments.length; i++) {
             PhenoTipsGene gene = result.getValue().get(i);
+            Assert.assertEquals(genes[i], gene.getName());
             Assert.assertEquals(comments[i], gene.getComment());
         }
     }
@@ -422,7 +419,7 @@ public class GeneListControllerTest
     {
         List<PhenoTipsGene> internalList = new LinkedList<>();
 
-        PhenoTipsGene item = new PhenoTipsGene(null, GENE_VALUE, "Status", "Strategy", "Comment");
+        PhenoTipsGene item = new PhenoTipsGene(null, GENE_VALUE, "Status", "familial_mutation", "Comment");
         internalList.add(item);
 
         PatientData<List<PhenoTipsGene>> patientData = new SimpleValuePatientData<>(CONTROLLER_NAME, internalList);
@@ -439,7 +436,7 @@ public class GeneListControllerTest
         Assert.assertEquals(GENE_VALUE, result.get(JSON_GENE_SYMBOL));
         Assert.assertEquals(GENE_VALUE, result.get(JSON_GENE_ID));
         Assert.assertEquals(null, result.opt(JSON_STATUS_KEY));
-        String[] strategyArray = { "strategy" };
+        String[] strategyArray = { "familial_mutation" };
         Assert.assertEquals(new JSONArray(strategyArray).get(0), ((JSONArray) result.get(JSON_STRATEGY_KEY)).get(0));
         Assert.assertEquals("Comment", result.get(JSON_COMMENTS_KEY));
         // id, gene, strategy, comment
@@ -611,7 +608,7 @@ public class GeneListControllerTest
     public void saveWithEmptyDataClearsGenesWhenPolicyIsUpdate()
     {
         when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
+            .thenReturn(new SimpleValuePatientData<>(CONTROLLER_NAME, Collections.emptyList()));
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
         this.component.save(this.patient);
         verify(this.doc).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
@@ -623,7 +620,7 @@ public class GeneListControllerTest
     public void saveWithEmptyDataMergesWithStoredDataWhenPolicyIsMerge() throws XWikiException
     {
         when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
+            .thenReturn(new SimpleValuePatientData<>(CONTROLLER_NAME, Collections.emptyList()));
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
 
         final BaseObject geneObject = mock(BaseObject.class);
@@ -640,18 +637,18 @@ public class GeneListControllerTest
         when(geneObject.getField(COMMENTS_KEY)).thenReturn(null);
 
         when(geneProperty.getValue()).thenReturn(GENE_VALUE);
-        when(statusProperty.getValue()).thenReturn(STATUS_KEY);
+        when(statusProperty.getValue()).thenReturn(JSON_OLD_SOLVED_GENE_KEY);
 
         final BaseObject xwikiObject = mock(BaseObject.class);
         when(this.doc.newXObject(GeneListController.GENE_CLASS_REFERENCE, this.context)).thenReturn(xwikiObject);
 
         this.component.save(this.patient, PatientWritePolicy.MERGE);
 
-        verify(this.doc, times(1)).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
         verify(this.doc, times(1)).newXObject(GeneListController.GENE_CLASS_REFERENCE, this.context);
+        verify(this.doc, times(1)).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
         verify(this.doc, times(1)).getXObjects(GeneListController.GENE_CLASS_REFERENCE);
         verify(xwikiObject, times(1)).set(GENE_KEY, GENE_VALUE, this.context);
-        verify(xwikiObject, times(1)).set(STATUS_KEY, STATUS_KEY, this.context);
+        verify(xwikiObject, times(1)).set(STATUS_KEY, JSON_OLD_SOLVED_GENE_KEY, this.context);
         verify(xwikiObject, never()).set(eq(STRATEGY_KEY), any(), eq(this.context));
         verify(xwikiObject, never()).set(eq(COMMENTS_KEY), any(), eq(this.context));
 
@@ -663,7 +660,7 @@ public class GeneListControllerTest
     public void saveWithEmptyDataClearsGenesWhenPolicyIsReplace()
     {
         when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
+            .thenReturn(new SimpleValuePatientData<>(CONTROLLER_NAME, Collections.emptyList()));
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
         this.component.save(this.patient, PatientWritePolicy.REPLACE);
         verify(this.doc).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
@@ -705,8 +702,8 @@ public class GeneListControllerTest
         PhenoTipsGene gene2 = new PhenoTipsGene("GENE2", null, null, null, null);
         data.add(gene);
         data.add(gene2);
-        when(this.patient.<PhenoTipsGene>getData(CONTROLLER_NAME))
-            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, data));
+        when(this.patient.<List<PhenoTipsGene>>getData(CONTROLLER_NAME))
+            .thenReturn(new SimpleValuePatientData<>(CONTROLLER_NAME, data));
 
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
 
@@ -731,8 +728,8 @@ public class GeneListControllerTest
         PhenoTipsGene gene2 = new PhenoTipsGene("GENE2", null, null, null, null);
         data.add(gene);
         data.add(gene2);
-        when(this.patient.<PhenoTipsGene>getData(CONTROLLER_NAME))
-            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, data));
+        when(this.patient.<List<PhenoTipsGene>>getData(CONTROLLER_NAME))
+            .thenReturn(new SimpleValuePatientData<>(CONTROLLER_NAME, data));
 
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
 
@@ -762,16 +759,13 @@ public class GeneListControllerTest
         verify(o2).set(GENE_KEY, "GENE2", this.context);
         verify(o2, never()).set(eq(COMMENTS_KEY), anyString(), eq(this.context));
         verify(o3, times(1)).set(GENE_KEY, GENE_VALUE, this.context);
-        verify(o3, times(1)).set(STATUS_KEY, STATUS_KEY, this.context);
+        verify(o3, times(1)).set(STATUS_KEY, JSON_OLD_CANDIDATE_GENE_KEY, this.context);
         verify(o3, never()).set(eq(STRATEGY_KEY), any(), eq(this.context));
         verify(o3, never()).set(eq(COMMENTS_KEY), any(), eq(this.context));
         verify(o3, times(1)).getFieldList();
         verify(o3, times(4)).getField(anyString());
 
         verifyNoMoreInteractions(this.doc);
-        verifyNoMoreInteractions(o1);
-        verifyNoMoreInteractions(o2);
-        verifyNoMoreInteractions(o3);
     }
 
     // ----------------------------------------Private methods----------------------------------------

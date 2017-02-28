@@ -333,10 +333,6 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
                     docX.removeXObjects(GENE_CLASS_REFERENCE);
                 }
             } else {
-                if (!genes.isIndexed()) {
-                    this.logger.error(ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT);
-                    return;
-                }
                 saveGenes(docX, patient, genes, policy, this.xcontextProvider.get());
             }
         } catch (final Exception ex) {
@@ -361,9 +357,6 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
         @Nonnull final XWikiContext context)
     {
         List<PhenoTipsGene> genes = data.getValue();
-        if (genes == null || genes.isEmpty()) {
-            return;
-        }
         docX.removeXObjects(GENE_CLASS_REFERENCE);
         if (PatientWritePolicy.MERGE.equals(policy)) {
             final Map<String, PhenoTipsGene> mergedGenes = getMergedGenes(genes, load(patient).getValue());
@@ -391,7 +384,7 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
             String status = gene.getStatus();
             // setting status to default 'candidate' if not defined yet
             setXwikiObjectProperty(INTERNAL_STATUS_KEY,
-                StringUtils.isBlank(status) ? status : INTERNAL_CANDIDATE_VALUE, xwikiObject, context);
+                StringUtils.isNotBlank(status) ? status : INTERNAL_CANDIDATE_VALUE, xwikiObject, context);
             setXwikiObjectProperty(INTERNAL_STRATEGY_KEY, gene.getStrategy(), xwikiObject, context);
             setXwikiObjectProperty(INTERNAL_COMMENTS_KEY, gene.getComment(), xwikiObject, context);
         } catch (final XWikiException e) {
