@@ -36,6 +36,14 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.ontology.IntersectionClass;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.Restriction;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.util.ClientUtils;
@@ -46,14 +54,6 @@ import org.apache.solr.common.params.SpellingParams;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
-import com.hp.hpl.jena.ontology.IntersectionClass;
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.Restriction;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 /**
  * Provides access to the ORPHANET ontology. The ontology prefix is {@code ORPHANET}.
@@ -265,7 +265,7 @@ public class Orphanet extends AbstractOWLSolrVocabulary
 
     /**
      * Extracts data from the parent of ontClass that is a {@link Restriction} of type
-     * {@link com.hp.hpl.jena.ontology.SomeValuesFromRestriction}. Updates the {@link SolrInputDocument} for ontClass.
+     * {@link org.apache.jena.ontology.SomeValuesFromRestriction}. Updates the {@link SolrInputDocument} for ontClass.
      *
      * @param doc the input Solr document
      * @param restriction the restriction
@@ -297,7 +297,7 @@ public class Orphanet extends AbstractOWLSolrVocabulary
 
     /**
      * Extracts data from the parent of ontClass that is a {@link Restriction} of type
-     * {@link com.hp.hpl.jena.ontology.HasValueRestriction}. Updates the {@link SolrInputDocument} for ontClass.
+     * {@link org.apache.jena.ontology.HasValueRestriction}. Updates the {@link SolrInputDocument} for ontClass.
      *
      * @param doc the input Solr document
      * @param restriction the restriction
@@ -344,7 +344,7 @@ public class Orphanet extends AbstractOWLSolrVocabulary
     }
 
     /**
-     * Obtains the label for the {@link Restriction} of type {@link com.hp.hpl.jena.ontology.SomeValuesFromRestriction}.
+     * Obtains the label for the {@link Restriction} of type {@link org.apache.jena.ontology.SomeValuesFromRestriction}.
      *
      * @param restriction the restriction being examined
      * @return the someValuesFrom restriction value as a string
