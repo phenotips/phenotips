@@ -16,8 +16,6 @@ define([
     {
         this.DG = drawGraph;
 
-        this._probandId = 0;  // assume 0 unless explicitly set (to simplify migration from older pedigrees - TODO: check. Maybe set to -1 by default)
-
         this._heuristics = new Heuristics( drawGraph );  // heuristics & helper methods separated into a separate class
 
         this._heuristics.improvePositioning();
@@ -36,12 +34,12 @@ define([
 
         setProbandId: function(id)
         {
-            this._probandId = id;
+            this.DG.probandId = id;
         },
 
         getProbandId: function()
         {
-            return this._probandId;
+            return this.DG.probandId;
         },
 
         getAllPatientLinks: function()
@@ -1740,13 +1738,13 @@ define([
 
             this.DG.positions = jsonData["positions"];
 
+            this.DG.probandId = jsonData.hasOwnProperty("probandNodeID") ? jsonData["probandNodeID"] : -1;
+
             this._updateauxiliaryStructures();
 
             this.screenRankShift = 0;
 
             var newNodes = this._getAllNodes();
-
-            this._probandId = jsonData.hasOwnProperty("probandNodeID") ? jsonData["probandNodeID"] : -1;
 
             return {"new": newNodes, "removed": removedNodes};
         },
@@ -1802,6 +1800,7 @@ define([
         {
             try {
                 var newDG = new PositionedGraph( baseGraph,
+                                                 probandNodeID,
                                                  this.DG.horizontalPersonSeparationDist,
                                                  this.DG.horizontalRelSeparationDist,
                                                  this.DG.maxInitOrderingBuckets,
@@ -1816,8 +1815,6 @@ define([
 
             this.DG          = newDG;
             this._heuristics = new Heuristics( this.DG );
-
-            this._probandId = probandNodeID;
 
             //this._debugPrintAll("before improvement");
             this._heuristics.improvePositioning();
