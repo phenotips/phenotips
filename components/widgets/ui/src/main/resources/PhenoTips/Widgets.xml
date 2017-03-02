@@ -4221,7 +4221,7 @@ document.observe("xwiki:dom:updated", init);
        },
       'phenotype-info' : {
         'hint'     : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.hint')",
-        'service'  : "$xwiki.getURL('PhenoTips.PhenotypeInfoService', 'get')",
+        'vocabulary' : 'hpo',
         'database' : {
           'name' : "$services.vocabularies.hpo.name",
           'link' : "$services.vocabularies.hpo.website",
@@ -4237,17 +4237,17 @@ document.observe("xwiki:dom:updated", init);
           c.update(
                     elt('span', 'info').insert(elt('span', 'key').update(json.id))
                                        .insert(' ')
-                                       .insert(elt('span', 'value').update(json.label))
+                                       .insert(elt('span', 'value').update(json.name_translated))
                   );
-          json.def &amp;&amp; c.insert(elt('p').update(json.def.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;')));
+          json.def_translated &amp;&amp; c.insert(elt('p').update(json.def_translated.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;')));
 
-          var labels = {'synonym' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.synonym')", 'is_a' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.typeOf')"};
+          var labels = {'synonym' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.synonym')", 'parents' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.typeOf')"};
           var advancedInfo = elt('dl');
           for (var l in labels) {
             if (json[l]) {
               advancedInfo.insert(elt('dt', '', labels[l]));
               json[l].each(function (item) {
-                advancedInfo.insert(elt('dd', '', item.label || item));
+                advancedInfo.insert(elt('dd', '', item.name_translated || item));
               })
             }
           }
@@ -4277,7 +4277,7 @@ document.observe("xwiki:dom:updated", init);
       },
       'phenotype-qualifier-info' : {
         'hint'     : "$services.localization.render('phenotips.widgets.helpButtons.phenotypeQualifier.hint')",
-        'service'  : "$xwiki.getURL('PhenoTips.PhenotypeInfoService', 'get')",
+        'vocabulary' : 'hpo',
         'database' : {
           'name' : "$services.vocabularies.hpo.name",
           'link' : "$services.vocabularies.hpo.website",
@@ -4292,9 +4292,9 @@ document.observe("xwiki:dom:updated", init);
           c.update(
                     elt('span', 'info').insert(elt('span', 'key').update(json.id))
                                        .insert(' ')
-                                       .insert(elt('span', 'value').update(json.label))
+                                       .insert(elt('span', 'value').update(json.name_translated))
                   );
-          json.def &amp;&amp; c.insert(elt('p').update(json.def.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;')));
+          json.def_translated &amp;&amp; c.insert(elt('p').update(json.def_translated.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;')));
         }
       },
       'omim-disease-info' : {
@@ -4424,13 +4424,21 @@ document.observe("xwiki:dom:updated", init);
       },
       'gene-info' : {
         'hint' : "$services.localization.render('phenotips.widgets.helpButtons.gene.hint')",
-        'service'  : "$xwiki.getURL('PhenoTips.GeneInfoService', 'get')",
+        'vocabulary' : 'hgnc',
         'database' : {
           'name' : "$services.vocabularies.hgnc.name",
           'link' : "$services.vocabularies.hgnc.website",
           'citation' : "$services.vocabularies.hgnc.citation",
           'version': "$services.vocabularies.hgnc.version"
         },
+        externalDBs : [
+                        { name : 'GENECARDS',    url : 'http://www.genecards.org/cgi-bin/carddisp.pl?gene=',          field : 'genecards_id'},
+                        { name : 'OMIM',         url : 'http://www.omim.org/entry/',                                  field : 'omim_id'},
+                        { name : 'Entrez',       url : 'http://www.ncbi.nlm.nih.gov/gene/?term=',                     field : 'entrez_id'},
+                        { name : 'RefSeq',       url : 'http://www.ncbi.nlm.nih.gov/nuccore/',                        field : 'refseq_accession'},
+                        { name : 'Ensembl',      url : 'http://useast.ensembl.org/Homo_sapiens/Gene/Compara_Tree?g=', field : 'ensembl_gene_id'},
+                        { name : 'Gene panels',  url : 'https://www.ncbi.nlm.nih.gov/gtr/all/tests/?term=',           field : 'genecards_id'}
+            ],
         'callback' : function (helpButton, json) {
           var c = helpButton.helpBox.content;
           var elt = function(type, cssClass, content) {
@@ -4440,7 +4448,7 @@ document.observe("xwiki:dom:updated", init);
           c.update(
                     elt('span', 'info').insert(elt('span', 'key').update(json.symbol))
                                        .insert(' ')
-                                       .insert(elt('span', 'value').update(json.name))
+                                       .insert(elt('span', 'value').update(json.name_translated))
                   );
 
           var labels = {'alias_symbol' : "$services.localization.render('phenotips.widgets.helpButtons.gene.alias')", 'prev_symbol' : "$services.localization.render('phenotips.widgets.helpButtons.gene.previousSymbols')", 'gene_family' : "$services.localization.render('phenotips.widgets.helpButtons.gene.family')"};
@@ -4450,7 +4458,7 @@ document.observe("xwiki:dom:updated", init);
               advancedInfo.insert(elt('dt', '', labels[l]));
               if (Object.prototype.toString.call(json[l]) === '[object Array]') {
                 json[l].each(function (item) {
-                  advancedInfo.insert(elt('dd', '', item.label || item));
+                  advancedInfo.insert(elt('dd', '', item.name_translated || item));
                 })
               } else {
                  advancedInfo.insert(elt('dd', '', json[l]));
@@ -4461,37 +4469,29 @@ document.observe("xwiki:dom:updated", init);
             c.insert(advancedInfo);
           }
 
-          if (json.external_ids) {
-            var tools = elt('div', 'term-tools');
-            var externalDBs = [
-                          { name : 'GENECARDS',    url : 'http://www.genecards.org/cgi-bin/carddisp.pl?gene=',          field : 'genecards_id'},
-                          { name : 'OMIM',         url : 'http://www.omim.org/entry/',                                  field : 'omim_id'},
-                          { name : 'Entrez',       url : 'http://www.ncbi.nlm.nih.gov/gene/?term=',                     field : 'entrez_id'},
-                          { name : 'RefSeq',       url : 'http://www.ncbi.nlm.nih.gov/nuccore/',                        field : 'refseq_accession'},
-                          { name : 'Ensembl',      url : 'http://useast.ensembl.org/Homo_sapiens/Gene/Compara_Tree?g=', field : 'ensembl_gene_id'},
-                          { name : 'Gene panels',  url : 'https://www.ncbi.nlm.nih.gov/gtr/all/tests/?term=',           field : 'genecards_id'}
-            ];
-            externalDBs.each(function (item) {
-                         var value = json.external_ids[item.field];
-                         if (value) {
-                           if (!value.each) {
-                             value = [value];
-                           }
-                           value.each (function (id) {
-                             tools.insert(new Element('a', {
-                               'href'   : item.url + id,
-                               'class'  : 'button'
-                             }).update(item.name + ': ' + id).wrap('span', {'class' : 'buttonwrapper'}));
-                           });
-                         }
-            });
-            // We must stop the event, otherwise this item will be selected; as a consequence, we must also manually open the link
-            tools.select('a').each(function(item) {
-                         item.observe('click', function(event) {
-                            event.stop();
-                            window.open(item.href);
-                         })
-            });
+          var tools = elt('div', 'term-tools');
+          this.externalDBs.each(function (item) {
+            var value = json[item.field];
+            if (value) {
+              if (!value.each) {
+                value = [value];
+              }
+              value.each (function (id) {
+                tools.insert(new Element('a', {
+                  'href'   : item.url + id,
+                  'class'  : 'button'
+                }).update(item.name + ': ' + id).wrap('span', {'class' : 'buttonwrapper'}));
+              });
+            }
+          });
+          // We must stop the event, otherwise this item will be selected; as a consequence, we must also manually open the link
+          tools.select('a').each(function(item) {
+            item.observe('click', function(event) {
+              event.stop();
+              window.open(item.href);
+            })
+          });
+          if (tools.firstDescendant()) {
             c.insert(tools);
           }
         }
@@ -4560,7 +4560,7 @@ document.observe("xwiki:dom:updated", init);
       this.helpBox.content = new Element('div');
       this.helpBox.insert(this.helpBox.content);
 
-      if (this._builder.service) {
+      if (this._builder.service || this._builder.vocabulary) {
         this.createHelpContentFromService();
       } else {
         this._builder.callback &amp;&amp; this._builder.callback(this);
@@ -4575,8 +4575,10 @@ document.observe("xwiki:dom:updated", init);
 
     createHelpContentFromService : function() {
       var _this = this;
-      new Ajax.Request(_this._builder.service, {
+      var url = _this._builder.service || (XWiki.contextPath + "/rest/vocabularies/" + _this._builder.vocabulary + "/" + _this._information);
+      new Ajax.Request(url, {
         parameters: {'id' : _this._information},
+        method : 'get',
         onCreate : function () {
           _this.helpBox.content.update(new Element('span', {'class' : 'hint temporary'}).update("$services.localization.render('phenotips.widgets.helpButtons.loading')"));
         },
