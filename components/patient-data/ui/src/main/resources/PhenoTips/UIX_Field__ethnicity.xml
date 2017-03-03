@@ -115,8 +115,8 @@
 #__hasDataToDisplay('paternal_ethnicity' $showPaternalEthnicity)
 #if ($showMaternalEthnicity || $showPaternalEthnicity)
   (% class="fieldset ethnicity" %)(((
-    #__displayFormatted('half-width' 'maternal_ethnicity')
     #__displayFormatted('half-width' 'paternal_ethnicity')
+    #__displayFormatted('half-width' 'maternal_ethnicity')
     (% class="clearfloats" %)((()))
   )))##fieldset
 #end
