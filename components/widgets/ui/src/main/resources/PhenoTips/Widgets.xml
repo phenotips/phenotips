@@ -4347,6 +4347,81 @@ document.observe("xwiki:dom:updated", init);
           }
         }
       },
+      'orphanet-disease-info' : {
+        'hint' : "$services.localization.render('phenotips.widgets.helpButtons.orphanetDisease.hint')",
+        'vocabulary' : 'orphanet',
+        'database' : {
+          'name' : "$services.vocabularies.orphanet.name",
+          'link' : "$services.vocabularies.orphanet.website",
+          'citation' : "$services.vocabularies.orphanet.citation",
+          'version': "$services.vocabularies.orphanet.version"
+        },
+        'externalDBs' : [
+                        { name : 'Ensembl', url : 'http://useast.ensembl.org/Homo_sapiens/Gene/Compara_Tree?g=', field : 'ensembl_id'},
+                        { name : 'GenAtlas', url : 'http://genatlas.medecine.univ-paris5.fr/fiche.php?symbol=', field : 'genatlas_id'},
+                        { name : 'HGNC', url : 'http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=', field : 'hgnc_id'},
+                        { name : 'ICD-10', url : 'http://icdlist.com/icd-10/', field : 'icd-10_id'},
+                        { name : 'IUPHAR', url : 'http://guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=', field : 'iuphar_id'},
+                        { name : 'MedDRA', url : 'http://purl.bioontology.org/ontology/MEDDRA/', field : 'meddra_id'},
+                        { name : 'MeSH', url : 'https://www.ncbi.nlm.nih.gov/mesh/', field : 'mesh_id'},
+                        { name : 'OMIM', url : 'http://www.omim.org/entry/', field : 'omim_id'},
+                        { name : 'UniProt', url : 'http://www.uniprot.org/uniprot/', field : 'swissprot_id'},
+                        { name : 'UMLS', url : 'https://uts.nlm.nih.gov/metathesaurus.html?cui=', field : 'umls_id'}
+        ],
+        'callback' : function (helpButton, json) {
+          var c = helpButton.helpBox.content;
+          var elt = function(type, cssClass, content) {
+            return new Element(type, cssClass &amp;&amp; {'class' : cssClass} || {}).update(content || '');
+          };
+
+          c.update(
+                    elt('span', 'info').insert(elt('span', 'key').update(json.id))
+                                       .insert(' ')
+                                       .insert(elt('span', 'value').update(json.name_translated))
+                  );
+          json.def_translated &amp;&amp; c.insert(elt('p').update(json.def_translated.replace(/\s*\n\s*/, ' ')));
+
+          var labels = {'alternative_term' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.synonym')", 'parents' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.typeOf')"};
+          var advancedInfo = elt('dl');
+          for (var l in labels) {
+            if (json[l]) {
+              advancedInfo.insert(elt('dt', '', labels[l]));
+              json[l].each(function (item) {
+                advancedInfo.insert(elt('dd', '', item.name_translated || item));
+              })
+            }
+          }
+          if (advancedInfo.firstDescendant()) {
+            c.insert(advancedInfo);
+          }
+
+          var tools = elt('div', 'term-tools');
+          this.externalDBs.each(function (item) {
+            var value = json[item.field];
+            if (value) {
+              if (!value.each) {
+                value = [value];
+              }
+              value.each (function (id) {
+                tools.insert(new Element('a', {
+                  'href'   : item.url + id,
+                  'class'  : 'button'
+                }).update(item.name + ': ' + id).wrap('span', {'class' : 'buttonwrapper'}));
+              });
+            }
+          });
+          // We must stop the event, otherwise this item will be selected; as a consequence, we must also manually open the link
+          tools.select('a').each(function(item) {
+            item.observe('click', function(event) {
+              event.stop();
+              window.open(item.href);
+            })
+          });
+          if (tools.firstDescendant()) {
+            c.insert(tools);
+          }
+        }
+      },
       'gene-info' : {
         'hint' : "$services.localization.render('phenotips.widgets.helpButtons.gene.hint')",
         'service'  : "$xwiki.getURL('PhenoTips.GeneInfoService', 'get')",
