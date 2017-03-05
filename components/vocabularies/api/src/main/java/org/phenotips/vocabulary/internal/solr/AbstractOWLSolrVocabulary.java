@@ -48,7 +48,7 @@ import org.apache.solr.common.params.CommonParams;
  * Ontologies processed from OWL files share much of the processing code.
  *
  * @version $Id$
- * @since 1.3M6
+ * @since 1.3
  */
 public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
 {

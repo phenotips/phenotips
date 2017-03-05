@@ -59,7 +59,7 @@ import com.google.common.collect.ImmutableSet;
  * Provides access to the ORPHANET ontology. The ontology prefix is {@code ORPHANET}.
  *
  * @version $Id$
- * @since 1.3M6
+ * @since 1.3
  */
 @Component
 @Named("orphanet")
@@ -630,13 +630,12 @@ public class Orphanet extends AbstractOWLSolrVocabulary
      */
     private SolrQuery addFieldQueryParam(@Nonnull final SolrQuery query)
     {
-        // Add static field parameters.
-        query.set(DisMaxParams.PF, "name^40 nameSpell^70 nameExact^100 namePrefix^30 alternative_term^15 "
-            + "alternative_termSpell^25 alternative_termExact^70 alternative_termPrefix^20 def^7 "
-            + "defSpell^14 text^3 textSpell^5");
-        query.set(DisMaxParams.QF,
-            "id^100 idStub^75 name^10 nameSpell^18 nameStub^5 alternative_term^6 alternative_termSpell^10 "
-                + "alternative_termStub^4 def^3 defSpell^5 text^1 textSpell^2 textStub^0.5");
+        query.set(DisMaxParams.PF, "name^20 nameSpell^36 nameExact^100 namePrefix^30 "
+            + "synonym^15 synonymSpell^25 synonymExact^70 synonymPrefix^20 "
+            + "def^7 defSpell^14 text^3 textSpell^5");
+        query.set(DisMaxParams.QF, "id^100 name^10 nameSpell^18 nameStub^5 "
+            + "synonym^6 synonymSpell^10 synonymStub^4 "
+            + "def^3 defSpell^5 text^1 textSpell^2 textStub^0.5");
         return query;
     }
 }
