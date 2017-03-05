@@ -30,7 +30,7 @@
 
   <properties>
     <!-- More tests should be added when the Solr core becomes a component -->
-    <coverage.instructionRatio>0.27</coverage.instructionRatio>
+    <coverage.instructionRatio>0.24</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -147,6 +147,21 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>jena-core</artifactId>
+      <version>3.2.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
