@@ -78,7 +78,8 @@ public class Orphanet extends AbstractOWLSolrVocabulary
 
     private static final String ON_PROPERTY_LABEL = "onProperty";
 
-    /** The pattern for prevalence values. Values are expected to be in fraction format, and may include "<" or ">" or
+    /**
+     * The pattern for prevalence values. Values are expected to be in fraction format, and may include "<" or ">" or
      * ranges (e.g. "1-9"), or single digits in the numerator.
      */
     private static final Pattern PREV_PATTERN =
@@ -607,6 +608,7 @@ public class Orphanet extends AbstractOWLSolrVocabulary
 
     /**
      * Given a {@code query} object, adds global query parameters.
+     *
      * @param query a {@link SolrQuery solr query} object
      * @return the {@code query} with global query parameters added
      */
