@@ -23,9 +23,7 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.util.Collection;
@@ -47,11 +45,6 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
-import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.DATA_NAME;
-import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_1;
-import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_2;
-import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_3;
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
@@ -59,6 +52,10 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.DATA_NAME;
+import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_1;
+import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_2;
+import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_3;
 
 /**
  * Test for the {@link AbstractSimpleController} defined methods (load, save, writeJSON, readJSON). These methods are
@@ -84,18 +81,11 @@ public class AbstractSimpleControllerTest
     @Mock
     protected BaseObject data;
 
-    private DocumentAccessBridge documentAccessBridge;
-
     @Before
     public void setUp() throws Exception
     {
         MockitoAnnotations.initMocks(this);
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
-        DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocumentReference();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
         doReturn(this.doc).when(this.patient).getDocument();
         doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
     }

@@ -24,7 +24,6 @@ import org.phenotips.data.PatientDataController;
 import org.phenotips.data.VocabularyProperty;
 import org.phenotips.data.internal.AbstractPhenoTipsVocabularyProperty;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.model.reference.EntityReference;
@@ -64,10 +63,6 @@ import com.xpn.xwiki.objects.BaseProperty;
  */
 public abstract class AbstractComplexController<T> implements PatientDataController<T>
 {
-    /** Provides access to the underlying data storage. */
-    @Inject
-    protected DocumentAccessBridge documentAccessBridge;
-
     /** Logging helper object. */
     @Inject
     private Logger logger;

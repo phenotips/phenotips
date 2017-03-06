@@ -22,7 +22,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;
 
 import java.util.Collection;
@@ -48,10 +47,6 @@ import com.xpn.xwiki.objects.BaseObject;
  */
 public abstract class AbstractSimpleController implements PatientDataController<String>
 {
-    /** Provides access to the underlying data storage. */
-    @Inject
-    protected DocumentAccessBridge documentAccessBridge;
-
     /** Logging helper object. */
     @Inject
     private Logger logger;

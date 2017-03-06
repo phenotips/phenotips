@@ -60,7 +60,7 @@ public interface PrimaryEntity
     /**
      * Returns the document where the entity is stored.
      *
-     * @return a valid document reference
+     * @return a valid XWiki document
      */
     XWikiDocument getDocument();
 

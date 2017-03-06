@@ -27,11 +27,9 @@ import org.phenotips.data.VocabularyProperty;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.ObjectPropertyReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -59,11 +57,8 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Test for the {@link AbstractComplexController} defined methods (load, save, writeJSON, readJSON). These methods are
@@ -96,10 +91,6 @@ public class AbstractComplexControllerTest
         new MockitoComponentMockingRule<PatientDataController<List<VocabularyProperty>>>(
             AbstractComplexControllerCodeFieldsTestImplementation.class);
 
-    private DocumentAccessBridge documentAccessBridge;
-
-    private DocumentReference patientDocument;
-
     @Mock
     private Patient patient;
 
@@ -129,11 +120,7 @@ public class AbstractComplexControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
-        this.patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(this.patientDocument).when(this.patient).getDocument();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(this.patientDocument);
+        doReturn(this.doc).when(this.patient).getDocument();
         doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
         doReturn(this.baseProperty1).when(this.data).getField(PROPERTY_1);
@@ -166,19 +153,6 @@ public class AbstractComplexControllerTest
     }
 
     // -----------------------------------load() tests-----------------------------------
-
-    @Test
-    public void loadCatchesExceptionFromDocumentAccess() throws Exception
-    {
-        Exception exception = new Exception();
-        doThrow(exception).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
-
-        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
-
-        verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen error has "
-            + "occurred during controller loading ", exception.getMessage());
-        Assert.assertNull(result);
-    }
 
     @Test
     public void loadReturnsNullWhenPatientDoesNotHavePatientClass() throws ComponentLookupException
@@ -217,8 +191,7 @@ public class AbstractComplexControllerTest
     @Test
     public void loadConvertsCodeFieldsWhenControllerIsOnlyCodeFields() throws Exception
     {
-        this.documentAccessBridge = this.codeFieldImplMocker.getInstance(DocumentAccessBridge.class);
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(this.patientDocument);
+        doReturn(this.doc).when(this.patient).getDocument();
         List<String> list1 = new LinkedList<>();
         list1.add("HP:00000015");
         doReturn(list1).when(this.baseProperty1).getValue();
