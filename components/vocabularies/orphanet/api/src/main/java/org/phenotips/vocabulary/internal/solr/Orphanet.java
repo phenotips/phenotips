@@ -533,7 +533,7 @@ public class Orphanet extends AbstractOWLSolrVocabulary
     @Override
     String getFormattedOntClassId(@Nullable final String localName)
     {
-        return StringUtils.isNotBlank(localName) ? localName.replace("Orphanet_", "") : null;
+        return StringUtils.isNotBlank(localName) ? localName.replace("Orphanet_", "ORPHA:") : null;
     }
 
     @Override
