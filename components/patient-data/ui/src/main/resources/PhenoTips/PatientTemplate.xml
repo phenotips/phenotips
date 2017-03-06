@@ -256,27 +256,6 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </date_of_death_entered>
-      <life_status>
-        <cache>0</cache>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>life_status</name>
-        <number>47</number>
-        <picker>0</picker>
-        <prettyName>life_status</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <sort>none</sort>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <values>alive|deceased</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </life_status>
       <diagnosis_notes>
         <contenttype>PureText</contenttype>
         <customDisplay/>
@@ -560,6 +539,22 @@
         <values>M=Male|F=Female|O=Other|U=Unknown</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </gender>
+      <genetic_notes>
+        <contenttype>PureText</contenttype>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>genetic_notes</name>
+        <number>55</number>
+        <picker>0</picker>
+        <prettyName>Additional genetic notes</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </genetic_notes>
       <gestation>
         <customDisplay>{{velocity}}
 #if ($type == 'edit')
@@ -758,6 +753,27 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </last_name>
+      <life_status>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>life_status</name>
+        <number>47</number>
+        <picker>0</picker>
+        <prettyName>life_status</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>alive|deceased</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </life_status>
       <maternal_ethnicity>
         <cache>0</cache>
         <customDisplay>{{velocity filter="indent"}}{{html wiki=true clean=false}}
@@ -1155,22 +1171,6 @@
         <values>Unknown|A|B|Other</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </twinNumber>
-      <genetic_notes>
-        <contenttype>PureText</contenttype>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <editor>---</editor>
-        <name>genetic_notes</name>
-        <number>55</number>
-        <picker>0</picker>
-        <prettyName>Additional genetic notes</prettyName>
-        <rows>5</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </genetic_notes>
       <unaffected>
         <customDisplay/>
         <defaultValue/>
