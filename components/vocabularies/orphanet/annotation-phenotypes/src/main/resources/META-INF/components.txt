@@ -1,0 +1,2 @@
+org.phenotips.vocabulary.annotation.internal.OrphanetSymptomAnnotationExtension
+org.phenotips.vocabulary.annotation.internal.OrphanetNotSymptomAnnotationExtension
