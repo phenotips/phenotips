@@ -137,7 +137,11 @@ public class OmimScriptService extends AbstractSolrScriptService
             }
             Collections.sort(result);
         }
-        return result.subList(0, limit);
+        if (result.size() > limit) {
+            return result.subList(0, limit);
+        } else {
+            return result;
+        }
     }
 
     /**
