@@ -65,7 +65,7 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
     @Override
     public String getDefaultSourceLocation()
     {
-        return "https://compbio.charite.de/jenkins/job/hpo/lastStableBuild/artifact/hp/hp.obo";
+        return "https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.obo";
     }
 
     @Override
