@@ -22,16 +22,17 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>vocabulary-orphanet</artifactId>
+    <artifactId>vocabulary-hpo</artifactId>
     <version>1.3-SNAPSHOT</version>
   </parent>
-  <artifactId>vocabulary-orphanet-annotation-phenotypes</artifactId>
-  <name>PhenoTips - Vocabularies - Orphanet integration - Phenotypes annotation</name>
+  <artifactId>vocabulary-hpo-annotation-phenotypes</artifactId>
+  <name>PhenoTips - Vocabularies - Disease integration - Phenotypes annotation</name>
 
   <properties>
     <xwiki.extension.namespaces>{root}</xwiki.extension.namespaces>
     <!-- Name to display by the Extension Manager -->
-    <xwiki.extension.name>Orphanet phenotype annotations</xwiki.extension.name>
+    <xwiki.extension.name>Disease term phenotype annotations</xwiki.extension.name>
+    <coverage.instructionRatio>0.47</coverage.instructionRatio>
   </properties>
 
   <dependencies>

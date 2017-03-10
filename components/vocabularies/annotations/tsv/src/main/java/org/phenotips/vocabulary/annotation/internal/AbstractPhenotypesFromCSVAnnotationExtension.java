@@ -34,6 +34,7 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 /**
  * Extends {@link AbstractCSVAnnotationExtension} to annotate a {@link VocabularyInputTerm} with its associated
@@ -41,16 +42,20 @@ import org.apache.commons.lang3.StringUtils;
  * (labeled {@link #getDirectPhenotypesLabel()}), the other one contains the phenotypes directly from the annotation
  * source, as well as their ancestor phenotypes (labeled {@link #getAllAncestorPhenotypesLabel()}).
  * @version $Id$
- * @since 1.4
+ * @since 1.3
  */
 public abstract class AbstractPhenotypesFromCSVAnnotationExtension extends AbstractCSVAnnotationExtension
 {
+    /** The name of the field where ancestors are stored. */
+    private static final String ANCESTORS_LABEL = "term_category";
+
     /** The vocabulary manager for easy access to various vocabularies. */
     @Inject
     private VocabularyManager vocabularyManager;
 
-    /** The name of the field where ancestors are stored. */
-    private static final String ANCESTORS_LABEL = "term_category";
+    /** The logger for the annotator. */
+    @Inject
+    private Logger logger;
 
     /** A map of disorder to symptoms, as outlined in the annotation source. */
     private final MultiValuedMap<String, String> directPhenotypes = new HashSetValuedHashMap<>();
@@ -64,7 +69,7 @@ public abstract class AbstractPhenotypesFromCSVAnnotationExtension extends Abstr
         // The annotation source file contains data for several disorder databases. Only want to look at data that is
         // relevant for the current vocabulary.
         final String dbName = getRowItem(row, getDBNameColNumber());
-        if (StringUtils.isNotBlank(dbName) && dbName.equalsIgnoreCase(vocabularyId)) {
+        if (StringUtils.isNotBlank(dbName) && StringUtils.containsIgnoreCase(vocabularyId, dbName)) {
             final String diseaseId = getRowItem(row, getDiseaseColNumber());
             final String symptomId = getRowItem(row, getPhenotypeColNumber());
             if (StringUtils.isNotBlank(diseaseId) && StringUtils.isNotBlank(symptomId)) {

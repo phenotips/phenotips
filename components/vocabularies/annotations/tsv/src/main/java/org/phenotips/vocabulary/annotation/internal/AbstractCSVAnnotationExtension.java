@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Collection;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -33,11 +34,11 @@ import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 
 /**
- * Implements {@link VocabularyExtension} to annotate {@link org.phenotips.vocabulary.VocabularyInputTerm} from a
- * {@link #getTargetVocabularyId() supported vocabulary} with data from {@link #getAnnotationSource() a tab-separated
+ * Implements {@link VocabularyExtension} to annotate {@link org.phenotips.vocabulary.VocabularyInputTerm} from
+ * {@link #getTargetVocabularyIds() supported vocabularies} with data from {@link #getAnnotationSource() a tab-separated
  * file}.
  * @version $Id$
- * @since 1.4
+ * @since 1.3
  */
 public abstract class AbstractCSVAnnotationExtension implements VocabularyExtension
 {
@@ -46,12 +47,12 @@ public abstract class AbstractCSVAnnotationExtension implements VocabularyExtens
 
     /** The logger for the annotator. */
     @Inject
-    Logger logger;
+    private Logger logger;
 
     @Override
     public boolean isVocabularySupported(@Nonnull final Vocabulary vocabulary)
     {
-        return getTargetVocabularyId().equals(vocabulary.getIdentifier());
+        return getTargetVocabularyIds().contains(vocabulary.getIdentifier());
     }
 
     @Override
@@ -91,11 +92,11 @@ public abstract class AbstractCSVAnnotationExtension implements VocabularyExtens
     }
 
     /**
-     * Specifies the vocabulary targeted by this annotator.
+     * Specifies the vocabularies targeted by this annotator.
      *
-     * @return a valid {@link Vocabulary#getIdentifier() vocabulary identifier}
+     * @return a collection of valid {@link Vocabulary#getIdentifier() vocabulary identifiers}
      */
-    protected abstract String getTargetVocabularyId();
+    protected abstract Collection<String> getTargetVocabularyIds();
 
     /**
      * Specifies the annotation source URL.

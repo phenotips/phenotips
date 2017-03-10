@@ -30,7 +30,6 @@
 
   <properties>
     <coverage.instructionRatio>0.47</coverage.instructionRatio>
-    <checkstyle.skip>true</checkstyle.skip>
   </properties>
 
   <dependencies>

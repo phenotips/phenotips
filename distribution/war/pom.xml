@@ -626,7 +626,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>vocabulary-orphanet-annotation-phenotypes</artifactId>
+      <artifactId>vocabulary-hpo-annotation-phenotypes</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

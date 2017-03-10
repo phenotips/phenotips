@@ -22,38 +22,45 @@ import org.phenotips.vocabulary.VocabularyInputTerm;
 
 import org.xwiki.component.annotation.Component;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.solr.client.solrj.SolrQuery;
 
 /**
- * Extends {@link AbstractPhenotypesFromCSVAnnotationExtension} to annotate an Orphanet {@link VocabularyInputTerm} with
- * its associated phenotypes. Two annotations are added: one contains actual symptoms directly from the annotation
- * source (labeled {@link #getDirectPhenotypesLabel()}), the other one contains symptoms from the annotation source, as
- * well as the ancestor phenotypes (labeled {@link #getAllAncestorPhenotypesLabel()}).
+ * Extends {@link AbstractPhenotypesFromCSVAnnotationExtension} to annotate a disease {@link VocabularyInputTerm} with
+ * its associated phenotypes. Two annotations are added: one contains actual negative symptoms directly from the
+ * annotation source (labeled {@link #getDirectPhenotypesLabel()}), the other one contains negative symptoms from the
+ * annotation source, as well as the ancestor phenotypes (labeled {@link #getAllAncestorPhenotypesLabel()}).
  * @version $Id$
- * @since 1.4
+ * @since 1.3
  */
 @Component
-@Named("orphanet-annotation-symptom")
+@Named("disease-annotation-not-symptom")
 @Singleton
-public class OrphanetSymptomAnnotationExtension extends AbstractPhenotypesFromCSVAnnotationExtension
+public class DiseaseNotSymptomAnnotationExtension extends AbstractPhenotypesFromCSVAnnotationExtension
 {
     /** The source URL for phenotype annotations. */
     private static final String ANNOTATION_SOURCE = "http://compbio.charite.de/jenkins/job/hpo.annotations/"
-        + "lastStableBuild/artifact/misc/phenotype_annotation.tab";
+        + "lastStableBuild/artifact/misc/negative_phenotype_annotation.tab";
 
     private static final String ORPHANET_LABEL = "orphanet";
 
-    private static final String ACTUAL_SYMPTOM = "actual_symptom";
+    private static final String ACTUAL_NOT_SYMPTOM = "actual_not_symptom";
 
-    private static final String SYMPTOM = "symptom";
+    private static final String NOT_SYMPTOM = "not_symptom";
+
+    private static final Collection<String> TARGET_VOCABULARIES = createTargetVocabularyLabels();
 
     @Override
-    protected String getTargetVocabularyId()
+    protected Collection<String> getTargetVocabularyIds()
     {
-        return ORPHANET_LABEL;
+        return TARGET_VOCABULARIES;
     }
 
     @Override
@@ -71,13 +78,13 @@ public class OrphanetSymptomAnnotationExtension extends AbstractPhenotypesFromCS
     @Override
     protected String getDirectPhenotypesLabel()
     {
-        return ACTUAL_SYMPTOM;
+        return ACTUAL_NOT_SYMPTOM;
     }
 
     @Override
     protected String getAllAncestorPhenotypesLabel()
     {
-        return SYMPTOM;
+        return NOT_SYMPTOM;
     }
 
     @Override
@@ -96,5 +103,17 @@ public class OrphanetSymptomAnnotationExtension extends AbstractPhenotypesFromCS
     protected int getPhenotypeColNumber()
     {
         return 4;
+    }
+
+    /**
+     * Creates an unmodifiable collection of target vocabulary identifiers.
+     *
+     * @return an unmodifiable collection of target vocabulary identifiers
+     */
+    private static Collection<String> createTargetVocabularyLabels()
+    {
+        final Set<String> vocabularySet = new HashSet<>();
+        vocabularySet.add(ORPHANET_LABEL);
+        return Collections.unmodifiableSet(vocabularySet);
     }
 }
