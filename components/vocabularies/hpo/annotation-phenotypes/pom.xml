@@ -32,7 +32,7 @@
     <xwiki.extension.namespaces>{root}</xwiki.extension.namespaces>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Disease term phenotype annotations</xwiki.extension.name>
-    <coverage.instructionRatio>0.47</coverage.instructionRatio>
+    <coverage.instructionRatio>0.96</coverage.instructionRatio>
   </properties>
 
   <dependencies>
