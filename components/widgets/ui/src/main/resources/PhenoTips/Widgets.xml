@@ -5206,9 +5206,8 @@ document.observe("xwiki:dom:updated", init);
   });
 
   Object.extend(widgets.FuzzyDatePicker, {
-    // Returns true if d1 is before d2, false if d1 is after d2 and undefined if they cannot be compared
-    // A decade value is understood as the first day of the decade for d1, and the last day of the decade for d2
-    // (so only the years are compared)
+    // Returns true if birth_date is before death_date, false if birth_date is after death_date, and undefined if they cannot be compared.
+    // A date range is understood as the first possible day of the range for a birth date, and the last possible day of the range for a death date (so only the years are compared)
     isDateAfter: function(birth_date, death_date) {
        var birth = birth_date;
        var death = death_date;

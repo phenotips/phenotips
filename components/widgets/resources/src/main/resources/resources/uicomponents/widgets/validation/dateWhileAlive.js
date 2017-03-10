@@ -36,9 +36,9 @@ var PhenoTips = (function(PhenoTips) {
       var thisDateParts = this.el && this.el.__datePicker && this.el.__datePicker.dateParts;
 
       if (bdayParts && thisDateParts && PhenoTips.widgets.FuzzyDatePicker.isDateAfter(thisDateParts, bdayParts)) {
-        Validate.fail("$services.localization.render('phenotips.widgets.dateWhileAlive.dateBeforeBirth')");
+        Validate.fail("$escapetool.javascript($services.localization.render('phenotips.widgets.dateWhileAlive.dateBeforeBirth'))");
       } else if (ddayParts && thisDateParts && PhenoTips.widgets.FuzzyDatePicker.isDateAfter(ddayParts, thisDateParts)) {
-        Validate.fail("$services.localization.render('phenotips.widgets.dateWhileAlive.dateAfterDeath')");
+        Validate.fail("$escapetool.javascript($services.localization.render('phenotips.widgets.dateWhileAlive.dateAfterDeath'))");
       } else {
         return true;
       }

@@ -92,7 +92,7 @@ var PhenoTips = (function(PhenoTips) {
       if (this.regexp.match(this.element.value)) {
         return true;
       } else {
-        Validate.fail("$services.localization.render('phenotips.widgets.durationField.invalid')");
+        Validate.fail("$escapetool.javascript($services.localization.render('phenotips.widgets.durationField.invalid'))");
       }
     }
   });
