@@ -61,7 +61,7 @@ public class SheetAssembler
         List<DataSection> headers = generateHeader(converter, enabledFields);
         List<List<DataSection>> bodySections = generateBody(converter, patients);
 
-        List<DataSection> patientsCombined = new LinkedList<DataSection>();
+        List<DataSection> patientsCombined = new LinkedList<>();
         for (List<DataSection> patientSections : bodySections) {
             for (DataSection section : patientSections) {
                 section.finalizeToMatrix();
@@ -105,12 +105,12 @@ public class SheetAssembler
     private List<List<DataSection>> generateBody(DataToCellConverter converter, List<Patient> patients)
         throws Exception
     {
-        List<List<DataSection>> allSections = new LinkedList<List<DataSection>>();
+        List<List<DataSection>> allSections = new LinkedList<>();
         for (Patient patient : patients) {
             if (patient == null) {
                 continue;
             }
-            List<DataSection> patientSections = new LinkedList<DataSection>();
+            List<DataSection> patientSections = new LinkedList<>();
             patientSections.add(converter.idBody(patient));
             patientSections.add(converter.documentInfoBody(patient));
             patientSections.add(converter.patientInfoBody(patient));
@@ -145,7 +145,7 @@ public class SheetAssembler
      */
     private List<DataSection> generateHeader(DataToCellConverter converter, Set<String> enabledFields) throws Exception
     {
-        List<DataSection> headerSections = new LinkedList<DataSection>();
+        List<DataSection> headerSections = new LinkedList<>();
         headerSections.add(converter.idHeader(enabledFields));
         headerSections.add(converter.documentInfoHeader(enabledFields));
         headerSections.add(converter.patientInfoHeader(enabledFields));
