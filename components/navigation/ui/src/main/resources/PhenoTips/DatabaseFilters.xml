@@ -68,6 +68,10 @@
 #if ($activeFields.contains('date_of_birth'))
   * $services.localization.render('phenotips.databaseFilters.dateOfBirth') #__filters_dateRange("date_of_birth")
 #end
+#if ($activeFields.contains('clinical_diagnosis'))
+  * $services.localization.render('phenotips.databaseFilters.clinicalDiagnosis') {{html clean=false}}&lt;p class="xHint"&gt;$services.localization.render('phenotips.databaseFilters.clinicalDiagnosis.hint')&lt;/p&gt;&lt;input type="text" class="suggest multi suggestOrphanet generateCheckboxes" name="clinical_diagnosis" value=""/&gt;{{/html}}
+  ** {{html clean='false'}}$services.localization.render('phenotips.databaseFilters.disease.presentingFilter', [ "&lt;label&gt;&lt;input type='radio' name='clinical_diagnosis/join_mode' value='AND'/&gt;", "&lt;/label&gt;", "&lt;label&gt;&lt;input type='radio' name='clinical_diagnosis/join_mode' value='OR' checked='checked'/&gt;", "&lt;/label&gt;"]){{/html}}
+#end
 #if ($activeFields.contains('omim_id'))
   * $services.localization.render('phenotips.databaseFilters.disease') {{html clean=false}}&lt;p class="xHint"&gt;$services.localization.render('phenotips.databaseFilters.disease.hint')&lt;/p&gt;&lt;input type="text" class="suggest multi suggestOmim generateCheckboxes" name="omim_id" value=""/&gt;{{/html}}
   ** {{html clean='false'}}$services.localization.render('phenotips.databaseFilters.disease.presentingFilter', [ "&lt;label&gt;&lt;input type='radio' name='omim_id/join_mode' value='AND'/&gt;", "&lt;/label&gt;", "&lt;label&gt;&lt;input type='radio' name='omim_id/join_mode' value='OR' checked='checked'/&gt;", "&lt;/label&gt;"]){{/html}}

@@ -123,6 +123,7 @@ public class SheetAssembler
             patientSections.add(converter.genesBody(patient));
             patientSections.add(converter.geneticNotesBody(patient));
             patientSections.add(converter.variantsBody(patient));
+            patientSections.add(converter.clinicalDiagnosisBody(patient));
             patientSections.add(converter.disordersBody(patient));
             patientSections.add(converter.isSolvedBody(patient));
 
@@ -158,6 +159,7 @@ public class SheetAssembler
         headerSections.add(converter.genesHeader());
         headerSections.add(converter.geneticNotesHeader(enabledFields));
         headerSections.add(converter.variantsHeader());
+        headerSections.add(converter.clinicalDiagnosisHeaders(enabledFields));
         headerSections.add(converter.disordersHeaders(enabledFields));
         headerSections.add(converter.isSolvedHeader(enabledFields));
 

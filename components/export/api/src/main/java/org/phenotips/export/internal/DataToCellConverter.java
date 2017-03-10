@@ -1249,6 +1249,94 @@ public class DataToCellConverter
         return bodySection;
     }
 
+    public DataSection clinicalDiagnosisHeaders(Set<String> enabledFields) throws Exception
+    {
+        String sectionName = "clinicalDiagnosis";
+
+        String[] fieldIds =
+            {
+            "clinical_diagnosis",
+            "clinical_diagnosis_code",
+            "clinical_diagnosis_combined"
+            };
+        /* FIXME These will not work properly in different configurations */
+        String[][] headerIds =
+            {
+            { "name" },
+            { "id" },
+            { "name", "id" }
+            };
+        Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
+        if (present.isEmpty()) {
+            return null;
+        }
+
+        this.enabledHeaderIdsBySection.put(sectionName, present);
+
+        DataSection headerSection = new DataSection();
+        int hX = 0;
+        for (String fieldId : Arrays.asList("name", "id")) {
+            if (!present.contains(fieldId)) {
+                continue;
+            }
+            DataCell headerCell = new DataCell(
+                this.translationManager.translate("phenotips.export.excel.label.clinicalDiagnosis." + fieldId), hX, 1,
+                StyleOption.HEADER);
+            headerSection.addCell(headerCell);
+            hX++;
+        }
+        DataCell headerCell =
+            new DataCell(this.translationManager.translate("phenotips.export.excel.label.clinicalDiagnosis"), 0,
+                0, StyleOption.LARGE_HEADER);
+        headerCell.addStyle(StyleOption.HEADER);
+        headerSection.addCell(headerCell);
+
+        return headerSection;
+    }
+
+    public DataSection clinicalDiagnosisBody(Patient patient)
+    {
+        String sectionName = "clinicalDiagnosis";
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
+        if (present == null || present.isEmpty()) {
+            return null;
+        }
+
+        int y = 0;
+        DataSection bodySection = new DataSection();
+
+        PatientData<Disorder> clinicalDisorders = patient.getData("clinical-diagnosis");
+        for (Disorder disorder : clinicalDisorders) {
+            int x = 0;
+            if (present.contains("name")) {
+                DataCell cell = new DataCell(disorder.getName(), x, y);
+                cell.setMultiline();
+                bodySection.addCell(cell);
+                x++;
+            }
+            if (present.contains("id")) {
+                DataCell cell = new DataCell(disorder.getId(), x, y);
+                bodySection.addCell(cell);
+            }
+            y++;
+        }
+        /* If there is no data, but there are headers present, create empty cells */
+        if (clinicalDisorders.size() == 0) {
+            int x = 0;
+            if (present.contains("name")) {
+                DataCell cell = new DataCell("", x, y);
+                bodySection.addCell(cell);
+                x++;
+            }
+            if (present.contains("id")) {
+                DataCell cell = new DataCell("", x, y);
+                bodySection.addCell(cell);
+            }
+        }
+
+        return bodySection;
+    }
+
     public DataSection medicalHistoryHeader(Set<String> enabledFields) throws Exception
     {
         String sectionName = "medicalHistory";
