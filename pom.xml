@@ -484,6 +484,30 @@
           <ignored>
             <!-- Remove the following ignores after we release 1.4 -->
             <difference>
+              <className>org/phenotips/vocabulary/SolrVocabularyResourceManager</className>
+              <differenceType>7012</differenceType>
+              <method>void createReplacementCore(java.lang.String)</method>
+              <justification>New methods for safe vocabulary reindexing.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/vocabulary/SolrVocabularyResourceManager</className>
+              <differenceType>7012</differenceType>
+              <method>void replaceCore(java.lang.String)</method>
+              <justification>New methods for safe vocabulary reindexing.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/vocabulary/SolrVocabularyResourceManager</className>
+              <differenceType>7012</differenceType>
+              <method>org.apache.solr.client.solrj.SolrClient getReplacementSolrConnection(java.lang.String)</method>
+              <justification>New methods for safe vocabulary reindexing.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/vocabulary/SolrVocabularyResourceManager</className>
+              <differenceType>7012</differenceType>
+              <method>void discardReplacementCore(java.lang.String)</method>
+              <justification>New methods for safe vocabulary reindexing.</justification>
+            </difference>
+            <difference>
               <className>org/phenotips/data/permissions/script/PermissionsManagerScriptService</className>
               <differenceType>7005</differenceType>
               <method>org.phenotips.data.permissions.PatientAccess getPatientAccess(org.phenotips.data.Patient)</method>

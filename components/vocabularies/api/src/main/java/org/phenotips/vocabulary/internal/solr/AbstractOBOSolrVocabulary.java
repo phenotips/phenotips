@@ -22,6 +22,8 @@ import org.phenotips.obo2solr.TermData;
 import org.phenotips.vocabulary.VocabularyExtension;
 import org.phenotips.vocabulary.VocabularyTerm;
 
+import org.xwiki.component.phase.InitializationException;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -99,19 +101,30 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     {
         int retval = 1;
         try {
-            for (VocabularyExtension ext : this.extensions.get()) {
-                if (ext.isVocabularySupported(this)) {
-                    ext.indexingStarted(this);
+            this.externalServicesAccess.createReplacementCore(getCoreName());
+            try {
+                for (VocabularyExtension ext : this.extensions.get()) {
+                    if (ext.isVocabularySupported(this)) {
+                        ext.indexingStarted(this);
+                    }
+                }
+                this.clear();
+                retval = this.index(sourceUrl);
+            } finally {
+                for (VocabularyExtension ext : this.extensions.get()) {
+                    if (ext.isVocabularySupported(this)) {
+                        ext.indexingEnded(this);
+                    }
                 }
             }
-            this.clear();
-            retval = this.index(sourceUrl);
-        } finally {
-            for (VocabularyExtension ext : this.extensions.get()) {
-                if (ext.isVocabularySupported(this)) {
-                    ext.indexingEnded(this);
-                }
+            if (retval == 0) {
+                this.externalServicesAccess.replaceCore(getCoreName());
+                this.externalServicesAccess.getTermCache(getCoreName()).removeAll();
             }
+            this.externalServicesAccess.discardReplacementCore(getCoreName());
+            return retval;
+        } catch (InitializationException ex) {
+            this.logger.warn("Failed to reindex. {}", ex.getMessage());
         }
         return retval;
     }
@@ -169,9 +182,8 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     protected void commitTerms(Collection<SolrInputDocument> batch)
         throws SolrServerException, IOException, OutOfMemoryError
     {
-        this.externalServicesAccess.getSolrConnection(getCoreName()).add(batch);
-        this.externalServicesAccess.getSolrConnection(getCoreName()).commit();
-        this.externalServicesAccess.getTermCache(getCoreName()).removeAll();
+        this.externalServicesAccess.getReplacementSolrConnection(getCoreName()).add(batch);
+        this.externalServicesAccess.getReplacementSolrConnection(getCoreName()).commit();
     }
 
     /**
@@ -182,7 +194,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     protected int clear()
     {
         try {
-            this.externalServicesAccess.getSolrConnection(getCoreName()).deleteByQuery("*:*");
+            this.externalServicesAccess.getReplacementSolrConnection(getCoreName()).deleteByQuery("*:*");
             return 0;
         } catch (SolrServerException ex) {
             this.logger.error("SolrServerException while clearing the Solr index", ex);

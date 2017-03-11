@@ -19,6 +19,7 @@ package org.phenotips.vocabulary;
 
 import org.xwiki.cache.Cache;
 import org.xwiki.component.annotation.Role;
+import org.xwiki.component.phase.InitializationException;
 import org.xwiki.stability.Unstable;
 
 import org.apache.solr.client.solrj.SolrClient;
@@ -48,4 +49,35 @@ public interface SolrVocabularyResourceManager
      * @return a Solr client for communication with the target core
      */
     SolrClient getSolrConnection(String vocabularyId);
+
+    /**
+     * Copy the Solr configuration file in a separate temp directory. Register core from temporary place for reindexing.
+     *
+     * @param vocabularyId the identifier of the target vocabulary
+     * @throws org.xwiki.component.phase.InitializationException if the process fails
+     */
+    void createReplacementCore(String vocabularyId) throws InitializationException;
+
+    /**
+     * Copy new index file from temporary directory to origin location.
+     *
+     * @param vocabularyId the identifier of the target vocabulary
+     * @throws org.xwiki.component.phase.InitializationException if the process fails
+     */
+    void replaceCore(String vocabularyId) throws InitializationException;
+
+    /**
+     * Get the temporary Solr core used for a vocabulary during reindexing.
+     *
+     * @param vocabularyId the identifier of the target vocabulary
+     * @return a Solr client for communication with the target temporary core
+     */
+    SolrClient getReplacementSolrConnection(String vocabularyId);
+
+    /**
+     * Delete the temporary directory handling vocabulary terms reindexing.
+     *
+     * @param vocabularyId the identifier of the target vocabulary
+     */
+    void discardReplacementCore(String vocabularyId);
 }
