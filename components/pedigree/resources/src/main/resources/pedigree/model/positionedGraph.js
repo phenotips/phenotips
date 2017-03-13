@@ -1693,6 +1693,15 @@ define([
                     return false;
                 }.bind(this);
 
+                var fixOrder = function(order) {
+                    // we know we can't easily change the order - it would be done in all algorithms above, if possible
+                    // ..so do a simple mirror flip of the pedigree - father will be moved ot the left.mother to the right
+                    order.flipOrders();
+                    // ... but all other partners get fliped as well, and may become badly-ordered (which is a problem
+                    // since most partners are probably ordered correctly). So fix whatever can be fixed easily
+                    this.transpose(order, true);
+                }.bind(this);
+
                 // check that father (if there is only one) is on the left, OR
                 // that mother (if there is only one) is on the right;
                 // if not, flip all orders left-to-right
@@ -1701,7 +1710,7 @@ define([
                     var allOther = motherFather.other.slice();
                     (motherFather.mother !== undefined) && allOther.push(motherFather.mother);
                     if (isOrderWrong(motherFather.father, allOther, true)) {
-                        order.flipOrders();
+                        fixOrder(order);
                         return;
                     }
                 }
@@ -1710,7 +1719,7 @@ define([
                     var allOther = motherFather.other.slice();
                     (motherFather.father !== undefined) && allOther.push(motherFather.father);
                     if (isOrderWrong(motherFather.mother, allOther, false)) {
-                        order.flipOrders();
+                        fixOrder(order);
                         return;
                     }
                 }
