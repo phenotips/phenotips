@@ -46,14 +46,9 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.DisMaxParams;
 import org.apache.solr.common.params.SpellingParams;
 import org.joda.time.DateTime;
@@ -76,14 +71,15 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
     /** The location for the official OMIM source. */
     public static final String OMIM_SOURCE_URL = "http://data.omim.org/downloads/???/mimTitles.txt";
 
-    private static final String ANNOTATIONS_BASE_URL =
-        "http://compbio.charite.de/hudson/job/hpo.annotations/lastStableBuild/artifact/misc/";
-
     private static final String GENE_ANNOTATIONS_URL = "http://omim.org/static/omim/data/mim2gene.txt";
 
-    private static final String POSITIVE_ANNOTATIONS_URL = ANNOTATIONS_BASE_URL + "phenotype_annotation.tab";
+    private static final String PHENOTYPE_ANNOTATIONS_BASE_URL =
+        "http://compbio.charite.de/hudson/job/hpo.annotations/lastStableBuild/artifact/misc/";
 
-    private static final String NEGATIVE_ANNOTATIONS_URL = ANNOTATIONS_BASE_URL + "negative_phenotype_annotation.tab";
+    private static final String POSITIVE_ANNOTATIONS_URL = PHENOTYPE_ANNOTATIONS_BASE_URL + "phenotype_annotation.tab";
+
+    private static final String NEGATIVE_ANNOTATIONS_URL =
+        PHENOTYPE_ANNOTATIONS_BASE_URL + "negative_phenotype_annotation.tab";
 
     private static final String GENEREVIEWS_MAPPING_URL =
         "ftp://ftp.ncbi.nih.gov/pub/GeneReviews/NBKid_shortname_OMIM.txt";
@@ -108,15 +104,13 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
 
     private static final String TITLE_SEPARATOR = ";";
 
-    private static final String SYNONYM_SEPARATOR = ";;";
+    private static final String LIST_SEPARATOR = ";;";
 
     /** The map of symbols preceding a MIM number to their symbolic representations. */
     private static final Map<String, String> SYMBOLS;
 
     /** The map of symbols preceding a MIM number to their corresponding types. */
     private static final Map<String, String[]> TYPES;
-
-    private SolrInputDocument crtTerm;
 
     private Map<String, SolrInputDocument> data = new HashMap<>();
 
@@ -132,7 +126,7 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
         symbols.put("Number Sign", "#");
         types.put("Number Sign", new String[] { "disorder" });
 
-        symbols.put("Plus", "#");
+        symbols.put("Plus", "+");
         types.put("Plus", new String[] { "gene", "disorder" });
 
         symbols.put("Percent", "%");
@@ -202,7 +196,12 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
     @Override
     protected Collection<SolrInputDocument> load(URL url)
     {
-        index();
+        parseOmimData(url);
+        loadGenes();
+        loadSymptoms(true);
+        loadSymptoms(false);
+        loadGeneReviews();
+        loadVersion();
         return this.data.values();
     }
 
@@ -247,9 +246,13 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
 
     private SolrQuery addFieldQueryParameters(SolrQuery query)
     {
-        query.set(DisMaxParams.PF, "name^40 nameSpell^70 synonym^15 synonymSpell^25 text^3 textSpell^5");
-        query.set(DisMaxParams.QF, "name^10 short_name^5 included_name^5 nameSpell^18 nameStub^5 "
-            + "synonym^6 synonymSpell^10 synonymStub^3 text^1 textSpell^2 textStub^0.5");
+        query.set(DisMaxParams.PF, "name^40 nameSpell^70 synonym^15 synonymSpell^25 "
+            + "included_name^15 included_nameSpell^25 text^3 textSpell^5");
+        query.set(DisMaxParams.QF, "id^40 name^10 nameSpell^18 nameStub^5 "
+            + "short_name^18 short_nameStub^5 "
+            + "synonym^6 synonymSpell^10 synonymStub^3 "
+            + "included_name^6 included_nameSpell^10 included_nameStub^3 "
+            + "text^1 textSpell^2 textStub^0.5");
         return query;
     }
 
@@ -258,7 +261,7 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
     {
         String queryString = originalQuery.trim();
         String escapedQuery = ClientUtils.escapeQueryChars(queryString);
-        query.setFilterQueries(StringUtils.defaultIfBlank(customFq, "-(nameSort:\\** nameSort:\\+* nameSort:\\^*)"));
+        query.setFilterQueries(StringUtils.defaultIfBlank(customFq, "+type:disorder"));
         query.setQuery(escapedQuery);
         query.set(SpellingParams.SPELLCHECK_Q, queryString);
         String lastWord = StringUtils.substringAfterLast(escapedQuery, " ");
@@ -267,7 +270,8 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
         }
         lastWord += "*";
         query.set(DisMaxParams.BQ,
-            String.format("nameSpell:%1$s^20 keywords:%1$s^2 text:%1$s^1 textSpell:%1$s^2", lastWord));
+            String.format("nameSpell:%1$s^20 short_name:%1$s^20 synonymSpell:%1$s^12 text:%1$s^1 textSpell:%1$s^2",
+                lastWord));
         query.setRows(rows);
         if (StringUtils.isNotBlank(sort)) {
             for (String sortItem : sort.split("\\s*,\\s*")) {
@@ -278,140 +282,64 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
         return query;
     }
 
-    @Override
-    public String getVersion()
-    {
-        SolrQuery query = new SolrQuery();
-        query.setQuery("version:*");
-        query.set(CommonParams.ROWS, "1");
-        try {
-            QueryResponse response = this.externalServicesAccess.getSolrConnection(getCoreName()).query(query);
-            SolrDocumentList termList = response.getResults();
-            if (!termList.isEmpty()) {
-                return termList.get(0).getFieldValue("version").toString();
-            }
-        } catch (SolrServerException | SolrException ex) {
-            this.logger.warn("Failed to query vocabulary version: {}", ex.getMessage());
-        } catch (IOException ex) {
-            this.logger.error("IOException while getting vocabulary version", ex);
-        }
-        return null;
-    }
-
-    @Override
-    public synchronized int reindex(String sourceURL)
-    {
-        try {
-            index();
-            Collection<SolrInputDocument> omimData = this.data.values();
-            if (omimData.isEmpty()) {
-                return 2;
-            }
-            if (clear() == 1) {
-                return 1;
-            }
-            this.externalServicesAccess.getSolrConnection(getCoreName()).add(omimData);
-            this.externalServicesAccess.getSolrConnection(getCoreName()).commit();
-            this.externalServicesAccess.getTermCache(getCoreName()).removeAll();
-        } catch (SolrServerException | IOException ex) {
-            this.logger.error("Failed to reindex OMIM: {}", ex.getMessage(), ex);
-            return 1;
-        }
-        return 0;
-    }
-
-    /**
-     * Delete all the data in the Solr index.
-     *
-     * @return {@code 0} if the command was successful, {@code 1} otherwise
-     */
-    @Override
-    public int clear()
-    {
-        try {
-            this.externalServicesAccess.getSolrConnection(getCoreName()).deleteByQuery("*:*");
-            return 0;
-        } catch (SolrServerException ex) {
-            this.logger.error("SolrServerException while clearing the Solr index", ex);
-        } catch (IOException ex) {
-            this.logger.error("IOException while clearing the Solr index", ex);
-        }
-        return 1;
-    }
-
-    private void index()
-    {
-        try {
-            parseOmimData();
-            loadGenes();
-            loadSymptoms(true);
-            loadSymptoms(false);
-            loadGeneReviews();
-            loadVersion();
-        } catch (NullPointerException ex) {
-            this.logger.error("Failed to prepare the OMIM index: {}", ex.getMessage(), ex);
-        }
-    }
-
-    private void parseOmimData()
+    private void parseOmimData(URL sourceUrl)
     {
         try {
             Reader in =
-                new InputStreamReader(new URL(OMIM_SOURCE_URL).openConnection().getInputStream(),
+                new InputStreamReader(sourceUrl.openConnection().getInputStream(),
                     Charset.forName(ENCODING));
-            for (CSVRecord row : CSVFormat.TDF.parse(in)) {
-                // ignore the comments, moved or removed entries
-                if (row.get(0).startsWith("#") || ("Caret").equals(row.get(0))
-                    || ("REMOVED FROM DATABASE").equals(row.get(2))) {
+            for (CSVRecord row : CSVFormat.TDF.withCommentMarker('#').parse(in)) {
+                // Ignore moved or removed entries
+                if ("Caret".equals(row.get(0))) {
                     continue;
                 }
 
-                this.crtTerm = new SolrInputDocument();
+                SolrInputDocument crtTerm = new SolrInputDocument();
                 // set id
-                setCrtTerm(ID_FIELD, row.get(1));
+                addFieldValue(ID_FIELD, row.get(1), crtTerm);
 
                 // set symbol
-                setCrtTerm(SYMBOL_FIELD, SYMBOLS.get(row.get(0)));
+                addFieldValue(SYMBOL_FIELD, SYMBOLS.get(row.get(0)), crtTerm);
                 // set type (multivalued)
                 for (String type : TYPES.get(row.get(0))) {
-                    setCrtTerm(TYPE_FIELD, type);
+                    addFieldValue(TYPE_FIELD, type, crtTerm);
                 }
                 // set name
                 String name = StringUtils.substringBefore(row.get(2), TITLE_SEPARATOR).trim();
-                setCrtTerm(NAME_FIELD, name);
+                addFieldValue(NAME_FIELD, name, crtTerm);
                 // set short name
                 String shortNameString = StringUtils.substringAfter(row.get(2), TITLE_SEPARATOR).trim();
                 String[] shortNames = StringUtils.split(shortNameString, TITLE_SEPARATOR);
                 for (String shortName : shortNames) {
-                    setCrtTerm(SHORT_NAME_FIELD, shortName.trim());
+                    addFieldValue(SHORT_NAME_FIELD, shortName.trim(), crtTerm);
                 }
 
                 // set synonyms
-                if (StringUtils.isNotBlank(row.get(3))) {
-                    String[] synonyms = StringUtils.split(row.get(3), SYNONYM_SEPARATOR);
-                    for (String synonym : synonyms) {
-                        setCrtTerm(SYNONYM_FIELD, synonym.trim());
-                    }
-                }
+                setListFieldValue(SYNONYM_FIELD, row.get(3), crtTerm);
                 // set included name
-                if (StringUtils.isNotBlank(row.get(4))) {
-                    String[] synonyms = StringUtils.split(row.get(4), SYNONYM_SEPARATOR);
-                    for (String synonym : synonyms) {
-                        setCrtTerm(INCLUDED_NAME_FIELD, synonym.replace(", INCLUDED", "").trim());
-                    }
-                }
+                setListFieldValue(INCLUDED_NAME_FIELD, row.get(4), crtTerm);
 
-                this.data.put(String.valueOf(this.crtTerm.get(ID_FIELD).getFirstValue()), this.crtTerm);
+                this.data.put(String.valueOf(crtTerm.get(ID_FIELD).getFirstValue()), crtTerm);
             }
         } catch (IOException ex) {
             this.logger.warn("Failed to read/parse the HGNC source: {}", ex.getMessage());
         }
     }
 
-    private void setCrtTerm(String key, String value)
+    private void setListFieldValue(String targetField, String value, SolrInputDocument doc)
     {
         if (StringUtils.isNotBlank(value)) {
-            this.crtTerm.setField(key, value);
+            String[] items = StringUtils.split(value, LIST_SEPARATOR);
+            for (String item : items) {
+                addFieldValue(targetField, item.replaceAll(", INCLUDED$", "").trim(), doc);
+            }
+        }
+    }
+
+    private void addFieldValue(String targetField, String value, SolrInputDocument doc)
+    {
+        if (StringUtils.isNotBlank(value)) {
+            doc.addField(targetField, value);
         }
     }
 
@@ -419,13 +347,8 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
     {
         try (BufferedReader in = new BufferedReader(
             new InputStreamReader(new URL(GENE_ANNOTATIONS_URL).openConnection().getInputStream(), ENCODING))) {
-            for (CSVRecord row : CSVFormat.TDF.parse(in)) {
-                // ignore comments rows and rows of not a gene MIM Entry Type
-                if (row.get(0).startsWith("#") || !row.get(1).contains("gene")
-                    || StringUtils.isNotBlank(row.get(2).trim())) {
-                    continue;
-                }
-                SolrInputDocument term = this.data.get(row.get(2).trim());
+            for (CSVRecord row : CSVFormat.TDF.withCommentMarker('#').parse(in)) {
+                SolrInputDocument term = this.data.get(row.get(0).trim());
                 if (term != null) {
                     String gs = row.get(3).trim();
                     if (StringUtils.isNotBlank(gs)) {
@@ -511,9 +434,9 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
         }
         if (!positive) {
             ancestors.removeAll(term.getFieldValues(symptomField));
-            term.addField("not_symptom", new HashSet<String>(ancestors));
+            term.addField("not_symptom", new HashSet<>(ancestors));
         } else {
-            term.addField(symptomField, new HashSet<String>(ancestors));
+            term.addField(symptomField, new HashSet<>(ancestors));
         }
         ancestors.clear();
     }
