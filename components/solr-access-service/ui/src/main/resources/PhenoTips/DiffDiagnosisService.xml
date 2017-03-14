@@ -79,12 +79,12 @@
           #set ($previousPage = $page - 1)
           &lt;span class="fa fa-chevron-left navigation"&gt;&lt;input type="hidden" value="$previousPage"/&gt;&lt;/span&gt;
         #end
-        &lt;ul&gt;
+        &lt;ul class="vocabulary-term-list"&gt;
         #foreach ($item in $pagedResults)
           #if ("$!item.id"!= '' &amp;&amp; "$!item.name" != '')
             &lt;li class="phenotype"&gt;
-              &lt;span class="id" title="${item.id}"&gt;[${item.id}]&lt;/span&gt;
-              &lt;span class="title"&gt;${item.name}&lt;/span&gt;
+              &lt;span class="term-id" title="${item.id}"&gt;${item.id}&lt;/span&gt;
+              &lt;span class="term-name"&gt;${item.name}&lt;/span&gt;
               &lt;span class="hidden term-category"&gt;
               #foreach ($c in $services.vocabularies.resolveTerm($item.id).get('term_category'))
                 &lt;input type="hidden" value="$c"&gt;

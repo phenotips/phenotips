@@ -63,7 +63,7 @@
     #else
       #set ($termId = $term.id)
     #end
-    (%%)((([[~[$term.id]&gt;&gt;http://www.omim.org/entry/${termId}]] $!{services.rendering.escape($name, $doc.syntax)})))
+    (% class="vocabulary-term-list" %)((([[~$!{stringtool.defaultString($!term.symbol, ' ')}${term.id}&gt;&gt;http://www.omim.org/entry/${termId}||class="term-id"]] $!{services.rendering.escape($name, $doc.syntax)})))
   #end
 #end
 {{/velocity}}</content>
