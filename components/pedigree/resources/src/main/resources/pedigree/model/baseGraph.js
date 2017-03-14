@@ -841,6 +841,38 @@ define([
                 }
             }
             return ancestors;
+        },
+
+        // Returns an object with "mother" and "father" properties. One or both can be undefined, or nodeID
+        // "undefined' means there are no parent(s) or parent gender does not alow mother/father indentification
+        // (e.g. gender is "other" or there is more than one parent of the same gender)
+        // Includes all other parents in the "other" array
+        getMotherFather: function(v) {
+            var result = {"mother": undefined, "father": undefined, "other": []};
+
+            var parents = this.getParents(v);
+            for (var i = 0; i < parents.length; i++) {
+                var gender = this.properties[parents[i]]["gender"];
+                if (gender == "M") {
+                    if (result.father === undefined) {
+                        // father isnot defined yet
+                        result.father = parents[i];
+                        continue;
+                    } else {
+                        // more than one father -> dont know which one is father
+                        result.father = undefined;
+                    }
+                } else if (gender == "F") {
+                    if (result.mother === undefined) {
+                        result.mother = parents[i];
+                        continue;
+                    } else {
+                        result.mother = undefined;
+                    }
+                }
+                result.other.push(parents[i]);
+            }
+            return result;
         }
     };
 

@@ -20,6 +20,7 @@ define([
     ){
 
     PositionedGraph = function( baseG,                          // mandatory, BaseGraph
+                                probandNodeId,                  // mandatory, int
                                 horizontalPersonSeparationDist, // mandatory, int
                                 horizontalRelSeparationDist,    // mandatory, int
                                 maxInitOrderingBuckets,         // optional,  int
@@ -44,7 +45,10 @@ define([
         this.ancestors = undefined;  // {}: for each node contains a set of all its ancestors and the closest relationship distance
         this.consangr  = undefined;  // {}: for each node a set of consanguineous relationship IDs
 
+        this.probandId = undefined;  // int; need it at this level to order proband parents correctly; -1 means no proband
+
         this.initialize( baseG,
+                         probandNodeId,
                          horizontalPersonSeparationDist, horizontalRelSeparationDist,
                          maxInitOrderingBuckets, maxOrderingIterations, maxXcoordIterations,
                          performVerticalPositioning, suggestedRanks );
@@ -67,6 +71,7 @@ define([
         yCommentLineHeight:            2.9,
 
         initialize: function( baseG,
+                              probandNodeId,
                               horizontalPersonSeparationDist,
                               horizontalRelSeparationDist,
                               maxInitOrderingBuckets,
@@ -80,6 +85,8 @@ define([
             if (maxInitOrderingBuckets)         this.maxInitOrderingBuckets         = maxInitOrderingBuckets;
             if (maxOrderingIterations)          this.maxOrderingIterations          = maxOrderingIterations;
             if (maxXcoordIterations)            this.maxXcoordIterations            = maxXcoordIterations;
+
+            this.probandId = Helpers.isInt(probandNodeId) ? probandNodeId : -1;
 
             if (this.maxInitOrderingBuckets > 8)
                 throw "Too many ordering buckets: number of permutations (" + this.maxInitOrderingBuckets.toString() + "!) is too big";
@@ -192,7 +199,7 @@ define([
             }
 
             var queue = new Queue();         // holds non-ranked nodes which have all their parents already ranked
-            
+
             if (suggestedRanks) {
                 for (var i = 0; i < suggestedRanks.length; i++) {
                     var nodesAtRank = suggestedRanks[i];
@@ -281,7 +288,7 @@ define([
             //    resuting component may have other minimum in/out multi-rnak edges
 
             console.log("Re-ranking ranks before: " + Helpers.stringifyObject(ranks));
-            
+
             while(true) {
                 var nodeColor        = [];   // for each node which component it belongs to
                 var component        = [];   // for each component list of vertices in the component
@@ -298,17 +305,17 @@ define([
                         // This node will be the first node of the next component, which
                         // includes all nodes reachable using non-multi-rank edges (any direction).
                         // All nodes in the component will be colored as "maxComponentColor"
-                        
+
                         var thisComponent = [];
-                        
+
                         var potentialLongEdges = {};
-                        
+
                         var queue = new Queue();
                         queue.push( v );
 
                         while ( queue.size() > 0 ) {
                             var nextV = queue.pop();
-                            
+
                             //console.log("processing: " + nextV);
                             if (nodeColor[nextV] != null) continue;
 
@@ -333,18 +340,18 @@ define([
                                 }
                             }
                         }
-                        
-                        component[currentComponentColor]      = thisComponent;                
+
+                        component[currentComponentColor]      = thisComponent;
                         minOutEdgeInfo[currentComponentColor] = { "length": Infinity, "weight": 0 };
-                    
+
                         // go over all long edges originating from nodes in the component,
-                        // and find the shortest long edge which goes out of component                    
+                        // and find the shortest long edge which goes out of component
                         for (var vv in potentialLongEdges) {
-                            if (potentialLongEdges.hasOwnProperty(vv)) {                                
+                            if (potentialLongEdges.hasOwnProperty(vv)) {
                                     if (nodeColor[vv] == currentComponentColor) continue;  // ignore nodes which are now in the same component
-                                    
+
                                     var nextEdge = potentialLongEdges[vv];
-                                    
+
                                     if (nextEdge.length < minOutEdgeInfo[currentComponentColor].length ||
                                         (nextEdge.length == minOutEdgeInfo[currentComponentColor].length &&
                                          nextEdge.weight > minOutEdgeInfo[currentComponentColor].weight) ) {
@@ -352,7 +359,7 @@ define([
                                     }
                                 }
                         }
-                        
+
                         currentComponentColor++;
                     }
                 }
@@ -528,6 +535,9 @@ define([
 
             this.reconnectRootlessPartners(best, rootlessPartners);
             this.transpose(best, true);
+
+            // proband father left/mother right check
+            this.adjustProbandParentOrder(best);
 
             this.reconnectLeafSiblings(best, leafSiblings);
             //this.transpose(best, true);
@@ -1664,6 +1674,56 @@ define([
 
             for (var i = 0; i < order.order[rank].length; i++)
                 order.vOrder[ order.order[rank][i] ] = i;
+        },
+
+        adjustProbandParentOrder: function(order)
+        {
+            if (this.probandId >=0) {
+                var motherFather = this.GG.getMotherFather(this.probandId);
+
+                var isOrderWrong = function(v, otherV, shouldBeLeft) {
+                    for (var i = 0; i < otherV.length; i++) {
+                        if (this.ranks[v] == this.ranks[otherV[i]])
+                            // either order should be less and shouldBeLeft, or order greater and !shouldBeLeft
+                            // if not so, order is wrong
+                            if ((order.vOrder[v] < order.vOrder[otherV[i]]) != shouldBeLeft) {
+                                return true;
+                            }
+                    }
+                    return false;
+                }.bind(this);
+
+                var fixOrder = function(order) {
+                    // we know we can't easily change the order - it would be done in all algorithms above, if possible
+                    // ..so do a simple mirror flip of the pedigree - father will be moved ot the left.mother to the right
+                    order.flipOrders();
+                    // ... but all other partners get fliped as well, and may become badly-ordered (which is a problem
+                    // since most partners are probably ordered correctly). So fix whatever can be fixed easily
+                    this.transpose(order, true);
+                }.bind(this);
+
+                // check that father (if there is only one) is on the left, OR
+                // that mother (if there is only one) is on the right;
+                // if not, flip all orders left-to-right
+                if (motherFather.father !== undefined) {
+                    // check that order of father is to the left of mother and all other parents
+                    var allOther = motherFather.other.slice();
+                    (motherFather.mother !== undefined) && allOther.push(motherFather.mother);
+                    if (isOrderWrong(motherFather.father, allOther, true)) {
+                        fixOrder(order);
+                        return;
+                    }
+                }
+                if (motherFather.mother !== undefined) {
+                    // check that order of mother is to the right of father and all other parents
+                    var allOther = motherFather.other.slice();
+                    (motherFather.father !== undefined) && allOther.push(motherFather.father);
+                    if (isOrderWrong(motherFather.mother, allOther, false)) {
+                        fixOrder(order);
+                        return;
+                    }
+                }
+            }
         },
 
         transpose: function(order, doMinorImprovements, stopIfMoreThanCrossings)
@@ -3463,7 +3523,7 @@ define([
     var DISPLAY_POSITIONING_DEBUG = false;
     var TIME_DRAWING_DEBUG        = 0;
 
-    function make_dynamic_positioned_graph( inputG, debugOutput )
+    function make_dynamic_positioned_graph( inputG, probandNodeId, debugOutput )
     {
         var horizontalPersonSeparationDist = 10; // same relative units as in inputG.width fields. Min distance between two person nodes
         var horizontalRelSeparationDist    = 6;  // same relative units as in inputG.width fields. Min distance between a relationship node and other nodes
@@ -3481,6 +3541,7 @@ define([
         else
             DISPLAY_POSITIONING_DEBUG = false;
         var drawGraph = new PositionedGraph( inputG,
+                                             probandNodeId,
                                              horizontalPersonSeparationDist,
                                              horizontalRelSeparationDist,
                                              orderingInitBuckets,
