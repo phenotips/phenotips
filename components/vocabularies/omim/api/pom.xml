@@ -30,7 +30,6 @@
 
   <properties>
     <!-- More tests should be added when the Solr core becomes a component -->
-    <!-- Changed from 0.15 to 0.00 during refactoring. No tests present at the time -->
     <coverage.instructionRatio>0.00</coverage.instructionRatio>
   </properties>
 

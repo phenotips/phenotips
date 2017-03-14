@@ -587,9 +587,7 @@ document.observe('xwiki:dom:loaded', function()
             resultsParameter : "rows",
             resultId : "id",
             resultValue : "name",
-            resultInfo : {
-                           "Locus"      : {"selector"  : "Locus"}
-                         },
+            resultInfo : {},
             tooltip: 'omim-disease-info',
             enableHierarchy: false,
             fadeOnClear : false,
@@ -2473,10 +2471,10 @@ document.observe('xwiki:dom:loaded', function()
       if (service.suggestFor &amp;&amp; service.suggestFor._suggestPicker) {
         service.target.select('li').each(function (item) {
           if (item.down('input[type=checkbox]')) {return;}
-          var idElt = item.down('.id');
-          var nameElt = item.down('.title');
+          var idElt = item.down('.term-id');
+          var nameElt = item.down('.term-name');
           var id = idElt &amp;&amp; idElt.title;
-          var name = item.down('.title a') &amp;&amp; item.down('.title a').innerHTML || item.down('.title') &amp;&amp; item.down('.title').innerHTML;
+          var name = item.down('.term-name a') &amp;&amp; item.down('.term-name a').innerHTML || item.down('.term-name') &amp;&amp; item.down('.term-name').innerHTML;
           var categoryElt = item.down('.term-category');
           if (id &amp;&amp; name) {
             if (service.suggestFor.hasClassName('generateYesNo')) {
@@ -3971,6 +3969,11 @@ h1, h2, h3, h4 {
 .pedigree-legend {
   margin-top: 1em !important;
   margin-left: 2em !important;
+}
+
+.vocabulary-term-list .term-id {
+  font-family: monospace;
+  white-space: pre;
 }</code>
     </property>
     <property>

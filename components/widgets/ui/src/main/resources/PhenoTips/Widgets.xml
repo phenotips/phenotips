@@ -4313,12 +4313,16 @@ document.observe("xwiki:dom:updated", init);
           };
 
           c.update(
-                    elt('span', 'info').insert(elt('span', 'key').update(json.id))
+                    elt('span', 'info').insert(elt('span', 'key').update((json.symbol || '') + json.id))
                                        .insert(' ')
-                                       .insert(elt('span', 'value').update(json.label.splice(0, 1)[0]))
+                                       .insert(elt('span', 'value').update(json.translated_name))
                   );
 
-          var labels = {'label' : '', 'symptoms' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.symptoms')", 'not_symptoms' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.notSymptoms')"};
+          var labels = {'short_name' : '',
+            'synonym': "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.synonym')",
+            'included_name': "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.included')",
+            'symptoms' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.symptoms')",
+            'not_symptoms' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.notSymptoms')"};
           var advancedInfo = elt('dl');
           for (var l in labels) {
             if (json[l] &amp;&amp; json[l].length &gt; 0) {

@@ -143,17 +143,24 @@
   <fields>
     <field name="version" type="string" indexed="true" stored="true" omitNorms="true"/>
     <field name="id" type="string" indexed="true" stored="true" required="true" omitNorms="true"/>
+    <field name="symbol" type="string" indexed="true" stored="true" omitNorms="true"/>
+    <field name="type" type="string" indexed="true" stored="false" omitNorms="true" multiValued="true"/>
     <field name="name" type="text_general" indexed="true" stored="true"/>
     <field name="nameSpell" type="text_spell" indexed="true" stored="false"/>
     <field name="nameExact" type="exact_match" indexed="true" stored="false" omitNorms="true"/>
     <field name="namePrefix" type="prefix_match" indexed="true" stored="false" omitNorms="true"/>
     <field name="nameStub" type="text_prefix" indexed="true" stored="false" omitNorms="true"/>
     <field name="nameSort" type="string" indexed="true" stored="false"/>
+    <field name="short_name" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="short_nameStub" type="text_prefix" indexed="true" stored="false" omitNorms="true" multiValued="true"/>
     <field name="synonym" type="text_general" indexed="true" stored="true" multiValued="true"/>
     <field name="synonymSpell" type="text_spell" indexed="true" stored="false" multiValued="true"/>
     <field name="synonymExact" type="exact_match" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
     <field name="synonymPrefix" type="prefix_match" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
     <field name="synonymStub" type="text_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+    <field name="included_name" type="text_general" indexed="true" stored="true" multiValued="true"/>
+    <field name="included_nameSpell" type="text_spell" indexed="true" stored="false" multiValued="true"/>
+    <field name="included_nameStub" type="text_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
     <field name="symptom" type="text_ws" indexed="true" stored="false" multiValued="true"/>
     <field name="actual_symptom" type="text_ws" indexed="true" stored="true" multiValued="true"/>
     <field name="not_symptom" type="text_ws" indexed="true" stored="false" multiValued="true"/>
