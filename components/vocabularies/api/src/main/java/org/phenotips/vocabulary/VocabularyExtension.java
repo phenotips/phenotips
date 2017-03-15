@@ -48,7 +48,8 @@ public interface VocabularyExtension
     boolean isVocabularySupported(Vocabulary vocabulary);
 
     /**
-     * Called when a vocabulary reindex begins, so that this extension can prepare its needed resources, if any.
+     * Called when a vocabulary reindex begins, so that this extension can prepare its needed resources, if any. This
+     * method is called only for {@link #isVocabularySupported(Vocabulary) supported vocabularies}.
      *
      * @param vocabulary the vocabulary being indexed
      */
@@ -56,7 +57,8 @@ public interface VocabularyExtension
 
     /**
      * Called for each term during vocabulary reindexing, this method modifies the parsed terms by changing, adding or
-     * removing fields.
+     * removing fields. This method is called only for {@link #isVocabularySupported(Vocabulary) supported
+     * vocabularies}.
      *
      * @param term the parsed term which can be altered
      * @param vocabulary the the vocabulary being indexed
@@ -64,7 +66,8 @@ public interface VocabularyExtension
     void extendTerm(VocabularyInputTerm term, Vocabulary vocabulary);
 
     /**
-     * Called when a vocabulary reindex is done, so that this extension can clean up its resources, if any.
+     * Called when a vocabulary reindex is done, so that this extension can clean up its resources, if any. This method
+     * is called only for {@link #isVocabularySupported(Vocabulary) supported vocabularies}.
      *
      * @param vocabulary the vocabulary that was indexed
      */
