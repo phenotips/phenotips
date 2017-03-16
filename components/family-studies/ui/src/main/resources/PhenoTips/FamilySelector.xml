@@ -147,14 +147,14 @@
             createLabel.insert(this.createFamily).insert("$!escapetool.javascript($services.localization.render('phenotips.UIXField.family_membership.create'))");
             assignLabel.insert(this.assignFamily).insert("$!escapetool.javascript($services.localization.render('phenotips.UIXField.family_membership.add'))");
             var ul = new Element('ul');
-            ul.insert(createLabel.wrap('li', {'class' : 'left-aligned'})).insert(assignLabel.wrap('li', {'class' : 'left-aligned'}));
+            ul.insert(createLabel.wrap('li')).insert(assignLabel.wrap('li'));
             mainDiv.insert(ul);
 
             // input field that will suggest families upon typing
             var searchBox = new Element('div', {'class': 'half-width'});
             this.searchInput = new Element('input', {'type': 'text', 'id' : 'family-search-input', 'class' : 'family-search-input', 'placeholder' : "$escapetool.javascript($services.localization.render('phenotips.UIXField.family_membership.placeholder'))"});
             searchBox.insert(this.searchInput).insert(new Element('span', {'class' : 'clear'}).wrap('div', {'class': 'add-to-family-wrapper'}));
-            mainDiv.insert(searchBox);
+            assignLabel.insert({after: searchBox});
 
             var changeEvents = ['propertychange','change','click','keyup','input','paste'];
             changeEvents.each(function(event) {
@@ -189,9 +189,9 @@
                 }
             });
 
-            var buttons = new Element('div', {'class' : 'buttons family-selector-buttons', 'style' : 'margin-top: 10px;'});
-            this.okButton = new Element('input', {'type': 'button', 'name' : 'ok', 'value' : ' $!escapetool.javascript($services.localization.render('phenotips.UIXField.family_membership.ok')) ', 'class' : 'button family-selector-button-cancel'});
-            this.quitButton = new Element('input', {'type': 'button', 'name' : 'quit', 'value' : ' $!escapetool.javascript($services.localization.render('phenotips.UIXField.family_membership.cancel')) ', 'class' : 'button secondary family-selector-button-cancel'});
+            var buttons = new Element('div', {'class' : 'buttons'});
+            this.okButton = new Element('input', {'type': 'button', 'name' : 'ok', 'value' : ' $!escapetool.javascript($services.localization.render('phenotips.UIXField.family_membership.ok')) ', 'class' : 'button'});
+            this.quitButton = new Element('input', {'type': 'button', 'name' : 'quit', 'value' : ' $!escapetool.javascript($services.localization.render('phenotips.UIXField.family_membership.cancel')) ', 'class' : 'button secondary'});
             buttons.insert(this.okButton.wrap('span', {'class' : 'buttonwrapper'}));
             buttons.insert(this.quitButton.wrap('span', {'class' : 'buttonwrapper'}));
             mainDiv.insert(buttons);
@@ -470,29 +470,25 @@
     <property>
       <code>.family-selector ul {
   list-style-type: none;
-  margin-left: 5px;
+  margin-left: 0;
 }
-.family-selector ul li.left-aligned {
+.family-selector ul li {
   display: inline-block;
   width: 100%;
   position: relative;
   text-align: left;
-  margin-bottom: 5px;
+  margin: .5em 0;
 }
 .family-selector div.half-width {
   width: 50%;
-  margin-left: 25px;
+  margin-left: 20px; /* to appear aligned with the label above it, to the right of the radio button */
   float: none;
 }
-.family-selector-buttons {
+.family-selector .buttons {
   text-align: center;
-  margin-top: 15px;
+  margin-top: 1em;
 }
-.family-selector-button-ok {
-  min-width: 140px;
-}
-.family-selector-button-cancel {
-  margin-left: 10px;
+.family-selector .buttons .button {
   min-width: 140px;
 }</code>
     </property>
