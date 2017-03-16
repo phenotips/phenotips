@@ -470,7 +470,7 @@
     <property>
       <code>.family-selector ul {
   list-style-type: none;
-  margin-left: 0;
+  margin-left: 5px;
 }
 .family-selector ul li {
   display: inline-block;
@@ -483,6 +483,7 @@
   width: 50%;
   margin-left: 20px; /* to appear aligned with the label above it, to the right of the radio button */
   float: none;
+  margin-top: 3px;
 }
 .family-selector .buttons {
   text-align: center;
