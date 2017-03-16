@@ -63,7 +63,7 @@
     #else
       #set ($termId = $term.id)
     #end
-    (%%)((([[~[$term.id]&gt;&gt;http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=EN&amp;Expert=${termId}]] $!{services.rendering.escape($name, $doc.syntax)})))
+    (% class="vocabulary-term-list" %)((([[$term.id&gt;&gt;http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=EN&amp;Expert=${termId}||class="term-id"]] $!{services.rendering.escape($name, $doc.syntax)})))
   #end
 #end
 {{/velocity}}</content>
