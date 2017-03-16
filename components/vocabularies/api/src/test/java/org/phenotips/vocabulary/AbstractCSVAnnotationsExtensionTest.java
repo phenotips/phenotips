@@ -15,11 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.vocabulary.internal;
-
-import org.phenotips.vocabulary.Vocabulary;
-import org.phenotips.vocabulary.VocabularyExtension;
-import org.phenotips.vocabulary.VocabularyInputTerm;
+package org.phenotips.vocabulary;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -49,15 +45,15 @@ import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 /**
- * Unit tests for {@link NegativeHPOAnnotationsExtension}.
+ * Unit tests for {@link AbstractCSVAnnotationsExtension}.
  */
-public class AbstractCSVAnnotationExtensionTest
+public class AbstractCSVAnnotationsExtensionTest
 {
     @Rule
     public final MockitoComponentMockingRule<VocabularyExtension> mocker =
-        new MockitoComponentMockingRule<VocabularyExtension>(TestingCSVAnnotationExtension.class);
+        new MockitoComponentMockingRule<VocabularyExtension>(TestingCSVAnnotationsExtension.class);
 
-    private AbstractCSVAnnotationExtension extension;
+    private AbstractCSVAnnotationsExtension extension;
 
     @Mock
     private VocabularyInputTerm inputTerm;
@@ -70,7 +66,7 @@ public class AbstractCSVAnnotationExtensionTest
     {
         MockitoAnnotations.initMocks(this);
         when(this.vocabulary.getIdentifier()).thenReturn("hpo");
-        this.extension = (AbstractCSVAnnotationExtension) this.mocker.getComponentUnderTest();
+        this.extension = (AbstractCSVAnnotationsExtension) this.mocker.getComponentUnderTest();
     }
 
     @Test
@@ -126,7 +122,7 @@ public class AbstractCSVAnnotationExtensionTest
 
     @Component
     @Named("test")
-    public static final class TestingCSVAnnotationExtension extends AbstractCSVAnnotationExtension
+    public static final class TestingCSVAnnotationsExtension extends AbstractCSVAnnotationsExtension
     {
         @Override
         protected Collection<String> getTargetVocabularyIds()

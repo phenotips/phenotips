@@ -15,11 +15,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.vocabulary.internal;
+package org.phenotips.vocabulary;
 
-import org.phenotips.vocabulary.Vocabulary;
-import org.phenotips.vocabulary.VocabularyExtension;
-import org.phenotips.vocabulary.VocabularyInputTerm;
+import org.xwiki.stability.Unstable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,14 +41,93 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.slf4j.Logger;
 
 /**
- * Implements {@link VocabularyExtension} to annotate {@link org.phenotips.vocabulary.VocabularyInputTerm} from
- * {@link #getTargetVocabularyIds() supported vocabularies} with data from {@link #getAnnotationSource() a tab-separated
- * file}.
+ * Implements {@link VocabularyExtension} to annotate {@link VocabularyInputTerm} from {@link #getTargetVocabularyIds
+ * supported vocabularies} with data from {@link #getAnnotationSource a tab- or comma-separated file}. The default
+ * behavior implemented in this base class is to gather data from the named columns in the file, and add this data to
+ * the respective terms when reindexing a supported vocabulary. Setting up the names of the columns is done by the
+ * concrete class, either by {@link #setupCSVParser telling} the CSV parser to treat the first row as the header
+ * definition, or by explicitly assigning names to columns.
+ * <p>
+ * To let the first row be parsed as the column names:
+ * </p>
+ *
+ * <pre>
+ * {@code
+ *   protected CSVFormat setupCSVParser(Vocabulary vocabulary)
+ *   {
+ *       return CSVFormat.TDF.withHeader();
+ *   }
+ * }
+ * </pre>
+ * <p>
+ * To explicitly name columns:
+ * </p>
+ *
+ * <pre>
+ * {@code
+ *   protected CSVFormat setupCSVParser(Vocabulary vocabulary)
+ *   {
+ *       return CSVFormat.TDF.withHeader("id", null, "symptom");
+ *   }
+ * }
+ * </pre>
+ * <p>
+ * With the default implementation of {@link #processCSVRecordRow the row processing function}, having a column named
+ * {@code id} is mandatory.
+ * </p>
+ * <p>
+ * Columns that are not named are ignored.
+ * </p>
+ * <p>
+ * Missing, empty, or whitespace-only cells will be ignored.
+ * </p>
+ * <p>
+ * If multiple rows for the same term identifier exists, then the values are accumulated in lists of values.
+ * </p>
+ * <p>
+ * If one or more of the fields parsed happen to already have values already in the term being extended, then the
+ * existing values will be discarded and replaced with the data read from the input file.
+ * </p>
+ * <p>
+ * If multiple rows for the same term identifier exists, then the values are accumulated in lists of values. If in the
+ * schema definition a field is set as non-multi-valued, then it's the responsibility of the user to make sure that only
+ * one value will be specified for such fields. If a value is specified multiple times in the input file, then it will
+ * be added multiple times in the field.
+ * </p>
+ * <p>
+ * Example: for the following parser set-up:
+ * </p>
+ *
+ * <pre>
+ * {@code
+ * CSVFormat.CSV.withHeader("id", null, "symptom", null, "frequency")
+ * }
+ * </pre>
+ *
+ * and the following input file:
+ *
+ * <pre>
+ * {@code
+ * MIM:162200,"NEUROFIBROMATOSIS, TYPE I",HP:0009737,"Lisch nodules",HP:0040284,HPO:curators
+ * MIM:162200,"NEUROFIBROMATOSIS, TYPE I",HP:0001256,"Intellectual disability, mild",HP:0040283,HPO:curators
+ * MIM:162200,"NEUROFIBROMATOSIS, TYPE I",HP:0000316,"Hypertelorism",,HPO:curators
+ * MIM:162200,"NEUROFIBROMATOSIS, TYPE I",HP:0000501,"Glaucoma",HP:0040284,HPO:curators
+ * }
+ * </pre>
+ *
+ * the following fields will be added:
+ * <dl>
+ * <dt>{@code "symptom"}</dt>
+ * <dd>{@code "HP:0009737"}, {@code HP:0001256}</dd>
+ * <dt>{@code "frequency"}</dt>
+ * <dd>{@code "HP:0040284"}, {@code HP:0040283}, {@code "HP:0040284"}</dd>
+ * </dl>
  *
  * @version $Id$
  * @since 1.3
  */
-public abstract class AbstractCSVAnnotationExtension implements VocabularyExtension
+@Unstable("New API introduced in 1.3")
+public abstract class AbstractCSVAnnotationsExtension implements VocabularyExtension
 {
     protected static final String ID_KEY = "id";
 
@@ -122,8 +199,8 @@ public abstract class AbstractCSVAnnotationExtension implements VocabularyExtens
     }
 
     /**
-     * Processes and caches the row data. By default, it simply copies every mapped value from the row as a single
-     * value. Override if further processing of the data is needed.
+     * Processes and caches the row data. By default, it simply copies every mapped value from the row. Override if
+     * further processing of the data is needed.
      *
      * @param row the {@link CSVRecord data row} to process
      * @param vocabulary the vocabulary being indexed
@@ -166,18 +243,31 @@ public abstract class AbstractCSVAnnotationExtension implements VocabularyExtens
     protected abstract Collection<String> getTargetVocabularyIds();
 
     /**
-     * Specifies the annotation source URL.
+     * Specifies the annotation source URL. This can be either a web (http) link, a network file, a local
+     * {@code file:///} reference, a classpath resource, or any other URL format that can be read by the JVM.
      *
      * @return a valid annotation source URL
      */
     protected abstract String getAnnotationSource();
 
     /**
-     * Sets up a CSV parser so that it accepts the format of the input file, and has names for each column. Giving names
-     * to columns is mandatory. A culumn named {@code id} holding the identifier of the target term is required with the
-     * default implementation of {@link AbstractCSVAnnotationExtension#processCSVRecordRow(CSVRecord, String)}, and only
-     * named column will be automatically extracted as data to add to each
-     * {@link #extendTerm(VocabularyInputTerm, Vocabulary) extended term}.
+     * <p>
+     * Sets up a CSV parser so that it accepts the format of the input file, and has names for each column of interest.
+     * Giving names to columns is mandatory if the default implementation of {@link #processCSVRecordRow} is used. A
+     * column named {@code id} holding the identifier of the target term is required, and only named columns will be
+     * automatically extracted as data to add to each {@link #extendTerm extended term}. For example:
+     * {@code return CSVFormat.TDF.withHeader("id", null, "symptom")}.
+     * </p>
+     * <p>
+     * If the file has the first row as a header, the it can be automatically parsed as column names with
+     * {@code return CSVFormat.TDF.withHeader()}.
+     * <p>
+     * Columns that aren't mapped, or are mapped to {@code null} or the empty string, will be ignored.
+     * <p>
+     * If a custom implementation of {@link #processCSVRecordRow} that doesn't rely on named columns is used, then
+     * simply specifying the format of the file is enough, for example {@code return CSVFormat.CSV} or
+     * {@code return CSVFormat.TDF.withSkipHeaderRecord().withCommentMarker('#')}.
+     * </p>
      *
      * @param vocabulary the identifier of the vocabulary being indexed
      * @return a CSV parser that can read the annotation file

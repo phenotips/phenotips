@@ -17,11 +17,11 @@
  */
 package org.phenotips.vocabulary.internal.hpoannotations;
 
+import org.phenotips.vocabulary.AbstractCSVAnnotationsExtension;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyInputTerm;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
-import org.phenotips.vocabulary.internal.AbstractCSVAnnotationExtension;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,7 +38,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Extends {@link AbstractCSVAnnotationExtension} to annotate a {@link VocabularyInputTerm} with its associated
+ * Extends {@link AbstractCSVAnnotationsExtension} to annotate a {@link VocabularyInputTerm} with its associated
  * phenotypes. Two annotations are added: one contains phenotypes directly from the annotation source (labeled
  * {@link #getDirectPhenotypesLabel()}), the other one contains the phenotypes directly from the annotation source, as
  * well as their ancestor phenotypes (labeled {@link #getAllAncestorPhenotypesLabel()}).
@@ -46,7 +46,7 @@ import org.apache.commons.lang3.StringUtils;
  * @version $Id$
  * @since 1.3
  */
-public abstract class AbstractHPOAnnotationsExtension extends AbstractCSVAnnotationExtension
+public abstract class AbstractHPOAnnotationsExtension extends AbstractCSVAnnotationsExtension
 {
     private static final int VOCABULARY_ID_COLUMN = 0;
 
