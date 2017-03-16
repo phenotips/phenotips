@@ -228,7 +228,7 @@
         _onOptionSelected: function() {
             this.selected = $$('input:checked[type=radio][name="select-family"]')[0].value;
             if (this.selected == "assign") {
-                $('family-search-input').enable();
+                $('family-search-input').enable().focus();
                 this._verifyFamilyID();
             } else {
                 $('family-search-input').disable();
