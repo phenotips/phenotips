@@ -32,7 +32,6 @@
   <modules>
     <module>api</module>
     <module>translations</module>
-    <module>annotations</module>
     <module>ui</module>
     <module>hpo</module>
     <module>omim</module>

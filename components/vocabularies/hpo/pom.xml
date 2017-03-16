@@ -32,7 +32,7 @@
   <modules>
     <module>api</module>
     <module>ui</module>
-    <module>annotation-phenotypes</module>
+    <module>annotations</module>
     <module>translation-italian</module>
     <module>translation-spanish</module>
   </modules>

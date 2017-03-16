@@ -596,6 +596,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>vocabulary-hpo-annotations</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>vocabulary-hpo-translation-spanish</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -622,11 +627,6 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>vocabulary-orphanet-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>vocabulary-hpo-annotation-phenotypes</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

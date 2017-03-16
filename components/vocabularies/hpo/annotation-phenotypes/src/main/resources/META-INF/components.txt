@@ -1,2 +1,0 @@
-org.phenotips.vocabulary.annotation.internal.DiseaseSymptomAnnotationExtension
-org.phenotips.vocabulary.annotation.internal.DiseaseNotSymptomAnnotationExtension
