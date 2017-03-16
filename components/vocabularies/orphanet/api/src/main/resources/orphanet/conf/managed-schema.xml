@@ -167,6 +167,11 @@
     <field name="lifetime_prevalence_avg" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="point_prevalence_avg" type="string" indexed="true" stored="true" multiValued="true"/>
 
+    <field name="symptom" type="text_ws" indexed="true" stored="false" multiValued="true"/>
+    <field name="actual_symptom" type="text_ws" indexed="true" stored="true" multiValued="true"/>
+    <field name="not_symptom" type="text_ws" indexed="true" stored="false" multiValued="true"/>
+    <field name="actual_not_symptom" type="text_ws" indexed="true" stored="true" multiValued="true"/>
+
     <field name="inheritance" type="string" indexed="true" stored="true" multiValued="true"/>
 
     <!-- OMIM, HGNC, Ensembl and other ids related to this entry. Some Orphanet terms have multiple linked external db ids. -->

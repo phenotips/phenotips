@@ -184,6 +184,7 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
     {
         parseSolrDocumentFromOntClass(doc, ontClass, root);
         parseSolrDocumentFromOntParentClasses(doc, ontClass);
+        extendTerm(new SolrVocabularyInputTerm(doc, this));
         this.externalServicesAccess.getSolrConnection(getCoreName()).add(doc);
         doc.clear();
     }

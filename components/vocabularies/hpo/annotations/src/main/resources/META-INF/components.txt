@@ -1,0 +1,2 @@
+org.phenotips.vocabulary.internal.hpoannotations.NegativeHPOAnnotationsExtension
+org.phenotips.vocabulary.internal.hpoannotations.PositiveHPOAnnotationsExtension

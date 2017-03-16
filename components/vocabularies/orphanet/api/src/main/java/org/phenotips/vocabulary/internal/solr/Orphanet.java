@@ -367,8 +367,8 @@ public class Orphanet extends AbstractOWLSolrVocabulary
      */
     private Boolean hasHierarchyRootAsParent(@Nonnull final OntClass ontClass, @Nonnull final Boolean level)
     {
-        for (final OntClass hierarcyRoot : this.hierarchyRoots) {
-            if (ontClass.hasSuperClass(hierarcyRoot, level)) {
+        for (final OntClass hierarchyRoot : this.hierarchyRoots) {
+            if (ontClass.hasSuperClass(hierarchyRoot, level)) {
                 return true;
             }
         }
