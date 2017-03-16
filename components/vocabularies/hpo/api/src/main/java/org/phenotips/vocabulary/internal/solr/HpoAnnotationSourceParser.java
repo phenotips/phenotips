@@ -44,8 +44,8 @@ import org.slf4j.LoggerFactory;
 public class HpoAnnotationSourceParser
 {
     private static final String PHENOTYPE_TO_GENES_ANNOTATIONS_URL =
-            "http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/lastStableBuild/artifact/annotation/"
-                    + "ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt";
+        "http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/lastStableBuild/artifact/annotation/"
+            + "ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt";
 
     /** Encoding for annotation file. */
     private static final String ENCODING = "UTF-8";
@@ -60,8 +60,8 @@ public class HpoAnnotationSourceParser
     private final Logger logger = LoggerFactory.getLogger(HpoAnnotationSourceParser.class);
 
     /**
-     * Default constructor that takes a {@link Map} containing {@link TermData} for the HPO vocabulary, and adds
-     * gene annotations to relevant HPO terms.
+     * Default constructor that takes a {@link Map} containing {@link TermData} for the HPO vocabulary, and adds gene
+     * annotations to relevant HPO terms.
      *
      * @param hpoData a {@link Map} containing HPO vocabulary data
      */
@@ -79,9 +79,9 @@ public class HpoAnnotationSourceParser
      */
     private void loadGenes()
     {
-        try (final BufferedReader in = new BufferedReader(
-                new InputStreamReader(
-                        new URL(PHENOTYPE_TO_GENES_ANNOTATIONS_URL).openConnection().getInputStream(), ENCODING))) {
+        try (BufferedReader in = new BufferedReader(
+            new InputStreamReader(
+                new URL(PHENOTYPE_TO_GENES_ANNOTATIONS_URL).openConnection().getInputStream(), ENCODING))) {
             for (final CSVRecord row : CSVFormat.TDF.withHeader().parse(in)) {
                 final String termName = getRowItem(row, 0);
                 final TermData termData = this.data.get(termName);
@@ -108,6 +108,7 @@ public class HpoAnnotationSourceParser
 
     /**
      * Returns the {@link #data HPO vocabulary data}.
+     *
      * @return the HPO vocabulary {@link #data}
      */
     public Map<String, TermData> getData()
