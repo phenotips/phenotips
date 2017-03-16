@@ -1,1 +1,1 @@
-org.phenotips.vocabulary.internal.AbstractCSVAnnotationExtensionTest.TestingCSVAnnotationExtension
+org.phenotips.vocabulary.AbstractCSVAnnotationsExtensionTest.TestingCSVAnnotationsExtension
