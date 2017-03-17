@@ -37,8 +37,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
-  <content>admin.ontology=Ontology index
-admin.workgroups=Work groups
+  <content>admin.workgroups=Work groups
 admin.studies=Studies
 
 saveandview=Save and view summary
