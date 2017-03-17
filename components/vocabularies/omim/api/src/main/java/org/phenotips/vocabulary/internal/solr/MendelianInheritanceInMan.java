@@ -73,14 +73,6 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
 
     private static final String GENE_ANNOTATIONS_URL = "http://omim.org/static/omim/data/mim2gene.txt";
 
-    private static final String PHENOTYPE_ANNOTATIONS_BASE_URL =
-        "http://compbio.charite.de/hudson/job/hpo.annotations/lastStableBuild/artifact/misc/";
-
-    private static final String POSITIVE_ANNOTATIONS_URL = PHENOTYPE_ANNOTATIONS_BASE_URL + "phenotype_annotation.tab";
-
-    private static final String NEGATIVE_ANNOTATIONS_URL =
-        PHENOTYPE_ANNOTATIONS_BASE_URL + "negative_phenotype_annotation.tab";
-
     private static final String GENEREVIEWS_MAPPING_URL =
         "ftp://ftp.ncbi.nih.gov/pub/GeneReviews/NBKid_shortname_OMIM.txt";
 
@@ -198,8 +190,6 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
     {
         parseOmimData(url);
         loadGenes();
-        loadSymptoms(true);
-        loadSymptoms(false);
         loadGeneReviews();
         loadVersion();
         return this.data.values();
@@ -389,55 +379,5 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
         metaTerm.addField(ID_FIELD, "HEADER_INFO");
         metaTerm.addField("version", ISODateTimeFormat.dateTime().withZoneUTC().print(new DateTime()));
         this.data.put("VERSION", metaTerm);
-    }
-
-    private void loadSymptoms(boolean positive)
-    {
-        String omimId = "";
-        String previousOmimId = null;
-        Set<String> ancestors = new HashSet<>();
-        try (BufferedReader in = new BufferedReader(
-            new InputStreamReader(new URL(positive ? POSITIVE_ANNOTATIONS_URL : NEGATIVE_ANNOTATIONS_URL)
-                .openConnection().getInputStream(), ENCODING))) {
-            for (CSVRecord row : CSVFormat.TDF.parse(in)) {
-                if ("OMIM".equals(row.get(0))) {
-                    omimId = row.get(1);
-                    addAncestors(previousOmimId, omimId, ancestors, positive);
-                    previousOmimId = omimId;
-                    SolrInputDocument term = this.data.get(omimId);
-                    if (term != null) {
-                        term.addField(positive ? "actual_symptom" : "actual_not_symptom", row.get(4));
-                    }
-                    VocabularyTerm vterm = this.hpo.getTerm(row.get(4));
-                    if (vterm != null) {
-                        for (VocabularyTerm ancestor : vterm.getAncestorsAndSelf()) {
-                            ancestors.add(ancestor.getId());
-                        }
-                    }
-                }
-            }
-            addAncestors(omimId, null, ancestors, positive);
-        } catch (IOException ex) {
-            this.logger.error("Failed to load OMIM-HPO links: {}", ex.getMessage(), ex);
-        }
-    }
-
-    private void addAncestors(String previousOmimId, String newOmimId, Set<String> ancestors, boolean positive)
-    {
-        if (previousOmimId == null || previousOmimId.equals(newOmimId)) {
-            return;
-        }
-        final String symptomField = "symptom";
-        SolrInputDocument term = this.data.get(previousOmimId);
-        if (term == null) {
-            return;
-        }
-        if (!positive) {
-            ancestors.removeAll(term.getFieldValues(symptomField));
-            term.addField("not_symptom", new HashSet<>(ancestors));
-        } else {
-            term.addField(symptomField, new HashSet<>(ancestors));
-        }
-        ancestors.clear();
     }
 }
