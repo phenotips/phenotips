@@ -257,8 +257,8 @@
            "group_type" : "single-select",
            "title" : "Discapacidad intelectual",
            "data"  : [
-               {"id" : "HP:0001256", "title" : "Lede"},
-               {"id" : "HP:0002342", "title" : "Moderado"},
+               {"id" : "HP:0001256", "title" : "Leve"},
+               {"id" : "HP:0002342", "title" : "Moderada"},
                {"id" : "HP:0010864", "title" : "Severa"}
            ]
         },
