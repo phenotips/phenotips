@@ -118,7 +118,7 @@
     </property>
     <property>
       <parameters>title=$services.localization.render('phenotips.UIXSection.genePanels')
-enabled=true
+enabled=false
 required=
 order=7</parameters>
     </property>
