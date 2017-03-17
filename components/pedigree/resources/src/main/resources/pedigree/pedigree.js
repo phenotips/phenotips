@@ -362,7 +362,7 @@ define([
                         editor.getOkCancelDialogue().showCustomized(currentPatientUnlinkedMessage +
                                 "Do you want to save the pedigree and remove current patient from the family?",
                                 "Proceed with save?",
-                                "Keep editing pedigree", undefined, true,
+                                "Keep editing pedigree", undefined,
                                 "Save pedigree with current patient excluded from the family", saveAndKeepEditingFunc);
                     }
                 } else {
