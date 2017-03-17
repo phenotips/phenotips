@@ -1,2 +1,2 @@
-org.phenotips.vocabulary.internal.hpoannotations.NegativeHPOAnnotationsExtension
-org.phenotips.vocabulary.internal.hpoannotations.PositiveHPOAnnotationsExtension
+org.phenotips.vocabulary.internal.hpoannotations.NegativePhenotypeForDiseaseAnnotationsExtension
+org.phenotips.vocabulary.internal.hpoannotations.PositivePhenotypeForDiseaseAnnotationsExtension

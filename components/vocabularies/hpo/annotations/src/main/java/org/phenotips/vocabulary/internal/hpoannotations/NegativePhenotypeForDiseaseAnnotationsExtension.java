@@ -25,26 +25,26 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Extends {@link AbstractHPOAnnotationsExtension} to annotate a disease {@link VocabularyInputTerm} with its associated
- * phenotypes. Two annotations are added: one contains actual symptoms directly from the annotation source (labeled
- * {@link #getDirectPhenotypesLabel()}), the other one contains symptoms from the annotation source, as well as the
- * ancestor phenotypes (labeled {@link #getAllAncestorPhenotypesLabel()}).
+ * Extends {@link AbstractPhenotypeForDiseaseAnnotationsExtension} to annotate a disease {@link VocabularyInputTerm} with its associated
+ * negative phenotypes. Two annotations are added: one contains actual negative symptoms directly from the annotation
+ * source (labeled {@link #getDirectPhenotypesLabel()}), the other one contains negative symptoms from the annotation
+ * source, as well as the ancestor phenotypes (labeled {@link #getAllAncestorPhenotypesLabel()}).
  *
  * @version $Id$
  * @since 1.3
  */
 @Component
-@Named("disease-hpo-annotations")
+@Named("disease-hpo-negative-annotations")
 @Singleton
-public class PositiveHPOAnnotationsExtension extends AbstractHPOAnnotationsExtension
+public class NegativePhenotypeForDiseaseAnnotationsExtension extends AbstractPhenotypeForDiseaseAnnotationsExtension
 {
     /** The source URL for phenotype annotations. */
     private static final String ANNOTATION_SOURCE = "http://compbio.charite.de/jenkins/job/hpo.annotations/"
-        + "lastStableBuild/artifact/misc/phenotype_annotation.tab";
+        + "lastStableBuild/artifact/misc/negative_phenotype_annotation.tab";
 
-    private static final String ACTUAL_SYMPTOM = "actual_symptom";
+    private static final String ACTUAL_NOT_SYMPTOM = "actual_not_symptom";
 
-    private static final String SYMPTOM = "symptom";
+    private static final String NOT_SYMPTOM = "not_symptom";
 
     @Override
     protected String getAnnotationSource()
@@ -55,12 +55,12 @@ public class PositiveHPOAnnotationsExtension extends AbstractHPOAnnotationsExten
     @Override
     protected String getDirectPhenotypesLabel()
     {
-        return ACTUAL_SYMPTOM;
+        return ACTUAL_NOT_SYMPTOM;
     }
 
     @Override
     protected String getAllAncestorPhenotypesLabel()
     {
-        return SYMPTOM;
+        return NOT_SYMPTOM;
     }
 }

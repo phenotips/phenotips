@@ -55,27 +55,27 @@ import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 /**
- * Unit tests for {@link NegativeHPOAnnotationsExtension}.
+ * Unit tests for {@link PositivePhenotypeForDiseaseAnnotationsExtension}.
  */
-public class NegativeHPOAnnotationsExtensionTest
+public class PositivePhenotypeForDiseaseAnnotationsExtensionTest
 {
     private static final String ANNOTATION_SOURCE = "http://compbio.charite.de/jenkins/job/hpo.annotations/"
-        + "lastStableBuild/artifact/misc/negative_phenotype_annotation.tab";
+        + "lastStableBuild/artifact/misc/phenotype_annotation.tab";
 
-    private static final String DIRECT_PHENOTYPES_LABEL = "actual_not_symptom";
+    private static final String DIRECT_PHENOTYPES_LABEL = "actual_symptom";
 
-    private static final String ALL_ANCESTOR_PHENOTYPES_LABEL = "not_symptom";
+    private static final String ALL_ANCESTOR_PHENOTYPES_LABEL = "symptom";
 
-    private static final String ROW_RESOURCE = "src/test/resources/negative_annotation.tab";
+    private static final String ROW_RESOURCE = "src/test/resources/annotation.tab";
 
     private static final Collection<String> TARGETED_VOCABS =
         Collections.unmodifiableList(Arrays.asList("omim", "orphanet", "decipher"));
 
     @Rule
     public final MockitoComponentMockingRule<VocabularyExtension> mocker =
-        new MockitoComponentMockingRule<VocabularyExtension>(NegativeHPOAnnotationsExtension.class);
+        new MockitoComponentMockingRule<VocabularyExtension>(PositivePhenotypeForDiseaseAnnotationsExtension.class);
 
-    private NegativeHPOAnnotationsExtension extension;
+    private PositivePhenotypeForDiseaseAnnotationsExtension extension;
 
     @Mock
     private VocabularyInputTerm inputTerm;
@@ -87,7 +87,7 @@ public class NegativeHPOAnnotationsExtensionTest
     public void setUp() throws Exception
     {
         MockitoAnnotations.initMocks(this);
-        this.extension = (NegativeHPOAnnotationsExtension) this.mocker.getComponentUnderTest();
+        this.extension = (PositivePhenotypeForDiseaseAnnotationsExtension) this.mocker.getComponentUnderTest();
         final VocabularyManager vocabularyManager = this.mocker.getInstance(VocabularyManager.class);
 
         when(this.vocabulary.getIdentifier()).thenReturn("orphanet");
@@ -96,10 +96,10 @@ public class NegativeHPOAnnotationsExtensionTest
 
         final Set<VocabularyTerm> term1Ancestors = new HashSet<>();
         final VocabularyTerm hpoTerm1Ancestor1 = mock(VocabularyTerm.class);
-        when(hpoTerm1Ancestor1.getId()).thenReturn("HP:0100006");
+        when(hpoTerm1Ancestor1.getId()).thenReturn("HP:0003117");
         term1Ancestors.add(hpoTerm1Ancestor1);
         final VocabularyTerm hpoTerm1Ancestor2 = mock(VocabularyTerm.class);
-        when(hpoTerm1Ancestor2.getId()).thenReturn("HP:0030692");
+        when(hpoTerm1Ancestor2.getId()).thenReturn("HP:0000818");
         term1Ancestors.add(hpoTerm1Ancestor2);
         when(hpoTerm1.getAncestors()).thenReturn(term1Ancestors);
 
@@ -107,9 +107,9 @@ public class NegativeHPOAnnotationsExtensionTest
         final Set<VocabularyTerm> term2Ancestors = Collections.emptySet();
         when(hpoTerm2.getAncestors()).thenReturn(term2Ancestors);
 
-        when(vocabularyManager.resolveTerm("HP:0002185")).thenReturn(null);
-        when(vocabularyManager.resolveTerm("HP:0030692")).thenReturn(hpoTerm1);
-        when(vocabularyManager.resolveTerm("HP:0100315")).thenReturn(hpoTerm2);
+        when(vocabularyManager.resolveTerm("HP:0003155")).thenReturn(hpoTerm1);
+        when(vocabularyManager.resolveTerm("HP:0003162")).thenReturn(null);
+        when(vocabularyManager.resolveTerm("HP:0004359")).thenReturn(hpoTerm2);
         createRowsData();
     }
 
@@ -148,18 +148,19 @@ public class NegativeHPOAnnotationsExtensionTest
     @Test
     public void extendTermVocabularyTermThatHasAssociatedPhenotypeDataIsModified() throws Exception
     {
-        when(this.inputTerm.getId()).thenReturn("ORPHA:100070");
+        when(this.inputTerm.getId()).thenReturn("ORPHA:263455");
         this.extension.extendTerm(this.inputTerm, this.vocabulary);
         final Set<String> directSymptoms = new HashSet<>();
-        directSymptoms.add("HP:0002185");
-        directSymptoms.add("HP:0030692");
-        directSymptoms.add("HP:0100315");
+        directSymptoms.add("HP:0003155");
+        directSymptoms.add("HP:0003162");
+        directSymptoms.add("HP:0004359");
 
         final Set<String> allSymptoms = new HashSet<>();
-        allSymptoms.add("HP:0002185");
-        allSymptoms.add("HP:0030692");
-        allSymptoms.add("HP:0100315");
-        allSymptoms.add("HP:0100006");
+        allSymptoms.add("HP:0003155");
+        allSymptoms.add("HP:0003162");
+        allSymptoms.add("HP:0004359");
+        allSymptoms.add("HP:0003117");
+        allSymptoms.add("HP:0000818");
 
         verify(this.inputTerm, times(1)).set(DIRECT_PHENOTYPES_LABEL, directSymptoms);
         verify(this.inputTerm, times(1)).set(ALL_ANCESTOR_PHENOTYPES_LABEL, allSymptoms);
@@ -191,8 +192,7 @@ public class NegativeHPOAnnotationsExtensionTest
     private void createRowsData() throws FileNotFoundException, IOException
     {
         try (BufferedReader in = new BufferedReader(
-            new InputStreamReader(
-                new FileInputStream(ROW_RESOURCE)))) {
+            new InputStreamReader(new FileInputStream(ROW_RESOURCE)))) {
             for (final CSVRecord row : this.extension.setupCSVParser(this.vocabulary).parse(in)) {
                 this.extension.processCSVRecordRow(row, this.vocabulary);
             }

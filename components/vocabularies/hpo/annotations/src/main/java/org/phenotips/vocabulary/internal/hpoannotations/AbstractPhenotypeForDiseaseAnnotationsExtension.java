@@ -46,7 +46,7 @@ import org.apache.commons.lang3.StringUtils;
  * @version $Id$
  * @since 1.3
  */
-public abstract class AbstractHPOAnnotationsExtension extends AbstractCSVAnnotationsExtension
+public abstract class AbstractPhenotypeForDiseaseAnnotationsExtension extends AbstractCSVAnnotationsExtension
 {
     private static final int VOCABULARY_ID_COLUMN = 0;
 
