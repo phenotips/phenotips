@@ -33,6 +33,7 @@
     <module>api</module>
     <module>ui</module>
     <module>annotations</module>
+    <module>translation-french</module>
     <module>translation-italian</module>
     <module>translation-spanish</module>
   </modules>
