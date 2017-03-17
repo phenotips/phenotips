@@ -414,6 +414,9 @@ define([
                         // the number of lines may vary depending on age etc., it is easier to just recompute it
                         needUpdateYPositions = true;
                     }
+                    if (propertySetFunction == "setDeceasedCause" || propertySetFunction == "setDeceasedAge") {
+                        needUpdateYPositions = true;
+                    }
                     if (propertySetFunction == "setCancers") {
                         needUpdateYPositions = true;
                     }

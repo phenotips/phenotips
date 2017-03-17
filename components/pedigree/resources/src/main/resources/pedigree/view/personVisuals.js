@@ -211,7 +211,7 @@ define([
             this._externalIDLabel && this._externalIDLabel.remove();
 
             if (this.getNode().getExternalID()) {
-                var text = '[' + this.getNode().getExternalID() + "]";
+                var text = '[ ' + this.getNode().getExternalID() + " ]";
                 this._externalIDLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditorParameters.attributes.radius, text).attr(PedigreeEditorParameters.attributes.externalIDLabels);
             } else {
                 this._externalIDLabel = null;
@@ -285,13 +285,30 @@ define([
          */
         updateDeathDetailsLabel: function() {
             this._deathDetailsLabel && this._deathDetailsLabel.remove();
-            var text = (this.getNode().getDeceasedAge() != "" || this.getNode().getDeceasedCause() != "") ? "d." : "";
-            text += (this.getNode().getDeceasedAge() != "") ? " " + this.getNode().getDeceasedAge() + " y" : "";
-            text += (this.getNode().getDeceasedCause() != "") ? " (" + this.getNode().getDeceasedCause() + ")" : "";
-            if (text != "") {
-                this._deathDetailsLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditorParameters.attributes.radius, text).attr(PedigreeEditorParameters.attributes.externalIDLabels);
-            } else {
+            var deceasedAgeKnown = (this.getNode().getDeceasedAge() != "");
+            var deceasedCauseKnown = (this.getNode().getDeceasedCause() != "");
+            if (!deceasedAgeKnown && !deceasedCauseKnown) {
                 this._deathDetailsLabel = null;
+            } else {
+                // one of:
+                //  a) (AGE, cause) or  (cause) or (AGE) -> if death date is known, "d." will already be present on the line above
+                //  b) d. AGE (cause) or (d. cause) -> otherwise add a "d." withe rinside or outside the brackets
+                var deathDateKnown = this.getNode().getDeathDate() != null && this.getNode().getDeathDate().isComplete();
+
+                var text = "";
+                if (deathDateKnown) {
+                    text += "(";
+                    text += deceasedAgeKnown ? this.getNode().getDeceasedAge() : "";
+                    text += (deceasedAgeKnown && deceasedCauseKnown) ? ", " : "";
+                    text += deceasedCauseKnown ? this.getNode().getDeceasedCause() : "";
+                    text += ")";
+                } else {
+                    text += deceasedAgeKnown ? ("d. " + this.getNode().getDeceasedAge() + (deceasedCauseKnown ? " (" : "")) : "(d. ";
+                    text += deceasedCauseKnown ? this.getNode().getDeceasedCause() : "";
+                    text += deceasedCauseKnown ? ")" : "";
+                }
+                this._deathDetailsLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditorParameters.attributes.radius, text).attr(PedigreeEditorParameters.attributes.externalIDLabels);
+                this._deathDetailsLabel.addGapAfter = true;
             }
             this.drawLabels();
         },
@@ -480,7 +497,7 @@ define([
                             text = person.getBirthDate().getBestPrecisionStringDDMMYYY(dateFormat) + " – " + person.getDeathDate().getBestPrecisionStringDDMMYYY(dateFormat);
                             if (person.getBirthDate().getYear() !== null && person.getDeathDate().getYear() !== null) {
                                 var ageString = AgeCalc.getAgeString(person.getBirthDate(), person.getDeathDate(), dateFormat);
-                                text += "\n" + ageString;
+                                text += "\nd. " + ageString;
                             }
                         }
                         else if (deathDate && deathDate.isComplete()) {
@@ -520,12 +537,12 @@ define([
                             var ageString = AgeCalc.getAgeString(birthDate, deathDate, dateFormat);
                             if (deathDate.getYear() != null && deathDate.getYear() != birthDate.getYear() && deathDate.getMonth() != null &&
                                 (ageString.indexOf("day") != -1 || ageString.indexOf("wk") != -1 || ageString.indexOf("mo") != -1) ) {
-                                text = "d. " + deathDate.getYear(true);
+                                text = "d. " + deathDate.getYear(true) + " (" + ageString + ")";
                             } else {
                                 text = birthDate.getBestPrecisionStringYear() + " – " + deathDate.getBestPrecisionStringYear();
-                            }
-                            if (ageString !== "") {
-                                text += "\n" + ageString;
+                                if (ageString !== "") {
+                                    text += "\nd. " + ageString;
+                                }
                             }
                         }
                         else if (deathDate && deathDate.isComplete()) {
@@ -956,13 +973,13 @@ define([
                     this.getAgeLabel().show();
                     labels.push(this.getAgeLabel());
                 }
-                if (this.getExternalIDLabel()) {
-                    this.getExternalIDLabel().show();
-                    labels.push(this.getExternalIDLabel());
-                }
                 if (this.getDeathDetailsLabel()) {
                     this.getDeathDetailsLabel().show();
                     labels.push(this.getDeathDetailsLabel());
+                }
+                if (this.getExternalIDLabel()) {
+                    this.getExternalIDLabel().show();
+                    labels.push(this.getExternalIDLabel());
                 }
             } else {
                 this.getLinkLabel() && this.getLinkLabel().hide();

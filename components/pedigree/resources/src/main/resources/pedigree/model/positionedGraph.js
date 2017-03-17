@@ -64,11 +64,11 @@ define([
         horizontalPersonSeparationDist: 10,
         horizontalTwinSeparationDist:    8,
         horizontalRelSeparationDist:     6,
-        yDistanceNodeToChildhub:        20,
+        yDistanceNodeToChildhub:      21.6,
         yDistanceChildhubToNode:        14,
         yExtraPerHorizontalLine:         4,
         yAttachPortHeight:             1.5,
-        yCommentLineHeight:            2.9,
+        yCommentLineHeight:            2.8,
 
         initialize: function( baseG,
                               probandNodeId,
@@ -2977,7 +2977,7 @@ define([
         {
             var height = this.yDistanceNodeToChildhub;
 
-            var maxNumLinesInComments = 0;
+            var maxLabelLinesOnRank = 0;
             for (var i = 0; i < this.order.order[r].length; i++) {
                 if (this.GG.isPerson(this.order.order[r][i])) {
                     var person = this.order.order[r][i];
@@ -3014,6 +3014,9 @@ define([
                     if (personProperties.hasOwnProperty("externalID")) {
                         numLabelLines++;
                     }
+                    if (personProperties.hasOwnProperty("deceasedCause") || personProperties.hasOwnProperty("deceasedAge")) {
+                        numLabelLines++;
+                    }
                     if (editor && editor.getPreferencesManager().getConfigurationOption("displayCancerLabels")) {
                         // count number of cancer labels
                         if (personProperties.hasOwnProperty("cancers")) {
@@ -3028,13 +3031,13 @@ define([
                             }
                         }
                     }
-                    if (numLabelLines > maxNumLinesInComments) {
-                        maxNumLinesInComments = numLabelLines;
+                    if (numLabelLines > maxLabelLinesOnRank) {
+                        maxLabelLinesOnRank = numLabelLines;
                     }
                 }
             }
-            if (maxNumLinesInComments > 4) {
-                height += (maxNumLinesInComments - 4)*this.yCommentLineHeight;
+            if (maxLabelLinesOnRank > 3) {
+                height += (maxLabelLinesOnRank - 3)*this.yCommentLineHeight;
             }
             return height;
         },
