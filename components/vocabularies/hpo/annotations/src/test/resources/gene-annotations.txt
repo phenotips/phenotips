@@ -1,0 +1,4 @@
+#HP:0010708	1-5 finger syndactyly	1234	WRONG
+HP:0010708	1-5 finger syndactyly	6469	SHH
+HP:0010708	1-5 finger syndactyly	64327	LMBR1
+HP:0010713	1-5 toe syndactyly	2737	GLI3
