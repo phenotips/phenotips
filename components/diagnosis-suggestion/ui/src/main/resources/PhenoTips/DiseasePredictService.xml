@@ -67,7 +67,7 @@
     #set ($unprefixedId = $term.id)
   #end
   #set ($fullName = $name)
-  #if ($term.short_name.size() &gt; 0)
+  #if ($term.short_name &amp;&amp; $term.short_name.size() &gt; 0)
     #set ($fullName = $fullName.concat('; ').concat($stringtool.join($term.short_name, ', ')))
   #end
   &lt;li class="disorder"&gt;
