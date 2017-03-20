@@ -224,7 +224,7 @@ define([], function(){
 
         // Returns the number of milliseconds since 1 January 1970 (same as Date.getTime())
         getTime: function() {
-            return this.toJSDate().getTime();
+            return this.toJSDate() === null ? 0 : this.toJSDate().getTime();
         },
 
         // Returns an integer or null.

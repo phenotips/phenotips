@@ -1336,8 +1336,8 @@ define([
                             var thisChildDOB = this.GG.properties[orderedChildren[j]].hasOwnProperty("dob") ?
                                                new PedigreeDate(this.GG.properties[orderedChildren[j]]["dob"]) : null;
 
-                            if (thisChildDOB != null) {
-                                if (leftChildDOB == null) {
+                            if (thisChildDOB != null && thisChildDOB.isComplete()) {
+                                if (leftChildDOB == null || !leftChildDOB.isComplete()) {
                                     // prefer all without date of birth to be on the right, i.e. penalty for no date on the left
                                     totalPenaltyForChildAgeOrder++;
                                 } else {
