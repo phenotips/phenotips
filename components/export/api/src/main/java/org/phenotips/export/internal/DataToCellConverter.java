@@ -1306,6 +1306,20 @@ public class DataToCellConverter
         DataSection bodySection = new DataSection();
 
         PatientData<Disorder> clinicalDisorders = patient.getData("clinical-diagnosis");
+        /* If there is no data, but there are headers present, create empty cells */
+        if (clinicalDisorders == null || clinicalDisorders.size() == 0) {
+            int x = 0;
+            if (present.contains("name")) {
+                DataCell cell = new DataCell("", x, y);
+                bodySection.addCell(cell);
+                x++;
+            }
+            if (present.contains("id")) {
+                DataCell cell = new DataCell("", x, y);
+                bodySection.addCell(cell);
+            }
+            return bodySection;
+        }
         for (Disorder disorder : clinicalDisorders) {
             int x = 0;
             if (present.contains("name")) {
@@ -1319,19 +1333,6 @@ public class DataToCellConverter
                 bodySection.addCell(cell);
             }
             y++;
-        }
-        /* If there is no data, but there are headers present, create empty cells */
-        if (clinicalDisorders.size() == 0) {
-            int x = 0;
-            if (present.contains("name")) {
-                DataCell cell = new DataCell("", x, y);
-                bodySection.addCell(cell);
-                x++;
-            }
-            if (present.contains("id")) {
-                DataCell cell = new DataCell("", x, y);
-                bodySection.addCell(cell);
-            }
         }
 
         return bodySection;
