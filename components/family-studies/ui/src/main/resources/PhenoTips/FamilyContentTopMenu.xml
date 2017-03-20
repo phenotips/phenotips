@@ -504,7 +504,7 @@
   #else
     #set ($pdfTemplate = 'PhenoTips.PatientSheetCode')
   #end
-#if($isAdvancedUser)
+#if ($hasAdmin)
   ** (% class="empty" %)----
 ** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.exportXAR')&gt;&gt;path:$doc.getURL('export', "format=xar&amp;name=${doc.fullName}&amp;pages=${doc.fullName}")|| class="export-link"]]
 #end
