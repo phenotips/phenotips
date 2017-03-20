@@ -119,7 +119,7 @@
 #__phenotypeSummary_create( $phenotypeSummary $hasSymptoms )
 #if ($xcontext.action == 'edit' || $hasSymptoms)
   (% class="instant-search ncbi-search-box" %)(((
-    === $services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch')===
+    === $services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.matchingDisorders') ===
 
     (% class="ncbi-search-box-content"%)(((
       (% class="hint"%)$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.Hint')(%%)##
@@ -129,7 +129,6 @@
       ##(% class="hint"%)$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.defaultTerms')(%%)
       ## {{html wiki=false clean=false}}&lt;input type="text" id="customSearchTermsInput" value="" /&gt;{{/html}}
       (% class="background-search omim-search hidden" %)(((
-        ====$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.matchingDisorders')====
         (% id="omim-search-results" class="background-suggestions" %)((()))
       )))
     )))
