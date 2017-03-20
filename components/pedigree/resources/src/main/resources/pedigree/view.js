@@ -634,7 +634,7 @@ define([
 
                 for (var node in affectedByLineRemoval) {
                     if (affectedByLineRemoval.hasOwnProperty(node)) {
-                        var newID = changedIDs.hasOwnProperty(node) ? changedIDs[node] : node;
+                        var newID = changeSet["changedIDSet"].hasOwnProperty(node) ? changeSet["changedIDSet"][node] : node;
                         if (!Helpers.arrayContains(changeSet.moved, newID)) {
                             //console.log("moved due to line removal: oldID="+node + ", newID=" + newID);
                             changeSet.moved.push(newID);
