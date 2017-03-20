@@ -292,7 +292,7 @@ define([
             } else {
                 // one of:
                 //  a) (AGE, cause) or  (cause) or (AGE) -> if death date is known, "d." will already be present on the line above
-                //  b) d. AGE (cause) or (d. cause) -> otherwise add a "d." withe rinside or outside the brackets
+                //  b) d. AGE (cause) or (d. cause) -> otherwise add a "d." inside or outside the brackets
                 var deathDateKnown = this.getNode().getDeathDate() != null && this.getNode().getDeathDate().isComplete();
 
                 var text = "";
@@ -562,7 +562,7 @@ define([
                     this._ageLabel.alignTop = true;
                 }
             }
-            this.drawLabels();
+            this.updateDeathDetailsLabel();  // ...which calls this.drawLabels()
         },
 
         /**
