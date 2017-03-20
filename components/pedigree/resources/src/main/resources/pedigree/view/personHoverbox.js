@@ -311,8 +311,8 @@ define([
                     _this._isMenuToggled = false;
                     _this.animateHideHoverZone();
                 }
-                editor.getOkCancelDialogue().showError("Can't see patient details because you do not have view rights for this patient",
-                                                       "Can't view this patient", "OK", allowUnhighlightNode);
+                editor.getOkCancelDialogue().showError("You do not have permission to view information about this patient.",
+                                                       "Cannot display patient details", "OK", allowUnhighlightNode);
                 return;
             }
 
@@ -328,8 +328,8 @@ define([
             }
 
             if (!editor.getPatientAccessPermissions(this.getNode().getPhenotipsPatientId()).hasEdit) {
-                editor.getOkCancelDialogue().showError("You do not have edit rights for this patient - displaying patient summary in view-only mode",
-                                                       "Can't edit this patient", "OK", displayMenu);
+                editor.getOkCancelDialogue().showError("You do not have permission to modify this patient. The patient summary will be displayed in read-only mode.",
+                                                       "Cannot modify this patient", "OK", displayMenu);
             } else {
                 displayMenu();
             }
