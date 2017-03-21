@@ -4909,8 +4909,12 @@ input[type="checkbox"] + .LV_validation_message {
   font-size: .85em;
   margin: 0 auto;
 }
-#genePanelsExport, .gene-panels-search-box h4 .xHelpButton, .gene-panels-search-box h4 .xTooltip {
+#genePanelsExport {
   font-size: .65em;
+}
+.gene-panels-search-box h3 .xTooltip {
+  font-size: .8em;
+  text-transform: none;
 }</code>
     </property>
     <property>
