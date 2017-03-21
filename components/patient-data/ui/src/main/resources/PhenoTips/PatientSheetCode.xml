@@ -614,7 +614,7 @@ document.observe('xwiki:dom:loaded', function()
       'quickSearch' : {
                   'showKey' : false,
                   'showTooltip' : false,
-                  'showDeleteTool' : true,
+                  'showDeleteTool' : false,
                   'enableSort' : false,
                   'showClearTool' : false,
                   'inputType': 'checkbox',
@@ -627,7 +627,7 @@ document.observe('xwiki:dom:loaded', function()
       'generateShortList' : {
                   'showKey' : true,
                   'showTooltip' : false,
-                  'showDeleteTool' : true,
+                  'showDeleteTool' : false,
                   'enableSort' : false,
                   'showClearTool' : false,
                   'inputType': 'checkbox'
@@ -635,7 +635,7 @@ document.observe('xwiki:dom:loaded', function()
       'generateCheckboxes' : {
                   'showKey' : false,
                   'showTooltip' : false,
-                  'showDeleteTool' : true,
+                  'showDeleteTool' : false,
                   'enableSort' : false,
                   'showClearTool' : false,
                   'inputType': 'checkbox',
@@ -646,7 +646,7 @@ document.observe('xwiki:dom:loaded', function()
       'generateYesNo' : {
                   'showKey' : false,
                   'showTooltip' : false,
-                  'showDeleteTool' : true,
+                  'showDeleteTool' : false,
                   'enableSort' : false,
                   'showClearTool' : false,
                   'inputType': 'checkbox',
