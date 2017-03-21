@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>vocabulary-orphanet</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-rc-2</version>
   </parent>
   <artifactId>vocabulary-orphanet-api</artifactId>
   <name>PhenoTips - Vocabularies - ORPHANET integration - APIs</name>
