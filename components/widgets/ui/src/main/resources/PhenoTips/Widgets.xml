@@ -4599,7 +4599,7 @@ document.observe("xwiki:dom:updated", init);
     },
 
     addDatabaseCreditInfo : function () {
-      var version = "$services.localization.render('phenotips.IndexOntology.version', ['" + this._builder.database.version + "'])";
+      var version = "$services.localization.render('phenotips.indexVocabulary.version', ['" + this._builder.database.version + "'])";
       var citation = this._builder.database.citation.concat(". ").concat(version);
       var credits = new Element('a', {'class' : 'reference', href : this._builder.database.link, 'target' : '_blank', 'title' : citation}).update(this._builder.database.name);
       var creditsWrapper = new Element('div', {'class' : 'hint'}).update(credits.wrap('span', {'class' : 'reference-wrapper'}));
