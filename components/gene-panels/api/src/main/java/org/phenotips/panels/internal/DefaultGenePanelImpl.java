@@ -19,6 +19,7 @@ package org.phenotips.panels.internal;
 
 import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientData;
 import org.phenotips.panels.GenePanel;
 import org.phenotips.panels.TermsForGene;
 import org.phenotips.vocabulary.Vocabulary;
@@ -34,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.JSONArray;
@@ -68,6 +70,8 @@ public class DefaultGenePanelImpl implements GenePanel
     private static final String PRESENT_LABEL = "present";
 
     private static final String ABSENT_LABEL = "absent";
+
+    private static final String GLOBAL_QUALIFIERS_LABEL = "global-qualifiers";
 
     /** The hgnc vocabulary. */
     private final Vocabulary hgnc;
@@ -126,12 +130,88 @@ public class DefaultGenePanelImpl implements GenePanel
      */
     public DefaultGenePanelImpl(@Nonnull final Patient patient, @Nonnull final VocabularyManager vocabularyManager)
     {
-        this(patient.getFeatures(), vocabularyManager);
+        final Set<? extends Feature> features = patient.getFeatures();
+        final PatientData<List<VocabularyTerm>> qualifiers = patient.getData(GLOBAL_QUALIFIERS_LABEL);
+        final Map<String, Set<VocabularyTerm>> termData = buildTermsFromFeaturesAndQualifiers(features, qualifiers,
+            vocabularyManager);
+
+        this.hgnc = vocabularyManager.getVocabulary(HGNC_LABEL);
+
+        this.presentTerms = termData.get(PRESENT_LABEL);
+        this.absentTerms = termData.get(ABSENT_LABEL);
+        this.termsForGeneList = buildTermsForGeneList();
     }
 
     /**
-     * Builds a map containing a set of {@link #PRESENT_LABEL} {@link VocabularyTerm} objects and a set of
-     * {@link #ABSENT_LABEL} {@link VocabularyTerm} objects.
+     * Builds a map containing a set of present {@link VocabularyTerm} objects and a set of absent
+     * {@link VocabularyTerm} objects.
+     *
+     * @param features a collection of {@link Feature} objects
+     * @param qualifiers a {@link PatientData} object that contains lists of global {@link VocabularyTerm} qualifiers
+     * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
+     * @return a map containing sets of present and absent {@link VocabularyTerm} objects
+     */
+    private Map<String, Set<VocabularyTerm>> buildTermsFromFeaturesAndQualifiers(
+        @Nonnull final Collection<? extends Feature> features,
+        @Nullable final PatientData<List<VocabularyTerm>> qualifiers,
+        @Nonnull final VocabularyManager vocabularyManager)
+    {
+        final Set<VocabularyTerm> retrievedPresentTerms = new HashSet<>();
+        final Set<VocabularyTerm> retrievedAbsentTerms = new HashSet<>();
+        addPresentQualifiers(qualifiers, retrievedPresentTerms);
+        addFeatures(features, retrievedPresentTerms, retrievedAbsentTerms, vocabularyManager);
+        final Map<String, Set<VocabularyTerm>> terms = new HashMap<>();
+        terms.put(PRESENT_LABEL, Collections.unmodifiableSet(retrievedPresentTerms));
+        terms.put(ABSENT_LABEL, Collections.unmodifiableSet(retrievedAbsentTerms));
+        return Collections.unmodifiableMap(terms);
+    }
+
+    /**
+     * Adds {@code qualifiers global qualifiers} to a set of present {@code retrievedPresentTerms terms}.
+     *
+     * @param qualifiers a {@link PatientData} object that contains lists of global {@link VocabularyTerm} qualifiers
+     * @param retrievedPresentTerms a set of present {@link VocabularyTerm} objects
+     */
+    private void addPresentQualifiers(@Nullable final PatientData<List<VocabularyTerm>> qualifiers,
+        @Nonnull final Set<VocabularyTerm> retrievedPresentTerms)
+    {
+        if (qualifiers != null) {
+            for (List<VocabularyTerm> qualiferTerms : qualifiers) {
+                retrievedPresentTerms.addAll(qualiferTerms);
+            }
+        }
+    }
+
+    /**
+     * Adds {@code features} to sets of present {@code retrievedPresentTerms terms} and absent
+     * {@code retrievedAbsentTerms terms}.
+     *
+     * @param features a collection of {@link Feature} objects
+     * @param retrievedPresentTerms a set of present {@link VocabularyTerm} objects
+     * @param retrievedAbsentTerms a set of absent {@link VocabularyTerm} objects
+     * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
+     */
+    private void addFeatures(
+        @Nonnull final Collection<? extends Feature> features,
+        @Nonnull final Set<VocabularyTerm> retrievedPresentTerms,
+        @Nonnull final Set<VocabularyTerm> retrievedAbsentTerms,
+        @Nonnull final VocabularyManager vocabularyManager)
+    {
+        for (final Feature feature : features) {
+            final VocabularyTerm term = vocabularyManager.resolveTerm(feature.getValue());
+            if (term != null) {
+                if (feature.isPresent()) {
+                    retrievedPresentTerms.add(term);
+                } else {
+                    retrievedAbsentTerms.add(term);
+                }
+            }
+        }
+    }
+
+    /**
+     * Builds a map containing a set of present {@link VocabularyTerm} objects and a set of absent
+     * {@link VocabularyTerm} objects.
      *
      * @param features a collection of {@link Feature} objects
      * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
@@ -140,22 +220,7 @@ public class DefaultGenePanelImpl implements GenePanel
     private Map<String, Set<VocabularyTerm>> buildTermsFromFeatures(
         @Nonnull final Collection<? extends Feature> features, @Nonnull final VocabularyManager vocabularyManager)
     {
-        final Set<VocabularyTerm> presentTermsFromFeatures = new HashSet<>();
-        final Set<VocabularyTerm> absentTermsFromFeatures = new HashSet<>();
-        for (final Feature feature : features) {
-            final VocabularyTerm term = vocabularyManager.resolveTerm(feature.getValue());
-            if (term != null) {
-                if (feature.isPresent()) {
-                    presentTermsFromFeatures.add(term);
-                } else {
-                    absentTermsFromFeatures.add(term);
-                }
-            }
-        }
-        final Map<String, Set<VocabularyTerm>> terms = new HashMap<>();
-        terms.put(PRESENT_LABEL, Collections.unmodifiableSet(presentTermsFromFeatures));
-        terms.put(ABSENT_LABEL, Collections.unmodifiableSet(absentTermsFromFeatures));
-        return Collections.unmodifiableMap(terms);
+        return buildTermsFromFeaturesAndQualifiers(features, null, vocabularyManager);
     }
 
     /**
