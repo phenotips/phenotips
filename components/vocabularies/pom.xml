@@ -40,7 +40,7 @@
     <module>hgnc-remote</module>
     <module>chebi</module>
     <module>ethnicity</module>
-    <module>orphanet</module>
+    <module>ordo</module>
   </modules>
 
   <build>

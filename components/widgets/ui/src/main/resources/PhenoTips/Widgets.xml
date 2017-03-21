@@ -4351,14 +4351,14 @@ document.observe("xwiki:dom:updated", init);
           }
         }
       },
-      'orphanet-disease-info' : {
-        'hint' : "$services.localization.render('phenotips.widgets.helpButtons.orphanetDisease.hint')",
-        'vocabulary' : 'orphanet',
+      'ordo-disease-info' : {
+        'hint' : "$services.localization.render('phenotips.widgets.helpButtons.ordoDisease.hint')",
+        'vocabulary' : 'ordo',
         'database' : {
-          'name' : "$services.vocabularies.orphanet.name",
-          'link' : "$services.vocabularies.orphanet.website",
-          'citation' : "$services.vocabularies.orphanet.citation",
-          'version': "$services.vocabularies.orphanet.version"
+          'name' : "$services.vocabularies.ordo.name",
+          'link' : "$services.vocabularies.ordo.website",
+          'citation' : "$services.vocabularies.ordo.citation",
+          'version': "$services.vocabularies.ordo.version"
         },
         'externalDBs' : [
                         { name : 'Ensembl', url : 'http://useast.ensembl.org/Homo_sapiens/Gene/Compara_Tree?g=', field : 'ensembl_id'},

@@ -626,7 +626,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>vocabulary-orphanet-api</artifactId>
+      <artifactId>vocabulary-ordo-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

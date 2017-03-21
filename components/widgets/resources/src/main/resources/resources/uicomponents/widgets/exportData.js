@@ -17,15 +17,15 @@ document.observe('xwiki:dom:loading', function() {
             fadeOnClear : false,
             timeout : 30000
         },
-        "orphanet" : {
-            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get", "vocabulary=orphanet") + "&",
+        "ordo" : {
+            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get", "vocabulary=ordo") + "&",
             varname: "q",
             noresults: "$services.localization.render('phenotips.DBWebHomeSheet.noResults')",
             json: true,
             resultsParameter : "rows",
             resultId : "id",
             resultValue : "name",
-            tooltip: 'orphanet-disease-info',
+            tooltip: 'ordo-disease-info',
             enableHierarchy: false,
             fadeOnClear : false,
             timeout : 30000

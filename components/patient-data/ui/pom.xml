@@ -60,7 +60,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>vocabulary-orphanet-ui</artifactId>
+      <artifactId>vocabulary-ordo-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
       <scope>runtime</scope>

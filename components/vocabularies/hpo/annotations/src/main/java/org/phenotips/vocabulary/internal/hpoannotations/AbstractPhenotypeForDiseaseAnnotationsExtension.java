@@ -55,7 +55,7 @@ public abstract class AbstractPhenotypeForDiseaseAnnotationsExtension extends Ab
     private static final int PHENOTYPE_COLUMN = 4;
 
     private static final Collection<String> TARGET_VOCABULARIES =
-        Collections.unmodifiableList(Arrays.asList("omim", "orphanet", "decipher"));
+        Collections.unmodifiableList(Arrays.asList("omim", "ordo", "decipher"));
 
     /** The vocabulary manager for easy access to various vocabularies. */
     @Inject
@@ -77,9 +77,7 @@ public abstract class AbstractPhenotypeForDiseaseAnnotationsExtension extends Ab
             String diseaseId = getRowItem(row, TERM_ID_COLUMN);
             final String symptomId = getRowItem(row, PHENOTYPE_COLUMN);
             if (StringUtils.isNotBlank(diseaseId) && StringUtils.isNotBlank(symptomId)) {
-                if (!"OMIM".equals(dbName)) {
-                    diseaseId = dbName + ':' + diseaseId;
-                }
+                diseaseId = vocabularyIdToTermPrefix(dbName) + diseaseId;
                 MultiValuedMap<String, String> termData = this.data.get(diseaseId);
                 if (termData == null) {
                     termData = new HashSetValuedHashMap<>();
@@ -96,6 +94,18 @@ public abstract class AbstractPhenotypeForDiseaseAnnotationsExtension extends Ab
     protected CSVFormat setupCSVParser(Vocabulary vocabulary)
     {
         return CSVFormat.TDF;
+    }
+
+    private String vocabularyIdToTermPrefix(String vocabularyId)
+    {
+        switch (vocabularyId) {
+            case "OMIM":
+                return "";
+            case "ORPHA":
+                return "ORDO:";
+            default:
+                return vocabularyId + ":";
+        }
     }
 
     /**

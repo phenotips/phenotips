@@ -68,9 +68,9 @@ public class ClinicalDiagnosisControllerTest
 
     private static final String XPROPERTY_NAME = "clinical_diagnosis";
 
-    private static final String DISORDER1 = "ORPHA:1";
+    private static final String DISORDER1 = "ORDO:1";
 
-    private static final String DISORDER2 = "ORPHA:2";
+    private static final String DISORDER2 = "ORDO:2";
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Disorder>> mocker =
@@ -114,9 +114,9 @@ public class ClinicalDiagnosisControllerTest
         when(this.doc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(this.dataHolder);
         when(this.dataHolder.get(XPROPERTY_NAME)).thenReturn(this.xproperty);
         when(this.disorder1.getValue()).thenReturn(DISORDER1);
-        when(this.disorder1.toJSON()).thenReturn(new JSONObject("{\"id\":\"ORPHA:1\"}"));
+        when(this.disorder1.toJSON()).thenReturn(new JSONObject("{\"id\":\"ORDO:1\"}"));
         when(this.disorder2.getValue()).thenReturn(DISORDER2);
-        when(this.disorder2.toJSON()).thenReturn(new JSONObject("{\"id\":\"ORPHA:2\"}"));
+        when(this.disorder2.toJSON()).thenReturn(new JSONObject("{\"id\":\"ORDO:2\"}"));
     }
 
     @Test
@@ -142,25 +142,25 @@ public class ClinicalDiagnosisControllerTest
     @Test
     public void loadReturnsExpectedDisorders() throws ComponentLookupException, XWikiException
     {
-        when(this.xproperty.getList()).thenReturn(Arrays.asList("ORPHA:1", "ORPHA:2"));
+        when(this.xproperty.getList()).thenReturn(Arrays.asList("ORDO:1", "ORDO:2"));
 
         PatientData<Disorder> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         assertEquals(2, result.size());
-        assertEquals("ORPHA:1", result.get(0).getValue());
-        assertEquals("ORPHA:2", result.get(1).getValue());
+        assertEquals("ORDO:1", result.get(0).getValue());
+        assertEquals("ORDO:2", result.get(1).getValue());
     }
 
     @Test
     public void loadSkipsEmptyValues() throws ComponentLookupException, XWikiException
     {
-        when(this.xproperty.getList()).thenReturn(Arrays.asList("ORPHA:1", "", null, "ORPHA:2"));
+        when(this.xproperty.getList()).thenReturn(Arrays.asList("ORDO:1", "", null, "ORDO:2"));
 
         PatientData<Disorder> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         assertEquals(2, result.size());
-        assertEquals("ORPHA:1", result.get(0).getValue());
-        assertEquals("ORPHA:2", result.get(1).getValue());
+        assertEquals("ORDO:1", result.get(0).getValue());
+        assertEquals("ORDO:2", result.get(1).getValue());
     }
 
     @Test
@@ -293,7 +293,7 @@ public class ClinicalDiagnosisControllerTest
     public void readJSONReadsDisorders() throws ComponentLookupException
     {
         PatientData<Disorder> result = this.mocker.getComponentUnderTest()
-            .readJSON(new JSONObject("{\"clinical-diagnosis\":[{\"id\":\"ORPHA:1\"},{\"id\":\"ORPHA:2\"}]}"));
+            .readJSON(new JSONObject("{\"clinical-diagnosis\":[{\"id\":\"ORDO:1\"},{\"id\":\"ORDO:2\"}]}"));
         assertEquals(2, result.size());
         assertEquals(DISORDER1, result.get(0).getId());
         assertEquals(DISORDER2, result.get(1).getId());
@@ -304,7 +304,7 @@ public class ClinicalDiagnosisControllerTest
     {
         PatientData<Disorder> result = this.mocker.getComponentUnderTest()
             .readJSON(
-                new JSONObject("{\"clinical-diagnosis\":[{\"id\":\"ORPHA:1\"},null,false,5,{\"id\":\"ORPHA:2\"}]}"));
+                new JSONObject("{\"clinical-diagnosis\":[{\"id\":\"ORDO:1\"},null,false,5,{\"id\":\"ORDO:2\"}]}"));
         assertEquals(2, result.size());
         assertEquals(DISORDER1, result.get(0).getId());
         assertEquals(DISORDER2, result.get(1).getId());

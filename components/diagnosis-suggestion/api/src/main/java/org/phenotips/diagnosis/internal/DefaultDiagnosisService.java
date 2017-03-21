@@ -177,7 +177,7 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
             String termId = String.valueOf(this.omimMap.get(id));
             String vocabularyId = StringUtils.substringBefore(termId, ":");
 
-            // ignore non-OMIM diseases (BOQA has ORPHANIET and DECIPHER as well)
+            // ignore non-OMIM diseases (BOQA has ORPHANET and DECIPHER as well)
             if (!"OMIM".equals(vocabularyId)) {
                 continue;
             }

@@ -181,7 +181,7 @@
       <clinical_diagnosis>
         <cache>0</cache>
         <classname/>
-        <customDisplay>{{include reference="PhenoTips.OrphaDisplay" /}}</customDisplay>
+        <customDisplay>{{include reference="PhenoTips.OrdoDisplay" /}}</customDisplay>
         <disabled>0</disabled>
         <displayType>input</displayType>
         <idField/>

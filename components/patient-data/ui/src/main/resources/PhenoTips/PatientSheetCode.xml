@@ -594,15 +594,15 @@ document.observe('xwiki:dom:loaded', function()
             timeout : 30000,
             parentContainer : null
         },
-        "orphanet" : {
-            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get", "vocabulary=orphanet") + "&amp;",
+        "ordo" : {
+            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get", "vocabulary=ordo") + "&amp;",
             varname: "q",
             noresults: "No matching terms",
             json: true,
             resultsParameter : "rows",
             resultId : "id",
             resultValue : "name",
-            tooltip: 'orphanet-disease-info',
+            tooltip: 'ordo-disease-info',
             enableHierarchy: false,
             fadeOnClear : false,
             timeout : 30000,

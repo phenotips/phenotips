@@ -323,7 +323,7 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
     }
 
     /**
-     * Returns a prefix for the vocabulary term (e.g. ORPHA, HPO).
+     * Returns a prefix for the vocabulary term (e.g. ORDO, HPO).
      *
      * @return the prefix for the vocabulary term, as string
      */

@@ -69,7 +69,7 @@ public class NegativePhenotypeForDiseaseAnnotationsExtensionTest
     private static final String ROW_RESOURCE = "src/test/resources/negative_annotation.tab";
 
     private static final Collection<String> TARGETED_VOCABS =
-        Collections.unmodifiableList(Arrays.asList("omim", "orphanet", "decipher"));
+        Collections.unmodifiableList(Arrays.asList("omim", "ordo", "decipher"));
 
     @Rule
     public final MockitoComponentMockingRule<VocabularyExtension> mocker =
@@ -90,7 +90,7 @@ public class NegativePhenotypeForDiseaseAnnotationsExtensionTest
         this.extension = (NegativePhenotypeForDiseaseAnnotationsExtension) this.mocker.getComponentUnderTest();
         final VocabularyManager vocabularyManager = this.mocker.getInstance(VocabularyManager.class);
 
-        when(this.vocabulary.getIdentifier()).thenReturn("orphanet");
+        when(this.vocabulary.getIdentifier()).thenReturn("ordo");
 
         final VocabularyTerm hpoTerm1 = mock(VocabularyTerm.class);
 
@@ -140,7 +140,7 @@ public class NegativePhenotypeForDiseaseAnnotationsExtensionTest
     @Test
     public void extendTermVocabularyTermThatHasNoAssociatedPhenotypeDataIsNotModified() throws Exception
     {
-        when(this.inputTerm.getId()).thenReturn("ORPHA:1457");
+        when(this.inputTerm.getId()).thenReturn("ORDO:1457");
         this.extension.extendTerm(this.inputTerm, this.vocabulary);
         verify(this.inputTerm, never()).set(anyString(), any());
     }
@@ -148,7 +148,7 @@ public class NegativePhenotypeForDiseaseAnnotationsExtensionTest
     @Test
     public void extendTermVocabularyTermThatHasAssociatedPhenotypeDataIsModified() throws Exception
     {
-        when(this.inputTerm.getId()).thenReturn("ORPHA:100070");
+        when(this.inputTerm.getId()).thenReturn("ORDO:100070");
         this.extension.extendTerm(this.inputTerm, this.vocabulary);
         final Set<String> directSymptoms = new HashSet<>();
         directSymptoms.add("HP:0002185");
