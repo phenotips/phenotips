@@ -1099,7 +1099,10 @@ document.observe("xwiki:dom:loaded", function(){
 }
 
 .designer-panel.sections .disabled {
-  opacity: .3;
+  opacity: .8;
+}
+.designer-panel.sections .disabled .section-contents {
+  opacity: .4;
 }
 .designer-panel.extensions input[type="checkbox"] {
   display: none;
