@@ -70,7 +70,7 @@ document.observe('xwiki:dom:loading', function() {
     'generateShortList' : {
                   'showKey' : true,
                   'showTooltip' : false,
-                  'showDeleteTool' : true,
+                  'showDeleteTool' : false,
                   'enableSort' : false,
                   'showClearTool' : true,
                   'inputType': 'checkbox'
@@ -78,7 +78,7 @@ document.observe('xwiki:dom:loading', function() {
     'generateCheckboxes' : {
                   'showKey' : false,
                   'showTooltip' : false,
-                  'showDeleteTool' : true,
+                  'showDeleteTool' : false,
                   'enableSort' : false,
                   'showClearTool' : true,
                   'inputType': 'checkbox',
