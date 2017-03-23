@@ -154,8 +154,7 @@ public class OrphanetRareDiseaseOntology extends AbstractOWLSolrVocabulary
     @Override
     public String getCitation()
     {
-        return "Orphanet: an online database of rare diseases and orphan drugs. Copyright, INSERM 1997. "
-            + "Available at http://www.orpha.net.";
+        return "Orphadata: Free access data from Orphanet. © INSERM 1997.";
     }
 
     @Override
