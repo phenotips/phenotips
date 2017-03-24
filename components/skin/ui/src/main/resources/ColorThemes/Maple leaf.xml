@@ -911,15 +911,22 @@
 #phenotips-mainmenu .leftmenu, #phenotips-globalTools .leftmenu {
    text-shadow: 0 1px 1px #FFF;
 }
-#phenotips-globalTools .rightmenu label,
-#phenotips-globalTools .rightmenu label a,
-#phenotips-globalTools .rightmenu label span,
-#phenotips-globalTools .rightmenu input[type="submit"],
-.rightmenu #create-patient-record,
+#phenotips-globalTools .rightmenu .menu-horizontal &gt; ul &gt; li a,
+#phenotips-globalTools .rightmenu .menu-horizontal &gt; ul &gt; li input[type="submit"],
+#phenotips-globalTools .rightmenu .menu-horizontal &gt; ul &gt; li span,
 #phenotips-mainmenu .rightmenu .topmenuentry,
 #phenotips-mainmenu .rightmenu .topmenuentry a {
     color: #FFF !important;
 }
+
+#phenotips-globalTools .rightmenu .menu-horizontal &gt; ul ul {
+  background: #9b0000
+}
+#phenotips-globalTools .rightmenu .menu-horizontal &gt; ul ul a, 
+#phenotips-globalTools .rightmenu .menu-horizontal &gt; ul ul input {
+  color: #fff;
+}
+
 #headerglobal {
     box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
 }</code>
