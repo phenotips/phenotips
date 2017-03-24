@@ -551,7 +551,7 @@
 #diffDiagnosis-search-results ul li {
   margin: 0;
 }
-#diffDiagnosis-search-results ul .id {
+#diffDiagnosis-search-results ul .term-id {
   display: none;
 }
 
