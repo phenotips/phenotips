@@ -154,7 +154,7 @@ public class OrphanetRareDiseaseOntology extends AbstractOWLSolrVocabulary
     @Override
     public String getCitation()
     {
-        return "Orphadata: Free access data from Orphanet. © INSERM 1997.";
+        return "Orphadata: Free access data from Orphanet. © INSERM 1997";
     }
 
     @Override
