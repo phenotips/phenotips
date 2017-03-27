@@ -998,10 +998,10 @@
                     _this._displayGroupPicker();
                 } else {
                     if (res.updatesdisabled) {
-                        _this._pushResultSection.update(_this._generateFailedToPushPatient("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.pushFailedUpdatesDisabled'))".replace('__serverID__', this._selectedServer)));
+                        _this._pushResultSection.update(_this._generateFailedToPushPatient("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.pushFailedUpdatesDisabled'))".replace('__serverID__', _this._selectedServer)));
                     } else
                     if (res.invalidguid) {
-                        _this._pushResultSection.update(_this._generateFailedToPushPatient("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.pushFailedInvalidGuid'))&amp;nbsp;".replace(/__serverID__/g, this._selectedServer), false, true));
+                        _this._pushResultSection.update(_this._generateFailedToPushPatient("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.pushFailedInvalidGuid'))&amp;nbsp;".replace(/__serverID__/g, _this._selectedServer), false, true));
                     } else
                     if (res.accessdeniedguid) {
                         _this._pushResultSection.update(_this._generateFailedToPushPatient("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.pushFailedAccessDeniedGuid'))"));
