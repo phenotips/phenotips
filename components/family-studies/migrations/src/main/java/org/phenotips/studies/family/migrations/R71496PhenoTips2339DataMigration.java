@@ -163,7 +163,9 @@ public class R71496PhenoTips2339DataMigration extends AbstractHibernateDataMigra
                 BaseObject pedigreeXObject = patientXDocument.getXObject(PEDIGREE_CLASS_REFERENCE);
                 if (pedigreeXObject != null) {
                     this.logger.debug("Updating pedigree for patient {}.", docName);
-                    this.updatePedigreePhenotypes(pedigreeXObject, context, docName);
+                    if (!this.updatePedigreePhenotypes(pedigreeXObject, context, docName)) {
+                        continue;
+                    }
                 }
 
                 patientXDocument.setComment(this.getDescription());
@@ -186,11 +188,11 @@ public class R71496PhenoTips2339DataMigration extends AbstractHibernateDataMigra
         return null;
     }
 
-    private void updatePedigreePhenotypes(BaseObject pedigreeXObject, XWikiContext context, String documentName)
+    private boolean updatePedigreePhenotypes(BaseObject pedigreeXObject, XWikiContext context, String documentName)
     {
         String dataText = pedigreeXObject.getStringValue(PEDIGREECLASS_JSONDATA_KEY);
         if (StringUtils.isEmpty(dataText)) {
-            return;
+            return false;
         }
 
         try {
@@ -208,8 +210,10 @@ public class R71496PhenoTips2339DataMigration extends AbstractHibernateDataMigra
             }
             String pedigreeData = pedigree.toString();
             pedigreeXObject.set(PEDIGREECLASS_JSONDATA_KEY, pedigreeData, context);
+            return true;
         } catch (Exception e) {
             this.logger.error("Patient pedigree data is not a valid JSON for patient {}: [{}]", documentName, e);
+            return false;
         }
     }
 
