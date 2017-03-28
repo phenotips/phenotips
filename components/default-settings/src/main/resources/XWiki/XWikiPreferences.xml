@@ -1464,6 +1464,9 @@
     <property>
       <url>https://phenomecentral.org/</url>
     </property>
+    <property>
+      <registration_url>https://phenomecentral.org/register/PhenomeCentral/WebHome/</registration_url>
+    </property>
   </object>
   <object>
     <name>XWiki.XWikiPreferences</name>
