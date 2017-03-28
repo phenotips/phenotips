@@ -60,7 +60,7 @@
         #end
         $services.localization.render('phenotips.patientRecord.header.modificationWithModifier',[$authorElement, $xwiki.formatDate($tdoc.date)])##
       #else
-        $services.localization.render('phenotips.patientRecord.header.modificationWithoutModifier', [$xwiki.formatDate($doc.creationDate)])
+        $services.localization.render('phenotips.patientRecord.header.modificationWithoutModifier', [$xwiki.formatDate($doc.date)])
       #end
       &lt;/span&gt;##
     #end
