@@ -740,7 +740,9 @@
           var remoteID   = pushInfo ? pushInfo.remotePatientID : "";
           var remoteGUID = pushInfo ? pushInfo.remotePatientGUID : "";
           var remoteURL  = pushInfo ? (serverInfo.serverURL + pushInfo.remotePatientURL) : "";
+          var serverRegistrationURL = serverInfo.serverRegistrationURL || "";
           this._remoteServers[name] = {"url": serverInfo.serverURL,
+                                       "registrationURL": serverRegistrationURL,
                                        "desc": serverInfo.serverDescription,
                                        "pushAgeHours": pushAge,
                                        "remoteID": remoteID,
@@ -772,6 +774,8 @@
         $$('#user-selection p')[0].innerHTML = userSelectionHint;
         var groupSelection = this._remoteGroupLabel.replace("__serverID__", this._selectedServer);
         $$('#group-selection h2')[0].innerHTML = groupSelection;
+
+        if (serverData.registrationURL != "") {$('user-selection').insert(new Element('p', {'class' : 'intro xHint'}).insert("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.remoteRegistration'))".replace("__serverID__", this._selectedServer).replace("__registrationUrl__", "&lt;a target=\"_blank\" href=\""+serverData.registrationURL+"\"&gt;"+serverData.registrationURL+"&lt;/a&gt;")));}
 
         var existingPatientDataInfo = '';
 
