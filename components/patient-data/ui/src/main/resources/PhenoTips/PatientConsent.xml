@@ -752,7 +752,7 @@
   $xwiki.jsx.use('PhenoTips.PatientConsent')
   $xwiki.ssx.use('PhenoTips.PatientConsent')
   #if ($services.consentauthorizer.consentsGloballyEnabled())
-    #set($consentAssignUrl = "/rest/patients/${doc.getName()}/consents/assign")
+    #set($consentAssignUrl = "$!{request.contextPath}/rest/patients/${doc.getName()}/consents/assign")
     #set($patientId = $doc.getName())
     #set($consents = $services.patientconsents.getAllConsentsForPatient("$patientId"))
     (% id='consents-block' class='$xcontext.action' assign-url='$consentAssignUrl'%)(((
