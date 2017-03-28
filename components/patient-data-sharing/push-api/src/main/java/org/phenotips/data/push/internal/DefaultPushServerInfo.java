@@ -33,10 +33,13 @@ public class DefaultPushServerInfo implements PushServerInfo
 
     private final String serverDescription;
 
-    DefaultPushServerInfo(String serverID, String serverURL, String serverDescription)
+    private final String serverRegistrationURL;
+
+    DefaultPushServerInfo(String serverID, String serverURL, String serverRegistrationURL, String serverDescription)
     {
         this.serverID = serverID;
         this.serverURL = serverURL;
+        this.serverRegistrationURL = serverRegistrationURL;
         this.serverDescription = serverDescription;
     }
 
@@ -50,6 +53,12 @@ public class DefaultPushServerInfo implements PushServerInfo
     public String getServerURL()
     {
         return this.serverURL;
+    }
+
+    @Override
+    public String getServerRegistrationURL()
+    {
+        return this.serverRegistrationURL;
     }
 
     @Override

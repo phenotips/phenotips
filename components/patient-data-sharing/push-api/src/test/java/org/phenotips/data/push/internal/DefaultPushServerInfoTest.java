@@ -29,7 +29,8 @@ public class DefaultPushServerInfoTest
     @Before
     public void setUp()
     {
-        this.serverInfo = new DefaultPushServerInfo("serverId", "serverURL", "serverDescription");
+        this.serverInfo =
+            new DefaultPushServerInfo("serverId", "serverURL", "serverRegistrationURL", "serverDescription");
     }
 
     @Test
@@ -45,6 +46,12 @@ public class DefaultPushServerInfoTest
     }
 
     @Test
+    public void getServerRegistrationURLReturnsCorrectURL()
+    {
+        Assert.assertEquals("serverRegistrationURL", this.serverInfo.getServerRegistrationURL());
+    }
+
+    @Test
     public void getServerDescriptionReturnsCorrectDescription()
     {
         Assert.assertEquals("serverDescription", this.serverInfo.getServerDescription());
@@ -53,14 +60,16 @@ public class DefaultPushServerInfoTest
     @Test
     public void compareToIdentifiesSameServerID()
     {
-        DefaultPushServerInfo otherInfo = new DefaultPushServerInfo("serverId", "otherURL", "otherDescription");
+        DefaultPushServerInfo otherInfo =
+            new DefaultPushServerInfo("serverId", "otherURL", "otherRegistrationURL", "otherDescription");
         Assert.assertEquals(this.serverInfo.compareTo(otherInfo), 0);
     }
 
     @Test
     public void compareToIdentifiesDifferentServerID()
     {
-        DefaultPushServerInfo otherInfo = new DefaultPushServerInfo("otherId", "otherURL", "otherDescription");
+        DefaultPushServerInfo otherInfo =
+            new DefaultPushServerInfo("otherId", "otherURL", "otherRegistrationURL", "otherDescription");
         Assert.assertNotEquals(this.serverInfo.compareTo((otherInfo)), 0);
     }
 

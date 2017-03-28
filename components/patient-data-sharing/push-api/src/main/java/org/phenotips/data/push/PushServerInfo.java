@@ -36,6 +36,11 @@ public interface PushServerInfo extends Comparable<PushServerInfo>
     String getServerURL();
 
     /**
+     * @return server registration URL, as configured on the PhenoTips configuration page
+     */
+    String getServerRegistrationURL();
+
+    /**
      * @return server description, as configured on the PhenoTips configuration page
      */
     String getServerDescription();
