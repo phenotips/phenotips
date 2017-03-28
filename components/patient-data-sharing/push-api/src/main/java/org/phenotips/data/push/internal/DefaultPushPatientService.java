@@ -48,6 +48,7 @@ import java.util.TreeSet;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.solr.common.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -156,9 +157,14 @@ public class DefaultPushPatientService implements PushPatientService
                 }
                 this.logger.debug("   ...available: [{}]",
                     serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME));
-                PushServerInfo info = new DefaultPushServerInfo(
-                    serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME),
-                    serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_URL_PROPERTY_NAME),
+                String name =
+                    serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME);
+                String url =
+                    serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_URL_PROPERTY_NAME);
+                if (StringUtils.isEmpty(name) || StringUtils.isEmpty(url)) {
+                    continue;
+                }
+                PushServerInfo info = new DefaultPushServerInfo(name, url,
                     serverConfiguration.displayView(DefaultPushPatientData.PUSH_SERVER_CONFIG_DESC_PROPERTY_NAME,
                         context));
                 response.add(info);
