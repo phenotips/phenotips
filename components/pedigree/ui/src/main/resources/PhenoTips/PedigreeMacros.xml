@@ -293,10 +293,11 @@
     // TODO: check if there is anything to save
     var pedigreeTrigger = $$('.pedigree-edit-trigger');
     var openPedigreeEditor = function() {
-      var familyLink = $('familyId');
+      var familyReference = $('familyIdentifier');
       if (XWiki.currentDocument.space == 'data') {
-        if (familyLink) {
-          window.self.location = XWiki.currentDocument.getURL('cancel', 'xredirect=' + encodeURIComponent(familyLink.href + '?sheet=PhenoTips.PedigreeEditor&amp;patient_id=' + XWiki.currentDocument.page + '&amp;action=' + XWiki.contextaction));
+        if (familyReference &amp;&amp; familyReference.value != '') {
+          var familyURL = (new XWiki.Document(familyReference.value, 'Families')).getURL();
+          window.self.location = XWiki.currentDocument.getURL('cancel', 'xredirect=' + encodeURIComponent(familyURL + '?sheet=PhenoTips.PedigreeEditor&amp;patient_id=' + XWiki.currentDocument.page + '&amp;action=' + XWiki.contextaction));
         } else {
           _this.familySelector.show();
         }
