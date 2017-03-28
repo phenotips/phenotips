@@ -47,21 +47,6 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
-    <description>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <editor>---</editor>
-      <name>description</name>
-      <number>4</number>
-      <picker>0</picker>
-      <prettyName>Description</prettyName>
-      <rows>2</rows>
-      <size>30</size>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-    </description>
     <name>
       <customDisplay/>
       <disabled>0</disabled>
@@ -88,5 +73,33 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </url>
+    <registration_url>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>registration_url</name>
+      <number>3</number>
+      <picker>0</picker>
+      <prettyName>Registration URL</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </registration_url>
+    <description>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>---</editor>
+      <name>description</name>
+      <number>4</number>
+      <picker>0</picker>
+      <prettyName>Description</prettyName>
+      <rows>2</rows>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </description>
   </class>
 </xwikidoc>
