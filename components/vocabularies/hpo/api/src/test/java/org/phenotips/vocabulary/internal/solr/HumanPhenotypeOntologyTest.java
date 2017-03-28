@@ -80,6 +80,7 @@ public class HumanPhenotypeOntologyTest
             this.mocker.getInstance(SolrVocabularyResourceManager.class);
         when(externalServicesAccess.getTermCache("hpo")).thenReturn(this.cache);
         this.server = mock(SolrClient.class);
+        when(externalServicesAccess.getReplacementSolrConnection("hpo")).thenReturn(this.server);
         when(externalServicesAccess.getSolrConnection("hpo")).thenReturn(this.server);
         this.ontologyService = this.mocker.getComponentUnderTest();
         this.ontologyServiceResult =
@@ -90,7 +91,6 @@ public class HumanPhenotypeOntologyTest
     public void testHumanPhenotypeOntologyReindex()
         throws ComponentLookupException, IOException, SolrServerException, CacheException
     {
-        Mockito.verify(this.server).deleteByQuery("*:*");
         Mockito.verify(this.server).commit();
         Mockito.verify(this.server).add(Matchers.anyCollectionOf(SolrInputDocument.class));
         Mockito.verify(this.cache).removeAll();

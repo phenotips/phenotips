@@ -421,7 +421,7 @@ public abstract class AbstractSolrVocabularyTerm implements VocabularyTerm
         if (CollectionUtils.isEmpty(values)) {
             return null;
         }
-        return IterableUtils.get(values, 0);
+        return values.iterator().next();
     }
 
     /**

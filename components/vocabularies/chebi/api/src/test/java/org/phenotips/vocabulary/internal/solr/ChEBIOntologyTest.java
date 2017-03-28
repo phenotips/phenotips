@@ -74,6 +74,7 @@ public class ChEBIOntologyTest
             this.mocker.getInstance(SolrVocabularyResourceManager.class);
         when(externalServicesAccess.getTermCache("chebi")).thenReturn(this.cache);
         this.server = mock(SolrClient.class);
+        when(externalServicesAccess.getReplacementSolrConnection("chebi")).thenReturn(this.server);
         when(externalServicesAccess.getSolrConnection("chebi")).thenReturn(this.server);
         this.ontologyService = this.mocker.getComponentUnderTest();
         this.ontologyServiceResult =
@@ -84,7 +85,6 @@ public class ChEBIOntologyTest
     public void testChEBIOntologyReindex()
         throws ComponentLookupException, IOException, SolrServerException, CacheException
     {
-        Mockito.verify(this.server).deleteByQuery("*:*");
         Mockito.verify(this.server, Mockito.atLeast(1)).commit();
         Mockito.verify(this.server, Mockito.atLeast(1)).add(Matchers.anyCollectionOf(SolrInputDocument.class));
         Mockito.verify(this.cache, Mockito.atLeast(1)).removeAll();

@@ -108,7 +108,6 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
                         ext.indexingStarted(this);
                     }
                 }
-                this.clear();
                 retval = this.index(sourceUrl);
             } finally {
                 for (VocabularyExtension ext : this.extensions.get()) {
@@ -194,7 +193,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     protected int clear()
     {
         try {
-            this.externalServicesAccess.getReplacementSolrConnection(getCoreName()).deleteByQuery("*:*");
+            this.externalServicesAccess.getSolrConnection(getCoreName()).deleteByQuery("*:*");
             return 0;
         } catch (SolrServerException ex) {
             this.logger.error("SolrServerException while clearing the Solr index", ex);
