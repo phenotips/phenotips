@@ -551,7 +551,6 @@
   vertical-align: middle;
 }
 .study-assignment-config {
-  width: 48%;
   float: left;
 }
 .study-assignment-config a.button {
