@@ -551,7 +551,7 @@
               <className>org/phenotips/data/push/PushServerInfo</className>
               <differenceType>7012</differenceType>
               <method>java.lang.String getServerRegistrationURL()</method>
-              <justification>New methods to erxpose push server registration URL.</justification>
+              <justification>New method to expose push server registration URL.</justification>
             </difference>
 
             <difference>
