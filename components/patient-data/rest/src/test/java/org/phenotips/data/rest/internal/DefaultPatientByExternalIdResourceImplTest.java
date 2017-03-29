@@ -29,7 +29,10 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -99,6 +102,9 @@ public class DefaultPatientByExternalIdResourceImplTest
     @Mock
     private User user;
 
+    @Mock
+    private EntityReferenceResolver resolver;
+
     private Logger logger;
 
     private PatientRepository repository;
@@ -148,16 +154,20 @@ public class DefaultPatientByExternalIdResourceImplTest
         Provider<XWikiContext> provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         this.context = provider.get();
         ReflectionUtils.setFieldValue(this.component, "uriInfo", this.uriInfo);
+        ReflectionUtils.setFieldValue(this.component, "currentResolver", this.resolver);
 
+        when(this.resolver.resolve(any(), any(EntityType.class), any())).thenReturn(mock(EntityReference.class));
         doReturn(this.uriBuilder).when(this.uriInfo).getBaseUriBuilder();
         when(this.patient.getId()).thenReturn(this.id);
         when(this.patient.getDocument()).thenReturn(this.patientReference);
         when(this.users.getCurrentUser()).thenReturn(this.user);
         when(this.user.getProfileDocument()).thenReturn(this.userReference);
         when(this.repository.getByName(this.eid)).thenReturn(this.patient);
+        when(this.repository.create()).thenReturn(this.patient);
         when(this.access.hasAccess(Right.VIEW, this.userReference, this.patientReference)).thenReturn(true);
         when(this.access.hasAccess(Right.EDIT, this.userReference, this.patientReference)).thenReturn(true);
         when(this.access.hasAccess(Right.DELETE, this.userReference, this.patientReference)).thenReturn(true);
+        when(this.access.hasAccess(eq(Right.EDIT), eq(this.userReference), any(EntityReference.class))).thenReturn(true);
 
         Autolinker autolinker = this.mocker.getInstance(Autolinker.class);
         when(autolinker.forResource(any(Class.class), any(UriInfo.class))).thenReturn(autolinker);
@@ -224,7 +234,7 @@ public class DefaultPatientByExternalIdResourceImplTest
 
         Response response = this.component.updatePatient("json", this.eid);
         verify(this.logger).debug("No patient record with external ID [{}] exists yet", this.eid);
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
     @Test(expected = WebApplicationException.class)
@@ -360,12 +370,12 @@ public class DefaultPatientByExternalIdResourceImplTest
         when(this.repository.getByName(this.eid)).thenReturn(null);
 
         Response responseGet = this.component.getPatient(this.eid);
-        Response responseUpdate = this.component.updatePatient(this.eid, this.eid);
+        Response responseUpdate = this.component.updatePatient("{}", this.eid);
         Response responseDelete = this.component.deletePatient(this.eid);
 
         verify(this.logger, times(3)).warn("Failed to retrieve patient with external id [{}]: {}", this.eid, null);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), responseGet.getStatus());
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), responseUpdate.getStatus());
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), responseUpdate.getStatus());
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), responseDelete.getStatus());
     }
 }

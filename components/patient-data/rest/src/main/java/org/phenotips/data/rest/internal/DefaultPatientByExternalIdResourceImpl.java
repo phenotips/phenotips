@@ -26,6 +26,7 @@ import org.phenotips.data.rest.model.Alternatives;
 import org.phenotips.rest.Autolinker;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.query.Query;
@@ -49,6 +50,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
@@ -67,6 +69,8 @@ import com.xpn.xwiki.XWikiException;
 @Singleton
 public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implements PatientByExternalIdResource
 {
+    private static final String EID_LABEL = "external_id";
+
     @Inject
     private Logger logger;
 
@@ -129,7 +133,7 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
         this.logger.debug("Updating patient record with external ID [{}] via REST with JSON: {}", eid, json);
         Patient patient = this.repository.getByName(eid);
         if (patient == null) {
-            return checkForMultipleRecords(patient, eid);
+            return checkRecords(eid, json);
         }
         User currentUser = this.users.getCurrentUser();
         if (!this.access.hasAccess(Right.EDIT, currentUser == null ? null : currentUser.getProfileDocument(),
@@ -137,7 +141,13 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
             this.logger.debug("Edit access denied to user [{}] on patient record [{}]", currentUser, patient.getId());
             throw new WebApplicationException(Status.FORBIDDEN);
         }
-        JSONObject jsonInput = new JSONObject(json);
+        JSONObject jsonInput;
+        try {
+            jsonInput = new JSONObject(json);
+        } catch (final JSONException ex) {
+            this.logger.error("Provided patient json: {} is invalid.", json);
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
         String idFromJson = jsonInput.optString("id");
         if (StringUtils.isNotBlank(idFromJson) && !patient.getId().equals(idFromJson)) {
             // JSON for a different patient, bail out
@@ -200,5 +210,61 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
             return Response.status(Status.NOT_FOUND).build();
         }
         return null;
+    }
+
+    /**
+     * Checks patient records for duplicates. Creates and updates a patient if no existing patients with {@code eid} are
+     * found, otherwise lists duplicate records in the response.
+     *
+     * @param eid the external ID of the patient of interest
+     * @param json the data to update the patient with
+     * @return a {@link Response} with no content if a new patient is created, a list of patients if duplicate patients
+     *         exist, or an error code in the event of error
+     */
+    private Response checkRecords(final String eid, final String json)
+    {
+        final Response response = checkForMultipleRecords(null, eid);
+        return (response != null && response.getStatus() == Status.NOT_FOUND.getStatusCode())
+            ? createPatient(eid, json)
+            : response;
+    }
+
+    /**
+     * Tries to create a patient with provided {@code eid} and {@code json data}. Returns a {@link Response} with
+     * no content if successful, an error code otherwise.
+     *
+     * @param eid the external identifier for the patient; will be overwritten if an eid is specified in {@code json}
+     * @param json patient data as json string
+     * @return a {@link Response} with no content if successful, an error code otherwise
+     */
+    private Response createPatient(final String eid, final String json)
+    {
+        this.logger.debug("Creating patient record with external ID [{}]", eid);
+        try {
+            if (StringUtils.isBlank(json)) {
+                this.logger.error("Provided patient json: {} is invalid.", json);
+                return Response.status(Status.BAD_REQUEST).build();
+            }
+            final JSONObject patientJson = new JSONObject(json);
+            final User currentUser = this.users.getCurrentUser();
+            if (!this.access.hasAccess(Right.EDIT, currentUser == null ? null : currentUser.getProfileDocument(),
+                this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
+                this.logger.error("Edit access denied to user [{}].", currentUser);
+                return Response.status(Status.FORBIDDEN).build();
+            }
+            final Patient patient = this.repository.create();
+            // Since we're creating a new patient, if eid is not provided in patientJson, use the eid that was passed in
+            if (!patientJson.has(EID_LABEL)) {
+                patientJson.put(EID_LABEL, eid);
+            }
+            patient.updateFromJSON(patientJson);
+            return Response.noContent().build();
+        } catch (final JSONException ex) {
+            this.logger.error("Provided patient json: {} is invalid.", json);
+            return Response.status(Status.BAD_REQUEST).build();
+        } catch (final Exception ex) {
+            this.logger.error("Failed to create patient with external ID: [{}] from JSON: {}.", eid, json);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
