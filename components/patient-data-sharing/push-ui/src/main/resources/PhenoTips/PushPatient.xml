@@ -183,21 +183,23 @@
     },
 
     _initUI: function() {
-      var generateSection = function(id, title, intro) {
+      var generateSection = function(id, title, intro, hint) {
          var section = new Element('div', {'id': id, 'class' : 'section'});
          if (title) {section.insert(title &amp;&amp; new Element('h2').update(title) || '');}
          if (intro) {section.insert(intro &amp;&amp; new Element('p', {'class' : 'intro xHint'}).update(intro) || '');} 
          section.insert(new Element ('div', {'class' : 'section-contents'}));
+         if (hint) {section.insert(hint &amp;&amp; new Element('p', {'class' : 'hint xHint'}).update(hint) || '');}
          return section;
       };
 
       this._authenticationLabel = "$!escapetool.javascript($services.localization.render('phenotips.patientSharing.push.dialog.authentication.label'))";
       this._authenticationHint = "$!escapetool.javascript($services.localization.render('phenotips.patientSharing.push.dialog.authentication.hint'))";
       this._remoteGroupLabel = "$!escapetool.javascript($services.localization.render('phenotips.patientSharing.push.dialog.remoteGroup.label'))";
+      this._remoteRegistrationHint = "$!escapetool.javascript($services.localization.render('phenotips.PushPatient.remoteRegistration'))";
 
       this._container = new Element('form', {'id' : 'push-patients-ui', 'class' : 'xform', 'method' : 'post', 'action' : this._serviceURL});
       this._container.insert(generateSection('server-selection'))
-                     .insert(generateSection('user-selection', this._authenticationLabel, this._authenticationHint))
+                     .insert(generateSection('user-selection', this._authenticationLabel, this._authenticationHint, this._remoteRegistrationHint))
                      .insert(generateSection('group-selection', this._remoteGroupLabel));
 
       this._container.insert(generateSection('consents-section',
@@ -500,6 +502,7 @@
           if (this._lastLoginResponse.status == "success") {
             console.log("--&gt; login successful!");
             $$('#user-selection p')[0].hide();
+            $$('#user-selection p')[1].hide();
             this._lastApprovedUser = username;
             this._updateUserList();  // update current user list with an indication that this user has successfully logged in
             this._populateGroupsAndData(this._lastLoginResponse.groups, this._lastLoginResponse.serverfields, this._lastLoginResponse.updatesEnabled);
@@ -531,6 +534,7 @@
         },
         onSuccess : function (response) {
           $$('#user-selection p')[0].show();
+          $$('#user-selection p')[1].show();
           _this._lastLoginResponse = undefined;
           _this._lastApprovedUser  = undefined;
           _this._updateUserList();
@@ -772,11 +776,16 @@
         $$('#user-selection h2')[0].innerHTML = userSelection;
         var userSelectionHint = this._authenticationHint.replace(/__serverID__/g, this._selectedServer);
         $$('#user-selection p')[0].innerHTML = userSelectionHint;
+        $$('#user-selection p')[0].show();
         var groupSelection = this._remoteGroupLabel.replace("__serverID__", this._selectedServer);
         $$('#group-selection h2')[0].innerHTML = groupSelection;
-
-        if (serverData.registrationURL != "") {$('user-selection').insert(new Element('p', {'class' : 'intro xHint'}).insert("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.remoteRegistration'))".replace("__serverID__", this._selectedServer).replace("__registrationUrl__", "&lt;a target=\"_blank\" href=\""+serverData.registrationURL+"\"&gt;"+serverData.registrationURL+"&lt;/a&gt;")));}
-
+        if (serverData.registrationURL != "" &amp;&amp; !this._lastApprovedUser) {
+           var remoteRegistration = this._remoteRegistrationHint.replace("__serverID__", this._selectedServer).replace("__registrationUrl__", "&lt;a target=\"_blank\" href=\""+serverData.registrationURL+"\"&gt;"+serverData.registrationURL+"&lt;/a&gt;");
+           $$('#user-selection p')[1].innerHTML = remoteRegistration;
+           $$('#user-selection p')[1].show();
+        } else {
+           $$('#user-selection p')[1].innerHTML = '';
+        }
         var existingPatientDataInfo = '';
 
         if (serverData.pushAgeHours !== undefined &amp;&amp; serverData.pushAgeHours &gt;=0) {
