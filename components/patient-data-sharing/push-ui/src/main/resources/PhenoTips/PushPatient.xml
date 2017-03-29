@@ -243,10 +243,6 @@
         }
     },
 
-    _generateServerFirstMessage: function() {
-      return new Element('div', {'class' : 'warningmessage'}).update("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.serverFirstMessage'))");
-    },
-
     _generateNoServerListMessage: function() {
       var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$!escapetool.javascript($services.localization.render('phenotips.PushPatient.retry'))", 'class': this._retryButtonClass}).wrap('span', {'class' : 'buttonwrapper'});
       var _this = this;
@@ -306,24 +302,17 @@
       // TODO: DATAPREVIEW: if preview is implemented on the main push dialog page, need to display
       //                    this._generateServerAndUserFirstMessage() error there
 
-      this._pushButton.disable();   // disabled until the server is selected and fields are confirmed
+      this._pushButton.disable();   // disabled until the user is successfully logged to the server
       this._approveElement.hide();
 
       this._pushResultSection.update("");
 
       this._patientFieldList = undefined;
       this._userGroupsList   = undefined;
-    },
 
-    _onNoServerSelected: function() {
       this._lastApprovedUser  = undefined;
       this._lastSelectedGroup = undefined;
       this._userLoginError    = undefined;
-
-      this._serverInfo.hide();
-      this._userManager.update(this._generateServerFirstMessage());
-
-      this._onUnapprovedUser();
     },
 
     _disableControl: function(control) {
@@ -344,8 +333,6 @@
             allInputs[i].disable();
           }
        }
-       // disable server-selector: it is an option not an input
-       this._serverSelector.down('select').disable();
        // but enable the cancel button
        if (!disableCancelAsWell) {
           this._cancelButton.enable();
@@ -363,8 +350,6 @@
              allInputs[i].enable();
           }
        }
-       // enable server-selector: it is an option not an input
-       this._serverSelector.down('select').enable();
     },
 
     _launchUI : function() {
@@ -377,12 +362,10 @@
       // reset data about available push servers
       this._remoteServers       = {};
       this._numAvailableServers = 0;
+      this._serverInfo.hide();
 
-      this._onNoServerSelected();
+      this._onUnapprovedUser();
 
-      this._serverLoadMessages.update(new Element('div', {'class' : 'infomessage'}).update("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.retrievingListMessage'))"));
-      this._serverLoadMessages.show();
-      this._serverSelector.hide();
       this._container.addClassName('loading-indicator-large');
 
       //AJAX 1: Get available remote servers
@@ -729,14 +712,12 @@
       //console.log("Server list input: " + stringifyObject(pushServerList));
 
       this._remoteServers = {};
-      var servers = [];
 
       this._numAvailableServers = pushServerList.length;
-      for(var i = 0; i &lt; pushServerList.length; i++) {
+      for (var i = 0; i &lt; pushServerList.length; i++) {
           var serverInfo = pushServerList[i].serverinfo;
           var pushInfo   = pushServerList[i].pushinfo;
           var name       = serverInfo.serverID;
-          servers.push(name);
 
           serverInfo.serverURL = this._addHTTP(serverInfo.serverURL);
 
@@ -753,8 +734,6 @@
                                        "remoteGUID": remoteGUID,
                                        "remoteURL": remoteURL};
       }
-      servers.sort();
-      var _this = this;
 
       //console.log("Remote servers as cached: " + stringifyObject(this._remoteServers))
 
@@ -832,30 +811,11 @@
         }
     },
 
-    _onServerOptionChange: function() {
-      var serverSelectInput = this._serverSelector.down('select');
-      var selectedServer = serverSelectInput.options[serverSelectInput.selectedIndex].value;
-      this._onNoServerSelected();
-      if (selectedServer != 'none') {
-        this._selectServer(selectedServer);
-      }
-    },
-
     _initServerSelector: function() {
       this._serverLoadMessages = new Element('div', {id: 'server-load-messages'});
       this._serverLoadMessages.hide();
-
-      var options = new Element('select', {id: 'server-selector'});
-      options.insert(new Element('option', {value: "none"}).update("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.loadingServers'))"));
-      options.observe('change', this._onServerOptionChange.bind(this));   // on server selection: enable &amp; repopulate user/group lists
-
-      this._serverSelector = new Element('div', {id: 'server-selector-div'});
-      this._serverSelector.hide();
-      this._serverSelector.update(options);
-
       this._serverInfo = new Element('div', {id: 'server-info'});
-
-      this._serverManager.update(this._serverLoadMessages).insert(this._serverSelector ).insert(this._serverInfo);
+      this._serverManager.update(this._serverLoadMessages).insert(this._serverInfo);
     },
 
     // ---------------------------------------------------------------------
