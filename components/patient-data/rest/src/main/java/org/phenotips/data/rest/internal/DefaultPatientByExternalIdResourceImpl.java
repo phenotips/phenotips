@@ -148,9 +148,7 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
             this.logger.error("Provided patient json: {} is invalid.", json);
             throw new WebApplicationException(Status.BAD_REQUEST);
         }
-        String idFromJson = jsonInput.optString("id");
-        if (StringUtils.isNotBlank(idFromJson) && !patient.getId().equals(idFromJson)) {
-            // JSON for a different patient, bail out
+        if (hasInternalIdConflict(jsonInput, patient)) {
             throw new WebApplicationException(Status.CONFLICT);
         }
         try {
@@ -253,12 +251,7 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
                 return Response.status(Status.FORBIDDEN).build();
             }
             final Patient patient = this.repository.create();
-            // Since we're creating a new patient, if eid is not provided in patientJson, use the eid that was passed in
-            if (!patientJson.has(EID_LABEL)) {
-                patientJson.put(EID_LABEL, eid);
-            }
-            patient.updateFromJSON(patientJson);
-            return Response.noContent().build();
+            return updatePatientWithJsonData(patient, eid, patientJson);
         } catch (final JSONException ex) {
             this.logger.error("Provided patient json: {} is invalid.", json);
             return Response.status(Status.BAD_REQUEST).build();
@@ -266,5 +259,42 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
             this.logger.error("Failed to create patient with external ID: [{}] from JSON: {}.", eid, json);
             return Response.status(Status.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Updates the {@code patient} with provided {@code patientJson JSON data}.
+     *
+     * @param patient the {@link Patient} to update
+     * @param eid the external identifier for the patient
+     * @param patientJson the patient data as {@link JSONObject}
+     * @return a response with no content if patient update is successful, an error code otherwise
+     */
+    private Response updatePatientWithJsonData(final Patient patient, final String eid, final JSONObject patientJson)
+    {
+        // Check that internal ids are not conflicting.
+        if (hasInternalIdConflict(patientJson, patient)) {
+            return Response.status(Status.CONFLICT).build();
+        }
+        // Since we're creating a new patient, if eid is not provided in patientJson, use the eid that was passed in
+        if (!patientJson.has(EID_LABEL)) {
+            patientJson.put(EID_LABEL, eid);
+        }
+        patient.updateFromJSON(patientJson);
+        return Response.noContent().build();
+    }
+
+    /**
+     * Returns true iff the internal ID is specified in {@code jsonInput} and does not correspond with the patient
+     * internal ID, false otherwise.
+     *
+     * @param jsonInput the patient data being imported
+     * @param patient the {@link Patient} object
+     * @return true iff the internal ID is specified in {@code jsonInput} and conflicts with patient internal ID, false
+     *         otherwise
+     */
+    private boolean hasInternalIdConflict(final JSONObject jsonInput, final Patient patient)
+    {
+        final String idFromJson = jsonInput.optString("id");
+        return StringUtils.isNotBlank(idFromJson) && !patient.getId().equals(idFromJson);
     }
 }
