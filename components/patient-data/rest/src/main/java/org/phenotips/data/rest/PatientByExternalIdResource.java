@@ -57,11 +57,12 @@ public interface PatientByExternalIdResource
     Response getPatient(@PathParam("eid") String eid);
 
     /**
-     * Update a patient record, identified by its given "external" identifier, from its JSON representation. If the
-     * indicated patient record doesn't exist, or if the user sending the request doesn't have the right to edit the
-     * target patient record, no change is performed and an error is returned. If multiple records exist with the same
-     * given identifier, no change is performed, and a list of links to each such record is returned. If a field is set
-     * in the patient record, but missing in the JSON, then that field is not changed.
+     * Update a patient record, identified by its given "external" identifier, from its JSON representation. If the user
+     * sending the request doesn't have the right to edit the target patient record, no change is performed and an error
+     * is returned. If the indicated patient record doesn't exist, and a valid JSON is provided, a new patient record
+     * is created with the provided data. If multiple records exist with the same given identifier, no change is
+     * performed, and a list of links to each such record is returned. If a field is set in the patient record, but
+     * missing in the JSON, then that field is not changed.
      *
      * @param json the JSON representation of the new patient to add
      * @param eid the patient's given "external" identifier, see {@link org.phenotips.data.Patient#getExternalId()}
