@@ -1400,45 +1400,6 @@
       <defaultWeb/>
       <nameField/>
       <validationScript/>
-      <name>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <picker>0</picker>
-        <prettyName>Server name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <url>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <name>url</name>
-        <number>2</number>
-        <picker>0</picker>
-        <prettyName>Server URL</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </url>
-      <registration_url>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <name>registration_url</name>
-        <number>3</number>
-        <picker>0</picker>
-        <prettyName>Registration URL</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </registration_url>
       <description>
         <customDisplay/>
         <disabled>0</disabled>
@@ -1454,6 +1415,45 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </description>
+      <name>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>Server name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <registration_url>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>registration_url</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>Registration URL</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </registration_url>
+      <url>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>url</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Server URL</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </url>
     </class>
     <property>
       <description>{{translation key="phenotips.patientSharing.push.configuration.phenomecentral.description"/}}</description>
@@ -1462,10 +1462,10 @@
       <name>PhenomeCentral</name>
     </property>
     <property>
-      <url>https://phenomecentral.org/</url>
+      <registration_url>https://phenomecentral.org/register/PhenomeCentral/</registration_url>
     </property>
     <property>
-      <registration_url>https://phenomecentral.org/register/PhenomeCentral/WebHome/</registration_url>
+      <url>https://phenomecentral.org/</url>
     </property>
   </object>
   <object>

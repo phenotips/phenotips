@@ -186,9 +186,9 @@
       var generateSection = function(id, title, intro, hint) {
          var section = new Element('div', {'id': id, 'class' : 'section'});
          if (title) {section.insert(title &amp;&amp; new Element('h2').update(title) || '');}
-         if (intro) {section.insert(intro &amp;&amp; new Element('p', {'class' : 'intro xHint'}).update(intro) || '');} 
+         if (intro) {section.insert(intro &amp;&amp; new Element('p', {'id': id+'-intro', 'class' : 'intro xHint'}).update(intro) || '');}
          section.insert(new Element ('div', {'class' : 'section-contents'}));
-         if (hint) {section.insert(hint &amp;&amp; new Element('p', {'class' : 'hint xHint'}).update(hint) || '');}
+         if (hint) {section.insert(hint &amp;&amp; new Element('p', {'id': id+'-hint', 'class' : 'hint xHint'}).update(hint) || '');}
          return section;
       };
 
@@ -484,8 +484,8 @@
 
           if (this._lastLoginResponse.status == "success") {
             console.log("--&gt; login successful!");
-            $$('#user-selection p')[0].hide();
-            $$('#user-selection p')[1].hide();
+            $('user-selection-intro').hide();
+            $('user-selection-hint').hide();
             this._lastApprovedUser = username;
             this._updateUserList();  // update current user list with an indication that this user has successfully logged in
             this._populateGroupsAndData(this._lastLoginResponse.groups, this._lastLoginResponse.serverfields, this._lastLoginResponse.updatesEnabled);
@@ -516,8 +516,8 @@
           } catch (e) {console.log("ERROR: " + e); }
         },
         onSuccess : function (response) {
-          $$('#user-selection p')[0].show();
-          $$('#user-selection p')[1].show();
+          $('user-selection-intro').show();
+          $('user-selection-hint').show();
           _this._lastLoginResponse = undefined;
           _this._lastApprovedUser  = undefined;
           _this._updateUserList();
@@ -754,16 +754,16 @@
         var userSelection = this._authenticationLabel.replace("__serverID__", this._selectedServer);
         $$('#user-selection h2')[0].innerHTML = userSelection;
         var userSelectionHint = this._authenticationHint.replace(/__serverID__/g, this._selectedServer);
-        $$('#user-selection p')[0].innerHTML = userSelectionHint;
-        $$('#user-selection p')[0].show();
+        $('user-selection-intro').innerHTML = userSelectionHint;
+        $('user-selection-intro').show();
         var groupSelection = this._remoteGroupLabel.replace("__serverID__", this._selectedServer);
         $$('#group-selection h2')[0].innerHTML = groupSelection;
         if (serverData.registrationURL != "" &amp;&amp; !this._lastApprovedUser) {
            var remoteRegistration = this._remoteRegistrationHint.replace("__serverID__", this._selectedServer).replace("__registrationUrl__", "&lt;a target=\"_blank\" href=\""+serverData.registrationURL+"\"&gt;"+serverData.registrationURL+"&lt;/a&gt;");
-           $$('#user-selection p')[1].innerHTML = remoteRegistration;
-           $$('#user-selection p')[1].show();
+           $('user-selection-hint').innerHTML = remoteRegistration;
+           $('user-selection-hint').show();
         } else {
-           $$('#user-selection p')[1].innerHTML = '';
+           $('user-selection-hint').innerHTML = '';
         }
         var existingPatientDataInfo = '';
 
