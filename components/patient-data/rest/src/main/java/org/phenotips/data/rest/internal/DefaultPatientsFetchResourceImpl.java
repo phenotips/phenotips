@@ -108,13 +108,13 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
             addEids(patientsBuilder, eids);
             addIds(patientsBuilder, ids);
             // Generate JSON for all retrieved patients.
-            final String json = objectMapper.writeValueAsString(patientsBuilder.build());
+            final String json = this.objectMapper.writeValueAsString(patientsBuilder.build());
             return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
         } catch (final JsonProcessingException ex) {
-            logger.error("Failed to serialize patients [{}] to JSON: {}", eids, ex.getMessage());
+            this.logger.error("Failed to serialize patients [{}] to JSON: {}", eids, ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (final QueryException ex) {
-            logger.error("Failed to retrieve patients with external ids [{}]: {}", eids, ex.getMessage());
+            this.logger.error("Failed to retrieve patients with external ids [{}]: {}", eids, ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -144,7 +144,7 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
     private void collectPatientsFromEids(@Nonnull final ImmutableSet.Builder<PrimaryEntity> patientsBuilder,
         @Nonnull final List<Object> eids) throws QueryException
     {
-        final Query q = qm.createQuery("from doc.object(PhenoTips.PatientClass) p where p.external_id in (:eids)",
+        final Query q = this.qm.createQuery("from doc.object(PhenoTips.PatientClass) p where p.external_id in (:eids)",
             Query.XWQL);
         q.bindValue("eids", eids);
         final List<Object> patientIds = q.execute();
@@ -185,7 +185,7 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
                 patientsBuilder.add(patient);
             }
         } catch (final SecurityException ex) {
-            logger.warn("Failed to retrieve patient with ID [{}]: {}", id, ex.getMessage());
+            this.logger.warn("Failed to retrieve patient with ID [{}]: {}", id, ex.getMessage());
         }
     }
 
@@ -214,7 +214,8 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
             final SerializerProvider provider) throws IOException
         {
             final JSONObject json = primaryEntity.toJSON();
-            json.put("links", autolinker.get().forSecondaryResource(PatientResource.class, uriInfo)
+            json.put("links", DefaultPatientsFetchResourceImpl.this.autolinker.get()
+                .forSecondaryResource(PatientResource.class, DefaultPatientsFetchResourceImpl.this.uriInfo)
                 .withExtraParameters("patient-id", primaryEntity.getId()).build());
             jgen.writeRawValue(json.toString());
         }

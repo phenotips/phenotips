@@ -184,7 +184,8 @@ public class DefaultPatientsFetchResourceImplTest
 
         final Response response = this.component.fetchPatients();
 
-        final JSONArray expected = new JSONArray().put(new JSONObject().put(ID_LABEL, ID_1).put(LINKS_LABEL, this.uriList));
+        final JSONArray expected =
+            new JSONArray().put(new JSONObject().put(ID_LABEL, ID_1).put(LINKS_LABEL, this.uriList));
 
         final JSONArray actual = new JSONArray(response.getEntity().toString());
         assertTrue(expected.similar(actual));
@@ -230,8 +231,9 @@ public class DefaultPatientsFetchResourceImplTest
 
         final Response response = this.component.fetchPatients();
 
-        final JSONArray expected = new JSONArray().put(new JSONObject().put(ID_LABEL, ID_1).put(LINKS_LABEL, this.uriList))
-            .put(new JSONObject().put(ID_LABEL, ID_3).put(LINKS_LABEL, this.uriList));
+        final JSONArray expected =
+            new JSONArray().put(new JSONObject().put(ID_LABEL, ID_1).put(LINKS_LABEL, this.uriList))
+                .put(new JSONObject().put(ID_LABEL, ID_3).put(LINKS_LABEL, this.uriList));
         final JSONArray actual = new JSONArray(response.getEntity().toString());
         verify(this.logger).warn("Failed to retrieve patient with ID [{}]: {}", ID_2, null);
         assertTrue(expected.similar(actual));
@@ -250,9 +252,10 @@ public class DefaultPatientsFetchResourceImplTest
 
         final Response response = this.component.fetchPatients();
 
-        final JSONArray expected = new JSONArray().put(new JSONObject().put(ID_LABEL, ID_1).put(LINKS_LABEL, this.uriList))
-            .put(new JSONObject().put(ID_LABEL, ID_2).put(LINKS_LABEL, this.uriList))
-            .put(new JSONObject().put(ID_LABEL, ID_3).put(LINKS_LABEL, this.uriList));
+        final JSONArray expected =
+            new JSONArray().put(new JSONObject().put(ID_LABEL, ID_1).put(LINKS_LABEL, this.uriList))
+                .put(new JSONObject().put(ID_LABEL, ID_2).put(LINKS_LABEL, this.uriList))
+                .put(new JSONObject().put(ID_LABEL, ID_3).put(LINKS_LABEL, this.uriList));
         final JSONArray actual = new JSONArray(response.getEntity().toString());
         assertTrue(expected.similar(actual));
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
