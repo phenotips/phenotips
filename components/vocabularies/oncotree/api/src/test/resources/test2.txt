@@ -1,0 +1,4 @@
+primary	secondary	tertiary	quaternary	quinternary	metamaintype	metacolor	metanci	metaumls
+Soft Tissue (SOFT_TISSUE)	Dendritic Cell Sarcoma (DCS)	Follicular Dendritic Cell Sarcoma (FDCS)			Soft Tissue Sarcoma	LightYellow	C9281	C1260325
+Myeloid (MYELOID)	Histiocytic and Dendritic Cell Neoplasms (HDCN)	Follicular Dendritic Cell Sarcoma (FDCS)				LightSalmon
+Myeloid (MYELOID)	Histiocytic and Dendritic Cell Neoplasms (HDCN)	Follicular Dendritic Cell Sarcoma Alt (FDCS)				LightYellow
