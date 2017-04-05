@@ -37,6 +37,22 @@
   <minorEdit>false</minorEdit>
   <syntaxId>plain/1.0</syntaxId>
   <hidden>false</hidden>
-  <content>
-</content>
+  <content>PhenoTips.FamilyClass_external_id=Identifiant
+PhenoTips.FamilyClass_identifier=Identifiant interne
+PhenoTips.FamilyClass_members=Membres de la famille
+PhenoTips.FamilyClass_reports=Compte rendus
+PhenoTips.FamilyClass_warning=Afficher une alerte sur les informations sensibles
+PhenoTips.FamilyClass_warning_message=Texte d’avertissement sur les informations sensibles
+
+phenotips.familyRecord.section.about=A propos
+phenotips.familyRecord.section.familyMembers=Membres
+phenotips.familyRecord.section.pedigree=Arbre généalogique
+phenotips.familyRecord.section.reports=Compte rendu médical
+
+phenotips.familyRecord.field.externalId=Identifiant
+phenotips.familyRecord.field.sensitiveInfoWarning=Alerte sur les informations sensibles
+phenotips.familyRecord.field.familyMembers=Membres de la famille
+phenotips.familyRecord.field.pedigree=Ascendance
+phenotips.familyRecord.field.memberReports=Comptes rendus médicaux sur les membres de la famille
+phenotips.familyRecord.field.familyReports=Compte rendu médical</content>
 </xwikidoc>

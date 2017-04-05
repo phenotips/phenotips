@@ -37,5 +37,14 @@
   <minorEdit>false</minorEdit>
   <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
-  <content></content>
+  <content>phenotips.specificityMeter.label=Quelle est l'informativitité de votre description phénotypique\:
+phenotips.specificityMeter.level.0=Aucune
+phenotips.specificityMeter.level.1=Faible
+phenotips.specificityMeter.level.2=Satisfaisante
+phenotips.specificityMeter.level.3=Bonne
+phenotips.specificityMeter.level.4=Très bonne
+phenotips.specificityMeter.level.5=Excellente
+phenotips.specificityMeter.info.label=Qu'est-ce que c'est?
+phenotips.specificityMeter.info.title=A propos de la mesure de spécificité phénotypique Monarch
+phenotips.specificityMeter.info=Cette évaluation représente l’ampleur et la profondeur de votre annotation phénotypique pour un patient donné, contextualisé dans les ontologies organisées humaines et animales intégrées dans Monarch. L’objectif est de rendre votre description phénotypique suffisamment précise pour exclure des maladies similaires et d’identifier des organismes modèles avec un phénotype semblable, qui pourraient avoir des mutations dans des gènes ou voies cellulaires comparables. En utilisant la même technologie, l'annotation phénotypique du patient est également utilisée pour faciliter la priorisation de l’exome.</content>
 </xwikidoc>

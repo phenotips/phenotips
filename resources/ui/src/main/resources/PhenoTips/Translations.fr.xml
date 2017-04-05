@@ -37,5 +37,40 @@
   <minorEdit>false</minorEdit>
   <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
-  <content></content>
+  <content>admin.ontology=Index de l'ontologie
+admin.workgroups=Groupes de travail
+admin.studies=Études
+
+saveandview=Enregistrer et afficher la vue Résumé
+saveandcontinue=Sauvegarde rapide
+cancel=Annuler les modifications non-enregistrées
+
+phenotips.profile.preferences=Préférences PhenoTips
+phenotips.profile.preferences.mapping=Configuration préférée
+
+XWiki.XWikiUsers_company=Affiliation
+XWiki.XWikiUsers_comment=A propos
+
+core.widgets.confirmationBox.button.cancel=Annuler
+
+phenotips.globalHeader.allData=Parcourir tous les patients
+phenotips.globalHeader.search.placeholder=Rechercher un dossier de patient...
+
+phenotips.OmimPredictService.linkToDisorder=Lisez à propos de ce trouble sur OMIM
+phenotips.OmimPredictService.noMatches=Aucun résultat trouvé
+phenotips.PatientPhenotyoeExportService.cantFindPatientError=Identifiant introuvable.
+phenotips.SuggestPatientService.serviceInfo=Ce service permet de récupérer les résultats de recherche pour le composant d’interface utilisateur suggéré. Exemple \: {0}
+phenotips.UIXDirectory.noNameError=Veuillez saisir un nom d'extension
+phenotips.UIXDirectory.nameExistsError=L''extension intitulée « {0} » existe déjà. Veuillez choisir un autre nom
+phenotips.UIXDirectory.newExtension.label=Nouveau nom d'extension \:
+phenotips.UIXDirectory.newExtension.placeholder=Par ex. « Mon widget »
+phenotips.UIXDirectory.options.edit=Modifier cette extension
+phenotips.UIXDirectory.options.history=Afficher l'historique des changements
+phenotips.UIXDirectory.options.copy=Copier
+phenotips.UIXDirectory.options.rename=Renommer
+phenotips.UIXDirectory.options.download=Exporter cette extension au format XAR
+phenotips.UIXDirectory.options.delete=Supprimer cette extension
+phenotips.UIXDirectory.newExtension.create=Créer
+phenotips.UIXDirectory.sortedBy= Trié par {0}
+phenotips.UIXDirectory.sortBy= Trier par {0}</content>
 </xwikidoc>
