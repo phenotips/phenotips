@@ -31,7 +31,10 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -73,6 +76,16 @@ public class PhenotipsFamilyMigrations
     private static final String EDIT_RIGHT = "view,edit";
 
     private static final String FULL_RIGHT = "view,edit,delete";
+
+    private static final String JSON_TOP_LEVEL = "GG";
+
+    private static final String JSON_NODE_PROPERTIES = "prop";
+
+    private static final String JSON_EXTERNALID = "externalID";
+
+    private static final String JSON_PHENOTIPSID = "phenotipsId";
+
+    private static final String JSON_COMMENTS = "comments";
 
     private EntityReference rightsClassReference = new EntityReference("XWikiRights", EntityType.DOCUMENT,
         new EntityReference("XWiki", EntityType.SPACE));
@@ -170,7 +183,7 @@ public class PhenotipsFamilyMigrations
     public JSONObject processPedigree(JSONObject data, String patientId)
     {
         // Adding patient id under the patient prop
-        JSONArray gg = (JSONArray) data.get("GG");
+        JSONArray gg = (JSONArray) data.get(JSON_TOP_LEVEL);
         for (Object nodeObj : gg) {
             JSONObject node = (JSONObject) nodeObj;
 
@@ -179,12 +192,12 @@ public class PhenotipsFamilyMigrations
                 continue;
             }
 
-            JSONObject properties = node.optJSONObject("prop");
+            JSONObject properties = node.optJSONObject(JSON_NODE_PROPERTIES);
             if (properties == null) {
                 properties = new JSONObject();
-                node.accumulate("prop", properties);
+                node.accumulate(JSON_NODE_PROPERTIES, properties);
             }
-            properties.accumulate("phenotipsId", patientId);
+            properties.accumulate(JSON_PHENOTIPSID, patientId);
             break;
         }
 
@@ -194,41 +207,68 @@ public class PhenotipsFamilyMigrations
     }
 
     /**
-     * Finds a pedigree node linked to patientID and adds the given comment to it's free-text comment.
+     * Asigns nodes to PhenoTips records and adds comments to nodes.
      *
-     * @param pedigree pedigree as JSON
-     * @param patientId the PhenoTips patient id
-     * @param commentAddition text of comment addition
+     *  - Finds all nodes with the given external IDs and - if not already linked to a PT record - links them to
+     *    the given PT record
+     *  - For each node linked to a PT record (including nodes linked in step1 above) appends the comment
+     *    provided
+     *
+     * @param pedigree pedigree as JSON. The pedigree will be modified in place
+     * @param externalIdToPhenotipsId a map of externalIDs which, if found in pedigree, should be linked
+     *        to the corresponding phenotips records
+     * @param commentsByPhenotipsId a map of phenotips ids to comments that shouldbe added for those nodes.
+     *        The list may include nodes linked based on the `externalIdToPhenotipsId` list
+     * @return a set of phenotips IDs that were newly linked based on externalID
      */
-    public void updatePedigreeComment(JSONObject pedigree, String patientId, String commentAddition)
+    public Set<String> updatePedigree(JSONObject pedigree, Map<String, String> externalIdToPhenotipsId,
+            Map<String, String> commentsByPhenotipsId)
     {
-        JSONArray gg = pedigree.getJSONArray("GG");
+        Set<String> linkedIds = new HashSet<>();
+
+        JSONArray gg = pedigree.getJSONArray(JSON_TOP_LEVEL);
         for (int pedigreeId = 0; pedigreeId < gg.length(); pedigreeId++) {
             JSONObject node = gg.getJSONObject(pedigreeId);
 
-            JSONObject properties = node.optJSONObject("prop");
+            JSONObject properties = node.optJSONObject(JSON_NODE_PROPERTIES);
             if (properties == null) {
                 continue;
             }
 
             //logger.error("Node: properties: [{}]", properties);
 
-            String linkPatientId = properties.optString("phenotipsId");
-            if (StringUtils.equals(linkPatientId, patientId)) {
+            String externalId = properties.optString(JSON_EXTERNALID);
+            String linkPatientId = properties.optString(JSON_PHENOTIPSID, null);
+
+            if (externalId == null && linkPatientId == null) {
+                continue;
+            }
+
+
+
+            if (linkPatientId == null && externalIdToPhenotipsId.containsKey(externalId)) {
+                linkPatientId = externalIdToPhenotipsId.get(externalId);
+                properties.put(JSON_PHENOTIPSID, linkPatientId);
+                linkedIds.add(linkPatientId);
+            }
+
+            if (commentsByPhenotipsId.containsKey(linkPatientId)) {
                 // update comments
-                String comment = properties.optString("comments", null);
+                String comment = properties.optString(JSON_COMMENTS, null);
+                String commentAddition = commentsByPhenotipsId.get(linkPatientId);
                 if (comment == null) {
                     comment = commentAddition;
                 } else {
                     comment += "\n" + commentAddition;
                 }
-                properties.put("comments", comment);
-                node.put("prop", properties);
-                gg.put(pedigreeId, node);
-                pedigree.put("GG", gg);
-                return;
+                properties.put(JSON_COMMENTS, comment);
             }
+
+            node.put(JSON_NODE_PROPERTIES, properties);
+            gg.put(pedigreeId, node);
+            pedigree.put(JSON_TOP_LEVEL, gg);
         }
+        return linkedIds;
     }
 
     /**
