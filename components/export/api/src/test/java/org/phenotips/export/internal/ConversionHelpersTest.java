@@ -207,7 +207,6 @@ public class ConversionHelpersTest
         doReturn("id3").when(featureThree).getId();
         doReturn("id4").when(featureFour).getId();
 
-        helpersSpy.newPatient();
         helpersSpy.featureSetUp(true);
         List<Feature> sorted = helpersSpy.sortFeaturesWithSections(features);
 
@@ -216,62 +215,5 @@ public class ConversionHelpersTest
         Assert.assertTrue(sorted.contains(featureThree));
         Assert.assertTrue(sorted.contains(featureFour));
         Assert.assertTrue(helpersSpy.getSectionFeatureTree().containsKey("id4"));
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void sortFeaturesWithSectionsNewPatientNotCalled() throws Exception
-    {
-        ConversionHelpers helpers = new ConversionHelpers();
-        ConversionHelpers helpersSpy = spy(helpers);
-        Feature featureOne = mock(Feature.class);
-        Feature featureTwo = mock(Feature.class);
-        Feature featureThree = mock(Feature.class);
-        VocabularyTerm termOne = mock(VocabularyTerm.class);
-        VocabularyTerm termTwo = mock(VocabularyTerm.class);
-        VocabularyTerm termThree = mock(VocabularyTerm.class);
-        Set<Feature> features = new HashSet<>();
-        List<String> mappingIdsOne = new LinkedList<>();
-        List<String> mappingIdsTwo = new LinkedList<>();
-        Map<String, List<String>> mapping = new HashMap<>();
-        features.add(featureOne);
-        features.add(featureTwo);
-        features.add(featureThree);
-        mappingIdsOne.add("id1");
-        mappingIdsOne.add("id3");
-        mappingIdsTwo.add("id2");
-        mapping.put("sectionOne", mappingIdsOne);
-        mapping.put("sectionTwo", mappingIdsTwo);
-
-        ComponentManager componentManager = mock(ComponentManager.class);
-        Vocabulary ontologyService = mock(Vocabulary.class);
-        List<Map<String, List<String>>> mappingObj = new LinkedList<>();
-        List<Map<String, List<String>>> mappingObjSpy = spy(mappingObj);
-        PhenotypeMappingService phenotypeMappingService = mock(PhenotypeMappingService.class);
-
-        doReturn(componentManager).when(helpersSpy).getComponentManager();
-        doReturn(ontologyService).when(componentManager).getInstance(eq(Vocabulary.class), eq("hpo"));
-        doReturn(phenotypeMappingService).when(componentManager)
-            .getInstance(eq(ScriptService.class), eq("phenotypeMapping"));
-        doReturn(mappingObjSpy).when(phenotypeMappingService).get(anyString());
-        doReturn(mapping).when(helpersSpy).getCategoryMapping();
-
-        doReturn(true).when(featureOne).isPresent();
-        doReturn(false).when(featureTwo).isPresent();
-        doReturn(false).when(featureThree).isPresent();
-        doReturn(termOne).when(ontologyService).getTerm("id1");
-        doReturn(termTwo).when(ontologyService).getTerm("id2");
-        doReturn(termThree).when(ontologyService).getTerm("id3");
-        doReturn(mappingIdsOne).when(termOne).get(anyString());
-        doReturn(mappingIdsOne).when(termThree).get(anyString());
-        doReturn(mappingIdsTwo).when(termTwo).get(anyString());
-        doReturn("id1").when(featureOne).getId();
-        doReturn("id2").when(featureTwo).getId();
-        doReturn("id3").when(featureThree).getId();
-
-        helpersSpy.featureSetUp(true);
-        List<Feature> sorted = helpersSpy.sortFeaturesWithSections(features);
-
-        Assert.assertFalse(sorted.contains(featureOne));
-        Assert.assertTrue(sorted.contains(featureTwo));
     }
 }
