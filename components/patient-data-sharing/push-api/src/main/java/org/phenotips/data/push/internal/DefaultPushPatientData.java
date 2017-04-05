@@ -76,6 +76,9 @@ public class DefaultPushPatientData implements PushPatientData
     /** Server configuration URL property name within the PushPatientServer class. */
     public static final String PUSH_SERVER_CONFIG_URL_PROPERTY_NAME = "url";
 
+    /** Server configuration registration URL property name within the PushPatientServer class. */
+    public static final String PUSH_SERVER_CONFIG_REGISTRATION_URL_PROPERTY_NAME = "registration_url";
+
     /** Server configuration Description property name within the PushPatientServer class. */
     public static final String PUSH_SERVER_CONFIG_DESC_PROPERTY_NAME = "description";
 

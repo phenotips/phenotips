@@ -164,9 +164,12 @@ public class DefaultPushPatientService implements PushPatientService
                 if (StringUtils.isBlank(name) || StringUtils.isBlank(url)) {
                     continue;
                 }
-                PushServerInfo info = new DefaultPushServerInfo(name, url,
-                    serverConfiguration.displayView(DefaultPushPatientData.PUSH_SERVER_CONFIG_DESC_PROPERTY_NAME,
-                        context));
+                PushServerInfo info =
+                    new DefaultPushServerInfo(name, url,
+                        serverConfiguration
+                            .getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_REGISTRATION_URL_PROPERTY_NAME),
+                        serverConfiguration.displayView(DefaultPushPatientData.PUSH_SERVER_CONFIG_DESC_PROPERTY_NAME,
+                            context));
                 response.add(info);
             }
             return response;

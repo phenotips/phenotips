@@ -75,6 +75,19 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </name>
+    <registration_url>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>registration_url</name>
+      <number>3</number>
+      <picker>0</picker>
+      <prettyName>Registration URL</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </registration_url>
     <url>
       <customDisplay/>
       <disabled>0</disabled>
