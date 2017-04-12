@@ -124,13 +124,10 @@ public class PropertyDisplayer
                     CollectionUtils.intersection(section.getCategories(), categories);
                 if (!categoriesInCommon.isEmpty()) {
                     for (String categoryId : categoriesInCommon) {
-                        VocabularyTerm categoryTerm = this.ontologyService.getTerm(categoryId);
-                        long distance;
-                        if (term != null) {
-                            distance = categoryTerm.getDistanceTo(term);
-                        } else {
-                            distance = 1000 - categoryTerm.getDistanceTo(root);
-                        }
+                        VocabularyTerm categoryTerm = getCategoryTerm(categoryId);
+                        long distance = (term != null)
+                            ? categoryTerm.getDistanceTo(term)
+                            : 1000 - categoryTerm.getDistanceTo(root);
                         if (distance >= 0 && distance < bestDistance) {
                             bestDistance = distance;
                             mostSpecificSection = section;
@@ -143,6 +140,20 @@ public class PropertyDisplayer
                     .addCustomElement(this.generateField(value, null, false, positive, !positive));
             }
         }
+    }
+
+    /**
+     * Gets the {@link VocabularyTerm} associated with the provided {@code categoryId}. If {@code categoryId} refers to
+     * a non-standard category, will set "phenotypic abnormality" ("HP:0000118") as the default.
+     *
+     * @param categoryId the ID of a category of interest
+     * @return a {@link VocabularyTerm} associated with the provided {@code categoryId} or {@link VocabularyTerm} for
+     *         "HP:0000118"
+     */
+    private VocabularyTerm getCategoryTerm(final String categoryId)
+    {
+        final VocabularyTerm categoryTerm = this.ontologyService.getTerm(categoryId);
+        return categoryTerm != null ? categoryTerm : this.ontologyService.getTerm("HP:0000118");
     }
 
     public String display()
