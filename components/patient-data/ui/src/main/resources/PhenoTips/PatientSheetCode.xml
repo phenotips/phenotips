@@ -2666,6 +2666,7 @@ document.observe('xwiki:dom:loaded', function()
       });
 
       document.observe('xwiki:dom:loaded', function() {
+        _this._builder.searchTermsInput.value = '';
         var phenotypesSummary = $('panels-phenotypes-summary') || $('phenotypes-summary')
         if (phenotypesSummary) {
           var phenotypes = JSON.parse(phenotypesSummary.value);
