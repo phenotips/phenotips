@@ -60,7 +60,7 @@ public class DefaultGenePanelsPatientResourceImpl extends XWikiResource implemen
     private PatientRepository repository;
 
     @Override
-    public Response getPatientGeneCounts(final String patientId)
+    public Response getPatientGeneCounts(final String patientId, final boolean excludeRejectedGenes)
     {
         // Check if patient ID is provided.
         if (StringUtils.isBlank(patientId)) {
@@ -77,7 +77,7 @@ public class DefaultGenePanelsPatientResourceImpl extends XWikiResource implemen
                 this.logger.error("Could not find patient with ID {}", patientId);
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-            final JSONObject genePanel = this.genePanelFactory.build(patient).toJSON();
+            final JSONObject genePanel = this.genePanelFactory.build(patient, excludeRejectedGenes).toJSON();
             return Response.ok(genePanel, MediaType.APPLICATION_JSON_TYPE).build();
         } catch (final SecurityException ex) {
             // The user has no access rights for the requested patient.

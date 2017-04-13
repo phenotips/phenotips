@@ -20,6 +20,7 @@ package org.phenotips.panels.rest.internal;
 import org.phenotips.panels.GenePanel;
 import org.phenotips.panels.rest.GenePanelsResource;
 
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.container.Container;
 import org.xwiki.container.Request;
@@ -29,6 +30,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -39,7 +41,6 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ import com.xpn.xwiki.XWikiContext;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -85,8 +86,8 @@ public class DefaultGenePanelsResourceImplTest
     public MockitoComponentMockingRule<GenePanelsResource> mocker =
         new MockitoComponentMockingRule<GenePanelsResource>(DefaultGenePanelsResourceImpl.class);
 
-    @Rule
-    public final ExpectedException exception = ExpectedException.none();
+    @Mock
+    private GenePanel genePanel;
 
     private Logger logger;
 
@@ -98,17 +99,17 @@ public class DefaultGenePanelsResourceImplTest
     private Request request;
 
     @Before
-    public void setUp() throws Exception
+    public void setUp() throws ComponentLookupException, ExecutionException
     {
         MockitoAnnotations.initMocks(this);
-        Execution execution = mock(Execution.class);
-        ExecutionContext executionContext = mock(ExecutionContext.class);
-        ComponentManager compManager = this.mocker.getInstance(ComponentManager.class, "context");
-        Provider<XWikiContext> provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
-        XWikiContext context = provider.get();
+        final Execution execution = mock(Execution.class);
+        final ExecutionContext executionContext = mock(ExecutionContext.class);
+        final ComponentManager compManager = this.mocker.getInstance(ComponentManager.class, "context");
+        final Provider<XWikiContext> provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
+        final XWikiContext context = provider.get();
         when(compManager.getInstance(Execution.class)).thenReturn(execution);
-        doReturn(executionContext).when(execution).getContext();
-        doReturn(context).when(executionContext).getProperty("xwikicontext");
+        when(execution.getContext()).thenReturn(executionContext);
+        when(executionContext.getProperty("xwikicontext")).thenReturn(context);
 
         this.component = this.mocker.getComponentUnderTest();
         this.genePanelLoader = this.mocker.getInstance(GenePanelLoader.class);
@@ -117,6 +118,7 @@ public class DefaultGenePanelsResourceImplTest
         Container container = this.mocker.getInstance(Container.class);
         when(container.getRequest()).thenReturn(this.request);
         // Some defaults, can be overridden later
+        when(this.genePanelLoader.get(any(PanelData.class))).thenReturn(this.genePanel);
         when(this.request.getProperty(START_PAGE_LABEL)).thenReturn("1");
         when(this.request.getProperty(RESULTS_LABEL)).thenReturn("20");
         when(this.request.getProperty(REQ_NO)).thenReturn("1");
@@ -139,38 +141,32 @@ public class DefaultGenePanelsResourceImplTest
         final List<Object> absentTerms = Collections.<Object>singletonList(TERM_1);
         when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(presentTerms);
         when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(absentTerms);
-        when(this.genePanelLoader.get(Collections.<String>emptyList()))
+        when(this.genePanelLoader.get(any(PanelData.class)))
             .thenThrow(new ExecutionException(new Throwable()));
         final Response response = this.component.getGeneCountsFromPhenotypes();
-        verify(this.logger).error("No content associated with [present-term: {}, absent-term: {}].", presentTerms,
-            absentTerms);
+        verify(this.logger).warn("No content associated with [present-term: {}, absent-term: {}, rejected-gene: {}].",
+            new HashSet<>(presentTerms), new HashSet<>(absentTerms), Collections.emptySet());
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
     @Test
-    public void getGeneCountsFromPhenotypesStartPageNegativeResultsInBadRequest() throws ExecutionException
+    public void getGeneCountsFromPhenotypesStartPageNegativeResultsInBadRequest()
     {
-        final GenePanel genePanel = mock(GenePanel.class);
-
         when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_2));
         when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_1));
         when(this.request.getProperty(START_PAGE_LABEL)).thenReturn("-20");
-        when(this.genePanelLoader.get(Collections.singletonList(TERM_2))).thenReturn(genePanel);
         final Response response = this.component.getGeneCountsFromPhenotypes();
         verify(this.logger).error("The requested [{}: {}] is out of bounds.", START_PAGE_LABEL, -20);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
     @Test
-    public void getGeneCountsFromPhenotypesStartPageOutOfBounds() throws ExecutionException
+    public void getGeneCountsFromPhenotypesStartPageOutOfBounds()
     {
-        final GenePanel genePanel = mock(GenePanel.class);
-        when(genePanel.size()).thenReturn(1);
-
+        when(this.genePanel.size()).thenReturn(1);
         when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_2));
         when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_1));
         when(this.request.getProperty(START_PAGE_LABEL)).thenReturn("2");
-        when(this.genePanelLoader.get(Collections.singletonList(TERM_2))).thenReturn(genePanel);
 
         final Response response = this.component.getGeneCountsFromPhenotypes();
         verify(this.logger).error("The requested [{}: {}] is out of bounds.", START_PAGE_LABEL, 2);
@@ -178,16 +174,14 @@ public class DefaultGenePanelsResourceImplTest
     }
 
     @Test
-    public void getGeneCountsFromPhenotypesReturnEverythingIfNumResultsIsNegative() throws ExecutionException
+    public void getGeneCountsFromPhenotypesReturnEverythingIfNumResultsIsNegative()
     {
-        final GenePanel genePanel = mock(GenePanel.class);
-        when(genePanel.size()).thenReturn(2);
-        when(genePanel.toJSON()).thenReturn(new JSONObject());
+        when(this.genePanel.size()).thenReturn(2);
+        when(this.genePanel.toJSON()).thenReturn(new JSONObject());
 
         when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Arrays.<Object>asList(TERM_1, TERM_2));
         when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_3));
         when(this.request.getProperty(RESULTS_LABEL)).thenReturn("-1");
-        when(this.genePanelLoader.get(Arrays.asList(TERM_1, TERM_2))).thenReturn(genePanel);
 
         final Response response = this.component.getGeneCountsFromPhenotypes();
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -195,16 +189,14 @@ public class DefaultGenePanelsResourceImplTest
     }
 
     @Test
-    public void getGeneCountsFromPhenotypesReturnActualNumberOfResultsIfNumResultsLarger() throws ExecutionException
+    public void getGeneCountsFromPhenotypesReturnActualNumberOfResultsIfNumResultsLarger()
     {
-        final GenePanel genePanel = mock(GenePanel.class);
-        when(genePanel.size()).thenReturn(1);
-        when(genePanel.toJSON()).thenReturn(new JSONObject());
+        when(this.genePanel.size()).thenReturn(1);
+        when(this.genePanel.toJSON()).thenReturn(new JSONObject());
 
         when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_1));
         when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_3));
         when(this.request.getProperty(RESULTS_LABEL)).thenReturn("2");
-        when(this.genePanelLoader.get(Collections.singletonList(TERM_1))).thenReturn(genePanel);
 
         final Response response = this.component.getGeneCountsFromPhenotypes();
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -213,16 +205,14 @@ public class DefaultGenePanelsResourceImplTest
     }
 
     @Test
-    public void getGeneCountsFromPhenotypesReturnRequestedNumResults() throws ExecutionException
+    public void getGeneCountsFromPhenotypesReturnRequestedNumResults()
     {
-        final GenePanel genePanel = mock(GenePanel.class);
-        when(genePanel.size()).thenReturn(2);
-        when(genePanel.toJSON(0, 1)).thenReturn(new JSONObject());
+        when(this.genePanel.size()).thenReturn(2);
+        when(this.genePanel.toJSON(0, 1)).thenReturn(new JSONObject());
 
         when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Arrays.<Object>asList(TERM_1, TERM_2));
         when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_3));
         when(this.request.getProperty(RESULTS_LABEL)).thenReturn("1");
-        when(this.genePanelLoader.get(Arrays.asList(TERM_1, TERM_2))).thenReturn(genePanel);
 
         final Response response = this.component.getGeneCountsFromPhenotypes();
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -231,16 +221,14 @@ public class DefaultGenePanelsResourceImplTest
     }
 
     @Test
-    public void getGeneCountsFromPhenotypesDefaultReqNo() throws ExecutionException
+    public void getGeneCountsFromPhenotypesDefaultReqNo()
     {
-        final GenePanel genePanel = mock(GenePanel.class);
-        when(genePanel.size()).thenReturn(1);
-        when(genePanel.toJSON()).thenReturn(new JSONObject());
+        when(this.genePanel.size()).thenReturn(1);
+        when(this.genePanel.toJSON()).thenReturn(new JSONObject());
 
         when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_1));
         when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_3));
         when(this.request.getProperty(REQ_NO)).thenReturn("0");
-        when(this.genePanelLoader.get(Collections.singletonList(TERM_1))).thenReturn(genePanel);
 
         final Response response = this.component.getGeneCountsFromPhenotypes();
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());

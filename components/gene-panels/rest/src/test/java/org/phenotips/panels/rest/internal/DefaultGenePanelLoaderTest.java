@@ -22,22 +22,24 @@ import org.phenotips.panels.GenePanelFactory;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.anyCollectionOf;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -48,126 +50,185 @@ import static org.mockito.Mockito.when;
  */
 public class DefaultGenePanelLoaderTest
 {
+    private static final String TERM_1 = "HP:001";
+
+    private static final String TERM_2 = "HP:002";
+
+    private static final String TERM_3 = "HP:003";
+
+    private static final String TERM_4 = "HP:004";
+
+    private static final String TERM_5 = "HP:005";
+
+    private static final String GENE_1 = "gene1";
+
+    private static final String GENE_2 = "gene2";
+
     @Rule
     public MockitoComponentMockingRule<GenePanelLoader> mocker =
         new MockitoComponentMockingRule<GenePanelLoader>(DefaultGenePanelLoader.class);
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
+    @Mock
+    private GenePanel genePanel1;
+
+    @Mock
+    private GenePanel genePanel2;
+
+    @Mock
+    private VocabularyTerm term1;
+
+    @Mock
+    private VocabularyTerm term2;
+
+    @Mock
+    private VocabularyTerm term3;
 
     private GenePanelLoader genePanelLoader;
 
     private GenePanelFactory genePanelFactory;
 
-    private VocabularyManager vocabularyManager;
+    private Set<String> presentSet1;
+
+    private Set<String> presentSet2;
+
+    private Set<String> presentSet3;
+
+    private Set<String> geneSet;
+
+    private Set<VocabularyTerm> presentTerms1;
+
+    private Set<VocabularyTerm> presentTerms2;
 
     @Before
-    public void setUp() throws Exception
+    public void setUp() throws ComponentLookupException
     {
         MockitoAnnotations.initMocks(this);
         this.genePanelLoader = this.mocker.getComponentUnderTest();
         this.genePanelFactory = this.mocker.getInstance(GenePanelFactory.class);
-        this.vocabularyManager = this.mocker.getInstance(VocabularyManager.class);
+
+        final VocabularyManager vocabularyManager = this.mocker.getInstance(VocabularyManager.class);
+
+        when(vocabularyManager.resolveTerm(TERM_1)).thenReturn(term1);
+        when(vocabularyManager.resolveTerm(TERM_2)).thenReturn(term2);
+        when(vocabularyManager.resolveTerm(TERM_3)).thenReturn(term3);
+
+        when(this.genePanelFactory.build(anyCollectionOf(VocabularyTerm.class), anyCollectionOf(VocabularyTerm.class),
+            anyCollectionOf(VocabularyTerm.class))).thenReturn(this.genePanel1);
+
+        this.presentSet1 = new HashSet<>();
+        this.presentSet1.add(TERM_1);
+
+        this.presentSet2 = new HashSet<>();
+        this.presentSet2.add(TERM_1);
+        this.presentSet2.add(TERM_2);
+        this.presentSet2.add(TERM_3);
+
+        this.presentSet3 = new HashSet<>();
+        this.presentSet3.add(TERM_1);
+        this.presentSet3.add(TERM_2);
+        this.presentSet3.add(TERM_3);
+        this.presentSet3.add(TERM_4);
+        this.presentSet3.add(TERM_5);
+
+        this.geneSet = new HashSet<>();
+        this.geneSet.add(GENE_1);
+        this.geneSet.add(GENE_2);
+
+        this.presentTerms1 = new HashSet<>();
+        this.presentTerms1.add(this.term1);
+
+        this.presentTerms2 = new HashSet<>();
+        this.presentTerms2.add(this.term1);
+        this.presentTerms2.add(this.term2);
+        this.presentTerms2.add(this.term3);
     }
 
-    @Test
+    @Test(expected = ExecutionException.class)
     public void testGetWhenPanelIsEmpty() throws ExecutionException
     {
-        final GenePanel genePanel = mock(GenePanel.class);
-        when(this.genePanelFactory.build(anyListOf(VocabularyTerm.class), anyListOf(VocabularyTerm.class)))
-            .thenReturn(genePanel);
-        this.expectedException.expect(ExecutionException.class);
-        this.genePanelLoader.get(Collections.singletonList("HP:001"));
+        final PanelData data = new PanelData(this.presentSet1, Collections.<String>emptySet(),
+            Collections.<String>emptySet());
+        this.genePanelLoader.get(data);
         assertEquals(0, this.genePanelLoader.size());
     }
 
     @Test
     public void testGetWorksWhenNewDataIsCreatedThenRetrieved() throws ExecutionException
     {
-        final GenePanel genePanel = mock(GenePanel.class);
-        when(genePanel.size()).thenReturn(5);
-        when(this.genePanelFactory.build(anyListOf(VocabularyTerm.class), anyListOf(VocabularyTerm.class)))
-            .thenReturn(genePanel);
-        final GenePanel firstPanel = this.genePanelLoader.get(
-            Arrays.asList("HP:001", "HP:002", "HP:003", "HP:004", "HP:005"));
+        when(this.genePanel1.size()).thenReturn(5);
+        final PanelData data1 = new PanelData(this.presentSet3, Collections.<String>emptySet(), this.geneSet);
+        final GenePanel firstPanel = this.genePanelLoader.get(data1);
         assertEquals(1, this.genePanelLoader.size());
-        assertEquals(genePanel, firstPanel);
+        assertEquals(genePanel1, firstPanel);
 
-        final GenePanel secondPanel = this.genePanelLoader.get(
-            Arrays.asList("HP:001", "HP:002", "HP:003", "HP:004", "HP:005"));
+        final PanelData data2 = new PanelData(this.presentSet3, Collections.<String>emptySet(), this.geneSet);
+        final GenePanel secondPanel = this.genePanelLoader.get(data2);
+        // The panel should only be built once. The second time it should be retrieved from cache.
+        verify(this.genePanelFactory, times(1)).build(anyCollectionOf(VocabularyTerm.class),
+            anyCollectionOf(VocabularyTerm.class), anyCollectionOf(VocabularyTerm.class));
         assertEquals(1, this.genePanelLoader.size());
-        assertEquals(genePanel, secondPanel);
+        assertEquals(genePanel1, secondPanel);
     }
 
     @Test
     public void testInvalidateWorks() throws ExecutionException
     {
-        final VocabularyTerm term1 = mock(VocabularyTerm.class);
-        final VocabularyTerm term2 = mock(VocabularyTerm.class);
-        final VocabularyTerm term3 = mock(VocabularyTerm.class);
-        final GenePanel genePanel1 = mock(GenePanel.class);
-        final GenePanel genePanel2 = mock(GenePanel.class);
+        when(this.genePanel1.size()).thenReturn(1);
+        when(this.genePanel2.size()).thenReturn(3);
 
-        when(genePanel1.size()).thenReturn(1);
-        when(genePanel2.size()).thenReturn(3);
-
-        when(this.genePanelFactory.build(Collections.singleton(term1), Collections.<VocabularyTerm>emptyList()))
-            .thenReturn(genePanel1);
-        when(this.genePanelFactory.build(new HashSet<>(Arrays.asList(term1, term2, term3)),
-            Collections.<VocabularyTerm>emptyList())).thenReturn(genePanel2);
-
-        when(this.vocabularyManager.resolveTerm("HP:001")).thenReturn(term1);
-        when(this.vocabularyManager.resolveTerm("HP:002")).thenReturn(term2);
-        when(this.vocabularyManager.resolveTerm("HP:003")).thenReturn(term3);
+        when(this.genePanelFactory.build(this.presentTerms1, Collections.<VocabularyTerm>emptySet(),
+            Collections.<VocabularyTerm>emptySet())).thenReturn(this.genePanel1);
+        when(this.genePanelFactory.build(this.presentTerms2, Collections.<VocabularyTerm>emptySet(),
+            Collections.<VocabularyTerm>emptySet())).thenReturn(this.genePanel2);
 
         // The first panel is generated and cached.
-        final GenePanel firstPanel = this.genePanelLoader.get(Collections.singletonList("HP:001"));
+        final PanelData data1 = new PanelData(this.presentSet1, Collections.<String>emptySet(),
+            Collections.<String>emptySet());
+        final GenePanel firstPanel = this.genePanelLoader.get(data1);
         assertEquals(1, this.genePanelLoader.size());
-        assertEquals(genePanel1, firstPanel);
+        assertEquals(this.genePanel1, firstPanel);
 
         // The second panel is generated and cached.
-        final GenePanel secondPanel = this.genePanelLoader.get(Arrays.asList("HP:001", "HP:002", "HP:003"));
+        final PanelData data2 = new PanelData(this.presentSet2, Collections.<String>emptySet(),
+            Collections.<String>emptySet());
+        final GenePanel secondPanel = this.genePanelLoader.get(data2);
         assertEquals(2, this.genePanelLoader.size());
-        assertEquals(genePanel2, secondPanel);
+        assertEquals(this.genePanel2, secondPanel);
 
         // The correct panel is removed from cache.
-        this.genePanelLoader.invalidate(Arrays.asList("HP:001", "HP:002", "HP:003"));
+        final PanelData data3 = new PanelData(this.presentSet2, Collections.<String>emptySet(),
+            Collections.<String>emptySet());
+        this.genePanelLoader.invalidate(data3);
         assertEquals(1, this.genePanelLoader.size());
-        final GenePanel thirdPanel = this.genePanelLoader.get(Collections.singletonList("HP:001"));
+        final GenePanel thirdPanel = this.genePanelLoader.get(data1);
         assertEquals(1, this.genePanelLoader.size());
-        assertEquals(genePanel1, thirdPanel);
+        assertEquals(this.genePanel1, thirdPanel);
     }
 
     @Test
     public void testInvalidateAllWorks() throws ExecutionException
     {
-        final VocabularyTerm term1 = mock(VocabularyTerm.class);
-        final VocabularyTerm term2 = mock(VocabularyTerm.class);
-        final VocabularyTerm term3 = mock(VocabularyTerm.class);
-        final GenePanel genePanel1 = mock(GenePanel.class);
-        final GenePanel genePanel2 = mock(GenePanel.class);
+        when(this.genePanel1.size()).thenReturn(1);
+        when(this.genePanel2.size()).thenReturn(3);
 
-        when(genePanel1.size()).thenReturn(1);
-        when(genePanel2.size()).thenReturn(3);
-
-        when(this.genePanelFactory.build(new HashSet<>(Collections.singletonList(term1)),
-            Collections.<VocabularyTerm>emptyList())).thenReturn(genePanel1);
-        when(this.genePanelFactory.build(new HashSet<>(Arrays.asList(term1, term2, term3)),
-            Collections.<VocabularyTerm>emptyList())).thenReturn(genePanel2);
-
-        when(this.vocabularyManager.resolveTerm("HP:001")).thenReturn(term1);
-        when(this.vocabularyManager.resolveTerm("HP:002")).thenReturn(term2);
-        when(this.vocabularyManager.resolveTerm("HP:003")).thenReturn(term3);
+        when(this.genePanelFactory.build(this.presentTerms1, Collections.<VocabularyTerm>emptySet(),
+            Collections.<VocabularyTerm>emptySet())).thenReturn(this.genePanel1);
+        when(this.genePanelFactory.build(this.presentTerms2, Collections.<VocabularyTerm>emptySet(),
+            Collections.<VocabularyTerm>emptySet())).thenReturn(this.genePanel2);
 
         // The first panel is generated and cached.
-        final GenePanel firstPanel = this.genePanelLoader.get(Collections.singletonList("HP:001"));
+        final PanelData data1 = new PanelData(this.presentSet1, Collections.<String>emptySet(),
+            Collections.<String>emptySet());
+        final GenePanel firstPanel = this.genePanelLoader.get(data1);
         assertEquals(1, this.genePanelLoader.size());
-        assertEquals(genePanel1, firstPanel);
+        assertEquals(this.genePanel1, firstPanel);
 
         // The second panel is generated and cached.
-        final GenePanel secondPanel = this.genePanelLoader.get(Arrays.asList("HP:001", "HP:002", "HP:003"));
+        final PanelData data2 = new PanelData(this.presentSet2, Collections.<String>emptySet(),
+            Collections.<String>emptySet());
+        final GenePanel secondPanel = this.genePanelLoader.get(data2);
         assertEquals(2, this.genePanelLoader.size());
-        assertEquals(genePanel2, secondPanel);
+        assertEquals(this.genePanel2, secondPanel);
 
         // Cache is emptied.
         this.genePanelLoader.invalidateAll();
@@ -179,8 +240,10 @@ public class DefaultGenePanelLoaderTest
     {
         assertEquals(0, this.genePanelLoader.size());
         this.genePanelLoader.invalidate(Collections.emptyList());
+        final PanelData data1 = new PanelData(this.presentSet1, Collections.<String>emptySet(),
+            Collections.<String>emptySet());
         assertEquals(0, this.genePanelLoader.size());
-        this.genePanelLoader.invalidate(Collections.singletonList("HP:001"));
+        this.genePanelLoader.invalidate(data1);
         assertEquals(0, this.genePanelLoader.size());
     }
 

@@ -50,6 +50,8 @@ public interface GenePanelsResource
      * <dd>a list of term IDs that are observed to be present (e.g. HP:0001154)</dd>
      * <dt>absentTerms</dt>
      * <dd>a list of term IDs that are observed to be absent</dd>
+     * <dt>rejectedGenes</dt>
+     * <dd>a list of gene IDs that were rejected and should be excluded from gene suggestion results</dd>
      * <dt>startPage</dt>
      * <dd>the start page from which to display the results, numbering starts from 1</dd>
      * <dt>numResults</dt>
@@ -59,6 +61,7 @@ public interface GenePanelsResource
      * </dl>
      *
      * @return associated genes and counts data if successful, an error code otherwise
+     * @since 1.4 (modified)
      */
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)

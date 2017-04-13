@@ -17,7 +17,6 @@
  */
 package org.phenotips.panels.internal;
 
-import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
 import org.phenotips.panels.GenePanel;
 import org.phenotips.panels.GenePanelFactory;
@@ -92,95 +91,14 @@ public class DefaultGenePanelFactoryImplTest
     @Mock
     private Vocabulary hgnc;
 
-    private VocabularyManager vocabularyManager;
-
     @Before
     public void setUp() throws ComponentLookupException
     {
         MockitoAnnotations.initMocks(this);
         this.genePanelFactory = this.mocker.getComponentUnderTest();
-        this.vocabularyManager = this.mocker.getInstance(VocabularyManager.class);
-        when(this.vocabularyManager.getVocabulary(HPO_LABEL)).thenReturn(this.hpo);
-        when(this.vocabularyManager.getVocabulary(HGNC_LABEL)).thenReturn(this.hgnc);
-    }
-
-    // ------------------------Test build(Collection<? extends Feature> features)-----------------------//
-
-    @Test
-    public void buildThrowsExceptionIfFeaturesIsNull() throws Exception
-    {
-        final Set<Feature> features = null;
-        this.expectedException.expect(Exception.class);
-        this.genePanelFactory.build(features);
-    }
-
-    @Test
-    public void buildWorksIfFeaturesEmpty()
-    {
-        final Set<Feature> features = Collections.emptySet();
-        final GenePanel genePanel = this.genePanelFactory.build(features);
-        Assert.assertEquals(0, genePanel.size());
-        Assert.assertTrue(genePanel.getPresentTerms().isEmpty());
-        Assert.assertTrue(genePanel.getAbsentTerms().isEmpty());
-        Assert.assertTrue(genePanel.getTermsForGeneList().isEmpty());
-
-        final JSONObject expectedJson = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
-            .put(GENES_LABEL, new JSONArray());
-        Assert.assertTrue(genePanel.toJSON().similar(expectedJson));
-    }
-
-    @Test
-    public void buildWorksIfFeaturesNotEmpty()
-    {
-        final Set<Feature> features = new HashSet<>();
-        final Feature presentFeature = mock(Feature.class);
-        final Feature absentFeature = mock(Feature.class);
-        final VocabularyTerm presentTerm = mock(VocabularyTerm.class);
-        final VocabularyTerm absentTerm = mock(VocabularyTerm.class);
-        final List<String> associatedGenes = new ArrayList<>();
-        associatedGenes.add(GENE1);
-        associatedGenes.add(GENE2);
-        features.add(presentFeature);
-        features.add(absentFeature);
-        when(presentFeature.isPresent()).thenReturn(Boolean.TRUE);
-        when(absentFeature.isPresent()).thenReturn(Boolean.FALSE);
-        when(presentFeature.getValue()).thenReturn(HPO_TERM1);
-        when(absentFeature.getValue()).thenReturn(HPO_TERM2);
-        when(this.vocabularyManager.resolveTerm(HPO_TERM1)).thenReturn(presentTerm);
-        when(this.vocabularyManager.resolveTerm(HPO_TERM2)).thenReturn(absentTerm);
-        when(presentTerm.get(ASSOCIATED_GENES)).thenReturn(associatedGenes);
-        when(presentTerm.getName()).thenReturn(HPO_TERM1);
-        when(absentTerm.getName()).thenReturn(HPO_TERM2);
-        when(this.hgnc.getTerm(anyString())).thenReturn(null);
-        final GenePanel genePanel = this.genePanelFactory.build(features);
-        // The gene panel should only represent two genes.
-        Assert.assertEquals(2, genePanel.size());
-
-        final Set<VocabularyTerm> presentTerms = new HashSet<>();
-        presentTerms.add(presentTerm);
-        final Set<VocabularyTerm> absentTerms = new HashSet<>();
-        absentTerms.add(absentTerm);
-        // There should only be one present term and one absent term.
-        Assert.assertEquals(presentTerms, genePanel.getPresentTerms());
-        Assert.assertEquals(absentTerms, genePanel.getAbsentTerms());
-
-        final List<TermsForGene> termsForGene = genePanel.getTermsForGeneList();
-        // There should only be two objects, one for each gene.
-        Assert.assertEquals(2, termsForGene.size());
-
-        Assert.assertEquals(GENE1, termsForGene.get(0).getGeneId());
-        Assert.assertEquals(GENE1, termsForGene.get(0).getGeneSymbol());
-        // The number of terms associated with "gene1" should be 1.
-        Assert.assertEquals(1, termsForGene.get(0).getCount());
-        // Check the term associated with "gene1" is the one that is expected.
-        Assert.assertEquals(presentTerms, termsForGene.get(0).getTerms());
-
-        Assert.assertEquals(GENE2, termsForGene.get(1).getGeneId());
-        Assert.assertEquals(GENE2, termsForGene.get(1).getGeneSymbol());
-        // The number of terms associated with "gene2" should be 1.
-        Assert.assertEquals(1, termsForGene.get(1).getCount());
-        // Check the term associated with "gene2" is the one that is expected.
-        Assert.assertEquals(presentTerms, termsForGene.get(1).getTerms());
+        final VocabularyManager vocabularyManager = this.mocker.getInstance(VocabularyManager.class);
+        when(vocabularyManager.getVocabulary(HPO_LABEL)).thenReturn(this.hpo);
+        when(vocabularyManager.getVocabulary(HGNC_LABEL)).thenReturn(this.hgnc);
     }
 
     // -----------------------------------Test build(Patient patient)-----------------------------------//

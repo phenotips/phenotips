@@ -29,7 +29,6 @@ import org.xwiki.component.phase.InitializationException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +39,7 @@ import javax.inject.Singleton;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -49,7 +49,7 @@ import com.google.common.cache.LoadingCache;
  * Default implementation of the {@link GenePanelLoader} component.
  *
  * @version $Id$
- * @since 1.3
+ * @since 1.3 (modified 1.4)
  */
 @Component
 @Singleton
@@ -61,8 +61,11 @@ public class DefaultGenePanelLoader implements GenePanelLoader, Initializable
     @Inject
     private VocabularyManager vocabularyManager;
 
+    @Inject
+    private Logger logger;
+
     /** The loading cache for gene panels. Absent term data is ignored. */
-    private LoadingCache<List<String>, GenePanel> loadingCache;
+    private LoadingCache<PanelData, GenePanel> loadingCache;
 
     @Override
     public void initialize() throws InitializationException
@@ -70,10 +73,10 @@ public class DefaultGenePanelLoader implements GenePanelLoader, Initializable
         this.loadingCache = CacheBuilder.newBuilder()
             .maximumSize(100)
             .expireAfterAccess(5, TimeUnit.MINUTES)
-            .build(new CacheLoader<List<String>, GenePanel>()
+            .build(new CacheLoader<PanelData, GenePanel>()
             {
                 @Override
-                public GenePanel load(@Nonnull final List<String> key) throws Exception
+                public GenePanel load(@Nonnull final PanelData key) throws Exception
                 {
                     // Make the computation.
                     return generatePanelsData(key);
@@ -82,21 +85,21 @@ public class DefaultGenePanelLoader implements GenePanelLoader, Initializable
     }
 
     /**
-     * Generates a new {@link GenePanel} object, given a {@code key} that is a list of HPO term IDs.
+     * Generates a new {@link GenePanel} object, given a {@code key} that is a {@link PanelData} object.
      *
-     * @param key an unmodifiable list of HPO term IDs as strings
+     * @param key a {@link PanelData} object containing present terms, absent terms, rejected gene terms data
      * @return a {@link GenePanel} object for the provided {@code key}
      * @throws Exception if {@code key} is empty or {@code null}, or if the generated {@link GenePanel} contains no data
      */
-    private GenePanel generatePanelsData(@Nonnull final List<String> key) throws Exception
+    private GenePanel generatePanelsData(@Nonnull final PanelData key) throws Exception
     {
         // No need to perform a lookup if the key is not valid.
-        if (CollectionUtils.isEmpty(key)) {
+        if (CollectionUtils.isEmpty(key.getPresentTerms()) && CollectionUtils.isEmpty(key.getAbsentTerms())) {
             throw new Exception();
         }
         // Generate the gene panel data.
-        final GenePanel panel = this.genePanelFactory.build(buildTermsFromIDs(key),
-            Collections.<VocabularyTerm>emptyList());
+        final GenePanel panel = this.genePanelFactory.build(buildTermsFromIDs(key.getPresentTerms()),
+            buildTermsFromIDs(key.getAbsentTerms()), buildTermsFromIDs(key.getRejectedGenes()));
         // Don't want to store any empty values in the loading cache.
         if (panel.size() == 0) {
             throw new Exception();
@@ -108,7 +111,7 @@ public class DefaultGenePanelLoader implements GenePanelLoader, Initializable
     /**
      * Builds a set of {@link VocabularyTerm} objects from a collection of term ID strings.
      *
-     * @param termIds a collection of term IDs as strings
+     * @param termIds a collection of term IDs as strings; all IDs must be prefixed with the vocabulary identifier
      * @return a set of {@link VocabularyTerm} objects corresponding with the provided term IDs
      */
     private Set<VocabularyTerm> buildTermsFromIDs(@Nonnull final Collection<String> termIds)
@@ -119,17 +122,20 @@ public class DefaultGenePanelLoader implements GenePanelLoader, Initializable
                 continue;
             }
             final VocabularyTerm term = this.vocabularyManager.resolveTerm(termId);
-            if (term != null) {
-                terms.add(term);
+            if (term == null) {
+                this.logger.warn("A term with id: {} could not be found in existing vocabularies, and will be ignored.",
+                    termId);
+                continue;
             }
+            terms.add(term);
         }
         return Collections.unmodifiableSet(terms);
     }
 
     @Override
-    public GenePanel get(@Nonnull final List<String> termList) throws ExecutionException
+    public GenePanel get(@Nonnull final PanelData panelData) throws ExecutionException
     {
-        return this.loadingCache.get(termList);
+        return this.loadingCache.get(panelData);
     }
 
     @Override
