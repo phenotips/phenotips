@@ -2455,18 +2455,16 @@ document.observe('xwiki:dom:loaded', function()
 
     requestCreated : function(service, request) {
       service.target.addClassName('loading');
-      service.target.select('li').each(function(element){element.update(' ')});
     },
 
     responseReceived : function(service, request) {
-      if (request &amp;&amp; request.getHeader('X-ReqNo') == service.expectedReqNo) {
-        service.target.removeClassName('loading');
-      } else {
+      if (!request || request.getHeader('X-ReqNo') != service.expectedReqNo) {
         request.request.container = {};
       }
     },
 
     updateDone : function(service) {
+      service.target.removeClassName('loading');
       var _this = this;
       if (service.suggestFor &amp;&amp; service.suggestFor._suggestPicker) {
         service.target.select('li').each(function (item) {
