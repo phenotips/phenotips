@@ -1579,6 +1579,8 @@ define([
                     //          {id: 'ENSG00000160688', gene: 'FLAD1', status: 'solved'},
                     //          {id: 'custom', 'gene': 'custom', status: 'candidate'} ]
                     this._setGenes(info.genes);
+                } else {
+                    this._setGenes([]);
                 }
 
                 if(info.hasOwnProperty("adoptedStatus")) {

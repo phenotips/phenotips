@@ -621,7 +621,8 @@ define([
             },
             'text' : function (data) {
                 var result = this._generateEmptyField(data);
-                var text = new Element('input', {type: 'text', name: data.name});
+                // disable enter for text fields to avoid submitting the form and closing the pedigree editor on enter
+                var text = new Element('input', {type: 'text', name: data.name, onkeypress:'return event.keyCode != 13;'});
                 if (data.tip) {
                     text.placeholder = data.tip;
                 }
