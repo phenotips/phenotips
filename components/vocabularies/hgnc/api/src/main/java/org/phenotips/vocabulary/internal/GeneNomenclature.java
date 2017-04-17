@@ -187,7 +187,8 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
             return null;
         }
 
-        String escapedSymbol = ClientUtils.escapeQueryChars(symbol);
+        String escapedSymbol = ClientUtils
+            .escapeQueryChars(StringUtils.contains(symbol, ":") ? StringUtils.substringAfter(symbol, ":") : symbol);
 
         VocabularyTerm result = getTermById(escapedSymbol);
         if (result != null) {
@@ -203,7 +204,7 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
 
     private VocabularyTerm getTermById(String id)
     {
-        return requestTerm(ID_FIELD_NAME + ':' + id, null);
+        return requestTerm(ID_FIELD_NAME + ":HGNC\\:" + id, null);
     }
 
     private VocabularyTerm getTermBySymbolOrAlias(String id)
