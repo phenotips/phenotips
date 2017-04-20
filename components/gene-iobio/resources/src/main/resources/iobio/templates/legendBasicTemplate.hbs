@@ -1,0 +1,61 @@
+<div id="legend" class="level-basic">
+  <div class="sidebar-label level-basic">Legend</div>
+
+
+  <div style="text-align:left;margin-top:5px">
+    <svg id="exon" class="exon-symbol legend-element" width="130" height="30">
+      <rect class="legend-symbol exon" rx="1" ry="1" x="25" width="9" y="4" height="24">
+      </rect>
+      <line x1="0" x2="60" y1="17" y2="17" style="stroke: #b0b0b0;stroke-width: 1.5px;"></line>  
+      <text  x="65" y="18" style="font-size:14px">Exon</text> 
+    </svg>        
+  </div>      
+
+  <div style="text-align:left;margin-top:10px">
+    <div class="legend-label">Impact of variant</div>
+    <svg id="HIGH" class="legend-element" width="80" height="24" transform="translate(0,0)">
+      <text class="name" x="18" y="14" style="fill-opacity: 1;font-size: 14px;">High</text>
+      <rect class="legend-symbol impact_HIGH" rx="1" ry="1" x="1" width="14" y="2" height="14" style="opacity: 1;"></rect>
+    </svg>
+    <svg id="MODERATE" class="legend-element" width="80" height="24" transform="translate(0,0)">
+      <text class="name" x=18 y="14" style="fill-opacity: 1;font-size: 14px;">Moderate</text>
+      <rect class="legend-symbol impact_MODERATE" rx="1" ry="1" x="1" width="14" y="2" height="14" style="opacity: 1;"></rect>
+    </svg>
+    <svg id="MODIFIER" class="legend-element" width="80" height="24" transform="translate(0,0)">
+      <text class="name" x=18 y="14" style="fill-opacity: 1;font-size: 14px;">Modifier</text>
+      <rect class="legend-symbol impact_MODIFIER" rx="1" ry="1" x="1" width="14" y="2" height="14" style="opacity: 1;"></rect>
+    </svg>
+    <svg id="LOW" class="  legend-element" width="80" height="24" transform="translate(0,0)">
+      <text class="name" x="18" y="14" style="fill-opacity: 1;font-size: 14px;">Low</text>
+      <rect class="legend-symbol  impact_LOW" rx="1" ry="1" x="1" width="14" y="2" height="14" style="opacity: 1;"></rect>
+    </svg>
+  </div>
+
+  <div style="text-align:left;display: block;margin-top: 10px;">
+    <div class="legend-label">Type of variant</div>
+      <svg id="snp" class="  legend-element" width="180" height="24" transform="translate(0,0)">
+        <text class="name" x="20" y="14" style="fill-opacity: 1;font-size: 14px;">Single nucleotide variant</text>
+        <rect class="legend-symbol snp" rx="2" ry="1" x="1" width="14" y="2" height="14" style="opacity: 1; fill: none; stroke: rgb(0, 0, 0); stroke-width: 1px;"></rect>
+      </svg>
+      <svg id="ins" class="  legend-element" width="180" height="24" transform="translate(0,0)">
+        <text class="name" x="20" y="14" style="fill-opacity: 1;font-size: 14px;"> Insertion</text>
+        <circle class="legend-symbol ins" cx="8" cy="8" r="8" style="fill: none; stroke: rgb(0, 0, 0); stroke-width: 1px; opacity: 1;"></circle>
+      </svg>
+
+      <svg id="del" class="  legend-element" width="180" height="24" transform="translate(0,0)">
+        <text class="name" x="18" y="14" style="fill-opacity: 1;font-size: 14px;">Deletion</text>       
+        
+        <polygon class="legend-symbol del  legend-element" points="0,14 7,0 14,14" rx="1" ry="1" x="1" y="2" style="fill: none; stroke: rgb(0, 0, 0); stroke-width: 1px; opacity: 1;">
+        </polygon>
+      </svg>
+
+      <svg id="complex" class="  legend-element" width="180" height="30" transform="translate(0,0)">
+        <text class="name" x="18" y="18" style="fill-opacity: 1;font-size: 14px;">Complex</text>
+        <g transform="translate(7,12)">                 
+          <path d="M0,-11.771323825530848L6.79617697938849,0 0,11.771323825530848 -6.79617697938849,0Z" class="legend-symbol complex" style="opacity: 1;fill: none;stroke-width: 1.5px !important;"></path>
+        </g>
+      </svg>
+    </div>
+
+
+</div>

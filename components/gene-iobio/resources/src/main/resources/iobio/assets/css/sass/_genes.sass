@@ -1,0 +1,401 @@
+#phenolyzer-results
+  rect
+    fill: rgb(204, 204, 204)
+    stroke: rgb(146, 150, 158)
+
+    &.selected
+      fill: rgb(137, 167, 191)
+      stroke: grey d
+
+  text
+    &.name
+      fill: $sidebar-text-color !important
+      font-size: 12px
+
+    &.score
+      fill: $sidebar-text-color !important
+      font-size: 12px
+
+#genes-panel
+  margin-bottom: 5px 
+  margin-top: 5px
+  margin-bottom: 0px
+
+  #analyze-all-progress, #filter-progress
+    position: relative
+    background-color: white
+    color: #717070
+    border: #878585
+    border-style: solid
+    border-width: thin
+    font-size: 12px
+    margin-left: 5px
+    padding: 0px 0px 0px 0px !important
+    display: inline-block
+    width: 130px
+    vertical-align: middle
+    height: 18px
+    margin-bottom: 2px
+
+    .bar
+      background-color: rgba(65, 176, 220, 0.45)
+      height: 17px
+      position: absolute
+      left: 0
+      top: 0%
+      width: 0%
+      text-align: center
+
+    .text
+      position: absolute
+      left: 0
+      top: 0%
+      width: 100%
+      text-align: center       
+
+    
+#genes-card
+  height: 100%
+
+  .phenolyzer-label
+    color: $sidebar-text-color !important
+    font-size: 13px
+    float: left
+
+  #phenolyzer-run-label
+    display: inline-block !important
+    vertical-align: top
+    margin-top: 4px  
+
+  #phenolyzer-heading
+    margin-top: 20px
+    
+    h5
+      display: inline-block
+      font-size: 13px
+
+  #phenolyzer-use
+    font-style: italic !important
+    color: text-color !important
+    font-size: 11px !important
+
+  #phenolyzer-disclaimer
+    color: $text-color !important
+    font-style: italic  !important
+
+
+#get-genes-copy-paste-button.btn.btn-raised, #phenolyzer-go-button.btn.btn-raised
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12), 0 1px 6px rgba(0, 0, 0, 0.12) !important
+  transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1)
+
+#copy-paste-li, #phenolyzer-search-box
+  color: $sidebar-text-color !important
+  font-size: 12px
+
+#edit-list-li
+  color: $text-color !important
+  font-size: 13px
+  margin-left: 20px
+  margin-right: 20px
+  margin-top: 5px
+
+  textarea
+    width: 250px
+    height: 180px
+
+  button
+    margin-left: 3px
+    padding-top: 0px
+    padding-bottom: 0px
+    margin-top: 0px
+    margin-bottom: 1px  
+
+
+#get-genes-copy-paste-button, #phenolyzer-go-button
+  font-size: 12px
+
+
+#gene-badge-button
+  font-size: 13px
+  padding: 5px 1px 1px 1px
+  margin: 0px
+  color: $text-color
+  line-height: 15px
+  border: thin solid #e8e6e6
+
+  &.user-visited
+    border: 2px solid #c5c4c4
+    padding: 4px 1px 0px 1px
+  
+  #gene-badge-symbols
+    height: 14px
+    padding-left: 3px
+    padding-top: 1px
+    float: right   
+
+  #gene-badge-phenotype-symbol
+    float: right
+    height: 14px
+    padding-top: 1px
+
+  #gene-badge-loader
+    width: 14px
+    height: 14px
+    float: left
+    padding-top: 1px  
+
+
+#gene-badge
+  margin-top: 0px
+  margin-bottom: 8px
+  margin-right: 10px
+  height: 21px
+
+#gene-badge.loading
+  border-left: #dad26c solid 12px
+  height: 22px
+
+
+#gene-badge.loading.selected
+  border-left: #dad26c solid 12px
+
+
+#gene-badge.selected
+  border-left: #7ea238 solid 12px
+  height: 22px
+  #gene-badge-button
+    //box-shadow: 0 6px 10px rgba(0, 0, 0, 0.23), 0 10px 10px rgba(0, 0, 0, 0.19)
+
+  #gene-badge-name, #gene-badge-danger-count, #gene-badge-remove i
+    font-weight: bold
+
+#gene-badge.phenolyzer
+  #gene-badge-button
+    border: solid 1px #9FC2D0
+    height: 21px
+
+    &.user-visited
+      border: solid 2px #9FC2D0
+
+
+#gene-badge-loaded
+  font-size: 14px
+  color: $heading-color
+  font-weight: bold
+  padding-right: 1px
+  float: left
+  display: none
+
+#gene-badge-warning
+  float: left
+  font-size: 12px
+  color: rgba(230, 126, 30, 0.84)
+  padding-top: 0px
+  padding-bottom: 1px
+  padding-right: 2px
+  display: none
+
+#gene-badge-error
+  float: left
+  font-size: 12px
+  color: rgba(204, 29, 7, 0.67)
+  padding-top: 0px
+  padding-right: 2px
+  padding-left: 1px
+  display: none
+
+#gene-badge
+  &.visited
+    #gene-badge-loaded
+      display: inline
+
+    #gene-badge-name
+      color: $sidebar-text-color !important
+
+  &:hover #gene-badge-remove
+    visibility: visible 
+
+#gene-badge
+  &.visited.error
+    #gene-badge-loaded
+      display: none
+    #gene-badge-error
+      display: inline
+
+#gene-badge
+  &.visited.warning
+    #gene-badge-loaded
+      display: none
+    #gene-badge-warning
+      display: inline
+
+
+#manage-genes
+  float: left
+
+  a
+    color:  $sidebar-text-color !important
+
+    &:hover
+      text-decoration: underline !important
+
+.manage-gene-links
+  font-size: 13px
+  color: $text-color !important
+  cursor: pointer
+
+
+
+#manage-gene-list
+  display: inline-block
+  padding-top: 0px
+  padding-bottom: 0px
+  padding-left: 8px
+  padding-right: 8px
+  font-size: 12px
+  margin-top: 7px
+
+#manage-genes-box
+  float: right
+  text-align: right
+  display: inline-block
+  margin-top: 5px
+
+  #manage-genes-dropdown
+    float: right
+    margin-top: -8px  
+
+
+#gene-badge-container
+  display: flex
+  display: -webkit-flex
+  flex-flow: row wrap
+  -webkit-flex-flow: row wrap
+  justify-content: center
+  -webkit-justify-content: center
+  max-height: 150px
+  overflow-y: auto
+  padding-bottom: 0px
+  padding-top: 0px
+  visibility: visible
+
+  &.hide
+    display: flex !important
+    visibility: hidden
+
+  a
+    color:  $sidebar-text-color !important
+
+    &:hover
+      text-decoration: underline !important
+
+
+  #gene-badge-remove
+    i
+      color: #E0292B !important
+      font-weight: bold
+      font-size: 13px
+
+    visibility: hidden
+
+  &.manage #gene-badge-remove
+    visibility: visible
+
+
+
+#gene-page-selection
+  display: inline-block
+  margin-bottom: 0px
+  padding-bottom: 4px
+  vertical-align: top
+  font-size: 0px
+  margin-top: 2px
+  margin-right: 10px
+
+#manage-cache-link
+  display: inline-block
+  padding-top: 2px
+
+#gene-page-control
+  margin-top: 0px
+  margin-bottom: 5px
+  text-align: center
+
+  #gene-paging-links
+    display: inline-block
+    width: 160px
+
+  a.gene-paging-link
+    color:  $sidebar-text-color !important
+    font-size:  12px
+    display: inline-block
+    vertical-align: top
+    margin-left: 0px   
+    padding-top: 4px 
+
+    &:hover
+      text-decoration: underline !important
+
+#clear-gene-list
+  margin-left: 0px
+  margin-right: 10px
+
+      
+#order-by-label
+  margin-left: 20px
+
+#select-gene-container
+  display: inline-block
+  width: 110px
+  vertical-align: middle
+  margin-top: 2px
+
+  .selectize-input
+    padding-bottom: 2px
+    padding-top: 2px
+    line-height: 17px
+
+#manage-cache-modal
+
+  .modal-dialog
+    width: 500px
+
+  .modal-body
+    margin-top: 30px
+    margin-bottom: 30px
+
+    button
+      width: 100px
+      padding-top: 2px
+      padding-bottom: 2px
+
+  .cache-label
+    width: 220px
+    display: inline-block
+    height: 30px
+    font-size: 14px
+
+
+  .cache-size
+    width: 60px
+    display: inline-block
+    font-size: 14px
+    margin-right: 50px
+    color: $app-color
+    text-align: right
+
+ 
+
+#refresh-badges-button
+  display: inline-block
+  margin-left: 20px
+  margin-bottom: 0px
+  margin-top: 0px
+  line-height: 12px
+
+#gene-badge-loading-display
+  font-size: 11px
+  text-align: center
+  color: $text-color
+  width: 160px
+  display: inline-block

@@ -1,0 +1,24 @@
+<div id="gene-badge"  >
+
+	<a id="gene-badge-button" style="display:inline-block" onclick="genesCard.selectGeneBadge(this)" 
+		rel="tooltip"   data-html="true" href="#"
+		data-placement="bottom">
+        <i id="gene-badge-loaded" class="material-icons glyph">done</i>
+        <i id="gene-badge-warning" class="material-icons glyph">warning</i>
+        <i id="gene-badge-error" class="material-icons glyph">error</i>
+        <span id="gene-badge-bookmark" class="glyph" style="float:left"></span>
+        <span id="gene-badge-name" style="float:left;margin-left:2px;margin-right:2px"></span>
+        <img class="gene-badge-loader hide glyph" style="width: 12px; height: 12px; float: left;" src="assets/images/wheel.gif">
+        <span id="gene-badge-phenotype-symbol" class="glyph" style="float:right;height:14px;"></span>
+  		<span id="gene-badge-symbols" class="glyph"></span>
+
+	</a>	
+
+	<div id="gene-badge-remove" href="javascript:void(0)" 
+		onclick="genesCard.removeGeneBadge(this)" 
+		style="display: inline-block;cursor: pointer;float:right">
+	  	<i style="vertical-align:middle" class="material-icons">close</i>
+
+	</div>
+	
+</div>

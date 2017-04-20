@@ -1,0 +1,507 @@
+.tooltip-title
+  font-size: 12px
+  word-break: break-word
+
+  &.danger
+    text-align: center
+    font-size: 12px
+    font-weight: bold
+    color: $danger-font-color
+
+.tooltip-header
+  overflow-wrap: break-all
+  text-align: right
+  width: 100px
+  float: left
+  color: $tooltip-text-color
+  vertical-align: top
+
+.tooltip-section-header
+  fill:  $tooltip-text-color !important
+  font-size: 12px !important
+
+.tooltip-label
+  color: $tooltip-label-color
+  fill:  $tooltip-label-color
+
+.tooltip-row
+  width: 330px
+  clear: both
+  line-height: 13px !important
+
+.tooltip-value
+  overflow-wrap: break-word
+  float: right
+  width: 220px
+  margin-right: 5px
+
+
+.tooltip-header
+  overflow-wrap: break-all
+  text-align: right
+  width: 100px
+  float: left
+  fill:  $tooltip-label-color
+  color: $tooltip-label-color
+
+.tooltip-header-small
+  overflow-wrap: break-word
+  text-align: left
+  width: 50px
+  float: left
+  color: $tooltip-label-color
+  fill:  $tooltip-label-color
+
+.tooltip-allele-count-bar
+  overflow-wrap: break-word
+  float: left
+  width: 180px
+  min-height: 25px
+  
+
+.tooltip-zygosity
+  float: left
+  font-size: 9px
+  font-weight: normal !important
+  padding-top: 1px !important
+  padding-bottom: 0px !important
+  padding-right: 0px !important
+  padding-left: 0px !important
+  background-color: #D3D5D8 !important
+  margin-right: 3px
+  margin-top: 0px !important
+  width: 33px !important
+  color: black
+  border: solid thin rgba(0, 0, 0, 0.22)
+
+.tooltip-zygosity
+  &.hom 
+    background-color: rgba(165, 48, 48, 0.76) !important
+    color: white
+
+
+  &.homref
+    background-color: #5D809D !important
+    color: rgba(255,255,255,1)
+
+.tooltip-subtitle
+  font-size: 12px
+  text-align: center
+  color: $text-color
+  padding-top: 4px
+  padding-bottom: 1px
+
+  &.selected
+    font-weight: bold
+    color: $current-color
+  
+
+.tooltip-footer
+  color: $link-color !important
+  margin-bottom: -2px
+  margin-top: 35px !important
+  font-size: 12px
+
+  .bookmark
+    text
+      font-size: 12px !important
+
+.tooltip a
+  color: $link-color !important
+  font-size: 12px !important
+
+  &:hover, &:focus
+    color: $link-color !important
+    font-size: 12px !important
+   
+
+.tooltip a
+  &:hover, &:focus
+    color: $link-color !important
+    font-size: 12px !important
+
+.tooltip .row
+  line-height: 12px !important
+
+
+.tooltip
+  position: absolute
+  z-index: 20
+  background-color: white
+  color: $tooltip-text-color
+  padding: 4px 6px 4px 6px
+  font-size: 12px
+  border-radius: 4px
+  pointer-events: none
+  text-align: left
+  top: 371px
+  pointer-events: all
+  border: 1px outset rgb(213, 213, 213)
+  opacity: 1
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.23), 0 3px 10px rgba(0, 0, 0, 0.16)
+
+.tooltip
+  font-family: $app-font, sans-serif !important
+  
+
+rect
+  &.alt-count
+    stroke: black !important
+
+  &.ref-count
+    stroke: black !important
+    fill: none !important
+
+  &.alt-count
+    fill: #6A9C2F !important
+
+  &.other-count
+    stroke: black !important
+    fill: rgb(132,132,132) !important 
+
+.tooltip-allele-count-bar
+  text
+    font-size: 11px !important
+    fill:  $text-color
+
+text
+  &.alt-count
+    fill: white !important
+
+  &.alt-count-under
+    fill: $text-color !important  
+
+  &.other-count
+    fill: white  !important    
+    font-style: italic !important
+  
+  &.other-count-under
+    fill: $text-color  !important 
+    font-style: italic !important  
+
+  &.ref-count
+    fill: $text-color  !important    
+ 
+#coverage-svg
+
+  .processing
+    margin-left: 40px
+    font-style: italic
+    font-weight: bold
+    font-size: 11px
+    color: $text-color
+
+.tooltip.left-arrow
+  &:before
+    position: absolute
+    display: inline-block
+    border-top: 12px solid transparent
+    border-right: 8px solid #8D8D8D
+    border-bottom: 12px solid transparent
+    left: -5px
+    bottom: -11px
+    -webkit-transform: rotate(202deg)
+    transform: rotate(202deg)
+    content: ""
+
+  &:after
+    position: absolute
+    display: inline-block
+    border-top: 12px solid transparent
+    border-right: 8px solid #FFFFFF
+    border-bottom: 12px solid transparent
+    left: -5px
+    bottom: -10px
+    -webkit-transform: rotate(202deg)
+    transform: rotate(202deg)
+    content: ""
+
+.tooltip.right-arrow
+  &:before 
+    position: absolute
+    display: inline-block
+    border-top: 12px solid transparent
+    border-left: 8px solid #8D8D8D
+    border-bottom: 12px solid transparent
+    right: -3px
+    bottom: -10px
+    -webkit-transform: rotate(160deg)
+    transform: rotate(160deg)
+    content: ""
+
+  &:after
+    position: absolute
+    display: inline-block
+    border-top: 12px solid transparent
+    border-left: 8px solid #FFFFFF
+    border-bottom: 12px solid transparent
+    right: -3px
+    bottom: -9px
+    -webkit-transform: rotate(160deg)
+    transform: rotate(160deg)
+    content: ""
+    
+.tooltip.arrow-down-left
+  &:before 
+    position: absolute
+    display: inline-block
+    border-top: 10px solid #A7A5A5
+    border-left: 10px solid transparent
+    border-right: 10px solid transparent
+    border-top-color: rgba(0, 0, 0, 0.2)
+    bottom: -10px
+    content: ""
+    left: 8px
+
+  &:after
+    position: absolute
+    display: inline-block
+    border-top: 9px solid #FFFFFF
+    border-left: 9px solid transparent
+    border-right: 9px solid transparent
+    bottom: -8px
+    content: ""
+    left: 10px
+    
+.tooltip.arrow-down-right
+  &:before 
+    position: absolute
+    display: inline-block
+    border-top: 10px solid #A7A5A5
+    border-left: 10px solid transparent
+    border-right: 10px solid transparent
+    border-top-color: rgba(0, 0, 0, 0.2)
+    bottom: -10px
+    content: ""
+    right: 8px
+
+  &:after
+    position: absolute
+    display: inline-block
+    border-top: 9px solid #FFFFFF
+    border-left: 9px solid transparent
+    border-right: 9px solid transparent
+    bottom: -8px
+    content: ""
+    right: 10px
+
+.tooltip-wide.arrow-down-center
+  &:before 
+    position: absolute
+    display: inline-block
+    border-top: 10px solid #A7A5A5
+    border-left: 10px solid transparent
+    border-right: 10px solid transparent
+    border-top-color: rgba(0, 0, 0, 0.2)
+    bottom: -10px
+    content: ""
+    right: 328px
+
+  &:after
+    position: absolute
+    display: inline-block
+    border-top: 9px solid #FFFFFF
+    border-left: 9px solid transparent
+    border-right: 9px solid transparent
+    bottom: -8px
+    content: ""
+    right: 330px
+ 
+.tooltip.black-arrow-left
+  &:after
+    position: absolute
+    display: inline-block
+    border-top: 8px solid transparent
+    border-right: 8px solid rgb(80,80,80)
+    border-bottom: 8px solid transparent
+    left: -3px
+    bottom: -5px
+    -webkit-transform: rotate(209deg)
+    transform: rotate(209deg)
+    content: ""
+
+.tooltip.black-arrow-right
+  &:after
+    position: absolute
+    display: inline-block
+    border-top: 8px solid transparent
+    border-left: 8px solid rgb(80,80,80)
+    border-bottom: 8px solid transparent
+    right: -3px
+    bottom: -5px
+    -webkit-transform: rotate(152deg)
+    transform: rotate(152deg)
+    content: ""
+
+.tooltip.tooltip-wide
+  width: 650px !important
+
+.tooltip-wide
+  font-size: 13px 
+
+  .tooltip-title
+    font-size: 14px
+
+  .tooltip-row
+    clear: both
+    padding-bottom: 6px
+
+  .tooltip-footer
+    margin-top: 0px !important
+    padding-top: 4px !important
+    padding-bottom: 2px
+
+    .bookmark-badge
+      height: 14px
+      width: 120px
+
+      text
+        font-size: 14px !important
+
+    #remove-bookmark-link
+      vertical-align: top
+      text-align: left
+      display: inline-block
+
+  .tooltip-left-column
+    float: left
+    padding-top: 10px
+    padding-bottom: 0px
+    .tooltip-row
+      width: 360px
+      overflow: auto
+      .tooltip-header
+        width: 110px
+      .tooltip-value
+        width: 240px
+
+    
+  .tooltip-right-column
+    float: right
+    padding-top: 10px
+    padding-bottom: 0px
+    .tooltip-row
+      width: 270px    
+      overflow: auto
+      .tooltip-header
+        width: 110px
+      .tooltip-value
+        width: 150px      
+
+  a
+    font-size: 13px !important
+
+    &:hover, &:focus
+      font-size: 13px !important
+     
+  a
+    &:hover, &:focus
+      font-size: 13px !important      
+
+  .tooltip-footer
+    clear: both
+
+    a
+      font-size: 14px !important
+
+      &:hover, &:focus
+        font-size: 14px !important
+       
+    a
+      &:hover, &:focus
+        font-size: 14px !important
+
+  .row
+    line-height: 14px !important
+
+
+    
+
+#examine-card .tooltip-allele-count-bar
+  font-family: $app-font, sans-serif !important
+  overflow-wrap: break-word
+  float: left
+  width: 105px
+   
+
+#examine-card
+  font-size: 12px
+  color: $sidebar-text-color
+
+ 
+
+  .tooltip-title
+    font-size: 12px
+   
+
+  .tooltip-header
+    overflow-wrap: break-word
+    text-align: right
+    width: 110px
+    display: inline-block !important
+    float: none
+    color: $sidebar-label-color
+
+  .tooltip-row
+    clear: both
+    margin-bottom: 8px
+
+  .tooltip-value
+    overflow-wrap: break-word
+    margin-left: 10px
+    width: 175px
+    margin-right: 5px
+    display: inline-block !important
+    float: none
+    color: $sidebar-text-color
+    vertical-align: bottom
+    
+   
+
+  .tooltip-footer
+    margin-top: 40px !important
+
+
+  .tooltip-footer #unpin
+    display: none !important
+
+  .tooltip-subtitle
+    color: $sidebar-text-color
+
+  .tooltip-header-small
+    color: $sidebar-text-color
+
+  .tooltip-section-header
+    fill: $sidebar-text-color !important
+
+
+  .tooltip-allele-count-bar
+    text
+      fill:  $sidebar-text-color
+
+  text   
+    &.alt-count-under
+      fill: $sidebar-text-color !important  
+
+    &.other-count-under
+      fill: $sidebar-text-color !important 
+      font-style: italic !important  
+
+    &.ref-count
+      fill: $sidebar-text-color  !important     
+
+#examine-card a
+  color: $sidebar-link-color !important
+  font-size: 12px !important
+
+
+  &:hover, &:focus
+    color: $sidebar-link-color !important
+    font-size: 12px !important
+    
+
+  color: $sidebar-link-color !important
+  font-size: 12px !important
+
+   
+

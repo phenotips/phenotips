@@ -1,0 +1,698 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>GeneIobioEditorGenerator</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822196000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1440795631000</date>
+  <contentUpdateDate>1440795601000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Gene.iobio view generator</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity}}
+{{html clean="false"}}
+#if ($xcontext.action != 'get')
+  $response.sendRedirect($doc.getURL('get', "$!request.queryString"))
+#end
+$response.setContentType('text/html')
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"/&gt;
+  &lt;meta http-equiv="X-UA-Compatible" content="IE=Edge"/&gt;
+    &lt;title&gt;gene.iobio&lt;/title&gt;
+
+
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/jquery.1.11.1.min.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/typeahead.bundle.min.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/card/bookmarkCard.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/card/dataCard.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/card/matrixCard.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/card/filterCard.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/card/genesCard.js' defer='defer'&gt;&lt;/script&gt;
+
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/globalsDeployment.js' defer='defer'&gt;&lt;/script&gt;
+
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/globals.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/jdataview.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/jparser.js' defer='defer'&gt;&lt;/script&gt;
+
+
+
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/bootstrap.min.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/d3.min.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/colorbrewer.v1.min.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/jquery.bootpag.min.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/edge.6.0.0.min.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/es6-promise.min.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/material.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/ripples.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/alertify.min.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/selectize.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/lz-string.min.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/class.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/bam.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/bin.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/inflate.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/binary.js' defer='defer'&gt;&lt;/script&gt;
+
+
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/pako_deflate.min.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/jsbgzf.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/js-bv-sampling.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/js-local-vcf.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/js-bv-common.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/js-local-bam.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/iobio.min.js' defer='defer'&gt;&lt;/script&gt;
+
+
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/d3/geneList.d3.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/d3/histogram.d3.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/d3/line.d3.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/d3/gene.d3.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/d3/variant.d3.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/d3/featureMatrix.d3.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/bam.iobio.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/vcf.iobio.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/model/geneBadgeLoaderDisplay.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/model/cacheHelper.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/model/stringCompress.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/model/variantModel.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/model/variantTrioModel.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/model/genomeBuildHelper.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/legend.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/variantTooltip.js' defer='defer'&gt;&lt;/script&gt;
+
+
+
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/card/variantCard.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/timeout.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/eduTour.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/pageguide.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/app/app.js' defer='defer'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='/resources/uicomponents/iobio/assets/js/handlebars-v4.0.5.js' defer='defer'&gt;&lt;/script&gt;
+
+&lt;link rel="stylesheet" href="/resources/uicomponents/iobio/assets/css/bootstrap.css" /&gt;
+&lt;link rel="stylesheet" href="/resources/uicomponents/iobio/assets/css/google-fonts.css" /&gt;
+&lt;link rel="stylesheet" href="/resources/uicomponents/iobio/assets/css/material-icons.css" /&gt;
+&lt;link rel="stylesheet" href="/resources/uicomponents/iobio/assets/css/animate.css" /&gt;
+&lt;link rel="stylesheet" href="/resources/uicomponents/iobio/assets/css/bootstrap-material-design.css" /&gt;
+&lt;link rel="stylesheet" href="/resources/uicomponents/iobio/assets/css/ripples.min.css" /&gt;
+&lt;link rel="stylesheet" href="/resources/uicomponents/iobio/assets/css/selectize.css" /&gt;
+&lt;link rel="stylesheet" href="/resources/uicomponents/iobio/assets/css/alertify.min.css" /&gt;
+&lt;link rel="stylesheet" href="/resources/uicomponents/iobio/assets/css/alertify.default.min.css" /&gt;
+&lt;link rel="stylesheet" href="/resources/uicomponents/iobio/assets/css/pageguide.css" /&gt;
+&lt;link rel="stylesheet" href="/resources/uicomponents/iobio/assets/css/customcheckbox.css" /&gt;
+&lt;link rel="stylesheet" href="/resources/uicomponents/iobio/assets/css/gene.d3.css" /&gt;
+&lt;link rel="stylesheet" id="site-stylesheet" href="/resources/uicomponents/iobio/assets/css/site.css" /&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="legend-tooltip" class="tooltip" style="opacity:0"&gt;&lt;/div&gt;
+
+  &lt;div id="bookmark-gene-tooltip" class="tooltip" style="opacity:0"&gt;&lt;/div&gt;
+
+  &lt;div id="gene-badge-tooltip" class="tooltip" style="font-size:12px;opacity:0;overflow-y:hidden;overflow-x:hidden"&gt;&lt;/div&gt;
+
+  &lt;div id="nav-edu-tour" class="shadow-z-2 hide" &gt;
+  &lt;/div&gt;
+
+  &lt;div id="slide-buttons"  class="level-edu level-basic"&gt;
+    &lt;div id="close-slide-left" class="close-button fade-in hide"&gt;
+        &lt;i class="material-icons" id="close-slide-left-glyph" &gt;keyboard_arrow_left&lt;/i&gt;
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+  &lt;div id="slider-left" class="hide fade-in shadow-z-2"&gt;
+     
+
+    &lt;div class="navbar navbar-default level-basic level-edu"&gt;
+      &lt;div class="container-fluid"&gt;
+        &lt;div class="navbar-header"&gt;
+          &lt;button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse"&gt;
+            &lt;span class="icon-bar"&gt;&lt;/span&gt;
+            &lt;span class="icon-bar"&gt;&lt;/span&gt;
+            &lt;span class="icon-bar"&gt;&lt;/span&gt;
+          &lt;/button&gt;     
+        &lt;/div&gt;
+        &lt;div class="navbar-collapse collapse navbar-responsive-collapse" &gt;
+          &lt;ul class="nav "&gt;
+
+            &lt;li id="filter-tab" class="hide"&gt;
+             &lt;a href="javascript:void(0)" id="clear-filters-link" 
+               onclick="filterCard.clearFilters();filterVariants()"&gt;
+                  Clear all
+              &lt;/a&gt;              
+              &lt;a href="javascript:void(0)" onclick="$('.navbar li.active').removeClass('active');$(this).parent().addClass('active');showSidebar('Filter')" style="pointer-events:none;margin-left:40px"&gt;
+                &lt;span class="material-icons"&gt;tune&lt;/span&gt; 
+                Filter Variants
+              &lt;/a&gt;
+            &lt;/li&gt;
+            &lt;li id="examine-tab" class="hide"&gt;
+              &lt;a href="javascript:void(0)" onclick="$('.navbar li.active').removeClass('active');$(this).parent().addClass('active');showSidebar('Examine')"&gt;
+                &lt;span class="material-icons"&gt;remove_red_eye&lt;/span&gt; 
+                Inspect
+              &lt;/a&gt;
+            &lt;/li&gt;
+            &lt;li id="phenolyzer-tab" class="hide"&gt;
+              &lt;a href="javascript:void(0)" onclick="$('.navbar li.active').removeClass('active');$(this).parent().addClass('active');showSidebar('Phenolyzer')"&gt;
+                &lt;svg height="22" width="22"&gt;
+                  &lt;g transform="translate(0,0)"&gt;
+                    &lt;use id="search-dna-glyph" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#search-dna-symbol" width="22" height="22" fill="white"&gt;&lt;/use&gt;
+                  &lt;/g&gt;
+                &lt;/svg&gt;   
+                &lt;span style="overflow:auto;display:inline-block"&gt;Select Genes&lt;/span&gt;
+              &lt;/a&gt;
+            &lt;/li&gt; 
+            &lt;li id="bookmarks-tab" class="hide"&gt;
+              &lt;a href="javascript:void(0)" onclick="$('.navbar li.active').removeClass('active');$(this).parent().addClass('active');showSidebar('Bookmarks')"&gt;
+                &lt;span class="material-icons"&gt;bookmark&lt;/span&gt; 
+                Bookmark Variants
+              &lt;/a&gt;
+            &lt;/li&gt; 
+            &lt;li id="recall-tab" class="hide"&gt;
+              &lt;a href="javascript:void(0)" onclick="$('.navbar li.active').removeClass('active');$(this).parent().addClass('active');showSidebar('Recall')"&gt;
+                &lt;span class="material-icons"&gt;dialpad&lt;/span&gt; 
+                Call Variants
+              &lt;/a&gt;
+            &lt;/li&gt;        
+          &lt;/ul&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;    
+
+    &lt;div id="slider-left-content" class="shadow-z-2"&gt;
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+
+  &lt;div id="modals-placeholder"&gt;&lt;/div&gt;
+
+  &lt;div id="container" class="push"&gt;
+
+    &lt;div id="intro" class="hide level-basic shadow-z-2"&gt;
+    &lt;/div&gt;
+
+    &lt;div id="filter-summary-track" class="hide shadow-z-2 track"&gt;
+      &lt;span class="card-label" style="margin-right:20px;margin-bottom:4px"&gt;Filters&lt;/span&gt;
+    &lt;/div&gt;
+
+
+    &lt;div id="genes-control-track" class="hide level-basic shadow-z-2"&gt;
+      
+      &lt;button id="refresh-badges-button" class="hide btn btn-default icon-button-sm btn-raised" onclick="cacheHelper.refreshGeneBadges()"&gt;
+        Refresh all
+      &lt;/button&gt;
+
+
+      &lt;div  class="nav-stretch level-basic" style="margin-top:-13px;"&gt;
+          &lt;div class="card-label" style="float:left;padding-top:7px;margin-right:20px;"&gt;Selected Genes&lt;/div&gt;
+          &lt;!-- gene badges for navigation --&gt;
+          &lt;div id="genes-panel" class="hide nav-center"&gt;
+            &lt;div class="level-edu" style="text-align:center"&gt;
+              &lt;!-- Buttons for editting gene list, done editting gene list --&gt;
+              &lt;div id="manage-genes" class="manage-gene-links level-edu level-basic"&gt;
+                &lt;a  id="manage-gene-list" class="hide btn btn-default icon-button-sm btn-raised" href="javascript:void(0)" onclick="cacheHelper.analyzeAll()"&gt;
+                   &lt;i class="material-icons" style="font-size:21px"&gt;playlist_play&lt;/i&gt;
+                    Analyze all genes
+                &lt;/a&gt;
+
+                &lt;div id="analyze-all-progress" class="hide"&gt;
+                  &lt;div class="bar"&gt;&lt;/div&gt;
+                  &lt;div class="text"&gt;&lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;div id="filter-progress" class="hide"&gt;
+                  &lt;div class="bar"&gt;&lt;/div&gt;
+                  &lt;div class="text"&gt;&lt;/div&gt;
+                &lt;/div&gt;
+
+                
+                &lt;span id="order-by-label" class="manage-gene-links"&gt;Order by&lt;/span&gt;
+                &lt;div id="select-gene-container"&gt;
+                    &lt;select id="select-gene-sort"&gt;
+                    &lt;/select&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+
+              &lt;div style="display:inline-block"&gt;
+
+
+              &lt;/div&gt;
+
+
+             
+              &lt;div id="manage-genes-box"&gt;               
+                &lt;div id="manage-genes-dropdown" class="level-edu level-basic" &gt;
+                  &lt;div class="btn-toolbar"&gt;
+                    &lt;div class="btn-group" style="display:inline;"&gt;
+
+                      &lt;button type="button" style="padding-top: 1px;padding-bottom: 0px;" class=" icon-button-sm btn btn-default btn-raised dropdown-toggle" data-toggle="dropdown" aria-expanded="false"&gt;
+                          Manage genes
+                          &lt;span style="margin-left:6px" class="caret"&gt;&lt;/span&gt;
+                      &lt;/button&gt;
+                       
+                      &lt;ul class="dropdown-menu " role="menu" style="right: 0;left: initial;"&gt;
+                        &lt;li style="margin-bottom: 10px"&gt;
+                            &lt;a href="javascript:void(0)" id="manage-cache-link" class="hide manage-gene-links" onclick="cacheHelper.openDialog()" &gt;
+                              Manage cache of analyzed genes...
+                          &lt;/a&gt;
+                        &lt;/li&gt;
+
+                         &lt;li  style="margin-bottom: 10px"&gt;
+                            &lt;a class="hide manage-gene-links" id="clear-gene-list"  style="cursor:pointer;"
+                              href="javascript:void(0)" onclick="genesCard.clearGenes()"&gt;
+                                Remove all genes
+                           &lt;/a&gt;
+                        &lt;/li&gt;
+                       
+                        &lt;li id="edit-list-li"&gt;
+                           &lt;div &gt;Edit gene list&lt;/div&gt;
+                           &lt;div style="padding-left: 5px;padding-right: 5px;padding-top:3px;padding-bottom:3px;"&gt;
+                              &lt;textarea  id="genes-to-edit"&gt;&lt;/textarea&gt;
+                              &lt;div style="text-align:right"&gt;
+                                &lt;button id="edit-genes-button" type="submit" onclick="genesCard.editGenes()" class="icon-button-sm btn btn-default btn-raised"&gt;
+                                  Done
+                                &lt;/button&gt;
+                              &lt;/div&gt;
+                          &lt;/div&gt;
+                        &lt;/li&gt;
+                        
+                      &lt;/ul&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+               
+
+              
+            &lt;/div&gt;
+            &lt;div id="gene-badge-container" class="level-basic" style="clear:both;"&gt;
+              &lt;div id="after-genes" style="display:inline-block;margin-top:5px;"&gt;&lt;/div&gt;
+                
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div id="gene-page-control" class="hide level-edu level-basic"&gt;
+            &lt;div id="gene-badge-loading-display" class="level-edu level-basic"&gt;&lt;/div&gt;
+            
+            &lt;div id="gene-page-selection" class="level-basic"&gt;&lt;/div&gt;
+
+            &lt;div id="gene-paging-links" class="hide"&gt;
+              &lt;a href="javascript:void(0)" id="view-50-genes" 
+                 class="gene-paging-link" onclick="genesCard.viewDefaultsGenesPerPage()" &gt;
+                    View 40
+              &lt;/a&gt;
+              &lt;a href="javascript:void(0)" id="view-all-genes" 
+                 class="gene-paging-link" onclick="genesCard.viewAllGenes()" &gt;
+                | all
+              &lt;/a&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+      &lt;/div&gt;          
+    &lt;/div&gt;
+    
+    &lt;div id="nav-section" class="fixed level-edu hide"&gt;
+
+
+      &lt;div id="nav-card" class="shadow-z-2"&gt;
+
+
+
+
+
+
+      &lt;div id="transcript-card" class="hide" &gt;
+
+                
+
+
+
+          &lt;div id="region-track" class="level-edu level-basic" style="clear:both;"&gt;
+              &lt;div class="card-label" style="float:left;"&gt;Selected Gene&lt;/div&gt;
+
+
+              &lt;div id="select-gene-box"  class="level-basic hide"&gt;
+                &lt;select id="select-gene" class=""  data-placeholder="Choose a gene..."&gt;                  
+                &lt;/select&gt;
+              &lt;/div&gt;     
+              &lt;div id="gene-summary" class="level-basic hide"&gt;              
+              &lt;/div&gt;
+
+              &lt;div style="text-align:center;display:inline-block"&gt;
+                &lt;div style="vertical-align:top;display:inline-block"&gt;
+                  &lt;a id="gene-name" target="_genecards" class="level-basic gene-card-label heading " data-toggle="tooltip" data-placement="right" &gt;&lt;/a&gt;
+                  &lt;span id="gene-chr" class="level-basic gene-card-label keep-case" &gt;&lt;/span&gt;
+                  &lt;span id="gene-region" class="level-edu level-basic gene-card-label keep-case"&gt;&lt;/span&gt;
+                  &lt;span id="minus_strand" class="level-edu level-basic" style="font-size:12px;padding-left: 5px;font-style: italic;"&gt;reverse strand&lt;/span&gt;
+                  &lt;span  id="gene-plus-minus-label" class="level-edu level-basic fullview hide " style="padding-left: 15px"&gt;+  -&lt;/span&gt;
+                  &lt;input id="gene-region-buffer-input" class="level-edu level-basic hide fullview" onchange="adjustGeneRegionBuffer()" type="text" value="1000" maxlength="5" style="width: 50px;font-size: 13px;margin-bottom:2px"&gt;
+                &lt;/div&gt;
+
+                &lt;div id="gene-source-box" class="level-edu level-basic" style="width:130px;display:inline-block;margin-left: 20px;vertical-align:top"&gt;
+                  &lt;select id="select-gene-source" class="fullview" data-placeholder=""&gt;
+                        &lt;option value="Gencode Transcript"&gt;Gencode Transcript&lt;/option&gt;
+                        &lt;option value="RefSeq Transcript"&gt;RefSeq Transcript&lt;/option&gt;                   
+                   &lt;/select&gt;        
+                &lt;/div&gt;
+                
+                &lt;div class="level-edu level-basic fullview" style="margin-top:-10px;display:inline-block"&gt; 
+                  &lt;div class="btn-toolbar fullview" 
+                     style="display: inline-block;margin-left: 5px;padding-top: 0px; "&gt;
+                      &lt;div id="transcript-btn-group" class="btn-group hide" style="display:  inline;"&gt;
+                          &lt;button id="transcript-dropdown-button" type="button"  
+                          style="width:150px;padding-top:2px;padding-bottom:1px"
+                          class="btn btn-raised btn-default dropdown-toggle icon-button-sm" 
+                          data-toggle="dropdown" aria-expanded="false" &gt;
+                            Choose Transcript 
+                            &lt;span class="caret" style="margin-left:4px;"&gt;&lt;/span&gt;
+                          &lt;/button&gt;
+                          &lt;ul id="transcript-menu" class="dropdown-menu" role="menu" style="right: 0;left: initial;min-width: 610px"&gt;
+                            &lt;li id="transcript-menu-item"&gt;
+                            &lt;/li&gt;
+                          &lt;/ul&gt;
+                      &lt;/div&gt;
+                  &lt;/div&gt; 
+                &lt;/div&gt;
+
+              &lt;/div&gt;
+
+              &lt;span class="level-edu level-basic" style="float:right;margin-right:14px"&gt;
+                  &lt;a href="javascript:void(0)" id="minimize-button" style="float:right;margin-top:-2px;text-decoration:none;"&gt;
+                    &lt;i class="material-icons"&gt;remove&lt;/i&gt;
+                  &lt;/a&gt;
+                  &lt;a href="javascript:void(0)" id="expand-button" class="disabled" style="float:right;margin-top:-2px;text-decoration:none;"&gt;
+                    &lt;i class="material-icons"&gt;crop_3_2&lt;/i&gt;
+                  &lt;/a&gt;
+              &lt;/span&gt;
+
+          &lt;/div&gt;
+
+
+
+          &lt;!-- Non protein-coding gene badges --&gt;
+          &lt;div id="non-protein-coding" class="level-edu level-basic"  style="clear: both;padding-bottom: 0px;display: block;"&gt;
+              &lt;div id="no-gene-selected-badge" class="hide label label-warning" style="display:block;margin-bottom:2px;"&gt;
+                Enter a gene name
+              &lt;/div&gt;   
+              &lt;div id="gene-type-badge" class="hide label label-warning" style="display:block;margin-bottom:2px;"&gt;
+                Pseudogene
+              &lt;/div&gt;   
+              &lt;div id="transcript-type-badge" class="hide label label-warning" style="display:block;"&gt;   
+              &lt;/div&gt;                  
+              &lt;div id="no-transcripts-badge" class="hide label label-warning" style="display:block;"&gt;   
+              &lt;/div&gt;                  
+          &lt;/div&gt;  
+
+
+
+          &lt;div id="transcript-panel" class="level-edu fullview" &gt;
+            &lt;div id="gene-track" class="track hide"&gt;  
+                &lt;div id="top-coordinate-frame" class="hide"&gt;
+                  &lt;svg height="22" width="28"&gt;
+                      &lt;g transform="translate(24,19),rotate(180)"&gt;
+                        &lt;polygon class="coordinate-arrow" points="0,14 10,0 20,14" x="0" y="0"&gt;
+                        &lt;/polygon&gt;
+                      &lt;/g&gt;
+                  &lt;/svg&gt;        
+                &lt;/div&gt;         
+                &lt;div id="gene-viz" class="track-chart"&gt;
+                &lt;/div&gt;               
+            &lt;/div&gt;
+            &lt;span id="zoom-hint" class="level-edu hint todo" style="margin-top: -15px;display: block;text-align: center;"&gt;
+                To zoom into region, drag over gene model.
+            &lt;/span&gt;
+          &lt;/div&gt;
+
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+    &lt;/div&gt;  
+
+   
+
+    &lt;div id="screencast-panel" class="hide" style="text-align:center;margin-top:50px;overflow: visible;"&gt;
+      &lt;div style="height: 550px;width: 680px;background-color: white;margin-left: auto;margin-right: auto;"&gt;
+          &lt;button style="float:left;margin-left:10px;padding-left: 0;margin-top: 5px;margin-bottom: 0px;" class="btn  btn-default" onclick="$('#welcome-panel').removeClass('hide');$('#welcome-screencast-panel').removeClass('hide');$('#screencast-panel').addClass('hide');$('#screencast-video')[0].stopVideo()"&gt;
+            &lt;i class="material-icons" style="text-align: left;"&gt;arrow_back&lt;/i&gt;
+          &lt;/button&gt;
+          &lt;h4 style="font-size: 21px;padding-top: 10px;margin-right:50px"&gt;Multi-gene analysis&lt;/h4&gt;
+          &lt;iframe id="screencast-video" src="https://www.youtube.com/embed/QiJ7wuN8LYQ?ecver=2&amp;rel=0&amp;vq=hd1080&amp;autoplay=1&amp;loop=1" width="620" height="465" frameborder="0" style="width: 620px;height: 465px;clear: both;" allowfullscreen=""&gt;
+          &lt;/iframe&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;    
+
+
+    &lt;div id="welcome-area" class="hide"&gt;
+      &lt;div id="welcome-panel" &gt;
+        &lt;div id="welcome-label"&gt;
+          A web tool for disease-causing variant interrogation 
+        &lt;/div&gt;  
+        &lt;div id="welcome-panel-content" style="display:flex;justify-content:space-around"&gt;
+          &lt;div class="description-paragraph"&gt;
+            &lt;ul&gt;
+
+              &lt;li&gt;Real-time analysis
+              &lt;/li&gt;
+
+              &lt;li&gt;On-the-fly annotation&lt;/li&gt;
+              &lt;li&gt;Integrated genomic visualizations&lt;/li&gt;
+              &lt;li&gt;On-demand variant calling
+              &lt;/li&gt;
+            &lt;/ui&gt;
+
+          &lt;/div&gt;
+
+          &lt;div id="welcome-screencast-panel" &gt;
+            &lt;i class="material-icons" id="play-button" onclick="$('#welcome-panel').addClass('hide');$('#welcome-screencast-panel').addClass('hide');$('#screencast-panel').removeClass('hide')"&gt;play_arrow&lt;/i&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;    
+        &lt;div&gt;  
+          &lt;button id="load-demo-data" class="btn btn-raised btn-default" onclick="$('#welcome-panel').addClass('hide');dataCard.loadDemoData()"&gt;
+            &lt;span style=""&gt;Try it with demo data&lt;/span&gt;
+          &lt;/button&gt;
+          &lt;button   class="btn btn-raised btn-default" onclick="$('#welcome-panel').addClass('hide');pageGuide.open()"&gt;
+            &lt;span style=""&gt;Take an app tour&lt;/span&gt;
+          &lt;/button&gt;
+          &lt;button   class="btn btn-raised btn-default" onclick="$('#welcome-panel').addClass('hide');showDataDialog()"&gt;
+            &lt;span style=""&gt;Start your analysis&lt;/span&gt;
+          &lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div&gt;  
+          &lt;button id="show-screencast" class="hide btn btn-raised btn-default" onclick="$('#welcome-panel').addClass('hide');$('#screencast-panel').removeClass('hide')"&gt;
+            &lt;span style=""&gt;What's in this release?&lt;/span&gt;
+          &lt;/button&gt;
+        &lt;/div&gt;
+
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+     
+
+    &lt;div id="track-section" class="push" style="display:flex;margin-top:5px;"&gt;
+
+        &lt;div id="matrix-track" style="width:100%;overflow-x:scroll" class="track shadow-z-2 hide"&gt;
+
+            
+            &lt;div style="overflow:auto;text-align:left;margin-bottom: 5px;"&gt;
+              &lt;div class="card-label level-edu level-basic" style="float:left"&gt;Ranked Variants&lt;/div&gt;
+              &lt;a id="show-legend" class="level-edu level-basic"  onclick="showLegend()" href="javascript:void(0)"&gt;
+                &lt;i style="font-size:18px" class="material-icons"&gt;map&lt;/i&gt;
+                Show legend
+              &lt;/a&gt;
+            &lt;/div&gt;
+
+
+            &lt;div id="rank-variants-title" class="hide card-label" style=""&gt;Evaluate Variants&lt;/div&gt;
+
+            &lt;div id="no-variants" class="level-basic hide"&gt;
+              No clinvar variants under 1% population frequency found
+            &lt;/div&gt;
+    
+            &lt;div id="matrix-panel"  style="clear:both;min-height:30px"
+              class="fullview" aria-expanded="true"&gt;
+                &lt;div class="loader hide"  style="margin-top:0px;margin-bottom:10px;"&gt;
+                    &lt;span class="loader-label"&gt;Ranking variants&lt;/span&gt;
+                    &lt;img src="assets/images/wheel.gif"/&gt;
+                &lt;/div&gt;
+
+
+              &lt;div id="feature-matrix" style="overflow-x: scroll;"&gt;
+              &lt;/div&gt;
+
+              &lt;a id="move-rows" class="level-edu level-basic hide" href="javascript:void(0)" onclick="matrixCard.toogleMoveRows()"&gt;
+                 &lt;i class="material-icons"&gt;swap_vert&lt;/i&gt;
+                Reorder
+              &lt;/a&gt;
+
+              &lt;div id="feature-matrix-note" class="hide" &gt;
+                
+                &lt;div style="display:inline-block"&gt;
+                  &lt;svg style="height: 10px;width:108px"&gt;
+                    &lt;g transform="translate(8,6)"&gt;
+                      &lt;line x1="0" y1="0" x2="100" y2="0" style="stroke: lightgrey;stroke-width: 4;"&gt;&lt;/line&gt;
+                    &lt;/g&gt;
+                    &lt;g transform="translate(-10,0),rotate(-90,10,0)"&gt;
+                      &lt;polygon points="0,8 4,2 8,8" style="fill: lightgrey; stroke: lightgrey; stroke-width: 1px; opacity: 1;"&gt;&lt;/polygon&gt;
+                    &lt;/g&gt;
+                  &lt;/svg&gt;
+
+                  &lt;div class="matrix-note-text level-edu level-basic"&gt;
+                    More likely causative
+                  &lt;/div&gt;
+                  &lt;div id="matrix-harmful-note" class="matrix-note-text hide level-basic level-edu"&gt;
+                    Most harmful
+                  &lt;/div&gt;
+
+                &lt;/div&gt;
+                &lt;div class="level-edu level-basic" style="display: inline-block;vertical-align: top;"&gt;
+                  &lt;span id="low-quality-legend" &gt;
+                      &lt;div id="low-quality-legend-box"&gt;&lt;/div&gt;
+                      &lt;p id="low-quality-legend-text"&gt;
+                          shaded columns: flagged for not meeting filtering criteria
+                      &lt;/p&gt;
+                  &lt;/span&gt;
+                           
+                &lt;/div&gt;
+
+              &lt;/div&gt; 
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div id="legend-track" style="width:50%;margin-left:5px" class="hide track shadow-z-2 level-basic level-edu"&gt;
+          &lt;div style="overflow:auto"&gt;
+            &lt;div class="card-label" style="float:left"&gt;Legend&lt;/div&gt;
+            &lt;a id="close-legend"  onclick="hideLegend()" href="javascript:void(0)"&gt;X&lt;/a&gt;
+          &lt;/div&gt;
+
+          &lt;div id="legend-placeholder"&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div id="coordinate-frame" class=""&gt;
+    &lt;/div&gt;
+
+    &lt;div id="proband-variant-card"  &gt;
+    &lt;/div&gt;
+
+
+    &lt;div id="other-variant-cards"&gt;
+    &lt;/div&gt;
+
+
+    &lt;div id="splash" class="hide horizontal-center push" style="padding-top:70px;height: calc(100vh - 70px);"&gt;
+      &lt;div class="vertical-center"&gt;
+        &lt;img id="splash-image" height="400px" class="hide" src="assets/images/gene.iobio.v2.png"   &gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+
+  &lt;div id="animation-container-1" class="tour-animation-container hide " 
+      style="z-index:9999;position: absolute;bottom:0px;margin-bottom:110px;vertical-align:middle;width:100%"&gt;
+        &lt;div id="Stage"  class="EDGE-462912531 tour-animation"&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div id="animation-container-2" class="tour-animation-container hide " 
+      style="z-index:9999;position: absolute;bottom:0px;margin-bottom:110px;vertical-align:middle;width:100%"&gt;
+        &lt;div id="Stage" class="EDGE-30904779 tour-animation"&gt;&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div id="tourWelcome" class="customPageGuideWelcome hide" style="text-align:center;height:170px;"&gt;
+    &lt;button onclick="$('#tourWelcome').removeClass('open');" class="tlypageguide_ignore" style="
+          float: right;
+          background-color: transparent !important;
+          font-size: 17px;
+          margin-top: -10px;
+      "&gt;X&lt;/button&gt;
+
+    &lt;h3&gt;Welcome to gene.iobio&lt;/h3&gt;
+    &lt;p&gt;An app for interrogating disease-causing variants&lt;/p&gt;
+    &lt;div class="modal-button-container" style="text-align: center;margin-top: 20px;"&gt;
+      &lt;button class="screencasts" style="margin-left:5px;" onclick="$('#tourWelcome').removeClass('open');showSidebar('Help');" class="tlypageguide_ignore"&gt;Learn more&lt;/button&gt;
+      &lt;button  style="margin-left:10px" onclick="$('#tourWelcome').removeClass('open');showDataDialog()" class="tlypageguide_ignore"&gt;Add your data&lt;/button&gt;
+            
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+   
+  &lt;div id="tour-placeholder" class="hide"&gt;
+  &lt;div&gt;
+
+
+ 
+
+  &lt;div id="footer" class="footer text-center" &gt;
+    &lt;div class="poweredbyheader"&gt;gene.iobio is powered by&lt;/div&gt;
+    &lt;div&gt;
+        &lt;a class="poweredby" href="http://phenolyzer.usc.edu/" target="_poweredby"&gt;Phenolyzer&lt;/a&gt;
+        &lt;a class="poweredby" href="http://human-phenotype-ontology.github.io/about.html" target="_poweredby"&gt;Human Phenotype Ontology&lt;/a&gt;
+        &lt;a class="poweredby" href="http://snpeff.sourceforge.net/" target="_poweredby"&gt;SnpEff&lt;/a&gt;
+        &lt;a class="poweredby"  href="http://uswest.ensembl.org/info/docs/tools/vep/index.html?redirect=nop" target="_poweredby"&gt;Variant Effect Predictor&lt;/a&gt;
+        &lt;a class="poweredby" href="http://genetics.bwh.harvard.edu/pph/index.html" target="_poweredby"&gt;PolyPhen&lt;/a&gt;
+        &lt;a class="poweredby" href="http://sift.jcvi.org/" target="_poweredby"&gt;SIFT&lt;/a&gt;
+
+        &lt;a class="poweredby" href="https://github.com/ekg/freebayes" target="_poweredby"&gt;FreeBayes&lt;/a&gt;
+        &lt;a class="poweredby" href="http://www.ncbi.nlm.nih.gov/clinvar/" target="_poweredby"&gt;ClinVar&lt;/a&gt;
+        &lt;a class="poweredby" href="http://samtools.sourceforge.net/" target="_poweredby"&gt;samtools&lt;/a&gt;
+        &lt;a class="poweredby" href="https://github.com/pezmaster31/bamtools" target="_poweredby"&gt;bamtools&lt;/a&gt;
+        &lt;a class="poweredby" href="http://genome.sph.umich.edu/wiki/Vt" target="_poweredby"&gt;VT&lt;/a&gt;
+        &lt;a class="poweredby" href="http://exac.broadinstitute.org/" target="_poweredby"&gt;ExAC&lt;/a&gt;
+        &lt;a class="poweredby" href="http://www.1000genomes.org/home" target="_poweredby"&gt;1000G&lt;/a&gt;
+        &lt;span class="icon-credit" &gt;
+            &lt;a  id="icon-credit" href="javascript:void(0)" onclick="$('#freepik-info').toggleClass('hide')"&gt;Freepik icons...&lt;/a&gt; 
+            &lt;span id="freepik-info" class="hide" &gt;
+              &lt;a  href="http://www.freepik.com" title="Freepik"  &gt;Freepik icons&lt;/a&gt; 
+              from &lt;a   href="http://www.flaticon.com" title="Flaticon"&gt;www.flaticon.com&lt;/a&gt; licensed by &lt;a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"&gt;CC BY 3.0&lt;/a&gt;
+            &lt;/span&gt;
+        &lt;/span&gt;
+
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/body&gt;
+
+&lt;div id="svg-glyphs-placeholder"&gt;
+&lt;/div&gt;
+ 
+ &lt;/div&gt;
+
+&lt;/body&gt;
+
+&lt;/html&gt;
+{{/html}}
+{{/velocity}}</content>
+</xwikidoc>

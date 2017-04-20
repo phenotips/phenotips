@@ -1,0 +1,126 @@
+#bookmark-card
+  a
+    margin-right: 5px
+    word-break: break-all
+
+    &.current
+      font-weight: bold     
+      line-height: 12px
+      padding-bottom: 2px
+      padding-top: 2px !important
+      margin-top: 1px
+      margin-bottom: 1px
+      margin-right: 5px
+      border: none !important
+
+    #import-help-icon
+      color: $sidebar-link-color !important
+      margin-left: 2px
+
+  .bookmark
+    font-size: 12px
+    cursor: pointer
+    display: inline-block
+    float: left
+    width: 100%
+    text-align: left
+    padding-top: 4px
+    margin-left: 0px
+
+  div
+    &.bookmark-box
+      clear: both
+
+    &.bookmark-gene
+      clear: both
+      padding-top: 10px
+
+  a.bookmark-gene
+    font-size: 13px
+    cursor: pointer
+    display: inline-block
+    text-align: left
+    padding-top: 4px
+    margin-bottom: -5px
+    color: $text-color !important
+
+  .phenotype-symbol
+    stroke: $sidebar-text-color
+
+  #favorite-badge
+    stroke: $sidebar-text-color
+
+  .favorite-indicator
+    cursor: pointer
+
+  .phenotypes-container
+    overflow-x: hidden
+
+  .phenotypes
+    font-size: 10px
+    color: rgb(158, 158, 158)
+    margin-left: 5px
+    margin-top: 5px
+    overflow-x: hidden
+    max-height: 80px
+
+  .phenotypes-container
+    &.expand .phenotypes
+      max-height: none
+
+    .expander
+      margin-left: 5px
+      font-size: 11px
+      display: none
+
+    &.large .expander
+      display: block
+
+    .expander a
+      &#more
+        display: inline
+        cursor: pointer
+
+      &#less
+        display: none
+        cursor: pointer
+
+    &.expand .expander a
+      &#more
+        display: none
+
+      &#less
+        display: inline
+
+  li
+    color: $text-color !important
+    font-size: 12px
+
+#bookmark-panel
+  i#remove-bookmark
+    color: #E0292B !important
+    font-weight: bold
+    font-size: 13px
+    display: none
+    float: right
+    padding-top: 3px
+
+  &.editmode i#remove-bookmark
+    display: inline
+
+
+#vcf-track .bookmark
+  rect
+    fill: none
+    stroke: #1574C7
+    stroke-width: 5
+    opacity: .8
+
+  line
+    stroke: #1574C7
+    stroke-width: 5
+    opacity: .8
+
+  g
+    fill: #1574C7
+    opacity: .8    

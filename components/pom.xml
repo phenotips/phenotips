@@ -64,5 +64,6 @@
     <module>pedigree</module>
     <module>record-locking</module>
     <module>xwiki-locks</module>
+	<module>gene-iobio</module>
   </modules>
 </project>

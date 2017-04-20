@@ -1,0 +1,569 @@
+<div id="filter-track">
+ 
+  <div class="card-label">Filter Variants</div>
+
+  
+
+  <div id="standard-filter-panel">
+     <div>
+       <button class="standard-filter-btn btn btn-default btn-raised" 
+        onclick="filterCard.applyStandardFilter(this, 'known_causative')">
+        <i class="done material-icons glyph">done</i>
+        <span>Known Causative</span>
+       </button>
+       <span id="known_causative_count" class="standard-filter-count"></span>
+     </div>
+     <div>
+       <button class="standard-filter-btn btn btn-default btn-raised" 
+        onclick="filterCard.applyStandardFilter(this, 'denovo')">
+        <i class="done material-icons glyph">done</i>
+        <span>De novo VUS</span>
+       </button>
+       <span id="denovo_count" class="standard-filter-count"></span>
+     </div>
+     <div>
+       <button class="standard-filter-btn btn btn-default btn-raised" 
+        onclick="filterCard.applyStandardFilter(this, 'recessive')">
+        <i class="done material-icons glyph">done</i>
+        <span>Recessive VUS</span>
+       </button>
+       <span id="recessive_count" class="standard-filter-count"></span>
+     </div>
+     <div>
+       <button class="standard-filter-btn btn btn-default btn-raised" 
+        onclick="filterCard.applyStandardFilter(this, 'functional_impact')">
+        <i class="done material-icons glyph">done</i>
+        <span>High or moderate impact</span>
+       </button>
+       <span id="functional_impact_count" class="standard-filter-count"></span>
+     </div>
+  </div>
+
+
+
+
+  <div style="display:flex;flex-direction:row;width:335px;justify-content:space-between">
+   <!-- Inheritance -->
+    <div >
+     
+      <h4 >
+          Inheritance mode        
+      </h4>
+     
+      <div style="display:flex;flex-direction:column">
+
+
+               <svg id="denovo" class="inheritance" width="90" height="18" transform="translate(0,0)">
+                <g class="denovo" transform="translate(0,-2)" style="opacity: 1;">
+                  <use xmlns:xlink="http://www.w4.org/1999/xlink" xlink:href="#denovo-symbol" width="20" height="20"></use>
+                </g>
+                <text class="name" style="fill-opacity: 1;" x="20" y="11">Denovo</text></svg>
+              </svg>
+              <svg id="recessive" class="inheritance" width="90" height="18" transform="translate(0,0)">
+                <g class=" recessive" style="opacity: 1;" transform="translate(0,-2)">
+                  <use xmlns:xlink="http://www.w4.org/1999/xlink" xlink:href="#recessive-symbol" width="20" height="20"></use>
+                </g>
+                <text class="name" style="fill-opacity: 1;" x="20" y="11">Recessive</text></svg>
+              </svg>
+      </div>
+      
+    </div>
+
+
+
+
+   <!-- Coverage -->
+    <div >
+      
+      <h4 >
+        Coverage (minimum)
+      </h4>
+
+      <!-- coverage -->  
+      <div id="coverage-filter" style="text-align:left;width:150px;" >
+        
+        <input type="number" id="coverage-min" value="" style="width:40px;font-size: 9px;margin-bottom:1px">
+        X
+        <a id="coverage-go-button" href="javascript:void(0)" class="icon-button-sm btn btn-default btn-raised" style="margin-left:4px;padding-top:0px;padding-bottom:0px;margin-top:0px;margin-bottom: 1px;line-height: 19px;">           
+        Go
+        </a>
+      </div>
+
+
+    </div>
+
+  </div>
+<!-- ClinVar -->
+  <div >
+    
+    <h4  >
+      ClinVar
+    </h4>
+    <div style="display:table;text-align:left;">
+
+      <div style="display:table-cell;width:110px;">
+      <!-- ClinVar -->
+        <div style="display:flex;flex-direction:column;">
+        
+          <svg id="clinvar_path" class="clinvar" width="110" height="17" transform="translate(0,0)">
+          <g class="clinvar_path" transform="translate(1,0)" style="opacity: 1;">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#clinvar-symbol" width="11" height="11" style="fill: #ad494A;"></use>
+          </g>
+          <text class="name" style="fill-opacity: 1;font-size: 9px;" x="15" y="10">Pathogenic</text>
+
+          </svg>
+
+          <svg id="clinvar_lpath" class="clinvar" width="110" height="17" transform="translate(0,0)">
+          <g class="clinvar_lpath" transform="translate(1,0)" style="opacity: 1;">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#clinvar-symbol" width="11" height="11" style="fill: #FB7737;"></use>
+          </g>
+          <text class="name" style="fill-opacity: 1;font-size: 9px;" x="15" y="10">Likely Pathogenic</text>
+          </svg>
+
+          <svg id="clinvar_uc" class="clinvar" width="140" height="17" transform="translate(0,0)">
+            <g class="clinvar_uc" transform="translate(1,0)" style="opacity: 1;">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#clinvar-symbol" width="11" height="11" style="fill:rgba(231, 186, 82, 1);"></use>
+            </g>
+            <text class="name" style="fill-opacity: 1;font-size: 9px;" x="15" y="10">Unknown significance </text>
+          </svg>
+
+          <svg id="clinvar_cd" class="clinvar" width="110" height="17" transform="translate(0,0)">
+            <g class="clinvar_cd" transform="translate(1,0)" style="opacity: 1;">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#clinvar-symbol" width="11" height="11" style="fill: rgb(111, 182, 180);"></use>
+            </g>
+            <text class="name" style="fill-opacity: 1;font-size: 9px;" x="15" y="10">Conflicting data</text>
+          </svg>
+        </div>
+      </div>
+
+      <div style="display:table-cell;width:73px;">
+        <div style="display:flex;flex-direction:column;">
+
+          <svg id="clinvar_other" class="clinvar" width="73" height="17" transform="translate(0,0)">
+            <g class="clinvar_other" transform="translate(1,0)" style="opacity: 1;">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#clinvar-symbol" width="11" height="11" style="fill: rgb(189, 189, 189);"></use>
+            </g>
+            <text class="name" style="fill-opacity: 1;font-size: 9px;" x="15" y="10">Other </text>
+          </svg>
+
+          <svg id="clinvar_benign" class="clinvar" width="73" height="17" transform="translate(0,0)">
+            <g class="clinvar_benign" transform="translate(1,0)" style="opacity: 1;">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#clinvar-symbol" width="11" height="11" style="fill: rgba(156, 194, 49, 1);"></use>
+            </g>
+            <text class="name" style="fill-opacity: 1;font-size: 9px;" x="15" y="10">Benign</text>
+          </svg>
+
+          <svg id="clinvar_lbenign" class="clinvar" width="93" height="17" transform="translate(0,0)">
+            <g class="clinvar_lbenign" transform="translate(1,0)" style="opacity: 1;">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#clinvar-symbol" width="11" height="11" style="fill: rgba(181, 207, 107, 1);"></use>
+            </g>
+            <text class="name" style="fill-opacity: 1;font-size: 9px;" x="15" y="10">Likely Benign</text>
+          </svg>
+   
+        </div>
+      </div>
+      
+    </div>
+
+  </div>
+
+  <!-- SnpEff/VEP Impact and Effect -->
+  <div >
+
+
+
+
+    <div class="hide" style="width:100px;margin-right:10px;margin-bottom:4px;">
+      <select id="select-annotation-scheme" style="font-size:10px;">
+              <option value="VEP" selected>VEP</option>                   
+              <option value="SnpEff">SnpEff</option> 
+      </select>
+    </div>
+
+
+
+    <div style="display:table;margin-top:-3px">
+      <div style="width:135px;display:table-cell;">
+
+          <h4 style="width:135px;">
+            VEP<br>Most severe impact
+            <a id="impact-scheme" href="javascript:(0)" class="current">
+              <i class="material-icons" style="color:rgb(113, 113, 113);font-size:14px">color_lens</i>            
+            </a>
+          </h4>
+
+          <div style="text-align:left;display:flex;flex-direction:column">
+            <svg id="HIGH" class="highestImpactVep" width="80" height="15" transform="translate(0,0)">
+              <text class="name" x="9" y="9" style="fill-opacity: 1;font-size: 9px;">High</text>
+              <rect class="filter-symbol  impact_HIGH" rx="1" ry="1" x="1" width="5" y="2" height="5" style="opacity: 1;"></rect>
+            </svg>
+            <svg id="MODERATE" class="highestImpactVep" width="80" height="15" transform="translate(0,0)">
+              <text class="name" x="9" y="9" style="fill-opacity: 1;font-size: 9px;">Moderate</text>
+              <rect class="filter-symbol  impact_MODERATE" rx="1" ry="1" x="1" width="5" y="2" height="5" style="opacity: 1;"></rect>
+            </svg>
+            <svg id="MODIFIER" class="highestImpactVep" width="80" height="15" transform="translate(0,0)">
+              <text class="name" x="9" y="9" style="fill-opacity: 1;font-size: 9px;">Modifier</text>
+              <rect class="filter-symbol  impact_MODIFIER" rx="1" ry="1" x="1" width="5" y="2" height="5" style="opacity: 1;"></rect>
+            </svg>
+            <svg id="LOW" class="highestImpactVep" width="80" height="15" transform="translate(0,0)">
+              <text class="name" x="9" y="9" style="fill-opacity: 1;font-size: 9px;">Low</text>
+              <rect class="filter-symbol  impact_LOW" rx="1" ry="1" x="1" width="5" y="2" height="5" style="opacity: 1;"></rect>
+            </svg>
+          </div>
+
+      </div>
+       
+      <div id="effect-filter-box" style=display:table-cell;text-align:left;width:120px;">
+        <h4>
+            VEP<br>Consequence
+          <a id="effect-scheme" href="javascript:(0)" >
+            <i class="material-icons" style="color:rgb(113, 113, 113);font-size:14px">color_lens</i>            
+          </a>
+
+          <div id="effect-filters" style="display: flex;flex-direction: row;flex-wrap: wrap;width: 210px;">
+          </div>     
+
+        </h4>
+      </div>
+
+    </div>
+  </div>
+
+ 
+ <!-- Allele Frequency -->
+<div>
+
+<div style="width:335px;display: flex;flex-wrap: wrap;">
+
+        <div class="afexaclevel-panel" style="display: flex;flex-direction: column;flex-wrap: wrap;width: 150px;">
+
+
+          <h4>
+      Allele Frequency ExAC
+    </h4><svg id="afexac_unique" class="afexaclevels" width="70" height="17" transform="translate(0,0)">
+              <text class="name" x="20" y="11" style="fill-opacity: 1;font-size: 9px;">private</text>
+              <g class=" afexac_unique">
+                <use xmlns:xlink="http://www.w4.org/1999/xlink" xlink:href="#af-symbol" width="12" height="12" style="fill: rgb(199, 0, 1);"></use>
+              </g>
+            </svg><svg id="afexac_uberrare" class="afexaclevels" width="60" height="17" transform="translate(0,0)">
+              <text class="name" x="20" y="11" style="fill-opacity: 1;font-size: 9px;">&lt; .01%</text>
+              <g class=" afexac_uberrare">
+                <use xmlns:xlink="http://www.w4.org/1999/xlink" xlink:href="#af-symbol" width="12" height="12" style="fill: rgba(204, 28, 29, 0.79);"></use>
+              </g>
+            </svg><svg id="afexac_superrare" class="afexaclevels" width="60" height="17" transform="translate(0,0)">
+              <text class="name" x="20" y="11" style="fill-opacity: 1;font-size: 9px;">&lt; .1%</text>
+              <g class=" afexac_superrare">
+                <use xmlns:xlink="http://www.w4.org/1999/xlink" xlink:href="#af-symbol" width="12" height="12" style="fill: rgba(255, 44, 0, 0.76);"></use>
+              </g>
+            </svg><svg id="afexac_rare" class="afexaclevels" width="60" height="17" transform="translate(0,0)">
+              <text class="name" x="20" y="11" style="fill-opacity: 1;font-size: 9px;">&lt; 1%</text>
+              <g class=" afexac_rare">
+                <use xmlns:xlink="http://www.w4.org/1999/xlink" xlink:href="#af-symbol" width="12" height="12" style="fill: rgb(247, 138, 31);"></use>
+              </g>
+            </svg><svg id="afexac_uncommon" class="afexaclevels" width="60" height="17" transform="translate(0,0)">
+              <text class="name" x="20" y="11" style="fill-opacity: 1;font-size: 9px;">1-5%</text>
+              <g class=" afexac_uncommon">
+                <use xmlns:xlink="http://www.w4.org/1999/xlink" xlink:href="#af-symbol" width="12" height="12" style="fill: rgb(224, 195, 128);"></use>
+              </g>
+            </svg><svg id="afexac_common" class="afexaclevels" width="60" height="17" transform="translate(0,0)">
+              <g class=" af_common">
+                <use xmlns:xlink="http://www.w4.org/1999/xlink" xlink:href="#af-symbol" width="12" height="12" style="fill: rgb(189,189,189);"></use>
+              </g>
+              <text class="name" style="fill-opacity: 1;font-size: 9px;" x="20" y="11">&gt; 5%</text>
+            </svg><svg id="afexac_unique_nc" class="afexaclevels" width="110" height="17" transform="translate(0,0)">
+              <text class="name" x="20" y="11" style="fill-opacity: 1;font-size: 9px;">n/a (noncoding)</text>
+              <g transform="translate(0,3)" class=" afexac_unique_nc">
+                <use xmlns:xlink="http://www.w4.org/1999/xlink" xlink:href="#af-symbol" width="12" height="12" style="fill:none;stroke: #6b6666;"></use>
+              </g>
+            </svg>
+
+          
+
+        <div id="afexac-range-filter" style="clear:both;text-align:left;margin-bottom:2px;">
+          <input type="number" id="af-amount-start" value="" style="width: 30px;font-size: 9px;margin-bottom: 1px;">
+          -
+          <input type="number" id="af-amount-end" value="" style="width: 30px;font-size: 9px;margin-bottom: 1px;">
+          %
+          <a id="af-go-button" href="javascript:void(0)" class="icon-button-sm btn btn-default btn-raised" style="padding-top:0px;padding-bottom:0px;margin-top:0px;margin-bottom: 1px;line-height: 19px;">           
+          Go
+          </a>
+        </div></div>
+
+        <div class="af1000glevel-panel " style="display: flex;flex-direction: column;flex-wrap: wrap;float: left;width: 140px;align-items: flex-start;">
+
+          <h4>
+      Allele Frequency 1000G
+    </h4><svg id="af1000g_unique" class="af1000glevels  " width="70" height="17" transform="translate(0,0)">
+              <text class="name" x="20" y="11" style="fill-opacity: 1;font-size: 9px;">private</text>
+              <g class=" af1000g_unique">
+                <use xmlns:xlink="http://www.w4.org/1999/xlink" xlink:href="#af-symbol" width="12" height="12" style="fill: rgb(199, 0, 1);"></use>
+              </g>
+            </svg><svg id="af1000g_uberrare" class="af1000glevels  " width="60" height="17" transform="translate(0,0)">
+              <text class="name" x="20" y="11" style="fill-opacity: 1;font-size: 9px;">&lt; .01%</text>
+              <g class=" af1000g_uberrare">
+                <use xmlns:xlink="http://www.w4.org/1999/xlink" xlink:href="#af-symbol" width="12" height="12" style="fill: rgb(215, 75, 76);"></use>
+              </g>
+            </svg><svg id="af1000g_superrare" class="af1000glevels  " width="60" height="17" transform="translate(0,0)">
+              <text class="name" x="20" y="11" style="fill-opacity: 1;font-size: 9px;">&lt; .1%</text>
+              <g class=" af1000g_superrare">
+                <use xmlns:xlink="http://www.w4.org/1999/xlink" xlink:href="#af-symbol" width="12" height="12" style="fill: rgb(255, 94, 61);"></use>
+              </g>
+            </svg><svg id="af1000g_rare" class="af1000glevels  " width="60" height="17" transform="translate(0,0)">
+              <text class="name" x="20" y="11" style="fill-opacity: 1;font-size: 9px;">&lt; 1%</text>
+              <g class=" af1000g_rare">
+                <use xmlns:xlink="http://www.w4.org/1999/xlink" xlink:href="#af-symbol" width="12" height="12" style="fill: rgb(247, 138, 31);"></use>
+              </g>
+            </svg><svg id="af1000g_uncommon" class="af1000glevels  " width="60" height="17" transform="translate(0,0)">
+              <text class="name" x="20" y="11" style="fill-opacity: 1;font-size: 9px;">1-5%</text>
+              <g class=" af1000g_uncommon">
+                <use xmlns:xlink="http://www.w4.org/1999/xlink" xlink:href="#af-symbol" width="12" height="12" style="fill: rgb(224, 195, 128);"></use>
+              </g>
+            </svg><svg id="af1000g_common" class="af1000glevels" width="60" height="17" transform="translate(0,0)">
+              <g class=" af1000g_common">
+                <use xmlns:xlink="http://www.w4.org/1999/xlink" xlink:href="#af-symbol" width="18" height="12" style="fill: rgb(189, 189, 189);"></use>
+              </g>
+              <text class="name" style="fill-opacity: 1;font-size: 9px;" x="20" y="11">&gt; 5%</text></svg>
+
+          
+        <div id="af1000g-range-filter" style="clear:both;text-align:left;margin-bottom:2px;margin-top: 18px;">
+          <input type="number" id="af-amount-start" value="" style="width: 30px;font-size: 9px;margin-bottom: 1px;">
+          -
+          <input type="number" id="af-amount-end" value="" style="width: 30px;font-size: 9px;margin-bottom: 1px;">
+          %
+          <a id="af-go-button" href="javascript:void(0)" class="icon-button-sm btn btn-default btn-raised" style="padding-top:0px;padding-bottom:0px;margin-top:0px;margin-bottom: 1px;line-height: 19px;">           
+          Go
+          </a>
+        </div></div> 
+        
+
+        <!-- allele freq range -->
+        
+    </div>    
+    
+
+</div>
+
+
+
+
+
+
+
+   <!-- PolyPhen and SIFT  -->
+  <div style="display:flex;flex-direction:row;justify-content:space-between;width:300px">
+
+      <!-- PolyPhen -->     
+      <div>
+        <h4>PolyPhen</h4>
+
+          <div style="display:flex;flex-direction:column">
+
+            <svg id="polyphen_probably_damaging" class="polyphen " width="120" height="17" transform="translate(0,0)">
+              <g class="polyphen_probably_damaging" transform="translate(1,0)" style="opacity: 1;">
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#biohazard-symbol" width="12" height="12" style="fill: #ad494A"></use>
+              </g>
+              <text class="name" style="fill-opacity: 1;font-size: 9px;" x="15" y="10">Probably damaging</text>
+            </svg>
+
+            <svg id="polyphen_possibly_damaging" class="polyphen " width="120" height="17" transform="translate(0,0)">
+              <g class="polyphen_possibly_damaging" transform="translate(1,0)" style="opacity: 1;">
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#biohazard-symbol" width="12" height="12" style="fill: #FB7737"></use>
+              </g>
+              <text class="name" style="fill-opacity: 1;font-size: 9px;" x="17" y="10">Possibly damaging</text>
+            </svg>
+
+            <svg id="polyphen_benign" class="polyphen " width="120" height="17" transform="translate(0,0)">
+              <g class="polyphen_benign" transform="translate(1,0)" style="opacity: 1;">
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#biohazard-symbol" width="12" height="12" style="fill: rgba(181, 207, 107,1)"></use>
+              </g>
+              <text class="name" style="fill-opacity: 1;font-size: 9px;" x="15" y="10">Benign</text>
+            </svg>
+          </div>  
+      </div>
+
+      <!-- SIFT -->
+      <div style="margin-left:20px;">        
+        <h4 style="">SIFT</h4>
+        <div style="display:flex;flex-direction: row;flex-wrap: wrap;">
+
+          <svg id="sift_deleterious" class="sift " width="110" height="17" transform="translate(0,0)">
+            <g class="sift_deleterious" transform="translate(1,0)" style="opacity: 1;">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#danger-symbol" width="12" height="12" style="fill: #ad494A"></use>
+            </g>
+            <text class="name" style="fill-opacity: 1;font-size: 9px;" x="16" y="9">Deleterious</text>
+          </svg>
+
+          <svg id="sift_deleterious_low_confidence" class="sift " width="175"  transform="translate(0,0)">
+            <g class="sift_deleterious_low_confidence" transform="translate(1,0)" style="opacity: 1;">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#danger-symbol" width="12" height="12" style="fill: #FB7737"></use>
+            </g>
+            <text class="name" style="fill-opacity: 1;font-size: 9px;" x="15" y="9">Deleterious (low confidence)</text>
+          </svg>
+
+          <svg id="sift_tolerated" class="sift " width="67" height="110" transform="translate(0,0)">
+            <g class="sift_tolerated" transform="translate(1,0)" style="opacity: 1;">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#danger-symbol" width="12" height="12" style="fill: rgba(181, 207, 107,1)"></use>
+            </g>
+            <text class="name" style="fill-opacity: 1;font-size: 9px;" x="15" y="9">Tolerated</text>
+          </svg>
+
+          <svg id="sift_tolerated_low_confidence" class="sift " width="180" transform="translate(0,0)">
+            <g class="sift_tolerated_low_confidence" transform="translate(1,0)" style="opacity: 1;">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#danger-symbol" width="12" height="12" style="fill: rgba(231,186,82,1)"></use>
+            </g>
+            <text class="name" style="fill-opacity: 1;font-size: 9px;" x="15" y="9">Tolerated (low confidence)</text>
+          </svg>
+
+        </div>
+      </div>
+   
+    </div>
+
+
+  <div style="display:flex;flex-direction:row;justify-content: space-between;width: 335px;">
+
+   <!-- Zygosity -->
+    <div  >
+      <h4 >
+        
+        Zygosity
+        <a id="zygosity-scheme" href="javascript:(0)" >
+              <i class="material-icons" style="font-size:14px">color_lens</i>            
+        </a>
+      </h4>
+
+      <div style="display:flex;flex-direction:column">
+        <!-- zygosity -->
+
+          <div class="tooltip-zygosity nocolor filter-symbol zyg_hom hom zygosity " id="hom" style="margin-bottom:3px;width:32px !important">Hom</div>
+          <div class="tooltip-zygosity nocolor filter-symbol zyg_het het zygosity " id="het">Het</div>
+
+      </div>
+    </div>
+
+
+   <!-- Type -->
+    <div >
+      <h4  >
+        Type        
+      </h4>
+      <div  style="display:flex;flex-direction:column">
+
+
+        <!-- type -->
+          <svg id="snp" class="type" width="70" height="15" transform="translate(0,0)">
+            <text class="name" x="10" y="9" style="fill-opacity: 1;font-size: 9px;">SNP</text>
+            <rect class="filter-symbol snp" rx="2" ry="1" x="1" width="6" y="2" height="6" style="opacity: 1; fill: none; stroke: rgb(0, 0, 0); stroke-width: 1px;"></rect>
+          </svg>
+          <svg id="ins" class="type" width="70" height="15" transform="translate(0,0)">
+            <text class="name" x="11" y="9" style="fill-opacity: 1;font-size: 9px;"> Insertion</text>
+            <circle class="filter-symbol ins" cx="4.5" cy="5" r="4.5" style="fill: none; stroke: rgb(0, 0, 0); stroke-width: 1px; opacity: 1;"></circle>
+          </svg>
+
+          <svg id="del" class="type" width="70" height="15" transform="translate(0,0)">
+            <text class="name" x="11" y="9" style="fill-opacity: 1;font-size: 9px;">Deletion</text>       
+            <polygon class="filter-symbol del" points="0,8 4,2 8,8" rx="1" ry="1" x="1" width="6" y="2" height="6" style="fill: none; stroke: rgb(0, 0, 0); stroke-width: 1px; opacity: 1;"></polygon>
+          </svg>
+
+          <svg id="complex" class="type" width="70" height="15" transform="translate(0,0)">
+            <g transform="translate(1,0)">
+              <text class="name" x="9" y="9" style="fill-opacity: 1;font-size: 9px;">Complex</text>       
+              <path d="M0,-4.161791450287818L2.4028114141447544,0 0,4.161791450287818 -2.4028114141447544,0Z" class="filter-symbol complex" transform="translate(4,5)" style="opacity: 1; fill: none; stroke: rgb(0, 0, 0);">
+              </path>
+            </g>
+          </svg>
+      </div>
+
+    </div>
+
+     <!-- Regulatory -->
+    <div >
+      <h4 >
+          Regulatory
+      </h4>
+      <div style="text-align:left;display:flex;flex-direction:column">
+
+          <svg id="reg_the_promoter" class="regulatory nocolor" width="110" height="15" transform="translate(0,0)">
+            <text class="name" x="2" y="11" style="fill-opacity: 1;font-size: 9px;">Promoter</text>
+          </svg>
+
+          <svg id="reg_promoter_flanking_region" class="regulatory nocolor" width="140" height="15" transform="translate(0,0)">
+            <text class="name" x="2" y="11" style="fill-opacity: 1;font-size: 9px;">Promoter flanking region</text>
+          </svg>
+
+          <svg id="reg_tf_binding_site" class="regulatory nocolor" width="110" height="15" transform="translate(0,0)">
+            <text class="name" x="2" y="11" style="fill-opacity: 1;font-size: 9px;">TF binding site</text>
+          </svg>
+
+          <svg id="reg_ctcf_binding_site" class="regulatory nocolor" width="140" height="15" transform="translate(0,0)">
+            <text class="name" x="2" y="11" style="fill-opacity: 1;font-size: 9px;">CTCF binding site</text>
+          </svg>
+
+          <svg id="mot_tf_binding_site_variant" class="regulatory nocolor" width="140" height="15" transform="translate(0,0)">
+            <text class="name" x="2" y="11" style="fill-opacity: 1;font-size: 9px;">TF Motif feature</text>
+          </svg>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="display:flex;flex-direction:row;justify-content: space-between;width: 335px;">
+    <!-- VCF Record Filters -->
+    <div id="rec-filter-panel"  style="clear:both">
+        <h4>
+            <span style="float:left;">VCF Filter status </span> 
+            <a id="import-help" href="javascript:void(0)" data-toggle="collapse" data-target="#vcf-filter-status-info" class="collapsed " aria-expanded="false" style="font-size:10px;float: left;margin-left: 4px;" data-toggle="tooltip" title="What is this field?">
+              <span id="filter-status-help-icon" class="material-icons" style="font-size: 14px;">help</span> 
+            </a>         
+
+            <div id="vcf-filter-status-info" class="collapse" aria-expanded="false" style="clear:both;font-size:10px;padding-top:4px;color:rgb(132,132,132)">
+              The 'Filter status' is a tag set by filtering software to explain the result of
+              filters applied to each variant in the VCF file prior to loading into gene.iobio. It is
+              recommended to display variants marked with 'PASS' if present. Often, if some variants
+              are tagged with 'PASS', variants that failed the filters have no tag, shown as '.'.
+              For more detailed information, with examples, see the blog post on 'Filter status'.
+            </div>          
+
+        </h4>
+        <div style="clear:both;">
+            <div id="rec-filter-box" style="display:flex;flex-direction:column"></div>
+        </div>
+    </div>
+
+    <!-- Exonic and Intronic -->
+    <div style="margin-bottom:20px">
+      <h4 > Coding vs non-coding</h4>
+       <div class="checkbox">
+        <label style="margin-right:5px;">
+          <input id="exonic-only-cb" type="checkbox"> Exclude non-coding intronic variants
+        </label>
+      </div>
+    </div>
+
+  </div>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+</div>
+  
+
+ 
+
+  
+
+
+
+
+   
+
+   

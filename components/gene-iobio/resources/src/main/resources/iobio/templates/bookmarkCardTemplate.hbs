@@ -1,0 +1,112 @@
+<div id="bookmark-card">
+<div class="card-label">Variant Bookmarks</div>
+
+
+	<div style="margin-top:5px;">
+      <div style="float:left">
+  	    <div id="import-bookmarks-dropdown" class="" style="float:left;margin-top:-10px">
+          <div class="btn-toolbar">
+            <div class="btn-group"  style="display:inline;">
+
+              <button type="button"  style="padding-top: 2px;padding-bottom: 1px;" class=" icon-button-sm btn btn-raised btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                <i class="material-icons" style="font-size:14px;padding-right:2px;padding-left:0px;padding-top:2px;">content_paste</i>
+                Import<span class="caret" style="margin-left:2px;"></span>
+              </button>
+
+              <ul class="dropdown-menu " role="menu">
+                <li id="copy-paste-li">
+                  <div style="padding-left:10px;padding-right:10px;padding-top:3px;padding-bottom:3px;">
+                    <div>Copy/Paste</div>
+                    <textarea style="width:160px;height:100px" id="bookmarks-to-import"></textarea>
+                    <div style="text-align:right">
+                      <button id="add-bookmarks-button" 
+                      type="submit"
+                      onclick="bookmarkCard.importBookmarks()" 
+                      class="icon-button-sm btn btn-default btn-raised" 
+                      style="margin-left:3px;padding-top:0px;padding-bottom:0px;margin-top:0px;margin-bottom: 1px;">
+                        Done
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <a id="import-help" href="javascript:void(0)" data-toggle="collapse" data-target="#bookmarks-format" class="collapsed " 
+        aria-expanded="false" data-toggle="tooltip" title="import format">
+            <span id="import-help-icon" class="material-icons" style="font-size: 14px;">help</span> 
+        </a>      
+      </div>
+
+      <div style="float:left;margin-left:60px">
+        <div id="export-bookmarks-dropdown" class="" style="margin-top: -15px;float: left;">
+          <div class="btn-toolbar">
+            <div class="btn-group"  style="display:inline;margin-top: 15px;">
+
+              <button type="button"  style="padding-top: 2px;padding-bottom: 1px;" class=" icon-button-sm btn btn-raised btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+              <i class="material-icons" style="font-size:14px;padding-right:2px;padding-top:2px;">archive</i>
+                Export<span class="caret" style="margin-left:2px;"></span>
+              </button>
+
+              <ul class="dropdown-menu" role="menu">
+                <li id="export-all-bookmarks" >
+                 <a href="javascript:void(0)" onclick="bookmarkCard.exportBookmarks('all')">All bookmarks</a>
+                </li>
+                <li id="export-favorite-bookmarks" onclick="bookmarkCard.exportBookmarks('favorites')">
+                 <a href="javascript:void(0)" onclick="bookmarkCard.exportBookmarks('favorites')">
+                  <i class="material-icons" style="font-size:14px;width: 14px;float: left;color: gold;margin-right: 2px;">star_rate</i>
+                  Starred
+                </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+	</div>
+
+  
+   <div id="bookmarks-format" class="collapse" aria-expanded="false" style="clear:both;padding-top:4px;padding-bottom:10px;color:rgb(132,132,132)">
+    Each line represents a variant, described by the following columns, separated by tabs:<br>
+    &nbsp;&nbsp;1. Chromosome<br>
+    &nbsp;&nbsp;2. Start position (in standard chromosomal<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coordinates, i.e. first base is 0)<br> 
+    &nbsp;&nbsp;3. End position <br>
+    &nbsp;&nbsp;4. Reference allele<br>
+    &nbsp;&nbsp;5. Alternate allele<br>
+    &nbsp;&nbsp;6. Gene symbol<br>
+    
+    <div style="padding-top:3px;">    
+    Examples:<br>
+    SNP C->T on chr 21 in gene AIRE:
+    </div>
+    <div  style="font-style:italic">
+    21&nbsp;&nbsp;&nbsp;&nbsp;45709338&nbsp;&nbsp;&nbsp;&nbsp;45709339&nbsp;&nbsp;&nbsp;&nbsp;C&nbsp;&nbsp;&nbsp;&nbsp;T&nbsp;&nbsp;&nbsp;&nbsp;AIRE    
+    </div>
+    
+    <div style="padding-top:6px;">    
+    Deletion of nucleotide C on chr 21, gene AIRE:
+    </div>
+    <div style="font-style:italic">
+    21&nbsp;&nbsp;&nbsp;&nbsp;45712356&nbsp;&nbsp;&nbsp;&nbsp;45712357&nbsp;&nbsp;&nbsp;&nbsp;AC&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;&nbsp;&nbsp;&nbsp;AIRE</div>
+  </div>      
+
+ 
+ 
+  <div id="edit-bookmarks-box" class="hide" style="clear:both;text-align:right;clear:both;">
+    <a href="javascript:void(0)" id="edit-bookmarks" 
+    onclick="$('#bookmark-card #bookmark-panel').toggleClass('editmode');$('#bookmark-card #edit-bookmarks').toggleClass('hide');$('#bookmark-card #done-edit-bookmarks').toggleClass('hide')">Edit</a>
+
+    <a href="javascript:void(0)" id="done-edit-bookmarks"  class="hide"
+    onclick="$('#bookmark-card #bookmark-panel').toggleClass('editmode');;$('#bookmark-card #edit-bookmarks').toggleClass('hide');$('#bookmark-card #done-edit-bookmarks').toggleClass('hide')">Done</a>
+  </div>
+
+	<div id="bookmark-panel-area" style="clear:both;margin-right:10px;margin-top:-20px;">
+     <div id="bookmark-panel" style="padding-bottom:20px">
+     </div>
+	</div>
+
+	
+</div>

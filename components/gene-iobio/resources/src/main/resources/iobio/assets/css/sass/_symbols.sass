@@ -1,0 +1,278 @@
+
+#recessive-symbol
+  .parent
+    .left
+      stroke: #F49A73
+      stroke-width: 2
+
+    .right
+      stroke: gray
+      stroke-width: 2
+
+  .proband
+    .left, .right
+      stroke: #F49A73
+      stroke-width: 3
+
+#denovo-symbol
+  .parent
+    .left, .right
+      stroke: grey
+      stroke-width: 2
+
+  .proband
+    .left, .right
+      stroke: #6A9C2F !important
+      fill: none
+      stroke-width: 3
+
+#trio-symbol
+  .parent
+    .left
+      stroke: $app-color
+      stroke: $app-color
+
+    .right
+      stroke: $app-color
+
+  .proband
+    .left, .right
+      stroke: $app-color
+
+#phenotype-symbol
+  fill: #ABA2A2
+  stroke: #ABA2A2
+
+
+.variant
+  &.homref
+    opacity: 0 !important
+    fill: none !important
+
+
+.impact_HIGH
+  fill: #E0292B !important
+  color: #E0292B !important
+  font-weight: bold
+
+.impact_MODERATE
+  fill: #F49A73 !important
+  color: #F49A73 !important
+  font-weight: bold
+
+.impact_MODIFIER
+  fill: rgba(244, 217, 155, 1)
+  color: rgba(244, 217, 155, 1)
+
+.impact_LOW
+  fill: rgba(181, 207, 107, 0.65)
+  color: rgba(181, 207, 107, 0.65)
+
+.impact_NOIMPACT, .impact_none, .effect_none
+  fill: #FAF5BE
+  stroke: #807D7D
+
+#feature-matrix
+  
+  .impact_HIGH
+    pointer-events: none
+
+  .impact_MODERATE
+    pointer-events: none
+
+  .impact_MODIFIER
+    pointer-events: none
+
+  .impact_LOW
+    pointer-events: none
+
+  .impact_NOIMPACT, .impact_none, .effect_none
+    pointer-events: none
+
+.effect_transcript_ablation
+  fill: #ff0000
+
+.effect_splice_acceptor_variant, .effect_splice_donor_variant
+  fill: #FF581A
+
+.effect_stop_gained
+  fill: #ff0000
+
+.effect_frameshift_variant
+  fill: #9400D3
+
+.effect_stop_lost
+  fill: #ff0000
+
+.effect_start_lost
+  fill: #ffd700
+
+.effect_transcript_amplification, .effect_inframe_insertion, .effect_inframe_deletion
+  fill: #ff69b4
+
+.effect_missense_variant
+  fill: #ffd700
+
+.effect_protein_altering_variant
+  fill: #FF0080
+
+.effect_splice_region_variant
+  fill: #ff7f50
+
+.effect_incomplete_terminal_codon_variant
+  fill: #ff00ff
+
+.effect_synonymous_variant
+  fill: #76ee00
+
+.effect_coding_sequence_variant, .effect_mature_miRNA_variant
+  fill: #458b00
+
+.effect_5_prime_UTR_variant, .effect_3_prime_UTR_variant
+  fill: #7ac5cd
+
+.effect_non_coding_transcript_exon_variant
+  fill: #32cd32
+
+.effect_intron_variant
+  fill: #02599c
+
+.effect_NMD_transcript_variant
+  fill: #ff4500
+
+.effect_non_coding_transcript_variant
+  fill: #32cd32
+
+.effect_upstream_gene_variant, .effect_downstream_gene_variant
+  fill: #a2b5cd
+
+.effect_TFBS_ablation, .effect_TFBS_amplification, .effect_TF_binding_site_variant, .effect_regulatory_region_ablation, .effect_regulatory_region_amplification
+  fill: #a52a2a
+
+.effect_feature_elongation
+  fill: #7f7f7f
+
+.effect_regulatory_region_variant
+  fill: #a52a2a
+
+.effect_feature_truncation
+  fill: #7f7f7f
+
+.effect_intergenic_variant
+  fill: #636363
+
+.effect_synonymous_variant
+  fill: #76ee00
+
+.effect_coding_sequence_variant, .effect_exon_variant
+  fill: #458b00
+
+.zyg_hom
+  fill: rgba(173, 38, 38, 0.65)
+  stroke: rgba(0, 0, 0, 0.26)
+
+.zyg_het
+  fill: #D3D5D8
+  stroke: rgba(0, 0, 0, 0.26)
+
+.impact, .vepImpact, .highestImpactVep, .effect, .vepConsequence, .type, .zygosity, .recfilter
+  border: solid 2px $sidebar-body-color
+  padding: 1px
+
+  text
+    fill: $sidebar-text-color
+
+.impact.nocolor rect, .vepImpact.nocolor rect, .highestImpactVep.nocolor rect, .effect.nocolor rect, .vepConsequence.nocolor rect, .zygosity.nocolor rect, .regulatory.nocolor rect, .polyphen.nocolor rect, .sift.nocolor rect
+  fill: lightgrey !important
+  stroke: grey
+
+.afexaclevels.nocolor, .af1000glevels.nocolor
+  display: none !important
+
+.impact:hover, .vepImpact:hover, .highestImpactVep:hover, .effect:hover, .vepConsequence:hover, .regulatory:hover, .polyphen:hover, .sift:hover, .regulatory:hover, .tooltip-zygosity:hover, .type:hover, .afexaclevels:hover, .af1000glevels:hover, .inheritance:hover, .clinvar:hover, .uasibs:hover, .recfilter:hover
+  cursor: pointer
+  font-weight: bold
+  fill: $current-color
+  border: solid 1.5px $current-frame-color 
+  border-radius: 4px
+
+.tooltip-zygosity:hover
+  border-radius: 0px  
+  border: solid 2.5px $current-frame-color 
+
+.impact.current:hover, .vepImpact.current:hover, .highestImpactVep.current:hover,  .effect.current:hover, .vepConsequence.current:hover, .tooltip-zygosity.current:hover, .regulatory.current:hover, .polyphen.current:hover, .sift.current:hover, .type.current:hover, .afexaclevels.current:hover, .af1000glevels.current:hover, .inheritance.current:hover, .clinvar.current:hover, .uasibs.current:hover, .recfilter.current:hover
+  font-weight: bold
+  cursor: pointer
+  border: solid 2.5px $current-color 
+  border-radius: 4px
+  padding: 1px
+
+  &.not-equal
+    border: solid 1.5px $current-frame-color 
+
+
+.tooltip-zygosity.current:hover
+  border-radius: 0px
+
+.current
+  font-weight: bold
+  border: solid 2.5px $current-color
+  border-radius: 4px
+  padding: 1px
+
+  &.not-equal
+    background-image: linear-gradient(transparent 7px,$current-color 7px,$current-color 9px,transparent 9px)
+    border: none  
+
+
+.tooltip-zygosity.current
+  border-radius: 0px
+  border: solid 2.5px $current-color !important
+
+#impact-scheme, #effect-scheme, #regulatory-scheme, #zygosity-scheme
+  padding-top: 2px
+
+#impact-scheme, #effect-scheme, #zygosity-scheme
+  color: rgb(102, 88, 92) !important
+  text-decoration: none !important
+  font-size: 11px
+
+#impact-scheme.current, #effect-scheme.current, #zygosity-scheme.current
+  color: $current-color !important
+
+  .material-icons
+    color: $current-color !important
+
+#type-scheme, #zygosity-scheme, #inheritance-scheme, #af-scheme, #clinvar-scheme, #regulatory-scheme, #uasibs-scheme
+  padding-top: 2px
+
+.impact.inactive, .vepImpact.inactive, .highestImpactVep.inactive, .zygosity.inactive, .afexaclevels.inactive, .af1000glevels.inactive, .inheritance.inactive, .polyphen.inactive, .sift.inactive, .regulatory.inactive, .clinvar.inactive, .uasibs.inactive
+  pointer-events: none
+  opacity: .4
+
+.effect.inactive, .vepConsequence.inactive
+  pointer-events: none
+  display: none
+
+#impact-scheme.current, #effect-scheme.current, #zygosity-scheme.current, #af1000g-scheme.current, #afexac-scheme.current, #regulatory-scheme.current, #uasibs-scheme.current
+  font-weight: bold
+  border: none
+
+#impact-scheme .name, #effect-scheme .name, #compare-scheme .name, #type-scheme .name, #zygosity-scheme .name, #inheritance-scheme .name, #af-scheme .name, #clinvar-scheme .name, #regulatory-scheme .name, #uasibs-scheme.name, #afexac-scheme .name, #af1000g-scheme .name
+  fill-opacity: 1
+  font-size: 12px
+  font-weight: normal
+
+#impact-scheme.current .name, #effect-scheme.current .name, #af1000g-scheme.current .name, #afexac-scheme.current .name
+  fill-opacity: 1
+  font-size: 12px
+  font-style: bold
+  color: $current-color
+  fill: $current-color
+  border: solid thin black
+  border-radius: 4px
+  padding: 1px
+
+#impact-scheme:hover, #effect-scheme:hover, #af1000g-scheme:hover, #afexac-scheme:hover
+  font-weight: bold
+  cursor: pointer

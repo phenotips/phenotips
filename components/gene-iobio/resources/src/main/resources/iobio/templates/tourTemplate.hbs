@@ -1,0 +1,581 @@
+<div id="tourPanelWrapper" class="hide">
+  <div id="tourPanel"> 
+     
+  </div>
+</div>
+
+
+<!-- Tour for colon cancer screening case -->
+<ul id="tourEduCase1"  data-tourtitle="coloncancer">
+
+
+  <li class="tlypageguide_down" data-tourtarget="#edu-tour-label">
+  </li>
+  
+  <li class="tlypageguide_right" data-tourtarget="#phenolyzer-search-box .selectize-control.single">
+    <div>
+       Look at the father’s genome first. Select 'Colon cancer' from the ‘Phenolyzer’ box at the left of the screen.
+    </div>
+  </li>
+
+ 
+  <li class="tlypageguide_right" data-tourtarget="#phenolyzer-results">
+  </li>
+
+  <li class="tlypageguide_right" data-tourtarget="#proband-variant-card #zoom-region-chart">
+    <div> 
+      Gene model     
+    </div>
+  </li>
+
+
+
+  <li class="tlypageguide_left" data-tourtarget="#gene-badge-container">
+
+    <div style="display:inline-block;float:left;width: 50%;text-align: left;margin-left: 20px;margin-bottom:20px">
+      Examine the genes at the top of the screen for
+     harmful variants. Touch a gene’s name to search it. Variants predicted
+     to be harmful will have bright red icons. 
+     If you find a harmful variant for the father, tap the red icon.
+    </div>
+    <div style="display:inline-block;float:left">
+       <img width="300" src="assets/images/edutour/impact_legend.png">
+    </div>
+  </li>
+
+   <li class="tlypageguide_up" data-tourtarget="#edu-tour-1 #start-over">
+    <div>
+    </div>
+  </li>
+
+   <li class="tlypageguide_down" data-tourtarget="#children-buttons">
+    <div style="margin-right:100px">
+    Search the APC genes of the children for the harmful variant. Touch each child’s name at the top of the screen. Based on what you find, select which children should get frequent colon cancer screenings below.
+
+      <div style="text-align:center;margin-top:20px;margin-bottom:0px;">
+        <div class="custom-checkbox" style="display:inline-block;margin-right:20px">
+            <input type="checkbox" onclick="onEduTour1Check($(this))" id="jimmy">
+            <label for="jimmy" >Jimmy</label>
+        </div>
+        <div class="custom-checkbox" style="display:inline-block;margin-right:20px">
+            <input type="checkbox"  onclick="onEduTour1Check($(this))" id="bobby">
+            <label for="bobby">Bobby</label>
+         </div>
+        <div class="custom-checkbox" style="display:inline-block">
+            <input type="checkbox"  onclick="onEduTour1Check($(this))" id="sarah">
+            <label for="sarah" >Sarah</label>
+         </div>
+      </div>
+    
+      <div style="text-align:center;margin-top: -5px;margin-bottom:0px;">
+          <div style="display:inline-block;margin-right: 45px;margin-left: -8px;">
+              <label id="jimmy-answer" class=" edu-tour-answer" style="visibility:hidden">correct</label>
+          </div>
+          <div style="display:inline-block;margin-right: 36px;">            
+              <label id="bobby-answer" class="incorrect edu-tour-answer" style="visibility:hidden">incorrect</label>
+           </div>
+          <div style="display:inline-block">
+              <label id="sarah-answer" class=" edu-tour-answer" style="visibility:hidden">correct</label>
+           </div>
+        </div>      
+    </div>
+  </li>
+
+   <li class="tlypageguide_down" data-tourtarget=".edu-tour-1-child-buttons">
+  </li>
+
+</ul>
+
+<!-- Tour for warfarin screening case -->
+<ul id="tourEduCase2"  data-tourtitle="warfarin">
+
+  
+  <li class="tlypageguide_up" data-tourtarget="#edu-tour-2-label">          
+  </li>
+
+  <li class="tlypageguide_up" data-tourtarget="#edu-tour-2 #start-over">  
+  </li>
+
+  <li class="tlypageguide_down" data-tourtarget="#proband-variant-card #vcf-track">
+      <div style="margin-right:120px">
+        The variant with a red circle around it determines Warfarin sensitivity. This is the variant you need to examine in your patients. 
+      </div>
+  </li>  
+ 
+  <li class="tlypageguide_down" data-tourtarget="#child-buttons-tour2">
+    <div>
+    Select each patient. Determine their genotype and choose the correct dosage for them below.
+    <br><br>
+    </div>    
+    <div    style="margin-bottom:0px;margin-top:10px;">
+      
+
+      <div id="john-answers"  class="answers selected" >
+        <div class="answer-label">John</div>
+        <div style="text-align:left;margin-top:0px;margin-bottom:0px">
+          <div class="custom-checkbox" style="display:block;">
+              <input type="checkbox" class="john-checkbox" onclick="onEduTour2Check($(this))" id="john-normal">
+              <label for="john-normal" >Normal GG</label>
+          </div>
+          <div class="custom-checkbox" style="display:block;">
+              <input type="checkbox" class="john-checkbox" onclick="onEduTour2Check($(this))" id="john-lower">
+              <label for="john-lower">Lower AG</label>
+           </div>
+          <div class="custom-checkbox" style="display:inline">
+              <input type="checkbox" class="john-checkbox" onclick="onEduTour2Check($(this))" id="john-lowest">
+              <label for="john-lowest" >Lowest AA</label>
+           </div>
+           <div  style="text-align:left;margin-top:-7px;margin-bottom:0px;">
+            <label id="john-normal-answer" class="john-answer incorrect hide edu-tour-answer" >incorrect</label>
+            <label id="john-lower-answer"  class="john-answer hide edu-tour-answer" >correct</label>
+            <label id="john-lowest-answer" class="john-answer hide incorrect edu-tour-answer">incorrect</label>
+           </div>
+        </div>
+      
+      </div>
+      <div  id="diego-answers" class="answers" >
+        <div class="answer-label">Diego</div>
+        <div  style="text-align:left;margin-top:0px;margin-bottom:0px">
+          <div class="custom-checkbox" style="display:block;">
+              <input type="checkbox" class="diego-checkbox" onclick="onEduTour2Check($(this))" id="diego-normal">
+              <label for="diego-normal" >Normal GG</label>
+          </div>
+          <div class="custom-checkbox" style="display:block;">
+              <input type="checkbox" class="diego-checkbox" onclick="onEduTour2Check($(this))" id="diego-lower">
+              <label for="diego-lower">Lower AG</label>
+           </div>
+          <div class="custom-checkbox" style="display:inline">
+              <input type="checkbox" class="diego-checkbox" onclick="onEduTour2Check($(this))" id="diego-lowest">
+              <label for="diego-lowest" >Lowest AA</label>
+           </div>
+           <div  style="text-align:left;margin-top:-7px;margin-bottom:0px;">
+            <label id="diego-normal-answer" class="diego-answer incorrect hide edu-tour-answer" >incorrect</label>
+            <label id="diego-lower-answer"  class="diego-answer hide incorrect edu-tour-answer" >incorrect</label>
+            <label id="diego-lowest-answer" class="diego-answer hide  edu-tour-answer">correct</label>
+           </div>
+        </div>
+      </div>
+
+      
+      <div  id="anna-answers"  class="answers" >
+        <div class="answer-label">Anna</div>
+        <div style="text-align:left;margin-top:0px;margin-bottom:0px">
+          <div class="custom-checkbox" style="display:block;">
+              <input type="checkbox" class="anna-checkbox" onclick="onEduTour2Check($(this))" id="anna-normal">
+              <label for="anna-normal" >Normal GG</label>
+          </div>
+          <div class="custom-checkbox" style="display:block;">
+              <input type="checkbox" class="anna-checkbox" onclick="onEduTour2Check($(this))" id="anna-lower">
+              <label for="anna-lower">Lower AG</label>
+           </div>
+          <div class="custom-checkbox" style="display:inline">
+              <input type="checkbox" class="anna-checkbox" onclick="onEduTour2Check($(this))" id="anna-lowest">
+              <label for="anna-lowest" >Lowest AA</label>
+           </div>
+           <div  style="text-align:left;margin-top:-7px;margin-bottom:0px;">
+            <label id="anna-normal-answer" class="anna-answer  hide edu-tour-answer" >correct</label>
+            <label id="anna-lower-answer"  class="anna-answer hide incorrect edu-tour-answer" >incorrect</label>
+            <label id="anna-lowest-answer" class="anna-answer hide incorrect edu-tour-answer">incorrect</label>
+           </div>
+        </div>
+      </div>
+
+      <!-- <div style="margin-top:20px;float:left;width:25%;background-color:white;padding: 10px;">
+        <img width="200" src="assets/images/edutour/dose_legend.png">
+      </div>
+     -->     
+    </div>
+  </li>  
+
+  <li class="tlypageguide_up" data-tourtarget="#edu-tour-2">
+
+      <img width="450" src="assets/images/edutour/patient_to_dose_legend.png">
+
+  </li>  
+
+ 
+
+
+</ul>
+
+
+<!-- Main gene.iobio tour --->
+<ul id="tourMain" data-tourtitle="main">
+ <li class="tlypageguide_left" data-tourtarget="#enter-gene-name">
+    <div>
+      Type in the gene name BRCA2 and select from the dropdown list.
+      <br><br>
+      <strong><em>Click on next arrow > to continue to next step.</em></strong>
+      <br><br>
+    </div>
+  </li>
+    <li class="tlypageguide_top" data-tourtarget="#gene-track">
+    <div>
+      This shows the gene model for the canonical transcript.
+    </div>
+  </li>
+
+  <li class="tlypageguide_bottom" data-tourtarget="#add-data-button">
+    <div>
+      Click on the 'Select Data' link in the navigation bar to load your variant and alignment files.
+      <br><br>
+    </div>
+    <div>
+      1. Select 'GRCh37' from the genome build dropdown. <br><br>
+    </div>
+    <div>
+      2. Click on the 'Variants' dropdown and select 'Platinum Trio'.    
+      <br><br>
+    </div>
+    <div>
+      3. Click on the 'Alignments' dropdown and select 'Platinum Trio'.
+      <br><br>
+    </div>  
+     <div>
+      4. Click 'Load' to load all of the selected data into the app.
+      <br><br>
+    </div>
+  </li>
+
+  
+  <li class="tlypageguide_top" data-tourtarget="#vcf-track">
+    <div>
+      The variants for the gene are annotated using VEP to determine functional impact and effect, the allele frequencies from 1000 Genomes and ExAC are retrieved, and queries to ClinVar flag any variants with clinical significance.  All of this processing occurs in real-time.
+      Hover over or click on the variants symbols to see more information.  
+      <br><br>
+
+    </div>
+  </li>
+
+  
+  <li class="tlypageguide_top" data-tourtarget="#bam-depth">
+    <div>
+      When an alignment file is specified, the base coverage chart is displayed, allowing the user to identify regions of abnormal or unexpected sequence coverage.
+    </div>
+  </li>
+  <li class="tlypageguide_top" data-tourtarget="#matrix-track">
+    <div>
+      The variants are ranked according to different criteria. 
+      <br><br>
+      Click on a column to see details about the variant.  Click the column again and the tooltip disappears.
+    </div>
+  </li>
+  <li class="tlypageguide_top" data-tourtarget="#matrix-panel #move-rows">
+    <div>
+     The criteria used to rank the variants can be reordered by clicking on their respective arrows. Click on 'Reorder' link and then click on the up/down arrows to reorder variants.
+    </div>
+  </li>
+  
+
+
+  <li class="tlypageguide_right" data-tourtarget="#transcript-btn-group">
+    <div>
+      For the gene BRCA2, the variants were annotated and ranked based on the canonical transcript.
+      <br><br>
+      Other transcripts for this gene can be selected from this dropdown.
+      <br><br>
+      Click on the dropdown and select another transcript.  Notice how the variants are re-annotated 
+      according to this transcript.
+    </div>
+  </li>
+  <li class="tlypageguide_top" data-tourtarget="#set-gene-source">
+    <div>
+     The Gencode transcript set is currently loaded.  To switch to the RefSeq transcripts, select it from the dropdown.
+    </div>
+  </li>
+
+  <li class="tlypageguide_top" data-tourtarget="#gene-viz">
+    <div>
+     To zoom into a region of a gene, drag and drop to select a region. 
+     <br><br>
+     To zoom back out, click anywhere on the gene model.
+    </div>
+  </li>
+  <li class="tlypageguide_right" data-tourtarget="#gene-region-buffer-input">
+    <div>
+      Adjust this value to modify the displayed genomic region. Increasing the amount of upstream and downstream DNA analyzed increases the potential for detecting cis regulatory variants for this gene.
+    </div>
+  </li>
+
+
+  <li class="tlypageguide_right" data-tourtarget="#call-variants-link">
+    <div>
+      Variants can be called in real-time when an alignment file is present.
+      <br><br>
+      Push the 'Call Variants' link in the navigation bar. 
+    </div> 
+  </li>
+  <li class="tlypageguide_right" data-tourtarget="#button-call-variants">
+    <div>
+      Push the 'Run Freebayes' button to call variants from the alignment (BAM) files.
+      <br><br>
+      Variants are called in real-time.  In a few seconds, Freebayes will return
+      the called variants.
+    </div>
+  </li>
+    <li class="tlypageguide_bottom" data-tourtarget="#proband-variant-card #fb-variants">
+    <div>
+      Variants not present in the VCF file will be displayed above the loaded variants. 
+    </div>
+  </li>
+  <li class="tlypageguide_right" data-tourtarget="#show-filters-link">
+    <div>
+      Push the 'Filter Variants' link in the navigation bar.
+    </div>
+  </li>
+  <li class="tlypageguide_right" data-tourtarget="#filter-track svg#MODERATE">
+    <div>
+      The variants can be filtered by mousing over a specific label.  To apply multiple filters, click on multiple labels to toggle on or off.
+      <br><br>
+      Click on the Moderate impact.  
+    </div>
+  </li>
+
+  <li class="tlypageguide_top" data-tourtarget="#proband-variant-card #displayed-variant-count">
+    <div>
+      The proband variant card now shows one variant.
+    </div>
+  </li>
+
+  <li class="tlypageguide_top" data-tourtarget="#proband-variant-card #vcf-track #vcf-variants svg g.group g.snp">
+    <div>
+      Click on a variant to lock the tooltip and examine the variant in more detail.
+    </div>
+  </li>
+
+
+  <li class="tlypageguide_top" data-tourtarget="#vcf-variants .tooltip">
+    <div>
+      Variant details are shown in the tooltip.      
+    </div>
+  </li>
+  "#vcf-variants .tooltip a:contains('bookmark')": {},
+  <li class="tlypageguide_top" data-tourtarget="#vcf-variants .tooltip #bookmarkLink">
+    <div>     
+      Click on the 'bookmark this variant' link to bookmark this variant.
+    </div>
+  </li>
+  </li>
+  <li class="tlypageguide_right" data-tourtarget="#show-bookmarks-link">
+    <div>
+      Click on the 'Bookmark Variants' link in the navigation bar to see a list of all bookmarked variants.
+    </div>
+  </li>
+  </li>
+  <li class="tlypageguide_right" data-tourtarget="#bookmark-card #bookmark-panel">
+    <div>
+      All variants that are bookmarked are listed here.
+    </div>
+  </li>
+  <li class="tlypageguide_top" data-tourtarget="#bookmark-card .favorite-indicator">
+    <div>
+      When reviewing a number of bookmarks, you can star the ones that are noteworthy.      
+    </div>      
+  </li>
+
+  <li class="tlypageguide_top" data-tourtarget=".navbar-fixed-top #help-link">
+    <div>
+      To learn more about the Bookmark Variants feature, select 'Tour bookmarks' from the 'Help' menu.
+    </div>    
+  </li>
+
+   <li class="tlypageguide_right" data-tourtarget="#show-select-genes-link">
+    <div>
+      Click on the 'Select Genes' link in the navigation bar.
+    </div>
+  </li>
+
+
+   <li class="tlypageguide_right" data-tourtarget="#get-genes-dropdown">
+    <div>
+      Click on 'Import Gene set' dropdown.  You can type in or copy/paste a gene list here. 
+    </div>
+  </li>
+
+
+   <li class="tlypageguide_right" data-tourtarget="#get-acmg-genes">
+    <div>
+      Click on 'ACMG 56 Genes' button.  These genes have been selected and now appear in the Select Genes panel. 
+    </div>
+  </li>
+
+
+   <li class="tlypageguide_right" data-tourtarget="#phenolyzer-search-box">
+    <div>
+      Our application has integrated Phenolyzer, which produces a ranked gene list based on
+      a phenotype terms.
+    </div>
+  </li>
+
+   <li class="tlypageguide_right" data-tourtarget=".navbar-fixed-top .nav #help-link">
+    <div>
+       To learn more about running Phenolyzer in gene.iobio, select  'Tour phenolyzer' from the 'Help' menu.
+    </div>
+  </li>
+   
+   <li class="tlypageguide_right" data-tourtarget="#help-link">
+    <div>
+      This completes the gene.iobio tour.  You can run the tour any time by 
+      selecting 'Tour gene.iobio' from the 'Help' menu.
+      <br>
+      <br>
+      <strong><em>Click the close button to end or click on next arrow > to re-run the tour.</em></strong>
+      <br>
+      <br>
+    </div>
+  </li>
+   <li class="tlypageguide_right" data-tourtarget=".navbar-fixed-top">
+    <div>
+      Starting the gene.iobio tour over...
+      <br>
+      <br>
+      <strong><em>To end this tour, click the close button.</em></strong>
+      <br>
+      <br>
+    </div>
+  </li>
+
+</ul>
+
+
+<!-- Tour of bookmarks functionality -->
+<ul id="tourBookmarks"  data-tourtitle="bookmarks">
+
+ 
+
+  <li class="tlypageguide_top" data-tourtarget="#feature-matrix">
+    <div>
+      You can bookmark variants by clicking on a variant column in the Ranked Variants card.
+      <br><br>
+      Bookmark a variant now by clicking on a column and then clicking on the 'Bookmark' link in the tooltip.
+      Do this a few times to bookmark multiple variants.
+    </div>
+  </li>
+  <li class="tlypageguide_top" data-tourtarget="#proband-variant-card #vcf-track">
+    <div>
+      You can also bookmark a variant by clicking on a variant and then clicking on the 'Bookmark' link in the
+      tooltip.  
+      <br><br>
+      Click on a variant and click on the 'Bookmark' link in the tooltip.
+    </div>
+  </li>
+  <li class="tlypageguide_top" data-tourtarget="#vcf-variants .tooltip #bookmarkLink">
+    <div>     
+      Or you can click on the 'bookmark variant' link here to bookmark variant you are inspecting.
+    </div>
+  </li>
+  </li>
+  <li class="tlypageguide_right" data-tourtarget="#show-bookmarks-link">
+    <div>
+      Click on the 'Bookmark Variants' to see a list of all bookmarked variants.
+    </div>
+  </li>
+  </li>
+  <li class="tlypageguide_right" data-tourtarget="#bookmark-card #bookmark-panel">
+    <div>
+      All variants that are bookmarked are listed here.  You can click on a bookmark
+      link to show the variant in the main app area.
+    </div>
+  </li>
+  <li class="tlypageguide_top" data-tourtarget="#bookmark-card .favorite-indicator">
+    <div>
+      When reviewing a number of bookmarks, you can star the ones that are noteworthy.
+    </div>
+  </li>
+  <li class="tlypageguide_left" data-tourtarget="#bookmark-card #edit-bookmarks">
+    <div>
+      To remove any bookmarks, click on the Edit link.  Then click the X next to the bookmarks you wish to remove.    
+    </div>    
+  </li>
+
+  <li class="tlypageguide_top" data-tourtarget="#bookmark-card #import-bookmarks-dropdown">
+    <div>
+      If you are using a variant priorization app like GEMINI and have a list of variants,
+      you can import them as bookmarks here.
+      <br><br>
+      1. Copy (ctrl+C) a tab-delimited list of variants.
+      <br><br>
+      2. Click on the 'Import' dropdown.
+      <br><br>
+      3. Paste (ctrl+V) your buffer into the text area.
+      <br><br>
+      4. Press the 'Done' button.
+    </div>
+  </li>
+   <li class="tlypageguide_top" data-tourtarget="#bookmark-card #export-bookmarks-dropdown">
+    <div>
+      You can export the bookmarked variants into a tab-delimited file by clicking
+      on the 'Export' dropdown.
+      <br><br>
+      The exported list will appear in a new tab in your browser window.  
+    </div>
+  </li>
+
+</ul>
+
+
+<!-- Tour of phenolyzer functionality -->
+<ul id="tourPhenolyzer" data-tourtitle="phenolyzer">
+
+   <li class="tlypageguide_right" data-tourtarget="#show-select-genes-link">
+    <div>
+      Click on the 'Select Genes' link in the navigation bar.
+    </div>
+   </li>
+   
+   <li class="tlypageguide_right" data-tourtarget="#genes-card #phenolyzer-search-box .selectize-control">
+    <div>
+      Our application has integrated Phenolyzer, which produces a ranked gene list based on
+      a phenotype terms.
+      <br><br>
+      Enter the search term 'breast cancer'
+    </div>
+   </li>
+
+
+   <li class="tlypageguide_top" data-tourtarget="#genes-card #phenolyzer-go-button">
+    <div>
+      Press the 'Run' button.  In about a minute, phenolyzer will return a
+      ranked gene list.
+    </div>
+   </li>
+
+
+   <li class="tlypageguide_top" data-tourtarget="#genes-card #phenolyzer-results">
+    <div>
+      When the Phenolyzer run has finished, the ranked gene list will appear. 
+      By default, the top 10 genes are selected.  
+      <br><br>
+      By checking a gene, it will appear as a 
+      gene button in the main navigation area.
+    </div>
+   </li>
+
+
+   <li class="tlypageguide_top" data-tourtarget="#gene-badge-button:eq(0)">
+    <div>
+      For each of the selected genes, a gene button will appear.
+      <br><br>
+      Notice that a checkmark will appear when analysis is done for a gene.
+      <br><br>
+      Badges will appear to the left of the gene name, indicating the highest impact
+      variant or variants found that have a high SIFT or Polyphen score, a ClinVar
+      entry, or a denovo or recessive mode of inheritance.  
+      <br><br>
+      Notice that this gene button has
+      an orange rectangle, indicating that at least one variant of moderate impact exists
+      for this gene.
+    </div>
+    </li>
+
+    <li class="tlypageguide_top" data-tourtarget="#manage-gene-list">
+      <div>
+        To analyze the variants across all of the genes, click the 'Analyze all' link.  The
+        app will analyze each gene, one at a time, in the background.  When analysis is complete for
+        a gene, the green checkmark along with any gene badges will appear.
+      </div>
+    </li>
+
+</ul>
+
+

@@ -216,7 +216,9 @@
 
 [[attach:${doc.getObject('PhenoTips.VCF').getProperty('filename').value}]] $services.localization.render("phenotips.vcf.referenceGenome", ["$!{doc.getObject('PhenoTips.VCF').getProperty('reference_genome').value}"])
 #end
-{{/velocity}}</content>
+{{/velocity}}
+{{html}}&lt;span class="buttonwrapper"&gt;&lt;a class="button" href="?sheet=PhenoTips.GeneIobioEditor" title="Open Gene.iobio tool"&gt;Gene.iobio tool&lt;/a&gt;&lt;/span&gt;
+{{/html}}</content>
     </property>
     <property>
       <extensionPointId>org.phenotips.patientSheet.section.genotype</extensionPointId>

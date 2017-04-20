@@ -1,0 +1,161 @@
+<div id="genes-card" class="hide">
+    <div class="card-label" >Genes</div>
+
+
+  <div class="col-container">
+
+    <div class="col-main">
+
+        <div id="get-genes-dropdown" class="level-edu level-basic" style="margin-top:-5px;width: 125px;">
+          <div class="btn-toolbar">
+            <div class="btn-group" style="display:inline;">
+
+              <button type="button" style="width:120px;padding-top: 2px;padding-bottom: 1px;" class=" icon-button-sm btn btn-default btn-raised dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+              <i class="material-icons" style="font-size:14px;padding-right:0px;padding-top:2px;">content_paste</i>Import Gene set<span style="margin-left:6px" class="caret"></span>
+              </button>
+
+              <ul class="dropdown-menu " role="menu">
+                <li id="copy-paste-li">
+                  <div style="padding-left: 5px;padding-right: 5px;padding-top:3px;padding-bottom:3px;">
+                    <div>Copy/Paste</div>
+                    <textarea style="width:170px;height:150px;" id="genes-to-copy"></textarea>
+                    <div style="text-align:right">
+                      <button id="get-genes-copy-paste-button" type="submit" onclick="genesCard.copyPasteGenes()" class="icon-button-sm btn btn-default btn-raised" style="margin-left:3px;padding-top:0px;padding-bottom:0px;margin-top:0px;margin-bottom: 1px;">
+                        Done
+                      </button>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="todo hide "><a href="">Upload</a></li>
+              </ul>
+            </div>
+          </div>
+       </div>
+
+      <!-- ACMG genes -->
+      
+              <button id="get-acmg-genes" type="submit" onclick="genesCard.ACMGGenes()" class="level-edu level-basic icon-button-sm btn btn-default btn-raised" style="width:120px;margin-left:0px;padding-top:0px;padding-bottom:0px;margin-top:0px;margin-bottom: 10px;">
+                <i class="material-icons" style="font-size:14px;padding-right:0px;padding-top:2px;">format_list_numbered</i>ACMG Genes<span style="margin-left:6px"></span>
+              </button>
+
+
+      <!-- Gene search box (mygene2 only) -->
+      <div class="sidebar-label hide level-basic">Search for a gene (example: KDM1A)</div>
+      <span id="bloodhound-sidebar" class="level-basic hide" >
+          <input id="enter-gene-name-sidebar" class="level-edu typeahead" style="border: thin solid #cccccc !important;cursor:pointer;margin-top:0px;margin-bottom:0px;margin-right:10px" type="text" data-toggle="tooltip" data-placement="bottom" 
+          placeholder="Gene">
+      </span>     
+
+
+      <!-- Phenolyzer -->          
+       
+        <div id="phenolyzer-search-box" >
+          <div>
+            <h4 class="level-edu level-basic">Phenolyzer</h4>
+            <div class="sidebar-label hide level-basic">Search for a condition (examples: cystic fibrosis, breast cancer)</div>
+            <h4 id="phenolyzer-title" class="hide">Phenolyzer</h4>
+            
+
+            <select id="select-phenotypes" class="level-edu" placeholder="Enter phenotype terms..."/>
+
+
+            <select id="select-phenotype-edutour" class="level-basic" placeholder="Choose disease..." style="display:none;">
+                    <option value="breast_cancer">Breast cancer</option>
+                    <option value="colon_cancer">Colon cancer</option>                   
+                    <option value="b_cell_deficiency" >B Cell deficiency</option>                   
+            </select>
+            
+            <div style="font-size:12px;margin-bottom:5px;">          
+              <span id="powered-by-phenolyzer" class="hide level-basic">Powered by Phenolyzer</span>
+              <div id="phenolyzer-use">
+                For academic &amp; non-profit use. 
+                <a id="phenolyzer-disclaimer"  href="javascript:void(0)" data-toggle="collapse" data-target="#disclaimer" class="collapsed" aria-expanded="false">Disclaimer</a>
+              </div>
+            </div>
+
+            <div style="text-align:center;">
+            
+              <button id="phenolyzer-go-button" type="submit" onclick="genesCard.getPhenolyzerGenes()" class="level-edu level-basic icon-button-sm btn btn-default btn-raised" style="line-height:normal;width:120px;margin-left:3px;padding-top:0px;padding-bottom:0px;margin-top:5px;margin-bottom: 10px;">
+                <svg height="18" width="19">
+                  <g transform="translate(0,1)">
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#search-dna-symbol" width="18" height="18" fill="#5d809d"></use>
+                  </g>
+                </svg>
+
+
+                <span id="phenolyzer-run-label" class="level-edu level-basic">Run</span>
+                <span id="phenolyzer-run-label-long" class="level-edu level-basic hide">Get Genes</span>
+
+              </button>
+            </div>
+
+            <div id="disclaimer" class="collapse" aria-expanded="false" style="">
+              By using the software, you acknowledge that you agree to the terms below:
+
+              For academic and non-profit use, you are free to fork, download, modify, distribute and use the software without restriction.
+
+              For commercial use, you are required to contact Stevens Institute of Innovation at USC directly to discuss licensing options.
+
+              THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+            </div>        
+          </div>
+        </div>
+
+        <!-- loader gif for phenolyzer -->
+        <div class="phenolyzer loader hide" style="margin-top: 20px;margin-bottom: 10px;">
+            <span class="loader-label">Running Phenolyzer...</span>
+            <img src="assets/images/wheel.gif"/>
+        </div>
+
+        <div style="text-align:center">
+
+      	 <div id="phenolyzer-heading" class="hide level-basic">
+
+            <div class="level-edu level-basic" style="margin-bottom:10px;margin-left:50px;margin-right:50px;">
+        
+              <span style="float:left" class="phenolyzer-label">select top</span>
+
+              <input id="phenolyzer-select-range-end" class="phenolyzer-label" type="text" value="10" style="width: 40px;line-height: 13px;margin-left: 2px;">
+
+
+              <button onclick="genesCard.selectPhenolyzerGeneRange()" class="btn btn-raised btn-default icon-button-sm" style="float:left;line-height: 12px;margin-left: 4px;margin-top: 0px;margin-bottom: 0px;padding-top: 3px;padding-bottom: 3px;">Go</button>
+
+
+              <a href="javascript:void(0)" class="phenolyzer-label" onclick="genesCard.deselectPhenolyzerGenes()" style="float: right;">deselect all</a>
+            </div>
+
+            <div style="text-align:center;clear:both">
+                <h5 class="level-edu level-basic">Rank</h5>
+                <h5 class="" style="width: 75px;">Genes</h5>
+                <h5 class="level-edu level-basic" style="margin-right:25px">Score</h5>
+            </div>
+
+          </div>
+
+          <div id="phenolyzer-results" style="clear:both;">
+          </div>
+
+          <div id="phenolyzer-timeout-message" class="hide alert alert-dismissable alert-info" style="background-color: rgb(249, 237, 184); border: solid 1px rgb(237, 201, 103);color: rgb(132, 132, 132);text-align: left;margin-left: 0px;margin-right: 10px;">
+
+              <button type="button" class="close" data-dismiss="alert">×</button>
+              <strong>Warning:  </strong>The Phenolyzer services was unable to return results within 5 minutes.  Consider using a  different search term.
+
+          </div>
+
+        </div>
+    </div>
+
+
+    <div class="col-footer">
+
+        <!-- Legend (mygene2 basic) -->
+
+
+        <div id="legend-placeholder" class="level-basic">
+        </div>
+    </div>
+
+  </div>
+
+</div>

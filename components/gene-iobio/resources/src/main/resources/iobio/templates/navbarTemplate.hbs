@@ -1,0 +1,178 @@
+<div class="navbar navbar-fixed-top shadow-z-nav ">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+          <div class="navbar-brand" >
+                <a id='home'>
+                  <span class="iobioapp">gene</span><span class="iobio">.iobio</span>
+                </a>
+                <div id="basic-mode-title" class="level-mygene2 hide">
+                  basic
+                </div>
+                <div id="advanced-mode-title" class="level-mygene2 hide">
+                  advanced
+                </div>
+                <div id="education-title" class="level-edu"
+                style="text-align:left;font-size: 14px;color: rgb(132,132,132);font-style: italic;">
+                  education edition
+                </div>
+
+          </div>
+
+
+    </div>
+    <div class="navbar-collapse collapse navbar-responsive-collapse">
+
+      <ul class="nav navbar-nav" >
+
+        <li class="level-basic">
+          <form class="navbar-form navbar-left" >
+            <div id="bloodhound" class="form-group">
+              <input id="enter-gene-name" type="text" class="form-control col-sm-8 typeahead" data-toggle="tooltip" data-placement="bottom"  placeholder="Enter Gene name">
+            </div>           
+          </form>
+        </li>
+
+        <li class="level-basic">
+          <a id="show-select-genes-link" href="javascript:void(0)" onclick="$('.navbar li.active').removeClass('active');$(this).parent().addClass('active');showSidebar('Phenolyzer')">
+            <svg height="22" width="22">
+              <g transform="translate(0,0)">
+                <use id="search-dna-glyph" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#search-dna-symbol" width="22" height="22" fill="white"></use>
+              </g>
+            </svg>   
+            <span id="genes-menu-item">
+              <p class="wrapped">Select Genes</p>
+            </span>
+          </a>
+        </li > 
+        <li class="level-basic">
+          <a id="show-filters-link" href="javascript:void(0)" onclick="$('.navbar li.active').removeClass('active');$(this).parent().addClass('active');showSidebar('Filter')">
+            <span class="material-icons">tune</span> 
+            <p class="wrapped">Filter Variants</p>
+          </a>
+        </li>
+
+
+        <li class="level-basic">
+          <a  id="show-bookmarks-link" href="javascript:void(0)" onclick="$('.navbar li.active').removeClass('active');$(this).parent().addClass('active');showSidebar('Bookmarks')">
+            <span class="material-icons">bookmark</span> 
+            <p class="wrapped wide">Bookmark Variants</p>
+          </a>
+        </li> 
+        <li class="level-basic">
+          <a id="call-variants-link" href="javascript:void(0)" onclick="$('.navbar li.active').removeClass('active');$(this).parent().addClass('active');showSidebar('Recall')">
+            <span class="material-icons">dialpad</span> 
+            <p class="wrapped">Call Variants</p>
+          </a>
+        </li>
+
+        <li class="vertical-divider optional level-basic mygene2"></li>  
+
+
+
+        <li>      
+              <!-- Button data modal -->
+              <a href="javascript:void(0)" id="add-data-button"  class="level-edu mygene2 " onclick="$('#dataModal').modal('show')">
+                <span class="material-icons">input</span>    
+                <p class="wrapped">Select Data</p>  
+              </a>
+
+        </li>
+        <li class="optional">
+            <!-- Genome build link -->
+            <a href="javascript:void(0)" id="build-link" class="level-edu-tour mygene2 level-basic" data-toggle="modal" data-target="#dataModal"></a>
+
+        </li>
+         
+       
+      </ul>
+
+
+
+      <ul class="nav navbar-nav navbar-right">
+
+        <li>
+            <a id="button-launch-basic-mode"    class="hide"  onclick="switchToBasicMode()">Go to Basic mode</a>
+            <a id="button-launch-advanced-mode" class="hide"  onclick="switchToAdvancedMode()">Go to Advanced mode</a>
+        </li>
+        <li class="dropdown">
+          <a id="help-link" href="bootstrap-elements.html" data-target="#" class="dropdown-toggle" data-toggle="dropdown">Help
+            <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+        
+            <li>
+              <a id="load-demo-data" style="cursor:pointer" onclick="dataCard.loadDemoData()">
+                <span  style="padding-top: 1px;display: inline-block;" >Load Demo data</span>
+              </a>
+            </li>   
+              <li class="divider"></li>     
+            <li >
+              <a 
+                href="javascript:void(0)" class="help-link"  onclick="$('#tourWelcome').removeClass('open');window.open('http://iobio.io/tags/gene.iobio', '_new');">
+                Blog 
+              </a> 
+            </li>
+
+            <li>
+                <a  href="help_resources.html" target="_new">Tutorials</a>
+            </li>
+
+            <li class="divider"></li>
+
+            <li>
+              <a id="show-main-tour" onclick="$('#splash').addClass('hide');closeSlideLeft()" href="javascript:void(0)" >Tour gene.iobio
+              </a>
+            </li>
+            <li>
+              <a  id="show-phenolyzer-tour" href="javascript:void(0)">Tour phenolyzer </a>
+            </li>
+            <li>
+              <a  id="show-bookmarks-tour"  href="javascript:void(0)">Tour bookmarks</a>        
+            </li>
+
+ 
+
+
+          </ul>
+        </li> 
+
+        <li class="dropdown">
+          <a href="bootstrap-elements.html" data-target="#" class="dropdown-toggle" data-toggle="dropdown">About
+            <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li>
+              <a href="javascript:void(0)" class="level-edu level-basic"  onclick="$('#version-modal').modal('show')">Version&nbsp;<span class="version-number"></span></a>
+            </li>
+            <li>
+              <a href="javascript:void(0)" class="level-edu level-basic"  onclick="$('#citation-modal').modal('show')">Software and Resources</a>
+            </li>
+            <li>
+              <a href="javascript:void(0)" class="level-edu level-basic"  onclick="$('#disclaimer-modal').modal('show')">Disclaimer</a>
+            </li> 
+            <li>
+              <a  id="feedback-link" class="hide level-edu level-edu-tour mygene2" data-toggle="modal" data-target="#feedback-modal">
+                Give us feedback
+              </a>              
+            </li>  
+
+            <li class="divider"></li>
+
+            <li>
+              <a href="http://iobio.io" target="_new">iobio</a>
+            </li>
+            <li>
+              <a  href="http://iobio.io/support.html" target="_new"  onclick="$('#tourWelcome').removeClass('open');">Support the iobio project
+              </a>
+            </li> 
+
+          </ul>
+        </li>       
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,1978 @@
+@import variables
+
+
+// These  are styles for the gene.iobio education edition, with
+// a simplified interface and logic.  Remember to set the isLevelEdu flag
+// in app/globalsDeployment.js
+//@import levelEdu
+
+ 
+
+body
+  font-family: $app-font, sans-serif !important
+  margin-top: -5px 
+
+
+
+.navbar 
+  background-color: $app-color !important
+  margin-bottom: 0px !important
+  min-height: 50px
+  
+
+  .navbar-brand
+    height: 50px
+    margin-top: -6px
+    padding-top: 15px
+
+    #home
+      margin-top: 6px
+
+  .navbar-form
+    margin-top: 10px
+
+  .form-group.is-focused 
+    .form-control
+      background-image: linear-gradient($navbar-lowlight-color, $navbar-hover-color), linear-gradient($navbar-underline-color, $navbar-underline-color)
+
+  .vertical-divider    
+    height: 34px
+    margin: 10px 17px
+    border-left: 1px solid #aba9a9
+      
+  ul.nav
+    >li
+
+      #genes-menu-item
+        overflow: visible
+        display: inline-block
+        vertical-align: top
+        padding-top: 1px
+      
+      >a
+        color: white !important
+        padding-top: 15px !important
+        padding-bottom: 10px !important
+
+        &:hover
+          color: $navbar-hover-color  !important
+          
+          #search-dna-glyph
+            fill: $navbar-hover-color   !important
+
+        p.wrapped
+          width: 50px
+          word-wrap: break-word
+          line-height: 14px
+          display: inline-block
+          vertical-align: top
+          margin-bottom: 0px 
+
+          &.wide
+            width: 70px       
+
+    >li.active
+      color: white !important  
+
+      >a
+        color: white !important
+
+        #search-dna-glyph
+          fill: white !important
+
+
+
+
+h4
+  font-size: 13px
+  color: $app-color
+  margin-bottom: 4px
+  margin-top: 10px
+
+
+h5
+  font-size: 12px
+  color: $app-color
+  margin-bottom: 4px
+  margin-top: 10px
+
+.alertify-notifier .ajs-message 
+  width: 460px 
+
+.alertify-notifier.ajs-right .ajs-message.ajs-visible 
+  right: 472px 
+
+.alertify-notifier .ajs-message.ajs-error 
+  background: rgba(191, 64, 64, 0.95)
+  text-shadow: none 
+
+#nav-card
+  padding-top: 3px
+
+.pagination
+  margin: 0px 0
+
+.pagination > .active > a  
+  color: #fff !important
+  background-color: $app-color !important
+  border-color: $app-color 
+
+.pagination > li > a 
+  line-height: .4
+  color: $text-color !important
+  font-size: 11px 
+
+.pagination > li.prev a
+  font-size: 18px
+  line-height: .7
+  padding-top: 1px
+  padding-bottom: 3px
+  color: $app-color !important
+
+.pagination > li.next a
+  font-size: 18px
+  line-height: .7
+  padding-top: 1px
+  padding-bottom: 3px
+  color: $app-color !important
+
+.nav-stretch
+  position: relative
+
+.nav-left 
+  position: absolute
+  left: 5px
+  top: 0   
+  text-align: left
+  padding-left: 3px
+  padding-top: 5px
+  width:  250px
+
+.nav-right
+  position: absolute
+  right: 5px
+  top: 0
+  width: 250px
+  padding-top: 0px
+
+.nav-center
+  margin: 0px 0px 0 0px
+  position: relative
+
+
+.modal-title
+  font-size: 16px
+  color:  $app-color
+
+.modal-header 
+  .close 
+    opacity: .5
+    font-size: 32px
+
+.form-control,
+.form-group .form-control 
+  background-image: -webkit-gradient(linear, left top, left bottom, from($current-color), to($current-color)), -webkit-gradient(linear, left top, left bottom, from(#D2D2D2), to(#D2D2D2))
+  background-image: -webkit-linear-gradient($current-color, $current-color), -webkit-linear-gradient(#D2D2D2, #D2D2D2)
+  background-image: -o-linear-gradient($current-color, $current-color), -o-linear-gradient(#D2D2D2, #D2D2D2)
+  background-image: linear-gradient($current-color, $current-color), linear-gradient(#D2D2D2, #D2D2D2)
+
+
+.form-group.is-focused .form-control 
+  background-image: -webkit-gradient(linear, left top, left bottom, from($current-color), to($current-color)), -webkit-gradient(linear, left top, left bottom, from(#D2D2D2), to(#D2D2D2))
+  background-image: -webkit-linear-gradient($current-color, $current-color), -webkit-linear-gradient(#D2D2D2, #D2D2D2)
+  background-image: -o-linear-gradient($current-color, $current-color), -o-linear-gradient(#D2D2D2, #D2D2D2)
+  background-image: linear-gradient($current-color, $current-color), linear-gradient(#D2D2D2, #D2D2D2)
+
+.form-group.is-focused .form-control .material-input:after
+  background-color: $current-color
+
+.selectize-dropdown
+  font-size: 12px
+  line-height: 15px
+  color: $text-color
+
+.selectize-input
+  font-size: 12px
+  line-height: 15px
+  padding: 5px 4px 4px 4px
+  -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12)
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12)
+  border-radius: 0 !important
+  border: none !important
+  color: $text-color
+
+#gene-source-box
+  .selectize-input
+    padding-top: 5px
+    padding-bottom: 6px
+
+#phenolyzer-search-box
+  .selectize-input
+    -webkit-box-shadow: none
+    box-shadow: none
+    border: solid thin rgba(204,204,204,1) !important
+    
+
+.selectize-input.focus 
+  -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12)
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12)
+  
+  
+.selectize-input 
+  input 
+    font-size: 12px
+    line-height: 15px
+
+.selectize-control.single 
+  .selectize-input:after 
+    right: 5px
+
+.selectize-control.multi 
+  .selectize-input > div
+    color: $text-color !important
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), inset 0 1px rgba(255, 255, 255, 0.03) !important
+
+.selectize-control.plugin-remove_button  
+  a.remove 
+    color: $text-color !important
+
+#slider-left
+  .selectize-control.plugin-remove_button  
+    a.remove 
+      color: $text-color !important
+
+#slider-left
+  #genes-card
+    .selectize-dropdown-content 
+      overflow-y: scroll
+      overflow-x: hidden
+      max-height: 400px
+
+.animate-twice 
+  -webkit-animation-iteration-count: 2
+  -maz-animation-iteration-count: 2
+  animation-iteration-count: 2
+ 
+.animate-delayed
+  -webkit-animation-iteration-count: 2
+  -moz-animation-iteration-count: 2
+  animation-iteration-count: 1
+  -webkit-animation-delay: 4s
+  -moz-animation-delay: 4s
+  animation-delay: 4s
+  -webkit-animation-duration: 1.2s
+  -moz-animation-duration: 1.2s
+  animation-duration: 1.2s
+  
+#splash-image
+  -webkit-animation-duration: 2s
+  -webkit-animation-delay: 0s
+  -webkit-animation-iteration-count: 1
+  -moz-animation-duration: 2s
+  -moz-animation-delay: 0s
+  -moz-animation-iteration-count: 1
+  animation-duration: 2s
+  animation-delay: 0s
+  animation-iteration-count: 1
+
+//.alertify
+//  border: 1px solid rgb(224, 224, 224)
+//  width: 350px
+//  margin-left: -175px
+
+.alertify 
+  .ajs-header
+    background-color: white
+    border: none 
+
+.alertify 
+  .ajs-footer
+    background-color: white
+    border: none 
+
+.horizontal-center
+  display: -ms-Flexbox
+  -ms-box-orient: horizontal
+  display: -webkit-flex
+  display: -moz-flex
+  display: -ms-flex
+  display: flex
+  justify-content: center
+  -webkit-justify-content: center
+  -moz-justify-content: center
+  -ms-justify-content: center
+
+.vertical-center
+  display: -ms-Flexbox
+  -ms-box-orient: vertical
+  display: -webkit-flex
+  display: -moz-flex
+  display: -ms-flex
+  display: flex
+  flex-direction: column
+  -webkit-justify-flex-direction: column
+  -moz-justify-flex-direction: column
+  -ms-Flexbox-justify-flex-direction: column
+  justify-content: center
+  -webkit-justify-content: center
+  -moz-justify-content: center
+  -ms-justify-content: center
+
+
+.form-group 
+  label.control-label 
+    font-size: 16px !important
+    color: $app-color !important
+
+
+.shadow-z-2
+  box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.17), 0px 1px 6px rgba(0, 0, 0, 0.17)
+
+.shadow-z-1 
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.23), 0 3px 10px rgba(0, 0, 0, 0.16)
+
+.shadow-z-nav
+  box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.37), 0px 1px 6px rgba(0, 0, 0, 0.37)
+
+i.material-icons
+  color:  $app-color
+
+#minimize-button
+  .material-icons
+    font-size: 14px
+    color: $text-color
+
+  &.disabled
+    opacity: .4
+    pointer-events: none
+
+#shrink-button
+  .material-icons
+    font-size: 14px
+    color: $text-color
+
+  &.disabled
+    opacity: .4
+    pointer-events: none
+
+#expand-button
+  .material-icons
+    font-size: 14px
+    color: $text-color
+
+  &.disabled
+    opacity: .4
+    pointer-events: none
+ 
+.btn
+  &.btn-default
+    background-color: #fff
+
+  &.btn-raised
+    background-color: #fff !important
+
+.alert
+  width: 100%
+  background-color: transparent
+  border: none
+  color: $text-color
+  text-align: center
+  font-size: 12px
+  padding: 6px
+
+  &.alert-info
+    background-color: transparent
+    color: $text-color
+
+.alert-dismissable .close, .alert-dismissible .close
+  position: relative
+  top: -2px !important
+  right: 0 !important
+
+
+.alert
+  &.alert-danger
+    background-color: #c55951
+    color: rgba(255,255,255, 1)
+    width: 400px
+    display: block
+    margin: auto
+
+/* autocomplete */
+.ui-menu 
+  .ui-menu-item 
+    font-size: 12px
+    color: $text-color
+
+.ui-state-hover
+  background: #f5fafd
+  color: $text-color
+
+.ui-menu
+  .ui-state-focus
+    background: #f5fafd
+    color: $text-color
+
+.ui-menu
+  .ui-autocomplete 
+    max-height: 400px
+    overflow-y: auto
+    overflow-x: hidden
+
+
+.transcript
+  .selection-box 
+    fill: transparent
+
+#transcript-menu
+  .transcript
+    &.selected
+      .selection-box 
+        stroke: $current-color
+        stroke-width: 2px
+        cursor: pointer 
+
+#select_side_bar_chosen.chosen-container-single .chosen-single
+  line-height: 30px !important
+  height: 30px !important
+  width: 200px
+  font-size: 14px
+  color: $heading-color
+  background-color: white
+
+  div
+    top: 5px !important
+
+.chosen-container-single
+  .chosen-single
+    border-radius: 0px
+    line-height: 20px
+    height: 20px
+    background: none
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12), 0 1px 6px rgba(0, 0, 0, 0.12)
+    border: none
+
+  .chosen-drop
+    border-radius: 0px
+
+  .chosen-single div b
+    background: url('chosen-sprite.png') no-repeat 0px 0px
+
+
+.hint
+  color: rgba(208, 66, 66, 0.95)
+  font-size: 12px
+
+.label
+  padding: 3px 6px 3px 6px !important
+
+.label-warning
+  padding-bottom: 2px !important
+  background-color: transparent !important
+  color: $danger-font-color !important
+  font-weight: normal !important
+  font-size: 12px !important
+
+.label-primary
+  background-color: #6D9652
+
+#no-transcripts-badge
+  font-size: 14px !important
+
+.poweredby
+  margin-right: 10px
+  color: white !important
+  font-size: 13px
+
+  &:visited
+    color: white !important
+
+  &:hover
+    color: $footer-text-color !important
+
+.todo
+  visibility: hidden !important
+
+
+.btn.btn-fab
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12), 0 1px 6px rgba(0, 0, 0, 0.12)
+
+
+.dropdown-menu .divider
+  height: 1px
+  margin: 9px 0
+  overflow: hidden
+  background-color: #e5e5e5
+
+// Don't show the number box 
+.tlypageguide_index 
+  display: none !important 
+
+
+.tlypageguide_shadow
+  background-color: rgba(255, 255, 255, 0)
+  box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0)
+
+  &.tlypageguide-active
+    background-color: transparent !important
+    webkit-box-shadow: none !important
+    box-shadow: none !important
+    border: $tour-hilite-color solid 6px !important
+   
+
+#tlyPageGuideWrapper #tlyPageGuideMessages a.tlypageguide_close
+  color: white !important
+
+  &:hover, &:focus
+    color: white !important
+
+.dropdown-menu > li > a
+  color: $text-color !important
+
+
+.tlypageguide_text
+  padding-bottom: 10px !important
+
+.tlyPageGuideStepIndex 
+  opacity: .3
+
+.tlypageguide-active 
+  .tlyPageGuideStepIndex
+    opacity: 1
+
+// This is for the new next and prev buttons
+#tlyPageGuideWrapper 
+  #tlyPageGuideMessages 
+    min-height: 130px
+
+    span
+      top: 35px !important
+
+    a.tlypageguide_listen
+      color: white !important
+      background-color:  $tour-button-color
+      -webkit-border-radius: 3px 3px 3px 3px
+      -moz-border-radius: 3px 3px 3px 3px
+      -o-border-radius: 3px 3px 3px 3px
+      border-radius: 3px 3px 3px 3px
+      display: block
+      font-size: 12px
+      height: 24px
+      line-height: 26px
+      text-align: center
+      text-decoration: none
+      width: 50px      
+
+    .tlypageguide_text
+      margin-left: 200px
+      margin-right: 200px
+      margin-top: 10px
+      margin-bottom: 10px
+
+
+    .pageguide-nav
+      text-align: center
+      position: absolute
+      bottom: 10px
+      width: 100%
+      margin-top: 13px
+
+
+    a.pageguide-prev
+      color: white !important
+      background-color:  $tour-button-color
+      text-align: left
+      padding-right: 0px
+      vertical-align: top
+      margin-left: -15px
+      margin-right: 40% !important
+      font-size: 28px
+      padding-top: 2px
+      padding-bottom: 3px
+      border-radius: 3px 3px 3px 3px
+      
+
+      &:focus
+        text-decoration: none !important
+        color: white !important
+
+      &:hover
+        text-decoration: none !important
+        color: white !important
+
+      &:before
+        position: relative
+        display: inline-block
+        border-top: 30px solid transparent
+        border-right: 19px solid $tour-button-color
+        border-bottom: 30px solid transparent
+        left: -11px
+        bottom: 10px
+        content: ""
+
+      &.hide
+        visibility: hidden !important
+        display: inline-block !important
+
+
+    a.pageguide-next
+      color: white !important
+      background-color: $tour-button-color
+      text-align: left
+      padding-right: 2px
+      vertical-align: top
+      margin-left: 40% !important
+      margin-right: 10px
+      font-size: 28px
+      padding-top: 2px
+      padding-bottom: 3px
+      border-radius: 3px 3px 3px 3px
+      visibility: visible
+
+      &:focus
+        text-decoration: none !important
+        color: white !important
+
+      &:hover
+        text-decoration: none !important
+        color: white !important
+      
+      &:before 
+        position: relative
+        display: inline-block
+        border-top: 30px solid transparent
+        border-left: 19px solid  $tour-button-color
+        border-bottom: 30px solid transparent
+        right: -87px
+        bottom: 11px
+        content: ""
+
+      &.disabled
+        color: rgba(0, 0, 0, 0.26) !important
+        opacity: .65 !important
+        cursor: not-allowed !important
+
+      &.hide
+        visibility: hidden !important
+        display: inline-block !important
+        
+    
+    a.pageguide-close
+      color: white !important
+      background-color: transparent
+      position: absolute
+      top: 0px
+      right: 15px
+      font-size: 28px
+      text-decoration: none
+
+      &:focus
+        text-decoration: none !important
+        color: white !important
+
+      &:hover
+        text-decoration: none !important
+        color: white !important
+ 
+
+
+html
+  position: relative
+  min-height: 100%
+
+body
+  margin-bottom: 70px
+
+#intro
+  height: 60px
+
+#education-title
+  display: none
+
+#app-disclaimer-link-left
+  font-size: 12px
+  color: white !important
+  text-align: left
+  margin-right: 10px
+  padding-top: 15px
+  padding-left: 3px
+  font-style: italic
+  display: block
+  margin-top: -23px
+  vertical-align: top
+
+#app-disclaimer-link-right
+  display: none
+
+#app-disclaimer
+  font-size: 12px
+  color: rgb(132,132,132)
+
+#credits
+  font-size: 12px
+  color:  rgb(132,132,132)
+
+#versions
+  font-size: 14px
+  color:  rgb(132,132,132)
+  padding-top: 5px
+  margin-bottom: 20px !important
+
+  div
+    margin-bottom: 0px !important
+    clear: both
+
+    .title
+      width: 230px
+      float: left
+      padding-right: 5px
+      clear: none
+      padding-bottom: 7px
+      color: #717171
+      font-weight: 600
+
+    .number
+      width: 220px
+      float: left
+      padding-bottom: 7px
+      clear: none
+
+.citation-title
+  margin-bottom: 0px !important
+  margin-top: 5px !important
+  font-size: 12px 
+  color: #717171
+  font-weight: 600
+  clear: both
+
+.footer
+  position: absolute
+  bottom: 0
+  left: 0px
+  width: 100%
+  height: 45px
+  background-color: $footer-color !important
+
+.icon-credit
+  font-size: 12px
+  color: #eee
+  margin-top: 3px
+
+  a
+    color: #96C774  !important
+
+    &:hover
+      color: #96C774  !important
+
+    &:focus
+      color: #96C774  !important
+  
+  #freepick-info
+    a
+      color: #96C774  !important
+
+      &:hover
+        color: #96C774  !important
+
+      &:focus
+        color: #96C774  !important
+
+.card-label
+  color: $heading-color !important
+  text-transform: uppercase
+
+.gene-card-label
+  color: $app-color !important
+
+.keep-case
+  text-transform: none !important
+
+
+#variant-card-label
+  float: left
+  margin-left: 2px
+  margin-right: 1px
+  text-align: left
+  color: $app-color
+
+#sample-data-label
+  color: $text-color
+
+a
+  color: $link-color !important
+
+  &:hover, &:focus
+    color: $link-color !important
+
+
+.chosen-container a
+  color: $text-color !important
+
+
+
+#variant-card-buttons a.selected
+  font-weight: bold
+
+.form-control-wrapper .material-input:before
+  background-color: $app-color !important
+
+.chart-label
+  color: $text-color
+  margin-left: 4px
+  font-size: 12px
+
+.togglebutton label
+  font-weight: 400
+  cursor: pointer
+  font-size: 12px
+
+.checkbox label .check
+  display: inline-block
+  width: 20px
+  height: 20px
+  border: 2px solid
+  border-radius: 2px
+  overflow: hidden
+  position: relative
+  top: 7px
+  left: -3px
+  margin-right: 11px
+
+.badge
+  display: inline-block
+  min-width: 10px
+  padding: 2px 7px 1px 7px !important
+  font-size: 13px
+  font-weight: 700
+  line-height: 1
+  color: $text-color
+  text-align: center
+  white-space: nowrap
+  border: $text-color
+  border-style: solid
+  vertical-align: baseline
+  background-color: rgb(255, 255, 255)
+  border-radius: 10px
+  border-width: 1px
+
+.badge-label
+  color: $text-color
+  font-size: 13px
+
+.material-dropdown
+  .form-control
+    background: white
+
+  li
+    &.disabled
+      color: rgb(210, 210, 210)
+      cursor: auto
+
+      &:hover
+        background: white
+
+    &:hover
+      background: rgb(200, 200, 200)
+
+#genes-control-track
+  background: white
+  padding-right: 10px
+  padding-top: 10px
+  padding-bottom: 0px
+  margin-bottom: 5px
+  margin-top: 0px
+  padding-left: 10px
+
+#filter-summary-track
+  background: white
+  margin-top: 0px !important
+  padding-bottom: 5px
+  padding-top: 5px
+  width: 100%
+
+#welcome-area
+  text-align: center
+  margin-top: 100px
+  display: flex
+  justify-content: space-around
+
+
+  #welcome-panel
+    background-color: white
+    padding-bottom: 15px
+    padding-top: 15px  
+    max-width: 800px
+    padding-left: 10px
+    padding-right: 10px
+
+    #welcome-label
+      color: $app-color
+      font-size: 17px
+
+    .description-paragraph
+      text-align: left
+      margin-left: 20px
+      margin-right: 20px
+      margin-top: 50px
+      color: $text-color
+      font-size: 15px
+      width: 40%
+
+      li
+        padding-bottom: 10px
+        
+        li
+          padding-bottom: 4px
+
+    button
+      color: $app-color
+      font-size: 15px !important
+      margin-left: 7px
+      margin-right: 7px
+
+    #welcome-screencast-panel
+      width: 60%
+      height: 200px
+      margin-top: 20px
+      margin-bottom: 20px
+      background-color: grey
+      margin-left: 20px
+      margin-right: 20px
+      background-image: url('../../assets/images/screencast-multigene-analysis.png')
+      background-size: cover
+
+      #play-button
+        margin-top: 50px
+        margin-bottom: auto
+        font-size: 100px
+        cursor: pointer
+        opacity: .6
+        color: white
+        font-size: 100px
+  
+
+#matrix-track
+  .matrix-note-text
+    margin-top: -7px
+    color: $hint-color
+    font-style: italic
+
+  #low-quality-legend
+    font-size: 12px
+    margin-left: 20px
+    font-style: italic
+    clear:both
+    overflow: visible
+    float: left    
+
+    #low-quality-legend-box
+      display: inline-block
+      width: 15px
+      height: 15px
+      background-color: #dedede
+      vertical-align: bottom  
+      float: left 
+      margin-top: 5px
+
+
+  #low-quality-legend-text
+    width: 160px
+    float: left
+    margin-left: 5px
+    margin-bottom: 0px  
+    color:  $hint-color
+    font-style: italic
+    line-height: 13px
+
+  #feature-matrix
+    rect.cellbox
+      fill: white
+      stroke: rgb(230, 230, 230)
+      stroke-width: 1px
+
+    .col
+      &.danger
+        rect.cellbox
+          fill: rgba(187, 0, 0, 0.13) 
+
+      &.low-quality
+        rect.cellbox
+          fill: rgba(0, 0, 0, 0.13) 
+
+    .colhdr text
+      font-size: 11px
+      pointer-events: none
+
+    rect.cellbox:hover
+      cursor: pointer
+      font-weight: bold
+
+    .col.active rect.cellbox
+      fill: transparent
+
+    rect.colbox
+      fill: none
+      opacity: 0
+      pointer-events: none
+
+      &.current
+        stroke: $current-frame-color !important
+        stroke-width: 1.5px !important
+        opacity: 1
+        pointer-events: none
+
+    .col.active
+
+      rect.colbox   
+        stroke: $current-frame-color
+        stroke-width: 1px
+        opacity: 1
+
+    text
+      font-size: 12px
+      fill: rgb(120, 120, 120)
+      pointer-events: none
+
+      &.clickable
+        text-decoration: underline
+        fill: $app-color !important
+
+        &:hover
+          fill: $current-color !important
+
+    .axis .tick text.current
+      font-weight: bold !important
+      fill: black !important
+
+    .y.axis .tick
+      .up #arrow-up, .down #arrow-down
+        opacity: 0
+
+  #feature-matrix
+    
+    &.shift-rows
+
+      .y.axis .tick
+        .up #arrow-up, .down #arrow-down
+          fill: #E0E0E0
+          stroke: #ABABAB
+          stroke-width: .5px
+          opacity: 1
+
+        text
+          &:hover, &.current, &.active
+            font-weight: bold
+            fill: $current-color
+
+        .up #arrow-up:hover, .down #arrow-down:hover
+          cursor: pointer
+          fill: $current-color
+
+        pointer-events: all
+
+    
+  #feature-matrix-note
+    padding-left: 180px
+    font-size: 12px
+    margin-top: -5px
+
+  #move-rows
+    float: left
+    font-size: 13px !important
+    color: $text-color !important
+    margin-top: 0px
+
+.icon
+  width: 30px
+  height: 30px
+  background: #eee
+
+#nav-section
+  z-index: 2
+  margin-top: 0px
+  background-color: white
+  margin-bottom: 6px
+
+section
+  text-align: left
+  padding-left: 10px
+  padding-right: 10px
+  clear: both
+
+#color-scheme
+  font-size: 12px
+  margin-bottom: 10px
+  color: rgb(102, 88, 92)
+
+.radio
+  label
+    cursor: pointer
+    padding-left: 30px
+    position: relative
+    padding-top: 2px
+    font-size: 12px
+
+  position: relative
+  display: inline
+  margin-top: 0px
+  margin-bottom: 0px
+
+.checkbox
+  position: relative
+  display: inline
+  margin-top: 0px
+  margin-bottom: 0px
+
+#container
+  margin-top: 0px
+  margin-bottom: 10px
+  margin-right: 4px
+
+
+.hide
+  display: none !important
+
+.invisible
+  visibility: hidden
+
+.visible
+  visibility: visible
+
+.box-shadow
+  box-shadow: 2px 2px 9px 0px rgba(0, 0, 0, 0.15)
+
+.track
+  display: block
+  background-color: white
+  padding-top: 4px
+  padding-bottom: 4px
+  padding-left: 10px
+  padding-right: 10px
+  margin-top: 0px
+  margin-bottom: 5px
+
+
+
+.track-expand
+  font-size: 14px
+  display: block
+  background-color: white
+  padding-top: 4px
+  padding-bottom: 4px
+  padding-left: 10px
+  padding-right: 10px
+  margin-top: 6px
+  margin-bottom: 5px
+
+.track-chart
+  order: 2
+  -webkit-order: 2
+  flex: 1 0 auto
+  -webkit-flex: 1 0 auto
+
+.bars .chartlabel
+  font-size: 8px
+  fill: white
+
+  &.missing
+    fill: none
+
+
+
+.poweredbyheader
+  font-size: 15px
+  color: #96C774  !important
+  font-family: $iobio-font
+  margin-top: 1px
+  margin-bottom: 0px
+
+.iobio
+  font-size: 30px
+  color: white
+  font-family: $iobio-font
+  float: left
+
+
+.beta
+  background: #F06767
+  border-radius: 3px
+  padding: 2px 8px 2px 8px
+  color: white
+  font-size: 19px
+
+.iobioapp
+  font-size: 30px
+  color: white
+  font-family: $iobio-font
+  float: left
+
+
+
+.iobioproject
+  font-size: 18px
+  color: white4 !important
+  font-family: $iobio-font
+  float: right
+  margin-top: 5px
+  line-height: 30px
+
+#app-title-section
+  text-align: center
+  background: white
+  padding-bottom: 0px !important
+
+
+.chart rect
+  fill: rgb(49, 102, 147)
+
+.bar rect
+  opacity: .75
+  fill: rgb(49, 102, 147)
+
+  &.selected
+    fill: rgb(60, 159, 244)
+
+#non-protein-coding
+  text-align: center
+  padding-bottom: 4px
+
+  &.hidden
+    visibility: hidden
+
+#region-track
+  text-align: center
+  margin-bottom: -10px
+  padding-bottom: 0px
+  color: $text-color
+  font-size: 14px
+  margin-left: 10px
+  padding-top: 3px
+
+
+
+#gene-search-bar
+  display: inline-block
+  padding-left: 160px
+
+
+#build-link
+  color: $navbar-hover-color  !important
+  padding-left: 0px
+  display: inline-block
+  margin-top: 1px
+
+#gene-name
+  font-size: 16px 
+  color: $app-color
+  font-weight: bold
+
+#gene-region-info
+  padding-left: 10px
+
+#gene-region-start
+
+#gene-region-end
+  padding-left: 5px
+
+#view-finder-track
+  align-items: center
+
+#region-chart .axis text
+  font-size: 15px
+  fill: rgb(120, 120, 120)
+
+#gene-track
+  padding-top: 0px
+  margin-top: 0px
+  margin-bottom: 0px
+  padding-bottom: 0px
+  clear: both
+
+#bam-track
+  margin-bottom: 0px
+  margin-top: -10px
+  margin-left: 0px
+  margin-right: 0px
+  padding: 0px
+  clear: both
+
+#vcf-track
+  padding: 0px
+  margin: 0px
+
+#track-legend
+  margin-top: 10px
+
+#vcf-count, #vcf-legend
+  display: none
+
+#filter-and-rank-card
+  display: table
+  margin-top: 8px
+
+
+#matrix-track
+  width: 100%
+  display: block
+
+
+#fb-track
+
+#fb-legend, #fb-count, #st-track
+  display: none
+
+.loader
+  img
+    height: 15px
+    width: 15px
+    margin-top: -2px
+
+  text-align: center
+  background-color: white
+  display: table
+  padding-right: 2px
+  padding-left: 2px
+  margin-top: 40px
+  margin-left: auto
+  margin-right: auto
+
+.loader-label
+  color: rgb(111, 111, 111)
+  font-size: 13px
+
+#coordinate-frame 
+  /* don't show rectangle border.  (remove coordinate rectangle) */
+  /* border: $current-frame-color solid 1px */
+  border: none
+  width: 19px
+  position: absolute
+  pointer-events: none
+  opacity: 0
+
+#top-coordinate-frame 
+  border: none 
+  position: relative
+  pointer-events: none
+  top: 0px
+  height: 18px
+  visibility: visible
+  width:  26px
+
+  &.hide
+    visibility:  hidden !important
+    display: block !important
+
+  .coordinate-arrow
+    stroke-width: 1px !important
+    stroke: black !important
+    fill: $arrow-color
+
+.variant-card
+  min-height: 60px
+  padding-bottom: 0px
+  background-color: white
+  margin-top: 0px
+
+  .vcfloader
+    text-align: center
+    background-color: white
+    display: table
+    padding-right: 2px
+    padding-left: 2px
+    margin-top: 0px
+    margin-bottom: 10px
+
+  #bam-track .loader
+    margin-top: -0px !important
+    margin-bottom: 5px !important
+
+.stats-box
+  display: flex
+  flex-direction: row
+  align-items: center
+
+.stats-chart
+  order: 1
+  -webkit-order: 1
+  flex: 0 0 180px
+  -webkit-flex: 0 0 180px
+
+.stats-label
+  margin-bottom: 0px
+
+#variant-heading
+  float: left
+  display: inline-block
+  min-width: 250px
+  max-width: 250px
+  margin-top: 2px
+
+.variant-count
+  order: 2
+  -webkit-order: 2
+  flex: 0 0 40px
+  -webkit-flex: 0 0 40px
+  font-size: 12px
+  margin-top: -8px
+  text-align: center
+
+.hollow-button
+  padding: 10px 27px
+  border: 1px solid #3d8901
+  font-size: 16px
+  color: #3d8901
+  top: 50%
+  background-color: white
+  text-decoration: none
+
+  &:hover
+    color: white
+    background-color: #3d8901
+
+.hollow-small-button
+  padding: 4px
+  border: 1px solid #3d8901
+  font-size: 12px
+  color: #3d8901
+  top: 50%
+  background-color: white
+  text-decoration: none
+  font-family: $iobio-font
+  margin-bottom: 4px
+
+  &:hover
+    color: white
+    background-color: #3d8901
+
+header
+  display: block
+  margin-bottom: 20px
+  font-size: 18px
+
+
+
+
+#matrix-track g.bookmark, #examine-card g.bookmark, #gene-badge-button g.bookmark, .tooltip g.bookmark
+  fill: #3773A7
+  opacity: .7
+
+.arrow_box
+  position: relative
+  background: #ffffff
+  border: 2px solid grey
+  border-radius: 4px
+
+  &:after, &:before
+    bottom: 100%
+    border: solid transparent
+    content: " "
+    height: 0
+    width: 0
+    position: absolute
+    pointer-events: none
+
+  &:after
+    border-color: rgba(255, 255, 255, 0)
+    border-bottom-color: #ffffff
+    border-width: 20px
+    left: 78%
+    margin-left: -20px
+
+  &:before
+    border-color: rgba(45, 143, 193, 0)
+    border-bottom-color: grey
+    border-width: 23px
+    left: 78%
+    margin-left: -23px
+
+  input
+    border: none
+    outline: none
+    width: 87%
+    margin: 8px
+    color: grey
+    font: 400 18px
+
+  button
+    font: 28px
+    margin-top: 4px
+
+#add-track, #call-variants-button
+  visibility: hidden
+
+#bam-depth
+  text-align: left
+  margin-top: 0px
+  min-height: 30px
+
+  .circle
+    stroke: none
+    fill: $current-color
+    pointer-events: none
+
+#vcf-variants .circle, #fb-variants .circle, #vcf-variants .arrow-line, #fb-variants .arrow-line
+  stroke: $arrow-color
+  stroke-width: 2
+
+  fill: none
+  pointer-events: none
+
+#vcf-variants .circle.emphasize, #fb-variants .circle.emphasize, #vcf-variants .arrow-line.emphasize, #fb-variants .arrow-line.emphasize
+  stroke: $arrow-color
+  fill: none
+  stroke-width: 3
+  pointer-events: none
+
+#vcf-variants .arrow, #fb-variants .arrow, #vcf-variants .arrow.emphasize, #fb-variants .arrow.emphasize
+  stroke-width: 3
+  stroke: $arrow-color
+  pointer-events: none
+
+#bam-depth .circle-label
+  fill: $arrow-color
+  font-size: 13px
+  font-weight: bold
+  stroke: none
+  pointer-events: none
+
+.bar
+  stroke: black
+  stroke-width: 1
+
+  &.missing
+    stroke: none
+    stroke-width: 0
+    stroke: none
+    fill: none
+    opacity: 0
+
+#bam-depth path.line
+  stroke: black
+  stroke-width: 1
+  fill: none
+  opacity: .5
+
+.area-chart-gradient-top
+  stop-color: grey
+  stop-opacity: 0.1
+
+.area-chart-gradient-bottom
+  stop-color: grey
+  stop-opacity: 0.6
+
+.axis text
+  font-size: 10px
+  fill: rgb(120, 120, 120)
+
+#zoom-region-chart
+  .axis text
+    font-size: 10px
+    fill: rgb(120, 120, 120)
+    font-style: italic
+
+  padding-left: 0px
+  padding-right: 0px
+  margin-top: -10px
+  margin-bottom: 0px
+  padding-bottom: 0px
+
+#zoom-region-ref-name
+
+#zoom-region-start
+  float: left
+  width: 80px
+  font-size: 12px
+  color: rgb(120, 120, 120)
+
+#zoom-region-end
+  float: right
+  width: 80px
+  font-size: 12px
+  color: rgb(120, 120, 120)
+
+.axis
+  line, path
+    fill: none
+    stroke: lightgrey
+    shape-rendering: crispEdges
+    stroke-width: 1px
+
+#gene-viz .axis
+  line, path
+    fill: none
+    stroke: lightgrey
+    shape-rendering: crispEdges
+    stroke-width: 3px
+
+#zoom-region-chart .axis
+  line, path
+    fill: none
+    stroke: lightgrey
+    shape-rendering: crispEdges
+    stroke-width: 3px
+
+.brush .extent
+  stroke: #000
+  fill-opacity: .125
+  shape-rendering: crispEdges
+
+
+.variant
+  opacity: 1
+  stroke: #000
+  stroke-width: 1px
+  stroke-opacity: .3
+
+  &.current
+    stroke: #036DB7 !important
+    stroke-width: 1.5px !important
+    stroke-opacity: 1 !important
+
+.filter-symbol
+  stroke: #000 !important
+  stroke-width: 1px !important
+  stroke-opacity: .3 !important
+
+.ibo-variant
+  .reference
+    stroke: rgb(150, 150, 150)
+
+  .name
+    font-size: 18px
+    fill: rgb(120, 120, 120)
+
+  .arrow
+    stroke: rgb(150, 150, 150)
+    fill: none
+
+  .axis
+    path, line
+      fill: none
+      stroke: lightgrey
+      shape-rendering: crispEdges
+
+    font-size: 10px
+
+.brush-line, .dashed
+  stroke: rgb(150, 150, 150)
+  stroke-dasharray: 5,5
+
+.divider text
+  font-size: 12px
+  fill: rgb(120, 120, 120)
+
+
+.btn
+  text-transform: none
+
+
+#variant-card-buttons .btn
+  border-right: 1px solid rgb(235, 235, 235)
+  border-bottom: 1px solid white
+
+  &:last
+    border-right: 1px solid white
+
+  &:hover
+    border-bottom: 1px solid #009587
+
+.icon-button
+  padding-right: 10px
+  padding-left: 10px
+  padding-top: 6px
+  padding-bottom: 6px
+  line-height: 22px
+  font-size: 12px
+  color: $text-color !important
+
+.icon-button-sm
+  padding-top: 4px
+  padding-bottom: 4px
+  padding-left: 6px
+  padding-right: 6px
+  line-height: 22px
+  font-size: 12px
+  color: $text-color !important
+
+.icon-button-extra-sm
+  padding-top: 3px
+  padding-bottom: 3px
+  padding-left: 4px
+  padding-right: 3px
+  line-height: 10px
+  font-size: 12px
+  color: $text-color !important
+
+.icon-button i, .icon-button-sm i
+  float: left
+  font-size: 22px
+  padding-right: 4px
+  color: $app-color !important
+
+#button-find-missing-variants
+
+#bloodhound .typeahead
+  min-width: 140px
+  max-width: 140px
+  font-size: 18px
+  vertical-align: middle !important
+
+
+.results
+  text-align: left
+  color: $text-color
+
+.tt-input, .tt-hint
+  padding: 5px 8px !important
+  font-size: 18px !important
+  line-height: 24px
+  outline: none !important
+  border: none !important
+
+.tt-input
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075)
+
+.tt-hint
+  color: #999
+
+.tt-dropdown-menu
+  width: 150px
+  margin-top: 2px
+  padding: 4px 0
+  background-color: #fff
+  border: 1px solid #ccc
+  border: 1px solid rgba(0, 0, 0, 0.2)
+  border-radius: 8px
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2)
+  color: $text-color
+
+.tt-dataset-name
+  max-height: 400px
+  overflow-y: scroll
+
+
+.tt-suggestion
+  padding: 3px 20px
+  font-size: 18px
+  line-height: 24px
+
+  &.tt-cursor
+    color: #fff
+    background-color: #0097cf
+
+  p
+    margin: 0
+
+// Material design checkboxes
+.checkbox
+
+  input[type=checkbox]:checked + .checkbox-material .check
+    border-color: $app-color
+
+    &:before
+      color:  $app-color
+  
+  label
+    font-size:    12px
+    line-height:  13px
+    color:        $text-color  
+
+    .check
+      margin-right: 0px
+
+  .checkbox-material
+    top: 0px
+
+    .check
+      width: 18px
+      height:  18px
+      top: 5px
+      left: 0px
+      
+      &:before
+        margin-top:  -5px
+        margin-left:  5px  
+
+
+.col-container
+  display: flex
+  flex-direction: column
+  align-content: space-between
+  height: 100%
+
+.col-main
+  flex: 1
+  flex-grow: 1
+
+.col-footer
+  flex: 2
+  flex-grow: 0
+  align-self: flex-end
+
+
+@import slideout
+
+@import filters
+
+@import symbols
+
+@import datasource
+
+@import tooltip
+
+@import bookmarks
+
+@import genes
+
+@import recall
+
+@import info
+
+@import feedback
+
+@import legend
+
+// This style adds a panel to the top of the main view, explaining how
+// gene.iobio works in Mygene2.  There are nav buttons to go
+// from beginner to advanced modes
+//@import mygene2
+
+// This style is for  Beginner mode of gene.iobio, a simplified version
+// of the app. Uncomment this import to turn on styling for the Beginner mode.
+//@import levelBasic
+
+
+
+@media screen and (max-device-width: 1030px), screen and (max-width: 1030px)
+  #region-track
+    margin-left: 200px !important
+
+@media screen and (max-device-width: 800px), screen and (max-width: 800px)
+
+
+  #region-track
+    margin-left: 200px !important
+
+@media screen and (max-device-width: 1250px), screen and (max-width: 1250px)
+  .navbar
+    ul.nav 
+      > li 
+        > a 
+          padding-right: 13px
+          padding-left:  13px
+
+
+
+@media screen and (max-device-width: 1140px), screen and (max-width: 1140px)
+  .navbar
+
+    ul.nav 
+
+      > li 
+
+        .navbar-form
+          margin-right: 25px
+
+        #genes-menu-item
+          vertical-align: initial
+          padding-top: 0px
+
+        > a 
+          padding-right: 11px
+          padding-left:  11px
+
+          .material-icons
+            display: none
+
+          svg
+            display: none
+
+  #slider-left 
+    .navbar
+      ul.nav 
+
+        > li 
+          padding-top: 8px
+
+          > a
+            padding-top: 3px !important
+
+          > a#clear-filters-link
+            padding-top: 0px !important
+
+  #close-slide-left
+    top: 12px
+
+@media screen and (max-width: 990px)
+
+  .navbar
+
+    .navbar-brand
+      margin-top: 0px
+      padding-top: 10px
+      margin-right: 0px
+
+      #home
+        margin-right: 10px
+        
+      .iobio
+        font-size: 28px
+      .iobioapp
+        font-size: 28px
+
+
+    #bloodhound .typeahead
+      min-width: 125px
+      max-width: 125px
+      font-size: 16px !important
+
+    .tt-input, .tt-hint
+      padding: 1px 1px !important
+      font-size: 16px !important
+      line-height: 22px
+
+
+
+    ul.nav 
+
+      > li 
+        &.optional
+          display: none  
+
+        .navbar-form
+          margin-left: 10px
+          margin-right: 10px
+
+        > a 
+          padding-right: 11px
+          padding-left:  11px
+
+          .material-icons
+            display: none
+
+          svg
+            display: none
+
+        .navbar-form
+          padding-right: 5px
+          padding-left: 2px
+
+
+
+@media screen and (max-width: 934px)
+
+  .navbar
+
+    ul.nav 
+
+      > li
+
+        > a 
+          font-size: 12px
+          padding-right: 6px
+          padding-left:  6px
+
+          p.wrapped
+            &.wide
+              width: 60px
+

@@ -1,0 +1,122 @@
+<div id="sample-data-panel">
+  <div id="add-name" class="fullview" style="display:table">
+    <div id="sample-data-label"  style=";width:105px;">PROBAND</div>
+    <div style="display:table-cell;width:100%">
+      <input id="datasource-name" class="form-control input-sm" placeholder="Enter name" type="text"/>
+    </div>
+  </div>
+
+  <div id="add-vcf-track" class="fullview" style="display:table">
+      
+      <div id="add-vcf-track-toolbar" class="btn-toolbar" style="width:110px;">
+        <div class="btn-group" style="display:  inline;" >
+
+          <button type="button" id="vcf-dropdown-button" style="font-size:11px;width:95px;padding-top: 1px;padding-bottom: 0px;" class="icon-button-sm btn btn-raised btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+          <i class="material-icons" style="font-size:14px;padding-right:0px;padding-top:2px;">dialpad</i>
+            Variants <span class="caret"></span>
+          </button>
+
+          <ul class="dropdown-menu" role="menu">
+            <li id="vcf-file-line-item" style="">
+                <div class="file"  id="vcf-file-selector-item">
+                    <input type="file" name="files[]" id="vcf-file-upload" multiple="">
+                    <label class="file-button" for="vcf-file-upload">Choose VCF File</label>
+                </div>
+            </li>
+            <li>
+                <a id="display-vcf-url-item"  href="#">Enter URL for VCF</a>
+            </li>  
+            <li role="presentation" class="divider"></li>
+
+            <li class="disabled" style="text-align: center;color: grey;font-size: 12px;font-style: italic;">  
+              Sample Datasets
+            </li>
+            <li>
+                <a id="display-platinum-vcf-url-item"  href="#">Platinum Trio</a>
+            </li>  
+            <li role="presentation" class="divider"></li>
+            <li>
+                <a id="clear-vcf" href="javascript:void(0)">Clear</a>
+            </li>  
+          </ul>
+        </div>
+      </div>
+
+      <div style="display:table-cell;width:100%;vertical-align:middle;">
+        <input  id="url-input" type="text" value="" class="form-control input-sm empty hide" placeholder="http://...vcf.gz">
+        <input id="vcf-file-info" type="text" value="" readonly=""  style="background-color: #FFFFFF;font-size:10px;" class="form-control input-sm empty hide">
+      </div>
+
+  </div>    
+
+  <div class="vcf-sample loader hide" style="margin-top:0px;margin-left: 110px;">
+      <span class="loader-label" style="font-size:11px;">Accessing file header</span>
+      <img src="assets/images/wheel.gif" style="height:17px;width:17px;">
+  </div>
+      
+  <span id="vcf-sample-box" class="fullview hide">
+      <span style="font-size: 11px;width: 100px;display: inline-block;color:rgb(132,132,132);vertical-align: top;padding-top: 4px;">
+        Sample
+      </span>
+      <div id="vcf-sample-select-box"  style="display:inline-block;width:200px;">
+        <select id="vcf-sample-select" style="font-size:10px;" data-placeholder="Choose a sample...">
+        </select>
+      </div>
+  </span>
+
+ 
+  <div id="add-bam-track" class="fullview" style="display:table">
+
+    <div id="add-bam-track-toolbar" class="btn-toolbar" style="width:110px;" >
+      <div class="btn-group" style="display:inline;">
+
+          <button type="button" id="bam-dropdown-button" style="width:95px;font-size:11px;padding-top: 1px;padding-bottom: 0px;"
+          class="icon-button-sm btn btn-default btn-raised dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+
+            <i class="material-icons" style="margin-left:-5px;padding-left:0px;font-size:18px;transform: rotate(180deg);">power_input</i>          
+            Alignments 
+            <span class="caret"></span>
+          </button>
+
+          <ul class="dropdown-menu" role="menu">
+            <li style="">
+                 <div id="bam-file-selector-item" class="file">
+                    <input type="file" name="files[]" id="bam-file-upload" multiple="">
+                    <label class="file-button" for="bam-file-upload">Choose BAM File</label>
+                </div>
+            </li>
+            <li>
+                <a id="display-bam-url-item" href="#">Enter URL for BAM</a>
+            </li>
+            <li role="presentation" class="divider"></li>
+
+            <li class="disabled" style="text-align: center;color: grey;font-size: 12px;font-style: italic;">  
+              Sample Datasets
+            </li>    
+            <li>
+                <a id="display-platinum-bam-url-item" href="#">Platinum Trio</a>
+            </li>    
+             <li role="presentation" class="divider"></li>
+           <li>
+                <a id="clear-bam" href="javascript:void(0)">Clear</a>
+            </li>  
+          </ul>
+      </div>
+    </div>
+    
+
+    <div style="display:table-cell;width:100%;vertical-align:middle;">
+        <input  id="bam-url-input" type="text" class="form-control input-sm hide" value="" placeholder="http://...bam"/>
+        <input id="bam-file-info" type="text" value="" readonly="" style="background-color: #FFFFFF;font-size:10px;"
+        class="form-control input-sm empty hide"/>
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+</div>

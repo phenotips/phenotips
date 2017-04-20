@@ -1,0 +1,141 @@
+@font-face {
+	font-family: DIN; 
+	src:         url('../fonts/DIN-Regular.ttf');
+	font-weight: normal;
+	font-style:  normal;
+}
+@font-face {
+	font-family: DIN; 
+	src:         url('../fonts/DIN-Medium.ttf');
+	font-weight: bold;
+	font-style:  normal;
+}
+@font-face {
+	font-family: DIN; 
+	src:         url('../fonts/DIN-Bold.ttf');
+	font-weight: bolder;
+	font-style:  normal;
+}
+@font-face {
+	font-family: DIN; 
+	src:         url('../fonts/DIN-Light.ttf');
+	font-weight: 100;
+	font-style:  normal;
+}
+
+body#edu-tour-welcome {
+	background-color: #1D287B;
+	font-family: 'DIN' !important;
+}
+#banner {
+	background-image: url("../images/exhibit-pattern.png"); 
+	height: 70px;
+	text-align: left;
+}
+h1 {
+	color: white;
+	font-family: 'DIN' !important;
+	font-size: 47px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	font-weight: bolder;
+}
+h2 {
+	color: #F3E6B2;
+	font-family: 'DIN' !important;
+	font-weight: bold;
+	font-size: 38px;
+	margin-top: 10px;
+}
+h3 {
+	color: #F3E6B2;
+	font-family: 'DIN' !important;
+	font-weight: bold;
+	font-size: 24px;
+	margin-top: 10px;
+}
+.app {
+	color: white !important;
+}
+
+#container {
+	text-align: center;
+}
+
+#button-container {
+	text-align: center;
+	margin-top: 0px;
+
+}
+
+#video-container {
+	text-align: center;
+	margin-top: -60px;
+	margin-left: 160px;
+	margin-right: 160px;			
+}
+
+.exhibit-button {
+	color: white !important;
+	background-color: rgba(165, 185, 65, 1) !important;
+	text-transform: none !important;	
+	font-family: 'DIN' !important;	
+	font-size: 14px !important;	
+}
+.exhibit-button.large {
+	width: 80%;
+	height: 90px;
+	font-size: 30px !important; 
+	text-align: center;
+	vertical-align: middle;
+	margin: auto;
+	display: block;
+	margin-top: 50px;
+	box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.57), 0 3px 1px -2px rgba(0, 0, 0, 0.68), 0 1px 5px 0 rgba(0, 0, 0, 0.67);
+}
+.exhibit-button.fat.large {
+	height: 110px;
+}
+
+#start-over {
+	font-size: 20px !important;
+	margin-left: 10px;
+}
+
+.edu-cases {	
+	-webkit-animation-iteration-count: 1;
+	-moz-animation-iteration-count: 1;
+	animation-iteration-count: 1;
+	-webkit-animation-delay: .1s;
+	-moz-animation-delay: .1s;
+	animation-delay: .1s;
+	-webkit-animation-duration: 1.2s;
+	-moz-animation-duration: 1.2s;
+	animation-duration: 1.2;
+}
+
+#thankyou {
+	position: absolute;
+    bottom: 0px;
+    width: 100%;
+    background: #314096;
+    padding: 10px;
+}
+
+#thankyou #header {
+	color: rgba(165, 185, 65, 1);
+	font-size: 18px;
+	margin-top: 25px;
+	margin-bottom: 5px;
+	text-align: center;
+}
+#thankyou span {
+	margin-left: 20px;
+	font-size: 23px;
+}
+#thankyou img {
+	margin-left: 20px;
+	font-size: 23px;
+}
+
+

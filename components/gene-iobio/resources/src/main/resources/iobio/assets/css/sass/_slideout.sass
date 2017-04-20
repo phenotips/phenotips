@@ -1,0 +1,268 @@
+/* Bootstrap accordion
+
+#slider-left
+
+  #slider-left-content
+    a
+      color: $sidebar-link-color !important
+
+  .navbar
+    background-color: $sidebar-color !important
+    min-height: 30px !important
+
+    .navbar-collapse
+      margin-left: -22px
+      margin-right: -18px
+
+    .container-fluid
+      margin: 0px
+      padding: 0px
+
+  .nav
+    li
+      padding-top: 5px
+      padding-bottom: 4px
+      max-width: inherit
+      margin-left: 7px
+      margin-right: 7px
+      text-align: center
+
+      a
+        font-size: 14px
+        padding: 4px 8px 0px 2px  !important
+
+        &:hover
+          background-color: initial
+        &:focus
+          background-color: initial
+
+      &.active
+        background-color: white  !important
+        
+        a
+          color: $app-color !important
+
+          #search-dna-glyph
+            fill: $app-color !important          
+
+
+  .btn.btn-raised 
+    background-color: $sidebar-button-color !important
+    color: $sidebar-text-color !important
+
+  textarea
+    background-color: $sidebar-button-color !important
+  
+  .icon-button-sm
+    color:  $sidebar-text-color !important
+
+  .icon-button 
+    i 
+      color:  $sidebar-link-color !important
+
+  .icon-button-sm
+    i 
+      color:  $sidebar-link-color !important
+
+
+
+#slider-left
+
+  .card-label
+    display: none
+
+#close-slide-left-glyph
+  color: $sidebar-color
+  line-height: .8
+  font-size: 36px
+  font-weight: bold
+
+.close-button
+  padding-top: 50px
+  z-index: 100
+  font-size: 14px
+  cursor: pointer
+  text-align: right
+  vertical-align: middle
+  color: $sidebar-text-color !important
+
+  &:hover
+    color: $sidebar-link-color !important
+
+#slide-buttons
+  position: absolute
+  top: 50px
+  left: 0
+  transition: all 0.6s ease
+  -webkit-transition: all 0.6s ease
+  -moz-transition: all 0.6s ease
+  -ms-transition: all 0.6s ease
+  -o-transition: all 0.6s ease
+  min-height: 75px
+  z-index: 20
+
+#slider-left
+  position: fixed
+  top: 55px
+  left: 0px
+  width: 356px
+  height: 100%
+  transition: width 0.6s ease
+  -webkit-transition: width 0.6s ease
+  -moz-transition: width 0.6s ease
+  -ms-transition: width 0.6s ease
+  -o-transition: width 0.6s ease
+  background-color: $sidebar-color
+
+
+#slider-left-content
+  height: 100%
+  width: 352px
+  background-color: $sidebar-body-color
+  overflow-y: scroll
+  margin-top: 0px
+  padding-left: 10px
+  padding-right: 5px
+  padding-bottom: 10px
+  padding-top: 0px
+
+  .card-label
+    margin-bottom: 10px
+
+#close-slide-left
+  position: fixed
+  left: 324px
+  top: 8px
+
+.icon-button.sidebar-button
+  margin-bottom: 0px !important
+  margin-left: 2px !important
+  padding-left: 0px !important
+  padding-right: 0px !important
+  padding-top: 4px !important
+  font-size: 11px !important
+  margin-top: 20px !important
+  word-break: break-all !important
+  width: 34px !important
+  height: 48px !important
+  white-space: normal !important
+  line-height: 13px !important
+  background-color: rgba(117, 180, 245, 0.22) !important
+  box-shadow: -3px 2px 3px 0 rgba(0, 0, 0, 0.34),-2px -2px 2px 0 rgba(0, 0, 0, 0.14)!important
+
+  &.closed
+    box-shadow: 0 0 7px rgba(0,0,0,.40) !important
+
+  .material-icons
+    font-size: 18px !important
+    color: white !important
+    margin-bottom: 0px !important
+    display: block !important
+    padding-top: 3px
+
+  .label
+    color: white !important
+    font-size: 9px !important
+    padding: 0px !important
+    line-height: 10px !important
+    word-break: break-word !important
+    white-space: normal !important
+    background-color: transparent !important
+    font-weight: 100
+    display: block
+    padding-top: 4px !important
+    top: 0 !important
+    margin-left: -3px
+
+  &.selected
+    background-color: $sidebar-body-color !important
+    color: $app-color !important
+    font-weight: normal !important
+    box-shadow: -6px 2px 6px 0 rgba(0, 0, 0, 0.49),-2px -2px 2px 0 rgba(0, 0, 0, 0.28)!important
+
+    .label, .material-icons
+      color: $app-color !important
+      margin-left: 0px !important
+
+    .label
+      font-weight: normal !important
+
+#slider-icon-bar
+  position: fixed
+  left: 1px
+  top: 0px
+  background-color: $sidebar-color
+  width: 0px
+  height: 100%
+  z-index: 400
+
+  &.closed
+    width: 0px
+
+.push
+  transition: all 0.6s ease
+  -webkit-transition: all 0.6s ease
+  -moz-transition:  0.6s ease
+  -ms-transition: all 0.6s ease
+  -o-transition: all 0.6s ease
+  
+  
+
+.fixed
+  left: 0px
+
+#container
+  margin-left: 0px
+  position: relative !important
+  top: 60px 
+
+.slide-left
+  transform: translate(356px, 0)
+  -webkit-transform: translate(356px, 0)
+  -moz-transform: translate(356px, 0)
+  -ms-transform: translate(356px, 0)
+  -o-transform: translate(356px, 0)
+
+
+
+/* make keyframes that tell the start state and the end state of our object
+@-webkit-keyframes fadeIn
+  from
+    opacity: 0
+
+  to
+    opacity: 1
+
+@-moz-keyframes fadeIn
+  from
+    opacity: 0
+
+  to
+    opacity: 1
+
+@keyframes fadeIn
+  from
+    opacity: 0
+
+  to
+    opacity: 1
+
+.fade-in
+  opacity: 0
+
+  /* make things invisible upon start
+  -webkit-animation: fadeIn ease-in 1
+
+  /* call our keyframe named fadeIn, use animattion ease-in and repeat it only 1 time
+  -moz-animation: fadeIn ease-in 1
+  animation: fadeIn ease-in 1
+  -webkit-animation-fill-mode: forwards
+
+  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)
+  -moz-animation-fill-mode: forwards
+  animation-fill-mode: forwards
+  -webkit-animation-duration: .6s
+  -moz-animation-duration: .6s
+  animation-duration: .6s
+
+

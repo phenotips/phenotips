@@ -1,0 +1,25 @@
+@font-face {
+	font-family: Quicksand; 
+	src:         url('../fonts/Quicksand-Regular.ttf');
+	font-weight: 400;
+	font-style:  normal;
+}
+@font-face {
+	font-family: Quattrocento Sans; 
+	src:         url('../fonts/QuattrocentoSans-Regular.ttf');
+	font-weight: 400;
+	font-style:  normal;
+}
+@font-face {
+	font-family: Quattrocento Sans; 
+	src:         url('../fonts/QuattrocentoSans-Italic.ttf');
+	font-weight: 400;
+	font-style:  italic;
+}
+@font-face {
+	font-family: Quattrocento Sans; 
+	src:         url('../fonts/QuattrocentoSans-Bold.ttf');
+	font-weight: 700;
+	font-style:  normal;
+}
+

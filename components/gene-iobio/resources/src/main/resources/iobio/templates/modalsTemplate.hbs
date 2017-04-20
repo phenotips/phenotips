@@ -1,0 +1,362 @@
+<!-- Tour visual dialog -->
+<div class="modal fade" id="edu-tour-modal" tabindex="-1" role="dialog">
+  <div id="edu-tour-modal-content" class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="padding-top:10px;">        
+      </div>
+      <div class="modal-body" style="padding-top:0px;padding-bottom:0px;font-size:12px;color:rgb(132,132,132)">
+      </div>
+      <div class="modal-footer" style="clear-both">
+          <button type="button" class="btn btn-default icon-button-sm btn btn-default btn-raised" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Disclaimer dialog -->
+<div class="modal fade" id="disclaimer-modal" tabindex="-1" role="dialog">
+  <div id="disclaimer-modal-content" class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="padding-top:10px;">
+        <h4>Disclaimer</h4>
+      </div>
+      <div class="modal-body" style="padding-top:0px;padding-bottom:0px;font-size:12px;color:rgb(132,132,132)">
+     
+                The University of Utah makes no claims that iobio applications, including gene.iobio are approved for clinical use. All users of iobio applications including gene.iobio understand and accept that any information gained by using these applications, whether the information comes from visualization, processing, internal or external databases, or analysis, may not in any way be used for clinical purposes. The University of Utah makes no representation that iobio or gene.iobio is either safe or effective for any intended use for which research may currently be performed.
+
+                iobio, or any iobio applications ARE TO BE USED FOR RESEARCH PURPOSES ONLY. USE FOR CLINICAL PURPOSES IS EXPRESSLY FORBIDDEN. Approval of iobio applications for clinical use has neither been applied for, nor received, in any country, including the United States of America.
+      </div>
+      <div class="modal-footer" style="clear-both">
+          <button type="button" class="btn btn-default icon-button-sm btn btn-default btn-raised" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Version dialog -->
+<div class="modal fade" id="version-modal" tabindex="-1" role="dialog">
+  <div id="version-modal-content" class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="padding-top:10px;text-align:center">
+        <span class="modal-title">gene.iobio&nbsp;<span class="version-number"></span></span>
+      </div>
+      <div class="modal-body" style="margin-top:4px;padding-top:0px;padding-bottom:0px;font-size:12px;color:rgb(132,132,132)">
+
+
+        <div id="versions" >
+          <div><span class="title">Human Genome Reference</span><span class="number">GRCh37, GRCh38</span></div>
+          <div><span class="title">Gencode Human Reference</span><span class="number">19, 25</span></div>
+          <div><span class="title">REFSEQ Human Reference</span><span class="number">ref_GRCh37.p5, ref_GRCh38.p7</span></div>
+          <div><span class="title">Human Phenotype Ontology</span><span class="number">Build #102 (12-15-2015)</span></div>
+          <div><div class="title">Phenolyzer</div><div class="number">1.0.5 (02-21-2015)</div></div>
+          <div><div class="title">Variant Effect Predictor</div><div class="number">Version 87</div></div>
+          <div><div class="title">&nbsp;&nbsp;&nbsp;SIFT</div><div class="number">5.2.2</div></div>
+          <div><div class="title">&nbsp;&nbsp;&nbsp;PolyPhen</div><div class="number">2.2.2</div></div>
+          <div><div class="title">FreeBayes</div><div class="number">v1.0.2-33-gdbb6160-dirty</div></div>
+          <div><div class="title">Samtools</div><div class="number">samtools 1.3.1-33-gb25695b-dirty</div></div>
+          <div><div class="title">vt subset, normalize</div><div class="number">v0.5</div></div>
+          <div><div class="title">ExAC</div><div class="number">Release 0.3.1 (03-13-2016)</div></div>
+          <div><div class="title">1000G</div><div class="number">Phase 3 (05-02-2013)</div></div>
+          <div><div class="title">ACMG Genes</div> <div class="number">v2.0</div></div>
+
+
+        </div>
+      </div>
+      <div class="modal-footer" style="clear-both">
+          <button type="button" class="btn btn-default icon-button-sm btn btn-default btn-raised" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Citations dialog -->
+<div class="modal fade" id="citation-modal" tabindex="-1" role="dialog">
+  <div id="citation-modal-content" class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="padding-top:10px;">
+        <span class="modal-title">Software and Resources</span>
+      </div>
+      <div class="modal-body" style="padding-top:0px;padding-bottom:0px;font-size:12px;color:rgb(132,132,132)">
+
+        <div id="credits">
+
+          <div class="citation-title">Human Phenotype Ontology</div>
+          Sebastian Köhler, Sandra C Doelken, Christopher J. Mungall, Sebastian Bauer, Helen V. Firth, et al.The Human Phenotype Ontology project: linking molecular biology and disease through phenotype data 
+          <a href="http://nar.oxfordjournals.org/content/42/D1/D966.full" target="_new">Nucliec Acids Res. (1 January 2014) 42 (D1): D966-D974 doi:10.1093/nar/gkt1026</a>
+
+          <div class="citation-title">Phenolyzer</div>
+          Yang, Hui, Peter N. Robinson, and Kai Wang. Phenolyzer: phenotype-based prioritization of candidate genes for human diseases. 
+          <a href="http://www.nature.com/nmeth/journal/v12/n9/abs/nmeth.3484.html" target="_new">Nature Methods (2015).
+          </a>
+
+          <div class="citation-title">SnpEff</div>
+           "A program for annotating and predicting the effects of single nucleotide polymorphisms, SnpEff: SNPs in the genome of Drosophila melanogaster strain w1118; iso-2; iso-3.", Cingolani P, Platts A, Wang le L, Coon M, Nguyen T, Wang L, Land SJ, Lu X, Ruden DM. Fly (Austin). <a href="http://snpeff.sourceforge.net/SnpEff_paper.pdf" target="_new">2012 Apr-Jun;6(2):80-92.</a> PMID: 22728672 [PubMed - in process]
+
+          <div class="citation-title">Variant Effect Predictor</div>
+          McLaren W, Pritchard B, Rios D, Chen Y, Flicek P, Cunningham F.
+        Deriving the consequences of genomic variants with the Ensembl API and SNP Effect Predictor.
+        <a href="http://dx.doi.org/10.1093/bioinformatics/btq330" target="_new">Bioinformatics 26(16):2069-70(2010)
+        doi:10.1093/bioinformatics/btq330</a>
+
+        <div class="citation-title">PolyPhen</div>
+        Adzhubei IA, Schmidt S, Peshkin L, Ramensky VE, Gerasimova A, Bork P, Kondrashov AS, Sunyaev SR. Nat Methods <strong>7</strong>(4):248-249 (2010). <a href="http://www.ncbi.nlm.nih.gov/pubmed/20354512" class="urlextern" title="http://www.ncbi.nlm.nih.gov/pubmed/20354512" rel="nofollow">PubMed</a> <a href="/pph2/dokuwiki/_media/nmeth0410-248.pdf" class="media mediafile mf_pdf" title="nmeth0410-248.pdf">PDF</a> <a href="/pph2/dokuwiki/_media/nmeth0410-248-s1.pdf" class="media mediafile mf_pdf" title="nmeth0410-248-s1.pdf">Supplemental Information</a>
+
+        <div class="citation-title">SIFT</div>
+                 Kumar P, Henikoff S, Ng PC. Predicting the effects of coding non-synonymous variants on 
+                 protein function using the SIFT algorithm.
+                 <i>Nat Protoc. 2009</i>;4(7):1073-81.
+         <a href="http://www.ncbi.nlm.nih.gov/pubmed/19561590">PubMed</a> <a href="/www/nprot.2009.86.pdf" target="_blank">PDF</a>
+
+        <div class="citation-title">FreeBayes</div>
+        Garrison E, Marth G. Haplotype-based variant detection from short-read sequencing 
+        <a href="/abs/1207.3907v2">arXiv:1207.3907v2</a> [q-bio.GN]
+  
+          <div class="citation-title">ClinVar</div>
+          Landrum MJ, Lee JM, Riley GR, Jang W, Rubinstein WS, Church DM, Maglott DR. <u>ClinVar: public archive of relationships among sequence variation and human phenotype</u>. Nucleic Acids Res. 2014 Jan 1;42(1):D980-5. doi: 10.1093/nar/gkt1113. PubMed PMID: <a href="/pubmed/24234437">24234437</a>
+        
+          <div class="citation-title">Samtools</div>
+          Li H.*, Handsaker B.*, Wysoker A., Fennell T., Ruan J., Homer N.,
+          Marth G., Abecasis G., Durbin R. and 1000 Genome Project Data
+          Processing Subgroup (2009) The Sequence alignment/map (SAM) format and
+          SAMtools. Bioinformatics, 25,
+          2078-9. [PMID: <a href="http://www.ncbi.nlm.nih.gov/pubmed/19505943">19505943</a>]
+
+          <div class="citation-title">Bamtools</div>
+        BamTools: a C++ API and toolkit for analyzing and managing BAM files</span>. Bioinformatics 2011;27:1691-1692.
+        <a href="/cgi/ijlink?linkType=ABST&amp;journalCode=bioinfo&amp;resid=27/12/1691" class="cit-ref-sprinkles cit-ref-sprinkles-ijlinks"><span class="cit-reflinks-abstract">Abstract</span><span class="cit-sep cit-reflinks-variant-name-sep">/</span><span class="cit-reflinks-full-text"><span class="free-full-text">FREE </span>Full Text</span></a>        
+
+        <div class="citation-title">vt</div>
+        <a rel="nofollow" class="external text" href="http://bioinformatics.oxfordjournals.org/content/31/13/2202">Adrian Tan, Gonçalo R. Abecasis and Hyun Min Kang. Unified Representation of Genetic Variants. Bioinformatics (2015) 31(13): 2202-2204</a>
+
+        <div class="citation-title">ExAC</div>
+        Analysis of protein-coding genetic variation in 60,706 humans<a href="http://biorxiv.org/content/early/2015/10/30/030338">preprint on bioRxiv</a>
+        <br>
+                The authors would like to thank the Exome Aggregation Consortium and the groups that provided exome variant data for comparison. A full list of contributing groups can be found at <a href="/about">http://exac.broadinstitute.org/about</a>.
+
+                <div class="citation-title">1000 Genomes</div>
+          Pilot Analysis<br>
+             <a href="http://www.nature.com/nature/journal/v467/n7319/full/nature09534.html">A map of human genome variation from population-scale sequencing</a> <em>Nature 467, 1061–1073 (28 October 2010)</em>  <br>
+          Phase 1 Analysis <br>
+              <a href="http://www.nature.com/nature/journal/v491/n7422/full/nature11632.html">An integrated map of genetic variation from 1,092 human genomes</a> <em>Nature 491, 56–65 (01 November 2012)</em> <br>
+          Phase 3 Analysis <br>
+              <a href="http://www.nature.com/nature/journal/v526/n7571/full/nature15393.html">A global reference for human genetic variation</a> <em>Nature 526, 68–74 (01 October 2015)</em><br>
+              <a href="http://www.nature.com/nature/journal/v526/n7571/full/nature15394.html">An integrated map of structural variation in 2,504 human genomes</a> <em>Nature 526, 75–81 (01 October 2015)</em>
+   
+          
+        </div>
+
+        <div class="citation-title">ACMG Genes v2.0</div>
+        Kalia SS, Adelman K, Bale SJ, Chung WK, Eng C, Evans JP, Herman GE, Hufnagel SB, Klein TE, Korf BR, McKelvey KD, Ormond KE, Richards CS, Vlangos CN, Watson M, Martin CL, Miller DT. Recommendations for reporting of secondary findings in clinical exome and genome sequencing, 2016 update (ACMG SF v2.0): a policy statement of the American College of Medical Genetics and Genomics.
+       <a href="https://www.ncbi.nlm.nih.gov/pubmed/27854360">Genet Med. 2016 Nov 17. doi: 10.1038/gim.2016.190.</a>
+
+      </div>
+      <div class="modal-footer" style="clear-both">
+          <button type="button" class="btn btn-default icon-button-sm btn btn-default btn-raised" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Manage cache dialog -->
+<div class="modal fade" id="manage-cache-modal" tabindex="-1" role="dialog">
+  <div id="manage-cache-modal-content" class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="padding-top:10px;">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>        
+        <span class="modal-title">Manage cache of analyzed genes</span>
+      </div>
+      <div class="modal-body" style="padding-top:0px;padding-bottom:0px;font-size:12px;color:rgb(132,132,132)">
+     
+               <div >
+                 <span class="cache-label" >Coverage data for this session</span>
+                 <span class="cache-size" id="coverage-size"></span>
+                 <button id="clear-coverage-cache" onclick="cacheHelper.clearCoverageCache();" class="icon-button-sm btn btn-default btn-raised">Clear</button>
+               </div>
+               <div >
+                <span class="cache-label" >All data for this session</span>
+                <span class="cache-size" id="cache-size"></span>
+                 <button id="clear-coverage-cache" onclick="cacheHelper.clearAll();" class="icon-button-sm btn btn-default btn-raised">Clear</button>
+               </div>
+               <div style="margin-top:30px">
+                 <a  style="font-size:14px;margin-top:30px" data-toggle="collapse" href="#other-cache-panel" aria-expanded="false" aria-controls="other-cache-panel">
+                  Other gene.iobio sessions...
+                 </a>
+                 <div id="other-cache-panel" class="collapse">
+                  <span class="cache-label" >All data from other sessions</span>
+                  <span class="cache-size" id="other-cache-size"></span>
+                   <button id="clear-other-cache" onclick="cacheHelper.clearOther();" class="icon-button-sm btn btn-default btn-raised">Clear</button>
+                 </div>
+              </div>
+              <div style="margin-top:30px">
+                 <a  style="font-size:14px;margin-top:30px" data-toggle="collapse" href="#other-app-cache-panel" aria-expanded="false" aria-controls="other-app-cache-panel">
+                  Other browser apps ...
+                 </a>
+                 <div id="other-app-cache-panel" class="collapse">
+                  <span class="cache-label" >Data from other web apps</span>
+                  <span class="cache-size" id="other-app-cache-size"></span>
+                   <button id="clear-other-app-cache" onclick="cacheHelper.clearOtherApp();" class="icon-button-sm btn btn-default btn-raised">Clear</button>
+                 </div>
+              </div>
+      </div>
+      <div class="modal-footer" style="clear-both">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Data Modal -->
+<div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModalLabel"  >
+  <div id="data-card" class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="padding-top:12px;">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <span class="modal-title">Data</span>
+
+        <div class="fullview" style="text-align:center;width: 100%;margin-top: -32px;">
+          <button id="single-proband-button" type="btn btn-raised" class="icon-button-sm btn btn-default btn-raised" onclick="toggleSampleTrio(false)"  >
+            <i class="mdi-social-person"></i>
+            Single
+          </button>
+          <button id="trio-button" type="btn btn-raised" class="icon-button-sm btn btn-default btn-raised" onclick="toggleSampleTrio(true)" 
+            style="padding-top: 2px;padding-bottom:1px;">
+            <div style="float:left;">
+              <img src="assets/images/family.png" style="height:27px"/>
+            </div>
+             <div style="float: right;margin-top: 2px;margin-left: 2px;padding-bottom: 0px;">Trio</div>
+          </button>            
+          <button id="pedigree-button" type="btn btn-raised" class=" todo hide icon-button-sm btn btn-default btn-raised" onclick="toggleSampleTrio(true)" 
+            style="padding-top: 2px;padding-bottom:1px;">
+            <div style="float:left;">
+              <img src="assets/images/pedigree.png" style="height:22px"/>
+            </div>
+             <div style="float: right;margin-top: 2px;margin-left: 2px;padding-bottom: 0px;">Pedigree</div>
+          </button>
+          <button id="other-button" type="btn btn-raised" class="todo hide icon-button-sm btn btn-default btn-raised" onclick="toggleSampleTrio(true)" 
+            style="padding-top: 2px;padding-bottom:1px;">
+            <i class="mdi-editor-format-align-justify"></i>                
+             <div style="float: right;margin-top: 2px;margin-left: 2px;padding-bottom: 0px;">Other</div>
+          </button>
+        </div>
+
+      </div>
+      <div class="modal-body" style="padding-top:0px;padding-bottom:0px">
+          <div  >
+
+            <div style="overflow:visible;margin-bottom:10px;">
+              <div id="select-species-box" style="width:170px;float:left;">
+                <span id="sample-data-label">Species</span>
+                <select id="select-species" class="selectized" placeholder="select species...">
+                </select>
+              </div>
+              <div id="select-build-box" style="width:170px;float:left;margin-left:20px;">
+                <span id="sample-data-label">Genome Build</span>
+                <select id="select-build" class="selectized" placeholder="select genome build...">
+                </select>
+              </div>
+              <div id="species-build-warning" class="alert alert-danger hide" style="float:left;width:100%">                
+              </div>              
+            </div>
+
+              <div>
+                <div id="proband-data" style="float:left;min-width:500px;">
+                  <input id="card-index" class="hide" value="0" type="text">
+                  <input id="datasource-relationship" class="hide" value="proband" type="text"/>
+                </div>
+
+
+                <div id="mother-data" class="hide" style="float:left;margin-top:20px;min-width:500px;">
+                  <input id="card-index" class="hide" value="1" type="text">
+                  <input id="datasource-relationship" class="hide" value="mother" type="text"/>
+                </div>
+
+                <div id="father-data" class="hide" style="float:left;width:32%;margin-top:20px;min-width:500px;">
+                  <input id="card-index" class="hide" value="2" type="text">
+                  <input id="datasource-relationship" class="hide" value="father" type="text"/>
+                </div>
+
+
+              </div>
+
+              <div class="fullview" style="clear:both;text-align:left;padding-top:10px;">
+                <div id="affected-sibs-box" style="float:left;" class="hide">
+                    <div id="sample-data-label">
+                      AFFECTED SIBLINGS
+                    </div>
+                    <div style="width:270px;">
+                      <select id="affected-sibs-select" style="font-size:10px;"  class="selectized" multiple="multiple" placeholder="Choose sample(s)...">
+                      </select>
+                    </div>
+                </div>
+                <div id="unaffected-sibs-box" style="float:left;margin-left:10px;padding-bottom:20px;" class="hide">
+                    <div id="sample-data-label">
+                      UNAFFECTED SIBLINGS
+                    </div>
+                    <div style="width:270px;">
+                      <select id="unaffected-sibs-select" style="font-size:10px;" class="selectized"  multiple="multiple" placeholder="Choose sample(s)...">
+                      </select>
+                    </div>
+                </div>
+              </div>
+
+          </div>   
+
+          
+
+
+      </div>
+
+      <div class="modal-footer" style="clear-both">
+         
+          <span class="hint todo" style="float:left;">Files must correspond to build GRCh37.</span>
+          <button id="ok-button" data-dismiss="modal" type="btn btn-raised" class="disabled icon-button-sm btn btn-default btn-raised">
+            <i class="material-icons">cloud_done</i>
+            Load
+          </button>
+          <button type="button" class="btn btn-default icon-button-sm btn btn-default btn-raised" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="feedback-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <span class="modal-title">Give us feedback</span>
+        </div>
+        <div class="modal-body">
+          <div>
+             <span class="feedback-small-label" style="margin-right: 4px">Your email</span>
+              <input id="feedback-email" type="text" ></input>
+          </div>
+           <div style="margin-top:10px">
+             <span class="feedback-small-label" style="margin-right: 4px">Your name</span>
+             <input id="feedback-name" type="text" ></input>
+          </div>
+          <div style="margin-top:10px; margin-bottom:10px">
+             <span class="feedback-label"</span>Description of problem
+              <textarea id="feedback-note" ></textarea>
+          </div>
+          <div id="feedback-screen-capture-area" class="hide">
+            <span class="feedback-label"</label>Screen Capture</span>
+            <div id="feedback-screen-capture">
+          </div>
+        </div>    
+        <div class="modal-footer">
+          <span id="feedback-warning" class="hide alert alert-danger">
+          </span>          
+          <button id="report-feedback-button" type="button" class="btn btn-default icon-button-sm btn btn-default btn-raised" >
+             <i class="material-icons">email</i>
+             Send email
+          </button>
+          <button type="button" class="btn btn-default icon-button-sm btn btn-default btn-raised" data-dismiss="modal">Cancel</button>
+        </div>
+    </div>
+  </div>
+</div>
