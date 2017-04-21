@@ -58,7 +58,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * @since 1.3M5
  */
 @Component
-@Named("R71501PhenoTips#2991")
+@Named("R71501-PT-2991")
 @Singleton
 public class R71501PhenoTips2991DataMigration extends AbstractHibernateDataMigration implements
     HibernateCallback<Object>

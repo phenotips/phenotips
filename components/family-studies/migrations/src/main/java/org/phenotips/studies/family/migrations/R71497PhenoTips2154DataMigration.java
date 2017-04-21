@@ -57,7 +57,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * @since 1.3M3
  */
 @Component
-@Named("R71497PhenoTips#2154")
+@Named("R71497-PT-2154")
 @Singleton
 public class R71497PhenoTips2154DataMigration extends AbstractHibernateDataMigration
 {
