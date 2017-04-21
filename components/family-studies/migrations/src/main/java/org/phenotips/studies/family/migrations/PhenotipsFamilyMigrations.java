@@ -81,6 +81,8 @@ public class PhenotipsFamilyMigrations
 
     private static final String JSON_NODE_PROPERTIES = "prop";
 
+    private static final String JSON_NODE_PEDIGREE_ID = "id";
+
     private static final String JSON_EXTERNALID = "externalID";
 
     private static final String JSON_PHENOTIPSID = "phenotipsId";
@@ -176,18 +178,20 @@ public class PhenotipsFamilyMigrations
     /**
      * Adds to the pedigree JSON: "phenotipsId": patient ID in XWiki; "probandNodeID": 0; "JSON_version": "1.0".
      *
-     * @param data pedigree data
+     * @param pedigree pedigree JSON, supposedly in 1.2.x format
      * @param patientId patient Id
      * @return processed pedigree JSON object
      */
-    public JSONObject processPedigree(JSONObject data, String patientId)
+    public JSONObject processPedigree(JSONObject pedigree, String patientId)
     {
-        // Adding patient id under the patient prop
-        JSONArray gg = (JSONArray) data.get(JSON_TOP_LEVEL);
-        for (Object nodeObj : gg) {
-            JSONObject node = (JSONObject) nodeObj;
+        JSONArray gg = pedigree.getJSONArray(JSON_TOP_LEVEL);
+        for (int pedigreeId = 0; pedigreeId < gg.length(); pedigreeId++) {
+            JSONObject node = gg.optJSONObject(pedigreeId);
+            if (node == null) {
+                continue;
+            }
 
-            int id = (int) node.get("id");
+            int id = node.optInt(JSON_NODE_PEDIGREE_ID, -1);
             if (id != 0) {
                 continue;
             }
@@ -195,15 +199,17 @@ public class PhenotipsFamilyMigrations
             JSONObject properties = node.optJSONObject(JSON_NODE_PROPERTIES);
             if (properties == null) {
                 properties = new JSONObject();
-                node.accumulate(JSON_NODE_PROPERTIES, properties);
             }
-            properties.accumulate(JSON_PHENOTIPSID, patientId);
+            properties.put(JSON_PHENOTIPSID, patientId);
+            node.put(JSON_NODE_PROPERTIES, properties);
+            gg.put(pedigreeId, node);
+            pedigree.put(JSON_TOP_LEVEL, gg);
             break;
         }
 
-        data.put("probandNodeID", 0);
-        data.put("JSON_version", "1.0");
-        return data;
+        pedigree.put("probandNodeID", 0);
+        pedigree.put("JSON_version", "1.0");
+        return pedigree;
     }
 
     /**
@@ -228,14 +234,15 @@ public class PhenotipsFamilyMigrations
 
         JSONArray gg = pedigree.getJSONArray(JSON_TOP_LEVEL);
         for (int pedigreeId = 0; pedigreeId < gg.length(); pedigreeId++) {
-            JSONObject node = gg.getJSONObject(pedigreeId);
+            JSONObject node = gg.optJSONObject(pedigreeId);
+            if (node == null) {
+                continue;
+            }
 
             JSONObject properties = node.optJSONObject(JSON_NODE_PROPERTIES);
             if (properties == null) {
                 continue;
             }
-
-            //logger.error("Node: properties: [{}]", properties);
 
             String externalId = properties.optString(JSON_EXTERNALID);
             String linkPatientId = properties.optString(JSON_PHENOTIPSID, null);
@@ -243,8 +250,6 @@ public class PhenotipsFamilyMigrations
             if (externalId == null && linkPatientId == null) {
                 continue;
             }
-
-
 
             if (linkPatientId == null && externalIdToPhenotipsId.containsKey(externalId)) {
                 linkPatientId = externalIdToPhenotipsId.get(externalId);
