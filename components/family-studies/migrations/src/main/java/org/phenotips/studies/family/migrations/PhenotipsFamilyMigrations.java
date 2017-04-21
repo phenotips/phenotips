@@ -29,6 +29,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
+import org.xwiki.rendering.syntax.Syntax;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -147,6 +148,7 @@ public class PhenotipsFamilyMigrations
             newFamilyXDocument.setCreatorReference(patientXDoc.getCreatorReference());
             newFamilyXDocument.setContentAuthorReference(patientXDoc.getContentAuthorReference());
             newFamilyXDocument.setParentReference(this.familyParentReference);
+            newFamilyXDocument.setSyntax(Syntax.XWIKI_2_1);
 
             return newFamilyXDocument;
         } catch (Exception ex) {

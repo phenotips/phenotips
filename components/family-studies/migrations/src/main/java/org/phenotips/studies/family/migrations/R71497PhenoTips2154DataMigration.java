@@ -23,7 +23,6 @@ import org.phenotips.studies.family.Pedigree;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReferenceSerializer;
-import org.xwiki.rendering.syntax.Syntax;
 
 import java.util.List;
 
@@ -124,8 +123,6 @@ public class R71497PhenoTips2154DataMigration extends AbstractHibernateDataMigra
             @SuppressWarnings("unchecked")
             List<String> documents = q.list();
 
-            this.migrator.logger.debug("Found {} patient documents", documents.size());
-
             for (String docName : documents) {
 
                 XWikiDocument patientXDocument =
@@ -154,7 +151,6 @@ public class R71497PhenoTips2154DataMigration extends AbstractHibernateDataMigra
                 patientXDocument.setComment(this.migrator.getDescription());
 
                 newFamilyXDocument.setComment(this.migrator.getDescription());
-                newFamilyXDocument.setSyntax(Syntax.XWIKI_2_1);
 
                 try {
                     this.session.clear();
