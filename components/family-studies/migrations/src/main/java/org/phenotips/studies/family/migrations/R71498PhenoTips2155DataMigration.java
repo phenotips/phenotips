@@ -71,6 +71,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * members of the family are owned by the same user, and all members of the family can be included
  * in restricted pedigree shape (or a subset of the shape) as described below:
  *
+ * <pre>{@code
  *      < >--*--< >     < >--*--< >
  *           |               |
  *     +-----+-----+         |
@@ -80,7 +81,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  *              +---+---+------------+---...
  *              |   |      |       /   \
  *             < > <...> <...>  <...> <...>
- *
+ * }</pre>
  *  - R denotes "root" patient (not necessarily the proband)
  *  - R may have at most one partner, P
  *  - at most 3 generations: root patient, root parents and root children
@@ -607,6 +608,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
          * (currently) the migrator can only auto-generate a family/pedigree if all members in the family
          * can be included in a restricted pedigree shape (or a subset of the shape) as outlined below:
          *
+         * <pre>{@code
          *      < >--*--< >     < >--*--< >
          *           |               |
          *     +-----+-----+         |
@@ -616,6 +618,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
          *              +---+---+------------+---...
          *              |   |      |       /   \
          *             < > <...> <...>  <...> <...>
+         * }</pre>
          *
          *  - R denotes "root" patient (not necessarily the proband)
          *  - R may have at most one partner, P
