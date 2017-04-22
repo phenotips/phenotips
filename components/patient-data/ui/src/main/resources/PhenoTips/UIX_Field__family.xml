@@ -234,7 +234,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family')##
 #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
 
   (% class="clear relatives-info" %)(((
-    {{error}}This component is deprecated. Please specify relevant family relationships in the pedigree.{{/error}}
+    {{error}}$services.localization.render('phenotips.UIXField.family.deprecated'){{/error}}
 
     === $services.localization.render('phenotips.UIXField.family.heading') ===
 
@@ -253,7 +253,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family')##
       <parameters>title=$services.localization.render('phenotips.UIXField.family')
 enabled=false
 required=
-order=4
+order=6
 fields=relative_type,relative_of
 pt_class=PhenoTips.RelativeClass
 pt_class_usage=multiple

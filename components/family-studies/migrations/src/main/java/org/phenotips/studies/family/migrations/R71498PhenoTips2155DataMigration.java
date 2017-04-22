@@ -113,7 +113,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * @since 1.3M4
  */
 @Component
-@Named("R71498PhenoTips#2155")
+@Named("R71498-PT-2155")
 @Singleton
 public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigration
     implements HibernateCallback<Object>
@@ -558,7 +558,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             PatientReference(String phenotipsID, String externalID)
             {
                 this.phenotipsID = phenotipsID;
-                this.externalID = externalID;
+                this.externalID = StringUtils.isNotBlank(externalID) ? externalID : null;
                 this.hashCode = ((phenotipsID == null ? "" : phenotipsID)
                         + "__" + (externalID == null ? "" : externalID)).hashCode();
             }
@@ -1397,7 +1397,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         {
             Map<String, String> result = new HashMap<>();
             for (PatientReference patient : phenotipsPatients.values()) {
-                if (patient.externalID != null) {
+                if (StringUtils.isNotBlank(patient.externalID)) {
                     result.put(patient.externalID, patient.phenotipsID);
                 }
             }

@@ -412,6 +412,7 @@
                   pedigreeThumnail.innerHTML = pedigreeThumnail.title;
                   pedigreeThumnail.addClassName('draw');
                   $('familyId').up().remove();
+                  $('familyIdentifier').value='';
                   $('pedigree-buttons').remove();
                 }
               }
