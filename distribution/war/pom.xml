@@ -822,12 +822,12 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>pingback-common</artifactId>
-      <version>1.0</version>
+      <version>1.1</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>pingback-client-api</artifactId>
-      <version>1.0</version>
+      <version>1.1</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
