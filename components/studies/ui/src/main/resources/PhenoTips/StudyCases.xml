@@ -60,14 +60,28 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
   #set ($configuredColumns = 'doc.name')
 #end
 #set ($columns = [])
-#set ($discard = $columns.addAll($configuredColumns))
+#set ($columnFilters = {})
+#foreach($c in $configuredColumns)
+  #set($pieces = $c.split('/', 2))
+  #set ($discard = $columns.add($pieces[0]))
+  #if ($pieces.size() &gt; 1 &amp;&amp; $pieces[1] != $patientClassName)
+    #set ($discard = $columnFilters.put("${pieces[0]}/class", $pieces[1]))
+  #end
+#end
 #set ($columnsProperties = {
   '_actions' : {'actions': ['edit', 'delete']}
 })
+#set ($columnFiltersContent = '')
+#foreach ($f in $columnFilters.keySet())
+  #set($columnFiltersContent = "${columnFiltersContent}&lt;input type='hidden' name='$escapetool.xml($f)' value='$escapetool.xml($columnFilters.get($f))'/&gt;")
+#end
 #foreach ($column in $columns)
   #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0) &amp;&amp; ($column != 'doc.creator') &amp;&amp; ($column != 'doc.author'))
-  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'view', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true }))
+  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'field', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true }))
 #end
+#set ($discard = $columnsProperties.get('doc.name').put('link', 'view'))
+#set ($discard = $columnsProperties.identifier.put('link', 'view'))
+#set ($discard = $columnsProperties.external_id.put('link', 'view'))
 ##  toggle-filters
 #set ($topFilters = $doc.getRenderedContent("(% class='xform' %)((( {{html clean='false'}}&lt;span class='buttonwrapper'&gt;&lt;a class='button toggle-filters' href='#'&gt;$services.localization.render('phenotips.studyCases.advanceDataFiltersButton')&lt;/a&gt;&lt;/span&gt;{{/html}}
 {{velocity}}#__filters_display('xform'){{/velocity}})))", "xwiki/2.1"))
@@ -122,7 +136,7 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
   'maxPages'          : 10,
   'selectedColumn'    : $config.getProperty('livetableSortColumn').value,
   'defaultOrder'      : 'asc',
-  'topFilters'        : $topFilters,
+  'topFilters'        : "$!{topFilters}$!{columnFiltersContent}",
   'resultPage'        : 'PhenoTips.LiveTableResults',
   'extraParams'       : "&amp;filterFrom=${escapetool.url($filterFrom)}&amp;filterWhere=${escapetool.url($filterWhere)}"
 })
@@ -132,7 +146,7 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 #livetable('patients' $columns $columnsProperties $options)
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
 #else
-{{warning}}**$services.localization.render('phenotips.configurationMissing')**{{/warning}}
+{{warning}}$services.localization.render('phenotips.configurationMissing'){{/warning}}
 #end
 {{/velocity}}</content>
 </xwikidoc>
