@@ -119,7 +119,7 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 #livetable('patients' $columns $columnsProperties $options)
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
 #else
-{{warning}}**Configuration missing.**{{/warning}}
+{{warning}}$services.localization.render('phenotips.configurationMissing'){{/warning}}
 #end
 {{/velocity}}</content>
 </xwikidoc>
