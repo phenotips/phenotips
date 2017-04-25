@@ -129,7 +129,7 @@ public class DataToCellConverter
 
         DataSection section = new DataSection();
         int hX = 0;
-        if (present.contains("positive") && present.contains("negative")) {
+        if (present.contains("positive") || present.contains("negative")) {
             DataCell cell =
                 new DataCell(this.translationManager.translate("phenotips.export.excel.label.phenotype.present"),
                     hX, 1, StyleOption.HEADER);
@@ -179,27 +179,26 @@ public class DataToCellConverter
             sectionFeatureLookup = this.phenotypeHelper.getSectionFeatureTree();
         }
 
-        Boolean lastStatus = false;
+        Boolean lastStatus = null;
         String lastSection = "";
         for (Feature feature : sortedFeatures) {
             x = 0;
 
-            if (bothTypes && lastStatus != feature.isPresent()) {
-                lastStatus = feature.isPresent();
+            if (present.contains("positive") || present.contains("negative")) {
                 lastSection = "";
-                DataCell cell = new DataCell(lastStatus
+                DataCell cell = new DataCell(feature.isPresent()
                     ? this.translationManager.translate("yes")
                     : this.translationManager.translate("no"),
                     x, y);
-                if (!lastStatus) {
+                if (bothTypes && lastStatus != null && lastStatus != feature.isPresent()) {
                     cell.addStyle(StyleOption.YES_NO_SEPARATOR);
                 }
-                cell.addStyle(lastStatus ? StyleOption.YES : StyleOption.NO);
+                cell.addStyle(feature.isPresent() ? StyleOption.YES : StyleOption.NO);
                 section.addCell(cell);
-            }
-            if (bothTypes) {
+                lastStatus = feature.isPresent();
                 x++;
             }
+
             if (categoriesEnabled) {
                 String currentSection = sectionFeatureLookup.get(feature.getId());
                 if (!StringUtils.equals(currentSection, lastSection)) {
@@ -1058,7 +1057,7 @@ public class DataToCellConverter
         DataSection section = new DataSection();
 
         int hX = 0;
-        if (present.contains("positive") && present.contains("negative")) {
+        if (present.contains("positive") || present.contains("negative")) {
             DataCell cell =
                 new DataCell(this.translationManager.translate("phenotips.export.excel.label.phenotype.present"),
                     hX, 1, StyleOption.HEADER);
@@ -1104,25 +1103,24 @@ public class DataToCellConverter
         List<Feature> sortedFeatures;
         sortedFeatures = this.prenatalPhenotypeHelper.sortFeaturesSimple(features);
 
-        Boolean lastStatus = false;
+        Boolean lastStatus = null;
         for (Feature feature : sortedFeatures) {
             x = 0;
 
-            if (bothTypes && lastStatus != feature.isPresent()) {
-                lastStatus = feature.isPresent();
-                DataCell cell = new DataCell(lastStatus
+            if (present.contains("positive") || present.contains("negative")) {
+                DataCell cell = new DataCell(feature.isPresent()
                     ? this.translationManager.translate("yes")
                     : this.translationManager.translate("no"),
                     x, y);
-                if (!lastStatus) {
+                if (bothTypes && lastStatus != null && lastStatus != feature.isPresent()) {
                     cell.addStyle(StyleOption.YES_NO_SEPARATOR);
                 }
-                cell.addStyle(lastStatus ? StyleOption.YES : StyleOption.NO);
+                cell.addStyle(feature.isPresent() ? StyleOption.YES : StyleOption.NO);
                 section.addCell(cell);
-            }
-            if (bothTypes) {
+                lastStatus = feature.isPresent();
                 x++;
             }
+
             if (present.contains("name")) {
                 DataCell cell = new DataCell(feature.getName(), x, y, StyleOption.FEATURE_SEPARATOR);
                 section.addCell(cell);
