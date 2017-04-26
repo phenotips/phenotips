@@ -91,7 +91,7 @@
 #end
 {{html clean="false" wiki="false"}}
 &lt;div class="form-template-option"&gt;
-&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value=""#if ("$!{value}" == '') checked="checked"#end/&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption')&lt;/label&gt;
+&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value=""#if ("$!{value}" == '') checked="checked"#end/&gt; $services.localization.render('phenotips.studyBindingClass.noStudyOption')&lt;/label&gt;
 &lt;p class="xHint"&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption.hint')&lt;/p&gt;
 &lt;/div&gt;
 #foreach ($sName in $studies)
@@ -105,7 +105,7 @@
       #set ($configTitle = "${s.name}")
     #end
     &lt;div class="form-template-option"&gt;
-    &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value="${escapetool.xml($services.model.serialize($s.documentReference))}" #if ("$!{value}" == "${s.documentReference}") checked="checked" #end/&gt;$escapetool.xml($configTitle)&lt;/label&gt;
+    &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value="${escapetool.xml($services.model.serialize($s.documentReference, 'default'))}" #if ("$!{value}" == "${s.documentReference}") checked="checked" #end/&gt; $escapetool.xml($configTitle)&lt;/label&gt;
     &lt;p class="xHint"&gt;$!{escapetool.xml($s.content)}&lt;/p&gt;
     &lt;/div&gt;
   #end
