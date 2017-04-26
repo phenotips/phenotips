@@ -1476,7 +1476,7 @@ document.observe('xwiki:dom:loaded', function()
     initialize : function(dataTable) {
       /** Measurement evaluation service */
       this.measurementsService = new XWiki.Document('PatientToolsService', 'PhenoTips').getURL('get');
-      this.solarService = new XWiki.Document('SolrService', 'PhenoTips').getURL("get");
+      this.solrService = XWiki.contextPath + "/rest/vocabularies/hpo/suggest";
 
       this.dataTable = dataTable;
       this.dataTable._processor = this;
@@ -1842,7 +1842,7 @@ document.observe('xwiki:dom:loaded', function()
         if (!suggestWidget) {
            return null;
         }
-        searchURL = this.solarService + "?q=" + id;
+        searchURL = this.solrService + "?input=" + id;
         new Ajax.Request(searchURL, {
           method: 'get',
           onSuccess: function(transport) {
