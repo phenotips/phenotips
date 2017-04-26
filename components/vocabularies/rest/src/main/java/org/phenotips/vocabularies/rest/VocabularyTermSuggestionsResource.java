@@ -19,7 +19,6 @@ package org.phenotips.vocabularies.rest;
 
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
-import org.phenotips.vocabularies.rest.model.VocabularyTerms;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -28,6 +27,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * Resource for searching in a vocabulary for terms matching an input (vocabulary suggest).
@@ -41,9 +41,8 @@ import javax.ws.rs.core.MediaType;
 public interface VocabularyTermSuggestionsResource
 {
     /**
-     * Provides term suggestions for the specified {@link org.phenotips.vocabulary.Vocabulary} as a list of
-     * {@link VocabularyTerms}. Request can optionally specify additional filters. If no suggestions are found an empty
-     * list is returned.
+     * Provides term suggestions for the specified {@link org.phenotips.vocabulary.Vocabulary}. Request can optionally
+     * specify additional filters. If no suggestions are found an empty list is returned.
      *
      * @param vocabularyId The ID of the {@link org.phenotips.vocabulary.Vocabulary} to be used for suggestions. Any
      *            alias of the vocabulary can be used. If no matching vocabulary is found an error is returned to the
@@ -55,12 +54,11 @@ public interface VocabularyTermSuggestionsResource
      * @param customFilter a custom filter query to further restrict which terms may be returned, in a format that
      *            depends on the actual engine that stores the vocabulary; some vocabularies may not support a filter
      *            query; may be empty
-     * @return A {@link VocabularyTerms} representing a list of
-     *         {@link org.phenotips.vocabularies.rest.model.VocabularyTerm} suggestions.
+     * @return A JSON object with a list of {@link VocabularyTerm} suggestions.
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    VocabularyTerms suggest(@PathParam("vocabulary-id") String vocabularyId,
+    Response suggest(@PathParam("vocabulary-id") String vocabularyId,
         @QueryParam("input") String input,
         @QueryParam("maxResults") @DefaultValue("10") int maxResults,
         @QueryParam("sort") String sort,

@@ -18,16 +18,12 @@
 package org.phenotips.vocabularies.rest.internal;
 
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
-import org.phenotips.vocabularies.rest.model.VocabularyTermSummary;
 import org.phenotips.vocabulary.Vocabulary;
-import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.stability.Unstable;
 
 import javax.inject.Singleton;
-
-import org.json.JSONObject;
 
 /**
  * @version $Id$
@@ -55,20 +51,5 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
             // Don't do anything and leave source empty
         }
         return result;
-    }
-
-    @Override
-    public VocabularyTermSummary createVocabularyTermRepresentation(VocabularyTerm term)
-    {
-        VocabularyTermSummary rep = new VocabularyTermSummary();
-        rep.withId(term.getId());
-        rep.withName(term.getName());
-        JSONObject jsonObject = term.toJSON();
-        String symbolKey = "symbol";
-        if (jsonObject != null && jsonObject.opt(symbolKey) != null) {
-            rep.withSymbol(jsonObject.get(symbolKey).toString());
-        }
-        rep.withDescription(term.getDescription());
-        return rep;
     }
 }

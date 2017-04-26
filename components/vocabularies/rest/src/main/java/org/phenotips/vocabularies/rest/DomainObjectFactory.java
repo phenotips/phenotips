@@ -17,9 +17,7 @@
  */
 package org.phenotips.vocabularies.rest;
 
-import org.phenotips.vocabularies.rest.model.VocabularyTermSummary;
 import org.phenotips.vocabulary.Vocabulary;
-import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
@@ -42,13 +40,4 @@ public interface DomainObjectFactory
      * @return the REST representation without links
      */
     org.phenotips.vocabularies.rest.model.Vocabulary createVocabularyRepresentation(Vocabulary vocabulary);
-
-    /**
-     * Converts a {@link VocabularyTerm} into a summary representation,
-     * {@link org.phenotips.vocabularies.rest.model.VocabularyTermSummary}.
-     *
-     * @param term the term to be converted
-     * @return a REST representation summarizing the term information
-     */
-    VocabularyTermSummary createVocabularyTermRepresentation(VocabularyTerm term);
 }

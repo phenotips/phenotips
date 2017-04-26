@@ -386,8 +386,8 @@ define([
                     var solrServiceURL = HPOTerm.getServiceURL()
                     //console.log("HPO\SOLR URL: " + solrServiceURL);
                     item._suggest = new PhenoTips.widgets.Suggest(item, {
-                        script: solrServiceURL + "rows=100&",
-                        varname: "q",
+                        script: solrServiceURL + "/suggest?sort=nameSort asc&start=0&rows=100&",
+                        varname: "input",
                         noresults: "No matching terms",
                         json: true,
                         resultsParameter : "rows",
