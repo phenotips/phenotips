@@ -88,7 +88,7 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 #set ($discard = $columns.add('_actions'))
 ##
 #set ($filterFrom = ", BaseObject studyBindingObj, StringProperty study")
-#set ($filterWhere = "and studyBindingObj.name = doc.fullName and studyBindingObj.className = 'PhenoTips.StudyBindingClass' and study.id.id = studyBindingObj.id and study.value = '${escapetool.sql($doc.documentReference)}'")
+#set ($filterWhere = "and studyBindingObj.name = doc.fullName and studyBindingObj.className = 'PhenoTips.StudyBindingClass' and study.id.id = studyBindingObj.id and study.value in ('${escapetool.sql($services.model.serialize($doc.documentReference, 'default'))}', '${escapetool.sql($services.model.serialize($doc.documentReference, 'compactwiki'))}')")
 #if ($isGuest)
   #set ($filterWhere = "${filterWhere} and doc.creator = 'XWiki.XWikiGuest' and not exists (from BaseObject accessObj where accessObj.name = doc.fullName and accessObj.className = 'PhenoTips.OwnerClass')")
 #elseif (!$hasAdmin)
