@@ -154,7 +154,8 @@
     <maven-jaxb2-plugin.version>0.12.3</maven-jaxb2-plugin.version>
     <enforcer.skip>false</enforcer.skip>
     <checkstyle.skip>false</checkstyle.skip>
-    <clirr.skip>false</clirr.skip>
+    <!-- Clirr doesn't work well on Java 8 unfortunately... -->
+    <clirr.skip>true</clirr.skip>
     <license.skip>false</license.skip>
     <coverage.instructionRatio>1.00</coverage.instructionRatio>
 
@@ -754,10 +755,10 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>3.6.1</version>
-          <!-- Java 1.7 is required -->
+          <!-- Java 1.8 is required -->
           <configuration>
-            <source>1.7</source>
-            <target>1.7</target>
+            <source>1.8</source>
+            <target>1.8</target>
           </configuration>
         </plugin>
         <plugin>
