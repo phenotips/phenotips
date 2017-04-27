@@ -1081,7 +1081,7 @@ define([
                 },
                 parameters: {"family_id": editor.getFamilyData().getFamilyId(), "patient_to_link_id": linkID }
             });
-    	}
+        }
     }
 
     return Controller;

@@ -584,23 +584,23 @@
                                                                    .insert(logoutButton);
         userList.insert(label.wrap('td').wrap('tr'));
       } else {
-	    // add an option to enter username &amp; password manually
-	    var userPasswrodBox = new Element("span", {'class' : 'user-password-box'});
-	    var userNameBox = new Element("input", {type: 'text', "id": "newusername", "value": "", "placeholder": "$!escapetool.javascript($services.localization.render('phenotips.PushPatient.userName'))", size: 12});
-	    if (selectedUserName) {
-	      userNameBox.value = selectedUserName;
-	    }
-		var passwordBox = new Element("input", {type:'password', "id": "password", "value": "", "placeholder": "$!escapetool.javascript($services.localization.render('phenotips.PushPatient.password'))", size: 12});
-		var authorizeButton = new Element('input', {type: 'button', id:"authorizenewuser", 'name':'authorize', 'value':"$!escapetool.javascript($services.localization.render('phenotips.PushPatient.logIn'))", 'class':'button secondary'});
-	    authorizeButton.observe('click', function(event) {
-		  if (passwordBox.value != "") {
-		    this._userLoginError.hide();
-		    this._loginAndGetConfig(userNameBox.value, passwordBox.value);
-		  } else {
-		    this._userLoginError.update("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.noPassword'))");
-		    this._userLoginError.show();
-		  }
-		}.bind(this));
+        // add an option to enter username &amp; password manually
+        var userPasswrodBox = new Element("span", {'class' : 'user-password-box'});
+        var userNameBox = new Element("input", {type: 'text', "id": "newusername", "value": "", "placeholder": "$!escapetool.javascript($services.localization.render('phenotips.PushPatient.userName'))", size: 12});
+        if (selectedUserName) {
+          userNameBox.value = selectedUserName;
+        }
+        var passwordBox = new Element("input", {type:'password', "id": "password", "value": "", "placeholder": "$!escapetool.javascript($services.localization.render('phenotips.PushPatient.password'))", size: 12});
+        var authorizeButton = new Element('input', {type: 'button', id:"authorizenewuser", 'name':'authorize', 'value':"$!escapetool.javascript($services.localization.render('phenotips.PushPatient.logIn'))", 'class':'button secondary'});
+        authorizeButton.observe('click', function(event) {
+          if (passwordBox.value != "") {
+            this._userLoginError.hide();
+            this._loginAndGetConfig(userNameBox.value, passwordBox.value);
+          } else {
+            this._userLoginError.update("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.noPassword'))");
+            this._userLoginError.show();
+          }
+        }.bind(this));
         userPasswrodBox.insert(userNameBox.wrap('label', {'class' : 'fa fa-user'}))
                         .insert(" ")
                         .insert(passwordBox.wrap('label', {'class' : 'fa fa-key'}))
