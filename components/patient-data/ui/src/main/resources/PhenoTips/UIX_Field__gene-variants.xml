@@ -299,22 +299,14 @@
     <property>
       <code>document.observe("xwiki:dom:loaded", function(event) {
   var geneSuggestOptions = {
-            script: new XWiki.Document('GeneNameService', 'PhenoTips').getURL('get', 'outputSyntax=plain') + "&amp;",
-            varname: "q",
+            script: XWiki.contextPath + "/rest/vocabularies/hgnc/suggest?",
             noresults: "$services.localization.render('phenotips.UIXField.genes.noMatches')",
-            json: true,
-            resultsParameter : "docs",
-            resultId : 'id',
+            resultsParameter : "rows",
             resultValue : 'symbol',
             resultAltName : "alias_symbol",
-            enableHierarchy: false,
             tooltip : 'gene-info',
             resultInfo : {},
-            fadeOnClear : false,
-            timeout : 30000,
-            parentContainer : null,
-            matchScript : new XWiki.Document('GeneInfoService', 'PhenoTips').getURL('get') + "?",
-            matchVarname : "id",
+            matchScript : XWiki.contextPath + "/rest/vocabularies/hgnc/"
   };
 
   // -----------------------------------------------------------------

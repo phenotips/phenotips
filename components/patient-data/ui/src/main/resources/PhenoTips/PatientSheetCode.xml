@@ -561,59 +561,36 @@ document.observe('xwiki:dom:loaded', function()
     // go : namespace:
     var suggestionsMapping = {
         "hpo" : {
-            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get") + "?",
-            queryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({}, {}),
-            varname: "q",
-            noresults: "No matching terms",
-            json: true,
+            script: XWiki.contextPath + "/rest/vocabularies/hpo/suggest?",
+            noresults: "$escapetool.javascript($services.localization.render('phenotips.DBWebHomeSheet.noResults'))",
             resultsParameter : "rows",
-            resultId : "id",
             resultValue : "name",
             resultAltName: "synonym",
             resultCategory : "term_category",
             resultInfo : {},
             tooltip: 'phenotype-info',
-            enableHierarchy: true,
-            resultParent : "is_a",
-            fadeOnClear : false,
-            timeout : 30000,
-            parentContainer : null
+            resultParent : "is_a"
         },
         "omim" : {
-            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get", "vocabulary=omim") + "&amp;",
-            varname: "q",
-            noresults: "No matching terms",
-            json: true,
+            script: XWiki.contextPath + "/rest/vocabularies/omim/suggest?",
+            noresults: "$escapetool.javascript($services.localization.render('phenotips.DBWebHomeSheet.noResults'))",
             resultsParameter : "rows",
-            resultId : "id",
             resultValue : "name",
             resultInfo : {},
-            tooltip: 'omim-disease-info',
-            enableHierarchy: false,
-            fadeOnClear : false,
-            timeout : 30000,
-            parentContainer : null
+            tooltip: 'omim-disease-info'
         },
         "ordo" : {
-            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get", "vocabulary=ordo") + "&amp;",
-            varname: "q",
-            noresults: "No matching terms",
-            json: true,
+            script: XWiki.contextPath + "/rest/vocabularies/ordo/suggest?",
+            noresults: "$escapetool.javascript($services.localization.render('phenotips.DBWebHomeSheet.noResults'))",
             resultsParameter : "rows",
-            resultId : "id",
             resultValue : "name",
-            tooltip: 'ordo-disease-info',
-            enableHierarchy: false,
-            fadeOnClear : false,
-            timeout : 30000,
-            parentContainer : null
+            tooltip: 'ordo-disease-info'
         }
     };
     var pickerSpecialClassOptions = {
       'defaultPicker' : {},
       'quickSearch' : {
                   'showKey' : false,
-                  'showTooltip' : false,
                   'showDeleteTool' : false,
                   'enableSort' : false,
                   'showClearTool' : false,
@@ -625,8 +602,6 @@ document.observe('xwiki:dom:loaded', function()
                   'onItemAdded' : restoreCategory
                 },
       'generateShortList' : {
-                  'showKey' : true,
-                  'showTooltip' : false,
                   'showDeleteTool' : false,
                   'enableSort' : false,
                   'showClearTool' : false,
@@ -634,7 +609,6 @@ document.observe('xwiki:dom:loaded', function()
                 },
       'generateCheckboxes' : {
                   'showKey' : false,
-                  'showTooltip' : false,
                   'showDeleteTool' : false,
                   'enableSort' : false,
                   'showClearTool' : false,

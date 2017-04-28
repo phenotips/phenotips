@@ -145,7 +145,7 @@
     matchVarname : "id",
     // The CSS classname of the suggest list
     className : "ajaxsuggest",
-    timeout : 2500,
+    timeout : 3000,
     delay : 500,
     offsety : 0,
     // Display a "no results" message, or simply hide the suggest box when no suggestions are available
@@ -183,7 +183,7 @@
     // Should results fragments be highlighted when matching typed input
     highlight: true,
     // Fade the suggestion container on clear
-    fadeOnClear: true,
+    fadeOnClear: false,
     // Show a 'hide suggestions' button
     enableHideButton: true,
     insertBeforeSuggestions: null,
@@ -203,7 +203,9 @@
     loaderNode: null,
     // A function returning true or false for each fetched suggestion. If defined, only suggestions for which 'true' is returned
     // are added to the list
-    filterFunc: null
+    filterFunc: null,
+    // The expected data format, XML or JSON by default
+    json: true
   },
   sInput : "",
   nInputChars : 0,
@@ -2600,10 +2602,10 @@ return PhenoTips;
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   widgets.OntologyBrowser = Class.create({
   options : {
-    script : "${xwiki.getURL('PhenoTips.SolrService', 'get', 'sort=nameSort asc&amp;start=0&amp;rows=10000')}&amp;",
-    varname: "q",
-    method : "post",
+    script : XWiki.contextPath + "/rest/vocabularies/hpo/suggest?sort=nameSort asc&amp;start=0&amp;rows=10000&amp;",
     json : true,
+    varname: "input",
+    method : "get",
     responseFormat : "application/json",
     resultsParameter : "rows",
     resultId : "id",
@@ -4303,7 +4305,7 @@ document.observe("xwiki:dom:updated", init);
       },
       'omim-disease-info' : {
         'hint' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.hint')",
-        'service'  : "$xwiki.getURL('PhenoTips.OmimInfoService', 'get')",
+        'service'  : XWiki.contextPath + "/rest/vocabularies/omim/",
         'database' : {
           'name' : "$services.vocabularies.omim.name",
           'link' : "$services.vocabularies.omim.website",

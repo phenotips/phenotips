@@ -48,8 +48,8 @@ define([
         },
 
         load: function(callWhenReady) {
-            var baseServiceURL = editor.getExternalEndpoint().getGeneNameServiceURL();
-            var queryURL       = baseServiceURL + "&q=" + this._geneID;
+            var baseServiceURL = editor.getExternalEndpoint().getHGNCServiceURL();
+            var queryURL       = baseServiceURL + "/" + this._geneID;
             new Ajax.Request(queryURL, {
                 method: "GET",
                 onSuccess: this.onDataReady.bind(this),
@@ -62,18 +62,18 @@ define([
             var oldSymbol = this._symbol;
             var needUpdate = false;
             try {
-                var parsed = JSON.parse(response.responseText);
+                var parsed = JSON.parse(response);
 
-                if (parsed.hasOwnProperty("docs") && parsed.docs.length > 0) {
-                    console.log("LOADED GENE INFO: id = " + parsed.docs[0].id + ", name = " + parsed.docs[0].symbol);
+                if (parsed && parsed.hasOwnProperty("id") && parsed.hasOwnProperty("symbol")) {
+                    console.log("LOADED GENE INFO: id = " + parsed.id + ", name = " + parsed.symbol);
 
                     // may have to change ID, if old ID was actually a symbol which has an EnsembleID
-                    if (parsed.docs[0].id.toUpperCase() == this._geneID.toUpperCase()) {
-                        if (this._symbol != parsed.docs[0].symbol) {
+                    if (parsed.id.toUpperCase() == this._geneID.toUpperCase()) {
+                        if (this._symbol != parsed.symbol) {
                             console.log("LOADED GENE INFO: loaded symbol for ID (new)");
                         }
                         needUpdate = true;
-                    } else if (parsed.docs[0].symbol.toUpperCase() == this._geneID.toUpperCase()) {
+                    } else if (parsed.symbol.toUpperCase() == this._geneID.toUpperCase()) {
                         console.log("LOADED GENE INFO: got ID for symbol");
                         needUpdate = true;
                     } else {
@@ -81,8 +81,8 @@ define([
                     }
                     if (needUpdate) {
                         // update even if it matched - in case of upper/lower case differences
-                        this._geneID = parsed.docs[0].id;
-                        this._symbol = parsed.docs[0].symbol;
+                        this._geneID = parsed.id;
+                        this._symbol = parsed.symbol;
                         if (oldID != this._geneID || oldSymbol != this._symbol) {
                             document.fire('gene:loaded', {'oldid' : oldID, 'newid': this._geneID, 'symbol': this._symbol});
                         }

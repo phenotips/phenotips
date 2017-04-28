@@ -109,7 +109,7 @@
         },
 
         /**
-         * When an ID changes (e.g. a gene was added by symbol and an ID was loaded using geneNameService)
+         * When an ID changes (e.g. a gene was added by symbol and an ID was loaded using genes Vocabulary RESTFull API)
          * need to remove all cases with oldID and add cases with newID, this will take care of correctly
          * updating counts in case newID already has some cases independent form oldID.
          */
