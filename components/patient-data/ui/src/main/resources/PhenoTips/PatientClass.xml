@@ -176,7 +176,36 @@
     <clinical_diagnosis>
       <cache>0</cache>
       <classname/>
-      <customDisplay>{{include reference="PhenoTips.OrdoDisplay" /}}</customDisplay>
+      <customDisplay>{{velocity}}
+#if ($xcontext.action == 'edit')
+  {{html wiki=false clean=false}}
+  &lt;div class="custom-display-data"&gt;
+  #foreach ($val in $value)
+    #set($entryName = "$!{services.vocabularies.ordo.getTerm($val).name}")
+    &lt;label class="term-entry" for="${prefix}${name}_${val}"&gt;
+      &lt;input title="$entryName" type="checkbox" checked="checked" name="${prefix}${name}" id="${prefix}${name}_${val}" value="${val}"/&gt;$entryName
+    &lt;/label&gt;
+  #end
+  &lt;/div&gt;
+  &lt;input type="text" name="${prefix}${name}" id="${prefix}${name}" value="" class="suggested suggest-ordo multi generateShortList"/&gt;
+  &lt;input type="hidden" name="${prefix}${name}" value=""/&gt;
+  {{/html}}
+#elseif ($value &amp;&amp; $value.size() &gt; 0 &amp;&amp; "${value.get(0)}" != '')
+  #foreach ($val in $value)
+    #set ($term = $!services.vocabularies.ordo.getTerm($val))
+    #set ($name = $term.name)
+    #if ("$!{name}" == '')
+      #set ($name = $val)
+    #end
+    #if ($term.id.indexOf(':') &gt;= 0)
+      #set ($termId = $stringtool.substringAfter($term.id, ':'))
+    #else
+      #set ($termId = $term.id)
+    #end
+    (% class="vocabulary-term-list" %)((([[$term.id&gt;&gt;http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=EN&amp;Expert=${termId}||class="term-id"]] $!{services.rendering.escape($name, $doc.syntax)})))
+  #end
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <displayType>input</displayType>
       <idField/>
@@ -916,7 +945,36 @@
     <omim_id>
       <cache>0</cache>
       <classname/>
-      <customDisplay>{{include reference="PhenoTips.OmimDisplay" /}}</customDisplay>
+      <customDisplay>{{velocity}}
+#if ($xcontext.action == 'edit')
+  {{html wiki=false clean=false}}
+  &lt;div class="custom-display-data"&gt;
+  #foreach ($val in $value)
+    #set($entryName = "$!{services.vocabularies.omim.getTerm($val).name}")
+    &lt;label class="term-entry" for="${prefix}${name}_${val}"&gt;
+      &lt;input title="$entryName" type="checkbox" checked="checked" name="${prefix}${name}" id="${prefix}${name}_${val}" value="${val}"/&gt;$entryName
+    &lt;/label&gt;
+  #end
+  &lt;/div&gt;
+  &lt;input type="text" name="${prefix}${name}" id="${prefix}${name}" value="" class="suggested suggest-omim multi generateShortList"/&gt;
+  &lt;input type="hidden" name="${prefix}${name}" value=""/&gt;
+  {{/html}}
+#elseif ($value &amp;&amp; $value.size() &gt; 0 &amp;&amp; "${value.get(0)}" != '')
+  #foreach ($val in $value)
+    #set ($term = $!services.vocabularies.omim.getTerm($val))
+    #set ($name = $term.name)
+    #if ("$!{name}" == '')
+      #set ($name = $val)
+    #end
+    #if ($term.id.indexOf(':') &gt;= 0)
+      #set ($termId = $stringtool.substringAfter($term.id, ':'))
+    #else
+      #set ($termId = $term.id)
+    #end
+    (% class="vocabulary-term-list" %)((([[~$!{stringtool.defaultString($!term.symbol, ' ')}${term.id}&gt;&gt;http://www.omim.org/entry/${termId}||class="term-id"]] $!{services.rendering.escape($name, $doc.syntax)})))
+  #end
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <displayType>input</displayType>
       <idField/>
