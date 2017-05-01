@@ -276,7 +276,7 @@ define([
                         resultInfo : {}
                     },
                     'genes' : {
-                        script: editor.getExtern  alEndpoint().getHGNCServiceURL() + "/suggest?",
+                        script: editor.getExternalEndpoint().getHGNCServiceURL() + "/suggest?",
                         noresults: "No matching terms",
                         resultsParameter : "rows",
                         resultValue : "symbol",

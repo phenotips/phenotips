@@ -28,7 +28,8 @@
   <artifactId>solr-access-service-api</artifactId>
   <name>PhenoTips - Solr Access Service - Java code</name>
   <properties>
-    <coverage.instructionRatio>0.43</coverage.instructionRatio>
+    <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
+    <coverage.instructionRatio>0.42</coverage.instructionRatio>
     <!-- Module soon to be removed, disable checks -->
     <clirr.skip>true</clirr.skip>
   </properties>

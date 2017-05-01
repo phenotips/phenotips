@@ -56,9 +56,9 @@ define([
             try {
                 var parsed = JSON.parse(response.responseText);
                 //console.log(Helpers.stringifyObject(parsed));
-                if (parsed.hasOwnProperty("rows") && parsed.rows.length > 0) {
-                    console.log("LOADED TERM INFO: id = " + this._hpoID + ", name = " + parsed.rows[0].name);
-                    this._name = parsed.rows[0].name;
+                if (parsed.hasOwnProperty("name")) {
+                    console.log("LOADED TERM INFO: id = " + this._hpoID + ", name = " + parsed.name);
+                    this._name = parsed.name;
                 } else {
                     console.log("LOADED TERM INFO: id = " + this._hpoID + " -> NO DATA");
                 }

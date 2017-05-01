@@ -92,19 +92,19 @@ define([
         },
 
         getEthnicitySearchURL: function() {
-            this.vocabulariesService + "/ethnicity";
+            return this.vocabulariesService + "/ethnicity";
         },
 
         getHGNCServiceURL: function() {
-            this.vocabulariesService + "/hgnc";
+            return this.vocabulariesService + "/hgnc";
         },
 
         getHPOServiceURL: function() {
-            this.vocabulariesService + "/hpo";
+            return this.vocabulariesService + "/hpo";
         },
 
         getOMIMServiceURL: function() {
-            this.vocabulariesService + "/omim";
+            return this.vocabulariesService + "/omim";
         },
 
         getPatientSuggestServiceURL: function() {
