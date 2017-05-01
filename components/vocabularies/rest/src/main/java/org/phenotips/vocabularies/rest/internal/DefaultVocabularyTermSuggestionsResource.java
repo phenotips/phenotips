@@ -79,7 +79,7 @@ public class DefaultVocabularyTermSuggestionsResource extends XWikiResource impl
         JSONArray trms = new JSONArray();
         for (VocabularyTerm term : termSuggestions) {
             JSONObject trm = term.toJSON();
-            trm.put("links", this.autolinker.get().forSecondaryResource(VocabularyTermResource.class, this.uriInfo));
+            trm.put("links", this.autolinker.get().forSecondaryResource(VocabularyTermResource.class, this.uriInfo).build());
             trms.put(trm);
         }
 
