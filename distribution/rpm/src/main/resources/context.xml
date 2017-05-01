@@ -18,4 +18,8 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
-<Context docBase="/var/lib/phenotips/webapp/" useHttpOnly="true"/>
+<Context docBase="/var/lib/phenotips/webapp/" useHttpOnly="true" processTlds="false">
+  <JarScanner scanClassPath="false">
+    <JarScanFilter tldSkip="*"/>
+  </JarScanner>
+</Context>
