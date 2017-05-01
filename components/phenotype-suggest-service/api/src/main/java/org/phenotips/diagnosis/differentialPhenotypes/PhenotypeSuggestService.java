@@ -15,10 +15,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.solr;
+package org.phenotips.diagnosis.differentialPhenotypes;
 
 import org.phenotips.obo2solr.maps.CounterMap;
 import org.phenotips.obo2solr.maps.SumMap;
+import org.phenotips.vocabulary.SolrVocabularyResourceManager;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
@@ -26,7 +29,6 @@ import org.xwiki.script.service.ScriptService;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,13 +40,14 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.CommonParams;
-import org.apache.solr.common.params.MapSolrParams;
 import org.apache.solr.common.util.SimpleOrderedMap;
+import org.slf4j.Logger;
 
 /**
  * Provides access to the Solr server, with the main purpose of providing access to the OMIM ontology.
@@ -52,20 +55,21 @@ import org.apache.solr.common.util.SimpleOrderedMap;
  * @version $Id$
  */
 @Component
-@Named("omim")
+@Named("hpo")
 @Singleton
-public class OmimScriptService extends AbstractSolrScriptService
+public class PhenotypeSuggestService implements ScriptService
 {
     /** Provides access to the HPO ontology, for converting IDs into names and for getting all term ancestors. */
     @Inject
     @Named("hpo")
-    private ScriptService service;
+    private Vocabulary hpo;
 
-    @Override
-    protected String getName()
-    {
-        return "omim";
-    }
+    @Inject
+    private SolrVocabularyResourceManager solrManager;
+
+    /** Logging helper object. */
+    @Inject
+    private Logger logger;
 
     /**
      * Compute a list of phenotypes to investigate, which maximize the probability of getting more accurate automatic
@@ -95,11 +99,10 @@ public class OmimScriptService extends AbstractSolrScriptService
     public List<SuggestedPhenotype> getDifferentialPhenotypes(Collection<String> phenotypes,
         Collection<String> nphenotypes, int limit)
     {
-        HPOScriptService hpoService = (HPOScriptService) this.service;
         QueryResponse response;
         List<SuggestedPhenotype> result = new LinkedList<>();
         try {
-            response = this.server.query(prepareParams(phenotypes, nphenotypes));
+            response = this.solrManager.getSolrConnection("hpo").query(prepareParams(phenotypes, nphenotypes));
         } catch (SolrServerException | IOException ex) {
             this.logger.warn("Failed to query OMIM index: {}", ex.getMessage());
             return result;
@@ -110,16 +113,16 @@ public class OmimScriptService extends AbstractSolrScriptService
         CounterMap<String> matchCounter = new CounterMap<>();
         Set<String> allAncestors = new HashSet<>();
         for (String phenotype : phenotypes) {
-            allAncestors.addAll(hpoService.getAllAncestorsAndSelfIDs(phenotype));
+            allAncestors.addAll(this.getAllAncestorsAndSelfIDs(phenotype));
         }
         for (SolrDocument disorder : matchingDisorders) {
-            String omimId = (String) disorder.getFieldValue(ID_FIELD_NAME);
+            String omimId = (String) disorder.getFieldValue("id");
             @SuppressWarnings("unchecked")
             SimpleOrderedMap<Float> omimTerm = (SimpleOrderedMap<Float>) explanations.get(omimId);
             float score = omimTerm.get("value");
             for (Object hpoId : disorder.getFieldValues("actual_symptom")) {
                 if (allAncestors.contains(hpoId) || nphenotypes.contains(hpoId)
-                    || !hpoService.getAllAncestorsAndSelfIDs((String) hpoId).contains("HP:0000118")) {
+                    || !this.getAllAncestorsAndSelfIDs((String) hpoId).contains("HP:0000118")) {
                     continue;
                 }
                 cummulativeScore.addTo((String) hpoId, (double) score);
@@ -128,11 +131,11 @@ public class OmimScriptService extends AbstractSolrScriptService
         }
         if (matchCounter.getMinValue() <= matchingDisorders.size() / 2) {
             for (String hpoId : cummulativeScore.keySet()) {
-                SolrDocument term = hpoService.get(hpoId);
+                VocabularyTerm term = this.hpo.getTerm(hpoId);
                 if (term == null) {
                     continue;
                 }
-                result.add(new SuggestedPhenotype(hpoId, (String) term.getFieldValue("name"),
+                result.add(new SuggestedPhenotype(hpoId, (String) term.get("name"),
                     cummulativeScore.get(hpoId) / (matchCounter.get(hpoId) * matchCounter.get(hpoId))));
             }
             Collections.sort(result);
@@ -148,20 +151,37 @@ public class OmimScriptService extends AbstractSolrScriptService
      * @param nphenotypes phenotypes that are not observed in the patient
      * @return the computed Solr query parameters
      */
-    private MapSolrParams prepareParams(Collection<String> phenotypes, Collection<String> nphenotypes)
+    private SolrQuery prepareParams(Collection<String> phenotypes, Collection<String> nphenotypes)
     {
-        Map<String, String> params = new HashMap<>();
+        SolrQuery result = new SolrQuery();
         String q = "symptom:" + StringUtils.join(phenotypes, " symptom:");
         if (!nphenotypes.isEmpty()) {
             q += "  not_symptom:" + StringUtils.join(nphenotypes, " not_symptom:");
         }
         q += " -nameSort:\\** -nameSort:\\+* -nameSort:\\^*";
-        params.put(CommonParams.Q, q.replaceAll("HP:", "HP\\\\:"));
-        params.put(CommonParams.ROWS, "100");
-        params.put(CommonParams.START, "0");
-        params.put(CommonParams.DEBUG_QUERY, Boolean.toString(true));
-        params.put(CommonParams.EXPLAIN_STRUCT, Boolean.toString(true));
+        result.set(CommonParams.Q, q.replaceAll("HP:", "HP\\\\:"));
+        result.set(CommonParams.ROWS, "100");
+        result.set(CommonParams.START, "0");
+        result.set(CommonParams.DEBUG_QUERY, Boolean.toString(true));
+        result.set(CommonParams.EXPLAIN_STRUCT, Boolean.toString(true));
 
-        return new MapSolrParams(params);
+        return result;
+    }
+
+    /**
+     * Get the HPO IDs of the specified phenotype and all its ancestors.
+     *
+     * @param id the HPO identifier to search for, in the {@code HP:1234567} format
+     * @return the full set of ancestors-or-self IDs, or an empty set if the requested ID was not found in the index
+     */
+    public Set<String> getAllAncestorsAndSelfIDs(final String id)
+    {
+        Set<String> parents = new HashSet<>();
+        VocabularyTerm crt = this.hpo.getTerm(id);
+        Set<VocabularyTerm> ancenstors = crt.getAncestorsAndSelf();
+        for (VocabularyTerm term : ancenstors) {
+            parents.add(term.getId());
+        }
+        return parents;
     }
 }

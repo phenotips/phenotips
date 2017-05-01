@@ -41,7 +41,7 @@
 #if ($xcontext.action == 'get')
   $response.setHeader("X-ReqNo", "$!request.reqNo")##
   #if ("$!request.symptom" != '')##
-    #set ($_service = $services.omim)
+    #set ($_service = $services.hpo)
     #set ($limit = $mathtool.toInteger("$!{request.limit}"))
     #if (!$limit || $limit &lt; 0)
       #set ($limit = 6)
@@ -74,7 +74,7 @@
         #end
         #set ($pagedResults = $results.subList($from, $to))
         {{html clean="false"  wiki="false"}}##
-        ##Add previous arrow if neccessary
+        ##Add previous arrow if necessary
         #if ($page &gt; 1)
           #set ($previousPage = $page - 1)
           &lt;span class="fa fa-chevron-left navigation"&gt;&lt;input type="hidden" value="$previousPage"/&gt;&lt;/span&gt;

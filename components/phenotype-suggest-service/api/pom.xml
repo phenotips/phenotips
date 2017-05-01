@@ -22,16 +22,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>solr-access-service</artifactId>
+    <artifactId>phenotype-suggest-service</artifactId>
     <version>1.4-SNAPSHOT</version>
   </parent>
-  <artifactId>solr-access-service-api</artifactId>
-  <name>PhenoTips - Solr Access Service - Java code</name>
+  <artifactId>phenotype-suggest-service-api</artifactId>
+  <name>PhenoTips - Phenotype suggest Service - Java code</name>
   <properties>
     <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
-    <coverage.instructionRatio>0.42</coverage.instructionRatio>
-    <!-- Module soon to be removed, disable checks -->
-    <clirr.skip>true</clirr.skip>
+    <coverage.instructionRatio>0.25</coverage.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
