@@ -116,7 +116,7 @@
 #end
 #set ($phenotypesSummary = [])
 #set ($hasSymptoms = 0)
-#__phenotypeSummary_create( $phenotypeSummary $hasSymptoms )
+#__phenotypeSummary_create( $phenotypesSummary $hasSymptoms )
 #if ($xcontext.action == 'edit' || $hasSymptoms)
   (% class="instant-search ncbi-search-box" %)(((
     === $services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.matchingDisorders') ===

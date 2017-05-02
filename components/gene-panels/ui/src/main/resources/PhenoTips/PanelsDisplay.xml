@@ -132,6 +132,7 @@
     'reqNoParam' : 'reqNo',
     'presentParam' : 'present-term',
     'absentParam' : 'absent-term',
+    'rejectedGenes' : 'rejected-gene',
 
     /**
      * Generates results for the first page based on new data provided.
@@ -143,6 +144,7 @@
       this.param = {};
       this.param[this.presentParam] = parameters.symptom || [];
       this.param[this.absentParam] = parameters.not_symptom || [];
+      this.geneCache = parameters.rejected_gene || [];
       this.requestPageData(page, resultsToShow);
     },
 
@@ -151,7 +153,13 @@
       this.page = page;
       resultsToShow &amp;&amp; (this.resultsToShow = resultsToShow);
 
-      if (!this.param) {
+      if (this.checkBox.visible() &amp;&amp; this.excludeRejected) {
+        this.param[this.rejectedGenes] = this.geneCache;
+      } else {
+        delete this.param[this.rejectedGenes] &amp;&amp; this.param[this.rejectedGenes]
+      }
+
+      if (!this.param || (this.param[this.presentParam].size() == 0 &amp;&amp; this.param[this.absentParam].size() == 0)) {
         this.updateDataContainer(null);
         return;
       }
@@ -301,16 +309,17 @@
       this.nextArrow = new Element('span', {'class' : 'fa fa-angle-right fa-lg fa-fw hidden'});
       this.toLast = new Element('span', {'class' : 'fa fa-angle-double-right fa-lg fa-fw hidden'});
       this.resultsContainer = new Element('div', {'class' : 'gene-search-page'});
-      this.pageSwitcher = new Element('div', {'id' : 'genePanelsPagination', 'class' : 'pagination-navigation'})
+      this.pageSwitcher = new Element('span', {'id' : 'genePanelsPagination', 'class' : 'pagination-navigation'})
         .insert(this.toFirst)
         .insert(this.prevArrow)
         .insert(this.curPage)
         .insert(this.nextArrow)
         .insert(this.toLast);
-      this.service.target.insert(this.resultsContainer);
-      this.service.target.insert(this.pageSwitcher);
+      $('genePanelsPaginationWrapper').insert(this.pageSwitcher);
+      this.service.target.insert({'top' : this.resultsContainer});
       this.attachNavigationListeners();
       this.attachDownloadListeners();
+      this.attachCheckBoxListeners();
     },
 
     /**
@@ -350,7 +359,16 @@
         var parameters = {};
         parameters[_this.presentParam] = _this.param[_this.presentParam];
         parameters[_this.absentParam] = _this.param[_this.absentParam];
+        _this.excludeRejected &amp;&amp; (parameters[_this.rejectedGenes] = _this.param[_this.rejectedGenes]);
         Event.fire(document, 'panels:export:requested', {'param' : parameters, 'service' : _this.service});
+      });
+    },
+
+    attachCheckBoxListeners : function() {
+      var _this = this;
+      this.checkBox &amp;&amp; this.checkBox.observe('change', function(event) {
+        _this.excludeRejected = _this.checkBox.checked;
+        _this.requestPageData(1, _this.resultsToShow);
       });
     },
 
@@ -364,6 +382,8 @@
       if (!service) {return;}
       this.service = service;
       this.saveButton = saveButton;
+      this.checkBox = $('excludeRejectedGenesCheckBox');
+      this.checkBox &amp;&amp; (this.excludeRejected = this.checkBox.checked);
       this.createResultsContainers();
     }
   });
@@ -484,6 +504,31 @@
 
 #genePanelsPagination {
   font-size: .85em;
+  float: right;
+}
+
+#genePanelsPaginationWrapper {
+  display: block;
+  margin-top: 1em;
+}
+
+#genePanelsDownloadWrapper {
+  float: left;
+}
+
+#genePanelsExcludeGenesWrapper {
+  float: right;
+  font-size: .7em;
+  text-transform: capitalize;
+  margin-right: -20px;
+  color: $theme.textColor;
+}
+
+#genePanelsExcludeGenesWrapper label {
+  width: 100%;
+  display: inline;
+  padding-left: .3em;
+  font-weight: bold;
 }
 
 #genePanelsPagination &gt; .fa:hover {

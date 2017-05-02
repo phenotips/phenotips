@@ -2388,6 +2388,7 @@ document.observe('xwiki:dom:loaded', function()
         'searchTerms' : $('panelsSearchTerms'),
         'searchTermsInput' : $('panelsSearchTermsInput'),
         'searchTermIDsInput' : $('panelsSearchTermIDsInput'),
+        'rejectedGeneIDsInput' : $('panelsRejectedGeneIDsInput'),
         'containersInitialized' : function(searchBox) {
           var containersInit;
           if (searchBox.searchTerms &amp;&amp; searchBox.searchTermsInput &amp;&amp; searchBox.genePanels.target) {
@@ -2429,7 +2430,17 @@ document.observe('xwiki:dom:loaded', function()
         _this._builder.searchTermIDsInput.value += term.__key + ' ';
       });
 
-      if (this._builder.searchTermsInput.value != prevValue) {
+      var prevGenes = '';
+      if (this._builder.rejectedGeneIDsInput) {
+        prevGenes = this._builder.rejectedGeneIDsInput.value;
+        this._builder.rejectedGeneIDsInput.value = '';
+        for (var gene in this._builder.genes) {
+          (this._builder.genes[gene].status == 'rejected') &amp;&amp; (_this._builder.rejectedGeneIDsInput.value += gene + ' ');
+        };
+      }
+
+      if (this._builder.searchTermsInput.value != prevValue || (this._builder.rejectedGeneIDsInput
+        &amp;&amp; this._builder.rejectedGeneIDsInput.value != prevGenes)) {
         _this._builder.firePhenotypeChanged({phenotype: _this._builder.cache});
         _this._builder.doSearch(_this);
       }
@@ -2598,6 +2609,10 @@ document.observe('xwiki:dom:loaded', function()
         }
       }
 
+      if (this._builder.genes) {
+        this.addRejectedGeneParams(parameters);
+      }
+
       if (page !== undefined) {
         parameters['page'] = page;
       }
@@ -2612,6 +2627,16 @@ document.observe('xwiki:dom:loaded', function()
       }.bind(this).delay(searchDelay);
     },
 
+    addRejectedGeneParams : function(parameters) {
+      var geneList = [];
+        parameters['rejected_gene'] = geneList;
+        for (var g in this._builder.genes) {
+          if ('rejected' == this._builder.genes[g].status) {
+            geneList.push("HGNC:" + this._builder.genes[g].key);
+          }
+        }
+    },
+
     initialize : function(searchBox) {
       this.searchBox = searchBox;
       for (var label in this.searchServices) {
@@ -2624,6 +2649,19 @@ document.observe('xwiki:dom:loaded', function()
       }
 
       this.attachObservers();
+    },
+
+    initGeneCache : function() {
+      var _this = this;
+      this._builder.rejectedGeneIDsInput.value = '';
+      var genesSummary = $('panels-genes-summary');
+      this._builder.genes = {};
+      if (genesSummary) {
+        var genes = JSON.parse(genesSummary.value);
+        genes.each(function (g) {
+          _this._builder.genes[g.key] = g;
+        });
+      }
     },
         
     attachObservers : function() {
@@ -2685,8 +2723,31 @@ document.observe('xwiki:dom:loaded', function()
             _this._builder.cache.all[p.key] = p;
             _this._builder.cache.displayed[p.key] = true;
           });
+          _this._builder.rejectedGeneIDsInput &amp;&amp; _this.initGeneCache();
           _this.updateDefaultSearchTerms();
         }
+      });
+
+      document.observe('gene:updated', function(event) {
+        var key = event.memo &amp;&amp; event.memo.key;
+        key &amp;&amp; (_this._builder.genes[key] = event.memo);
+        _this.updateDefaultSearchTerms();
+      });
+
+      document.observe('gene:removed', function(event) {
+        var key = event.memo &amp;&amp; event.memo.key;
+        key &amp;&amp; (delete _this._builder.genes[key]);
+        _this.updateDefaultSearchTerms();
+      });
+
+      document.observe('gene:replaced', function(event) {
+        if (!event.memo) {return;}
+        var delete_key = event.memo.delete_key;
+        var geneKey = event.memo.key;
+        var geneStatus = event.memo.status;
+        delete_key &amp;&amp; (delete _this._builder.genes[delete_key]);
+        geneKey &amp;&amp; geneStatus &amp;&amp; (_this._builder.genes[geneKey] = {'key' : geneKey, 'status' : geneStatus})
+        _this.updateDefaultSearchTerms();
       });
 
       if (this._builder.customSearchTermsInput) {

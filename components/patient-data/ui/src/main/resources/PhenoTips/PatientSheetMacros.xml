@@ -310,7 +310,7 @@
 ## PHENOTYPE SUMMARY
 ##
 ##
-#macro (__phenotypeSummary_create $phenotypeSummary $hasSymptoms)
+#macro (__phenotypeSummary_create $phenotypesSummary $hasSymptoms)
   #set ($patient = $services.patients.get($doc.name))
   #set($qualifiers = $patient.getData('global-qualifiers'))
   #foreach ($q in ['global_age_of_onset', 'global_mode_of_inheritance'])
@@ -339,6 +339,19 @@
   #end
 
   #set ($hasSymptoms = ($phenotypesSummary.size() &gt; 0))
+#end
+
+## =====================================================================
+##
+## GENE SUMMARY
+##
+##
+#macro (__geneSummary_create $genesSummary)
+  #set ($patient = $services.patients.get($doc.name))
+  #set($genes = $patient.getData('genes'))
+  #foreach ($g in $genes)
+    #set ($discard = $genesSummary.add({"key" : $g.gene, "status" : $g.status}))
+  #end
 #end
 {{/velocity}}</content>
 </xwikidoc>
