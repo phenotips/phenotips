@@ -41,7 +41,7 @@ Building the entire project is as simple as `mvn install`, but first the environ
     * `git clone git@github.com:phenotips/phenotips.git` if you also want to commit changes back to the project (and you have the right to do so)
     * download an [archive of the latest release](https://github.com/phenotips/phenotips/tags) if you don't want to use version control at all
 * It is advisable to increase the amount of memory available to Maven: `export MAVEN_OPTS="-Xmx2g -XX:MaxPermSize=256m"`
-* cd into the phenotips folder. ls and make sure pom.xml is there.
+* `cd` into the `phenotips` folder. `ls` and make sure `pom.xml` is there.
 * Execute `mvn install` at the command line to build the project
     * note that the first build will take a while longer, because all the required dependencies are downloaded, but all the subsequent builds should only take a few minutes
 
