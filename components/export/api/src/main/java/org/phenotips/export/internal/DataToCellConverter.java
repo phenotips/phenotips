@@ -233,8 +233,7 @@ public class DataToCellConverter
                 { "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp", "transcript", "protein",
                     "cdna" },
                 { "segregation", "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp",
-                    "transcript",
-                    "protein", "cdna" },
+                    "transcript", "protein", "cdna" },
                 { "sanger", "segregation", "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp",
                     "transcript", "protein", "cdna" },
                 { "reference_genome", "end_position", "start_position", "chromosome", "cdna" }
@@ -1062,7 +1061,7 @@ public class DataToCellConverter
 
             DataSection headerSection = new DataSection();
             int hX = 0;
-            for (String fieldId : Arrays.asList("name", "id", "notes")) {
+            for (String fieldId : Arrays.asList("name", "id")) {
                 DataCell headerCell = new DataCell(
                     this.translationManager.translate("phenotips.export.excel.label.disorders." + fieldId), hX, 1,
                     StyleOption.HEADER);
@@ -1101,13 +1100,6 @@ public class DataToCellConverter
         if (disorders.isEmpty()) {
             bodySection.addCell(new DataCell("", 0, y));
             bodySection.addCell(new DataCell("", 1, y));
-        }
-        /* Notes export */
-        PatientData<String> notes = patient.getData("notes");
-        String diagnosisNotes = notes != null ? notes.get("diagnosis_notes") : "";
-        for (DataCell cell : ConversionHelpers.preventOverflow(diagnosisNotes, 2, 0)) {
-            cell.setMultiline();
-            bodySection.addCell(cell);
         }
 
         return bodySection;
@@ -1164,6 +1156,51 @@ public class DataToCellConverter
             bodySection.addCell(new DataCell(disorder.getName(), 0, y));
             bodySection.addCell(new DataCell(disorder.getId(), 1, y));
             y++;
+        }
+
+        return bodySection;
+    }
+
+    public DataSection diagnosisNotesHeader(Set<String> enabledFields) throws Exception
+    {
+        String sectionName = "diagnosis_notes";
+
+        Set<String> present = new LinkedHashSet<>();
+        if (enabledFields.remove(sectionName)) {
+            present.add(sectionName);
+        }
+        this.enabledHeaderIdsBySection.put(sectionName, present);
+
+        DataSection headerSection = new DataSection();
+
+        if (present.isEmpty()) {
+            return null;
+        }
+
+        DataCell headerCell =
+            new DataCell(this.translationManager.translate("phenotips.export.excel.label.diagnosisNotes"), 0,
+                0, StyleOption.LARGE_HEADER);
+        headerCell.addStyle(StyleOption.HEADER);
+        headerSection.addCell(headerCell);
+
+        return headerSection;
+    }
+
+    public DataSection diagnosisNotesBody(Patient patient)
+    {
+        String sectionName = "diagnosis_notes";
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
+        if (present == null || present.isEmpty()) {
+            return null;
+        }
+
+        DataSection bodySection = new DataSection();
+
+        PatientData<String> notes = patient.getData("notes");
+        String comments = notes != null ? notes.get("diagnosis_notes") : "";
+        for (DataCell gcell : ConversionHelpers.preventOverflow(comments, 0, 0)) {
+            gcell.setMultiline();
+            bodySection.addCell(gcell);
         }
 
         return bodySection;
