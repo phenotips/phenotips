@@ -64,8 +64,7 @@ public class ConsentManagerScriptServiceTest {
 
         when(this.consentManager.toJSON(consents)).thenReturn(this.arr);
         // Debug this assertion
-        Assert.assertNotSame(this.arr,
-                this.mocker.getComponentUnderTest().getAllConsentsForPatient(Patient.JSON_KEY_ID));
+        Assert.assertSame(this.arr,this.mocker.getComponentUnderTest().getAllConsentsForPatient(Patient.JSON_KEY_ID));
     }
 
     @Test
