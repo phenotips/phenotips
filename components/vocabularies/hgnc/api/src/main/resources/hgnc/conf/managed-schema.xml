@@ -65,20 +65,10 @@
          protects keywords defined in "protwords.txt",
          down cases,
          and stems words using the possessive (remove 's)
-         and the Porter English stemmer.
-         At query time only, it also applies synonyms. -->
+         and the Porter English stemmer. -->
     <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
-      <analyzer type="index">
+      <analyzer>
         <tokenizer class="solr.ClassicTokenizerFactory"/>
-        <filter class="solr.StopFilterFactory" ignoreCase="true"/>
-        <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
-        <filter class="solr.LowerCaseFilterFactory"/>
-        <filter class="solr.EnglishPossessiveFilterFactory"/>
-        <filter class="solr.PorterStemFilterFactory"/>
-      </analyzer>
-      <analyzer type="query">
-        <tokenizer class="solr.ClassicTokenizerFactory"/>
-        <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
         <filter class="solr.StopFilterFactory" ignoreCase="true"/>
         <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
         <filter class="solr.LowerCaseFilterFactory"/>
