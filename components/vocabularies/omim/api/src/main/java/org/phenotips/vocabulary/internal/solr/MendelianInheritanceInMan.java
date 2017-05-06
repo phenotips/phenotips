@@ -312,7 +312,7 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
                 this.data.put(String.valueOf(crtTerm.get(ID_FIELD).getFirstValue()), crtTerm);
             }
         } catch (IOException ex) {
-            this.logger.warn("Failed to read/parse the HGNC source: {}", ex.getMessage());
+            this.logger.warn("Failed to read/parse the OMIM source: {}", ex.getMessage());
         }
     }
 
