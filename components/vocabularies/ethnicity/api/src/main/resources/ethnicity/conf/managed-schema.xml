@@ -23,7 +23,7 @@
  http://wiki.apache.org/solr/SchemaXml
 -->
 
-<schema name="ethnicity" version="1.5">
+<schema name="ethnicity" version="1.6">
   <types>
     <!-- Numeric field for storing the population size. -->
     <fieldType name="tlong" class="solr.TrieLongField" precisionStep="8" positionIncrementGap="0"/>

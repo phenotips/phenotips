@@ -23,7 +23,7 @@
  http://wiki.apache.org/solr/SchemaXml
 -->
 
-<schema name="hgnc" version="1.5">
+<schema name="hgnc" version="1.6">
   <types>
     <!-- The StrField type is not analyzed, but indexed/stored verbatim. -->
     <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
