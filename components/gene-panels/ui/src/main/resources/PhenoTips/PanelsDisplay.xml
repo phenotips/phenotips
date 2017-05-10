@@ -122,133 +122,113 @@
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
 
   widgets.PanelsDisplay = Class.create({
-    'data' : {},
+    'url' : '',
     'param' : {},
-    'size' : 0,
-    'resultsToShow' : 6,
-    'page' : 1,
-    'startPageParam' : 'startPage',
-    'numResultsParam' : 'numResults',
-    'reqNoParam' : 'reqNo',
-    'presentParam' : 'present-term',
-    'absentParam' : 'absent-term',
-    'rejectedGenes' : 'rejected-gene',
+    'baseUrl' : '',
+    'resultsToShow' : 10,
+    'presentParamLabel' : 'present-term',
+    'absentParamLabel' : 'absent-term',
+    'rejectedGenesLabel' : 'rejected-gene',
 
     /**
      * Generates results for the first page based on new data provided.
-     * @param parameters the incomplete parameters, containing only the term information
-     * @param page the page number to render
+     * @param parameters the query parameters. Supported parameters are as follows:
+     *        "symptom" the symptoms that were found to be present.
+     *        "not_symptom" the symptoms that were found to be absent.
      * @param resultsToShow the number of results to show; uses the default value if null
      */
-    paginate : function(parameters, page, resultsToShow) {
-      this.param = {};
-      this.param[this.presentParam] = parameters.symptom || [];
-      this.param[this.absentParam] = parameters.not_symptom || [];
-      this.geneCache = parameters.rejected_gene || [];
-      this.requestPageData(page, resultsToShow);
-    },
-
-    requestPageData : function(page, resultsToShow) {
-      var _this = this;
-      this.page = page;
-      resultsToShow &amp;&amp; (this.resultsToShow = resultsToShow);
+    paginate : function(parameters, resultsToShow) {
+      this.param = parameters;
+      this.geneCache = parameters[this.rejectedGenesLabel] || [];
+      this.param = parameters;
 
       if (this.checkBox.visible() &amp;&amp; this.excludeRejected) {
-        this.param[this.rejectedGenes] = this.geneCache;
+        this.param[this.rejectedGenesLabel] = this.geneCache;
       } else {
-        delete this.param[this.rejectedGenes] &amp;&amp; this.param[this.rejectedGenes]
+        delete this.param[this.rejectedGenesLabel]
       }
 
-      if (!this.param || (this.param[this.presentParam].size() == 0 &amp;&amp; this.param[this.absentParam].size() == 0)) {
-        this.updateDataContainer(null);
-        return;
-      }
+      this.resultsToShow = resultsToShow || this.resultsToShow;
+      this.updateLiveTable();
+    },
 
-      this.param[this.startPageParam] = this.page;
-      this.param[this.numResultsParam] = this.resultsToShow;
-      this.param[this.reqNoParam] = ++this.service.expectedReqNo;
-
-      new Ajax.Request(this.service.script, {
-        method : 'POST',
-        parameters: _this.param,
-        contentType: 'application/x-www-form-urlencoded',
-        onCreate : function() {
-          _this.service.target.addClassName('loading');
-        },
-        onSuccess : function(response) {
-          _this.updateDataContainer(response.responseJSON);
-        },
-        onComplete : function() {
-          _this.service.target.removeClassName('loading');
+    /**
+     * Prompts redrawing of the LiveTable, by providing a new url with the updated parameters.
+     * @param parameters the query parameters. Supported parameters are as follows:
+     *        "symptom" the symptoms that were found to be present.
+     *        "not_symptom" the symptoms that were found to be absent.
+     */
+    updateLiveTable : function() {
+      var newUrl = this.buildNewUrl();
+      if (newUrl != this.url) {
+        this.url = newUrl;
+        this.service.target.__hiddenParent &amp;&amp; this.service.target.__hiddenParent.removeClassName('hidden');
+        if (this.table) {
+          this.table.updateBaseUrl(this.url);
+        } else {
+          var options = {'limit' : this.resultsToShow};
+          this.table = new PhenoTips.widgets.GenePanelsLiveTable(this.url, 'panels-livetable', this.buildRow.bind(this), options);
         }
-      });
+      }
     },
 
-    updateDataContainer : function(json) {
-      if (!json || json.reqNo != this.service.expectedReqNo || !json.genes || !json.size) {
-        // Empty the results service, and hide section objects.
-        this.resultsContainer.update(' ');
-        this.service.target.__hiddenParent &amp;&amp; this.service.target.__hiddenParent.addClassName('hidden');
-        return;
+    buildNewUrl : function() {
+      var newUrl = this.baseUrl;
+      if (this.param) {
+        var presentParams = (this.param[this.presentParamLabel] &amp;&amp; (this.presentParamLabel + '='
+          + this.param[this.presentParamLabel].join('&amp;' + this.presentParamLabel + '='))) || '';
+        var absentParams = (this.param[this.absentParamLabel] &amp;&amp; (this.absentParamLabel + '='
+          + this.param[this.absentParamLabel].join('&amp;' + this.absentParamLabel + '='))) || '';
+        var rejectedGenesParam = (this.param[this.rejectedGenesLabel] &amp;&amp; (this.rejectedGenesLabel + '='
+          + this.param[this.rejectedGenesLabel].join('&amp;' + this.rejectedGenesLabel + '='))) || '';
+        newUrl += '?' + presentParams + absentParams + rejectedGenesParam;
       }
-      // Reset the data values.
-      this.size = json.size;
-      this.totalPages = json.totalPages;
-      this.data = json.genes;
-      this.firstItemRangeNo = (this.page - 1) * this.resultsToShow + 1;
-      this.lastItemRangeNo = this.firstItemRangeNo + this.size - 1;
-      this.totalSize = json.totalSize;
-      // Generate the results page
-      this.renderResults();
-      this.service.target.__hiddenParent &amp;&amp; this.service.target.__hiddenParent.removeClassName('hidden');
+      return newUrl;
     },
 
     /**
-     * Creates results for a calculated range of indexes.
+     * Builds a LiveTable row from the provided {@code dataObj json}.
      */
-    renderResults : function() {
-      this.setDataRanges();
-      var container = new Element('ul');
-      for (var i = 0; i &lt;= this.size - 1; i++) {
-        var geneRow = this.buildGeneRow(this.data[i]);
-        container.insert(geneRow);
-      }
-      this.resultsContainer.update(container);
+    buildRow : function(dataObj, idx, table) {
+      // Create all nodes.
+      var dataRow = new Element('tr');
+      var geneSymbolCol = new Element('td', {'class' : 'livetable-display-gene-col'});
+      var phenotypesCol = new Element('td', {'class' : 'livetable-display-phenotypes-col'});
+      dataRow.insert(geneSymbolCol).insert(phenotypesCol);
+
+      this.populateGeneSymbolCol(geneSymbolCol, dataObj);
+      this.populatePhenotypesCol(phenotypesCol, dataObj);
+
+      return dataRow;
     },
 
-    /**
-     * Builds a gene row, given an object that contains gene data.
-     * @param geneObj an objects that contains gene data
-     * @return {*} an html object describing the gene row
-     */
-    buildGeneRow : function(geneObj) {
-      var geneName = geneObj.gene_symbol;
-      var geneId = geneObj.gene_id;
-      var terms = geneObj.terms;
-      var count = geneObj.count;
-      var geneSymbolElem = new Element('span', {'class' : 'gene-symbol', 'title' : geneName})
-        .insert(geneName);
-      var geneIdElem = new Element('span', {'class' : 'gene-id hidden'})
-        .insert(geneId);
-      var associatedFeaturesElem = new Element('dl', {'class' : 'gene-panels-row-features'})
-        .insert(new Element('dt').insert(this.getFeatureNames(terms)));
-      var associatedFeatureIDsElem = new Element('span', {'class' : 'gene-panels-row-feature-ids hidden'})
-        .insert(this.getFeatureIDs(terms));
-      var countElem = new Element('span', {'class' : 'gene-count hidden'})
-        .insert(count);
-      var geneRow = new Element('li', {'class' : 'gene-panels-row'})
-        .insert(geneSymbolElem)
-        .insert(geneIdElem)
-        .insert(countElem);
+    populateGeneSymbolCol : function(colElem, dataObj) {
+      var geneName = dataObj.gene_symbol;
+      var geneId = dataObj.gene_id;
+
+      var geneSymbolElem = new Element('span', {'class' : 'gene-symbol', 'title' : geneName}).insert(geneName);
+      var geneIdElem = new Element('span', {'class' : 'gene-id hidden'}).insert(geneId);
+
+      colElem.insert(geneSymbolElem).insert(geneIdElem);
 
       if (typeof(this.service.tooltip) != 'undefined') {
         var icon = new Element('span', {'class' : 'xHelpButton fa fa-info-circle ' + this.service.tooltip, 'title' : geneName});
         new PhenoTips.widgets.HelpButton(icon);
-        geneRow.insert(icon);
+        colElem.insert(icon);
       }
-      geneRow.insert(associatedFeaturesElem);
-      geneRow.insert(associatedFeatureIDsElem);
-      return geneRow;
+    },
+
+    populatePhenotypesCol : function(colElem, dataObj) {
+      var terms = dataObj.terms;
+      var featureNames = this.getFeatureNames(terms);
+      var featureIds = this.getFeatureIDs(terms);
+      var count = dataObj.count;
+
+      var featureNamesElem = new Element('span', {'class' : 'feature-names'}).insert(featureNames);
+      var featureIdsElem = new Element('span', {'class' : 'feature-ids hidden'}).insert(featureIds);
+      var featureCountElem = new Element('span', {'class' : 'feature-count hidden'}).insert(count);
+
+      colElem.insert(featureNamesElem).insert(featureIdsElem).insert(featureCountElem);
     },
 
     /**
@@ -274,81 +254,22 @@
     },
 
     /**
-     * Sets the ranges for the data that will be displayed.
-     */
-    setDataRanges : function()
-    {
-      if (this.page &gt; 1) {
-        this.prevArrow.removeClassName('hidden');
-        this.toFirst.removeClassName('hidden');
-      } else {
-        this.prevArrow.addClassName('hidden');
-        this.toFirst.addClassName('hidden');
-      }
-
-      if (this.page &lt; this.totalPages) {
-        this.nextArrow.removeClassName('hidden');
-        this.toLast.removeClassName('hidden');
-      } else {
-        this.nextArrow.addClassName('hidden');
-        this.toLast.addClassName('hidden');
-      }
-
-      var pageCount = "$escapetool.javascript($services.localization.render('phenotips.panels.panelsDisplay.pageCount'))";
-      pageCount = pageCount.replace(/___number_range___/g, this.firstItemRangeNo + "-" + this.lastItemRangeNo).replace(/___total___/g, this.totalSize);
-      this.curPage.update(pageCount);
-    },
-
-    /**
      * Creates the containers for displaying the results.
      */
     createResultsContainers : function() {
-      this.toFirst = new Element('span', {'class' : 'fa fa-angle-double-left fa-lg fa-fw hidden'});
-      this.prevArrow = new Element('span', {'class' : 'fa fa-angle-left fa-lg fa-fw hidden'});
-      this.curPage = new Element('span', {'class' : 'current-page'});
-      this.nextArrow = new Element('span', {'class' : 'fa fa-angle-right fa-lg fa-fw hidden'});
-      this.toLast = new Element('span', {'class' : 'fa fa-angle-double-right fa-lg fa-fw hidden'});
-      this.resultsContainer = new Element('div', {'class' : 'gene-search-page'});
-      this.pageSwitcher = new Element('span', {'id' : 'genePanelsPagination', 'class' : 'pagination-navigation'})
-        .insert(this.toFirst)
-        .insert(this.prevArrow)
-        .insert(this.curPage)
-        .insert(this.nextArrow)
-        .insert(this.toLast);
-      $('genePanelsPaginationWrapper').insert(this.pageSwitcher);
-      this.service.target.insert({'top' : this.resultsContainer});
-      this.attachNavigationListeners();
       this.attachDownloadListeners();
+      this.attachChangeListeners();
       this.attachCheckBoxListeners();
     },
 
-    /**
-     * Attach listeners to the navigation arrows.
-     */
-    attachNavigationListeners : function() {
+    attachChangeListeners : function() {
       var _this = this;
-      this.prevArrow.observe('click', function() {
-        _this.page--;
-        _this.requestPageData(_this.page, _this.resultsToShow);
-        _this.renderResults();
-      });
-
-      this.nextArrow.observe('click', function() {
-        _this.page++;
-        _this.requestPageData(_this.page, _this.resultsToShow);
-        _this.renderResults();
-      });
-
-      this.toFirst.observe('click', function() {
-        _this.page = 1;
-        _this.requestPageData(_this.page, _this.resultsToShow);
-        _this.renderResults();
-      });
-
-      this.toLast.observe('click', function() {
-        _this.page = _this.totalPages;
-        _this.requestPageData(_this.page, _this.resultsToShow);
-        _this.renderResults();
+      document.on("xwiki:livetable:panels-livetable:loadingComplete", function(event) {
+        if (event.memo &amp;&amp; event.memo.status &amp;&amp; event.memo.status == 204) {
+          _this.table.clearDisplay();
+          _this.table.clearCache();
+          _this.service.target.__hiddenParent &amp;&amp; _this.service.target.__hiddenParent.addClassName('hidden');
+        }
       });
     },
 
@@ -356,11 +277,7 @@
       var _this = this;
       this.saveButton &amp;&amp; this.saveButton.observe('click', function(event) {
         event.stop();
-        var parameters = {};
-        parameters[_this.presentParam] = _this.param[_this.presentParam];
-        parameters[_this.absentParam] = _this.param[_this.absentParam];
-        _this.excludeRejected &amp;&amp; (parameters[_this.rejectedGenes] = _this.param[_this.rejectedGenes]);
-        Event.fire(document, 'panels:export:requested', {'param' : parameters, 'service' : _this.service});
+        Event.fire(document, 'panels:export:requested', {'param' : _this.param, 'service' : _this.service});
       });
     },
 
@@ -368,8 +285,43 @@
       var _this = this;
       this.checkBox &amp;&amp; this.checkBox.observe('change', function(event) {
         _this.excludeRejected = _this.checkBox.checked;
+
+        if (_this.checkBox.visible() &amp;&amp; _this.excludeRejected) {
+          _this.param[_this.rejectedGenesLabel] = _this.geneCache;
+        } else {
+          delete _this.param[_this.rejectedGenesLabel];
+        }
+
         _this.requestPageData(1, _this.resultsToShow);
       });
+    },
+    extendLiveTable : function() {
+      if (XWiki.widgets &amp;&amp; XWiki.widgets.LiveTable) {
+        var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+        widgets.GenePanelsLiveTable = Class.create(XWiki.widgets.LiveTable, {
+          initialize: function($super, url, domNodeName, handler, options) {
+            $super(url, domNodeName, handler, options);
+          }
+        });
+        widgets.GenePanelsLiveTable.addMethods({
+          updateBaseUrl : function(newBaseUrl) {
+            this.clearCache();
+            this.getUrl = newBaseUrl;
+            this.showRows(1, this.limit, null);
+          },
+          // Compensates for LiveTable bug where the offset is set to be larger than the total number of entries.
+          showRows : function($super, offset, limit, delay) {
+            var newLimit = limit;
+            var newOffset = offset;
+            if (this.totalRows != -1) {
+              offset &gt; this.totalRows &amp;&amp; (newOffset = 1);
+              var diff = this.totalRows - (newOffset + limit);
+              diff &lt; 0 &amp;&amp; (newLimit = limit + diff + 1);
+            }
+            $super(newOffset, newLimit, delay);
+          }
+        });
+      }
     },
 
     /**
@@ -380,7 +332,9 @@
      */
     initialize : function(service, saveButton) {
       if (!service) {return;}
+      this.extendLiveTable();
       this.service = service;
+      this.baseUrl = service.script + "/livetable";
       this.saveButton = saveButton;
       this.checkBox = $('excludeRejectedGenesCheckBox');
       this.checkBox &amp;&amp; (this.excludeRejected = this.checkBox.checked);
@@ -497,11 +451,25 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>#template("colorThemeInit.vm")
-.pagination-navigation {
-  text-align: right;
+      <code>#template('colorThemeInit.vm')
+#genePanelsExport {
+  font-size: .65em;
 }
 
+.gene-panels-search-box h3 .xTooltip {
+  font-size: .8em;
+  text-transform: none;
+}
+
+#panels-livetable {
+  width: 100%;
+}
+
+#panels-livetable .xwiki-livetable-display-container td {
+  text-align: left;
+}
+
+<<<<<<< HEAD
 #genePanelsPagination {
   font-size: .85em;
   float: right;
@@ -529,13 +497,43 @@
   display: inline;
   padding-left: .3em;
   font-weight: bold;
+=======
+#panels-livetable tbody.xwiki-livetable-display-body tr:hover,
+#panels-livetable tbody.xwiki-livetable-display-body tr.rowHover {
+  background-color: $theme.backgroundSecondaryColor;
+>>>>>>> aa0dff053... PT-3107: Added UI support for displaying gene panels via LiveTable.
 }
 
-#genePanelsPagination &gt; .fa:hover {
-  background-color: rgba(0,0,0,0.1);
-  color: $theme.linkColor;
-  cursor: pointer;
-  transition: all 0.2s linear;
+#panels-livetable input.button,
+#panels-livetable .buttonwrapper button, .buttonwrapper a:visited,
+#panels-livetable .buttonwrapper a:link, .buttonwrapper a:active {
+  color: $theme.buttonPrimaryTextColor !important;
+}
+
+#panels-livetable thead tr th {
+  text-align: left;
+}
+
+#panels-livetable .pagesizeselect {
+  vertical-align: middle;
+}
+
+#panels-livetable-pagesize {
+  float: left;
+}
+
+.livetable-display-gene-col {
+  width: 15em;
+  font-size: .85em;
+  font-weight: bold;
+}
+
+.livetable-display-phenotypes-col .feature-names {
+  font-size: .8em;
+}
+
+.livetable-display-gene-col .xHelpButton.fa.fa-info-circle.gene-info {
+  padding-left: 6px;
 }</code>
     </property>
     <property>
