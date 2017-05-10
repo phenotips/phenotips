@@ -38,6 +38,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -186,5 +187,27 @@ public class LifeStatusControllerTest
     public void checkGetName() throws ComponentLookupException
     {
         Assert.assertEquals(DATA_NAME, this.mocker.getComponentUnderTest().getName());
+    }
+
+    @Test
+    public void saveAliveWhenAlive() throws XWikiException, ComponentLookupException
+    {
+        PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, ALIVE);
+        doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
+
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+
+        verify(this.data).setStringValue(DATA_NAME, ALIVE);
+    }
+
+    @Test
+    public void saveDeceasedWhenDeceased() throws XWikiException, ComponentLookupException
+    {
+        PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, DECEASED);
+        doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
+
+        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+
+        verify(this.data).setStringValue(DATA_NAME, DECEASED);
     }
 }
