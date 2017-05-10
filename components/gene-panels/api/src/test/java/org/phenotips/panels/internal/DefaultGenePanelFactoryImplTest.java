@@ -60,11 +60,11 @@ public class DefaultGenePanelFactoryImplTest
 
     private static final String HGNC_LABEL = "hgnc";
 
-    private static final String SIZE_LABEL = "size";
+    private static final String SIZE_LABEL = "returnedrows";
 
-    private static final String TOTAL_SIZE_LABEL = "totalSize";
+    private static final String TOTAL_SIZE_LABEL = "totalrows";
 
-    private static final String GENES_LABEL = "genes";
+    private static final String GENE_ROWS_LABEL = "rows";
 
     private static final String HPO_TERM1 = "HP:001";
 
@@ -123,7 +123,7 @@ public class DefaultGenePanelFactoryImplTest
         Assert.assertTrue(genePanel.getTermsForGeneList().isEmpty());
 
         final JSONObject expectedJson = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
-            .put(GENES_LABEL, new JSONArray());
+            .put(GENE_ROWS_LABEL, new JSONArray());
         Assert.assertTrue(genePanel.toJSON().similar(expectedJson));
     }
 
@@ -151,7 +151,7 @@ public class DefaultGenePanelFactoryImplTest
         Assert.assertTrue(genePanel.getTermsForGeneList().isEmpty());
 
         final JSONObject expectedJson = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
-            .put(GENES_LABEL, new JSONArray());
+            .put(GENE_ROWS_LABEL, new JSONArray());
         Assert.assertTrue(genePanel.toJSON().similar(expectedJson));
     }
 

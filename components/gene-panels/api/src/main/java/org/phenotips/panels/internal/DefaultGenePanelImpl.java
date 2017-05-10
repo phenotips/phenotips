@@ -47,13 +47,13 @@ public class DefaultGenePanelImpl implements GenePanel
     private static final String ASSOCIATED_GENES = "associated_genes";
 
     /** The "size" JSON property label. */
-    private static final String SIZE = "size";
+    private static final String RETURNED_SIZE = "returnedrows";
 
     /** The "totalSize" JSON property label. */
-    private static final String TOTAL_SIZE = "totalSize";
+    private static final String TOTAL_SIZE = "totalrows";
 
     /** The "genes" JSON property label. */
-    private static final String GENES_LABEL = "genes";
+    private static final String GENE_ROWS_LABEL = "rows";
 
     /** The "ensembl_gene_id" label. */
     private static final String ENSEMBL_ID_LABEL = "ensembl_gene_id";
@@ -202,14 +202,14 @@ public class DefaultGenePanelImpl implements GenePanel
     public JSONObject toJSON()
     {
         final JSONObject jsonObject = buildPhenotypesForGeneJSON(0, this.size());
-        return jsonObject.put(SIZE, this.size()).put(TOTAL_SIZE, this.size());
+        return jsonObject.put(RETURNED_SIZE, this.size()).put(TOTAL_SIZE, this.size());
     }
 
     @Override
     public JSONObject toJSON(final int fromIndex, final int toIndex)
     {
         final JSONObject jsonObject = buildPhenotypesForGeneJSON(fromIndex, toIndex);
-        return jsonObject.put(SIZE, toIndex - fromIndex).put(TOTAL_SIZE, this.size());
+        return jsonObject.put(RETURNED_SIZE, toIndex - fromIndex).put(TOTAL_SIZE, this.size());
     }
 
     /**
@@ -231,7 +231,7 @@ public class DefaultGenePanelImpl implements GenePanel
             jsonArray.put(this.termsForGeneList.get(i).toJSON());
         }
 
-        jsonObject.put(GENES_LABEL, jsonArray);
+        jsonObject.put(GENE_ROWS_LABEL, jsonArray);
         return jsonObject;
     }
 
