@@ -5,6 +5,7 @@ org.phenotips.studies.family.listener.PermissionsChangeListener
 org.phenotips.studies.family.internal.PhenotipsFamilyRepository
 org.phenotips.studies.family.internal.PhenotipsFamilyPermissions
 org.phenotips.studies.family.internal.PhenotipsFamilyTools
+org.phenotips.studies.family.internal.SecureFamilyTools
 org.phenotips.studies.family.internal.FamilyLockModule
 org.phenotips.studies.family.internal.FamilyMembersLockModule
 org.phenotips.studies.family.internal.PatientFamilyLockModule
