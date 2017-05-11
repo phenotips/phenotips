@@ -48,7 +48,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -147,7 +147,7 @@ public class MetaDataControllerTest
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        verify(this.mocker.getMockedLogger()).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), any());
+        verify(this.mocker.getMockedLogger()).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), anyString());
         Assert.assertNull(result);
     }
 

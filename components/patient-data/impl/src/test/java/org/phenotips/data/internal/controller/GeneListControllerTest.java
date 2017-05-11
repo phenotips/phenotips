@@ -223,7 +223,7 @@ public class GeneListControllerTest
         PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertNull(result);
-        verify(this.mocker.getMockedLogger()).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), any());
+        verify(this.mocker.getMockedLogger()).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), anyString());
     }
 
     @Test

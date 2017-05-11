@@ -216,7 +216,7 @@ public class SecurePatientRepository implements PatientRepository
      *       for the sole purpose of simplifying testing and mocking:
      *       - it is hard to test what patient is returned by the iterator if
      *         "new SecurePatient(patient)" is used directly, since constructor can't be mocked,
-     *         and correctly mocking all dependencies to actually mock patien tcreation is hard.
+     *         and correctly mocking all dependencies to actually mock patient creation is hard.
      *       - another "correct" way is to use some kind of SecurePatient factory, but static methods
      *         can't be mocked as well, and a non-static method does not make sense
      *
@@ -225,6 +225,9 @@ public class SecurePatientRepository implements PatientRepository
      */
     protected SecurePatient createSecurePatient(Patient patient)
     {
+        if (patient == null) {
+            return null;
+        }
         return new SecurePatient(patient);
     }
 }

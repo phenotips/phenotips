@@ -24,7 +24,6 @@ import org.phenotips.data.PatientContactsManager;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
-import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 
 import java.util.Collection;
@@ -64,7 +63,7 @@ public class ContactInformationController implements PatientDataController<Conta
     }
 
     @Override
-    public void save(Patient patient, DocumentModelBridge doc)
+    public void save(Patient patient)
     {
         // This is a read-only controller, at least for the moment, so nothing to do
     }

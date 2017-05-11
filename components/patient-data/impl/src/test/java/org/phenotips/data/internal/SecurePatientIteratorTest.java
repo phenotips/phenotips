@@ -19,6 +19,7 @@ package org.phenotips.data.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.security.authorization.AuthorizationService;
+
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.security.authorization.Right;
@@ -33,8 +34,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import com.xpn.xwiki.doc.XWikiDocument;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;

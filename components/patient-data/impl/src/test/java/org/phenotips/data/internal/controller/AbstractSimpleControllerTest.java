@@ -109,7 +109,7 @@ public class AbstractSimpleControllerTest
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        verify(this.mocker.getMockedLogger()).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), any());
+        verify(this.mocker.getMockedLogger()).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), anyString());
         Assert.assertNull(result);
     }
 
@@ -131,7 +131,7 @@ public class AbstractSimpleControllerTest
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        verify(this.mocker.getMockedLogger()).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), any());
+        verify(this.mocker.getMockedLogger()).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), anyString());
         Assert.assertNull(result);
     }
 

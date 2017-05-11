@@ -35,10 +35,10 @@ import com.xpn.xwiki.api.Document;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * A read-only wrapper around a PhenotipsPatient.
+ * A read-only wrapper around a PhenotipsPatient with no access to underlying XWikiDocument.
  *
  * @version $Id$
- * @since 1.3M4
+ * @since 1.4
  */
 @Unstable
 public class SecurePatient implements Patient
@@ -46,9 +46,9 @@ public class SecurePatient implements Patient
     private Patient patient;
 
     /**
-     * Constructor that copies the data from the givne patient's XDocument.
+     * Constructor that wraps around another (supposedly non-secure) instance of a Patient.
      *
-     * @param patient the XDocument representing this patient in XWiki
+     * @param patient the patient to have a secure wrapper around
      */
     public SecurePatient(Patient patient)
     {

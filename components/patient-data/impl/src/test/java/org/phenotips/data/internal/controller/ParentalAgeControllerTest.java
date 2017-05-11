@@ -50,6 +50,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -195,7 +196,7 @@ public class ParentalAgeControllerTest
 
         this.parentalAgeController.load(this.patient);
 
-        verify(this.logger).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), any());
+        verify(this.logger).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), anyString());
     }
 
     @Test
