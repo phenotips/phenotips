@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -92,9 +93,10 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
      */
     protected int index(String sourceUrl)
     {
+        String url = StringUtils.defaultIfBlank(sourceUrl, getDefaultSourceLocation());
         Collection<SolrInputDocument> data = null;
         try {
-            data = load(new URL(sourceUrl));
+            data = load(new URL(url));
         } catch (MalformedURLException e) {
             return 2;
         }
