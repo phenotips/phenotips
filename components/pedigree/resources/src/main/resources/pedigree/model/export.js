@@ -56,8 +56,7 @@ define([
 
          var person = {"id": idToJSONId[i]};
 
-         // TODO: fix after family studies are merged in
-         if (i == 0) {
+         if (i == pedigree.probandId) {
              person["proband"] = true;
          }
 
