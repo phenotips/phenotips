@@ -54,6 +54,7 @@ The project is split into several modules, among which `distribution/standalone`
 * extract the contents of the `phenotips-standalone-1.0-SNAPSHOT.zip` archive to a location of your choice (outside the `target` directory, to ensure it is not overwritten by subsequent builds)
 * launch the `start` script (`start.sh` on unix-like systems, `start.bat` on Windows)
 * open [http://localhost:8080/](http://localhost:8080/) in a browser
+* the local version is not connected to regular Phenotips. Log in using User: "Admin" and Password: "admin" (case-sensitive)  
 
 # Issue tracker #
 
