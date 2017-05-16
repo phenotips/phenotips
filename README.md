@@ -45,15 +45,16 @@ Building the entire project is as simple as `mvn install`, but first the environ
 * Execute `mvn install` at the command line to build the project
     * note that the first build will take a while longer, because all the required dependencies are downloaded, but all the subsequent builds should only take a few minutes
 
-# Installation #
+# Running a custom built instance #
 
 The project is split into several modules, among which `distribution/standalone` will result in a fully-working self-contained package ready to run. Running the application is as simple as:
 
 * `mvn install`, as stated above, to get the project built
 * go to the directory where the final package is located, `distribution/standalone/target`
-* extract the contents of the `phenotips-standalone-1.0-SNAPSHOT.zip` archive to a location of your choice (outside the `target` directory, to ensure it is not overwritten by subsequent builds)
+* extract the contents of the `phenotips-standalone-<version>.zip` archive to a location of your choice (outside the `target` directory, to ensure it is not overwritten by subsequent builds)
 * launch the `start` script (`start.sh` on unix-like systems, `start.bat` on Windows)
 * open [http://localhost:8080/](http://localhost:8080/) in a browser
+* this is a completely local version, not connected to any other PhenoTips instance or other software in your institution; a default user is provided, you can log in using User: `Admin` and Password: `admin` (case-sensitive)
 
 # Issue tracker #
 
