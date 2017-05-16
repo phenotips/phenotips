@@ -841,7 +841,11 @@ document.observe('xwiki:dom:loaded', function()
                if (isCustomEntry) {
                  newItem.insert({top: new Element('span', {'class': "fa fa-exclamation-triangle", title: "$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.nonStandardPhenotype'))"}).update(' ')})
                }
+               else {
+                 newItem.insert(new Element('span', {'class' : 'fa fa-info-circle phenotype-info xHelpButton', title : "$escapetool.javascript($services.localization.render('phenotips.PatientSheetCode.termSuggest.aboutPhenotype'))"})).insert(' ');
+               }
                newItem.__source = inputElt;
+
                var tools = new Element('span', {'class' : 'tools hint'});
                var deleteTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
                  new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.delete'))")
