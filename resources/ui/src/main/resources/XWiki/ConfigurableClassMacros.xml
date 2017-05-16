@@ -265,7 +265,7 @@
             "( for=['""])($objClass.getName()_$obj.getNumber()_$propName)", "$1${escapedAppName}_$2"))
         ## App Name is prepended to for= to make label work with id which is modified to prevent collisions.
         &lt;dt&gt;&lt;label
-        #if ($out.matches("id=['""]${escapedAppName}_$objClass.getName()_$obj.getNumber()_$propName"))
+        #if ($out.matches("(?s).*id=['""]${escapedAppName}_$objClass.getName()_$obj.getNumber()_$propName['""].*"))
           for="${escapedAppName}_$objClass.getName()_$obj.getNumber()_$propName"
         #end
         &gt;
