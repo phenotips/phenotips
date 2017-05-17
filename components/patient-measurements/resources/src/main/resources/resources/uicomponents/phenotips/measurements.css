@@ -196,6 +196,8 @@ input.pt-duration.measurement-age:read-only {
 }
 table.measurement-set {
   border: 2px solid #E8E8E8;
+  width: 100%;
+  box-sizing: border-box;
 }
 input.xwiki-date.measurement-date {
   width: 110px !important;
