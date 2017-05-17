@@ -114,6 +114,7 @@
 
 {{velocity}}
 $xwiki.jsx.use('XWiki.DateTimePicker')##
+$xwiki.ssx.use('XWiki.DateTimePicker')##
 $xwiki.ssfx.use('uicomponents/phenotips/measurements.css')##
 $xwiki.jsfx.use('uicomponents/phenotips/measurements.js', true)##
 $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
