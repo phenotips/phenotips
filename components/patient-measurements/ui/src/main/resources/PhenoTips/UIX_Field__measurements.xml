@@ -241,7 +241,7 @@ $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
 {{html clean="false" wiki="false"}}
 &lt;table class="measurement-set#if ($proto) proto#end"&gt;
   &lt;thead class="top"&gt;
-    &lt;th class="date" colspan="1"&gt;
+    &lt;th class="date" colspan="2"&gt;
       &lt;label for="date"&gt;$services.localization.render('phenotips.patientSheet.measurements.date'):&lt;/label&gt;
       #if ($xcontext.action == 'edit')
         &lt;input class="xwiki-date measurement-date" type="text" title="$!dateFormat" alt="#if($date)#formatdateISO($date)#end" value="$!dateFormatted"&gt;
@@ -249,8 +249,6 @@ $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
       #else
         &lt;span&gt;#if ("$!dateFormatted" == "")-#else$!dateFormatted#end&lt;/span&gt;
       #end
-    &lt;/th&gt;
-    &lt;th colspan="1"&gt;
     &lt;/th&gt;
     &lt;th class="age" colspan="2"&gt;
       &lt;label&gt;$services.localization.render('phenotips.patientSheet.measurements.age'):&lt;/label&gt;
