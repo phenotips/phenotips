@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.api.Document;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.classes.BaseClass;
@@ -65,16 +66,40 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
         this.document = document;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @deprecated since 1.3 use {@link #getDocumentReference()} instead
+     */
     @Override
+    @Deprecated
     public DocumentReference getDocument()
+    {
+        return this.getDocumentReference();
+    }
+
+    @Override
+    public DocumentReference getDocumentReference()
     {
         return this.document.getDocumentReference();
     }
 
     @Override
+    public XWikiDocument getXDocument()
+    {
+        return this.document;
+    }
+
+    @Override
+    public Document getSecureDocument()
+    {
+        return new Document(this.getXDocument(), this.getXContext());
+    }
+
+    @Override
     public String getId()
     {
-        return this.getDocument().getName();
+        return this.getDocumentReference().getName();
     }
 
     @Override
@@ -116,7 +141,7 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
     @Override
     public int hashCode()
     {
-        return this.getDocument().hashCode();
+        return this.getDocumentReference().hashCode();
     }
 
     @Override
@@ -125,7 +150,7 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
         if (!(obj instanceof PrimaryEntity)) {
             return false;
         }
-        return this.getDocument().equals(((PrimaryEntity) obj).getDocument());
+        return this.getDocumentReference().equals(((PrimaryEntity) obj).getDocumentReference());
     }
 
     @Override

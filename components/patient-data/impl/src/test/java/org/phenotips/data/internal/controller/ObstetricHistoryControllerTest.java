@@ -22,7 +22,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -53,7 +52,6 @@ import com.xpn.xwiki.objects.BaseObject;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -79,15 +77,13 @@ public class ObstetricHistoryControllerTest
 
     private static final String LIVE_BIRTHS = "births";
 
+    private static final String TEST_PATIENT_ID = "00000001";
+
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Integer>> mocker =
         new MockitoComponentMockingRule<PatientDataController<Integer>>(ObstetricHistoryController.class);
 
-    private DocumentAccessBridge documentAccessBridge;
-
     private ObstetricHistoryController obstetricHistoryController;
-
-    private DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
 
     @Mock
     private Patient patient;
@@ -124,10 +120,10 @@ public class ObstetricHistoryControllerTest
         this.xWikiContext = this.provider.get();
         doReturn(this.xwiki).when(this.xWikiContext).getWiki();
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
-        doReturn(this.patientDocument).when(this.patient).getDocument();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(this.patientDocument);
+        DocumentReference patientDocRef = new DocumentReference("wiki", "patient", TEST_PATIENT_ID);
+        doReturn(patientDocRef).when(this.patient).getDocumentReference();
+        doReturn(this.doc).when(this.patient).getXDocument();
+        doReturn(patientDocRef.getName()).when(this.patient).getId();
     }
 
     @Test
@@ -138,7 +134,7 @@ public class ObstetricHistoryControllerTest
         PatientData<Integer> testPatientData = this.obstetricHistoryController.load(this.patient);
 
         Assert.assertNull(testPatientData);
-        verify(this.logger).debug("No data for patient [{}]", this.patientDocument);
+        verify(this.logger).debug("No data for patient [{}]", TEST_PATIENT_ID);
     }
 
     @Test
@@ -171,23 +167,11 @@ public class ObstetricHistoryControllerTest
     }
 
     @Test
-    public void loadCatchesUnforeseenExceptions() throws Exception
-    {
-        Exception testException = new Exception("Test Exception");
-        doThrow(testException).when(this.documentAccessBridge).getDocument(this.patientDocument);
-
-        this.obstetricHistoryController.load(this.patient);
-
-        verify(this.logger).error("Could not find requested document or some unforeseen"
-            + " error has occurred during controller loading ", "Test Exception");
-    }
-
-    @Test
     public void saveHandlesEmptyPatientTest() throws XWikiException
     {
         doReturn(null).when(this.patient).getData(this.obstetricHistoryController.getName());
 
-        this.obstetricHistoryController.save(this.patient, this.doc);
+        this.obstetricHistoryController.save(this.patient);
 
         verifyNoMoreInteractions(this.data);
     }
@@ -208,16 +192,7 @@ public class ObstetricHistoryControllerTest
 
         doReturn(this.data).when(this.doc).getXObject(any(EntityReference.class), eq(true), eq(this.xWikiContext));
 
-        this.obstetricHistoryController.save(this.patient, this.doc);
-    }
-
-    @Test
-    public void saveHandlesExceptionsTest() throws Exception
-    {
-        Exception testException = new Exception("Test Exception");
-        doThrow(testException).when(this.documentAccessBridge).getDocument(this.patientDocument);
-
-        this.obstetricHistoryController.save(this.patient, this.doc);
+        this.obstetricHistoryController.save(this.patient);
     }
 
     @Test

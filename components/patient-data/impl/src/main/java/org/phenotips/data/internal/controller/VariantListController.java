@@ -26,7 +26,6 @@ import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
-import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
@@ -221,7 +220,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
     public PatientData<Map<String, String>> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getXDocument();
             List<BaseObject> variantXWikiObjects = doc.getXObjects(VARIANT_CLASS_REFERENCE);
             if (variantXWikiObjects == null || variantXWikiObjects.isEmpty()) {
                 return null;
@@ -248,8 +247,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
                 return new IndexedPatientData<>(getName(), allVariants);
             }
         } catch (Exception e) {
-            this.logger.error("Could not find requested document or some unforeseen "
-                + "error has occurred during controller loading ", e.getMessage());
+            this.logger.error(ERROR_MESSAGE_LOAD_FAILED, e.getMessage());
         }
         return null;
     }
@@ -497,23 +495,20 @@ public class VariantListController extends AbstractComplexController<Map<String,
     }
 
     @Override
-    public void save(Patient patient, DocumentModelBridge doc)
+    public void save(Patient patient)
     {
         PatientData<Map<String, String>> variants = patient.getData(this.getName());
         if (variants == null || !variants.isIndexed()) {
             return;
         }
-        if (doc == null) {
-            throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
-        }
 
         XWikiContext context = this.xcontextProvider.get();
-        ((XWikiDocument) doc).removeXObjects(VARIANT_CLASS_REFERENCE);
+        patient.getXDocument().removeXObjects(VARIANT_CLASS_REFERENCE);
         Iterator<Map<String, String>> iterator = variants.iterator();
         while (iterator.hasNext()) {
             try {
                 Map<String, String> variant = iterator.next();
-                BaseObject xwikiObject = ((XWikiDocument) doc).newXObject(VARIANT_CLASS_REFERENCE, context);
+                BaseObject xwikiObject = patient.getXDocument().newXObject(VARIANT_CLASS_REFERENCE, context);
 
                 for (String property : this.getProperties()) {
                     String value = variant.get(property);

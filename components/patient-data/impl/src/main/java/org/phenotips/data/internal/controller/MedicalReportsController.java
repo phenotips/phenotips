@@ -22,8 +22,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
-import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 
 import java.util.Collection;
@@ -56,12 +54,6 @@ import com.xpn.xwiki.objects.BaseProperty;
 public class MedicalReportsController implements PatientDataController<String>
 {
     /**
-     * Provides access to the underlying data storage.
-     */
-    @Inject
-    protected DocumentAccessBridge documentAccessBridge;
-
-    /**
      * Logging helper object.
      */
     @Inject
@@ -76,10 +68,10 @@ public class MedicalReportsController implements PatientDataController<String>
     {
         try {
             XWikiContext context = this.contextProvider.get();
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getXDocument();
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
-                throw new NullPointerException("The patient does not have a PatientClass");
+                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
             Map<String, String> result = new LinkedHashMap<>();
 
@@ -94,14 +86,13 @@ public class MedicalReportsController implements PatientDataController<String>
 
             return new DictionaryPatientData<>(getName(), result);
         } catch (Exception e) {
-            this.logger.error(
-                "Could not find requested document or some unforeseen error has occurred during controller loading");
+            this.logger.error(ERROR_MESSAGE_LOAD_FAILED, e.getMessage());
         }
         return null;
     }
 
     @Override
-    public void save(Patient patient, DocumentModelBridge doc)
+    public void save(Patient patient)
     {
     }
 

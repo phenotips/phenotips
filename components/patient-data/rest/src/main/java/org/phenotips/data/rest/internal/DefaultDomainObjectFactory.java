@@ -25,7 +25,6 @@ import org.phenotips.data.rest.model.Alternatives;
 import org.phenotips.data.rest.model.PatientSummary;
 import org.phenotips.rest.Autolinker;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -67,10 +66,6 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     @Inject
     private UserManager users;
 
-    /** Provides access to the underlying data storage. */
-    @Inject
-    private DocumentAccessBridge documentAccessBridge;
-
     /** Parses string representations of document references into proper references. */
     @Inject
     @Named("current")
@@ -88,18 +83,13 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         User currentUser = this.users.getCurrentUser();
 
         if (!this.access.hasAccess(Right.VIEW, currentUser == null ? null : currentUser.getProfileDocument(),
-            patient.getDocument())) {
+            patient.getDocumentReference())) {
             return null;
         }
 
         PatientSummary result = new PatientSummary();
 
-        XWikiDocument doc;
-        try {
-            doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-        } catch (Exception e) {
-            return null;
-        }
+        XWikiDocument doc = patient.getXDocument();
         result.withId(patient.getId()).withEid(patient.getExternalId());
         result.withCreatedBy(String.valueOf(patient.getReporter())).withLastModifiedBy(
             String.valueOf(doc.getAuthorReference()));

@@ -18,6 +18,7 @@
 package org.phenotips.data.permissions.script;
 
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
@@ -25,9 +26,14 @@ import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.internal.SecurePermissionsManager;
 import org.phenotips.data.permissions.internal.access.EditAccessLevel;
 import org.phenotips.data.permissions.internal.visibility.PublicVisibility;
+import org.phenotips.security.authorization.AuthorizationService;
 
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -111,13 +117,34 @@ public class PermissionsManagerScriptServiceTest
     }
 
     @Test
-    public void getPatientAccessForwardsCalls() throws ComponentLookupException
+    public void getPatientAccessForwardsCallsCorrectly() throws ComponentLookupException
     {
         PermissionsManager internal = this.mocker.getInstance(PermissionsManager.class, "secure");
         Patient patient = mock(Patient.class);
+        DocumentReference patientReference = mock(DocumentReference.class);
+        when(patient.getDocumentReference()).thenReturn(patientReference);
+
         PatientAccess internalAccess = mock(PatientAccess.class);
         when(internal.getPatientAccess(patient)).thenReturn(internalAccess);
-        PatientAccess result = this.mocker.getComponentUnderTest().getPatientAccess(patient);
-        Assert.assertSame(internalAccess, result);
+
+        User currentUser = mock(User.class);
+        UserManager userManager = this.mocker.getInstance(UserManager.class);
+        when(userManager.getCurrentUser()).thenReturn(currentUser);
+
+        String testID = "TESTID";
+        PatientRepository patientRepo = this.mocker.getInstance(PatientRepository.class);
+        when(patientRepo.get(testID)).thenReturn(patient);
+
+        AuthorizationService access = this.mocker.getInstance(AuthorizationService.class);
+
+        // test when has VIEW rights
+        when(access.hasAccess(currentUser, Right.VIEW, patientReference)).thenReturn(true);
+        PatientAccess result1 = this.mocker.getComponentUnderTest().getPatientAccess(testID);
+        Assert.assertSame(internalAccess, result1);
+
+        // test when no VIEW rights
+        when(access.hasAccess(currentUser, Right.VIEW, patientReference)).thenReturn(false);
+        PatientAccess result2 = this.mocker.getComponentUnderTest().getPatientAccess(testID);
+        Assert.assertNull(result2);
     }
 }

@@ -162,7 +162,7 @@ public class DefaultPatientByExternalIdResourceImplTest
             .thenReturn(mock(EntityReference.class));
         doReturn(this.uriBuilder).when(this.uriInfo).getBaseUriBuilder();
         when(this.patient.getId()).thenReturn(this.id);
-        when(this.patient.getDocument()).thenReturn(this.patientReference);
+        when(this.patient.getDocumentReference()).thenReturn(this.patientReference);
         when(this.users.getCurrentUser()).thenReturn(this.user);
         when(this.user.getProfileDocument()).thenReturn(this.userReference);
         when(this.repository.getByName(this.eid)).thenReturn(this.patient);

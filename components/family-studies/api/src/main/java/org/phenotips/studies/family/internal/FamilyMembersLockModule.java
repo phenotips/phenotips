@@ -106,8 +106,7 @@ public class FamilyMembersLockModule implements LockModule
             User user = null;
             Date date = new Date(0);
             for (Patient member : members) {
-                DocumentReference memberDoc = member.getDocument();
-                XWikiDocument memberXDoc = xwiki.getDocument(memberDoc, context);
+                XWikiDocument memberXDoc = member.getXDocument();
                 XWikiLock xlock = memberXDoc.getLock(context);
                 if (xlock != null) {
                     user = this.userManager.getUser(xlock.getUserName());

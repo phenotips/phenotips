@@ -126,7 +126,7 @@ public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
 
             q.bindValue("memberClass", getLocalSerializer().serialize(getMembershipClass()));
             q.bindValue("referenceProperty", getMembershipProperty());
-            q.bindValue("selfReference", getFullSerializer().serialize(getDocument()));
+            q.bindValue("selfReference", getFullSerializer().serialize(getDocumentReference()));
             if (type != null) {
                 q.bindValue("entityType", getLocalSerializer().serialize(type));
             }
@@ -146,15 +146,15 @@ public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
         try {
             DocumentAccessBridge dab =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
-            XWikiDocument doc = (XWikiDocument) dab.getDocument(member.getDocument());
+            XWikiDocument doc = (XWikiDocument) dab.getDocument(member.getDocumentReference());
             BaseObject obj = doc.getXObject(getMembershipClass(), getMembershipProperty(),
-                getFullSerializer().serialize(getDocument()), false);
+                getFullSerializer().serialize(getDocumentReference()), false);
             if (obj != null) {
                 return true;
             }
             obj = doc.newXObject(getMembershipClass(), getXContext());
-            obj.setStringValue(getMembershipProperty(), getFullSerializer().serialize(getDocument()));
-            getXContext().getWiki().saveDocument(doc, "Added to group " + getDocument(), true, getXContext());
+            obj.setStringValue(getMembershipProperty(), getFullSerializer().serialize(getDocumentReference()));
+            getXContext().getWiki().saveDocument(doc, "Added to group " + getDocumentReference(), true, getXContext());
             return true;
         } catch (Exception ex) {
             this.logger.warn("Failed to add member to group: {}", ex.getMessage());
@@ -168,14 +168,15 @@ public abstract class AbstractPrimaryEntityGroup<E extends PrimaryEntity>
         try {
             DocumentAccessBridge dab =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
-            XWikiDocument doc = (XWikiDocument) dab.getDocument(member.getDocument());
+            XWikiDocument doc = (XWikiDocument) dab.getDocument(member.getDocumentReference());
             BaseObject obj = doc.getXObject(getMembershipClass(), getMembershipProperty(),
-                getFullSerializer().serialize(getDocument()), false);
+                getFullSerializer().serialize(getDocumentReference()), false);
             if (obj == null) {
                 return true;
             }
             doc.removeXObject(obj);
-            getXContext().getWiki().saveDocument(doc, "Removed from group " + getDocument(), true, getXContext());
+            getXContext().getWiki().saveDocument(doc, "Removed from group " + getDocumentReference(),
+                    true, getXContext());
             return true;
         } catch (Exception ex) {
             this.logger.warn("Failed to remove member from group: {}", ex.getMessage());

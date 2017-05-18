@@ -47,14 +47,14 @@
       #set ($formBindingPropertyName = 'studyReference')
       #set ($formBindingPropertyValue = $request.get("$!{formBindingClassName}_${formBindingPropertyName}"))
       #if ($formBindingPropertyValue)
-        #set ($patientDoc = $xwiki.getDocument($patient.document))
+        #set ($patientDoc = $patient.getSecureDocument())
         #set ($formBindingObj = $patientDoc.getObject($formBindingClassName, true))
         #if ($formBindingObj)
           #set ($discard = $formBindingObj.set($formBindingPropertyName, $formBindingPropertyValue))
           #set ($discard = $patientDoc.save())
         #end
       #end
-      $response.sendRedirect($xwiki.getURL($patient.document, 'edit', ''))
+      $response.sendRedirect($xwiki.getURL($patient.getDocumentReference(), 'edit', ''))
     #else
       Cannot create patient
     #end

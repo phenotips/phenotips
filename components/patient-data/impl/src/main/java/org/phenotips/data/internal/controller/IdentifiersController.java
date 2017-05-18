@@ -22,10 +22,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
-import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.context.Execution;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -62,19 +59,11 @@ public class IdentifiersController implements PatientDataController<String>
     @Inject
     private Logger logger;
 
-    /** Provides access to the underlying data storage. */
-    @Inject
-    private DocumentAccessBridge documentAccessBridge;
-
-    /** Provides access to the current execution context. */
-    @Inject
-    private Execution execution;
-
     @Override
     public PatientData<String> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getXDocument();
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
                 return null;
@@ -83,16 +72,15 @@ public class IdentifiersController implements PatientDataController<String>
             result.put(EXTERNAL_IDENTIFIER_PROPERTY_NAME, data.getStringValue(EXTERNAL_IDENTIFIER_PROPERTY_NAME));
             return new DictionaryPatientData<>(DATA_NAME, result);
         } catch (Exception e) {
-            this.logger.error("Could not find requested document or some unforeseen"
-                + " error has occurred during controller loading ", e.getMessage());
+            this.logger.error(ERROR_MESSAGE_LOAD_FAILED, e.getMessage());
         }
         return null;
     }
 
     @Override
-    public void save(Patient patient, DocumentModelBridge doc)
+    public void save(Patient patient)
     {
-        BaseObject data = ((XWikiDocument) doc).getXObject(Patient.CLASS_REFERENCE);
+        BaseObject data = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE);
         if (data == null) {
             throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
         }

@@ -42,6 +42,7 @@ import javax.inject.Singleton;
 public class FamilyScriptService implements ScriptService
 {
     @Inject
+    @Named("secure")
     private FamilyTools familyTools;
 
     @Inject

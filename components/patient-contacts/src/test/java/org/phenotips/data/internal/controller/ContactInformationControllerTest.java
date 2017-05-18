@@ -178,7 +178,7 @@ public class ContactInformationControllerTest
     @Test
     public void saveDoesntThrowException() throws ComponentLookupException
     {
-        this.mocker.getComponentUnderTest().save(this.patient, null);
+        this.mocker.getComponentUnderTest().save(this.patient);
     }
 
     @Test

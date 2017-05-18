@@ -25,7 +25,6 @@ import org.phenotips.data.permissions.PermissionsManager;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import javax.inject.Inject;
@@ -68,7 +67,7 @@ public class DefaultPatientRecordLockManager implements org.phenotips.recordLock
     public boolean lockPatientRecord(Patient patient)
     {
         try {
-            XWikiDocument patientDocument = this.getPatientDocument(patient);
+            XWikiDocument patientDocument = patient.getXDocument();
             if (!this.isDocumentLocked(patientDocument) && this.hasLockingPermission(patient)) {
                 XWikiContext context = this.contextProvider.get();
                 XWiki xwiki = context.getWiki();
@@ -88,7 +87,7 @@ public class DefaultPatientRecordLockManager implements org.phenotips.recordLock
     public boolean unlockPatientRecord(Patient patient)
     {
         try {
-            XWikiDocument patientDocument = this.getPatientDocument(patient);
+            XWikiDocument patientDocument = patient.getXDocument();
             if (this.isDocumentLocked(patientDocument) && this.hasLockingPermission(patient)) {
                 XWikiContext context = this.contextProvider.get();
                 XWiki xwiki = context.getWiki();
@@ -107,21 +106,7 @@ public class DefaultPatientRecordLockManager implements org.phenotips.recordLock
     @Override
     public boolean isLocked(Patient patient)
     {
-        XWikiDocument document = this.getPatientDocument(patient);
-        return isDocumentLocked(document);
-    }
-
-    private XWikiDocument getPatientDocument(Patient patient)
-    {
-        XWikiContext context = this.contextProvider.get();
-        XWiki xwiki = context.getWiki();
-        DocumentReference patientDocumentReference = patient.getDocument();
-
-        try {
-            return xwiki.getDocument(patientDocumentReference, context);
-        } catch (XWikiException e) {
-            return null;
-        }
+        return isDocumentLocked(patient.getXDocument());
     }
 
     private boolean hasLockingPermission(Patient patient)

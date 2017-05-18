@@ -23,7 +23,6 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.PhenoTipsDate;
 
-import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 
 import java.text.DateFormat;
@@ -105,7 +104,7 @@ public class DatesControllerV1 implements PatientDataController<PhenoTipsDate>
     }
 
     @Override
-    public void save(Patient patient, DocumentModelBridge doc)
+    public void save(Patient patient)
     {
         // Explicitly do nothing.
         //

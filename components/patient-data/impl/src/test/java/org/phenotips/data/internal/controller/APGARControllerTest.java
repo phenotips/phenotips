@@ -21,8 +21,6 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -63,8 +61,6 @@ public class APGARControllerTest
     public MockitoComponentMockingRule<PatientDataController<Integer>> mocker =
         new MockitoComponentMockingRule<PatientDataController<Integer>>(APGARController.class);
 
-    private DocumentAccessBridge documentAccessBridge;
-
     @Mock
     private Patient patient;
 
@@ -79,11 +75,9 @@ public class APGARControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
-        DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocument();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
+        DocumentReference patientDocRef = new DocumentReference("wiki", "patient", "00000001");
+        doReturn(patientDocRef).when(this.patient).getDocumentReference();
+        doReturn(this.doc).when(this.patient).getXDocument();
         doReturn(this.dataHolder).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
     }
 

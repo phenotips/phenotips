@@ -24,7 +24,6 @@ import org.phenotips.data.rest.model.Alternatives;
 import org.phenotips.data.rest.model.PatientSummary;
 import org.phenotips.rest.Autolinker;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.model.reference.DocumentReference;
@@ -53,7 +52,6 @@ import org.joda.time.DateTimeZone;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -62,7 +60,6 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -108,8 +105,6 @@ public class DefaultDomainObjectFactoryTest
 
     private UserManager users;
 
-    private DocumentAccessBridge documentAccessBridge;
-
     @Named("current")
     private DocumentReferenceResolver<String> stringResolver;
 
@@ -120,10 +115,9 @@ public class DefaultDomainObjectFactoryTest
         MockitoAnnotations.initMocks(this);
         this.access = this.mocker.getInstance(AuthorizationManager.class);
         this.users = this.mocker.getInstance(UserManager.class);
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
         this.stringResolver = this.mocker.getInstance(this.stringResolverType, "current");
 
-        when(this.patient.getDocument()).thenReturn(this.patientReference1);
+        when(this.patient.getDocumentReference()).thenReturn(this.patientReference1);
         when(this.patient.getId()).thenReturn(this.patientReference1.getName());
         when(this.patient.getExternalId()).thenReturn(this.eid);
         when(this.patient.getReporter()).thenReturn(this.userReference1);
@@ -168,20 +162,13 @@ public class DefaultDomainObjectFactoryTest
     }
 
     @Test
-    public void createPatientDocumentExceptionReturnsNull() throws Exception
-    {
-        doThrow(Exception.class).when(this.documentAccessBridge).getDocument(Matchers.any(DocumentReference.class));
-        assertNull(this.mocker.getComponentUnderTest().createPatientSummary(this.patient, this.uriInfo));
-    }
-
-    @Test
     public void createPatientPerformsCorrectly() throws ComponentLookupException, URISyntaxException, Exception
     {
         XWikiDocument document = mock(XWikiDocument.class);
         Date creationDate = new Date(0);
         DateTime creationDateTime = new DateTime(creationDate).withZone(DateTimeZone.UTC);
 
-        when(this.documentAccessBridge.getDocument(this.patientReference1)).thenReturn(document);
+        when(this.patient.getXDocument()).thenReturn(document);
 
         when(document.getAuthorReference()).thenReturn(this.userReference2);
         when(document.getVersion()).thenReturn("version");
@@ -211,7 +198,7 @@ public class DefaultDomainObjectFactoryTest
         XWikiDocument document = mock(XWikiDocument.class);
         Date creationDate = new Date(0);
 
-        when(this.documentAccessBridge.getDocument(this.patientReference1)).thenReturn(document);
+        when(this.patient.getXDocument()).thenReturn(document);
 
         when(document.getAuthorReference()).thenReturn(this.userReference2);
         when(document.getVersion()).thenReturn("version");

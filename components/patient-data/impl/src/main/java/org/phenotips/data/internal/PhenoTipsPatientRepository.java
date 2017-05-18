@@ -114,9 +114,9 @@ public class PhenoTipsPatientRepository extends PatientEntityManager implements 
         try {
             XWikiContext context = this.xcontextProvider.get();
             Patient patient = super.create(creator);
-            XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getXDocument();
             doc.getXObject(Patient.CLASS_REFERENCE).setLongValue("identifier",
-                Integer.parseInt(patient.getDocument().getName().replaceAll("\\D++", "")));
+                Integer.parseInt(patient.getId().replaceAll("\\D++", "")));
             if (creator != null) {
                 doc.setCreatorReference(creator);
                 doc.setAuthorReference(creator);
@@ -133,14 +133,7 @@ public class PhenoTipsPatientRepository extends PatientEntityManager implements 
                         ex.getMessage(), ex);
                 }
             }
-
-            // FIXME: because currently there is no way to access the in-memory copy of XWikiDocument document
-            //        of the Patient returned by super.create(), we make a new copy via a call to
-            //        this.bridge.getDocument(). This way the document in the original Patient does not have those
-            //        changes, and when e.g. later updated from JSON and changes are saved to disk the changes
-            //        overwrite the changes made in this method (setting of "identifier" and creator/author)
-            //        Thus we need to create a new Patient on top of the modified document.
-            return new PhenoTipsPatient(doc);
+            return patient;
         } catch (Exception ex) {
             this.logger.warn("Failed to create patient: {}", ex.getMessage(), ex);
             return null;

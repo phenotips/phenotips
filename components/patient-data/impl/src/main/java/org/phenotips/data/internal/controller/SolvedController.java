@@ -22,7 +22,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
-import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -43,7 +42,6 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
-import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseProperty;
 
@@ -206,11 +204,11 @@ public class SolvedController extends AbstractSimpleController implements Initia
 
     @SuppressWarnings("unchecked")
     @Override
-    public void save(Patient patient, DocumentModelBridge doc)
+    public void save(Patient patient)
     {
         PatientData<String> data = patient.getData(getName());
 
-        BaseObject xwikiDataObject = ((XWikiDocument) doc).getXObject(Patient.CLASS_REFERENCE);
+        BaseObject xwikiDataObject = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE);
         if (data == null || !data.isNamed() || xwikiDataObject == null) {
             return;
         }

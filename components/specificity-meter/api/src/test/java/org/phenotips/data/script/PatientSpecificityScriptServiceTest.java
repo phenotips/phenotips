@@ -96,7 +96,7 @@ public class PatientSpecificityScriptServiceTest
         Assert.assertTrue(patient.getFeatures().isEmpty());
         Assert.assertNull(patient.getId());
         Assert.assertNull(patient.getExternalId());
-        Assert.assertNull(patient.getDocument());
+        Assert.assertNull(patient.getDocumentReference());
         Assert.assertNull(patient.getReporter());
         Assert.assertNull(patient.getDisorders());
         Assert.assertNull(patient.getData(""));
@@ -149,7 +149,7 @@ public class PatientSpecificityScriptServiceTest
         Assert.assertNull(patient.getExternalId());
         Assert.assertNull(patient.getName());
         Assert.assertNull(patient.getDescription());
-        Assert.assertNull(patient.getDocument());
+        Assert.assertNull(patient.getDocumentReference());
         Assert.assertNull(patient.getReporter());
         Assert.assertNull(patient.getDisorders());
         Assert.assertNull(patient.getData(""));

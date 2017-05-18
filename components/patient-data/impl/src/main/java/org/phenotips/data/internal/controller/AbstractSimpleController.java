@@ -22,9 +22,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
-import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.bridge.DocumentModelBridge;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -48,10 +45,6 @@ import com.xpn.xwiki.objects.BaseObject;
  */
 public abstract class AbstractSimpleController implements PatientDataController<String>
 {
-    /** Provides access to the underlying data storage. */
-    @Inject
-    protected DocumentAccessBridge documentAccessBridge;
-
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -60,7 +53,7 @@ public abstract class AbstractSimpleController implements PatientDataController<
     public PatientData<String> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getXDocument();
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
                 return null;
@@ -72,16 +65,15 @@ public abstract class AbstractSimpleController implements PatientDataController<
             }
             return new DictionaryPatientData<>(getName(), result);
         } catch (Exception e) {
-            this.logger.error("Could not find requested document or some unforeseen"
-                + " error has occurred during controller loading ", e.getMessage());
+            this.logger.error(ERROR_MESSAGE_LOAD_FAILED, e.getMessage());
         }
         return null;
     }
 
     @Override
-    public void save(Patient patient, DocumentModelBridge doc)
+    public void save(Patient patient)
     {
-        BaseObject xwikiDataObject = ((XWikiDocument) doc).getXObject(Patient.CLASS_REFERENCE);
+        BaseObject xwikiDataObject = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE);
         if (xwikiDataObject == null) {
             throw new IllegalArgumentException(ERROR_MESSAGE_NO_PATIENT_CLASS);
         }

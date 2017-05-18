@@ -24,8 +24,6 @@ import org.phenotips.data.PatientDataController;
 import org.phenotips.data.VocabularyProperty;
 import org.phenotips.data.internal.AbstractPhenoTipsVocabularyProperty;
 
-import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.ObjectPropertyReference;
@@ -64,10 +62,6 @@ import com.xpn.xwiki.objects.BaseProperty;
  */
 public abstract class AbstractComplexController<T> implements PatientDataController<T>
 {
-    /** Provides access to the underlying data storage. */
-    @Inject
-    protected DocumentAccessBridge documentAccessBridge;
-
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -80,7 +74,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     public PatientData<T> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getXDocument();
             BaseObject data = doc.getXObject(getXClassReference());
             if (data == null) {
                 return null;
@@ -105,8 +99,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             }
             return new DictionaryPatientData<>(getName(), result);
         } catch (Exception e) {
-            this.logger.error("Could not find requested document or some unforeseen"
-                + " error has occurred during controller loading ", e.getMessage());
+            this.logger.error(ERROR_MESSAGE_LOAD_FAILED, e.getMessage());
         }
         return null;
     }
@@ -298,9 +291,9 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     }
 
     @Override
-    public void save(Patient patient, DocumentModelBridge doc)
+    public void save(Patient patient)
     {
-        BaseObject dataHolder = ((XWikiDocument) doc).getXObject(getXClassReference());
+        BaseObject dataHolder = patient.getXDocument().getXObject(getXClassReference());
         PatientData<T> data = patient.getData(this.getName());
         if (dataHolder == null || data == null) {
             return;

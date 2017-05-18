@@ -27,7 +27,6 @@ import org.phenotips.data.PhenoTipsDate;
 import org.phenotips.translation.TranslationManager;
 import org.phenotips.vocabulary.internal.solr.SolrVocabularyTerm;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 
@@ -47,7 +46,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.web.Utils;
 
 /**
  * Each of functions need to be written with certain specification. Body producing functions must return null if they
@@ -643,9 +641,7 @@ public class DataToCellConverter
 
     public DataSection documentInfoBody(Patient patient) throws Exception
     {
-        @SuppressWarnings("deprecation")
-        DocumentAccessBridge dab = Utils.getComponent(DocumentAccessBridge.class);
-        XWikiDocument patientDoc = (XWikiDocument) dab.getDocument(patient.getDocument());
+        XWikiDocument patientDoc = patient.getXDocument();
         String sectionName = "documentInfo";
         Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present == null || present.isEmpty()) {
