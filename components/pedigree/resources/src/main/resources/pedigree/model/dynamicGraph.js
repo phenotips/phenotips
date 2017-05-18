@@ -1518,6 +1518,11 @@ define([
                 }
             }
 
+            // update proband ID, if it has changed
+            if (changedIDSet.hasOwnProperty(this.getProbandId())) {
+                this.setProbandId(changedIDSet[this.getProbandId()]);
+            }
+
             this.DG.maxRank = Math.max.apply(null, this.DG.ranks);
 
             this.DG.GG.validate();
