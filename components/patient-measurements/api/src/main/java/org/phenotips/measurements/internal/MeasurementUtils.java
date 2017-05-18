@@ -75,6 +75,9 @@ public final class MeasurementUtils
      */
     public static Double convertAgeStrToNumMonths(String age) throws IllegalArgumentException
     {
+        if (StringUtils.isBlank(age)) {
+          return Double.NaN;
+        }
         Period agePeriod;
         String pAge = "P" + age;
         agePeriod = Period.parse(StringUtils.isNumeric(age) ? pAge + "Y" : pAge);
