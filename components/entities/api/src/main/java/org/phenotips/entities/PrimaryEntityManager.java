@@ -66,8 +66,6 @@ public interface PrimaryEntityManager<E extends PrimaryEntity>
      *
      * @param id the {@link PrimaryEntity#getId() entity identifier}, i.e. the serialized document reference
      * @return the requested entity
-     * @throws IllegalArgumentException if the requested entity does not exist or is not really a type of the entity
-     *             requested
      */
     E get(String id);
 
@@ -76,7 +74,6 @@ public interface PrimaryEntityManager<E extends PrimaryEntity>
      *
      * @param reference reference of the {@link PrimaryEntity#getDocument() document where the entity is stored}
      * @return the requested entity
-     * @throws IllegalArgumentException if the document doesn't contain a proper entity
      */
     E get(DocumentReference reference);
 
