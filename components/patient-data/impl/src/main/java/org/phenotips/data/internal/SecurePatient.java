@@ -52,6 +52,9 @@ public class SecurePatient implements Patient
      */
     public SecurePatient(Patient patient)
     {
+        if (patient == null) {
+            throw new IllegalArgumentException();
+        }
         this.patient = patient;
     }
 

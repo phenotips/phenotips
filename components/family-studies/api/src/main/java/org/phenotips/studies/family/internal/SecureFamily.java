@@ -50,7 +50,7 @@ public class SecureFamily implements Family
     public SecureFamily(Family family)
     {
         if (family == null) {
-            throw new UnsupportedOperationException();
+            throw new IllegalArgumentException();
         }
         this.family = family;
     }

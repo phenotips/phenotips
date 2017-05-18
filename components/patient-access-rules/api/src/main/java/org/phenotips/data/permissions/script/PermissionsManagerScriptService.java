@@ -107,6 +107,17 @@ public class PermissionsManagerScriptService implements ScriptService
         return this.manager.resolveAccessLevel(name);
     }
 
+    /**
+     * Returns PatientAccess to the given patient for the given user.
+     *
+     * @param targetPatient the patient
+     * @deprecated since 1.4; use {@link #getPatientAccess(String targetPatientId)} instead
+     */
+    public PatientAccess getPatientAccess(Patient targetPatient)
+    {
+        return this.getPatientAccess(targetPatient.getId());
+    }
+
     public PatientAccess getPatientAccess(String targetPatientId)
     {
         // scripts have only access to a SecurePatient implementation of a Patient,

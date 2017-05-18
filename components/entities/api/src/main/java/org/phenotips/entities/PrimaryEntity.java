@@ -55,7 +55,7 @@ public interface PrimaryEntity
      * Returns a reference to the document where the entity is stored.
      *
      * @return a valid document reference
-     * @deprecated use {@link #getDocumentReference()} instead
+     * @deprecated since 1.4; use {@link #getDocumentReference()} instead
      */
     @Deprecated
     DocumentReference getDocument();
@@ -64,6 +64,7 @@ public interface PrimaryEntity
      * Returns a reference to the document where the entity is stored.
      *
      * @return a valid document reference
+     * @since 1.4
      */
     DocumentReference getDocumentReference();
 
@@ -71,6 +72,7 @@ public interface PrimaryEntity
      * Returns the XWiki document where the entity is stored.
      *
      * @return a valid document
+     * @since 1.4
      */
     XWikiDocument getXDocument();
 
@@ -79,6 +81,7 @@ public interface PrimaryEntity
      * {@code com.xpn.xwiki.doc.XWikiDocument}.
      *
      * @return a "secure" Document which is safe for use in scripts because it does permission checks in various methods
+     * @since 1.4
      */
     Document getSecureDocument();
 

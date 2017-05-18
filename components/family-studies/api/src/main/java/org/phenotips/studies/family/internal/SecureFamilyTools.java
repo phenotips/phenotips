@@ -37,7 +37,7 @@ import javax.inject.Singleton;
  * @version $Id$
  * @since 1.4
  */
-@Component(roles = FamilyTools.class)
+@Component
 @Named("secure")
 @Singleton
 public class SecureFamilyTools implements FamilyTools
