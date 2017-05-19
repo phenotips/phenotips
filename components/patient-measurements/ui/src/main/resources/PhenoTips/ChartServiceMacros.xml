@@ -82,7 +82,7 @@
   #foreach ($o in $doc.getObjects($targetClassName))
     #set ($age = $services.measurements.convertAgeStrToNumMonths($o.getProperty('age').value))
     #set ($measurementName = $o.getProperty('type').value)
-    #if ($age &gt;= 0 &amp;&amp; "$!{o.getProperty('value').value}" != '')
+    #if (!$age.isNaN() &amp;&amp; $age &gt;= 0 &amp;&amp; "$!{o.getProperty('value').value}" != '')
       #if (!($ageLimits.get($measurementName).min &lt;= $age))
         #set ($ageLimits.get($measurementName).min = $age)
       #end
