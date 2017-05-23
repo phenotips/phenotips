@@ -195,7 +195,7 @@ public class LifeStatusControllerTest
         PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, ALIVE);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
 
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.data).setStringValue(DATA_NAME, ALIVE);
     }
@@ -206,7 +206,7 @@ public class LifeStatusControllerTest
         PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, DECEASED);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
 
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.data).setStringValue(DATA_NAME, DECEASED);
     }
