@@ -558,6 +558,12 @@
       <artifactId>xwiki-platform-resource-servlet</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
+    <!-- Add support for HTTPS certificates signed by Let's Encrypt, such as the one used by nexus.phenotips.org -->
+    <dependency>
+      <groupId>org.xwiki.contrib</groupId>
+      <artifactId>letsencrypt</artifactId>
+      <version>1.1</version>
+    </dependency>
     <!-- PhenoTips components -->
     <dependency>
       <groupId>${project.groupId}</groupId>
