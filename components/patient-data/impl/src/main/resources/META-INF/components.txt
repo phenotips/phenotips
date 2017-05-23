@@ -39,3 +39,4 @@ org.phenotips.data.internal.PatientExtendedPhenotypeUpdater
 org.phenotips.data.internal.PhenoTipsPatientConsentManager
 org.phenotips.data.internal.EmptyGenotypeObjectsRemover
 org.phenotips.data.internal.PatientLockModule
+org.phenotips.data.internal.PatientDeathdateUpdater
