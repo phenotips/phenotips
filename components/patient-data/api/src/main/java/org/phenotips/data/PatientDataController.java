@@ -17,7 +17,6 @@
  */
 package org.phenotips.data;
 
-import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
@@ -34,7 +33,7 @@ import org.json.JSONObject;
  * <p>
  * The {@link #load(Patient)} method is responsible for populating a {@link Patient} object with actual data from the
  * patient record. Data read from the record can be accessed using the {@link Patient}'s {@link Patient#getData(String)
- * custom data access method}. The {@link #save(Patient, DocumentModelBridge)} method is responsible for storing back into the database the
+ * custom data access method}. The {@link #save(Patient)} method is responsible for storing back into the database the
  * custom data.
  * </p>
  * <p>
