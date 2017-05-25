@@ -481,15 +481,6 @@
         continue;
       }
 
-      var param = {};
-
-      if (this.options.queryProcessor != null &amp;&amp; typeof(this.options.queryProcessor.generateParameters) == "function") {
-        param = this.options.queryProcessor.generateParameters(query);
-      }
-      if (this.options.queryProcessor != null &amp;&amp; typeof(this.options.queryProcessor.processQuery) == "function") {
-        query = this.options.queryProcessor.processQuery(query);
-      }
-
       var url = source.matchScript + source.matchVarname + "=" + encodeURIComponent(query);
       var method = source.method || "get";
       var headers = {};
@@ -500,7 +491,6 @@
       }
       var ajx = new Ajax.Request(url, {
         method: method,
-        parameter: param,
         requestHeaders: headers,
         onCreate : function () {
           this.fld.addClassName("loading");
@@ -682,13 +672,6 @@
 
       // create ajax request
       var query = this.fld.value.strip();
-      var parameters = {};
-      if (this.options.queryProcessor != null &amp;&amp; typeof(this.options.queryProcessor.generateParameters) == "function") {
-        parameters = this.options.queryProcessor.generateParameters(query);
-      }
-      if (this.options.queryProcessor != null &amp;&amp; typeof(this.options.queryProcessor.processQuery) == "function") {
-        query = this.options.queryProcessor.processQuery(query);
-      }
       var url = source.script + source.varname + "=" + encodeURIComponent(query);
       var method = source.method || "get";
       var headers = {};
@@ -700,7 +683,6 @@
 
       var ajx = new Ajax.Request(url, {
         method: method,
-        parameters: parameters,
         requestHeaders: headers,
         onCreate : function () {
           this.fld.addClassName("loading");
@@ -2314,212 +2296,6 @@ return PhenoTips;
   </object>
   <object>
     <name>PhenoTips.Widgets</name>
-    <number>3</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>d536b27d-9de4-4d3d-9bc8-e458d3274c16</guid>
-    <class>
-      <name>XWiki.JavaScriptExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage|onDemand|always</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>var PhenoTips = (function (PhenoTips) {
-  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
-  widgets.SolrQueryProcessor = Class.create({
-  initialize: function(queryFields, restriction) {
-    this.queryFields = queryFields;
-    this.restriction = restriction;
-  },
-
-  processQuery: function(query)
-  {
-    return this.inflateQuery(query);
-  },
-
-  generateParameters: function(query)
-  {
-    var parameters = {'defType': 'edismax', 'spellcheck.collate': true, 'spellcheck': true, 'lowercaseOperators': false};
-    if (this.setupMandatoryQuery(query, parameters)) {
-      return parameters;
-    }
-    this.restrictQuery(query, parameters);
-    this.setupQueryFields(query, parameters);
-    return parameters;
-  },
-
-  setupMandatoryQuery : function(query, parameters)
-  {
-    var txt = query.strip();
-    var mandatoryQuery = "";
-    var hasMandatoryFields = false;
-    for (var field in this.queryFields) {
-      var fieldOptions = this.queryFields[field];
-      var activationRegex = fieldOptions['activationRegex'];
-      if (!fieldOptions['mandatory'] || !activationRegex || !txt.match(activationRegex)) {
-        continue;
-      }
-      mandatoryQuery += field + ":" + (fieldOptions['transform'] ? fieldOptions['transform'](query) : query) + " ";
-      hasMandatoryFields = true;
-    }
-    if (mandatoryQuery) {
-      parameters.fq = mandatoryQuery.strip();
-    }
-    return hasMandatoryFields;
-  },
-
-  restrictQuery : function(query, parameters)
-  {
-    if (!this.restriction) {
-      return;
-    }
-    var result = "";
-    for (var rField in this.restriction) {
-      var restrictionString = (rField.substring(0, 1) == '-' ? '-' : '+') + "(";
-      for (var i = 0; i &lt; this.restriction[rField].length; ++i) {
-        restrictionString += rField.replace(/^-/, '') + ":" + this.restriction[rField][i].replace(/:/g, "\\:") + " ";
-      }
-      restrictionString = restrictionString.strip() + ") ";
-      result += restrictionString;
-    }
-    if (result) {
-      parameters.fq = result.strip();
-    }
-  },
-
-  setupQueryFields : function(query, parameters)
-  {
-    var txt = query.strip();
-    var wordFields = "";
-    var phraseFields = "";
-    var boostQuery = "";
-    var lastWord = query.replace(/.*\W/g, '');
-    for (var field in this.queryFields) {
-      var fieldOptions = this.queryFields[field];
-      var activationRegex = fieldOptions['activationRegex'];
-      if (activationRegex &amp;&amp; !txt.match(activationRegex)) {
-        continue;
-      }
-      if (fieldOptions['wordBoost']) {
-        wordFields += field + "^" + fieldOptions['wordBoost'] + " ";
-      }
-      if (fieldOptions['phraseBoost']) {
-        phraseFields += field + "^" + fieldOptions['phraseBoost'] + (fieldOptions['phraseSlop'] ? "~" + fieldOptions['phraseSlop'] : "") + " ";
-      }
-      if (lastWord &amp;&amp; fieldOptions['stubBoost']) {
-        boostQuery += field + ":" + lastWord.replace(/:/g, "\\:")+ "*^" + fieldOptions['stubBoost'] + " ";
-      }
-    }
-    if (wordFields) {
-      parameters.qf = wordFields.strip();
-    }
-    if (phraseFields) {
-      parameters.pf = phraseFields.strip();
-    }
-    if (boostQuery) {
-      parameters.bq = boostQuery.strip();
-    }
-  },
-
-  inflateQuery : function(query)
-  {
-    var lastWord = query.replace(/.*\W/g, '');
-    if (!lastWord) {
-      return query;
-    }
-    var result = query;
-
-    for (var field in this.queryFields) {
-      if (this.queryFields[field].stubTrigger) {
-        result += " " + field + ":" + lastWord.replace(/:/g, "\\:") + "*";
-      }
-    }
-    return result.strip();
-  }
-});
-  return PhenoTips;
-}(PhenoTips || {}));</code>
-    </property>
-    <property>
-      <name>Solr Query Processor</name>
-    </property>
-    <property>
-      <parse>0</parse>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
-  <object>
-    <name>PhenoTips.Widgets</name>
     <number>4</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>984c7b53-5644-489c-8ddc-ef51a196254a</guid>
@@ -2602,7 +2378,7 @@ return PhenoTips;
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   widgets.OntologyBrowser = Class.create({
   options : {
-    script : XWiki.contextPath + "/rest/vocabularies/hpo/suggest?sort=nameSort asc&amp;start=0&amp;rows=10000&amp;",
+    script : XWiki.contextPath + "/rest/vocabularies/hpo/suggest?sort=nameSort asc&amp;maxResults=10000&amp;",
     json : true,
     varname: "input",
     method : "get",
@@ -2618,12 +2394,6 @@ return PhenoTips;
       }
     },
     noresults: "No sub-terms",
-    targetQueryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
-                           'id' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}}
-                         }),
-    expandQueryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
-                           'is_a' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}}
-                         }),
     showParents : true,
     showRoot : true,
     enableSelection : true,
@@ -2656,21 +2426,12 @@ return PhenoTips;
 
   load : function(id) {
       this.setContent(this.loadingMessage);
-      var query = id;
-      var parameters = {};
-      if (this.options.targetQueryProcessor != null &amp;&amp; typeof(this.options.targetQueryProcessor.generateParameters) == "function") {
-        parameters = this.options.targetQueryProcessor.generateParameters(query);
-      }
-      if (this.options.targetQueryProcessor != null &amp;&amp; typeof(this.options.targetQueryProcessor.processQuery) == "function") {
-        query = this.options.targetQueryProcessor.processQuery(query);
-      }
-      var url = this.options.script + this.options.varname + "=" + encodeURIComponent(query);
+      var url = this.options.script + this.options.varname + "=" + encodeURIComponent(id);
       var headers = {};
       headers.Accept = this.options.responseFormat;
 
       var ajx = new Ajax.Request(url, {
         method: this.options.method,
-        parameters: parameters,
         requestHeaders: headers,
         onSuccess: function (response) {
           this.setContent(this.buildTree(this._getDataFromResponse(response)));
@@ -2723,11 +2484,8 @@ return PhenoTips;
   expand : function (element, doPopulate) {
       var query = element.__termId;
       var parameters = {};
-      if (this.options.expandQueryProcessor != null &amp;&amp; typeof(this.options.expandQueryProcessor.generateParameters) == "function") {
-        parameters = this.options.expandQueryProcessor.generateParameters(query);
-      }
-      if (this.options.expandQueryProcessor != null &amp;&amp; typeof(this.options.expandQueryProcessor.processQuery) == "function") {
-        query = this.options.expandQueryProcessor.processQuery(query);
+      if (query.match(/^HP:[0-9]+$/i)) {
+        parameters.customFilter ="is_a:" + query.toUpperCase().replace(/:/g, "\\:");
       }
       var url = this.options.script + this.options.varname + "=" + encodeURIComponent(query);
       var headers = {};

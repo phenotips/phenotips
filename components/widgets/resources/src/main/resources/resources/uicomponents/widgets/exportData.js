@@ -120,12 +120,6 @@ document.observe('xwiki:dom:loading', function() {
                 item._restriction = null;
               }
             }
-            if (item._customOptions.queryProcessor && item._restriction) {
-              item._customOptions.queryProcessor = Object.clone(item._customOptions.queryProcessor);
-              item._customOptions.queryProcessor.restriction = {
-                'term_category' : item._restriction
-              }
-            }
             // Create the Suggest.
             item._suggest = new PhenoTips.widgets.Suggest(item, item._customOptions);
             if (item.hasClassName('multi') && typeof(PhenoTips.widgets.SuggestPicker) != "undefined") {
