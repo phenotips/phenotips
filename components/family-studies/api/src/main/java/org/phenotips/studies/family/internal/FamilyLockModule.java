@@ -54,7 +54,6 @@ import com.xpn.xwiki.doc.XWikiLock;
 @Named("famlock")
 public class FamilyLockModule implements LockModule
 {
-
     @Inject
     private Provider<XWikiContext> provider;
 

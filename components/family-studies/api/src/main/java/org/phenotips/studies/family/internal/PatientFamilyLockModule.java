@@ -117,7 +117,6 @@ public class PatientFamilyLockModule implements LockModule
             }
         } catch (XWikiException e) {
             this.logger.error("Failed to access the document lock: {}", e.getMessage(), e);
-
         }
         return null;
     }
