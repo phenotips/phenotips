@@ -202,6 +202,19 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
   });
 });
 document.observe('xwiki:dom:loaded', function(){
+  $('current-phenotype-selection').observe('DOMNodeInserted', function(event) {
+    // Only interested in "phenotype-details" class once it's completely loaded.
+    var container = !event.target.hasClassName("phenotype-details") &amp;&amp; event.target.up("div.phenotype-details");
+    if (container &amp;&amp; container.hasClassName("focused")) {
+      var branches = container.select('.hpo-branch&gt;ul');
+      // Attach observers to the newly inserted "hpo-branch".
+      branches &amp;&amp; attachToggleObservers(branches);
+    };
+  });
+  attachToggleObservers($$('.hpo-branch&gt;ul'));
+});
+
+var attachToggleObservers = function(branches) {
   function canCollapse(sublist){
     return sublist.select('input').every(function(input){
       return !input.checked;
@@ -221,7 +234,7 @@ document.observe('xwiki:dom:loaded', function(){
       });
     }
   };
-  $$('.hpo-branch&gt;ul').forEach(function(list){
+  branches.forEach(function(list){
     // Fire an event when the selection changes
     list.select('input:checked').each(notifyMetaSelected);
     list.select('input').invoke('observe', 'change', notifyMetaSelected);
@@ -234,7 +247,7 @@ document.observe('xwiki:dom:loaded', function(){
       //attach click handlers
       var expandTool = listElement.down('span.expand-tool');
       var checkInput = listElement.down('input');
-      expandTool.observe('click', function(e) {
+      !expandTool.__observersAttached &amp;&amp; expandTool.observe('click', function(e) {
         e.stop();
         if (sublist.hasClassName('collapsed')) {
           sublist.removeClassName('collapsed');
@@ -253,6 +266,7 @@ document.observe('xwiki:dom:loaded', function(){
           sublist.removeClassName('collapsed');
         }
       };
+      expandTool.__observersAttached = true;
 
       toggleCollapse();
 
@@ -266,7 +280,7 @@ document.observe('xwiki:dom:loaded', function(){
 
     });
   });
-});</code>
+}</code>
     </property>
     <property>
       <name/>
