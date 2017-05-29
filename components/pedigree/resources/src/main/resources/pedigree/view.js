@@ -46,29 +46,51 @@ define([
          * Saves all pedigree-specific settings/user choices/color scheme into an object
          */
         getSettings: function() {
-            // TODO: filter out items which are currently not being displayed on the pedigree
-            return {"colors": {"disorders": editor.getDisorderLegend().getAllColors(),
-                               "candidateGenes": editor.getCandidateGeneLegend().getAllColors(),
-                               "causalGenes": editor.getCausalGeneLegend().getAllColors(),
-                               "cancers": editor.getCancerLegend().getAllColors() },
-                    "names": {"disorders": editor.getDisorderLegend().getAllNames(),
-                              "candidateGenes": editor.getCandidateGeneLegend().getAllNames(),
-                              "causalGenes": editor.getCausalGeneLegend().getAllNames()} };
+            return {
+                "legendSettings": {
+                    "preferences": {
+                        "style": "multisector"   // "multiSector"/"fixedSector"
+                    },
+                    "abnormalities": {
+                        "disorders": editor.getDisorderLegend().getAllSettings(),
+                        "candidateGenes": editor.getCandidateGeneLegend().getAllSettings(),
+                        "causalGenes": editor.getCausalGeneLegend().getAllSettings(),
+                        "carrierGenes": editor.getCarrierGeneLegend().getAllSettings(),
+                        "phenotypes": editor.getHPOLegend().getAllSettings(),
+                        "cancers": editor.getCancerLegend().getAllSettings()
+                    }
+                }
+            }
         },
 
         /**
          * Restores pedigree-specific settings/user choices/color scheme from an object
          */
         loadSettings: function(settingsObject) {
-            if (settingsObject.hasOwnProperty("colors")) {
-                if (settingsObject.colors.hasOwnProperty("disorders")) {
-                    editor.getDisorderLegend().setAllPreferredColors(settingsObject.colors.disorders);
+            if (settingsObject.hasOwnProperty("legendSettings")) {
+                if (settingsObject.legendSettings.hasOwnProperty("preferences")
+                    && settingsObject.legendSettings.preferences.hasOwnProperty("style")) {
+                    PedigreeEditorParameters.attributes.legendStyle = settingsObject.legendSettings.preferences.style;
                 }
-                if (settingsObject.colors.hasOwnProperty("candidateGenes")) {
-                    editor.getCandidateGeneLegend().setAllPreferredColors(settingsObject.colors.candidateGenes);
-                }
-                if (settingsObject.colors.hasOwnProperty("causalGenes")) {
-                    editor.getCausalGeneLegend().setAllPreferredColors(settingsObject.colors.causalGenes);
+                if (settingsObject.legendSettings.hasOwnProperty("abnormalities")) {
+                    if (settingsObject.legendSettings.abnormalities.hasOwnProperty("disorders")) {
+                        editor.getDisorderLegend().setAllSettings(settingsObject.legendSettings.abnormalities.disorders);
+                    }
+                    if (settingsObject.legendSettings.abnormalities.hasOwnProperty("candidateGenes")) {
+                        editor.getCandidateGeneLegend().setAllSettings(settingsObject.legendSettings.abnormalities.candidateGenes);
+                    }
+                    if (settingsObject.legendSettings.abnormalities.hasOwnProperty("causalGenes")) {
+                        editor.getCausalGeneLegend().setAllSettings(settingsObject.legendSettings.abnormalities.causalGenes);
+                    }
+                    if (settingsObject.legendSettings.abnormalities.hasOwnProperty("carrierGenes")) {
+                        editor.getCarrierGeneLegend().setAllSettings(settingsObject.legendSettings.abnormalities.carrierGenes);
+                    }
+                    if (settingsObject.legendSettings.abnormalities.hasOwnProperty("phenotypes")) {
+                        editor.getHPOLegend().setAllSettings(settingsObject.legendSettings.abnormalities.phenotypes);
+                    }
+                    if (settingsObject.legendSettings.abnormalities.hasOwnProperty("cancers")) {
+                        editor.getCancerLegend().setAllSettings(settingsObject.legendSettings.abnormalities.cancers);
+                    }
                 }
             }
         },
