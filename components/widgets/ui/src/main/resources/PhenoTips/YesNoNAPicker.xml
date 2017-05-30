@@ -277,7 +277,7 @@ $xwiki.ssx.use('PhenoTips.YesNoNAPicker')##
     var value = element.value;
     var selected = element.checked;
     var label = element.parentNode;
-    if (value != this.yesInput.value || !selected || !label || (this.yesInput.name != element.name &amp;&amp; this.noInput.name != element.name)) {
+    if (value != this.yesInput.value || !selected || !label || (this.yesInput.name != element.name &amp;&amp; this.noInput.name != element.name &amp;&amp; this.naInput.name != element.name)) {
       return;
     }
     if (label.hasClassName('na')) {
@@ -322,6 +322,7 @@ YesNoPicker.generatePickerElement = function(buttons, value, title, activate, la
       na  : {label: 'NA', title : "$services.localization.render('phenotips.yesNoNAPicker.NA.title')"}
   };
   var ynPickerElt = new Element("span", {'class': 'yes-no-picker'});
+  var labelEl = label;
   buttons.each(function(b) {
      if (b.type &amp;&amp; supportedValues[b.type]) {
        var bLabel = new Element('label', {'class' : b.type + (b.selected &amp;&amp; ' selected' || ''), title : supportedValues[b.type].title}).update(supportedValues[b.type].label);
@@ -329,8 +330,11 @@ YesNoPicker.generatePickerElement = function(buttons, value, title, activate, la
        b.selected &amp;&amp; (bInput.checked = true);
        if (b.name) {
          bInput.name = b.name;
-         bInput.id = typeof b.id != "undefined" ? b.id : (b.name + "_" + value);
-         bLabel.htmlFor = bInput.id;
+         // do not assign id when generate drop-down yes-no-na pickers one level deeper in tree
+         if (!labelEl.up('.descendents')) {
+           bInput.id = typeof b.id != "undefined" ? b.id : (b.name + "_" + value);
+           bLabel.htmlFor = bInput.id;
+         }
        }
        bInput.hide();
        bLabel.insert({top: bInput});

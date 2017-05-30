@@ -1849,7 +1849,7 @@
         var value = input.value;
         var text = element.down('.value').firstChild.nodeValue;
         var ynpickerElt = YesNoPicker.generatePickerElement([
-              {type: 'na',                         selected: !isValueSelected(positiveName, value) &amp;&amp; !isValueSelected(negativeName, value)},
+              {type: 'na' , name: positiveName + '_na', selected: !isValueSelected(positiveName, value) &amp;&amp; !isValueSelected(negativeName, value)},
               {type: 'yes', name: positiveName, selected: isValueSelected(positiveName, value)},
               {type: 'no' , name: negativeName,    selected: isValueSelected(negativeName, value)}
         ], value, text, true, input.next());
