@@ -780,9 +780,9 @@ document.observe('xwiki:dom:loaded', function()
         }.bind(selectionSummary);
 
         selectionSummary._focusDetails = function(info) {
-          var pfTarget;
+          var pdTarget;
           if (typeof (info.findElement) == 'function') {
-            pdTarget = info.findElement('.phenotype-details');
+            pdTarget = info.findElement('.phenotype-details') || $$('.msdialog-box').size() != 0 &amp;&amp; selectionSummary.down('.phenotype-details');
           } else if (typeof (info.up) == 'function') {
             pdTarget = info;
           } else {
@@ -1015,7 +1015,6 @@ document.observe('xwiki:dom:loaded', function()
                 });
                 dataContainer.select("input[type='radio']").each(function(radio) {
                     radio.observe('click', function(){
-                        dataContainer.addClassName(cClassName);
                         selectedName.update(radio.readAttribute('title'));
                         if (radio.value) {
                           selectedName.addClassName('selected');
