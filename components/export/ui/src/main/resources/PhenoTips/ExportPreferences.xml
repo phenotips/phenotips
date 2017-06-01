@@ -125,28 +125,11 @@
           &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}" value="${field.name}" #if($valueList.contains(${field.name}) || $valueListisEmpty) checked="checked" #end /&gt;
           ${field.translatedPrettyName}
         &lt;/li&gt;
-        #if ($codeFields.contains(${field.name}) &amp;&amp; !${simple})
-        &lt;li&gt;
-          &lt;label for="${targetFieldName}_${field.name}_code"&gt;
-          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_code" value="${field.name}_code" #if($valueList.contains("${field.name}_code")) checked="checked" #end /&gt;
-          ${field.translatedPrettyName} $services.localization.render('phenotips.exportPreferences.field.ID')
-        &lt;/li&gt;
-        &lt;li&gt;
-          &lt;label for="${targetFieldName}_${field.name}_combined"&gt;
-          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_combined" value="${field.name}_combined" #if($valueList.contains("${field.name}_combined")) checked="checked" #end /&gt;
-          ${field.translatedPrettyName} $services.localization.render('phenotips.exportPreferences.field.IDandName')
-        &lt;/li&gt;
-        #end
         #if ($metaFields.contains(${field.name}) &amp;&amp; !${simple})
-        &lt;li&gt;
-          &lt;label for="${targetFieldName}_${field.name}_code_meta"&gt;
-          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_code_meta" value="${field.name}_code_meta" #if($valueList.contains("${field.name}_code_meta")) checked="checked" #end /&gt;
-          ${field.translatedPrettyName} $services.localization.render('phenotips.exportPreferences.field.termAndMetaID')
-        &lt;/li&gt;
         &lt;li&gt;
           &lt;label for="${targetFieldName}_${field.name}_meta"&gt;
           &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_meta" value="${field.name}_meta" #if($valueList.contains("${field.name}_meta") || $valueListisEmpty) checked="checked" #end /&gt;
-          ${field.translatedPrettyName} $services.localization.render('phenotips.exportPreferences.field.termAndMetaNames')
+          $services.localization.render('phenotips.exportPreferences.phenotype.qualifiers')
         &lt;/li&gt;
         #end
         #end
@@ -175,7 +158,7 @@
   #set($selectedValues = ['external_id', 'gender', 'phenotype', 'negative_phenotype', 'clinical_diagnosis', 'omim_id'])
 #else
   #set($ignored = {
-    'fields' : ['reports_history', 'pedigree', 'extended_negative_phenotype', 'extended_phenotype', 'extended_prenatal_phenotype', 'extended_negative_prenatal_phenotype', 'genetic_notes'],
+    'fields' : ['reports_history', 'pedigree', 'negative_phenotype', 'extended_phenotype', 'extended_negative_phenotype', 'negative_prenatal_phenotype', 'extended_prenatal_phenotype', 'extended_negative_prenatal_phenotype', 'genetic_notes'],
     'types'  : []
   })
   #if (${request.export_id} == 'phenotips_json_export')
