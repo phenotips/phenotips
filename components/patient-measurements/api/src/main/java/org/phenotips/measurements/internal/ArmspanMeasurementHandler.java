@@ -38,10 +38,4 @@ public class ArmspanMeasurementHandler extends AbstractMeasurementHandler
     {
         return "armspan";
     }
-
-    @Override
-    public String getUnit()
-    {
-        return "cm";
-    }
 }
