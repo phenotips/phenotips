@@ -221,6 +221,39 @@ define ([], function(){
       return obj;
     }
 
+    // expects two strings as input in the format of a web hex color: "#HHHHHH"
+    //
+    // optional minBrightnbess and maxBrightness parameters specify min and max brightness for the individual color
+    // channel of the reuslting color (e.g. background color should not be so dark as to make foreground text unreadable)
+    //
+    // returns a color in the "#HHHHH" format
+    Helpers.averageTwoHexColors = function (color1, color2, minBrightness, maxBrightness) {
+
+        function dec2hex(v) {return v.toString(16);}
+        function hex2dec(v) {return parseInt(v,16);}
+
+        // split into color components
+        var re = /[\da-z]{2}/gi;
+        var rgb1 = color1.match(re);
+        var rgb2 = color2.match(re);
+        var parts = [];
+
+        // average each set of hex numbers separately, round down
+        for (var i = rgb1.length; i;) {
+            var intColor = (hex2dec(rgb1[--i]) + hex2dec(rgb2[i])) >> 1;
+            if (minBrightness !== undefined && intColor < minBrightness) {
+                intColor = minBrightness;
+            }
+            if (maxBrightness !== undefined && intColor > maxBrightness) {
+                intColor = maxBrightness;
+            }
+            var hexColor = dec2hex(intColor);
+            // add leading zero if only one character
+            parts[i] = (hexColor.length == 2) ? '' + hexColor : '0' + hexColor;
+        }
+        return "#" + parts.join('');
+    }
+
     Helpers.romanize = function(num) {
         if (!+num)
             return false;

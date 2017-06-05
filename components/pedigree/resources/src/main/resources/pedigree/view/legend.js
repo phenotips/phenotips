@@ -31,6 +31,9 @@ define([
 
             this._previousHighightedNode = null;
 
+            this._disabled_icon = "fa-circle"; //"fa-plus-circle";
+            this._enabled_icon = "fa-check-circle"; //"fa-minus-circle";
+
             var legendContainer = $('legend-container');
             if (legendContainer == undefined) {
               var legendContainer = new Element('div', {'class': 'legend-container', 'id': 'legend-container'});
@@ -153,9 +156,9 @@ define([
                 $$('.abnormality-legend-icon').forEach( function(bubble) {
                     bubble.removeClassName("fa-circle");
                     if (bubble.hasClassName("icon-enabled-true")) {
-                        bubble.addClassName("fa-minus-circle");
+                        bubble.addClassName(_this._enabled_icon);
                     } else {
-                        bubble.addClassName("fa-plus-circle");
+                        bubble.addClassName(_this._disabled_icon);
                     }
                 });
                 $$('.legend-hide-show-button').forEach( function(button) {
@@ -165,8 +168,8 @@ define([
             Element.observe(this._legendBox, 'mouseout', function() {
                 // hide "+"/"-" symbols inside the bubbles
                 $$('.abnormality-legend-icon').forEach( function(bubble) {
-                    bubble.removeClassName("fa-minus-circle");
-                    bubble.removeClassName("fa-plus-circle");
+                    bubble.removeClassName(_this._enabled_icon);
+                    bubble.removeClassName(_this._disabled_icon);
                     bubble.addClassName("fa-circle");
                 });
                 $$('.legend-hide-show-button').forEach( function(button) {
@@ -497,8 +500,8 @@ define([
             bubble.disableColor = function() {
                 _this._objectProperties[id].enabled = false;
                 _this._preferredProperties[id].enabled = false;
-                bubble.removeClassName("fa-minus-circle");
-                bubble.addClassName("fa-plus-circle");
+                bubble.removeClassName(_this._enabled_icon);
+                bubble.addClassName(_this._disabled_icon);
                 bubble.removeClassName("icon-enabled-true");
                 bubble.addClassName("icon-enabled-false");
                 bubble.style.color = PedigreeEditorParameters.attributes.legendIconDisabledColor;
@@ -510,8 +513,8 @@ define([
             bubble.enableColor = function() {
                 _this._objectProperties[id].enabled = true;
                 _this._preferredProperties[id].enabled = true;
-                bubble.removeClassName("fa-plus-circle");
-                bubble.addClassName("fa-minus-circle");
+                bubble.removeClassName(_this._disabled_icon);
+                bubble.addClassName(_this._enabled_icon);
                 bubble.removeClassName("icon-enabled-false");
                 bubble.addClassName("icon-enabled-true");
                 bubble.style.color = color;
@@ -554,7 +557,8 @@ define([
             item.insert(" ").insert(countLabelContainer);
             var me = this;
             Element.observe(item, 'mouseover', function() {
-                item.down('.abnormality-' + me._getPrefix() + '-name').setStyle({'background': color, 'cursor' : 'default'});
+                var highlightColor = Helpers.averageTwoHexColors(color, "#EEEEEE", 180, 235);
+                item.down('.abnormality-' + me._getPrefix() + '-name').setStyle({'background': highlightColor, 'cursor' : 'pointer'});
                 me._highlightAllByItemID(id, true);
             });
             Element.observe(item, 'mouseout', function() {
@@ -615,13 +619,14 @@ define([
             var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
             var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
             var node   = editor.getView().getPersonNodeNear(pos.x, pos.y);
+            var _this  = this;
             //console.log("Position x: " + pos.x + " position y: " + pos.y);
             if (node) {
                 this._onDropObject(node, id);
                 // hide +/- symbols, which are not hidden automatically
                 $$('.abnormality-legend-icon').forEach( function(bubble) {
-                    bubble.removeClassName("fa-minus-circle");
-                    bubble.removeClassName("fa-plus-circle");
+                    bubble.removeClassName(_this._enabled_icon);
+                    bubble.removeClassName(_this._disabled_icon);
                     bubble.addClassName("fa-circle");
                 });
             }

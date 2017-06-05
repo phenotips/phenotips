@@ -281,6 +281,10 @@
 .legend-box .legend-title {
   font-size: 1.1em;
   margin: 0 0 0.3em;
+  cursor: default;
+}
+.abnormality {
+  cursor: pointer;
 }
 .legend-box .abnormality-list {
   list-style-type: none;
