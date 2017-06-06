@@ -38,29 +38,6 @@
     </complexContent>
   </complexType>
 
-  <complexType name="VocabularyTermSummary">
-    <complexContent>
-      <extension base="ptcommons:LinkCollection">
-        <sequence>
-          <element name="id" type="string"/>
-          <element name="symbol" type="string"/>
-          <element name="name" type="string"/>
-          <element name="description" type="string"/>
-        </sequence>
-      </extension>
-    </complexContent>
-  </complexType>
-
-  <complexType name="VocabularyTerm">
-    <complexContent>
-      <extension base="ptvocab:VocabularyTermSummary">
-        <sequence>
-          <any minOccurs="0" maxOccurs="unbounded"/>
-        </sequence>
-      </extension>
-    </complexContent>
-  </complexType>
-
   <element name="vocabularies">
     <complexType>
       <complexContent>
@@ -74,18 +51,4 @@
   </element>
 
   <element name="vocabulary" type="ptvocab:Vocabulary"/>
-
-  <element name="vocabularyTerms">
-    <complexType>
-      <complexContent>
-        <extension base="ptcommons:LinkCollection">
-          <sequence>
-            <element name="vocabularyTerm" type="ptvocab:VocabularyTermSummary" minOccurs="0" maxOccurs="unbounded"/>
-          </sequence>
-        </extension>
-      </complexContent>
-    </complexType>
-  </element>
-
-  <element name="vocabularyTerm" type="ptvocab:VocabularyTerm"/>
 </schema>

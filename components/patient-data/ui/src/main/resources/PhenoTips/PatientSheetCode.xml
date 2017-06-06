@@ -561,9 +561,9 @@ document.observe('xwiki:dom:loaded', function()
     // go : namespace:
     var suggestionsMapping = {
         "hpo" : {
-            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get") + "?",
+            script: XWiki.contextPath + "/rest/vocabularies/hpo/suggest?",
             queryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({}, {}),
-            varname: "q",
+            varname: "input",
             noresults: "No matching terms",
             json: true,
             resultsParameter : "rows",
@@ -580,8 +580,8 @@ document.observe('xwiki:dom:loaded', function()
             parentContainer : null
         },
         "omim" : {
-            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get", "vocabulary=omim") + "&amp;",
-            varname: "q",
+            script: XWiki.contextPath + "/rest/vocabularies/omim/suggest?",
+            varname: "input",
             noresults: "No matching terms",
             json: true,
             resultsParameter : "rows",
@@ -595,8 +595,8 @@ document.observe('xwiki:dom:loaded', function()
             parentContainer : null
         },
         "ordo" : {
-            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get", "vocabulary=ordo") + "&amp;",
-            varname: "q",
+            script: XWiki.contextPath + "/rest/vocabularies/ordo/suggest?",
+            varname: "input",
             noresults: "No matching terms",
             json: true,
             resultsParameter : "rows",
@@ -1489,7 +1489,7 @@ document.observe('xwiki:dom:loaded', function()
     initialize : function(dataTable) {
       /** Measurement evaluation service */
       this.measurementsService = new XWiki.Document('PatientToolsService', 'PhenoTips').getURL('get');
-      this.solarService = new XWiki.Document('SolrService', 'PhenoTips').getURL("get");
+      this.solrService = XWiki.contextPath + "/rest/vocabularies/hpo/suggest";
 
       this.dataTable = dataTable;
       this.dataTable._processor = this;
@@ -1855,7 +1855,7 @@ document.observe('xwiki:dom:loaded', function()
         if (!suggestWidget) {
            return null;
         }
-        searchURL = this.solarService + "?q=" + id;
+        searchURL = this.solrService + "?input=" + id;
         new Ajax.Request(searchURL, {
           method: 'get',
           onSuccess: function(transport) {

@@ -36,8 +36,6 @@ define([
 
             this.omimService = new XWiki.Document('OmimService', 'PhenoTips');
 
-            this.solrService = new XWiki.Document('SolrService', 'PhenoTips');
-
             this.pedigreeInterface = new XWiki.Document('PedigreeInterface', 'PhenoTips');
 
             this.pedigreeImageService = new XWiki.Document('PedigreeImageService', 'PhenoTips');
@@ -137,7 +135,7 @@ define([
         },
 
         getSolrServiceURL: function() {
-            return this.solrService.getURL("get");
+            return XWiki.contextPath + "/rest/vocabularies";
         },
 
         getPedigreePreferencesURL: function() {
