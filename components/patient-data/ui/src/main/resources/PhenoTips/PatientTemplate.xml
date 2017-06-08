@@ -832,7 +832,7 @@
         <customDisplay>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity filter="indent"}}{{html wiki=true clean=false}}
-#set ($suggest_script = $xwiki.getURL('PhenoTips.EthnicitySearch', 'get', 'outputSyntax=plain'))
+#set ($suggest_script = "/rest/vocabularies/ethnicity/suggest?")
 #__displayPropertyAsSelect($suggest_script)
 {{/html}}{{/velocity}}</customDisplay>
         <disabled>0</disabled>
@@ -1006,7 +1006,7 @@
         <customDisplay>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity filter="indent"}}{{html wiki=true clean=false}}
-#set ($suggest_script = $xwiki.getURL('PhenoTips.EthnicitySearch', 'get', 'outputSyntax=plain'))
+#set ($suggest_script = "/rest/vocabularies/ethnicity/suggest?")
 #__displayPropertyAsSelect($suggest_script)
 {{/html}}{{/velocity}}</customDisplay>
         <disabled>0</disabled>

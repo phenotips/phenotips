@@ -3330,12 +3330,15 @@ return PhenoTips;
       }
       // Suggest?
       var suggestInfoSource = element.previous('input[name="xwiki-free-multiselect-suggest-script"][type="hidden"]');
-      if (suggestInfoSource &amp;&amp; suggestInfoSource.value &amp;&amp; typeof(XWiki.widgets.Suggest) != "undefined") {
+      if (suggestInfoSource &amp;&amp; suggestInfoSource.value &amp;&amp; typeof(PhenoTips.widgets.Suggest) != "undefined") {
         this.suggestOptions = {
           script : suggestInfoSource.value,
           shownoresults : false,
           varname: "input",
-          timeout : 0
+          timeout : 0,
+          resultsParameter : "rows",
+          resultValue : "name",
+          resultInfo : {}
         }
       }
 
@@ -3364,7 +3367,7 @@ return PhenoTips;
       element.up('li').addClassName('xwiki-free-multiselect-line');
       this.attachDeleteTool(element);
       if (this.suggestOptions) {
-        new XWiki.widgets.Suggest(element, this.suggestOptions);
+        new PhenoTips.widgets.Suggest(element, this.suggestOptions);
       }
       this.enableAddInput(element);
     },
@@ -4063,7 +4066,7 @@ document.observe("xwiki:dom:updated", init);
       },
       'omim-disease-info' : {
         'hint' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.hint')",
-        'service'  : XWiki.contextPath + "/rest/vocabularies/omim/",
+        'vocabulary' : 'omim',
         'database' : {
           'name' : "$services.vocabularies.omim.name",
           'link' : "$services.vocabularies.omim.website",
@@ -4343,7 +4346,7 @@ document.observe("xwiki:dom:updated", init);
 
     createHelpContentFromService : function() {
       var _this = this;
-      var url = _this._builder.service || (XWiki.contextPath + "/rest/vocabularies/" + _this._builder.vocabulary + "/" + _this._information);
+      var url = XWiki.contextPath + "/rest/vocabularies/" + _this._builder.vocabulary + "/" + _this._information;
       new Ajax.Request(url, {
         parameters: {'id' : _this._information},
         method : 'get',

@@ -263,7 +263,7 @@ define([
                         script: editor.getExternalEndpoint().getEthnicitySearchURL() + "/suggest?",
                         noresults: "No matching terms",
                         resultsParameter : "rows",
-                        resultValue : "ethnicity",
+                        resultValue : "name",
                         resultInfo : {}
                     },
                     'genes' : {
@@ -275,7 +275,7 @@ define([
                         tooltip : 'gene-info'
                     },
                     'hpo' : {
-                        script: editor.getExternalEndpoint().getHPOServiceURL() + "/suggest?sort=nameSort asc&start=0&rows=100&",
+                        script: editor.getExternalEndpoint().getHPOServiceURL() + "/suggest?start=0&rows=100&",
                         noresults: "No matching terms",
                         resultsParameter : "rows",
                         resultValue : "name",
