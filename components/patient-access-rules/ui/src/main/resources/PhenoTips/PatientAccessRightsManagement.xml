@@ -63,6 +63,8 @@
     #set ($discard = $data.put('canManage', $canManage))
     #set ($discard = $data.put('level', $patientAccess.getAccessLevel().getName()))
     $jsontool.serialize($data)
+  #else
+    #set ($discard = $response.setStatus(400))## no patient id parameter sent: bad request
   #end
 #end
 {{/velocity}}</content>
@@ -441,7 +443,7 @@
       this._editorLauncher.observe('click', function(event) {
         event.stop();
         event.findElement().blur();
-        _this._populateEditorData();
+        _this._populateEditorData(false, true);
       });
       // ---------------------------------------------------------------------
       // Initialization done
@@ -463,18 +465,15 @@
       this._container.insert(this._generateSection('manage-ownership', "$services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipHeader')", "$services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipBody')"))
                      .insert(this._generateSection('manage-visibility', "$services.localization.render('phenotips.patientAccessRightsManagement.modifyVisibilityHeader')", "$services.localization.render('phenotips.patientAccessRightsManagement.modifyVisibilityBody')"))
                      .insert(this._generateSection('manage-collaborators', "$services.localization.render('phenotips.patientAccessRightsManagement.modifyCollaboratorsHeader')", "$services.localization.render('phenotips.patientAccessRightsManagement.modifyCollaboratorsBody')"))
-                     .insert(this._generateSection('manage-journals', 'Journals', 'If this case is being submitted to one of the following journals, please check the appropriate box. You give the journal permission to access this record, and to make this record public if the case is published.'))
                      .insert(new Element('div', {id : 'manager-messages'}));
       this._ownershipManager = this._container.down('#manage-ownership .section-contents');
       this._visibilityManager = this._container.down('#manage-visibility .section-contents');
       this._collaboratorsManager = this._container.down('#manage-collaborators .section-contents');
-      this._journalsManager = this._container.down('#manage-journals .section-contents');
       this._messages = this._container.down('#manager-messages');
 
       this._initOwnershipManager();
       this._initVisibilityManager();
       this._initCollaboratorsManager();
-      this._initJournalsManager();
       this._initManagerActions();
       this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': "$services.localization.render('phenotips.patientAccessRightsManagement.heading')".replace("__patientID__", this.patientId), 'verticalPosition': 'top', 'removeOnClose': false});
     },
@@ -619,31 +618,6 @@
       });
     },
 
-    _initJournalsManager : function() {
-      var _this = this;
-      // A list of collaborator objects
-      this.JOURNALS = [{"id":"xwiki:XWiki.ClinicalGenetics", "type":"user", "name":"Clinical Genetics", "level":"manage"}];
-      var table = new Element('table', {id : 'journals'});
-      this._journalsManager.insert(table);
-      this.JOURNALS.each(function (item) {
-        var input = new Element ('input', {'type' : 'checkbox', 'name' : 'journal', 'value' : item.id});
-        var label = new Element('label').insert(input).insert(item.name);
-        var row = new Element('tr').insert(new Element('td').insert(label));
-        table.insert(row);
-
-        input.observe('change', function(event) {
-          if (event.target) {
-            if (event.target.checked === false) {
-              // Remove journal collaborator
-              _this._removeJournal(item.id);
-            } else {
-              _this._addCollaborator(item);
-            }
-          }
-        });
-      });
-    },
-
     _initManagerActions : function() {
       var _this = this;
       this._buttons = new Element('div', {'class' : 'buttons'});
@@ -694,32 +668,30 @@
           dataObj.collaborators = {"collaborators" : collaboratorsArray};
         }
 
-        dataObjString = JSON.stringify(dataObj);
-        _this._ajaxCallsRemaining = 0;
+        var hasChanged = dataObj.owner || dataObj.visibility || dataObj.collaborators;
+        if (!hasChanged &amp;&amp; !_this.collaboratorRemoved) {
+          _this._dialog.closeDialog();
+        }
 
-        
         // if something was changed we update permissions with PATCH
-        if (dataObjString.length &gt; 3) {
-          _this._updatePermissions(dataObjString);
-        } else {
+        if (hasChanged) {
+          _this._updatePermissions(dataObj, collaboratorsArray);
+        } else if (_this.collaboratorRemoved) {
           // if any collaborators were removed, we reset collaborators with PUT
-          if (_this.collaboratorRemoved) {
-            _this._resetCollaborators(collaboratorsArray);
-          } else {
-            _this._dialog.closeDialog();
-          }
+          _this._resetCollaborators(collaboratorsArray);
         }
       })
     },
 
-    _updatePermissions : function (dataObj) {
+    _updatePermissions : function (dataObj, collaborators) {
       var _this = this;
+      var collaboratorsData = collaborators;
+      var dataObjString = JSON.stringify(dataObj);
 
       new Ajax.Request(_this.permissionsURL + "?method=PATCH", {
           contentType:'application/json',
-          parameters : dataObj,
+          parameters : dataObjString,
           onCreate : function() {
-            _this._ajaxCallsRemaining++;
             _this._submitButton._disabled = true;
             _this._buttons.addClassName('loading');
             _this._messages.update(new Element('div', {'class' : 'xHint'}).update("$services.localization.render('phenotips.patientAccessRightsManagement.modifyRequestSent')"));
@@ -731,13 +703,21 @@
             }
             _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.patientAccessRightsManagement.modifyUpdateFailure') " + failureReason));
           },
-          on0 : function (response) {
+          on0 : function(response) {
             response.request.options.onFailure(response);
           },
           onComplete : function(response) {
-            _this._ajaxCallsRemaining--;
-            if (response.status == 200) {
-              _this._populateEditorData(true);
+            // if any collaborators were removed, we reset collaborators with PUT
+            // we do it as a callback from completed first call because of a well-known XWiki constraint of non-simultaneous access to a document
+            // so we can not make 2 async ajax calls if we need both PATCH permissions and PUT collaborators because it will result in hibernate.StaleStateException
+            if (_this.collaboratorRemoved) {
+              _this._resetCollaborators(collaboratorsData);
+            } else {
+              if ((response.status &gt;= 200 &amp;&amp; response.status &lt; 300) || response.status == 1223) {
+                _this._populateEditorData(true, false);
+              } else {
+                _this._populateEditorData(true, true);
+              }
             }
           }
       });
@@ -752,7 +732,6 @@
           contentType:'application/json',
           parameters : dataObj,
           onCreate : function() {
-            _this._ajaxCallsRemaining++;
             _this._submitButton._disabled = true;
             _this._buttons.addClassName('loading');
             _this._messages.update(new Element('div', {'class' : 'xHint'}).update("$services.localization.render('phenotips.patientAccessRightsManagement.modifyRequestSent')"));
@@ -767,31 +746,33 @@
             }
             _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.patientAccessRightsManagement.modifyUpdateFailure') " + failureReason));
           },
+          on1223 : function(response) {
+            response.request.options.onSuccess(response);
+          },
           on0 : function (response) {
             response.request.options.onFailure(response);
           },
           onComplete : function(response) {
-            _this._ajaxCallsRemaining--;
-            if (response.status == 200) {
-              _this._populateEditorData(true);
+            if ((response.status &gt;= 200 &amp;&amp; response.status &lt; 300) || response.status == 1223) {
+              _this._populateEditorData(true, false);
+            } else {
+              _this._populateEditorData(true, true);
             }
           }
       });
     },
 
     // boolean parameter `updatePatientForm` is 'true' if we just made any permission updates
-    // and need to update patient form  accordingly after making a GET request after those updates
-    _populateEditorData : function (updatePatientForm) {
+    // and need to update patient form accordingly after making a GET request after those updates
+    // boolean parameter `leaveDialogOpen' is 'true' if we either open dialog first time and populate it with data,
+    // or we just made any permission updates and one of them failed so we want to keep dialog open to show error
+    _populateEditorData : function (updatePatientForm, leaveDialogOpen) {
       var _this = this;
-      if (updatePatientForm) {
-        if (_this._ajaxCallsRemaining &gt; 0) {
-          return;
-        } else {
-          var updatePatientSummary = updatePatientForm;
-        }
-      } else {
+      if (!updatePatientForm) {
         if (this._editorLauncher._disabled) { return; }
       }
+      var updatePatientSummary = updatePatientForm;
+      var keepOpen = leaveDialogOpen;
 
       new Ajax.Request(_this.permissionsURL + "?method=GET", {
           onCreate : function() {
@@ -806,10 +787,9 @@
           onSuccess : function(response) {
             var data = response.responseJSON;
             if (updatePatientSummary) {
-              // no need to update dialog because it will be closed
               _this._getUserAccessLevelAndUpdatePatientForm(data);
-              _this._dialog.closeDialog();
-            } else {
+            }
+            if (keepOpen) {
               if (data.owner &amp;&amp; data.owner.name) {
                 _this._updateOwnershipManager(data.owner);
               }
@@ -831,7 +811,7 @@
               if (response.statusText == ''  || response.status == 12031) {
                 failureReason = "$services.localization.render('phenotips.patientAccessRightsManagement.modifyNoServerResponse')";
               }
-              _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.patientAccessRightsManagement.modifyUpdateFailure') " + failureReason));
+              _this._messages.insert(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.patientAccessRightsManagement.modifyUpdateFailure') " + failureReason));
             }
           },
           onComplete : function(response) {
@@ -840,6 +820,9 @@
               _this._buttons.removeClassName('loading');
             } else {
               _this._editorLauncher._disabled = false;
+            }
+            if (!keepOpen) {
+              _this._dialog.closeDialog();
             }
           }
       });
@@ -856,16 +839,6 @@
     _updateCollaborators : function (collaborators) {
       this._collaboratorsList.update('');
       collaborators.each(this._addCollaborator.bind(this));
-    },
-
-    /* Updates the list of collaborators that is displayed on hover */
-    _updateDisplayedCollaborators : function (collaborators, collabAccessRights) {
-      var collaboratorStr = '';
-      if (collaborators) {
-        collaborators = [].concat(collaborators); /* collaborators may be an array or a string */
-        collaboratorStr = $$('#manage-collaborators tr td:nth-child(2)').map(function(item) {return item.innerText}).join(', ');
-      }
-      collabAccessRights.setAttribute("title", collaboratorStr);
     },
 
     // Get information about PatientAccess to the patient document for the currently logged in user
@@ -966,43 +939,8 @@
       }
     },
 
-    _isJournalCollaborator : function (id) {
-      for (var i = 0; i &lt; this.JOURNALS.length; i++) {
-        if (this.JOURNALS[i].id == id) {
-          return true;
-        }
-      }
-      return false;
-    },
-
-    _removeJournal : function (id) {
-      // Remove hidden journal collaborator
-      var collab = this._collaboratorsList.down('input[name="collaborator"][value="' + id + '"]');
-      if (collab) {
-        var row = collab.up('tr');
-        if (row) {
-          row.remove();
-        }
-      }
-    },
-
     /* Expected format for the collaborator object c : {id : 'string', type : 'string', name : 'string', level : 'string' } */
     _addCollaborator : function (c, highlight) {
-      var row = this._generateCollaborator(c, highlight);
-      if (row) {
-        if (this._isJournalCollaborator(c.id)) {
-          row.addClassName('journal');
-          // Ensure checkbox is checked
-          var checkbox = this._journalsManager.down('input[type="checkbox"][value="' + c.id + '"]');
-          if (checkbox) {
-            checkbox.checked = true;
-          }
-        }
-        this._collaboratorsList.insert(row);
-      }
-    },
-
-    _generateCollaborator : function (c, highlight) {
       var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
       row.insert(new Element('td').insert(new Element('span', {'class' : 'fa fa-' + c.type}).update(' ')));
       row.insert(new Element('td')
@@ -1017,7 +955,7 @@
         this.collaboratorRemoved = true;
         event.findElement('tr').remove();
       }.bind(this));
-      return row;
+      this._collaboratorsList .insert(row);
     },
 
     _generateCollaborationOptions : function (name, value) {
