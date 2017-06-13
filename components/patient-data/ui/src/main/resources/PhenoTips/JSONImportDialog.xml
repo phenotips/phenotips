@@ -283,7 +283,7 @@
 
       new Ajax.Request(_this._builder.service, {
         method : 'POST',
-        parameters : importVal,
+        postBody : importVal,
         contentType : 'application/json',
         on304 : function (response) {
           response.request.options.onSuccess(response);
