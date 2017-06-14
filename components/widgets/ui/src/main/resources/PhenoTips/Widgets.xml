@@ -1756,6 +1756,10 @@
     // insert the displayed value
     displayedValue.insert({'bottom' : new Element("span", {"class": "value"}).update(value.escapeHTML())});
     listItem.insert(displayedValue);
+    if(this.suggest.options.tooltip) {
+      var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton ' + this.suggest.options.tooltip, title : key});
+      listItem.insert(infoTool);
+    }
     if (category &amp;&amp; category != '') {
       listItem.insert(category);
     }
@@ -1776,6 +1780,7 @@
     this.synchronizeSelection(newItem);
     newItem.observe('change', this.synchronizeSelection.bind(this, newItem));
     this.updateListTools();
+    Event.fire(document, 'xwiki:dom:updated', {'elements' : [listItem]});
     this.onItemAdded(newItem)
     return newItem;
   },
@@ -6104,7 +6109,7 @@ div.resultContainer div.sourceContent.loading {
   color: #777;
 }
 .accepted-suggestions li .value {
-  margin-right: 1em;
+  margin-right: 0.5em;
 }
 .accepted-suggestions li .delete-tool,
 .clear-tool {
