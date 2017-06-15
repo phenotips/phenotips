@@ -91,38 +91,6 @@
   <object>
     <name>PhenoTips.VCF</name>
     <number>0</number>
-    <className>XWiki.DocumentSheetBinding</className>
-    <guid>e53ac762-8efa-4e8f-bc5f-8f47fb3278aa</guid>
-    <class>
-      <name>XWiki.DocumentSheetBinding</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <sheet>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <name>sheet</name>
-        <number>1</number>
-        <picker>0</picker>
-        <prettyName>Sheet</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </sheet>
-    </class>
-    <property>
-      <sheet>PhenoTips.UIXSheet</sheet>
-    </property>
-  </object>
-  <object>
-    <name>PhenoTips.VCF</name>
-    <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>fbfb648b-6f6a-449f-b066-3d017df05bcb</guid>
     <class>
