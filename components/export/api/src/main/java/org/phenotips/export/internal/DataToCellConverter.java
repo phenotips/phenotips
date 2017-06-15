@@ -129,13 +129,10 @@ public class DataToCellConverter
 
         DataSection section = new DataSection();
         int hX = 0;
-        if (present.contains("positive") && present.contains("negative")) {
-            DataCell cell =
-                new DataCell(this.translationManager.translate("phenotips.export.excel.label.phenotype.present"),
-                    hX, 1, StyleOption.HEADER);
-            section.addCell(cell);
-            hX++;
-        }
+        section.addCell(
+            new DataCell(this.translationManager.translate("phenotips.export.excel.label.phenotype.present"),
+                hX, 1, StyleOption.HEADER));
+        hX++;
         for (String headerId : Arrays.asList("type", "name", "id", "meta.name", "meta.id")) {
             if (!present.contains(headerId)) {
                 continue;
@@ -179,27 +176,25 @@ public class DataToCellConverter
             sectionFeatureLookup = this.phenotypeHelper.getSectionFeatureTree();
         }
 
-        Boolean lastStatus = false;
+        Boolean lastStatus = null;
         String lastSection = "";
         for (Feature feature : sortedFeatures) {
             x = 0;
 
-            if (bothTypes && lastStatus != feature.isPresent()) {
-                lastStatus = feature.isPresent();
+            if (!Boolean.valueOf(feature.isPresent()).equals(lastStatus)) {
                 lastSection = "";
-                DataCell cell = new DataCell(lastStatus
+                DataCell cell = new DataCell(feature.isPresent()
                     ? this.translationManager.translate("yes")
                     : this.translationManager.translate("no"),
                     x, y);
-                if (!lastStatus) {
+                if (lastStatus != null) {
                     cell.addStyle(StyleOption.YES_NO_SEPARATOR);
                 }
+                lastStatus = feature.isPresent();
                 cell.addStyle(lastStatus ? StyleOption.YES : StyleOption.NO);
                 section.addCell(cell);
             }
-            if (bothTypes) {
-                x++;
-            }
+            x++;
             if (categoriesEnabled) {
                 String currentSection = sectionFeatureLookup.get(feature.getId());
                 if (!StringUtils.equals(currentSection, lastSection)) {
@@ -1058,13 +1053,10 @@ public class DataToCellConverter
         DataSection section = new DataSection();
 
         int hX = 0;
-        if (present.contains("positive") && present.contains("negative")) {
-            DataCell cell =
-                new DataCell(this.translationManager.translate("phenotips.export.excel.label.phenotype.present"),
-                    hX, 1, StyleOption.HEADER);
-            section.addCell(cell);
-            hX++;
-        }
+        section.addCell(
+            new DataCell(this.translationManager.translate("phenotips.export.excel.label.phenotype.present"),
+                hX, 1, StyleOption.HEADER));
+        hX++;
         for (String headerId : Arrays.asList("name", "id")) {
             if (!present.contains(headerId)) {
                 continue;
@@ -1104,25 +1096,23 @@ public class DataToCellConverter
         List<Feature> sortedFeatures;
         sortedFeatures = this.prenatalPhenotypeHelper.sortFeaturesSimple(features);
 
-        Boolean lastStatus = false;
+        Boolean lastStatus = null;
         for (Feature feature : sortedFeatures) {
             x = 0;
 
-            if (bothTypes && lastStatus != feature.isPresent()) {
-                lastStatus = feature.isPresent();
-                DataCell cell = new DataCell(lastStatus
+            if (!Boolean.valueOf(feature.isPresent()).equals(lastStatus)) {
+                DataCell cell = new DataCell(feature.isPresent()
                     ? this.translationManager.translate("yes")
                     : this.translationManager.translate("no"),
                     x, y);
-                if (!lastStatus) {
+                if (lastStatus != null) {
                     cell.addStyle(StyleOption.YES_NO_SEPARATOR);
                 }
+                lastStatus = feature.isPresent();
                 cell.addStyle(lastStatus ? StyleOption.YES : StyleOption.NO);
                 section.addCell(cell);
             }
-            if (bothTypes) {
-                x++;
-            }
+            x++;
             if (present.contains("name")) {
                 DataCell cell = new DataCell(feature.getName(), x, y, StyleOption.FEATURE_SEPARATOR);
                 section.addCell(cell);
