@@ -187,14 +187,11 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
     #end
   #end
   #if ($content != '')
-#if ($options.isImage &amp;&amp; $options.inputType == 'checkbox')
-{{gallery}}
-$content
-{{/gallery}}
-
-#else
-$content
-#end
+    #if ($options.isImage &amp;&amp; $options.inputType == 'checkbox')
+      {{gallery}}$content{{/gallery}}
+    #else
+      $content
+    #end
   #end
 #end
 
@@ -218,6 +215,12 @@ $content
       #end
       #__displaySelectableAttachmentList($targetDoc $propValue)
       )))
+      ## Check if the VCF manager is the displayer being loaded. Append an info box near the bottom of the form.
+      #if ($!{xclass.name} == 'PhenoTips.VCF')
+        {{html wiki=false clean=false}}&lt;input type="hidden" id="vcf-manager" /&gt;{{/html}}
+
+        {{info}}$escapetool.xml($services.localization.render('phenotips.imageDisplayer.VCF.infoMessage')){{/info}}
+      #end##
     #else## not edit
       #__displayGallery($targetDoc $propValue)
     #end## context action check
@@ -321,6 +324,8 @@ $content
       this.list = this.gallery.down('.attachment-list');
       this.sourceList = sourceList;
       this.reloadTargetId = reloadTargetId;
+      // Determine if the displayer to be initialized is the VCF Manager.
+      this.isVCFManager = $("vcf-manager");
 
       this.filterFormUpload();
       this.addDeleteListeners();
@@ -512,7 +517,12 @@ $content
 
     addCloseListener : function () {
       this.dialog.__controller = this;
-      var closeButton = new Element('input', {'type' : 'button', 'class' : 'button', 'value' : "$services.localization.render('phenotips.imageDisplayer.done')"});
+      if (this.isVCFManager) {
+        var closeButtonLabel = "$escapetool.javascript($services.localization.render('phenotips.imageDisplayer.VCF.confirm'))";
+      } else {
+        var closeButtonLabel = "$escapetool.javascript($services.localization.render('phenotips.imageDisplayer.done'))";
+      }
+      var closeButton = new Element('input', {'type' : 'button', 'class' : 'button', 'value' : closeButtonLabel});
       this.gallery.down('.content').insert({bottom : closeButton});
       closeButton.observe('click', this.dialog.closeDialog.bindAsEventListener(this.dialog));
     }
