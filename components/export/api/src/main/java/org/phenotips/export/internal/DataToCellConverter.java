@@ -107,7 +107,7 @@ public class DataToCellConverter
     {
         String sectionName = "phenotype";
         Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
-        if (present.isEmpty()) {
+        if (present == null || present.isEmpty()) {
             return null;
         }
 
@@ -981,7 +981,7 @@ public class DataToCellConverter
     {
         String sectionName = "prenatalPhenotype";
         Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
-        if (present.isEmpty()) {
+        if (present == null || present.isEmpty()) {
             return null;
         }
 
