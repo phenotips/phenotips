@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -86,35 +87,20 @@ public class DataToCellConverter
         String sectionName = "phenotype";
         String[] fieldIds =
             {
-            "phenotype",
-            "phenotype_code",
-            "phenotype_combined",
-            "phenotype_code_meta",
-            "phenotype_meta",
-            "negative_phenotype",
-            "negative_phenotype_code",
-            "negative_phenotype_combined",
-            "phenotype_by_section"
+                "phenotype",
+                "phenotype_meta"
             };
-        // FIXME These will not work properly in different configurations
         String[][] headerIds =
             {
-            { "name", "positive" },
-            { "id", "positive" },
-            { "name", "id", "positive" },
-            { "meta.id", "name", "positive" },
-            { "meta.name", "name", "positive" },
-            { "name", "negative" },
-            { "id", "negative" },
-            { "id", "name", "negative" },
-            { "type" }
+                { "present", "name", "id" },
+                { "present", "name", "id", "meta.name", "meta.id" }
             };
 
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
         this.phenotypeHelper = new ConversionHelpers();
-        this.phenotypeHelper
-            .featureSetUp(present.contains("positive"), present.contains("negative"), present.contains("type"));
+        // FIXME "type" is never exposed
+        this.phenotypeHelper.featureSetUp(present.contains("type"));
     }
 
     public DataSection phenotypeHeader() throws Exception
@@ -127,17 +113,7 @@ public class DataToCellConverter
 
         DataSection section = new DataSection();
         int hX = 0;
-        if (present.contains("positive") && present.contains("negative")) {
-            DataCell cell =
-                new DataCell(this.translationManager.translate("phenotips.export.excel.label.phenotype.present"),
-                    hX, 1, StyleOption.HEADER);
-            section.addCell(cell);
-            hX++;
-        }
-        for (String headerId : Arrays.asList("type", "name", "id", "meta.name", "meta.id")) {
-            if (!present.contains(headerId)) {
-                continue;
-            }
+        for (String headerId : present) {
             DataCell cell = new DataCell(this.translationManager.translate("phenotips.export.excel.label.phenotype."
                 + headerId), hX, 1, StyleOption.HEADER);
             section.addCell(cell);
@@ -160,14 +136,14 @@ public class DataToCellConverter
             return null;
         }
 
-        Boolean bothTypes = present.contains("positive") && present.contains("negative");
         DataSection section = new DataSection();
 
         int x;
         int y = 0;
         Set<? extends Feature> features = patient.getFeatures();
+
         this.phenotypeHelper.newPatient();
-        Boolean categoriesEnabled = present.contains("type");
+        boolean categoriesEnabled = present.contains("type");
         List<Feature> sortedFeatures;
         Map<String, String> sectionFeatureLookup = new HashMap<>();
         if (!categoriesEnabled) {
@@ -177,92 +153,59 @@ public class DataToCellConverter
             sectionFeatureLookup = this.phenotypeHelper.getSectionFeatureTree();
         }
 
-        Boolean lastStatus = false;
+        Boolean lastStatus = null;
         String lastSection = "";
         for (Feature feature : sortedFeatures) {
             x = 0;
 
-            if (bothTypes && lastStatus != feature.isPresent()) {
-                lastStatus = feature.isPresent();
+            if (!Boolean.valueOf(feature.isPresent()).equals(lastStatus)) {
                 lastSection = "";
-                DataCell cell = new DataCell(lastStatus
+                DataCell cell = new DataCell(feature.isPresent()
                     ? this.translationManager.translate("yes")
                     : this.translationManager.translate("no"),
                     x, y);
-                if (!lastStatus) {
+                if (lastStatus != null) {
                     cell.addStyle(StyleOption.YES_NO_SEPARATOR);
                 }
+                lastStatus = feature.isPresent();
                 cell.addStyle(lastStatus ? StyleOption.YES : StyleOption.NO);
                 section.addCell(cell);
             }
-            if (bothTypes) {
-                x++;
-            }
             if (categoriesEnabled) {
+                ++x;
                 String currentSection = sectionFeatureLookup.get(feature.getId());
                 if (!StringUtils.equals(currentSection, lastSection)) {
                     DataCell cell = new DataCell(currentSection, x, y);
                     section.addCell(cell);
                     lastSection = currentSection;
                 }
-                x++;
             }
-            if (present.contains("name")) {
-                DataCell cell = new DataCell(feature.getName(), x, y, StyleOption.FEATURE_SEPARATOR);
-                section.addCell(cell);
-                x++;
-            }
-            if (present.contains("id")) {
-                DataCell cell = new DataCell(feature.getId(), x, y, StyleOption.FEATURE_SEPARATOR);
-                section.addCell(cell);
-                x++;
-            }
-            if (present.contains("meta.name") || present.contains("meta.id")) {
-                int mX = x;
+            section.addCell(new DataCell(feature.getName(), ++x, y, StyleOption.FEATURE_SEPARATOR));
+            section.addCell(new DataCell(feature.getId(), ++x, y, StyleOption.FEATURE_SEPARATOR));
+            if (present.contains("meta.name")) {
                 Collection<? extends FeatureMetadatum> featureMetadatum = feature.getMetadata().values();
                 Boolean metaPresent = !featureMetadatum.isEmpty();
-                int offset = 0;
                 for (FeatureMetadatum meta : featureMetadatum) {
-                    offset = 0;
-                    if (present.contains("meta.name")) {
-                        DataCell cell = new DataCell(meta.getName(), mX + offset, y);
-                        section.addCell(cell);
-                        offset += 1;
-                    }
-                    if (present.contains("meta.id")) {
-                        DataCell cell = new DataCell(meta.getId(), mX + offset, y);
-                        section.addCell(cell);
-                        offset += 1;
-                    }
-                    y++;
+                    section.addCell(new DataCell(meta.getName(), x + 1, y));
+                    section.addCell(new DataCell(meta.getId(), x + 2, y));
+                    ++y;
                 }
-                // Because otherwise the section has smaller width than the header
-                offset = 0;
+                // Add empty cells if there's no meta, since otherwise the section will be smaller than the header
                 if (!metaPresent) {
-                    if (present.contains("meta.name")) {
-                        DataCell cell = new DataCell("", mX + offset, y);
-                        section.addCell(cell);
-                        offset += 1;
-                    }
-                    if (present.contains("meta.id")) {
-                        DataCell cell = new DataCell("", mX + offset, y);
-                        section.addCell(cell);
-                        offset += 1;
-                    }
-                }
-                if (metaPresent) {
-                    y--;
+                    section.addCell(new DataCell("", x + 1, y));
+                    section.addCell(new DataCell("", x + 2, y));
+                } else {
+                    // Since each meta item moves to the next row, and we also move down once more after each feature,
+                    // move back up to the last meta row
+                    --y;
                 }
             }
-            y++;
+            ++y;
         }
         // Creating empties
         if (sortedFeatures.isEmpty()) {
-            // offset is included to account for the presence of both "positive" and "negative" in "present"
-            int offset = bothTypes ? 1 : 0;
-            for (int emptyX = 0; emptyX < present.size() - offset; emptyX++) {
-                DataCell cell = new DataCell("", emptyX, 0);
-                section.addCell(cell);
+            for (int emptyX = 0; emptyX < present.size(); emptyX++) {
+                section.addCell(new DataCell("", emptyX, 0));
             }
         }
         // section.finalizeToMatrix();
@@ -274,27 +217,28 @@ public class DataToCellConverter
         String sectionName = "variants";
         String[] fieldIds =
             { "variants", "variants_protein", "variants_transcript", "variants_dbsnp", "variants_zygosity",
-            "variants_effect", "variants_interpretation", "variants_inheritance", "variants_evidence",
-            "variants_segregation", "variants_sanger", "variants_coordinates" };
+                "variants_effect", "variants_interpretation", "variants_inheritance", "variants_evidence",
+                "variants_segregation", "variants_sanger", "variants_coordinates" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
             {
-            { "cdna" },
-            { "protein", "cdna" },
-            { "transcript", "protein", "cdna" },
-            { "dbsnp", "transcript", "protein", "cdna" },
-            { "zygosity", "dbsnp", "transcript", "protein", "cdna" },
-            { "effect", "zygosity", "dbsnp", "transcript", "protein", "cdna" },
-            { "interpretation", "effect", "zygosity", "dbsnp", "transcript", "protein", "cdna" },
-            { "inheritance", "interpretation", "effect", "zygosity", "dbsnp", "transcript", "protein", "cdna" },
-            { "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp", "transcript", "protein",
-                "cdna" },
-            { "segregation", "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp", "transcript",
-                "protein", "cdna" },
-            { "sanger", "segregation", "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp",
-                "transcript", "protein", "cdna" },
-            { "reference_genome", "end_position", "start_position", "chromosome", "cdna" }
-        };
+                { "cdna" },
+                { "protein", "cdna" },
+                { "transcript", "protein", "cdna" },
+                { "dbsnp", "transcript", "protein", "cdna" },
+                { "zygosity", "dbsnp", "transcript", "protein", "cdna" },
+                { "effect", "zygosity", "dbsnp", "transcript", "protein", "cdna" },
+                { "interpretation", "effect", "zygosity", "dbsnp", "transcript", "protein", "cdna" },
+                { "inheritance", "interpretation", "effect", "zygosity", "dbsnp", "transcript", "protein", "cdna" },
+                { "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp", "transcript", "protein",
+                    "cdna" },
+                { "segregation", "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp",
+                    "transcript",
+                    "protein", "cdna" },
+                { "sanger", "segregation", "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp",
+                    "transcript", "protein", "cdna" },
+                { "reference_genome", "end_position", "start_position", "chromosome", "cdna" }
+            };
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
     }
@@ -306,7 +250,7 @@ public class DataToCellConverter
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
             { { "genes" }, { "status", "genes" }, { "strategy", "status", "genes" },
-            { "comments", "strategy", "status", "genes" } };
+                { "comments", "strategy", "status", "genes" } };
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
     }
@@ -1018,29 +962,19 @@ public class DataToCellConverter
 
     public void prenatalPhenotypeSetup(Set<String> enabledFields) throws Exception
     {
+
         String sectionName = "prenatalPhenotype";
-        String[] fieldIds =
-            {
-            "prenatal_phenotype",
-            "prenatal_phenotype_code",
-            "prenatal_phenotype_combined",
-            "negative_prenatal_phenotype"
-            };
-        /* FIXME These will not work properly in different configurations */
-        String[][] headerIds =
-            {
-            { "name", "positive" },
-            { "id", "positive" },
-            { "name", "id", "positive" },
-            { "name", "negative" }
-            };
-        Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
-        this.enabledHeaderIdsBySection.put(sectionName, present);
+        Set<String> present = new LinkedHashSet<>();
+        present.add("present");
+        present.add("name");
+        present.add("id");
+        if (enabledFields.remove("prenatal_phenotype")) {
+            this.enabledHeaderIdsBySection.put(sectionName, present);
+        }
 
         /* Needed for ordering phenotypes */
         this.prenatalPhenotypeHelper = new ConversionHelpers();
-        this.prenatalPhenotypeHelper
-            .featureSetUp(present.contains("positive"), present.contains("negative"), false);
+        this.prenatalPhenotypeHelper.featureSetUp(false);
     }
 
     public DataSection prenatalPhenotypeHeader() throws Exception
@@ -1054,21 +988,10 @@ public class DataToCellConverter
         DataSection section = new DataSection();
 
         int hX = 0;
-        if (present.contains("positive") && present.contains("negative")) {
-            DataCell cell =
-                new DataCell(this.translationManager.translate("phenotips.export.excel.label.phenotype.present"),
-                    hX, 1, StyleOption.HEADER);
-            section.addCell(cell);
-            hX++;
-        }
-        for (String headerId : Arrays.asList("name", "id")) {
-            if (!present.contains(headerId)) {
-                continue;
-            }
-            DataCell cell =
+        for (String headerId : present) {
+            section.addCell(
                 new DataCell(this.translationManager.translate("phenotips.export.excel.label.phenotype." + headerId),
-                    hX, 1, StyleOption.HEADER);
-            section.addCell(cell);
+                    hX, 1, StyleOption.HEADER));
             hX++;
         }
         DataCell sectionHeader = new DataCell(
@@ -1088,7 +1011,6 @@ public class DataToCellConverter
             return null;
         }
 
-        Boolean bothTypes = present.contains("positive") && present.contains("negative");
         DataSection section = new DataSection();
 
         int x;
@@ -1100,44 +1022,30 @@ public class DataToCellConverter
         List<Feature> sortedFeatures;
         sortedFeatures = this.prenatalPhenotypeHelper.sortFeaturesSimple(features);
 
-        Boolean lastStatus = false;
+        Boolean lastStatus = null;
         for (Feature feature : sortedFeatures) {
             x = 0;
 
-            if (bothTypes && lastStatus != feature.isPresent()) {
-                lastStatus = feature.isPresent();
-                DataCell cell = new DataCell(lastStatus
+            if (!Boolean.valueOf(feature.isPresent()).equals(lastStatus)) {
+                DataCell cell = new DataCell(feature.isPresent()
                     ? this.translationManager.translate("yes")
                     : this.translationManager.translate("no"),
                     x, y);
-                if (!lastStatus) {
+                if (lastStatus != null) {
                     cell.addStyle(StyleOption.YES_NO_SEPARATOR);
                 }
+                lastStatus = feature.isPresent();
                 cell.addStyle(lastStatus ? StyleOption.YES : StyleOption.NO);
                 section.addCell(cell);
             }
-            if (bothTypes) {
-                x++;
-            }
-            if (present.contains("name")) {
-                DataCell cell = new DataCell(feature.getName(), x, y, StyleOption.FEATURE_SEPARATOR);
-                section.addCell(cell);
-                x++;
-            }
-            if (present.contains("id")) {
-                DataCell cell = new DataCell(feature.getId(), x, y, StyleOption.FEATURE_SEPARATOR);
-                section.addCell(cell);
-                x++;
-            }
-            y++;
+            section.addCell(new DataCell(feature.getName(), ++x, y, StyleOption.FEATURE_SEPARATOR));
+            section.addCell(new DataCell(feature.getId(), ++x, y, StyleOption.FEATURE_SEPARATOR));
+            ++y;
         }
         // Creating empties
         if (sortedFeatures.isEmpty()) {
-            // offset is included to account for the presence of both "positive" and "negative" in "present"
-            int offset = bothTypes ? 1 : 0;
-            for (int emptyX = 0; emptyX < present.size() - offset; emptyX++) {
-                DataCell cell = new DataCell("", emptyX, 0);
-                section.addCell(cell);
+            for (int emptyX = 0; emptyX < present.size(); emptyX++) {
+                section.addCell(new DataCell("", emptyX, 0));
             }
         }
         // section.finalizeToMatrix();
@@ -1147,48 +1055,29 @@ public class DataToCellConverter
     public DataSection disordersHeaders(Set<String> enabledFields) throws Exception
     {
         String sectionName = "disorders";
+        Set<String> present = Collections.singleton("omim_id");
 
-        String[] fieldIds =
-            {
-            "omim_id",
-            "omim_id_code",
-            "omim_id_combined",
-            "diagnosis_notes"
-            };
-        /* FIXME These will not work properly in different configurations */
-        String[][] headerIds =
-            {
-            { "name" },
-            { "id" },
-            { "name", "id" },
-            { "notes" }
-            };
-        Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
-        if (present.isEmpty()) {
-            return null;
-        }
+        if (enabledFields.remove("omim_id")) {
+            this.enabledHeaderIdsBySection.put(sectionName, present);
 
-        this.enabledHeaderIdsBySection.put(sectionName, present);
-
-        DataSection headerSection = new DataSection();
-        int hX = 0;
-        for (String fieldId : Arrays.asList("name", "id", "notes")) {
-            if (!present.contains(fieldId)) {
-                continue;
+            DataSection headerSection = new DataSection();
+            int hX = 0;
+            for (String fieldId : Arrays.asList("name", "id", "notes")) {
+                DataCell headerCell = new DataCell(
+                    this.translationManager.translate("phenotips.export.excel.label.disorders." + fieldId), hX, 1,
+                    StyleOption.HEADER);
+                headerSection.addCell(headerCell);
+                hX++;
             }
-            DataCell headerCell = new DataCell(
-                this.translationManager.translate("phenotips.export.excel.label.disorders." + fieldId), hX, 1,
-                StyleOption.HEADER);
+            DataCell headerCell =
+                new DataCell(this.translationManager.translate("phenotips.export.excel.label.disorders"), 0,
+                    0, StyleOption.LARGE_HEADER);
+            headerCell.addStyle(StyleOption.HEADER);
             headerSection.addCell(headerCell);
-            hX++;
-        }
-        DataCell headerCell =
-            new DataCell(this.translationManager.translate("phenotips.export.excel.label.disorders"), 0,
-                0, StyleOption.LARGE_HEADER);
-        headerCell.addStyle(StyleOption.HEADER);
-        headerSection.addCell(headerCell);
 
-        return headerSection;
+            return headerSection;
+        }
+        return null;
     }
 
     public DataSection disordersBody(Patient patient)
@@ -1204,42 +1093,21 @@ public class DataToCellConverter
         Set<? extends Disorder> disorders = patient.getDisorders();
         Integer y = 0;
         for (Disorder disorder : disorders) {
-            Integer x = 0;
-            if (present.contains("name")) {
-                DataCell cell = new DataCell(disorder.getName(), x, y);
-                cell.setMultiline();
-                bodySection.addCell(cell);
-                x++;
-            }
-            if (present.contains("id")) {
-                DataCell cell = new DataCell(disorder.getId(), x, y);
-                bodySection.addCell(cell);
-                x++;
-            }
+            bodySection.addCell(new DataCell(disorder.getName(), 0, y));
+            bodySection.addCell(new DataCell(disorder.getId(), 1, y));
             y++;
         }
         /* If there is no data, but there are headers present, create empty cells */
         if (disorders.isEmpty()) {
-            Integer x = 0;
-            if (present.contains("name")) {
-                DataCell cell = new DataCell("", x, y);
-                bodySection.addCell(cell);
-                x++;
-            }
-            if (present.contains("id")) {
-                DataCell cell = new DataCell("", x, y);
-                bodySection.addCell(cell);
-                x++;
-            }
+            bodySection.addCell(new DataCell("", 0, y));
+            bodySection.addCell(new DataCell("", 1, y));
         }
         /* Notes export */
-        if (present.contains("notes")) {
-            PatientData<String> notes = patient.getData("notes");
-            String diagnosisNotes = notes != null ? notes.get("diagnosis_notes") : "";
-            for (DataCell cell : ConversionHelpers.preventOverflow(diagnosisNotes, bodySection.getMaxX() + 1, 0)) {
-                cell.setMultiline();
-                bodySection.addCell(cell);
-            }
+        PatientData<String> notes = patient.getData("notes");
+        String diagnosisNotes = notes != null ? notes.get("diagnosis_notes") : "";
+        for (DataCell cell : ConversionHelpers.preventOverflow(diagnosisNotes, 2, 0)) {
+            cell.setMultiline();
+            bodySection.addCell(cell);
         }
 
         return bodySection;
@@ -1248,46 +1116,30 @@ public class DataToCellConverter
     public DataSection clinicalDiagnosisHeaders(Set<String> enabledFields) throws Exception
     {
         String sectionName = "clinicalDiagnosis";
+        Set<String> present = Collections.singleton("clinical_diagnosis");
 
-        String[] fieldIds =
-            {
-            "clinical_diagnosis",
-            "clinical_diagnosis_code",
-            "clinical_diagnosis_combined"
-            };
-        /* FIXME These will not work properly in different configurations */
-        String[][] headerIds =
-            {
-            { "name" },
-            { "id" },
-            { "name", "id" }
-            };
-        Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
-        if (present.isEmpty()) {
-            return null;
-        }
+        if (enabledFields.remove("clinical_diagnosis")) {
+            this.enabledHeaderIdsBySection.put(sectionName, present);
 
-        this.enabledHeaderIdsBySection.put(sectionName, present);
-
-        DataSection headerSection = new DataSection();
-        int hX = 0;
-        for (String fieldId : Arrays.asList("name", "id")) {
-            if (!present.contains(fieldId)) {
-                continue;
+            DataSection headerSection = new DataSection();
+            int hX = 0;
+            for (String fieldId : Arrays.asList("name", "id")) {
+                DataCell headerCell = new DataCell(
+                    this.translationManager.translate("phenotips.export.excel.label.clinicalDiagnosis." + fieldId), hX,
+                    1,
+                    StyleOption.HEADER);
+                headerSection.addCell(headerCell);
+                hX++;
             }
-            DataCell headerCell = new DataCell(
-                this.translationManager.translate("phenotips.export.excel.label.clinicalDiagnosis." + fieldId), hX, 1,
-                StyleOption.HEADER);
+            DataCell headerCell =
+                new DataCell(this.translationManager.translate("phenotips.export.excel.label.clinicalDiagnosis"), 0,
+                    0, StyleOption.LARGE_HEADER);
+            headerCell.addStyle(StyleOption.HEADER);
             headerSection.addCell(headerCell);
-            hX++;
-        }
-        DataCell headerCell =
-            new DataCell(this.translationManager.translate("phenotips.export.excel.label.clinicalDiagnosis"), 0,
-                0, StyleOption.LARGE_HEADER);
-        headerCell.addStyle(StyleOption.HEADER);
-        headerSection.addCell(headerCell);
 
-        return headerSection;
+            return headerSection;
+        }
+        return null;
     }
 
     public DataSection clinicalDiagnosisBody(Patient patient)
@@ -1304,30 +1156,13 @@ public class DataToCellConverter
         PatientData<Disorder> clinicalDisorders = patient.getData("clinical-diagnosis");
         /* If there is no data, but there are headers present, create empty cells */
         if (clinicalDisorders == null || clinicalDisorders.size() == 0) {
-            int x = 0;
-            if (present.contains("name")) {
-                DataCell cell = new DataCell("", x, y);
-                bodySection.addCell(cell);
-                x++;
-            }
-            if (present.contains("id")) {
-                DataCell cell = new DataCell("", x, y);
-                bodySection.addCell(cell);
-            }
+            bodySection.addCell(new DataCell("", 0, y));
+            bodySection.addCell(new DataCell("", 1, y));
             return bodySection;
         }
         for (Disorder disorder : clinicalDisorders) {
-            int x = 0;
-            if (present.contains("name")) {
-                DataCell cell = new DataCell(disorder.getName(), x, y);
-                cell.setMultiline();
-                bodySection.addCell(cell);
-                x++;
-            }
-            if (present.contains("id")) {
-                DataCell cell = new DataCell(disorder.getId(), x, y);
-                bodySection.addCell(cell);
-            }
+            bodySection.addCell(new DataCell(disorder.getName(), 0, y));
+            bodySection.addCell(new DataCell(disorder.getId(), 1, y));
             y++;
         }
 
@@ -1539,7 +1374,7 @@ public class DataToCellConverter
 
     private Set<String> addHeaders(String[] fieldIds, String[][] headerIds, Set<String> enabledFields)
     {
-        Set<String> present = new HashSet<>();
+        Set<String> present = new LinkedHashSet<>();
         int counter = 0;
         for (String fieldId : fieldIds) {
             if (enabledFields.remove(fieldId)) {

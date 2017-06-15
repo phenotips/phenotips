@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
@@ -56,12 +58,6 @@ public class ConversionHelpers
     private static final String NA = "-";
 
     private static TranslationManager translationManager;
-
-    /** Global parameter for whether to include phenotypes with "present" status. */
-    private Boolean positive;
-
-    /** Global parameter for whether to include phenotypes with "not present" status. */
-    private Boolean negative;
 
     /** Used for accessing HPO. */
     private Vocabulary ontologyService;
@@ -94,24 +90,19 @@ public class ConversionHelpers
     /**
      * Sets global parameters that are used by various other functions.
      *
-     * @param positive sets the global parameter {@link #positive}
-     * @param negative same as the above positive parameter, but for {@link #negative}
      * @param mapCategories whether the phenotypes will be sorted by which category they belong to
      * @throws java.lang.Exception Could happen if the {@link org.phenotips.vocabulary.Vocabulary} for HPO could not be
      *             accessed or is the phenotype category list is not available
      */
-    public void featureSetUp(Boolean positive, Boolean negative, Boolean mapCategories) throws Exception
+    public void featureSetUp(boolean mapCategories) throws Exception
     {
-        /* Set to true to include, and false to not include phenotypes with positive/negative status. */
-        this.positive = positive;
-        this.negative = negative;
         if (!mapCategories) {
             return;
         }
 
         /*
          * Gets a list of all categories, and maps each category's title to a list of HPO ids which represent it. This
-         * step is necessary only if {@link #mapCategories} is true.
+         * step is necessary only if mapCategories is true.
          */
         ComponentManager cm = getComponentManager();
         this.ontologyService = cm.getInstance(Vocabulary.class, "hpo");
@@ -143,25 +134,21 @@ public class ConversionHelpers
     private List<Feature> filterFeaturesByPresentStatus(Set<? extends Feature> features, Boolean status)
     {
         List<Feature> filteredFeatures = new LinkedList<>();
-        boolean include = status ? this.positive : this.negative;
-        if (include) {
-            for (Feature feature : features) {
-                if (feature.isPresent() == status) {
-                    filteredFeatures.add(0, feature);
-                }
+        for (Feature feature : features) {
+            if (feature.isPresent() == status) {
+                filteredFeatures.add(0, feature);
             }
         }
         return filteredFeatures;
     }
 
     /**
-     * Sorts the passed in features so that the features with the "is present" status are on top. Also filters out
-     * features which are disallowed by the global {@link #positive} and {@link #negative}.
+     * Sorts the passed in features so that the features with the "is present" status are on top.
      *
-     * @param features set of features to be filtered. Cannot be null
+     * @param features set of features to be filtered, cannot be {@code null}
      * @return a subset of the passed in features in a specific order
      */
-    public List<Feature> sortFeaturesSimple(Set<? extends Feature> features)
+    public List<Feature> sortFeaturesSimple(@Nonnull Set<? extends Feature> features)
     {
         List<Feature> positiveList = filterFeaturesByPresentStatus(features, true);
         List<Feature> negativeList = filterFeaturesByPresentStatus(features, false);

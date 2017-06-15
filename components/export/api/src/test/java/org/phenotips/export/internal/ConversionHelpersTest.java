@@ -78,7 +78,7 @@ public class ConversionHelpersTest
         ConversionHelpers helpers = new ConversionHelpers();
         ConversionHelpers helpersSpy = spy(helpers);
 
-        helpersSpy.featureSetUp(true, true, false);
+        helpersSpy.featureSetUp(false);
         verify(helpersSpy, atMost(0)).getComponentManager();
     }
 
@@ -94,7 +94,7 @@ public class ConversionHelpersTest
         doReturn(phenotypeMappingService).when(manager).getInstance(eq(ScriptService.class), eq("phenotypeMapping"));
         doReturn(null).when(phenotypeMappingService).get(anyString());
 
-        helpersSpy.featureSetUp(true, true, true);
+        helpersSpy.featureSetUp(true);
     }
 
     /* A rather poor test. */
@@ -114,44 +114,28 @@ public class ConversionHelpersTest
         /* null.toString will fail. */
         categoryEntry.put("title", null);
 
-        helpersSpy.featureSetUp(true, true, true);
-    }
-
-    /**
-     * If {@link org.phenotips.export.internal.ConversionHelpers#positive} and
-     * {@link org.phenotips.export.internal.ConversionHelpers#negative} have not been set up, this should fail.
-     */
-    @Test(expected = NullPointerException.class)
-    public void sortFeaturesSimpleNotSetup()
-    {
-        ConversionHelpers helpers = new ConversionHelpers();
-        ConversionHelpers helpersSpy = spy(helpers);
-        Feature feature = mock(Feature.class);
-        Set<Feature> features = new HashSet<>();
-        features.add(feature);
-
-        helpersSpy.sortFeaturesSimple(features);
+        helpersSpy.featureSetUp(true);
     }
 
     @Test
-    public void sortFeaturesSimple() throws Exception
+    public void sortFeaturesByPresentStatus() throws Exception
     {
         ConversionHelpers helpers = new ConversionHelpers();
         ConversionHelpers helpersSpy = spy(helpers);
         Feature featurePositive = mock(Feature.class);
         Feature featureNegative = mock(Feature.class);
         Set<Feature> features = new HashSet<>();
-        features.add(featurePositive);
         features.add(featureNegative);
+        features.add(featurePositive);
 
         doReturn(true).when(featurePositive).isPresent();
         doReturn(false).when(featureNegative).isPresent();
 
-        helpersSpy.featureSetUp(false, true, false);
+        helpersSpy.featureSetUp(false);
         List<Feature> sorted = helpersSpy.sortFeaturesSimple(features);
 
-        Assert.assertFalse(sorted.contains(featurePositive));
-        Assert.assertTrue(sorted.contains(featureNegative));
+        Assert.assertEquals(featurePositive, sorted.get(0));
+        Assert.assertEquals(featureNegative, sorted.get(1));
     }
 
     @Test(expected = NullPointerException.class)
@@ -161,7 +145,7 @@ public class ConversionHelpersTest
         ConversionHelpers helpersSpy = spy(helpers);
         Set<Feature> features = new HashSet<>();
 
-        helpersSpy.featureSetUp(true, true, false);
+        helpersSpy.featureSetUp(false);
         doReturn(null).when(helpersSpy).getCategoryMapping();
 
         helpersSpy.sortFeaturesWithSections(features);
@@ -224,7 +208,7 @@ public class ConversionHelpersTest
         doReturn("id4").when(featureFour).getId();
 
         helpersSpy.newPatient();
-        helpersSpy.featureSetUp(true, true, true);
+        helpersSpy.featureSetUp(true);
         List<Feature> sorted = helpersSpy.sortFeaturesWithSections(features);
 
         Assert.assertTrue(sorted.contains(featureOne));
@@ -284,7 +268,7 @@ public class ConversionHelpersTest
         doReturn("id2").when(featureTwo).getId();
         doReturn("id3").when(featureThree).getId();
 
-        helpersSpy.featureSetUp(true, true, true);
+        helpersSpy.featureSetUp(true);
         List<Feature> sorted = helpersSpy.sortFeaturesWithSections(features);
 
         Assert.assertFalse(sorted.contains(featureOne));
