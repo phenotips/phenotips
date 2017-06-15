@@ -163,21 +163,21 @@ public class DataToCellConverter
             sectionFeatureLookup = this.phenotypeHelper.getSectionFeatureTree();
         }
 
-        Boolean lastStatus = false;
+        Boolean lastStatus = null;
         String lastSection = "";
         for (Feature feature : sortedFeatures) {
             x = 0;
 
-            if (lastStatus != feature.isPresent()) {
-                lastStatus = feature.isPresent();
+            if (!Boolean.valueOf(feature.isPresent()).equals(lastStatus)) {
                 lastSection = "";
-                DataCell cell = new DataCell(lastStatus
+                DataCell cell = new DataCell(feature.isPresent()
                     ? this.translationManager.translate("yes")
                     : this.translationManager.translate("no"),
                     x, y);
-                if (!lastStatus) {
+                if (lastStatus != null) {
                     cell.addStyle(StyleOption.YES_NO_SEPARATOR);
                 }
+                lastStatus = feature.isPresent();
                 cell.addStyle(lastStatus ? StyleOption.YES : StyleOption.NO);
                 section.addCell(cell);
             }
@@ -1054,19 +1054,19 @@ public class DataToCellConverter
         List<Feature> sortedFeatures;
         sortedFeatures = this.prenatalPhenotypeHelper.sortFeaturesSimple(features);
 
-        Boolean lastStatus = false;
+        Boolean lastStatus = null;
         for (Feature feature : sortedFeatures) {
             x = 0;
 
-            if (lastStatus != feature.isPresent()) {
-                lastStatus = feature.isPresent();
-                DataCell cell = new DataCell(lastStatus
+            if (!Boolean.valueOf(feature.isPresent()).equals(lastStatus)) {
+                DataCell cell = new DataCell(feature.isPresent()
                     ? this.translationManager.translate("yes")
                     : this.translationManager.translate("no"),
                     x, y);
-                if (!lastStatus) {
+                if (lastStatus != null) {
                     cell.addStyle(StyleOption.YES_NO_SEPARATOR);
                 }
+                lastStatus = feature.isPresent();
                 cell.addStyle(lastStatus ? StyleOption.YES : StyleOption.NO);
                 section.addCell(cell);
             }
