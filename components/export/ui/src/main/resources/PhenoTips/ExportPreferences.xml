@@ -105,7 +105,7 @@
 
 {{velocity output=false}}
 ## if $simple is true the meta fields and the code fields are not rendered
-#macro(__export__displayFieldList $xclassName $targetFieldName $customValues $ignored $codeFields $valueList $simple $activeFields)
+#macro(__export__displayFieldList $xclassName $targetFieldName $customValues $ignored $valueList $simple)
   {{html clean="false"}}
     #set($valueListisEmpty = ($valueList.size() == 0))
     #set($xclass = $xwiki.getDocument($xclassName).getxWikiClass())
@@ -119,7 +119,7 @@
         &lt;/li&gt;
       #end
       #foreach ($field in $xclass.properties)
-        #if (($activeFields.size() == 0 || $activeFields.contains(${field.name})) &amp;&amp; !$ignored.fields.contains(${field.name}) &amp;&amp; !$ignored.types.contains(${field.type}))
+        #if (!$ignored.fields.contains(${field.name}) &amp;&amp; !$ignored.types.contains(${field.type}))
         &lt;li&gt;
           &lt;label for="${targetFieldName}_${field.name}"&gt;
           &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}" value="${field.name}" #if($valueList.contains(${field.name}) || $valueListisEmpty) checked="checked" #end /&gt;
@@ -153,7 +153,6 @@
     'fields' : ['family_history', 'pedigree'],
     'types'  : []
   })
-  #set($codeFields = [])
   #set($metaFields = [])
   #set($selectedValues = ['external_id', 'gender', 'phenotype', 'negative_phenotype', 'clinical_diagnosis', 'omim_id'])
 #else
@@ -163,7 +162,6 @@
   })
   #if (${request.export_id} == 'phenotips_json_export')
     #set ($simple = true)
-    #set ($discard = $ignored.fields.add('negative_phenotype'))
   #else
     #set ($simple = false)
   #end
@@ -192,7 +190,6 @@
        'variants_sanger' : "$services.localization.render('phenotips.exportPreferences.field.variantsSanger')",
        'variants_coordinates' : "$services.localization.render('phenotips.exportPreferences.field.variantsCoordinates')"
   })
-  #set($codeFields = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'clinical_diagnosis', 'omim_id'])
   #set($metaFields = ['phenotype'])
   #set($selectedValues = [])
 #end
@@ -234,7 +231,7 @@
   (% class="section columns"%)(((
   === (% class="step" %)2(%%) $services.localization.render('phenotips.exportPreferences.selectFields') ===
   {{html clean="false"}}$selectionTools{{/html}}##
-  #__export__displayFieldList( "PhenoTips.PatientClass" 'columns' $customValues $ignored $codeFields $selectedValues $simple)
+  #__export__displayFieldList( "PhenoTips.PatientClass" 'columns' $customValues $ignored $selectedValues $simple)
   #set($exportTitle = "$services.localization.render('phenotips.exportPreferences.export')")
   #set($exportButtonID = "export-multiple-patients")
 #end
