@@ -131,7 +131,7 @@ define([], function(){
         legendIconDisabledColor: "#BBB",
         dragThresholdPixels: 2,
         legendMaxWidthPixels: 260,
-        legendMinWidthPixels: 255,
+        legendMinWidthPixels: 245,
         legendMinimizedWidthPixels: 150,
         legendStyle: "multiSector"
     };

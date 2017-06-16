@@ -8,9 +8,9 @@
     var CausalGeneLegend = Class.create( GeneLegend, {
 
         initialize: function($super) {
-            $super('Confirmed Genes', 'genes',
+            $super('Confirmed Causal Genes', 'genes',
                    "causal",
-                   ['#eac080', '#bf6632', '#9a4500', '#a47841', '#c95555', '#ae6c57'], // TODO: replace
+                   ['#eac080', '#bf6632', '#9a4500', '#a47841', '#c95555', '#ae6c57'],
                    "getCausalGenes",
                    "setCausalGenes"); // operation
         }

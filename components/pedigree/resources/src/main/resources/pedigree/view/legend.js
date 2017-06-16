@@ -51,12 +51,12 @@ define([
                   this._legendInfo.addClassName("legend-hidden");
 
                   // add maximize/compact legend button
-                  this._legendBoxControls = new Element('div', {'class' : 'legend-box-controls', id: 'legend-box-controls'});
+                  this._legendBoxControls = new Element('div', {'class' : 'legend-box-controls-open', id: 'legend-box-controls'});
                   this._legendBoxControls.addClassName("legend-hidden");
-                  var minimizedLegendTitle = new Element('div', {'class': 'legend-minimized-title'}).update("Legend").hide();
+                  var minimizedLegendTitle = new Element('div', {'class': 'legend-minimized-title field-no-user-select'}).update("Legend").hide();
                   minimizedLegendTitle.hide();
                   var minimizeButton = new Element('span', {'class': 'fa fa-angle-double-up legend-box-button legend-action-minimize', 'title': "minimize"});
-                  var maximizeButton = new Element('span', {'class': 'fa fa-angle-double-left legend-box-button legend-action-maximize', 'title': "maximize", id: 'legend-maximize-button'});
+                  var maximizeButton = new Element('span', {'class': 'fa fa-angle-double-left legend-box-button legend-action-maximize legend-maximize-button', 'title': "maximize", id: 'legend-maximize-button'});
                   maximizeButton.addClassName("legend-hidden");
                   this._legendBoxControls.update(minimizedLegendTitle).insert(minimizeButton).insert(maximizeButton);
                   var restoreLegend = function() {
@@ -71,7 +71,8 @@ define([
                           box.show();
                       });
                       legendContainer.stopObserving("click", restoreLegend);
-                      $('legend-box-controls').style.cursor = "";
+                      $('legend-box-controls').removeClassName("legend-box-controls-closed");
+                      $('legend-box-controls').addClassName("legend-box-controls-open");
                       legendContainer.style.minWidth = PedigreeEditorParameters.attributes.legendMinWidthPixels + "px";
                   }
                   minimizeButton.observe("click", function(ev) {
@@ -88,7 +89,8 @@ define([
                               box.hide();
                           });
                           legendContainer.observe("click", restoreLegend);
-                          $('legend-box-controls').style.cursor = "pointer";
+                          $('legend-box-controls').removeClassName("legend-box-controls-open");
+                          $('legend-box-controls').addClassName("legend-box-controls-closed");
                           legendContainer.style.minWidth = PedigreeEditorParameters.attributes.legendMinimizedWidthPixels + "px";
                       } else {
                           restoreLegend();
@@ -130,29 +132,25 @@ define([
             this._droppableName = droppableName;
 
             var _this = this;
-            this._hideAllButton = new Element('span', {'class': 'legend-hide-show-button legend-hidden'}).update("hide all").hide();
-            this._showAllButton = new Element('span', {'class': 'legend-hide-show-button legend-hidden'}).update("show all").hide();
-            this._hideAllButton.observe("click", function() {
+            this._hideShowCheckbox = new Element('input', {'type': 'checkbox', 'class': 'legend-hide-show-checkbox'});
+            this._hideShowCheckbox.observe("click", function() {
                 $$('#' + _this._getPrefix() + '-legend-box .abnormality-legend-icon').forEach( function(bubble) {
-                    bubble.disableColor();
+                    if (_this._hideShowCheckbox.checked) {
+                        bubble.enableColor(true);
+                    } else {
+                        bubble.disableColor(true);
+                    }
                 });
-                _this._updateShowHideButtons();
-            });
-            this._showAllButton.observe("click", function() {
-                $$('#' + _this._getPrefix() + '-legend-box .abnormality-legend-icon').forEach( function(bubble) {
-                    bubble.enableColor();
-                });
-                _this._updateShowHideButtons();
             });
 
-            var legendTitle= new Element('h2', {'class' : 'legend-title field-no-user-select'}).update(title).insert(this._hideAllButton).insert(this._showAllButton);
+            var legendTitle= new Element('h2', {'class' : 'legend-title field-no-user-select'}).update(title).insert(this._hideShowCheckbox);
             this._legendBox.insert(legendTitle);
 
             this._list = new Element('ul', {'class' : this._getPrefix() +'-list abnormality-list'});
             this._legendBox.insert(this._list);
 
             Element.observe(this._legendBox, 'mouseover', function() {
-                // show "+"/"-" symbols inside the bubbles
+                // show "check"/"no-check" symbols inside the bubbles
                 $$('.abnormality-legend-icon').forEach( function(bubble) {
                     bubble.removeClassName("fa-circle");
                     if (bubble.hasClassName("icon-enabled-true")) {
@@ -161,19 +159,13 @@ define([
                         bubble.addClassName(_this._disabled_icon);
                     }
                 });
-                $$('.legend-hide-show-button').forEach( function(button) {
-                    button.show();
-                });
             });
             Element.observe(this._legendBox, 'mouseout', function() {
-                // hide "+"/"-" symbols inside the bubbles
+                // hide "check"/"no-check" symbols inside the bubbles
                 $$('.abnormality-legend-icon').forEach( function(bubble) {
                     bubble.removeClassName(_this._enabled_icon);
                     bubble.removeClassName(_this._disabled_icon);
                     bubble.addClassName("fa-circle");
-                });
-                $$('.legend-hide-show-button').forEach( function(button) {
-                    button.hide();
                 });
             });
 
@@ -202,7 +194,7 @@ define([
         hideDragHint: function() {
             editor.getPreferencesManager().setConfigurationOption("user", "hideDraggingHint", true);
             this._legendInfo.addClassName("legend-hidden");
-            if ($('legend-container').offsetWidth < 255) {
+            if ($('legend-container').offsetWidth < PedigreeEditorParameters.attributes.legendMaxWidthPixels) {
                 $('legend-maximize-button').addClassName("legend-hidden");
             }
         },
@@ -372,9 +364,7 @@ define([
                 this._affectedNodes[id].push(nodeID);
             }
             this._updateCaseNumbersForObject(id);
-            if ($('legend-container').offsetWidth >= PedigreeEditorParameters.attributes.legendMaxWidthPixels) {
-                $('legend-maximize-button').removeClassName("legend-hidden");
-            }
+            this._updateMinMaxButtons();
             this._updateShowHideButtons();
         },
 
@@ -406,10 +396,16 @@ define([
                 else {
                     this._updateCaseNumbersForObject(id);
                 }
-                if ($('legend-container').offsetWidth < PedigreeEditorParameters.attributes.legendMaxWidthPixels) {
-                    $('legend-maximize-button').addClassName("legend-hidden");
-                }
+                this._updateMinMaxButtons();
                 this._updateShowHideButtons();
+            }
+        },
+
+        _updateMinMaxButtons: function() {
+            if ($('legend-container').offsetWidth < PedigreeEditorParameters.attributes.legendMaxWidthPixels) {
+                $('legend-maximize-button').addClassName("legend-hidden");
+            } else {
+                $('legend-maximize-button').removeClassName("legend-hidden");
             }
         },
 
@@ -427,15 +423,15 @@ define([
                     }
                 }
             }
-            if (someEnabled) {
-                this._hideAllButton.removeClassName("legend-hidden");
+            if (allEnabled) {
+                this._hideShowCheckbox.checked = true;
+                this._hideShowCheckbox.indeterminate = false;
+            } else if (someEnabled) {
+                this._hideShowCheckbox.checked = false;
+                this._hideShowCheckbox.indeterminate = true;
             } else {
-                this._hideAllButton.addClassName("legend-hidden");
-            }
-            if (!allEnabled) {
-                this._showAllButton.removeClassName("legend-hidden");
-            } else {
-                this._showAllButton.addClassName("legend-hidden");
+                this._hideShowCheckbox.checked = false;
+                this._hideShowCheckbox.indeterminate = false;
             }
         },
 
@@ -497,7 +493,7 @@ define([
             var bubble = new Element('span', {'class' : 'abnormality-legend-icon fa fa-circle icon-enabled-' + this._objectProperties[id].enabled.toString()});
             bubble.style.color = this._objectProperties[id].enabled ? color : PedigreeEditorParameters.attributes.legendIconDisabledColor;
             var _this = this;
-            bubble.disableColor = function() {
+            bubble.disableColor = function(skipMasterCheckboxUpdate) {
                 _this._objectProperties[id].enabled = false;
                 _this._preferredProperties[id].enabled = false;
                 bubble.removeClassName(_this._enabled_icon);
@@ -508,9 +504,9 @@ define([
                 for (var i = 0; i < _this._affectedNodes[id].length; i++) {
                     editor.getNode(_this._affectedNodes[id][i]).getGraphics().updateDisorderShapes();
                 }
-                _this._updateShowHideButtons();
+                !skipMasterCheckboxUpdate && _this._updateShowHideButtons();
             }
-            bubble.enableColor = function() {
+            bubble.enableColor = function(skipMasterCheckboxUpdate) {
                 _this._objectProperties[id].enabled = true;
                 _this._preferredProperties[id].enabled = true;
                 bubble.removeClassName(_this._disabled_icon);
@@ -521,7 +517,7 @@ define([
                 for (var i = 0; i < _this._affectedNodes[id].length; i++) {
                     editor.getNode(_this._affectedNodes[id][i]).getGraphics().updateDisorderShapes();
                 }
-                _this._updateShowHideButtons();
+                !skipMasterCheckboxUpdate && _this._updateShowHideButtons();
             }
             // Need to distonguish click from drag in legend
             // (based on http://stackoverflow.com/questions/6042202/how-to-distinguish-mouse-click-and-drag)

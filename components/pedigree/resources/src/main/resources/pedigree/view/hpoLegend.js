@@ -75,6 +75,7 @@ define([
         _updateTermName: function(id) {
             var name = this._legendBox.down('li#' + this._getPrefix() + '-' + this._hashID(id) + ' .abnormality-phenotype-name');
             name.update(this.getTerm(id).getName());
+            this._updateMinMaxButtons();
         },
 
         /**

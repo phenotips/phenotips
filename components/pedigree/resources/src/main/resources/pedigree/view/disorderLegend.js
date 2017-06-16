@@ -77,6 +77,7 @@ define([
             var nameElement = this._legendBox.down('li#' + this._getPrefix() + '-' + disorderID + ' .abnormality-disorder-name');
             var name = this.getDisorder(disorderID).getName();
             nameElement.update(name);
+            this._updateMinMaxButtons();
             document.fire('disorder:name', {'id' : disorderID, 'name': name});
         },
 
