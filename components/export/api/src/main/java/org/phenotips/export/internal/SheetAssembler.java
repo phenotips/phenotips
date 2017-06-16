@@ -125,6 +125,7 @@ public class SheetAssembler
             patientSections.add(converter.variantsBody(patient));
             patientSections.add(converter.clinicalDiagnosisBody(patient));
             patientSections.add(converter.disordersBody(patient));
+            patientSections.add(converter.diagnosisNotesBody(patient));
             patientSections.add(converter.isSolvedBody(patient));
 
             /* Null section filter */
@@ -161,6 +162,7 @@ public class SheetAssembler
         headerSections.add(converter.variantsHeader());
         headerSections.add(converter.clinicalDiagnosisHeaders(enabledFields));
         headerSections.add(converter.disordersHeaders(enabledFields));
+        headerSections.add(converter.diagnosisNotesHeader(enabledFields));
         headerSections.add(converter.isSolvedHeader(enabledFields));
 
         Iterator<DataSection> it = headerSections.iterator();
