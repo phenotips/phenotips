@@ -341,6 +341,44 @@ define ([], function(){
 
 
     //-------------------------------------------------------------
+    Helpers.setCookie = function(key,  value, expireInDays) {
+        var expires = "";
+        if (expireInDays) {
+            var date = new Date();
+            date.setTime(date.getTime() + (expireInDays*24*60*60*1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = key + "=" + value + expires;
+    }
+
+    Helpers.getCookie = function(key) {
+        var name = key + "=";
+        var ca = document.cookie.split(';');
+        for(var i = 0; i < ca.length; i++) {
+            var c = ca[i].trim();
+            if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+        }
+        return null;
+    }
+
+    Helpers.getAllCookies = function(keyPrefix) {
+        var result = {};
+        var ca = document.cookie.split(';');
+        for(var i = 0; i < ca.length; i++) {
+            var keyValue = ca[i].split("=");
+            if (keyValue.length != 2) {
+                continue;
+            }
+            var key = keyValue[0].trim();
+            if (!keyPrefix || (key.indexOf(keyPrefix) == 0 && (key = key.substring(keyPrefix.length, key.length)))) {
+                result[key] = keyValue[1].trim();;
+            }
+        }
+        return result;
+    }
+    //-------------------------------------------------------------
+
+    //-------------------------------------------------------------
     // Used for profiling code
     Helpers.Timer = function() {
         this.startTime = undefined;
