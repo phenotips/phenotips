@@ -57,7 +57,6 @@ import com.xpn.xwiki.doc.XWikiLock;
 @Named("patientfamlock")
 public class PatientFamilyLockModule implements LockModule
 {
-
     @Inject
     private Provider<XWikiContext> provider;
 

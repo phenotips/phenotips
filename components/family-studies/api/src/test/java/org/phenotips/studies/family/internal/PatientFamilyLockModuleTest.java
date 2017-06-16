@@ -29,6 +29,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import java.util.Date;
+
 import javax.inject.Provider;
 
 import org.junit.Assert;
@@ -46,7 +48,6 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.doc.XWikiLock;
 
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -62,32 +63,44 @@ public class PatientFamilyLockModuleTest
         new MockitoComponentMockingRule<>(PatientFamilyLockModule.class);
 
     @Mock
-    private XWiki xwiki;
-
-    @Mock
     private XWikiContext context;
 
     @Mock
-    private XWikiDocument xdoc;
+    private XWiki xwiki;
 
-    @Mock
-    private XWikiDocument famWikiDoc;
+    private DocumentReference currentDocumentReference = new DocumentReference("xwiki", "data", "P01");
 
     @Mock
     private Patient patient;
 
     @Mock
+    private XWikiDocument patientDoc;
+
+    private DocumentReference familyDocumentReference = new DocumentReference("xwiki", "Family", "F01");
+
+    @Mock
     private Family family;
 
     @Mock
-    private XWikiLock xlock;
+    private XWikiDocument familyDoc;
 
     @Mock
-    private User user;
+    private XWikiLock lock;
 
-    private DocumentReference doc = new DocumentReference("xwiki", "data", "P01");
+    @Mock
+    private Date lockDate;
 
-    private DocumentReference famDoc = new DocumentReference("xwiki", "Family", "F01");
+    @Mock
+    private User lockingUser;
+
+    @Mock
+    private User otherUser;
+
+    private FamilyRepository familyRepository;
+
+    private PatientRepository patientRepository;
+
+    private UserManager userManager;
 
     @Before
     public void setup() throws ComponentLookupException, XWikiException
@@ -96,90 +109,92 @@ public class PatientFamilyLockModuleTest
 
         Provider<XWikiContext> contextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         when(contextProvider.get()).thenReturn(this.context);
-        doReturn(this.xwiki).when(this.context).getWiki();
+        when(this.context.getWiki()).thenReturn(this.xwiki);
+        when(this.xwiki.getDocument(this.currentDocumentReference, this.context)).thenReturn(this.patientDoc);
+        when(this.xwiki.getDocument(this.familyDocumentReference, this.context)).thenReturn(this.familyDoc);
+
+        when(this.patientDoc.getDocumentReference()).thenReturn(this.currentDocumentReference);
+
+        this.patientRepository = this.mocker.getInstance(PatientRepository.class);
+        when(this.patientRepository.get(this.currentDocumentReference.getName())).thenReturn(this.patient);
+
+        this.familyRepository = this.mocker.getInstance(FamilyRepository.class);
+        when(this.familyRepository.getFamilyForPatient(this.patient)).thenReturn(this.family);
+
+        when(this.family.getXDocument()).thenReturn(this.familyDoc);
+        when(this.family.getDocumentReference()).thenReturn(this.familyDocumentReference);
+        when(this.familyDoc.getLock(this.context)).thenReturn(this.lock);
+
+        when(this.lock.getDate()).thenReturn(this.lockDate);
+        when(this.lock.getUserName()).thenReturn("lockerUser");
+
+        this.userManager = this.mocker.getInstance(UserManager.class);
+        when(this.userManager.getUser("lockerUser")).thenReturn(this.lockingUser);
+        when(this.lockingUser.getId()).thenReturn("lockerUser");
+        when(this.userManager.getUser("otherUser")).thenReturn(this.otherUser);
+        when(this.otherUser.getId()).thenReturn("otherUser");
     }
 
     @Test
-    public void patientFamilyLockTest() throws ComponentLookupException, XWikiException
+    public void lockedWhenFamilyIsLockedByDifferentUser() throws ComponentLookupException, XWikiException
     {
-        PatientRepository pRepo = this.mocker.getInstance(PatientRepository.class);
-        FamilyRepository fRepo = this.mocker.getInstance(FamilyRepository.class);
+        when(this.userManager.getCurrentUser()).thenReturn(this.otherUser);
 
-        when(this.context.getWiki().getDocument(this.doc, this.context)).thenReturn(this.xdoc);
-        when(this.xdoc.getDocumentReference()).thenReturn(this.doc);
-        when(pRepo.get("P01")).thenReturn(this.patient);
-        when(fRepo.getFamilyForPatient(this.patient)).thenReturn(this.family);
-
-        when(this.family.getDocumentReference()).thenReturn(this.famDoc);
-        when(this.context.getWiki().getDocument(this.famDoc, this.context)).thenReturn(this.famWikiDoc);
-        when(this.famWikiDoc.getLock(this.context)).thenReturn(this.xlock);
-        when(this.xlock.getUserName()).thenReturn("User");
-        UserManager userManager = this.mocker.getInstance(UserManager.class);
-        when(userManager.getUser(this.xlock.getUserName())).thenReturn(this.user);
-
-        Assert.assertNotNull(this.mocker.getComponentUnderTest().getLock(this.doc));
+        Assert.assertNotNull(this.mocker.getComponentUnderTest().getLock(this.currentDocumentReference));
     }
 
     @Test
-    public void notLockedTest() throws ComponentLookupException, XWikiException
+    public void lockedWhenFamilyIsLockedBySameUser() throws ComponentLookupException, XWikiException
     {
-        PatientRepository pRepo = this.mocker.getInstance(PatientRepository.class);
-        FamilyRepository fRepo = this.mocker.getInstance(FamilyRepository.class);
+        when(this.userManager.getCurrentUser()).thenReturn(this.lockingUser);
 
-        when(this.context.getWiki().getDocument(this.doc, this.context)).thenReturn(this.xdoc);
-        when(this.xdoc.getDocumentReference()).thenReturn(this.doc);
-        when(pRepo.get("P01")).thenReturn(this.patient);
-        when(fRepo.getFamilyForPatient(this.patient)).thenReturn(this.family);
-
-        when(this.family.getDocumentReference()).thenReturn(this.famDoc);
-        when(this.context.getWiki().getDocument(this.famDoc, this.context)).thenReturn(this.famWikiDoc);
-        when(this.famWikiDoc.getLock(this.context)).thenReturn(null);
-
-        Assert.assertNull(this.mocker.getComponentUnderTest().getLock(this.doc));
+        Assert.assertNotNull(this.mocker.getComponentUnderTest().getLock(this.currentDocumentReference));
     }
 
     @Test
-    public void throwsXWikiExceptionTest() throws ComponentLookupException, XWikiException
+    public void noLockIfFamilyIsNotLocked() throws ComponentLookupException, XWikiException
     {
-        when(this.context.getWiki().getDocument(this.doc, this.context))
+        when(this.familyDoc.getLock(this.context)).thenReturn(null);
+
+        Assert.assertNull(this.mocker.getComponentUnderTest().getLock(this.currentDocumentReference));
+    }
+
+    @Test
+    public void exceptionsAreCaughtAndNoLockIsReturned() throws ComponentLookupException, XWikiException
+    {
+        when(this.context.getWiki().getDocument(this.currentDocumentReference, this.context))
             .thenThrow(new XWikiException(XWikiException.MODULE_XWIKI_STORE,
                 XWikiException.ERROR_XWIKI_STORE_HIBERNATE_READING_DOC,
                 "Exception while reading document [xwiki:PhenoTips.FamilyLockModule]"));
-        this.mocker.getComponentUnderTest().getLock(this.doc);
+        Assert.assertNull(this.mocker.getComponentUnderTest().getLock(this.currentDocumentReference));
         verify(this.mocker.getMockedLogger()).error(anyString(), anyString(),
             Matchers.any(XWikiException.class));
     }
 
     @Test
-    public void nullPatientTest() throws ComponentLookupException, XWikiException
+    public void noLockForNonPatientDocument() throws ComponentLookupException, XWikiException
     {
-        PatientRepository pRepo = this.mocker.getInstance(PatientRepository.class);
-        when(this.context.getWiki().getDocument(this.doc, this.context)).thenReturn(this.xdoc);
-        when(this.xdoc.getDocumentReference()).thenReturn(this.doc);
-        when(pRepo.get("P01")).thenReturn(null);
-        Assert.assertNull(this.mocker.getComponentUnderTest().getLock(this.doc));
+        when(this.patientRepository.get(this.currentDocumentReference.getName())).thenReturn(null);
+
+        Assert.assertNull(this.mocker.getComponentUnderTest().getLock(this.currentDocumentReference));
     }
 
     @Test
-    public void nullFamilyTest() throws ComponentLookupException, XWikiException
+    public void noLockForPatientWithoutFamily() throws ComponentLookupException, XWikiException
     {
-        PatientRepository pRepo = this.mocker.getInstance(PatientRepository.class);
-        FamilyRepository fRepo = this.mocker.getInstance(FamilyRepository.class);
-        when(this.context.getWiki().getDocument(this.doc, this.context)).thenReturn(this.xdoc);
-        when(this.xdoc.getDocumentReference()).thenReturn(this.doc);
-        when(pRepo.get("P01")).thenReturn(this.patient);
-        when(fRepo.getFamilyForPatient(this.patient)).thenReturn(null);
-        Assert.assertNull(this.mocker.getComponentUnderTest().getLock(this.doc));
+        when(this.familyRepository.getFamilyForPatient(this.patient)).thenReturn(null);
+
+        Assert.assertNull(this.mocker.getComponentUnderTest().getLock(this.currentDocumentReference));
     }
 
     @Test
-    public void nullDocumentTest() throws ComponentLookupException
+    public void noLockForNullDocument() throws ComponentLookupException
     {
         Assert.assertNull(this.mocker.getComponentUnderTest().getLock(null));
     }
 
     @Test
-    public void priorityIsCorrectTest() throws ComponentLookupException
+    public void priorityIsCorrect() throws ComponentLookupException
     {
         Assert.assertEquals(300, this.mocker.getComponentUnderTest().getPriority());
     }

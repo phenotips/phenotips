@@ -27,6 +27,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import java.util.Date;
+
 import javax.inject.Provider;
 
 import org.junit.Assert;
@@ -44,7 +46,6 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.doc.XWikiLock;
 
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -60,27 +61,34 @@ public class FamilyLockModuleTest
         new MockitoComponentMockingRule<>(FamilyLockModule.class);
 
     @Mock
-    private Family family;
-
-    @Mock
     private XWikiContext context;
-
-    @Mock
-    private XWikiDocument xdoc;
 
     @Mock
     private XWiki xwiki;
 
-    @Mock
-    private XWikiLock xlock;
+    private DocumentReference currentDocumentReference = new DocumentReference("xwiki", "Family", "F01");
 
     @Mock
-    private User user;
+    private Family family;
 
     @Mock
-    private User currentUser;
+    private XWikiDocument familyDoc;
 
-    private DocumentReference doc = new DocumentReference("xwiki", "Family", "F01");
+    @Mock
+    private XWikiLock lock;
+
+    @Mock
+    private Date lockDate;
+
+    @Mock
+    private User lockingUser;
+
+    @Mock
+    private User otherUser;
+
+    private UserManager userManager;
+
+    private FamilyRepository familyRepository;
 
     @Before
     public void setup() throws ComponentLookupException, XWikiException
@@ -89,77 +97,77 @@ public class FamilyLockModuleTest
 
         Provider<XWikiContext> contextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         when(contextProvider.get()).thenReturn(this.context);
-        doReturn(this.xwiki).when(this.context).getWiki();
+        when(this.context.getWiki()).thenReturn(this.xwiki);
+        when(this.xwiki.getDocument(this.currentDocumentReference, this.context)).thenReturn(this.familyDoc);
+        when(this.familyDoc.getDocumentReference()).thenReturn(this.currentDocumentReference);
+
+        this.familyRepository = this.mocker.getInstance(FamilyRepository.class);
+        when(this.familyRepository.getFamilyById(this.currentDocumentReference.getName())).thenReturn(this.family);
+
+        when(this.familyDoc.getLock(this.context)).thenReturn(this.lock);
+        when(this.lock.getDate()).thenReturn(this.lockDate);
+        when(this.lock.getUserName()).thenReturn("lockerUser");
+
+        this.userManager = this.mocker.getInstance(UserManager.class);
+        when(this.userManager.getUser("lockerUser")).thenReturn(this.lockingUser);
+        when(this.lockingUser.getId()).thenReturn("lockerUser");
+        when(this.userManager.getUser("otherUser")).thenReturn(this.otherUser);
+        when(this.otherUser.getId()).thenReturn("otherUser");
     }
 
     @Test
-    public void familyLockTest() throws ComponentLookupException, XWikiException
+    public void noLockReturnedIfNotLocked() throws ComponentLookupException, XWikiException
     {
-        FamilyRepository repo = this.mocker.getInstance(FamilyRepository.class);
-        when(this.context.getWiki().getDocument(this.doc, this.context)).thenReturn(this.xdoc);
-        when(this.xdoc.getDocumentReference()).thenReturn(this.doc);
-        when(repo.getFamilyById("F01")).thenReturn(this.family);
+        when(this.familyDoc.getLock(this.context)).thenReturn(null);
+        when(this.userManager.getCurrentUser()).thenReturn(this.lockingUser);
 
-        UserManager userManager = this.mocker.getInstance(UserManager.class);
-        when(this.xdoc.getLock(this.context)).thenReturn(this.xlock);
-        when(this.xlock.getUserName()).thenReturn("Donut");
-        when(userManager.getUser(this.xlock.getUserName())).thenReturn(this.user);
-        when(userManager.getCurrentUser()).thenReturn(this.currentUser);
-        when(this.user.getId()).thenReturn("User 1");
-        when(this.currentUser.getId()).thenReturn("User 2");
-
-        Assert.assertNotNull(this.mocker.getComponentUnderTest().getLock(this.doc));
+        Assert.assertNull(this.mocker.getComponentUnderTest().getLock(this.currentDocumentReference));
     }
 
     @Test
-    public void sameUserNotLockedTest() throws ComponentLookupException, XWikiException
+    public void differentUserGetsLockedWhenFamilyIsLocked() throws ComponentLookupException, XWikiException
     {
-        FamilyRepository repo = this.mocker.getInstance(FamilyRepository.class);
-        when(this.context.getWiki().getDocument(this.doc, this.context)).thenReturn(this.xdoc);
-        when(this.xdoc.getDocumentReference()).thenReturn(this.doc);
-        when(repo.getFamilyById("F01")).thenReturn(this.family);
+        when(this.userManager.getCurrentUser()).thenReturn(this.otherUser);
 
-        UserManager userManager = this.mocker.getInstance(UserManager.class);
-        when(this.xdoc.getLock(this.context)).thenReturn(this.xlock);
-        when(this.xlock.getUserName()).thenReturn("Donut");
-        when(userManager.getUser(this.xlock.getUserName())).thenReturn(this.user);
-        when(userManager.getCurrentUser()).thenReturn(this.currentUser);
-        when(this.user.getId()).thenReturn("User");
-        when(this.currentUser.getId()).thenReturn("User");
-
-        Assert.assertNull(this.mocker.getComponentUnderTest().getLock(this.doc));
+        Assert.assertNotNull(this.mocker.getComponentUnderTest().getLock(this.currentDocumentReference));
     }
 
     @Test
-    public void emptyFamily() throws ComponentLookupException, XWikiException
+    public void sameUserIsNotLocked() throws ComponentLookupException, XWikiException
     {
-        FamilyRepository repo = this.mocker.getInstance(FamilyRepository.class);
-        when(this.context.getWiki().getDocument(this.doc, this.context)).thenReturn(this.xdoc);
-        when(this.xdoc.getDocumentReference()).thenReturn(this.doc);
-        when(repo.getFamilyById("F01")).thenReturn(null);
-        Assert.assertNull(this.mocker.getComponentUnderTest().getLock(this.doc));
+        when(this.userManager.getCurrentUser()).thenReturn(this.lockingUser);
+
+        Assert.assertNull(this.mocker.getComponentUnderTest().getLock(this.currentDocumentReference));
     }
 
     @Test
-    public void nullDocumentTest() throws ComponentLookupException, XWikiException
+    public void noLockForNonFamilyDocument() throws ComponentLookupException, XWikiException
+    {
+        when(this.familyRepository.getFamilyById(this.currentDocumentReference.getName())).thenReturn(null);
+
+        Assert.assertNull(this.mocker.getComponentUnderTest().getLock(this.currentDocumentReference));
+    }
+
+    @Test
+    public void noLockForNullDocument() throws ComponentLookupException, XWikiException
     {
         Assert.assertNull(this.mocker.getComponentUnderTest().getLock(null));
     }
 
     @Test
-    public void throwsXWikiExceptionTest() throws ComponentLookupException, XWikiException
+    public void exceptionsAreCaughtAndNoLockIsReturned() throws ComponentLookupException, XWikiException
     {
-        when(this.context.getWiki().getDocument(this.doc, this.context))
+        when(this.context.getWiki().getDocument(this.currentDocumentReference, this.context))
             .thenThrow(new XWikiException(XWikiException.MODULE_XWIKI_STORE,
                 XWikiException.ERROR_XWIKI_STORE_HIBERNATE_READING_DOC,
                 "Exception while reading document [xwiki:PhenoTips.FamilyLockModule]"));
-        this.mocker.getComponentUnderTest().getLock(this.doc);
+        Assert.assertNull(this.mocker.getComponentUnderTest().getLock(this.currentDocumentReference));
         verify(this.mocker.getMockedLogger()).error(anyString(), anyString(),
             Matchers.any(XWikiException.class));
     }
 
     @Test
-    public void priorityIsCorrectTest() throws ComponentLookupException
+    public void priorityIsCorrect() throws ComponentLookupException
     {
         Assert.assertEquals(400, this.mocker.getComponentUnderTest().getPriority());
     }
