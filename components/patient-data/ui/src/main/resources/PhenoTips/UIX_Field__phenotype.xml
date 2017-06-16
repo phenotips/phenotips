@@ -578,10 +578,12 @@
 }
 #current-phenotype-selection .summary-item label {
   width: auto;
-  margin-right: 1em;
+  margin-right: 0.3em;
+}
+#current-phenotype-selection .summary-item .tools .xHelpButton {
+  margin : 0.6em;
 }
 #current-phenotype-selection .summary-item .tools {
-  color: $theme.textPrimaryColor;
   font-size: 0.8em;
 }
 #current-phenotype-selection .summary-item .tools .tool:hover {
