@@ -104,7 +104,7 @@ public abstract class AbstractBasePedigree implements Pedigree
     }
 
     /**
-     * @return a pair <ProbandId, ProbandLastname>
+     * @return a pair {@code <ProbandId, ProbandLastname>}
      */
     protected abstract Pair<String, String> getProbandInfo();
 
