@@ -17,19 +17,19 @@
  */
 package org.phenotips.data;
 
-import java.util.Collections;
+import org.xwiki.component.manager.ComponentLookupException;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.xwiki.component.manager.ComponentLookupException;
 
-public class SimpleValuePatientDataTest<T> {
-
+public class SimpleValuePatientDataTest
+{
     @Test
-    public void getTest() throws ComponentLookupException{
+    public void getTest() throws ComponentLookupException
+    {
         String name = "name";
-        T value = null;
-        SimpleValuePatientData<T> data = new SimpleValuePatientData<T>(name, value);
+        Object value = new Object();
+        SimpleValuePatientData<Object> data = new SimpleValuePatientData<>(name, value);
         Assert.assertEquals("name", data.getName());
         Assert.assertSame(1, data.size());
         Assert.assertNull(data.getValue());
@@ -41,19 +41,21 @@ public class SimpleValuePatientDataTest<T> {
     }
 
     @Test
-    public void iteratorTest() throws ComponentLookupException {
+    public void iteratorTest() throws ComponentLookupException
+    {
         String name = "name";
-        T value = null;
-        SimpleValuePatientData<T> data = new SimpleValuePatientData<T>(name, value);
+        Object value = new Object();
+        SimpleValuePatientData<Object> data = new SimpleValuePatientData<>(name, value);
         Assert.assertTrue(data.iterator().hasNext());
         Assert.assertFalse(data.dictionaryIterator().hasNext());
     }
-    
+
     @Test
-    public void emptyKeyIteratorTest() throws ComponentLookupException {
+    public void emptyKeyIteratorTest() throws ComponentLookupException
+    {
         String name = "name";
-        T value = null;
-        SimpleValuePatientData<T> data = new SimpleValuePatientData<T>(name, value);
+        Object value = new Object();
+        SimpleValuePatientData<Object> data = new SimpleValuePatientData<>(name, value);
         Assert.assertFalse(data.keyIterator().hasNext());
     }
 }

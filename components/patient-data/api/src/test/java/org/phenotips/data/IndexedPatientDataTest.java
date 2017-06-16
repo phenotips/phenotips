@@ -17,30 +17,28 @@
  */
 package org.phenotips.data;
 
-import static org.junit.Assert.*;
+import org.xwiki.component.manager.ComponentLookupException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.xwiki.component.manager.ComponentLookupException;
 
-public class IndexedPatientDataTest<T> {
-
+public class IndexedPatientDataTest
+{
     @Test
-    public void test() throws ComponentLookupException {
+    public void test() throws ComponentLookupException
+    {
         String name = "name";
-        T val1 = null;
-        T val2 = null;
-        List<T> data = new ArrayList<T>();
+        Object val1 = new Object();
+        Object val2 = new Object();
+        List<Object> data = new ArrayList<>();
         data.add(val1);
         data.add(val2);
-        
-        IndexedPatientData<T> indexedData = new IndexedPatientData<T>(name, data);
-        
+
+        IndexedPatientData<Object> indexedData = new IndexedPatientData<>(name, data);
+
         Assert.assertEquals("name", indexedData.getName());
         Assert.assertSame(2, indexedData.size());
         Assert.assertNull(indexedData.getValue());
@@ -50,27 +48,28 @@ public class IndexedPatientDataTest<T> {
         Assert.assertNull(indexedData.get("test"));
         Assert.assertFalse(indexedData.containsKey("key"));
     }
-    
+
     @Test
-    public void nullInternalListTest() throws ComponentLookupException {
+    public void nullInternalListTest() throws ComponentLookupException
+    {
         String name = "name";
-        List<T> data = new ArrayList<T>();
-        IndexedPatientData<T> indexedData = new IndexedPatientData<T>(name, data);
+        List<Object> data = new ArrayList<>();
+        IndexedPatientData<Object> indexedData = new IndexedPatientData<>(name, data);
         Assert.assertNull(indexedData.get(0));
     }
 
     @Test
-    public void iteratorTest() throws ComponentLookupException {
+    public void iteratorTest() throws ComponentLookupException
+    {
         String name = "name";
-        T val1 = null;
-        List<T> data = new ArrayList<T>();
+        Object val1 = new Object();
+        List<Object> data = new ArrayList<>();
         data.add(val1);
-        
-        IndexedPatientData<T> indexedData = new IndexedPatientData<T>(name, data);
+
+        IndexedPatientData<Object> indexedData = new IndexedPatientData<>(name, data);
         Assert.assertFalse(indexedData.keyIterator().hasNext());
         Assert.assertFalse(indexedData.dictionaryIterator().hasNext());
         Assert.assertTrue(indexedData.iterator().hasNext());
     }
-    
-    
+
 }
