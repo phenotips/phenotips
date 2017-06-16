@@ -30,7 +30,6 @@ import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -103,15 +102,13 @@ public class FamilyMembersLockModule implements LockModule
                 return null;
             }
             User user = null;
-            Date date = new Date(0);
             for (Patient member : members) {
                 XWikiDocument memberXDoc = member.getXDocument();
                 XWikiLock xlock = memberXDoc.getLock(context);
                 if (xlock != null) {
                     user = this.userManager.getUser(xlock.getUserName());
-                    date = (date.before(xlock.getDate())) ? xlock.getDate() : date;
                     Set<String> actions = Collections.singleton("edit");
-                    return new DocumentLock(user, date, this.tm.translate("family.locks.familyMemberInUse"),
+                    return new DocumentLock(user, xlock.getDate(), this.tm.translate("family.locks.familyMemberInUse"),
                         actions, false);
                 }
             }

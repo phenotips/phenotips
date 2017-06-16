@@ -17,10 +17,10 @@
  */
 package org.phenotips.studies.family.internal;
 
+import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
-import org.phenotips.data.Patient;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.locks.LockModule;
@@ -59,7 +59,7 @@ public class PatientFamilyLockModuleTest
 {
     @Rule
     public final MockitoComponentMockingRule<LockModule> mocker =
-        new MockitoComponentMockingRule<LockModule>(PatientFamilyLockModule.class);
+        new MockitoComponentMockingRule<>(PatientFamilyLockModule.class);
 
     @Mock
     private XWiki xwiki;
