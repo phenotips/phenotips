@@ -104,7 +104,8 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 #end
 |(% class="pseudoindent" %) |(% class="variant-row-count variant-${variantIndex} variant" %)$count##
 #foreach($propName in $options.defaultProperties)
-|(% class="variant variant-default-input $propName #if ($propName == 'cdna')mandatory#end variant-$variantIndex" %)#if ($xcontext.action == 'edit')$doc.display($propName, 'edit', $variantObj)#else$!{services.rendering.escape($variantObj.getValue($propName), $doc.syntax)}#end##
+#set ($isInputString = $options.inputStrings.contains($propName))
+|(% class="variant variant-default-input $propName #if ($propName == 'cdna')mandatory#end variant-$variantIndex" %)#if ($xcontext.action == 'edit')$doc.display($propName, 'edit', $variantObj)#elseif($isInputString)$!{services.rendering.escape($variantObj.getValue($propName), $doc.syntax)}#else$doc.display($propName, 'view', $variantObj)#end##
 #end
 #if ($options.mode == 'edit')#__variant__deleteTool($variantObj)#end\\
 (% class="variant-gene-$geneObjNumber variant-moreinfo-row v-collapsed variant-hide-heading-$geneObjNumber" %)##
