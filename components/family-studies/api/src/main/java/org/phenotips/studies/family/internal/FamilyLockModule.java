@@ -54,7 +54,6 @@ import com.xpn.xwiki.doc.XWikiLock;
 @Named("famlock")
 public class FamilyLockModule implements LockModule
 {
-
     @Inject
     private Provider<XWikiContext> provider;
 
@@ -94,6 +93,9 @@ public class FamilyLockModule implements LockModule
             }
 
             XWikiLock xlock = xdoc.getLock(context);
+            if (xlock == null) {
+                return null;
+            }
             User user = this.userManager.getUser(xlock.getUserName());
             if (xlock != null && !user.getId().equals(this.userManager.getCurrentUser().getId())) {
                 Set<String> actions = Collections.singleton("edit");
