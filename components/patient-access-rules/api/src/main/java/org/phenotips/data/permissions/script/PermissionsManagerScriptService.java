@@ -111,7 +111,6 @@ public class PermissionsManagerScriptService implements ScriptService
      * Returns PatientAccess to the given patient for the given user.
      *
      * @param targetPatient the patient
-     * @deprecated since 1.4; use {@link #getPatientAccess(String targetPatientId)} instead
      */
     public PatientAccess getPatientAccess(Patient targetPatient)
     {

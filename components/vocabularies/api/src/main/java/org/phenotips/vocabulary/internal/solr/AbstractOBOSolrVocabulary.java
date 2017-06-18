@@ -17,7 +17,6 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
-import org.phenotips.obo2solr.ParameterPreparer;
 import org.phenotips.obo2solr.SolrUpdateGenerator;
 import org.phenotips.obo2solr.TermData;
 import org.phenotips.vocabulary.VocabularyExtension;
@@ -147,7 +146,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
                 for (Map.Entry<String, Collection<String>> property : item.getValue().entrySet()) {
                     String name = property.getKey();
                     for (String value : property.getValue()) {
-                        doc.addField(name, value, ParameterPreparer.DEFAULT_BOOST.floatValue());
+                        doc.addField(name, value);
                     }
                 }
                 extendTerm(new SolrVocabularyInputTerm(doc, this));
