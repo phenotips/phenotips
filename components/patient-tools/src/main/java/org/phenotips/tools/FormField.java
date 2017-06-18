@@ -25,8 +25,8 @@ import org.phenotips.vocabulary.VocabularyTerm;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.xml.XMLUtils;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class FormField extends AbstractFormElement
 {
