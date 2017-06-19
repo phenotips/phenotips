@@ -46,8 +46,8 @@ public class ConsentManagerScriptService implements ScriptService
     private ConsentManager consentManager;
 
     /**
-     * Checks if a specific consent is given for the patient record. If consentId is not configured
-     * in the system returns {@code false} regardless of patient consent status.
+     * Checks if a specific consent is given for the patient record. If consentId is not configured in the system
+     * returns {@code false} regardless of patient consent status.
      *
      * @param patientId record in which to test consent
      * @param consentId of consent which is to be checked
@@ -59,12 +59,12 @@ public class ConsentManagerScriptService implements ScriptService
     }
 
     /**
-     * Returns the list of all consents configured in the system, with "granted"/"not granted" status
-     * for the given patient for each consent.
+     * Returns the list of all consents configured in the system, with "granted"/"not granted" status for the given
+     * patient for each consent.
      *
      * @param patientId record on which consents are granted (or not granted)
-     * @return All the consents configured in the system with granted (for the patient) status set for each.
-     *         Returns null if patientId is not a valid id.
+     * @return All the consents configured in the system with granted (for the patient) status set for each. Returns
+     *         null if patientId is not a valid id.
      */
     public JSONArray getAllConsentsForPatient(String patientId)
     {
