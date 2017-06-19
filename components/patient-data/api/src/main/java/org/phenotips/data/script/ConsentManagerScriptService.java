@@ -68,6 +68,10 @@ public class ConsentManagerScriptService implements ScriptService
      */
     public JSONArray getAllConsentsForPatient(String patientId)
     {
-        return this.consentManager.toJSON(this.consentManager.getAllConsentsForPatient(patientId));
+        try {
+            return this.consentManager.toJSON(this.consentManager.getAllConsentsForPatient(patientId));
+        } catch (Exception ex) {
+            return null;
+        }
     }
 }
