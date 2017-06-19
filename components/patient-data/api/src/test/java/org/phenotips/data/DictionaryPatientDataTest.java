@@ -19,53 +19,167 @@ package org.phenotips.data;
 
 import org.xwiki.component.manager.ComponentLookupException;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 public class DictionaryPatientDataTest
 {
-    @Test
-    public void test() throws ComponentLookupException
+    @Mock
+    private Object val1;
+
+    @Mock
+    private Object val2;
+
+    private PatientData<Object> dataset;
+
+    @Before
+    public void setup()
     {
-        Object val1 = new Object();
-        Object val2 = new Object();
+        MockitoAnnotations.initMocks(this);
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("key1", val1);
-        data.put("key2", val2);
-
-        DictionaryPatientData<Object> dictData = new DictionaryPatientData<>("name", data);
-
-        Assert.assertEquals("name", dictData.getName());
-        Assert.assertSame(2, dictData.size());
-        Assert.assertNull(dictData.getValue());
-        Assert.assertFalse(dictData.isIndexed());
-        Assert.assertTrue(dictData.isNamed());
-        Assert.assertNull(dictData.get(0));
-        Assert.assertNull(dictData.get("test"));
-        Assert.assertFalse(dictData.containsKey("key"));
+        data.put("key1", this.val1);
+        data.put("key2", this.val2);
+        this.dataset = new DictionaryPatientData<>("name", data);
     }
 
     @Test
-    public void nullInternalListTest() throws ComponentLookupException
+    public void isANamedDataset() throws ComponentLookupException
     {
-        Map<String, Object> data = new LinkedHashMap<>();
-        DictionaryPatientData<Object> dictData = new DictionaryPatientData<>("name", data);
-        Assert.assertNull(dictData.get(0));
+        Assert.assertEquals("name", this.dataset.getName());
+        Assert.assertEquals(2, this.dataset.size());
+
+        // Is not an indexed dataset
+        Assert.assertFalse(this.dataset.isIndexed());
+        Assert.assertNull(this.dataset.get(0));
+
+        // Is not a simple dataset
+        Assert.assertNull(this.dataset.getValue());
+
+        // Is a named dataset
+        Assert.assertTrue(this.dataset.isNamed());
+        Assert.assertTrue(this.dataset.containsKey("key1"));
+        Assert.assertSame(this.val1, this.dataset.get("key1"));
+        Assert.assertTrue(this.dataset.containsKey("key2"));
+        Assert.assertSame(this.val2, this.dataset.get("key2"));
+        Assert.assertFalse(this.dataset.containsKey("key"));
+        Assert.assertNull(this.dataset.get("key"));
     }
 
     @Test
-    public void iteratorTest() throws ComponentLookupException
+    public void dictionaryIteratorWorks()
     {
-        Object val1 = new Object();
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("key1", val1);
-        DictionaryPatientData<Object> dictData = new DictionaryPatientData<>("name", data);
+        Iterator<Entry<String, Object>> dit = this.dataset.dictionaryIterator();
+        Assert.assertTrue(dit.hasNext());
+        Entry<String, Object> item = dit.next();
+        Assert.assertEquals("key1", item.getKey());
+        Assert.assertSame(this.val1, item.getValue());
+        item = dit.next();
+        Assert.assertEquals("key2", item.getKey());
+        Assert.assertSame(this.val2, item.getValue());
+        Assert.assertFalse(dit.hasNext());
+    }
 
-        Assert.assertTrue(dictData.iterator().hasNext());
-        Assert.assertTrue(dictData.keyIterator().hasNext());
-        Assert.assertTrue(dictData.dictionaryIterator().hasNext());
+    @Test
+    public void valueIteratorWorks()
+    {
+        Iterator<Object> it = this.dataset.iterator();
+        Assert.assertTrue(it.hasNext());
+        Assert.assertSame(this.val1, it.next());
+        Assert.assertTrue(it.hasNext());
+        Assert.assertSame(this.val2, it.next());
+        Assert.assertFalse(it.hasNext());
+    }
+
+    @Test
+    public void keyIteratorWorks()
+    {
+        Iterator<String> kit = this.dataset.keyIterator();
+        Assert.assertTrue(kit.hasNext());
+        Assert.assertSame("key1", kit.next());
+        Assert.assertTrue(kit.hasNext());
+        Assert.assertSame("key2", kit.next());
+        Assert.assertFalse(kit.hasNext());
+    }
+
+    @Test
+    public void emptyInternalMapGetsEmptyDataset() throws ComponentLookupException
+    {
+        this.dataset = new DictionaryPatientData<>("name", Collections.emptyMap());
+
+        Assert.assertEquals("name", this.dataset.getName());
+        Assert.assertEquals(0, this.dataset.size());
+
+        // Is not an indexed dataset
+        Assert.assertFalse(this.dataset.isIndexed());
+        Assert.assertNull(this.dataset.get(0));
+
+        // Is not a simple dataset
+        Assert.assertNull(this.dataset.getValue());
+
+        // Is a named dataset
+        Assert.assertTrue(this.dataset.isNamed());
+        Assert.assertFalse(this.dataset.containsKey("key1"));
+        Assert.assertNull(this.dataset.get("key1"));
+    }
+
+    @Test
+    public void nullInternalMapGetsEmptyDataset() throws ComponentLookupException
+    {
+        this.dataset = new DictionaryPatientData<>("name", null);
+
+        Assert.assertEquals("name", this.dataset.getName());
+        Assert.assertEquals(0, this.dataset.size());
+
+        // Is not an indexed dataset
+        Assert.assertFalse(this.dataset.isIndexed());
+        Assert.assertNull(this.dataset.get(0));
+
+        // Is not a simple dataset
+        Assert.assertNull(this.dataset.getValue());
+
+        // Is a named dataset
+        Assert.assertTrue(this.dataset.isNamed());
+        Assert.assertFalse(this.dataset.containsKey("key1"));
+        Assert.assertNull(this.dataset.get("key1"));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void removingDataThroughIteratorIsNotAllowed()
+    {
+        Iterator<Object> it = this.dataset.iterator();
+        it.next();
+        it.remove();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void removingDataThroughKeyIteratorIsNotAllowed()
+    {
+        Iterator<String> kit = this.dataset.keyIterator();
+        kit.next();
+        kit.remove();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void removingDataThroughDictionaryIteratorIsNotAllowed()
+    {
+        Iterator<Entry<String, Object>> dit = this.dataset.dictionaryIterator();
+        dit.next();
+        dit.remove();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void changingDataThroughDictionaryIteratorIsNotAllowed()
+    {
+        Iterator<Entry<String, Object>> dit = this.dataset.dictionaryIterator();
+        dit.next().setValue(this.val2);
     }
 }

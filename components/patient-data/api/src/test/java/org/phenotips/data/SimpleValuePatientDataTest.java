@@ -19,43 +19,97 @@ package org.phenotips.data;
 
 import org.xwiki.component.manager.ComponentLookupException;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 public class SimpleValuePatientDataTest
 {
-    @Test
-    public void getTest() throws ComponentLookupException
+    @Mock
+    private Object val;
+
+    private PatientData<Object> dataset;
+
+    @Before
+    public void setup()
     {
-        String name = "name";
-        Object value = new Object();
-        SimpleValuePatientData<Object> data = new SimpleValuePatientData<>(name, value);
-        Assert.assertEquals("name", data.getName());
-        Assert.assertSame(1, data.size());
-        Assert.assertNull(data.getValue());
-        Assert.assertFalse(data.isIndexed());
-        Assert.assertFalse(data.isNamed());
-        Assert.assertNull(data.get(0));
-        Assert.assertNull(data.get("test"));
-        Assert.assertFalse(data.containsKey("key"));
+        MockitoAnnotations.initMocks(this);
+        this.dataset = new SimpleValuePatientData<>("name", this.val);
     }
 
     @Test
-    public void iteratorTest() throws ComponentLookupException
+    public void isASimpleDataset() throws ComponentLookupException
     {
-        String name = "name";
-        Object value = new Object();
-        SimpleValuePatientData<Object> data = new SimpleValuePatientData<>(name, value);
-        Assert.assertTrue(data.iterator().hasNext());
-        Assert.assertFalse(data.dictionaryIterator().hasNext());
+        Assert.assertEquals("name", this.dataset.getName());
+        Assert.assertEquals(1, this.dataset.size());
+
+        // Is not a named dataset
+        Assert.assertFalse(this.dataset.isNamed());
+        Assert.assertFalse(this.dataset.containsKey("0"));
+        Assert.assertNull(this.dataset.get("0"));
+
+        // Is not an indexed dataset
+        Assert.assertFalse(this.dataset.isIndexed());
+        Assert.assertNull(this.dataset.get(0));
+
+        // Is a simple value dataset
+        Assert.assertSame(this.val, this.dataset.getValue());
     }
 
     @Test
-    public void emptyKeyIteratorTest() throws ComponentLookupException
+    public void dictionaryIteratorIsEmpty()
     {
-        String name = "name";
-        Object value = new Object();
-        SimpleValuePatientData<Object> data = new SimpleValuePatientData<>(name, value);
-        Assert.assertFalse(data.keyIterator().hasNext());
+        Iterator<Entry<String, Object>> dit = this.dataset.dictionaryIterator();
+        Assert.assertFalse(dit.hasNext());
+    }
+
+    @Test
+    public void valueIteratorWorks()
+    {
+        Iterator<Object> it = this.dataset.iterator();
+        Assert.assertTrue(it.hasNext());
+        Assert.assertSame(this.val, it.next());
+        Assert.assertFalse(it.hasNext());
+    }
+
+    @Test
+    public void keyIteratorIsEmpty()
+    {
+        Iterator<String> kit = this.dataset.keyIterator();
+        Assert.assertFalse(kit.hasNext());
+    }
+
+    @Test
+    public void nullInternalValueGetsNullValue() throws ComponentLookupException
+    {
+        this.dataset = new SimpleValuePatientData<>("name", null);
+
+        Assert.assertEquals("name", this.dataset.getName());
+        Assert.assertEquals(1, this.dataset.size());
+
+        // Is not a named dataset
+        Assert.assertFalse(this.dataset.isNamed());
+        Assert.assertFalse(this.dataset.containsKey("0"));
+        Assert.assertNull(this.dataset.get("0"));
+
+        // Is not an indexed dataset
+        Assert.assertFalse(this.dataset.isIndexed());
+        Assert.assertNull(this.dataset.get(0));
+
+        // Is a simple value dataset
+        Assert.assertNull(this.dataset.getValue());
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void removingDataThroughIteratorIsNotAllowed()
+    {
+        Iterator<Object> it = this.dataset.iterator();
+        it.next();
+        it.remove();
     }
 }

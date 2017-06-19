@@ -19,8 +19,6 @@ package org.phenotips.data.script;
 
 import org.phenotips.data.Consent;
 import org.phenotips.data.ConsentManager;
-import org.phenotips.data.Patient;
-import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -28,6 +26,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.json.JSONArray;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -46,9 +45,6 @@ public class ConsentManagerScriptServiceTest
     private ConsentManager consentManager;
 
     @Mock
-    private Patient patient;
-
-    @Mock
     private Consent consent1;
 
     @Mock
@@ -62,38 +58,33 @@ public class ConsentManagerScriptServiceTest
     }
 
     @Test
-    public void hasConsentTest() throws ComponentLookupException
+    public void hasConsentForwardsCalls() throws ComponentLookupException
     {
-        when(this.consentManager.hasConsent("P0123456", "consent")).thenReturn(true);
-        Assert.assertTrue(this.mocker.getComponentUnderTest().hasConsent("P0123456", "consent"));
+        when(this.consentManager.hasConsent("P0123456", "consent1")).thenReturn(true);
+        when(this.consentManager.hasConsent("P0123456", "consent2")).thenReturn(false);
+
+        Assert.assertTrue(this.mocker.getComponentUnderTest().hasConsent("P0123456", "consent1"));
+        Assert.assertFalse(this.mocker.getComponentUnderTest().hasConsent("P0123456", "consent2"));
     }
 
     @Test
-    public void hasNoConsentTest() throws ComponentLookupException
-    {
-        when(this.consentManager.hasConsent("P0123456", "consent")).thenReturn(false);
-        Assert.assertFalse(this.mocker.getComponentUnderTest().hasConsent("P0123456", "consent"));
-    }
-
-    @Test
-    public void invalidPatientId() throws ComponentLookupException
+    public void getAllConsentsForPatientForwardsCalls() throws ComponentLookupException
     {
         Set<Consent> consents = new LinkedHashSet<>();
         consents.add(this.consent1);
         consents.add(this.consent2);
+        when(this.consentManager.getAllConsentsForPatient("P0123456")).thenReturn(consents);
+        JSONArray result = new JSONArray();
+        when(this.consentManager.toJSON(consents)).thenReturn(result);
 
-        when(this.consentManager.toJSON(consents)).thenReturn(null);
-        Assert.assertNull(this.mocker.getComponentUnderTest().getAllConsentsForPatient(PrimaryEntity.JSON_KEY_ID));
+        Assert.assertSame(result, this.mocker.getComponentUnderTest().getAllConsentsForPatient("P0123456"));
     }
 
     @Test
-    public void getConsentsForPatientWithException() throws ComponentLookupException
+    public void getAllConsentsForPatientCatchesExceptionsAndReturnsNull() throws ComponentLookupException
     {
-        Set<Consent> consents = new LinkedHashSet<>();
-        Assert.assertTrue(consents.isEmpty());
+        when(this.consentManager.getAllConsentsForPatient("P0123456")).thenThrow(new NullPointerException());
 
-        when(this.consentManager.getAllConsentsForPatient(this.patient)).thenThrow(new NullPointerException());
-        Assert.assertNull(this.mocker.getComponentUnderTest().getAllConsentsForPatient(PrimaryEntity.JSON_KEY_ID));
+        Assert.assertNull(this.mocker.getComponentUnderTest().getAllConsentsForPatient("P0123456"));
     }
-
 }

@@ -20,56 +20,129 @@ package org.phenotips.data;
 import org.xwiki.component.manager.ComponentLookupException;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 public class IndexedPatientDataTest
 {
-    @Test
-    public void test() throws ComponentLookupException
+    @Mock
+    private Object val1;
+
+    @Mock
+    private Object val2;
+
+    private PatientData<Object> dataset;
+
+    @Before
+    public void setup()
     {
-        String name = "name";
-        Object val1 = new Object();
-        Object val2 = new Object();
-        List<Object> data = new ArrayList<>();
-        data.add(val1);
-        data.add(val2);
-
-        IndexedPatientData<Object> indexedData = new IndexedPatientData<>(name, data);
-
-        Assert.assertEquals("name", indexedData.getName());
-        Assert.assertSame(2, indexedData.size());
-        Assert.assertNull(indexedData.getValue());
-        Assert.assertTrue(indexedData.isIndexed());
-        Assert.assertFalse(indexedData.isNamed());
-        Assert.assertNull(indexedData.get(0));
-        Assert.assertNull(indexedData.get("test"));
-        Assert.assertFalse(indexedData.containsKey("key"));
+        MockitoAnnotations.initMocks(this);
+        List<Object> data = new ArrayList<>(2);
+        data.add(this.val1);
+        data.add(this.val2);
+        this.dataset = new IndexedPatientData<>("name", data);
     }
 
     @Test
-    public void nullInternalListTest() throws ComponentLookupException
+    public void isAnIndexedDataset() throws ComponentLookupException
     {
-        String name = "name";
-        List<Object> data = new ArrayList<>();
-        IndexedPatientData<Object> indexedData = new IndexedPatientData<>(name, data);
-        Assert.assertNull(indexedData.get(0));
+        Assert.assertEquals("name", this.dataset.getName());
+        Assert.assertEquals(2, this.dataset.size());
+
+        // Is not a named dataset
+        Assert.assertFalse(this.dataset.isNamed());
+        Assert.assertFalse(this.dataset.containsKey("0"));
+        Assert.assertNull(this.dataset.get("0"));
+
+        // Is not a simple dataset
+        Assert.assertNull(this.dataset.getValue());
+
+        // Is an indexed dataset
+        Assert.assertTrue(this.dataset.isIndexed());
+        Assert.assertSame(this.val1, this.dataset.get(0));
+        Assert.assertSame(this.val2, this.dataset.get(1));
+        Assert.assertNull(this.dataset.get(2));
+        Assert.assertNull(this.dataset.get(-1));
     }
 
     @Test
-    public void iteratorTest() throws ComponentLookupException
+    public void dictionaryIteratorIsEmpty()
     {
-        String name = "name";
-        Object val1 = new Object();
-        List<Object> data = new ArrayList<>();
-        data.add(val1);
-
-        IndexedPatientData<Object> indexedData = new IndexedPatientData<>(name, data);
-        Assert.assertFalse(indexedData.keyIterator().hasNext());
-        Assert.assertFalse(indexedData.dictionaryIterator().hasNext());
-        Assert.assertTrue(indexedData.iterator().hasNext());
+        Iterator<Entry<String, Object>> dit = this.dataset.dictionaryIterator();
+        Assert.assertFalse(dit.hasNext());
     }
 
+    @Test
+    public void valueIteratorWorks()
+    {
+        Iterator<Object> it = this.dataset.iterator();
+        Assert.assertTrue(it.hasNext());
+        Assert.assertSame(this.val1, it.next());
+        Assert.assertTrue(it.hasNext());
+        Assert.assertSame(this.val2, it.next());
+        Assert.assertFalse(it.hasNext());
+    }
+
+    @Test
+    public void keyIteratorIsEmpty()
+    {
+        Iterator<String> kit = this.dataset.keyIterator();
+        Assert.assertFalse(kit.hasNext());
+    }
+
+    @Test
+    public void emptyInternalListGetsEmptyDataset() throws ComponentLookupException
+    {
+        this.dataset = new IndexedPatientData<>("name", Collections.emptyList());
+
+        Assert.assertEquals("name", this.dataset.getName());
+        Assert.assertEquals(0, this.dataset.size());
+
+        // Is not a named dataset
+        Assert.assertFalse(this.dataset.isNamed());
+        Assert.assertNull(this.dataset.get("0"));
+
+        // Is not a simple dataset
+        Assert.assertNull(this.dataset.getValue());
+
+        // Is an indexed dataset
+        Assert.assertTrue(this.dataset.isIndexed());
+        Assert.assertNull(this.dataset.get(0));
+    }
+
+    @Test
+    public void nullInternalListGetsEmptyDataset() throws ComponentLookupException
+    {
+        this.dataset = new IndexedPatientData<>("name", null);
+
+        Assert.assertEquals("name", this.dataset.getName());
+        Assert.assertEquals(0, this.dataset.size());
+
+        // Is not a named dataset
+        Assert.assertFalse(this.dataset.isNamed());
+        Assert.assertNull(this.dataset.get(0));
+
+        // Is not a simple dataset
+        Assert.assertNull(this.dataset.getValue());
+
+        // Is an indexed dataset
+        Assert.assertTrue(this.dataset.isIndexed());
+        Assert.assertNull(this.dataset.get(0));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void removingDataThroughIteratorIsNotAllowed()
+    {
+        Iterator<Object> it = this.dataset.iterator();
+        it.next();
+        it.remove();
+    }
 }
