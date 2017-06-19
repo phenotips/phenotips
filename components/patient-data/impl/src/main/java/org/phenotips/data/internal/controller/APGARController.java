@@ -21,6 +21,7 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.ObjectPropertyReference;
@@ -32,9 +33,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +47,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseProperty;
@@ -63,6 +69,9 @@ public class APGARController implements PatientDataController<Integer>
     /** Logging helper object. */
     @Inject
     private Logger logger;
+
+    @Inject
+    private Provider<XWikiContext> xcontext;
 
     @Override
     public PatientData<Integer> load(Patient patient)
@@ -87,25 +96,73 @@ public class APGARController implements PatientDataController<Integer>
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void save(Patient patient)
     {
-        BaseObject dataHolder = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE);
-        PatientData<Integer> data = patient.getData(getName());
-        if (data == null || dataHolder == null) {
-            return;
-        }
-        for (String propertyName : getProperties()) {
-            Integer value = data.get(propertyName);
-            BaseProperty<ObjectPropertyReference> field =
-                (BaseProperty<ObjectPropertyReference>) dataHolder.getField(propertyName);
-            if (value != null) {
-                field.setValue(value.toString());
+        save(patient, PatientWritePolicy.UPDATE);
+    }
+
+    @Override
+    public void save(@Nonnull final Patient patient, @Nonnull final PatientWritePolicy policy)
+    {
+        try {
+            final BaseObject dataHolder = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE, true,
+                this.xcontext.get());
+            final PatientData<Integer> data = patient.getData(getName());
+            if (data == null) {
+                if (PatientWritePolicy.REPLACE.equals(policy)) {
+                    getProperties().forEach(property -> writePropertyData(dataHolder, property, null));
+                }
             } else {
-                field.setValue("unknown");
+                if (!data.isNamed()) {
+                    this.logger.error(ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT);
+                    return;
+                }
+                writeAPGARData(dataHolder, data, policy);
             }
+        } catch (final Exception ex) {
+            this.logger.error("Failed to save apgar data: {}", ex.getMessage(), ex);
         }
+    }
+
+    /**
+     * Writes the {@code data} to {@code dataHolder} according to the specified {@code policy}.
+     *
+     * @param dataHolder the {@link BaseObject}
+     * @param data a {@link PatientData} object containing APGAR information.
+     * @param policy the selected {@link PatientWritePolicy}
+     */
+    private void writeAPGARData(
+        @Nonnull final BaseObject dataHolder,
+        @Nonnull final PatientData<Integer> data,
+        @Nonnull final PatientWritePolicy policy)
+    {
+        final Predicate<String> propertyFilter = PatientWritePolicy.REPLACE.equals(policy)
+            ? property -> true
+            : data::containsKey;
+
+        getProperties().stream()
+            .filter(propertyFilter)
+            .forEach(property -> writePropertyData(dataHolder, property, data.get(property)));
+    }
+
+    /**
+     * Writes a {@code value} for a {@code property} to the {@code dataHolder}.
+     *
+     * @param dataHolder the {@link BaseObject} where data will be written
+     * @param property the property of interest
+     * @param value the value for {@code property} as {@link Integer}
+     */
+    private void writePropertyData(
+        @Nonnull final BaseObject dataHolder,
+        @Nonnull final String property,
+        @Nullable final Integer value)
+    {
+        final String valueStr = value != null ? value.toString() : "unknown";
+        @SuppressWarnings("unchecked")
+        final BaseProperty<ObjectPropertyReference> field =
+            (BaseProperty<ObjectPropertyReference>) dataHolder.getField(property);
+        field.setValue(valueStr);
     }
 
     @Override
@@ -151,14 +208,8 @@ public class APGARController implements PatientDataController<Integer>
      */
     private boolean hasAnySelected(Collection<String> selectedFieldNames)
     {
-        boolean hasAny = false;
-        for (String selectedFieldName : selectedFieldNames) {
-            if (StringUtils.startsWithIgnoreCase(selectedFieldName, this.getName())) {
-                hasAny = true;
-                break;
-            }
-        }
-        return hasAny;
+        return selectedFieldNames.stream()
+            .anyMatch(selectedFieldName -> StringUtils.startsWithIgnoreCase(selectedFieldName, getName()));
     }
 
     @Override

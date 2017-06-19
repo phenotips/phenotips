@@ -21,6 +21,7 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -45,15 +46,19 @@ import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 public class ObstetricHistoryControllerTest
 {
@@ -81,7 +86,7 @@ public class ObstetricHistoryControllerTest
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Integer>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<Integer>>(ObstetricHistoryController.class);
+        new MockitoComponentMockingRule<>(ObstetricHistoryController.class);
 
     private ObstetricHistoryController obstetricHistoryController;
 
@@ -100,8 +105,6 @@ public class ObstetricHistoryControllerTest
     @Mock
     private BaseObject data;
 
-    private Provider<XWikiContext> provider;
-
     private XWikiContext xWikiContext;
 
     @Mock
@@ -112,18 +115,20 @@ public class ObstetricHistoryControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.obstetricHistoryController =
-            (ObstetricHistoryController) this.mocker.getComponentUnderTest();
+        this.obstetricHistoryController = (ObstetricHistoryController) this.mocker.getComponentUnderTest();
         this.logger = this.mocker.getMockedLogger();
 
-        this.provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
-        this.xWikiContext = this.provider.get();
+        final Provider<XWikiContext> provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
+        this.xWikiContext = provider.get();
         doReturn(this.xwiki).when(this.xWikiContext).getWiki();
 
         DocumentReference patientDocRef = new DocumentReference("wiki", "patient", TEST_PATIENT_ID);
         doReturn(patientDocRef).when(this.patient).getDocumentReference();
         doReturn(this.doc).when(this.patient).getXDocument();
         doReturn(patientDocRef.getName()).when(this.patient).getId();
+
+        when(this.doc.getXObject(this.obstetricHistoryController.getXClassReference(), true, this.xWikiContext))
+            .thenReturn(this.data);
     }
 
     @Test
@@ -167,20 +172,77 @@ public class ObstetricHistoryControllerTest
     }
 
     @Test
-    public void saveHandlesEmptyPatientTest() throws XWikiException
+    public void saveDoesNothingIfParentalInformationClassDoesNotExist()
+    {
+        when(this.doc.getXObject(this.obstetricHistoryController.getXClassReference(), true, this.xWikiContext))
+            .thenReturn(null);
+        this.obstetricHistoryController.save(this.patient);
+        verify(this.doc, times(1)).getXObject(this.obstetricHistoryController.getXClassReference(), true,
+            this.xWikiContext);
+        verifyNoMoreInteractions(this.doc);
+        verifyZeroInteractions(this.data);
+    }
+
+    @Test
+    public void saveHandlesEmptyPatientTestWithUpdatePolicy()
     {
         doReturn(null).when(this.patient).getData(this.obstetricHistoryController.getName());
 
-        this.obstetricHistoryController.save(this.patient);
+        this.obstetricHistoryController.save(this.patient, PatientWritePolicy.UPDATE);
 
+        verify(this.doc, times(1)).getXObject(this.obstetricHistoryController.getXClassReference(), true,
+            this.xWikiContext);
+        verifyNoMoreInteractions(this.doc);
+        verifyZeroInteractions(this.data);
+    }
+
+    @Test
+    public void saveHandlesEmptyPatientTestWithMergePolicy()
+    {
+        doReturn(null).when(this.patient).getData(this.obstetricHistoryController.getName());
+
+        this.obstetricHistoryController.save(this.patient, PatientWritePolicy.MERGE);
+
+        verify(this.doc, times(1)).getXObject(this.obstetricHistoryController.getXClassReference(), true,
+            this.xWikiContext);
+        verifyNoMoreInteractions(this.doc);
+        verifyZeroInteractions(this.data);
+    }
+
+    @Test
+    public void saveHandlesEmptyPatientTestWithReplacePolicy()
+    {
+        doReturn(null).when(this.patient).getData(this.obstetricHistoryController.getName());
+
+        this.obstetricHistoryController.save(this.patient, PatientWritePolicy.REPLACE);
+
+        verify(this.doc, times(1)).getXObject(this.obstetricHistoryController.getXClassReference(), true,
+            this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + GRAVIDA, null, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + PARA, null, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + TERM, null, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + PRETERM, null, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + SAB, null, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + TAB, null, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + LIVE_BIRTHS, null, this.xWikiContext);
+
+        verifyNoMoreInteractions(this.doc);
         verifyNoMoreInteractions(this.data);
     }
 
     @Test
-    public void saveDefaultBehaviourTest() throws XWikiException
+    public void saveDefaultBehaviourTestWithUpdatePolicy()
     {
         doReturn(this.mockPatientData).when(this.patient).getData(this.obstetricHistoryController.getName());
         doReturn(true).when(this.mockPatientData).isNamed();
+
+        when(this.mockPatientData.containsKey(GRAVIDA)).thenReturn(true);
+        when(this.mockPatientData.containsKey(PARA)).thenReturn(true);
+        when(this.mockPatientData.containsKey(TERM)).thenReturn(true);
+        when(this.mockPatientData.containsKey(PRETERM)).thenReturn(true);
+        when(this.mockPatientData.containsKey(SAB)).thenReturn(true);
+        when(this.mockPatientData.containsKey(TAB)).thenReturn(true);
+        when(this.mockPatientData.containsKey(LIVE_BIRTHS)).thenReturn(true);
 
         doReturn(NON_ZERO).when(this.mockPatientData).get(GRAVIDA);
         doReturn(NON_ZERO).when(this.mockPatientData).get(PARA);
@@ -190,9 +252,91 @@ public class ObstetricHistoryControllerTest
         doReturn(NON_ZERO).when(this.mockPatientData).get(TAB);
         doReturn(ZERO).when(this.mockPatientData).get(LIVE_BIRTHS);
 
-        doReturn(this.data).when(this.doc).getXObject(any(EntityReference.class), eq(true), eq(this.xWikiContext));
-
         this.obstetricHistoryController.save(this.patient);
+
+        verify(this.doc, times(1)).getXObject(this.obstetricHistoryController.getXClassReference(), true,
+            this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + GRAVIDA, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + PARA, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + TERM, ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + PRETERM, ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + SAB, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + TAB, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + LIVE_BIRTHS, ZERO, this.xWikiContext);
+
+        verifyNoMoreInteractions(this.doc);
+        verifyNoMoreInteractions(this.data);
+    }
+
+    @Test
+    public void saveDefaultBehaviourTestWithMergePolicy()
+    {
+        final ObstetricHistoryController spy = spy(this.obstetricHistoryController);
+        doReturn(this.mockPatientData).when(this.patient).getData(this.obstetricHistoryController.getName());
+        doReturn(true).when(this.mockPatientData).isNamed();
+
+        when(this.mockPatientData.containsKey(GRAVIDA)).thenReturn(true);
+        when(this.mockPatientData.containsKey(PARA)).thenReturn(false);
+        when(this.mockPatientData.containsKey(TERM)).thenReturn(true);
+        when(this.mockPatientData.containsKey(PRETERM)).thenReturn(true);
+        when(this.mockPatientData.containsKey(SAB)).thenReturn(true);
+        when(this.mockPatientData.containsKey(TAB)).thenReturn(true);
+        when(this.mockPatientData.containsKey(LIVE_BIRTHS)).thenReturn(true);
+
+        doReturn(NON_ZERO).when(this.mockPatientData).get(GRAVIDA);
+        doReturn(null).when(this.mockPatientData).get(PARA);
+        doReturn(ZERO).when(this.mockPatientData).get(TERM);
+        doReturn(ZERO).when(this.mockPatientData).get(PRETERM);
+        doReturn(NON_ZERO).when(this.mockPatientData).get(SAB);
+        doReturn(NON_ZERO).when(this.mockPatientData).get(TAB);
+        doReturn(ZERO).when(this.mockPatientData).get(LIVE_BIRTHS);
+
+        spy.save(this.patient, PatientWritePolicy.MERGE);
+
+        verify(this.doc, times(1)).getXObject(this.obstetricHistoryController.getXClassReference(), true,
+            this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + GRAVIDA, NON_ZERO, this.xWikiContext);
+        verify(this.data, never()).set(eq(PREFIX + PARA), any(), eq(this.xWikiContext));
+        verify(this.data, times(1)).set(PREFIX + TERM, ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + PRETERM, ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + SAB, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + TAB, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + LIVE_BIRTHS, ZERO, this.xWikiContext);
+
+        verify(spy, never()).load(this.patient);
+        verifyNoMoreInteractions(this.doc);
+        verifyNoMoreInteractions(this.data);
+    }
+
+    @Test
+    public void saveDefaultBehaviourTestWithReplacePolicy()
+    {
+        final ObstetricHistoryController spy = spy(this.obstetricHistoryController);
+        doReturn(this.mockPatientData).when(this.patient).getData(this.obstetricHistoryController.getName());
+        doReturn(true).when(this.mockPatientData).isNamed();
+
+        doReturn(null).when(this.mockPatientData).get(GRAVIDA);
+        doReturn(NON_ZERO).when(this.mockPatientData).get(PARA);
+        doReturn(null).when(this.mockPatientData).get(TERM);
+        doReturn(null).when(this.mockPatientData).get(PRETERM);
+        doReturn(NON_ZERO).when(this.mockPatientData).get(SAB);
+        doReturn(NON_ZERO).when(this.mockPatientData).get(TAB);
+        doReturn(ZERO).when(this.mockPatientData).get(LIVE_BIRTHS);
+
+        spy.save(this.patient, PatientWritePolicy.REPLACE);
+
+        verify(this.doc, times(1)).getXObject(this.obstetricHistoryController.getXClassReference(), true,
+            this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + GRAVIDA, null, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + PARA, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + TERM, null, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + PRETERM, null, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + SAB, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + TAB, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(PREFIX + LIVE_BIRTHS, ZERO, this.xWikiContext);
+
+        verifyNoMoreInteractions(this.doc);
+        verifyNoMoreInteractions(this.data);
     }
 
     @Test

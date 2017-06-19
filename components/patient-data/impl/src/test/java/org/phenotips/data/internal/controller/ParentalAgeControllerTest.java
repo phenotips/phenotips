@@ -22,6 +22,7 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.inject.Provider;
 
@@ -46,7 +48,6 @@ import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -56,8 +57,12 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 public class ParentalAgeControllerTest
 {
@@ -82,8 +87,6 @@ public class ParentalAgeControllerTest
     @Mock
     private Logger logger;
 
-    private Provider<XWikiContext> provider;
-
     private XWikiContext xWikiContext;
 
     private ParentalAgeController parentalAgeController;
@@ -100,6 +103,9 @@ public class ParentalAgeControllerTest
     @Mock
     private XWikiDocument doc;
 
+    @Mock
+    private BaseObject dataHolder;
+
     @Before
     public void setUp() throws Exception
     {
@@ -108,14 +114,16 @@ public class ParentalAgeControllerTest
         this.parentalAgeController = (ParentalAgeController) this.mocker.getComponentUnderTest();
         this.logger = this.mocker.getMockedLogger();
 
-        this.provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
-        this.xWikiContext = this.provider.get();
+        final Provider<XWikiContext> provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
+        this.xWikiContext = provider.get();
         doReturn(this.xwiki).when(this.xWikiContext).getWiki();
 
         DocumentReference patientDocRef = new DocumentReference("wiki", "patient", TEST_PATIENT_ID);
         doReturn(patientDocRef).when(this.patient).getDocumentReference();
         doReturn(this.doc).when(this.patient).getXDocument();
         doReturn(patientDocRef.getName()).when(this.patient).getId();
+
+        when(this.doc.getXObject(CLASS_REFERENCE, true, this.xWikiContext)).thenReturn(this.dataHolder);
     }
 
     @Test
@@ -139,8 +147,8 @@ public class ParentalAgeControllerTest
         PatientData<Integer> testData = this.parentalAgeController.load(this.patient);
 
         Assert.assertEquals("parentalAge", testData.getName());
-        Assert.assertTrue(testData.get(MATERNAL_AGE) == AGE_NON_ZERO);
-        Assert.assertTrue(testData.get(PATERNAL_AGE) == AGE_NON_ZERO);
+        Assert.assertTrue(Objects.equals(testData.get(MATERNAL_AGE), AGE_NON_ZERO));
+        Assert.assertTrue(Objects.equals(testData.get(PATERNAL_AGE), AGE_NON_ZERO));
     }
 
     @Test
@@ -155,7 +163,7 @@ public class ParentalAgeControllerTest
         PatientData<Integer> testData = this.parentalAgeController.load(this.patient);
 
         Assert.assertEquals("parentalAge", testData.getName());
-        Assert.assertTrue(testData.get(MATERNAL_AGE) == AGE_NON_ZERO);
+        Assert.assertTrue(Objects.equals(testData.get(MATERNAL_AGE), AGE_NON_ZERO));
         Assert.assertEquals(AGE_ZERO, testData.get(PATERNAL_AGE));
     }
 
@@ -172,7 +180,7 @@ public class ParentalAgeControllerTest
 
         Assert.assertEquals("parentalAge", testData.getName());
         Assert.assertEquals(AGE_ZERO, testData.get(MATERNAL_AGE));
-        Assert.assertTrue(testData.get(PATERNAL_AGE) == AGE_NON_ZERO);
+        Assert.assertTrue(Objects.equals(testData.get(PATERNAL_AGE), AGE_NON_ZERO));
     }
 
     @Test
@@ -201,29 +209,148 @@ public class ParentalAgeControllerTest
     }
 
     @Test
-    public void saveEmptyPatientTest() throws XWikiException
+    public void saveDoesNothingIfParentalInformationClassDoesNotExist()
+    {
+        when(this.doc.getXObject(this.parentalAgeController.getXClassReference(), true, this.xWikiContext))
+            .thenReturn(null);
+        this.parentalAgeController.save(this.patient);
+        verify(this.doc, times(1)).getXObject(this.parentalAgeController.getXClassReference(), true,
+            this.xWikiContext);
+        verifyNoMoreInteractions(this.doc);
+        verifyZeroInteractions(this.patientData);
+    }
+
+    @Test
+    public void saveDoesNothingWithWrongTypeOfPatient()
     {
         doReturn(this.patientData).when(this.patient).getData(this.parentalAgeController.getName());
         doReturn(false).when(this.patientData).isNamed();
         this.parentalAgeController.save(this.patient);
+        verify(this.doc, times(1)).getXObject(this.parentalAgeController.getXClassReference(), true,
+            this.xWikiContext);
+        verify(this.patientData, times(1)).isNamed();
         verifyNoMoreInteractions(this.doc);
+        verifyNoMoreInteractions(this.patientData);
     }
 
     @Test
-    public void saveDefaultBehaviourTest() throws XWikiException
+    public void saveHandlesEmptyPatientDataTestWithUpdatePolicy()
     {
-        BaseObject data = mock(BaseObject.class);
+        doReturn(null).when(this.patient).getData(this.parentalAgeController.getName());
+
+        this.parentalAgeController.save(this.patient, PatientWritePolicy.UPDATE);
+
+        verify(this.doc, times(1)).getXObject(this.parentalAgeController.getXClassReference(), true,
+            this.xWikiContext);
+        verifyNoMoreInteractions(this.doc);
+        verifyZeroInteractions(this.patientData);
+    }
+
+    @Test
+    public void saveHandlesEmptyPatientDataTestWithMergePolicy()
+    {
+        doReturn(null).when(this.patient).getData(this.parentalAgeController.getName());
+
+        this.parentalAgeController.save(this.patient, PatientWritePolicy.MERGE);
+
+        verify(this.doc, times(1)).getXObject(this.parentalAgeController.getXClassReference(), true,
+            this.xWikiContext);
+        verifyNoMoreInteractions(this.doc);
+        verifyZeroInteractions(this.patientData);
+    }
+
+    @Test
+    public void saveHandlesEmptyPatientDataTestWithReplacePolicy()
+    {
+        doReturn(null).when(this.patient).getData(this.parentalAgeController.getName());
+
+        this.parentalAgeController.save(this.patient, PatientWritePolicy.REPLACE);
+
+        verify(this.doc, times(1)).getXObject(this.parentalAgeController.getXClassReference(), true,
+            this.xWikiContext);
+        verify(this.dataHolder, times(1)).set(MATERNAL_AGE, null, this.xWikiContext);
+        verify(this.dataHolder, times(1)).set(PATERNAL_AGE, null, this.xWikiContext);
+        verifyNoMoreInteractions(this.doc);
+        verifyZeroInteractions(this.patientData);
+    }
+
+    @Test
+    public void saveDefaultBehaviourTestWithUpdatePolicy()
+    {
         doReturn(this.patientData).when(this.patient).getData(this.parentalAgeController.getName());
         doReturn(true).when(this.patientData).isNamed();
-        doReturn(data).when(this.doc).getXObject(CLASS_REFERENCE, true, this.xWikiContext);
 
-        doReturn(AGE_NON_ZERO).when(this.patientData).get(MATERNAL_AGE);
-        doReturn(AGE_NON_ZERO).when(this.patientData).get(PATERNAL_AGE);
+        when(this.patientData.containsKey(MATERNAL_AGE)).thenReturn(false);
+        when(this.patientData.containsKey(PATERNAL_AGE)).thenReturn(true);
+        when(this.patientData.get(PATERNAL_AGE)).thenReturn(AGE_NON_ZERO);
+        when(this.patientData.get(MATERNAL_AGE)).thenReturn(null);
 
-        this.parentalAgeController.save(this.patient);
+        this.parentalAgeController.save(this.patient, PatientWritePolicy.UPDATE);
 
-        verify(data).set(MATERNAL_AGE, AGE_NON_ZERO, this.xWikiContext);
-        verify(data).set(PATERNAL_AGE, AGE_NON_ZERO, this.xWikiContext);
+        verify(this.doc, times(1)).getXObject(this.parentalAgeController.getXClassReference(), true,
+            this.xWikiContext);
+        verify(this.dataHolder, never()).set(eq(MATERNAL_AGE), any(), eq(this.xWikiContext));
+        verify(this.dataHolder, times(1)).set(PATERNAL_AGE, AGE_NON_ZERO, this.xWikiContext);
+        verify(this.patientData, times(1)).isNamed();
+        verify(this.patientData, times(1)).containsKey(MATERNAL_AGE);
+        verify(this.patientData, times(1)).containsKey(PATERNAL_AGE);
+        verify(this.patientData, times(1)).get(PATERNAL_AGE);
+        verify(this.patientData, never()).get(MATERNAL_AGE);
+
+        verifyNoMoreInteractions(this.doc);
+        verifyNoMoreInteractions(this.patientData);
+    }
+
+    @Test
+    public void saveDefaultBehaviourTestWithMergePolicy()
+    {
+        doReturn(this.patientData).when(this.patient).getData(this.parentalAgeController.getName());
+        doReturn(true).when(this.patientData).isNamed();
+
+        when(this.patientData.containsKey(MATERNAL_AGE)).thenReturn(false);
+        when(this.patientData.containsKey(PATERNAL_AGE)).thenReturn(true);
+        when(this.patientData.get(PATERNAL_AGE)).thenReturn(AGE_NON_ZERO);
+        when(this.patientData.get(MATERNAL_AGE)).thenReturn(null);
+
+        this.parentalAgeController.save(this.patient, PatientWritePolicy.MERGE);
+
+        verify(this.doc, times(1)).getXObject(this.parentalAgeController.getXClassReference(), true,
+            this.xWikiContext);
+        verify(this.dataHolder, never()).set(eq(MATERNAL_AGE), any(), eq(this.xWikiContext));
+        verify(this.dataHolder, times(1)).set(PATERNAL_AGE, AGE_NON_ZERO, this.xWikiContext);
+        verify(this.patientData, times(1)).isNamed();
+        verify(this.patientData, times(1)).containsKey(MATERNAL_AGE);
+        verify(this.patientData, times(1)).containsKey(PATERNAL_AGE);
+        verify(this.patientData, times(1)).get(PATERNAL_AGE);
+        verify(this.patientData, never()).get(MATERNAL_AGE);
+
+        verifyNoMoreInteractions(this.doc);
+        verifyNoMoreInteractions(this.patientData);
+    }
+
+    @Test
+    public void saveDefaultBehaviourTestWithReplacePolicy()
+    {
+        doReturn(this.patientData).when(this.patient).getData(this.parentalAgeController.getName());
+        doReturn(true).when(this.patientData).isNamed();
+
+        when(this.patientData.get(PATERNAL_AGE)).thenReturn(AGE_NON_ZERO);
+        when(this.patientData.get(MATERNAL_AGE)).thenReturn(null);
+
+        this.parentalAgeController.save(this.patient, PatientWritePolicy.REPLACE);
+
+        verify(this.doc, times(1)).getXObject(this.parentalAgeController.getXClassReference(), true,
+            this.xWikiContext);
+        verify(this.dataHolder, times(1)).set(MATERNAL_AGE, null, this.xWikiContext);
+        verify(this.dataHolder, times(1)).set(PATERNAL_AGE, AGE_NON_ZERO, this.xWikiContext);
+        verify(this.patientData, times(1)).isNamed();
+        verify(this.patientData, never()).containsKey(MATERNAL_AGE);
+        verify(this.patientData, never()).containsKey(PATERNAL_AGE);
+        verify(this.patientData, times(1)).get(PATERNAL_AGE);
+        verify(this.patientData, times(1)).get(MATERNAL_AGE);
+
+        verifyNoMoreInteractions(this.doc);
+        verifyNoMoreInteractions(this.patientData);
     }
 
     @Test

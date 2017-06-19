@@ -28,6 +28,10 @@
   <artifactId>patient-data-api</artifactId>
   <name>PhenoTips - Patient data - Java APIs</name>
 
+  <properties>
+    <coverage.instructionRatio>0.95</coverage.instructionRatio>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>

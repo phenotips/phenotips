@@ -81,7 +81,7 @@ public class MetaDataControllerTest
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<String>>(MetaDataController.class);
+        new MockitoComponentMockingRule<>(MetaDataController.class);
 
     @Mock
     private Patient patient;

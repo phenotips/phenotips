@@ -21,15 +21,23 @@ import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.stability.Unstable;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -101,37 +109,102 @@ public class MedicalReportsController implements PatientDataController<Attachmen
     @Override
     public void save(Patient patient)
     {
-        PatientData<Attachment> reports = patient.getData(getName());
-        if (reports == null) {
-            return;
-        }
+        save(patient, PatientWritePolicy.UPDATE);
+    }
+
+    @Override
+    public void save(@Nonnull final Patient patient, @Nonnull final PatientWritePolicy policy)
+    {
         try {
-            XWikiDocument doc = patient.getXDocument();
-            BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE, true, this.contextProvider.get());
-
-            List<String> result = new ArrayList<>(reports.size());
-
-            for (Attachment report : reports) {
-                XWikiAttachment xattachment = doc.getAttachment(report.getFilename());
-                if (xattachment == null) {
-                    xattachment = new XWikiAttachment(doc, report.getFilename());
-                    doc.addAttachment(xattachment);
+            final XWikiDocument doc = patient.getXDocument();
+            final XWikiContext context = contextProvider.get();
+            final BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE, true, context);
+            PatientData<Attachment> reports = patient.getData(getName());
+            if (reports == null) {
+                if (PatientWritePolicy.REPLACE.equals(policy)) {
+                    data.setDBStringListValue(FIELD_NAME, null);
                 }
-                xattachment.setContent(report.getContent());
-                DocumentReference author = report.getAuthorReference();
-                if (author != null
-                    && !this.contextProvider.get().getWiki().exists(author, this.contextProvider.get())) {
-                    author = this.contextProvider.get().getUserReference();
+            } else {
+                if (!reports.isIndexed()) {
+                    this.logger.error(ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT);
+                    return;
                 }
-                xattachment.setAuthorReference(author);
-                xattachment.setDate(report.getDate());
-                xattachment.setFilesize((int) report.getFilesize());
-                result.add(report.getFilename());
+                saveAttachments(patient, doc, data, reports, policy, context);
             }
-            data.setDBStringListValue(FIELD_NAME, result);
         } catch (Exception ex) {
             this.logger.error("Failed to save attachment: {}", ex.getMessage(), ex);
         }
+
+    }
+
+    /**
+     * Saves the provided {@code reports} according to the specified save {@code policy}.
+     *
+     * @param patient the {@link Patient} of interest
+     * @param doc the {@link XWikiDocument}
+     * @param data the {@link BaseObject}
+     * @param reports the {@link PatientData} to save
+     * @param policy the {@link PatientWritePolicy} according to which data should be saved
+     * @param context the {@link XWikiContext}
+     */
+    private void saveAttachments(
+        @Nonnull final Patient patient,
+        @Nonnull final XWikiDocument doc,
+        @Nonnull final BaseObject data,
+        @Nonnull final PatientData<Attachment> reports,
+        @Nonnull final PatientWritePolicy policy,
+        @Nonnull final XWikiContext context)
+    {
+        final PatientData<Attachment> storedReports = PatientWritePolicy.MERGE.equals(policy)
+            ? load(patient)
+            : null;
+
+        final List<String> result;
+        if (storedReports == null || storedReports.size() == 0) {
+            result = StreamSupport.stream(reports.spliterator(), false)
+                .map(report -> saveAndGetFilename(doc, report, context))
+                .collect(Collectors.toList());
+        } else {
+            final Set<String> mergedReports = Stream.of(storedReports, reports)
+                .flatMap(s -> StreamSupport.stream(s.spliterator(), false))
+                .map(report -> saveAndGetFilename(doc, report, context))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+            result = new ArrayList<>(mergedReports);
+        }
+        data.setDBStringListValue(FIELD_NAME, result);
+    }
+
+    /**
+     * Saves {@code report} data to {@code doc}, and returns the file name.
+     *
+     * @param doc the {@link XWikiDocument}
+     * @param report the {@link Attachment} to be added
+     * @param context the {@link XWikiContext}
+     * @return the file name for the report
+     */
+    private String saveAndGetFilename(
+        @Nonnull final XWikiDocument doc,
+        @Nonnull final Attachment report,
+        @Nonnull final XWikiContext context)
+    {
+        XWikiAttachment xattachment = doc.getAttachment(report.getFilename());
+        if (xattachment == null) {
+            xattachment = new XWikiAttachment(doc, report.getFilename());
+            doc.addAttachment(xattachment);
+        }
+        try {
+            xattachment.setContent(report.getContent());
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+        DocumentReference author = report.getAuthorReference();
+        if (author != null && !context.getWiki().exists(author, context)) {
+            author = context.getUserReference();
+        }
+        xattachment.setAuthorReference(author);
+        xattachment.setDate(report.getDate());
+        xattachment.setFilesize((int) report.getFilesize());
+        return report.getFilename();
     }
 
     @Override

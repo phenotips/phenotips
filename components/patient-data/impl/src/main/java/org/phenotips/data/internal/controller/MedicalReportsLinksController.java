@@ -21,6 +21,7 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 
 import org.xwiki.component.annotation.Component;
 
@@ -93,6 +94,12 @@ public class MedicalReportsLinksController implements PatientDataController<Stri
 
     @Override
     public void save(Patient patient)
+    {
+        save(patient, PatientWritePolicy.UPDATE);
+    }
+
+    @Override
+    public void save(Patient patient, final PatientWritePolicy policy)
     {
         // Nothing to do, this is only used in memory
     }

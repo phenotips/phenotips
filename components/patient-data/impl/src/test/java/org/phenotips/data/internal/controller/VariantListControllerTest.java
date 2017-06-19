@@ -17,10 +17,12 @@
  */
 package org.phenotips.data.internal.controller;
 
+import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
@@ -28,11 +30,16 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Provider;
 
 import org.hamcrest.Matchers;
 import org.json.JSONArray;
@@ -44,6 +51,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
@@ -55,7 +65,11 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for the {@link VariantListController} Component, only the overridden methods from
@@ -101,6 +115,18 @@ public class VariantListControllerTest
 
     private static final String REFERENCE_GENOME_KEY = "reference_genome";
 
+    private static final String VARIANT_1 = "VARIANT1";
+
+    private static final String VARIANT_2 = "VARIANT2";
+
+    private static final String VARIANT_3 = "VARIANT3";
+
+    private static final String GENE_1 = "GENE1";
+
+    private static final String GENE_2 = "GENE2";
+
+    private static final String POS_22 = "22";
+
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Map<String, String>>> mocker =
         new MockitoComponentMockingRule<>(VariantListController.class);
@@ -111,13 +137,22 @@ public class VariantListControllerTest
     @Mock
     private XWikiDocument doc;
 
+    @Mock
+    private XWikiContext context;
+
     private List<BaseObject> variantXWikiObjects;
+
+    private PatientDataController<Map<String, String>> component;
 
     @Before
     public void setUp() throws Exception
     {
         MockitoAnnotations.initMocks(this);
 
+        final Provider<XWikiContext> xcontextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
+        when(xcontextProvider.get()).thenReturn(this.context);
+
+        this.component = this.mocker.getComponentUnderTest();
         DocumentReference patientDocRef = new DocumentReference("wiki", "patient", "00000001");
         doReturn(patientDocRef).when(this.patient).getDocumentReference();
         doReturn(this.doc).when(this.patient).getXDocument();
@@ -533,6 +568,231 @@ public class VariantListControllerTest
         result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
         Assert.assertEquals("variantName", result.get(VARIANT_KEY));
         Assert.assertEquals(12, result.length());
+    }
+
+    @Test
+    public void saveDoesNothingWhenPatientHasNoDocument()
+    {
+        when(this.patient.getXDocument()).thenReturn(null);
+        this.component.save(this.patient);
+        verifyZeroInteractions(this.doc);
+    }
+
+    @Test
+    public void saveDoesNothingWhenPatientDataHasWrongFormat()
+    {
+        when(this.patient.getData(CONTROLLER_NAME))
+            .thenReturn(new DictionaryPatientData<>(CONTROLLER_NAME, Collections.emptyMap()));
+        this.component.save(this.patient);
+        verifyZeroInteractions(this.doc);
+    }
+
+    @Test
+    public void saveWithNoDataDoesNothingWhenPolicyIsUpdate()
+    {
+        this.component.save(this.patient, PatientWritePolicy.UPDATE);
+        verifyZeroInteractions(this.doc);
+    }
+
+    @Test
+    public void saveWithNoDataDoesNothingWhenPolicyIsMerge()
+    {
+        this.component.save(this.patient, PatientWritePolicy.MERGE);
+        verifyZeroInteractions(this.doc);
+    }
+
+    @Test
+    public void saveWithNoDataRemovesAllVariantsWhenPolicyIsReplace()
+    {
+        this.component.save(this.patient, PatientWritePolicy.REPLACE);
+        verify(this.doc, times(1)).removeXObjects(VariantListController.VARIANT_CLASS_REFERENCE);
+        verifyNoMoreInteractions(this.doc);
+    }
+
+    @Test
+    public void saveWithEmptyDataClearsVariantsWhenPolicyIsUpdate()
+    {
+        when(this.patient.getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
+        when(this.context.getWiki()).thenReturn(mock(XWiki.class));
+        this.component.save(this.patient);
+        verify(this.doc).removeXObjects(VariantListController.VARIANT_CLASS_REFERENCE);
+
+        verifyNoMoreInteractions(this.doc);
+    }
+
+    @Test
+    public void saveWithEmptyDataMergesWithStoredDataWhenPolicyIsMerge() throws XWikiException
+    {
+        when(this.patient.getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
+        when(this.context.getWiki()).thenReturn(mock(XWiki.class));
+
+        final BaseObject variantObject = mock(BaseObject.class);
+        when(this.doc.getXObjects(VariantListController.VARIANT_CLASS_REFERENCE)).thenReturn(Collections.singletonList(variantObject));
+
+        final BaseStringProperty variantProperty = mock(BaseStringProperty.class);
+        final BaseStringProperty geneProperty = mock(BaseStringProperty.class);
+
+        when(variantObject.getFieldList()).thenReturn(Arrays.asList(GENE_KEY, VARIANT_KEY));
+        when(variantObject.getField(GENE_KEY)).thenReturn(geneProperty);
+        when(variantObject.getField(VARIANT_KEY)).thenReturn(variantProperty);
+
+        when(variantProperty.getValue()).thenReturn(VARIANT_KEY);
+        when(geneProperty.getValue()).thenReturn(GENE_KEY);
+
+        final BaseObject xwikiObject = mock(BaseObject.class);
+        when(this.doc.newXObject(VariantListController.VARIANT_CLASS_REFERENCE, this.context)).thenReturn(xwikiObject);
+
+        this.component.save(this.patient, PatientWritePolicy.MERGE);
+
+        verify(this.doc, times(1)).removeXObjects(VariantListController.VARIANT_CLASS_REFERENCE);
+        verify(this.doc, times(1)).newXObject(VariantListController.VARIANT_CLASS_REFERENCE, this.context);
+        verify(this.doc, times(1)).getXObjects(VariantListController.VARIANT_CLASS_REFERENCE);
+        verify(xwikiObject, times(1)).set(GENE_KEY, GENE_KEY, this.context);
+        verify(xwikiObject, times(1)).set(VARIANT_KEY, VARIANT_KEY, this.context);
+        verify(xwikiObject, times(1)).setIntValue(START_POSITION_KEY, 0);
+        verify(xwikiObject, times(1)).setIntValue(END_POSITION_KEY, 0);
+
+        verifyNoMoreInteractions(this.doc);
+        verifyNoMoreInteractions(xwikiObject);
+    }
+
+    @Test
+    public void saveWithEmptyDataClearsVariantsWhenPolicyIsReplace()
+    {
+        when(this.patient.getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
+        when(this.context.getWiki()).thenReturn(mock(XWiki.class));
+        this.component.save(this.patient, PatientWritePolicy.REPLACE);
+        verify(this.doc).removeXObjects(VariantListController.VARIANT_CLASS_REFERENCE);
+
+        verifyNoMoreInteractions(this.doc);
+    }
+
+    @Test
+    public void saveUpdatesVariantsWhenPolicyIsUpdate() throws XWikiException
+    {
+        final List<Map<String, String>> data = new LinkedList<>();
+        Map<String, String> item = new HashMap<>();
+        item.put(VARIANT_KEY, VARIANT_1);
+        item.put(GENE_KEY, GENE_1);
+        item.put(START_POSITION_KEY, POS_22);
+        data.add(item);
+        item = new HashMap<>();
+        item.put(VARIANT_KEY, VARIANT_2);
+        item.put(GENE_KEY, GENE_2);
+        data.add(item);
+        when(this.patient.<Map<String, String>>getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, data));
+
+        when(this.context.getWiki()).thenReturn(mock(XWiki.class));
+
+        BaseObject o1 = mock(BaseObject.class);
+        BaseObject o2 = mock(BaseObject.class);
+        when(this.doc.newXObject(VariantListController.VARIANT_CLASS_REFERENCE, this.context)).thenReturn(o1, o2);
+
+        this.component.save(this.patient);
+
+        verify(this.doc).removeXObjects(VariantListController.VARIANT_CLASS_REFERENCE);
+        verify(o1).set(GENE_KEY, GENE_1, this.context);
+        verify(o1).set(VARIANT_KEY, VARIANT_1, this.context);
+        verify(o1).setIntValue(START_POSITION_KEY, 22);
+        verifyNoMoreInteractions(o1);
+        verify(o2).set(GENE_KEY, GENE_2, this.context);
+        verify(o2).set(VARIANT_KEY, VARIANT_2, this.context);
+        verifyNoMoreInteractions(o2);
+    }
+
+    @Test
+    public void saveReplacesGenesWhenPolicyIsReplace() throws XWikiException
+    {
+        final List<Map<String, String>> data = new LinkedList<>();
+        Map<String, String> item = new HashMap<>();
+        item.put(VARIANT_KEY, VARIANT_1);
+        item.put(GENE_KEY, GENE_1);
+        item.put(START_POSITION_KEY, POS_22);
+        data.add(item);
+        item = new HashMap<>();
+        item.put(VARIANT_KEY, VARIANT_2);
+        item.put(GENE_KEY, GENE_2);
+        data.add(item);
+        when(this.patient.<Map<String, String>>getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, data));
+
+        when(this.context.getWiki()).thenReturn(mock(XWiki.class));
+
+        BaseObject o1 = mock(BaseObject.class);
+        BaseObject o2 = mock(BaseObject.class);
+        when(this.doc.newXObject(VariantListController.VARIANT_CLASS_REFERENCE, this.context)).thenReturn(o1, o2);
+
+        this.component.save(this.patient, PatientWritePolicy.REPLACE);
+
+        verify(this.doc).removeXObjects(VariantListController.VARIANT_CLASS_REFERENCE);
+        verify(o1).set(GENE_KEY, GENE_1, this.context);
+        verify(o1).set(VARIANT_KEY, VARIANT_1, this.context);
+        verify(o1).setIntValue(START_POSITION_KEY, 22);
+        verifyNoMoreInteractions(o1);
+        verify(o2).set(GENE_KEY, GENE_2, this.context);
+        verify(o2).set(VARIANT_KEY, VARIANT_2, this.context);
+        verifyNoMoreInteractions(o2);
+    }
+
+    @Test
+    public void saveMergesGenesWhenPolicyIsMerge() throws XWikiException
+    {
+        final List<Map<String, String>> data = new LinkedList<>();
+        Map<String, String> item = new HashMap<>();
+        item.put(VARIANT_KEY, VARIANT_1);
+        item.put(GENE_KEY, GENE_1);
+        item.put(START_POSITION_KEY, POS_22);
+        data.add(item);
+        item = new HashMap<>();
+        item.put(VARIANT_KEY, VARIANT_2);
+        item.put(GENE_KEY, GENE_2);
+        data.add(item);
+        when(this.patient.<Map<String, String>>getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, data));
+
+        when(this.context.getWiki()).thenReturn(mock(XWiki.class));
+
+        BaseObject o1 = mock(BaseObject.class);
+        BaseObject o2 = mock(BaseObject.class);
+        BaseObject o3 = mock(BaseObject.class);
+        when(this.doc.getXObjects(VariantListController.VARIANT_CLASS_REFERENCE)).thenReturn(Collections.singletonList(o3));
+
+        final BaseStringProperty variantProperty = mock(BaseStringProperty.class);
+        final BaseStringProperty geneProperty = mock(BaseStringProperty.class);
+        when(o3.getFieldList()).thenReturn(Arrays.asList(GENE_KEY, VARIANT_KEY));
+        when(o3.getField(GENE_KEY)).thenReturn(geneProperty);
+        when(o3.getField(VARIANT_KEY)).thenReturn(variantProperty);
+
+        when(variantProperty.getValue()).thenReturn(VARIANT_3);
+        when(geneProperty.getValue()).thenReturn(GENE_2);
+
+        when(this.doc.newXObject(VariantListController.VARIANT_CLASS_REFERENCE, this.context)).thenReturn(o3, o1, o2);
+        this.component.save(this.patient, PatientWritePolicy.MERGE);
+
+        verify(this.doc, times(1)).removeXObjects(VariantListController.VARIANT_CLASS_REFERENCE);
+        verify(this.doc, times(3)).newXObject(VariantListController.VARIANT_CLASS_REFERENCE, this.context);
+        verify(this.doc, times(1)).getXObjects(VariantListController.VARIANT_CLASS_REFERENCE);
+        verify(o1).set(GENE_KEY, GENE_1, this.context);
+        verify(o1).set(VARIANT_KEY, VARIANT_1, this.context);
+        verify(o1).setIntValue(START_POSITION_KEY, 22);
+        verify(o2).set(GENE_KEY, GENE_2, this.context);
+        verify(o2).set(VARIANT_KEY, VARIANT_2, this.context);
+        verify(o3, times(1)).set(GENE_KEY, GENE_2, this.context);
+        verify(o3, times(1)).set(VARIANT_KEY, VARIANT_3, this.context);
+        verify(o3, times(1)).setIntValue(START_POSITION_KEY, 0);
+        verify(o3, times(1)).setIntValue(END_POSITION_KEY, 0);
+        verify(o3, times(1)).getFieldList();
+        verify(o3, times(14)).getField(anyString());
+        verify(o3, times(2)).getIntValue(anyString(), eq(-1));
+
+        verifyNoMoreInteractions(this.doc);
+        verifyNoMoreInteractions(o1);
+        verifyNoMoreInteractions(o2);
+        verifyNoMoreInteractions(o3);
     }
 
     // ----------------------------------------Private methods----------------------------------------

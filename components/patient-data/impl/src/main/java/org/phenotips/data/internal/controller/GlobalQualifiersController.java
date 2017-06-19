@@ -21,26 +21,37 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -114,39 +125,164 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
     @Override
     public void save(Patient patient)
     {
-        PatientData<List<VocabularyTerm>> data = patient.getData(this.getName());
-        XWikiContext context = this.xcontextProvider.get();
+        save(patient, PatientWritePolicy.UPDATE);
+    }
 
-        BaseObject dataHolder = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE, true, context);
-        if (data == null || dataHolder == null) {
-            return;
-        }
-        BaseClass xclass = dataHolder.getXClass(context);
-        for (String propertyName : getProperties()) {
-            List<VocabularyTerm> terms = data.get(propertyName);
-            if (terms == null) {
-                continue;
-            }
-            PropertyClass xpropertyClass = (PropertyClass) xclass.get(propertyName);
-            if (xpropertyClass != null) {
-                PropertyInterface xproperty = xpropertyClass.newProperty();
-                if (xproperty instanceof BaseStringProperty) {
-                    // there should be only one term present; just taking the head of the list
-                    dataHolder.set(propertyName, terms.isEmpty() ? null : termsToXWikiFormat(terms).get(0), context);
-                } else if (xproperty instanceof ListProperty) {
-                    dataHolder.set(propertyName, termsToXWikiFormat(terms), context);
+    @Override
+    public void save(@Nonnull final Patient patient, @Nonnull final PatientWritePolicy policy)
+    {
+        try {
+            final XWikiContext context = this.xcontextProvider.get();
+            final BaseObject xobject = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE, true, context);
+            final PatientData<List<VocabularyTerm>> data = patient.getData(getName());
+            if (data == null) {
+                if (PatientWritePolicy.REPLACE.equals(policy)) {
+                    getProperties().forEach(p -> xobject.set(p, null, context));
                 }
+            } else {
+                if (!data.isNamed()) {
+                    this.logger.error(ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT);
+                    return;
+                }
+                saveQualifiersData(patient, xobject, data, policy, context);
+            }
+        } catch (final Exception ex) {
+            this.logger.error("Failed to save global qualifiers data: {}", ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Saves the provided qualifiers {@code data}.
+     *
+     * @param patient the {@link Patient} object being modified
+     * @param xobject the {@link BaseObject}
+     * @param data the new {@link PatientData} to store
+     * @param policy the {@link PatientWritePolicy} according to which data will be saved
+     * @param context the {@link XWikiContext}
+     */
+    private void saveQualifiersData(
+        @Nonnull final Patient patient,
+        @Nonnull final BaseObject xobject,
+        @Nonnull final PatientData<List<VocabularyTerm>> data,
+        @Nonnull final PatientWritePolicy policy,
+        @Nonnull final XWikiContext context)
+    {
+        final BaseClass xclass = xobject.getXClass(context);
+        final Predicate<String> propertyFilter;
+        final PatientData<List<VocabularyTerm>> storedData;
+        if (PatientWritePolicy.MERGE.equals(policy)) {
+            storedData = load(patient);
+            propertyFilter = data::containsKey;
+        } else {
+            storedData = null;
+            propertyFilter = PatientWritePolicy.REPLACE.equals(policy) ? p -> true : data::containsKey;
+        }
+        getProperties().stream()
+                .filter(propertyFilter)
+                .forEach(property -> savePropertyData(property, xobject, xclass, data, storedData, context));
+    }
+
+    /**
+     * Saves the {@code data} for a specific {@code property}.
+     *
+     * @param property the property of interest
+     * @param xobject the {@link BaseObject}
+     * @param xclass the {@link BaseClass}
+     * @param data the new {@link PatientData} to store
+     * @param storedData the {@link PatientData} already stored in patient
+     * @param context the {@link XWikiContext}
+     */
+    private void savePropertyData(
+        @Nonnull final String property,
+        @Nonnull final BaseObject xobject,
+        @Nonnull final BaseClass xclass,
+        @Nonnull final PatientData<List<VocabularyTerm>> data,
+        @Nullable final PatientData<List<VocabularyTerm>> storedData,
+        @Nonnull final XWikiContext context)
+    {
+        final PropertyClass xpropertyClass = (PropertyClass) xclass.get(property);
+        final List<VocabularyTerm> terms = data.get(property);
+        if (xpropertyClass != null) {
+            final PropertyInterface xproperty = xpropertyClass.newProperty();
+            if (xproperty instanceof BaseStringProperty) {
+                saveSingleValueData(property, xobject, terms, context);
+            } else if (xproperty instanceof ListProperty) {
+                final List<VocabularyTerm> storedTerms = (storedData != null) ? storedData.get(property) : null;
+                saveListData(property, xobject, terms, storedTerms, context);
             }
         }
     }
 
-    private List<String> termsToXWikiFormat(List<VocabularyTerm> terms)
+    /**
+     * Saves the {@code property} with a single value.
+     *
+     * @param property the property of interest
+     * @param xobject the {@link BaseObject}
+     * @param terms the list of {@link VocabularyTerm} objects specified for the property; should contain one term
+     * @param context the {@link XWikiContext}
+     */
+    private void saveSingleValueData(
+        @Nonnull final String property,
+        @Nonnull final BaseObject xobject,
+        @Nullable final List<VocabularyTerm> terms,
+        @Nonnull final XWikiContext context)
     {
-        List<String> ids = new LinkedList<>();
-        for (VocabularyTerm term : terms) {
-            ids.add(term.getId());
+        // If no terms provided, set to null. Otherwise, convert to a list of term IDs (should only have one ID) and
+        // extract the first ID.
+        final String value = (terms == null || terms.isEmpty())
+            ? null
+            : terms.stream().map(VocabularyTerm::getId).collect(Collectors.toList()).get(0);
+        xobject.set(property, value, context);
+    }
+
+    /**
+     * Saves the {@code property} with a list for value.
+     *
+     * @param property the property of interest
+     * @param xobject the {@link BaseObject}
+     * @param terms list of {@link VocabularyTerm} objects specified for the property
+     * @param storedTerms list of {@link VocabularyTerm} objects stored in patient; set to null if not relevant
+     * @param context the {@link XWikiContext}
+     */
+    private void saveListData(
+        @Nonnull final String property,
+        @Nonnull final BaseObject xobject,
+        @Nullable final List<VocabularyTerm> terms,
+        @Nullable final List<VocabularyTerm> storedTerms,
+        @Nonnull final XWikiContext context)
+    {
+        // A list of merged identifiers.
+        final List<String> value = buildMergedQualifiersList(storedTerms, terms);
+        xobject.set(property, value, context);
+    }
+
+    /**
+     * Returns a list of global qualifiers, merging {@code stored qualifiers}, if any, and {@code qualifers}.
+     *
+     * @param stored {@link PatientData} already stored in patient
+     * @param qualifiers {@link PatientData} to save for patient
+     * @return a merged list of global qualifiers
+     */
+    private List<String> buildMergedQualifiersList(
+        @Nullable final List<VocabularyTerm> stored,
+        @Nullable final List<VocabularyTerm> qualifiers)
+    {
+        // If there are no qualifiers stored, then just return a list of new qualifier ids.
+        if (CollectionUtils.isEmpty(stored)) {
+            return CollectionUtils.isNotEmpty(qualifiers)
+                ? qualifiers.stream()
+                    .map(VocabularyTerm::getId)
+                    .collect(Collectors.toList())
+                : null;
         }
-        return ids;
+        // There are some stored qualifiers, merge them.
+        final Set<String> qualifierValues = Stream.of(stored, qualifiers)
+            .filter(Objects::nonNull)
+            .flatMap(Collection::stream)
+            .map(VocabularyTerm::getId)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        return qualifierValues.isEmpty() ? null : new ArrayList<>(qualifierValues);
     }
 
     @Override

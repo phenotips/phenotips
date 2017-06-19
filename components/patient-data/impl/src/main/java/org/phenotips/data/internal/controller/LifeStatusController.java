@@ -20,6 +20,7 @@ package org.phenotips.data.internal.controller;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.component.annotation.Component;
@@ -29,13 +30,16 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -62,6 +66,9 @@ public class LifeStatusController implements PatientDataController<String>
     @Inject
     private Logger logger;
 
+    @Inject
+    private Provider<XWikiContext> xcontext;
+
     @Override
     public PatientData<String> load(Patient patient)
     {
@@ -84,13 +91,28 @@ public class LifeStatusController implements PatientDataController<String>
     @Override
     public void save(Patient patient)
     {
-        BaseObject data = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE);
-        if (data == null) {
-            throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
-        }
+        save(patient, PatientWritePolicy.UPDATE);
+    }
 
-        PatientData<String> lifeStatus = patient.getData(DATA_NAME);
-        data.setStringValue(DATA_NAME, lifeStatus.getValue());
+    @Override
+    public void save(@Nonnull final Patient patient, @Nonnull final PatientWritePolicy policy)
+    {
+        try {
+            final BaseObject dataHolder = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE, true,
+                xcontext.get());
+            final PatientData<String> lifeStatus = patient.getData(DATA_NAME);
+            if (lifeStatus == null) {
+                if (PatientWritePolicy.REPLACE.equals(policy)) {
+                    // Set to a default value.
+                    dataHolder.setStringValue(DATA_NAME, ALIVE);
+                }
+            } else {
+                dataHolder.setStringValue(DATA_NAME, lifeStatus.getValue());
+            }
+
+        } catch (final Exception ex) {
+            this.logger.error("Failed to save life status data: {}", ex.getMessage(), ex);
+        }
     }
 
     @Override

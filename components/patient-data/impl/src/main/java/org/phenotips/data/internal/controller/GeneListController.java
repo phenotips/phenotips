@@ -22,6 +22,7 @@ import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
@@ -39,8 +40,15 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -52,6 +60,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
@@ -451,28 +460,114 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     @Override
     public void save(Patient patient)
     {
-        PatientData<Map<String, String>> genes = patient.getData(this.getName());
-        if (genes == null || !genes.isIndexed()) {
-            return;
-        }
+        save(patient, PatientWritePolicy.UPDATE);
+    }
 
-        XWikiContext context = this.xcontextProvider.get();
-        patient.getXDocument().removeXObjects(GENE_CLASS_REFERENCE);
-        Iterator<Map<String, String>> iterator = genes.iterator();
-        while (iterator.hasNext()) {
-            try {
-                Map<String, String> gene = iterator.next();
-                BaseObject xwikiObject = patient.getXDocument().newXObject(GENE_CLASS_REFERENCE, context);
-                for (String property : this.getProperties()) {
-                    String value = gene.get(property);
-                    if (value != null) {
-                        xwikiObject.set(property, value, context);
-                    }
+    @Override
+    public void save(@Nonnull final Patient patient, @Nonnull final PatientWritePolicy policy)
+    {
+        try {
+            final XWikiDocument docX = patient.getXDocument();
+            final PatientData<Map<String, String>> genes = patient.getData(getName());
+            if (genes == null) {
+                if (PatientWritePolicy.REPLACE.equals(policy)) {
+                    docX.removeXObjects(GENE_CLASS_REFERENCE);
                 }
-            } catch (Exception e) {
-                this.logger.error("Failed to save a specific gene: [{}]", e.getMessage());
+            } else {
+                if (!genes.isIndexed()) {
+                    this.logger.error(ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT);
+                    return;
+                }
+                saveGenes(docX, patient, genes, policy, this.xcontextProvider.get());
             }
+        } catch (final Exception ex) {
+            this.logger.error("Failed to save disorders data: {}", ex.getMessage(), ex);
         }
+    }
+
+    /**
+     * Saves {@code genes} data for {@code patient} according to the provided {@code policy}.
+     *
+     * @param docX the {@link XWikiDocument} for patient
+     * @param patient the {@link Patient} object of interest
+     * @param genes the newly added gene data
+     * @param policy the policy according to which data should be saved
+     * @param context the {@link XWikiContext} object
+     */
+    private void saveGenes(
+        @Nonnull final XWikiDocument docX,
+        @Nonnull final Patient patient,
+        @Nonnull final PatientData<Map<String, String>> genes,
+        @Nonnull final PatientWritePolicy policy,
+        @Nonnull final XWikiContext context)
+    {
+        if (PatientWritePolicy.MERGE.equals(policy)) {
+            final Map<String, Map<String, String>> mergedGenes = getMergedGenesMap(genes, load(patient));
+            docX.removeXObjects(GENE_CLASS_REFERENCE);
+            mergedGenes.forEach((id, gene) -> saveGene(docX, gene, context));
+        } else {
+            docX.removeXObjects(GENE_CLASS_REFERENCE);
+            genes.forEach(gene -> saveGene(docX, gene, context));
+        }
+    }
+
+    /**
+     * Saves a {@code gene} for the provided {@code patient}.
+     *
+     * @param docX the {@link XWikiDocument} for patient
+     * @param gene a gene to be saved
+     * @param context the {@link XWikiContext} object
+     */
+    private void saveGene(
+        @Nonnull final XWikiDocument docX,
+        @Nonnull final Map<String, String> gene,
+        @Nonnull final XWikiContext context)
+    {
+        try {
+            final BaseObject xwikiObject = docX.newXObject(GENE_CLASS_REFERENCE, context);
+            getProperties().forEach(property -> setGeneProperty(gene, property, xwikiObject, context));
+        } catch (final XWikiException e) {
+            this.logger.error("Failed to save a specific gene: [{}]", e.getMessage());
+        }
+    }
+
+    /**
+     * Saves gene {@code property} value provided in {@code gene} to the {@code xwikiObject}.
+     *
+     * @param gene a gene to be saved
+     * @param property the property of interest
+     * @param xwikiObject the {@link BaseObject} that will store the {@code gene} data
+     * @param context the {@link XWikiContext} object
+     */
+    private void setGeneProperty(
+        @Nonnull final Map<String, String> gene,
+        @Nonnull final String property,
+        @Nonnull final BaseObject xwikiObject,
+        @Nonnull final XWikiContext context)
+    {
+        final String value = gene.get(property);
+        if (value != null) {
+            xwikiObject.set(property, value, context);
+        }
+    }
+
+    /**
+     * Create a map of gene ID to gene properties that merges existing and updated gene data.
+     *
+     * @param genes the gene data to add to patient
+     * @param storedGenes the gene data already stored in patient
+     * @return a map of gene ID to gene properties
+     */
+    private Map<String, Map<String, String>> getMergedGenesMap(
+        @Nullable final PatientData<Map<String, String>> genes,
+        @Nullable final PatientData<Map<String, String>> storedGenes)
+    {
+        // If map keys collide, merge genes in favour of the new value
+        return Stream.of(storedGenes, genes)
+            .filter(Objects::nonNull)
+            .flatMap(s -> StreamSupport.stream(s.spliterator(), false))
+            .collect(Collectors.toMap(gene
+                -> gene.get(INTERNAL_GENE_KEY), Function.identity(), (v1, v2) -> v2, LinkedHashMap::new));
     }
 
     /**

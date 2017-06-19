@@ -22,6 +22,7 @@ import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
@@ -29,8 +30,15 @@ import org.xwiki.model.reference.EntityReference;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -55,12 +63,12 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class AllergiesController implements PatientDataController<String>
 {
+    static final EntityReference CLASS_REFERENCE =
+        new EntityReference("AllergiesDataClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
     private static final String DATA_NAME = "allergies";
 
     private static final String NKDA = "NKDA";
-
-    private static final EntityReference CLASS_REFERENCE =
-        new EntityReference("AllergiesDataClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /** Logging helper object. */
     @Inject
@@ -109,22 +117,90 @@ public class AllergiesController implements PatientDataController<String>
     @Override
     public void save(Patient patient)
     {
-        PatientData<String> data = patient.getData(DATA_NAME);
-        if (data == null || !data.isIndexed()) {
-            return;
-        }
+        save(patient, PatientWritePolicy.UPDATE);
+    }
 
-        boolean nkda = false;
-        List<String> allergies = new ArrayList<>(data.size());
-        for (String allergy : data) {
-            if (NKDA.equals(allergy)) {
-                nkda = true;
-            } else {
-                allergies.add(allergy);
+    @Override
+    public void save(@Nonnull final Patient patient, @Nonnull final PatientWritePolicy policy)
+    {
+        try {
+            final BaseObject xobject = patient.getXDocument().getXObject(CLASS_REFERENCE, true, this.xcontext.get());
+            if (xobject == null) {
+                return;
             }
+            final PatientData<String> data = patient.getData(DATA_NAME);
+            if (data == null) {
+                if (PatientWritePolicy.REPLACE.equals(policy)) {
+                    writeToPatientDoc(xobject, false, null);
+                }
+            } else {
+                if (!data.isIndexed()) {
+                    this.logger.error(ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT);
+                    return;
+                }
+                saveAllergiesData(patient, xobject, data, policy);
+            }
+        } catch (final Exception ex) {
+            this.logger.error("Failed to save controller data: {}", ex.getMessage(), ex);
         }
+    }
 
-        BaseObject xobject = patient.getXDocument().getXObject(CLASS_REFERENCE, true, this.xcontext.get());
+    /**
+     * Saves the provided allergies {@code data}, according to the selected {@code policy}.
+     *
+     * @param patient the {@link Patient} being modified
+     * @param xobject the {@link BaseObject}
+     * @param data the {@link PatientData} to update {@code patient} with
+     * @param policy the {@link PatientWritePolicy} for saving patient data
+     */
+    private void saveAllergiesData(
+        @Nonnull final Patient patient,
+        @Nonnull final BaseObject xobject,
+        @Nonnull final PatientData<String> data,
+        @Nonnull final PatientWritePolicy policy)
+    {
+        final PatientData<String> storedData = PatientWritePolicy.MERGE.equals(policy) ? load(patient) : null;
+        final List<String> allergies = buildMergedAllergiesList(storedData, data);
+        final boolean nkda = allergies.remove(NKDA);
+        writeToPatientDoc(xobject, nkda, allergies.isEmpty() ? null : allergies);
+    }
+
+    /**
+     * Returns a list of allergies, merging {@code storedAllergies stored allergies}, if any, and {@code allergies}.
+     *
+     * @param storedAllergies {@link PatientData} already stored in patient
+     * @param allergies {@link PatientData} to save for patient
+     * @return a merged list of allergies
+     */
+    private List<String> buildMergedAllergiesList(
+        @Nullable final PatientData<String> storedAllergies,
+        @Nonnull final PatientData<String> allergies)
+    {
+        // If there are no allergies stored, then just return a list of new allergies.
+        if (storedAllergies == null || storedAllergies.size() == 0) {
+            return StreamSupport.stream(allergies.spliterator(), false)
+                .collect(Collectors.toList());
+        }
+        // There are some stored allergies, merge them.
+        final Set<String> allergyValues = Stream.of(storedAllergies, allergies)
+            .flatMap(s -> StreamSupport.stream(s.spliterator(), false))
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        return new ArrayList<>(allergyValues);
+    }
+
+    /**
+     * Updates {@code xobject} with provided {@code nkda} and {@code allergies} data.
+     *
+     * @param xobject the {@link BaseObject}
+     * @param nkda true iff no known drug allergies
+     * @param allergies the list of allergies; may be null
+     */
+    private void writeToPatientDoc(
+        @Nonnull final BaseObject xobject,
+        final boolean nkda,
+        @Nullable final List<String> allergies)
+    {
         xobject.setIntValue(NKDA, nkda ? 1 : 0);
         xobject.setDBStringListValue(DATA_NAME, allergies);
     }

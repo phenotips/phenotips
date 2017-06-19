@@ -22,6 +22,7 @@ import org.phenotips.data.Medication;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 
 import org.xwiki.component.annotation.Component;
 
@@ -30,6 +31,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -99,7 +101,7 @@ public class MedicationController implements PatientDataController<Medication>
                     medication.getLargeStringValue(Medication.NOTES)));
             }
             if (!result.isEmpty()) {
-                return new IndexedPatientData<Medication>(DATA_NAME, result);
+                return new IndexedPatientData<>(DATA_NAME, result);
             }
         } catch (Exception ex) {
             this.logger.error("Could not find requested document or some unforeseen"
@@ -139,6 +141,12 @@ public class MedicationController implements PatientDataController<Medication>
         } catch (Exception ex) {
             this.logger.error("Failed to save medication data: [{}]", ex.getMessage());
         }
+    }
+
+    @Override
+    public void save(@Nonnull final Patient patient, @Nonnull final PatientWritePolicy policy)
+    {
+
     }
 
     @Override

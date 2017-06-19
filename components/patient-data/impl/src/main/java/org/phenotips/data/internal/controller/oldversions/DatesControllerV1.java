@@ -21,6 +21,7 @@ import org.phenotips.configuration.RecordConfigurationManager;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.PhenoTipsDate;
 
 import org.xwiki.component.annotation.Component;
@@ -105,6 +106,12 @@ public class DatesControllerV1 implements PatientDataController<PhenoTipsDate>
 
     @Override
     public void save(Patient patient)
+    {
+        save(patient, PatientWritePolicy.UPDATE);
+    }
+
+    @Override
+    public void save(final Patient patient, final PatientWritePolicy policy)
     {
         // Explicitly do nothing.
         //
