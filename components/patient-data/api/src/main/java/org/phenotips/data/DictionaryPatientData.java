@@ -50,7 +50,11 @@ public class DictionaryPatientData<T> implements PatientData<T>
     public DictionaryPatientData(String name, Map<String, T> data)
     {
         this.name = name;
-        this.internalMap = Collections.unmodifiableMap(new LinkedHashMap<String, T>(data));
+        if (data == null) {
+            this.internalMap = Collections.emptyMap();
+        } else {
+            this.internalMap = Collections.unmodifiableMap(new LinkedHashMap<>(data));
+        }
     }
 
     @Override

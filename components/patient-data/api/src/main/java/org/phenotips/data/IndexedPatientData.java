@@ -49,7 +49,11 @@ public class IndexedPatientData<T> implements PatientData<T>
     public IndexedPatientData(String name, List<T> data)
     {
         this.name = name;
-        this.internalList = Collections.unmodifiableList(new ArrayList<T>(data));
+        if (data == null || data.isEmpty()) {
+            this.internalList = Collections.emptyList();
+        } else {
+            this.internalList = Collections.unmodifiableList(new ArrayList<>(data));
+        }
     }
 
     @Override
