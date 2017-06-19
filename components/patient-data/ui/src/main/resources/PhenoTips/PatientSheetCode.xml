@@ -1347,9 +1347,9 @@ document.observe('xwiki:dom:loaded', function()
             return;
           }
           var ynpickerElt = YesNoPicker.generatePickerElement([
-              {type: 'na', selected: !isValueSelected(positiveName, value) &amp;&amp; !isValueSelected(negativeName, value)},
-              {type: 'yes', selected: isValueSelected(positiveName, value)},
-              {type: 'no' , selected: isValueSelected(negativeName, value)}
+              {type: 'na' , name: positiveName + '_na', selected: !isValueSelected(positiveName, value) &amp;&amp; !isValueSelected(negativeName, value)},
+              {type: 'yes', name: positiveName, selected: isValueSelected(positiveName, value)},
+              {type: 'no' , name: negativeName, selected: isValueSelected(negativeName, value)}
           ], value, text, true, item.next());
           item.insert({before: ynpickerElt});
           item.remove();
