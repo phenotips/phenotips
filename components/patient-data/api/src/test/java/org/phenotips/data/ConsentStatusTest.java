@@ -44,4 +44,12 @@ public class ConsentStatusTest
         Assert.assertNotSame(ConsentStatus.fromString("nO"), ConsentStatus.NO);
         Assert.assertNotSame(ConsentStatus.fromString("notset"), ConsentStatus.NOT_SET);
     }
+
+    @Test
+    public void valueOfWorks() throws ComponentLookupException
+    {
+        Assert.assertSame(ConsentStatus.YES, ConsentStatus.valueOf("YES"));
+        Assert.assertSame(ConsentStatus.NO, ConsentStatus.valueOf("NO"));
+        Assert.assertSame(ConsentStatus.NOT_SET, ConsentStatus.valueOf("NOT_SET"));
+    }
 }

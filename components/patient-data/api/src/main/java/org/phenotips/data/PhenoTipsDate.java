@@ -197,8 +197,7 @@ public class PhenoTipsDate
             return null;
         }
 
-        // check if the key is a string and try to parse the value from it
-        return stringToIntegerInRange(json.optString(key, ""), validRangeMin, validRangeMax);
+        return null;
     }
 
     // If range is given, returns null if the number is not in range
@@ -311,6 +310,6 @@ public class PhenoTipsDate
      */
     public boolean isSet()
     {
-        return !(this.year == null && this.month == null && this.day == null && this.rangeYears == null);
+        return !(this.year == null && this.month == null && this.day == null);
     }
 }

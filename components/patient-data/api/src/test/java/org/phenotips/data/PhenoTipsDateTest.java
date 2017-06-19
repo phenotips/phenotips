@@ -62,6 +62,9 @@ public class PhenoTipsDateTest
             new PhenoTipsDate(new JSONObject("{\"year\":\"2010\",\"month\":\"01\",\"day\":\"13\"}")).toJSON()));
         Assert.assertTrue(new JSONObject("{\"year\":2010,\"month\":1,\"day\":13}").similar(
             new PhenoTipsDate(new JSONObject("{\"year\":2010,\"month\":01,\"day\":13}")).toJSON()));
+        Assert.assertTrue(new JSONObject("{\"year\":2010,\"range\":{\"years\":10},\"month\":1,\"day\":13}").similar(
+            new PhenoTipsDate(new JSONObject("{\"year\":2010,\"range\":{\"years\":10},\"month\":01,\"day\":13}"))
+                .toJSON()));
     }
 
     @Test
@@ -72,10 +75,40 @@ public class PhenoTipsDateTest
     }
 
     @Test
+    public void invalidDecadeIsIgnored()
+    {
+        Assert.assertTrue(new JSONObject("{\"month\":1,\"day\":13}").similar(
+            new PhenoTipsDate(new JSONObject("{\"decade\":\"1990\",\"month\":\"01\",\"day\":13}")).toJSON()));
+    }
+
+    @Test
+    public void invalidRangeIsIgnored()
+    {
+        Assert.assertTrue(new JSONObject("{\"year\":1990,\"month\":1,\"day\":13}").similar(
+            new PhenoTipsDate(
+                new JSONObject("{\"year\":\"1990\",\"range\":{\"years\":\"five\"},\"month\":\"01\",\"day\":13}"))
+                    .toJSON()));
+    }
+
+    @Test
+    public void whenYearIsPresentDecadeIsIgnored()
+    {
+        Assert.assertTrue(new JSONObject("{\"year\":1995,\"month\":1,\"day\":13}").similar(
+            new PhenoTipsDate(new JSONObject("{\"decade\":\"1990s\",\"year\":1995,\"month\":\"01\",\"day\":13}"))
+                .toJSON()));
+    }
+
+    @Test
     public void invalidJSONElementsAreIgnored()
     {
         Assert.assertTrue(new JSONObject("{\"month\":1,\"day\":13}").similar(
             new PhenoTipsDate(new JSONObject("{\"year\":\"2010s\",\"month\":\"01\",\"day\":\"13\"}"))
+                .toJSON()));
+        Assert.assertTrue(new JSONObject("{\"year\":2010}").similar(
+            new PhenoTipsDate(new JSONObject("{\"year\":\"2010\",\"month\":\"55\",\"day\":\"-2\"}"))
+                .toJSON()));
+        Assert.assertTrue(new JSONObject("{\"year\":2010}").similar(
+            new PhenoTipsDate(new JSONObject("{\"year\":\"2010\",\"month\":-2,\"day\":55}"))
                 .toJSON()));
     }
 
@@ -98,19 +131,18 @@ public class PhenoTipsDateTest
     @Test
     public void roundtripFromString()
     {
-        String date1 = "1995-06-23";
-        String date2 = "1995-06";
-        String date3 = "1995";
-        String date4 = "1990s";
-        PhenoTipsDate phenoDate = new PhenoTipsDate(date1);
-        PhenoTipsDate phenoDate2 = new PhenoTipsDate(date2);
-        PhenoTipsDate phenoDate3 = new PhenoTipsDate(date3);
-        PhenoTipsDate phenoDate4 = new PhenoTipsDate(date4);
+        Assert.assertEquals("1995-01-01", new PhenoTipsDate("1995-01-01").toYYYYMMDDString());
+        Assert.assertEquals("1995-12-31", new PhenoTipsDate("1995-12-31").toYYYYMMDDString());
+        Assert.assertEquals("1995-06", new PhenoTipsDate("1995-06").toYYYYMMDDString());
+        Assert.assertEquals("1995-11", new PhenoTipsDate("1995-11").toYYYYMMDDString());
+        Assert.assertEquals("1995", new PhenoTipsDate("1995").toYYYYMMDDString());
+        Assert.assertEquals("1990s", new PhenoTipsDate("1990s").toYYYYMMDDString());
+    }
 
-        Assert.assertEquals("1995-06-23", phenoDate.toYYYYMMDDString());
-        Assert.assertEquals("1995-06", phenoDate2.toYYYYMMDDString());
-        Assert.assertEquals("1995", phenoDate3.toYYYYMMDDString());
-        Assert.assertEquals("1990s", phenoDate4.toYYYYMMDDString());
+    @Test
+    public void invalidStringElementsAreIgnored()
+    {
+        Assert.assertEquals("1995", new PhenoTipsDate("1995-27-72").toYYYYMMDDString());
     }
 
     @Test
@@ -127,5 +159,26 @@ public class PhenoTipsDateTest
         String date = null;
         PhenoTipsDate phenoDate = new PhenoTipsDate(date);
         Assert.assertEquals("{}", phenoDate.toString());
+    }
+
+    @Test
+    public void isSetReturnsTrueWhenAnyElementIsSet()
+    {
+        Assert.assertFalse(new PhenoTipsDate(new JSONObject()).isSet());
+        Assert.assertTrue(new PhenoTipsDate(new JSONObject("{\"decade\":\"2010s\"}")).isSet());
+        Assert.assertTrue(new PhenoTipsDate(new JSONObject("{\"year\":\"2010\"}")).isSet());
+        Assert.assertTrue(new PhenoTipsDate(new JSONObject("{\"month\":2}")).isSet());
+        Assert.assertTrue(new PhenoTipsDate(new JSONObject("{\"day\":2}")).isSet());
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void earliestPossibleDateIsCorrect()
+    {
+        Assert.assertEquals(new Date(95, 2, 3), new PhenoTipsDate("1995-03-03").toEarliestPossibleISODate());
+        Assert.assertEquals(new Date(95, 2, 1), new PhenoTipsDate("1995-03").toEarliestPossibleISODate());
+        Assert.assertEquals(new Date(95, 0, 1), new PhenoTipsDate("1995").toEarliestPossibleISODate());
+        Assert.assertEquals(new Date(90, 0, 1), new PhenoTipsDate("1990s").toEarliestPossibleISODate());
+        Assert.assertNull(new PhenoTipsDate("").toEarliestPossibleISODate());
     }
 }
