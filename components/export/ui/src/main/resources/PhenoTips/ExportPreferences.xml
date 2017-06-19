@@ -119,7 +119,7 @@
         &lt;/li&gt;
       #end
       #foreach ($field in $xclass.properties)
-        #if (!$ignored.fields.contains(${field.name}) &amp;&amp; !$ignored.types.contains(${field.type}))
+        #if (($activeFields.size() == 0 || $activeFields.contains(${field.name})) &amp;&amp; !$ignored.fields.contains(${field.name}) &amp;&amp; !$ignored.types.contains(${field.type}))
         &lt;li&gt;
           &lt;label for="${targetFieldName}_${field.name}"&gt;
           &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}" value="${field.name}" #if($valueList.contains(${field.name}) || $valueListisEmpty) checked="checked" #end /&gt;
