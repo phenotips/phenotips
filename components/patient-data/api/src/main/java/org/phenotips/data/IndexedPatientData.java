@@ -49,7 +49,11 @@ public class IndexedPatientData<T> implements PatientData<T>
     public IndexedPatientData(String name, List<T> data)
     {
         this.name = name;
-        this.internalList = Collections.unmodifiableList(new ArrayList<T>(data));
+        if (data == null || data.isEmpty()) {
+            this.internalList = Collections.emptyList();
+        } else {
+            this.internalList = Collections.unmodifiableList(new ArrayList<>(data));
+        }
     }
 
     @Override
@@ -67,7 +71,7 @@ public class IndexedPatientData<T> implements PatientData<T>
     @Override
     public T get(int index)
     {
-        if (this.internalList == null || index < 0 || index >= this.internalList.size()) {
+        if (index < 0 || index >= this.internalList.size()) {
             return null;
         }
         return this.internalList.get(index);
@@ -76,10 +80,7 @@ public class IndexedPatientData<T> implements PatientData<T>
     @Override
     public Iterator<T> iterator()
     {
-        if (this.internalList != null) {
-            return this.internalList.iterator();
-        }
-        return Collections.emptyIterator();
+        return this.internalList.iterator();
     }
 
     @Override

@@ -50,7 +50,11 @@ public class DictionaryPatientData<T> implements PatientData<T>
     public DictionaryPatientData(String name, Map<String, T> data)
     {
         this.name = name;
-        this.internalMap = Collections.unmodifiableMap(new LinkedHashMap<String, T>(data));
+        if (data == null) {
+            this.internalMap = Collections.emptyMap();
+        } else {
+            this.internalMap = Collections.unmodifiableMap(new LinkedHashMap<>(data));
+        }
     }
 
     @Override
@@ -68,46 +72,31 @@ public class DictionaryPatientData<T> implements PatientData<T>
     @Override
     public T get(String name)
     {
-        if (this.internalMap != null) {
-            return this.internalMap.get(name);
-        }
-        return null;
+        return this.internalMap.get(name);
     }
 
     @Override
     public Iterator<T> iterator()
     {
-        if (this.internalMap != null) {
-            return this.internalMap.values().iterator();
-        }
-        return Collections.emptyIterator();
+        return this.internalMap.values().iterator();
     }
 
     @Override
     public boolean containsKey(String key)
     {
-        if (this.internalMap != null) {
-            return this.internalMap.containsKey(key);
-        }
-        return false;
+        return this.internalMap.containsKey(key);
     }
 
     @Override
     public Iterator<String> keyIterator()
     {
-        if (this.internalMap != null) {
-            return this.internalMap.keySet().iterator();
-        }
-        return Collections.emptyIterator();
+        return this.internalMap.keySet().iterator();
     }
 
     @Override
     public Iterator<Entry<String, T>> dictionaryIterator()
     {
-        if (this.internalMap != null) {
-            return this.internalMap.entrySet().iterator();
-        }
-        return Collections.emptyIterator();
+        return this.internalMap.entrySet().iterator();
     }
 
     @Override
