@@ -245,12 +245,13 @@ public class DataToCellConverter
     public void genesSetup(Set<String> enabledFields) throws Exception
     {
         String sectionName = "genes";
-        String[] fieldIds = { "genes", "genes_status", "genes_strategy", "genes_comments" };
-        // FIXME These will not work properly in different configurations
-        String[][] headerIds =
-            { { "genes" }, { "status", "genes" }, { "strategy", "status", "genes" },
-                { "comments", "strategy", "status", "genes" } };
-        Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
+        Set<String> present = new LinkedHashSet<>();
+        if (enabledFields.contains(sectionName)) {
+            present.add("genes");
+            present.add("genes_status");
+            present.add("genes_strategy");
+            present.add("genes_comments");
+        }
         this.enabledHeaderIdsBySection.put(sectionName, present);
     }
 
@@ -272,9 +273,6 @@ public class DataToCellConverter
         List<String> fields = Arrays.asList("status", "strategy", "comments");
 
         for (String field : fields) {
-            if (!present.contains(field)) {
-                continue;
-            }
             cell = new DataCell(this.translationManager.translate("PhenoTips.GeneClass_" + field), hX, 1,
                 StyleOption.HEADER);
             section.addCell(cell);
@@ -335,9 +333,6 @@ public class DataToCellConverter
                 "end_position", "reference_genome");
 
         for (String field : fields) {
-            if (!present.contains(field)) {
-                continue;
-            }
             String head = this.translationManager.translate("PhenoTips.GeneVariantClass_" + field);
             cell = new DataCell(head, hX, 1, StyleOption.HEADER);
             section.addCell(cell);
@@ -393,9 +388,6 @@ public class DataToCellConverter
             section.addCell(cell);
 
             for (String field : fields) {
-                if (!present.contains(field)) {
-                    continue;
-                }
                 String value = variant.get(field);
                 if ("evidence".equals(field)) {
                     value = parseMultivalueField(value, evidenceTranslates, "PhenoTips.GeneVariantClass_evidence_");
@@ -448,9 +440,6 @@ public class DataToCellConverter
             section.addCell(cell);
 
             for (String field : fields) {
-                if (!present.contains(field)) {
-                    continue;
-                }
                 String value = gene.get(field);
                 if ("strategy".equals(field)) {
                     value = parseMultivalueField(value, strategyTranslates, "PhenoTips.GeneClass_strategy_");
@@ -460,7 +449,6 @@ public class DataToCellConverter
                 cell = new DataCell(value, x++, y);
                 section.addCell(cell);
             }
-
             y++;
         }
 
@@ -849,7 +837,7 @@ public class DataToCellConverter
         List<String> fields = new ArrayList<>(Arrays.asList("gestation", "prenatal_development",
             "assistedReproduction_fertilityMeds", "assistedReproduction_iui", "ivf", "icsi",
             "assistedReproduction_surrogacy", "assistedReproduction_donoregg", "assistedReproduction_donorsperm",
-            "apgar1", "apgar5"));
+            "apgar"));
         fields.retainAll(enabledFields);
         Set<String> fieldSet = new HashSet<>(fields);
         this.enabledHeaderIdsBySection.put(sectionName, fieldSet);
@@ -858,25 +846,34 @@ public class DataToCellConverter
         }
 
         DataSection headerSection = new DataSection();
-
-        List<String> apgarFields = new ArrayList<>(Arrays.asList("apgar1", "apgar5"));
         List<String> assitedReproductionFields = new ArrayList<>(Arrays.asList("assistedReproduction_fertilityMeds",
             "assistedReproduction_iui", "ivf", "icsi", "assistedReproduction_surrogacy",
             "assistedReproduction_donoregg", "assistedReproduction_donorsperm"));
-        apgarFields.retainAll(fieldSet);
+        List<String> apgarField = new ArrayList<>(Arrays.asList("apgar1", "apgar5"));
         assitedReproductionFields.retainAll(fieldSet);
-        int apgarOffset = apgarFields.size();
-        // there used to be a +1 for the offset
         int assistedReproductionOffset = assitedReproductionFields.size();
-        int bottomY = (apgarOffset > 0 || assistedReproductionOffset > 0) ? 2 : 1;
+        int apgarOffset = fields.contains("apgar") ? 2 : 0;
+        int bottomY = (fields.contains("apgar") || assistedReproductionOffset > 0) ? 2 : 1;
 
         int hX = 0;
         for (String fieldId : fields) {
-            DataCell headerCell = new DataCell(
-                this.translationManager.translate("phenotips.export.excel.label.prenatalPerinatalHistory." + fieldId),
-                hX, bottomY, StyleOption.HEADER);
-            headerSection.addCell(headerCell);
-            hX++;
+            if (fieldId.equals("apgar")) {
+                for (String apgarId : apgarField) {
+                    DataCell headerCell = new DataCell(this.translationManager
+                        .translate("phenotips.export.excel.label.prenatalPerinatalHistory." + apgarId),
+                        hX, bottomY, StyleOption.HEADER);
+                    headerSection.addCell(headerCell);
+                    hX++;
+                }
+            }
+            else {
+                DataCell headerCell = new DataCell(
+                    this.translationManager
+                        .translate("phenotips.export.excel.label.prenatalPerinatalHistory." + fieldId),
+                    hX, bottomY, StyleOption.HEADER);
+                headerSection.addCell(headerCell);
+                hX++;
+            }
         }
         if (apgarOffset > 0) {
             DataCell headerCell = new DataCell(
@@ -941,19 +938,15 @@ public class DataToCellConverter
             x++;
         }
 
-        if (present.contains("apgar1")) {
-            Object apgar = apgarScores.get("apgar1");
-            String cellValue = apgar != null ? apgar.toString() : "";
-            DataCell cell = new DataCell(cellValue, x, 0);
-            bodySection.addCell(cell);
-            x++;
-        }
-        if (present.contains("apgar5")) {
-            Object apgar = apgarScores.get("apgar5");
-            String cellValue = apgar != null ? apgar.toString() : "";
-            DataCell cell = new DataCell(cellValue, x, 0);
-            bodySection.addCell(cell);
-            x++;
+        if(present.contains("apgar")) {
+            List<String> apgarFields = Arrays.asList("apgar1", "apgar5");
+            for (String aField : apgarFields) {
+                Object apgar = apgarScores.get(aField);
+                String cellValue = apgar != null ? apgar.toString() : "";
+                DataCell cell = new DataCell(cellValue, x, 0);
+                bodySection.addCell(cell);
+                x++;
+            }
         }
 
         return bodySection;
