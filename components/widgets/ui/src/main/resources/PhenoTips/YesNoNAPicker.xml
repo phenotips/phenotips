@@ -277,7 +277,7 @@ $xwiki.ssx.use('PhenoTips.YesNoNAPicker')##
     var value = element.value;
     var selected = element.checked;
     var label = element.parentNode;
-    if (value != this.yesInput.value || !selected || !label || (this.yesInput.name != element.name &amp;&amp; this.noInput.name != element.name)) {
+    if (value != this.yesInput.value || !selected || !label) {
       return;
     }
     if (label.hasClassName('na')) {
