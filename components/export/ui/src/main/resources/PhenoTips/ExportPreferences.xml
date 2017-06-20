@@ -157,7 +157,7 @@
   #set($selectedValues = ['external_id', 'gender', 'phenotype', 'negative_phenotype', 'clinical_diagnosis', 'omim_id'])
 #else
   #set($ignored = {
-    'fields' : ['reports_history', 'pedigree', 'negative_phenotype', 'extended_phenotype', 'extended_negative_phenotype', 'negative_prenatal_phenotype', 'extended_prenatal_phenotype', 'extended_negative_prenatal_phenotype', 'genetic_notes'],
+    'fields' : ['reports_history', 'pedigree', 'negative_phenotype', 'extended_phenotype', 'extended_negative_phenotype', 'negative_prenatal_phenotype', 'extended_prenatal_phenotype', 'extended_negative_prenatal_phenotype', 'genetic_notes', 'apgar1', 'apgar5'],
     'types'  : []
   })
   #if (${request.export_id} == 'phenotips_json_export')
@@ -173,22 +173,9 @@
        'date' : "$services.localization.render('phenotips.exportPreferences.field.date')",
        'allergies' : "$services.localization.render('PhenoTips.AllergiesDataClass_allergies')",
        'genes' : "$services.localization.render('phenotips.exportPreferences.field.genes')",
-       'genes_status' : "$services.localization.render('phenotips.exportPreferences.field.genesStatus')",
-       'genes_strategy' : "$services.localization.render('phenotips.exportPreferences.field.genesStrategy')",
-       'genes_comments' : "$services.localization.render('phenotips.exportPreferences.field.genesComments')",
        'genetic_notes' : "$services.localization.render('phenotips.exportPreferences.field.geneticNotes')",
        'variants' : "$services.localization.render('phenotips.exportPreferences.field.variants')",
-       'variants_protein' : "$services.localization.render('phenotips.exportPreferences.field.variantsProtein')",
-       'variants_transcript' : "$services.localization.render('phenotips.exportPreferences.field.variantsTranscript')",
-       'variants_dbsnp' : "$services.localization.render('phenotips.exportPreferences.field.variantsDbsnp')",
-       'variants_zygosity' : "$services.localization.render('phenotips.exportPreferences.field.variantsZygosity')",
-       'variants_effect' : "$services.localization.render('phenotips.exportPreferences.field.variantsEffect')",
-       'variants_interpretation' : "$services.localization.render('phenotips.exportPreferences.field.variantsInterpretation')",
-       'variants_inheritance' : "$services.localization.render('phenotips.exportPreferences.field.variantsInheritance')",
-       'variants_evidence' : "$services.localization.render('phenotips.exportPreferences.field.variantsEvidence')",
-       'variants_segregation' : "$services.localization.render('phenotips.exportPreferences.field.variantsSegregation')",
-       'variants_sanger' : "$services.localization.render('phenotips.exportPreferences.field.variantsSanger')",
-       'variants_coordinates' : "$services.localization.render('phenotips.exportPreferences.field.variantsCoordinates')"
+       'apgar' : "$services.localization.render('phenotips.exportPreferences.prenatalPerinatalHistory.apgarScores')"
   })
   #set($metaFields = ['phenotype'])
   #set($selectedValues = [])
