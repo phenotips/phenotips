@@ -195,6 +195,13 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
   #end
 #end
 
+#macro (__displayVCFManager)
+  #if ($options.manage)
+    #__displaySelectableAttachmentList($targetDoc $propValue)
+    {{info}}$escapetool.xml($services.localization.render('phenotips.imageDisplayer.VCF.infoMessage')){{/info}}
+  #end
+#end
+
 {{/velocity}}
 
 {{velocity}}
@@ -209,20 +216,20 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
       (% id=$!{fieldName}_container %)(((
       #if ($options.manage)
         #__displayUploadForm($targetDoc)
+
       #else
         #set ($actionURL = $displayer.getURL('view', "$!{qString}&amp;mode=edit&amp;manage=true"))
         {{html wiki=false clean=false}}&lt;div class="actions"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;span class="buttonwrapper"&gt;&lt;a class="add-data-button button manage-images-button" href="$!{escapetool.xml($actionURL)}"&gt;$services.localization.render('phenotips.imageDisplayer.uploadAndManage')&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;{{/html}}
-      #end
-      #if (($!{xclass.name} != 'PhenoTips.VCF') || ($options.manage))
-        #__displaySelectableAttachmentList($targetDoc $propValue)
-        )))
-        ## Check if the VCF manager is the displayer being loaded. Append an info box near the bottom of the form.
-        #if ($!{xclass.name} == 'PhenoTips.VCF')
-          {{html wiki=false clean=false}}&lt;input type="hidden" id="vcf-manager" /&gt;{{/html}}
 
-          {{info}}$escapetool.xml($services.localization.render('phenotips.imageDisplayer.VCF.infoMessage')){{/info}}
-        #end
       #end
+      ## Check if the VCF manager is the displayer being loaded.
+      #if ($!{xclass.name} == 'PhenoTips.VCF')
+        {{html wiki=false clean=false}}&lt;input type="hidden" id="vcf-manager" /&gt;{{/html}}
+        #__displayVCFManager
+      #else
+        #__displaySelectableAttachmentList($targetDoc $propValue)
+      #end
+    )))
     #else## not edit
       #__displayGallery($targetDoc $propValue)
     #end## context action check
