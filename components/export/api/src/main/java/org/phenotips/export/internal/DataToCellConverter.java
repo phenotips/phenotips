@@ -212,36 +212,6 @@ public class DataToCellConverter
         return section;
     }
 
-    public void variantsSetup(Set<String> enabledFields) throws Exception
-    {
-        String sectionName = "variants";
-        String[] fieldIds =
-            { "variants", "variants_protein", "variants_transcript", "variants_dbsnp", "variants_zygosity",
-                "variants_effect", "variants_interpretation", "variants_inheritance", "variants_evidence",
-                "variants_segregation", "variants_sanger", "variants_coordinates" };
-        // FIXME These will not work properly in different configurations
-        String[][] headerIds =
-            {
-                { "cdna" },
-                { "protein", "cdna" },
-                { "transcript", "protein", "cdna" },
-                { "dbsnp", "transcript", "protein", "cdna" },
-                { "zygosity", "dbsnp", "transcript", "protein", "cdna" },
-                { "effect", "zygosity", "dbsnp", "transcript", "protein", "cdna" },
-                { "interpretation", "effect", "zygosity", "dbsnp", "transcript", "protein", "cdna" },
-                { "inheritance", "interpretation", "effect", "zygosity", "dbsnp", "transcript", "protein", "cdna" },
-                { "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp", "transcript", "protein",
-                    "cdna" },
-                { "segregation", "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp",
-                    "transcript", "protein", "cdna" },
-                { "sanger", "segregation", "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp",
-                    "transcript", "protein", "cdna" },
-                { "reference_genome", "end_position", "start_position", "chromosome", "cdna" }
-            };
-        Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
-        this.enabledHeaderIdsBySection.put(sectionName, present);
-    }
-
     public void genesSetup(Set<String> enabledFields) throws Exception
     {
         String sectionName = "genes";
@@ -290,27 +260,88 @@ public class DataToCellConverter
         return section;
     }
 
-    public DataSection geneticNotesHeader(Set<String> enabledFields) throws Exception
+    public DataSection genesBody(Patient patient) throws Exception
     {
-        String sectionName = "genetic_notes";
-        Set<String> present = new LinkedHashSet<>();
-        if (enabledFields.remove(sectionName)) {
-            present.add(sectionName);
-        }
-        this.enabledHeaderIdsBySection.put(sectionName, present);
-
-        DataSection headerSection = new DataSection();
-        if (present.isEmpty()) {
+        String sectionName = "genes";
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
+        if (present == null || present.isEmpty()) {
             return null;
         }
 
-        DataCell headerCell =
-            new DataCell(this.translationManager.translate("phenotips.exportPreferences.field.geneticNotes"),
-                0, 0, StyleOption.LARGE_HEADER);
-        headerCell.addStyle(StyleOption.HEADER);
-        headerSection.addCell(headerCell);
+        DataSection section = new DataSection();
+        int y = 0;
 
-        return headerSection;
+        PatientData<Map<String, String>> allGenes = patient.getData("genes");
+
+        // empties should be created in the case that there are no genes to write
+        if (allGenes == null || !allGenes.isIndexed()) {
+            /* Status and gene name columns are always present */
+            for (int i = 0; i < present.size(); i++) {
+                DataCell cell = new DataCell("", i, y);
+                section.addCell(cell);
+            }
+            return section;
+        }
+
+        List<String> fields = Arrays.asList("status", "strategy", "comments");
+        List<String> strategyTranslates =
+            Arrays.asList("sequencing", "deletion", "familial_mutation", "common_mutations");
+        DataCell cell;
+
+        for (Map<String, String> gene : allGenes) {
+            int x = 0;
+            String geneName = gene.get("gene");
+            cell = new DataCell(geneName, x++, y);
+            section.addCell(cell);
+
+            for (String field : fields) {
+                if (!present.contains(field)) {
+                    continue;
+                }
+                String value = gene.get(field);
+                if ("strategy".equals(field)) {
+                    value = parseMultivalueField(value, strategyTranslates, "PhenoTips.GeneClass_strategy_");
+                } else if ("status".equals(field)) {
+                    value = this.translationManager.translate("PhenoTips.GeneClass_status_" + value);
+                }
+                cell = new DataCell(value, x++, y);
+                section.addCell(cell);
+            }
+
+            y++;
+        }
+
+        return section;
+    }
+
+    public void variantsSetup(Set<String> enabledFields) throws Exception
+    {
+        String sectionName = "variants";
+        String[] fieldIds =
+            { "variants", "variants_protein", "variants_transcript", "variants_dbsnp", "variants_zygosity",
+                "variants_effect", "variants_interpretation", "variants_inheritance", "variants_evidence",
+                "variants_segregation", "variants_sanger", "variants_coordinates" };
+        // FIXME These will not work properly in different configurations
+        String[][] headerIds =
+            {
+                { "cdna" },
+                { "protein", "cdna" },
+                { "transcript", "protein", "cdna" },
+                { "dbsnp", "transcript", "protein", "cdna" },
+                { "zygosity", "dbsnp", "transcript", "protein", "cdna" },
+                { "effect", "zygosity", "dbsnp", "transcript", "protein", "cdna" },
+                { "interpretation", "effect", "zygosity", "dbsnp", "transcript", "protein", "cdna" },
+                { "inheritance", "interpretation", "effect", "zygosity", "dbsnp", "transcript", "protein", "cdna" },
+                { "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp", "transcript", "protein",
+                    "cdna" },
+                { "segregation", "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp",
+                    "transcript", "protein", "cdna" },
+                { "sanger", "segregation", "evidence", "inheritance", "interpretation", "effect", "zygosity", "dbsnp",
+                    "transcript", "protein", "cdna" },
+                { "reference_genome", "end_position", "start_position", "chromosome", "cdna" }
+            };
+        Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
+        this.enabledHeaderIdsBySection.put(sectionName, present);
     }
 
     public DataSection variantsHeader() throws Exception
@@ -413,58 +444,27 @@ public class DataToCellConverter
         return section;
     }
 
-    public DataSection genesBody(Patient patient) throws Exception
+    public DataSection geneticNotesHeader(Set<String> enabledFields) throws Exception
     {
-        String sectionName = "genes";
-        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
-        if (present == null || present.isEmpty()) {
+        String sectionName = "genetic_notes";
+        Set<String> present = new LinkedHashSet<>();
+        if (enabledFields.remove(sectionName)) {
+            present.add(sectionName);
+        }
+        this.enabledHeaderIdsBySection.put(sectionName, present);
+
+        DataSection headerSection = new DataSection();
+        if (present.isEmpty()) {
             return null;
         }
 
-        DataSection section = new DataSection();
-        int y = 0;
+        DataCell headerCell =
+            new DataCell(this.translationManager.translate("phenotips.exportPreferences.field.geneticNotes"),
+                0, 0, StyleOption.LARGE_HEADER);
+        headerCell.addStyle(StyleOption.HEADER);
+        headerSection.addCell(headerCell);
 
-        PatientData<Map<String, String>> allGenes = patient.getData("genes");
-
-        // empties should be created in the case that there are no genes to write
-        if (allGenes == null || !allGenes.isIndexed()) {
-            /* Status and gene name columns are always present */
-            for (int i = 0; i < present.size(); i++) {
-                DataCell cell = new DataCell("", i, y);
-                section.addCell(cell);
-            }
-            return section;
-        }
-
-        List<String> fields = Arrays.asList("status", "strategy", "comments");
-        List<String> strategyTranslates =
-            Arrays.asList("sequencing", "deletion", "familial_mutation", "common_mutations");
-        DataCell cell;
-
-        for (Map<String, String> gene : allGenes) {
-            int x = 0;
-            String geneName = gene.get("gene");
-            cell = new DataCell(geneName, x++, y);
-            section.addCell(cell);
-
-            for (String field : fields) {
-                if (!present.contains(field)) {
-                    continue;
-                }
-                String value = gene.get(field);
-                if ("strategy".equals(field)) {
-                    value = parseMultivalueField(value, strategyTranslates, "PhenoTips.GeneClass_strategy_");
-                } else if ("status".equals(field)) {
-                    value = this.translationManager.translate("PhenoTips.GeneClass_status_" + value);
-                }
-                cell = new DataCell(value, x++, y);
-                section.addCell(cell);
-            }
-
-            y++;
-        }
-
-        return section;
+        return headerSection;
     }
 
     public DataSection geneticNotesBody(Patient patient)
