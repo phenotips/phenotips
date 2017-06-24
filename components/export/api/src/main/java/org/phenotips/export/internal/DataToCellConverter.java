@@ -214,6 +214,9 @@ public class DataToCellConverter
 
     public void genesSetup(Set<String> enabledFields) throws Exception
     {
+        if (!enabledFields.remove("genes")) {
+            return;
+        }
         String sectionName = "genes";
         Set<String> present = new LinkedHashSet<>();
         if (enabledFields.contains(sectionName)) {
