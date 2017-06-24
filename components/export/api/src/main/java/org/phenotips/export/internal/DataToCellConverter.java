@@ -868,8 +868,7 @@ public class DataToCellConverter
                     headerSection.addCell(headerCell);
                     hX++;
                 }
-            }
-            else {
+            } else {
                 DataCell headerCell = new DataCell(
                     this.translationManager
                         .translate("phenotips.export.excel.label.prenatalPerinatalHistory." + fieldId),
@@ -941,7 +940,7 @@ public class DataToCellConverter
             x++;
         }
 
-        if(present.contains("apgar")) {
+        if (present.contains("apgar")) {
             List<String> apgarFields = Arrays.asList("apgar1", "apgar5");
             for (String aField : apgarFields) {
                 Object apgar = apgarScores.get(aField);
