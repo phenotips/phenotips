@@ -85,16 +85,8 @@ public class DataToCellConverter
     public void phenotypeSetup(Set<String> enabledFields) throws Exception
     {
         String sectionName = "phenotype";
-        String[] fieldIds =
-            {
-                "phenotype",
-                "phenotype_meta"
-            };
-        String[][] headerIds =
-            {
-                { "present", "name", "id" },
-                { "present", "name", "id", "meta.name", "meta.id" }
-            };
+        String[] fieldIds = { "phenotype", "phenotype_meta" };
+        String[][] headerIds = { { "present", "name", "id" }, { "present", "name", "id", "meta.name", "meta.id" } };
 
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
