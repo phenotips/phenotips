@@ -877,6 +877,17 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   margin-right: 5px;
 }
 
+ul.filters {
+  margin: 10px;
+  list-style-type: none;
+}
+ul.filters li {
+  padding: 0 0 1em;
+}
+ul.filters .accepted-suggestions {
+  margin: 0 !important;
+}
+
 .bottombuttons {
   background: #F9F9F9;
   border: 1px solid #FFFFFF;
