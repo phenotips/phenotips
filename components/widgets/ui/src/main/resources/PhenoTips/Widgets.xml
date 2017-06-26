@@ -1788,8 +1788,9 @@
   onItemAdded : function (element) {
   },
 
-  removeItem : function(event) {
-    var item = event.findElement('li');
+  removeItem : function(e) {
+    // The parameter can be an event or a target element, depending on how it is called
+    var item = e.findElement &amp;&amp; e.findElement('li') || e;
     this.synchronizeSelection({
       value   : (item.down('input[type=checkbox]') || item.down('input')).value,
       checked : false
@@ -1801,12 +1802,10 @@
   },
 
   clearAcceptedList : function () {
-    // The list items are recreated after each update, so we can't cache the set of items, we must request them one by one
-    var item = this.list.down('li .delete-tool');
-    while (item) {
-      item.click();
-      item = this.list.down('li .delete-tool');
-    }
+    var _this = this;
+    this.list.select('li').each(function (item) {
+      _this.removeItem(item);
+    });
   },
 
   updateListTools : function () {
