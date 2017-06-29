@@ -18,30 +18,33 @@
 package org.phenotips.studies.family.internal;
 
 import org.phenotips.data.Patient;
+import org.phenotips.data.permissions.AccessLevel;
+import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.studies.family.Family;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceSerializer;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
-import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.BaseStringProperty;
 
 /**
  * Sets permissions of a family.
@@ -75,27 +78,41 @@ public class PhenotipsFamilyPermissions
     @Inject
     private Logger logger;
 
+    @Inject
+    private PermissionsManager permissionsManager;
+
+    @Inject
+    @Named("view")
+    private AccessLevel viewLevel;
+
+    @Inject
+    @Named("edit")
+    private AccessLevel editLevel;
+
+    @Inject
+    @Named("manage")
+    private AccessLevel manageLevel;
+
+    @Inject
+    private EntityReferenceSerializer<String> serializer;
+
     /**
      * Returns all the users and groups that have the given right for the patient as array of two strings. First string
      * in returned array contains all the users that has this right for the patient, second string contains all the
      * groups that has the right.
      *
-     * @param patientDoc patient to read permissions from
-     * @param rightName a permission name ('view','edit' or 'delete'), if entity's permissions include this permission
-     *            the entity is included in the result
+     * @param patient patient to read permissions from
+     * @param targetAccessLevel an access level ('view','edit' or 'manage')
      * @return array of entity names
      */
-    public String[] getEntitiesWithAccessAsString(XWikiDocument patientDoc, String rightName)
+    public String[] getEntitiesWithAccessAsString(Patient patient, AccessLevel targetAccessLevel)
     {
         String[] entityList = new String[2];
 
-        // sanity check - if given right is not contained in the full rights means it is a wrong accessString
-        if (VIEWEDITDELETE_RIGHTS.contains(rightName)) {
-            int i = 0;
-            for (Set<String> category : this.getEntitiesWithAccess(patientDoc, rightName)) {
-                entityList[i] = setToString(category);
-                i++;
-            }
+        int i = 0;
+        for (Set<String> category : this.getEntitiesWithAccess(patient, targetAccessLevel)) {
+            entityList[i] = setToString(category);
+            i++;
         }
         return entityList;
     }
@@ -104,46 +121,33 @@ public class PhenotipsFamilyPermissions
      * Returns all the users and groups that can edit the patient. First set in returned list contains all the users
      * that can edit the patient, second set contains all the groups that can edit the patient.
      */
-    private List<Set<String>> getEntitiesWithAccess(XWikiDocument patientDoc, String accessString)
+    private List<Set<String>> getEntitiesWithAccess(Patient patient, AccessLevel targetAccessLevel)
     {
-        Collection<BaseObject> rightsObjects = patientDoc.getXObjects(RIGHTS_CLASS);
         Set<String> users = new HashSet<>();
         Set<String> groups = new HashSet<>();
         List<Set<String>> fullRights = new ArrayList<>();
         fullRights.add(users);
         fullRights.add(groups);
-        if (rightsObjects == null) {
-            return fullRights;
-        }
-        for (BaseObject rights : rightsObjects) {
-            if (rights == null) {
-                continue;
-            }
-            String rightsString = rights.getStringValue(RIGHTS_LEVELS_FIELD);
-            if (rightsString.contains(accessString)) {
-                extractReferences((BaseStringProperty) rights.getField(RIGHTS_USERS_FIELD), users);
-                extractReferences((BaseStringProperty) rights.getField(RIGHTS_GROUPS_FIELD), groups);
-            }
-        }
-        return fullRights;
-    }
-
-    /**
-     * Extract a list of users or groups from an XProperty, and append the outcome to a specified set.
-     *
-     * @param xproperty the XWiki property from which to get the values; may be {@code null}
-     * @param target the container where to add the extracted users/groups
-     */
-    private void extractReferences(BaseStringProperty xproperty, Collection<String> target)
-    {
-        if (xproperty != null) {
-            String[] references = xproperty.getValue().split(COMMA);
-            for (String reference : references) {
-                if (StringUtils.isNotBlank(reference)) {
-                    target.add(reference);
+        PatientAccess access = this.permissionsManager.getPatientAccess(patient);
+        for (Collaborator c : access.getCollaborators()) {
+            if (targetAccessLevel.compareTo(c.getAccessLevel()) <= 0) {
+                if (c.isGroup()) {
+                    groups.add(this.serializer.serialize(c.getUser()));
+                } else {
+                    users.add(this.serializer.serialize(c.getUser()));
                 }
             }
         }
+        if (targetAccessLevel.compareTo(this.manageLevel) >= 0) {
+            // Requested manager/owner access, include the owner in the result
+            if (access.getOwner().isGroup()) {
+                groups.add(this.serializer.serialize(access.getOwner().getUser()));
+            } else {
+                users.add(this.serializer.serialize(access.getOwner().getUser()));
+            }
+        }
+
+        return fullRights;
     }
 
     /**
@@ -159,14 +163,9 @@ public class PhenotipsFamilyPermissions
      */
     public void updatePermissions(Family family, XWikiContext context)
     {
-        XWiki wiki = context.getWiki();
-
         List<Patient> members = family.getMembers();
 
-        this.updatePermissionsForOneRightLevel(VIEW_RIGHTS, members, family.getXDocument(), wiki, context);
-        // setting view-edit rights after view rights makes sure if a user has edit rights on one patient
-        // and view rights on another the user still gets edit permissions for the family
-        this.updatePermissionsForOneRightLevel(VIEWEDIT_RIGHTS, members, family.getXDocument(), wiki, context);
+        this.updatePermissions(members, family.getXDocument(), context);
 
         DocumentReference creatorReference = family.getXDocument().getCreatorReference();
         this.setOwnerPermissionsForUser(creatorReference == null ? "" : creatorReference.toString(),
@@ -182,46 +181,58 @@ public class PhenotipsFamilyPermissions
         rightsObject.set(ALLOW, 1, context);
     }
 
-    private void updatePermissionsForOneRightLevel(String rightsLevel,
-        List<Patient> members, XWikiDocument familyDocument, XWiki wiki, XWikiContext context)
+    private void updatePermissions(List<Patient> members, XWikiDocument familyDocument, XWikiContext context)
     {
-        BaseObject rightsObject = getOrCreateRightsObject(familyDocument, rightsLevel, context);
-        if (rightsObject == null) {
-            return;
-        }
-
-        Set<String> usersUnion = new HashSet<>();
-        Set<String> groupsUnion = new HashSet<>();
+        Set<String> viewUsersUnion = new HashSet<>();
+        Set<String> viewGroupsUnion = new HashSet<>();
+        Set<String> editUsersUnion = new HashSet<>();
+        Set<String> editGroupsUnion = new HashSet<>();
 
         for (Patient patient : members) {
-            XWikiDocument patientDoc = patient.getXDocument();
-            if (patientDoc == null) {
-                this.logger.error("Patient document is null for patient {}", patient.getId());
-                continue;
+            PatientAccess access = this.permissionsManager.getPatientAccess(patient);
+            for (Collaborator c : access.getCollaborators()) {
+                if (this.editLevel.compareTo(c.getAccessLevel()) <= 0) {
+                    if (c.isGroup()) {
+                        editGroupsUnion.add(this.serializer.serialize(c.getUser()));
+                    } else {
+                        editUsersUnion.add(this.serializer.serialize(c.getUser()));
+                    }
+                } else if (this.viewLevel.compareTo(c.getAccessLevel()) <= 0) {
+                    if (c.isGroup()) {
+                        viewGroupsUnion.add(this.serializer.serialize(c.getUser()));
+                    } else {
+                        viewUsersUnion.add(this.serializer.serialize(c.getUser()));
+                    }
+                }
             }
-
-            // TODO: what about users who have VIEW but not EDIT rights?
-            List<Set<String>> patientRights = this.getEntitiesWithAccess(patientDoc, rightsLevel);
-
-            usersUnion.addAll(patientRights.get(0));
-            groupsUnion.addAll(patientRights.get(1));
+            if (access.getOwner().isGroup()) {
+                editGroupsUnion.add(this.serializer.serialize(access.getOwner().getUser()));
+            } else {
+                editUsersUnion.add(this.serializer.serialize(access.getOwner().getUser()));
+            }
         }
 
-        rightsObject.set(RIGHTS_USERS_FIELD, setToString(usersUnion), context);
-        rightsObject.set(RIGHTS_GROUPS_FIELD, setToString(groupsUnion), context);
-        rightsObject.set(RIGHTS_LEVELS_FIELD, rightsLevel, context);
+        BaseObject rightsObject = getOrCreateRightsObject(familyDocument, VIEW_RIGHTS, context);
+        rightsObject.set(RIGHTS_USERS_FIELD, setToString(viewUsersUnion), context);
+        rightsObject.set(RIGHTS_GROUPS_FIELD, setToString(viewGroupsUnion), context);
+        rightsObject.set(RIGHTS_LEVELS_FIELD, VIEW_RIGHTS, context);
+        rightsObject.set(ALLOW, 1, context);
+        rightsObject = getOrCreateRightsObject(familyDocument, VIEWEDIT_RIGHTS, context);
+        rightsObject.set(RIGHTS_USERS_FIELD, setToString(editUsersUnion), context);
+        rightsObject.set(RIGHTS_GROUPS_FIELD, setToString(editGroupsUnion), context);
+        rightsObject.set(RIGHTS_LEVELS_FIELD, VIEWEDIT_RIGHTS, context);
         rightsObject.set(ALLOW, 1, context);
     }
 
     private static String setToString(Set<String> set)
     {
-        String finalString = "";
+        StringBuilder result = new StringBuilder();
         for (String item : set) {
             if (StringUtils.isNotBlank(item)) {
-                finalString += item + COMMA;
+                result.append(item).append(COMMA);
             }
         }
-        return finalString;
+        return result.toString();
     }
 
     /**

@@ -18,8 +18,10 @@
 package org.phenotips.studies.family.migrations;
 
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.Owner;
+import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.Pedigree;
@@ -103,6 +105,12 @@ public class PhenotipsFamilyMigrations
     @Inject
     private PhenotipsFamilyPermissions familyPermissions;
 
+    @Inject
+    private PatientRepository patientRepository;
+
+    @Inject
+    private PermissionsManager permissionsManager;
+
     /** Serializes the class name without the wiki prefix, to be used in the database query. */
     @Inject
     @Named("compactwiki")
@@ -140,7 +148,8 @@ public class PhenotipsFamilyMigrations
             this.setOwner(newFamilyXDocument, patientXDoc);
             this.setFamilyObject(newFamilyXDocument, patientXDoc, nextId);
             this.setPedigreeObject(newFamilyXDocument, pedigreeData, pedigreeImage);
-            this.setPermissionsObject(newFamilyXDocument, patientXDoc);
+            this.setPermissionsObject(newFamilyXDocument,
+                this.patientRepository.get(patientXDoc.getDocumentReference()));
             this.setVisibilityObject(newFamilyXDocument, patientXDoc);
             this.setCollaborators(newFamilyXDocument, patientXDoc);
 
@@ -215,22 +224,19 @@ public class PhenotipsFamilyMigrations
     }
 
     /**
-     * Asigns nodes to PhenoTips records and adds comments to nodes.
-     *
-     *  - Finds all nodes with the given external IDs and - if not already linked to a PT record - links them to
-     *    the given PT record
-     *  - For each node linked to a PT record (including nodes linked in step1 above) appends the comment
-     *    provided
+     * Asigns nodes to PhenoTips records and adds comments to nodes. - Finds all nodes with the given external IDs and -
+     * if not already linked to a PT record - links them to the given PT record - For each node linked to a PT record
+     * (including nodes linked in step1 above) appends the comment provided
      *
      * @param pedigree pedigree as JSON. The pedigree will be modified in place
-     * @param externalIdToPhenotipsId a map of externalIDs which, if found in pedigree, should be linked
-     *        to the corresponding phenotips records
-     * @param commentsByPhenotipsId a map of phenotips ids to comments that shouldbe added for those nodes.
-     *        The list may include nodes linked based on the `externalIdToPhenotipsId` list
+     * @param externalIdToPhenotipsId a map of externalIDs which, if found in pedigree, should be linked to the
+     *            corresponding phenotips records
+     * @param commentsByPhenotipsId a map of phenotips ids to comments that shouldbe added for those nodes. The list may
+     *            include nodes linked based on the `externalIdToPhenotipsId` list
      * @return a set of phenotips IDs that were newly linked based on externalID
      */
     public Set<String> updatePedigree(JSONObject pedigree, Map<String, String> externalIdToPhenotipsId,
-            Map<String, String> commentsByPhenotipsId)
+        Map<String, String> commentsByPhenotipsId)
     {
         Set<String> linkedIds = new HashSet<>();
 
@@ -296,7 +302,6 @@ public class PhenotipsFamilyMigrations
         return owner;
     }
 
-
     /**
      * Set owner object property.
      */
@@ -335,25 +340,26 @@ public class PhenotipsFamilyMigrations
     /**
      * Set permissions object properties.
      */
-    private void setPermissionsObject(XWikiDocument familyXDocument, XWikiDocument patientXDoc)
+    private void setPermissionsObject(XWikiDocument familyXDocument, Patient patient)
         throws XWikiException
     {
-        setRights(familyXDocument, patientXDoc, VIEW_RIGHT);
-        setRights(familyXDocument, patientXDoc, EDIT_RIGHT);
-        setRights(familyXDocument, patientXDoc, FULL_RIGHT);
+        setRights(familyXDocument, patient, VIEW_RIGHT, VIEW_RIGHT);
+        setRights(familyXDocument, patient, "edit", EDIT_RIGHT);
+        setRights(familyXDocument, patient, "manage", FULL_RIGHT);
     }
 
     /**
      * Helper method - set permissions object properties for one access level.
      */
-    private void setRights(XWikiDocument familyXDocument, XWikiDocument patientXDoc, String rightLevel)
-        throws XWikiException
+    private void setRights(XWikiDocument familyXDocument, Patient patient, String grantedAccess,
+        String targetLevel) throws XWikiException
     {
         BaseObject permissionsObject = familyXDocument.newXObject(this.rightsClassReference, this.context);
-        String[] rightHolders = this.familyPermissions.getEntitiesWithAccessAsString(patientXDoc, VIEW_RIGHT);
+        String[] rightHolders = this.familyPermissions.getEntitiesWithAccessAsString(patient,
+            this.permissionsManager.resolveAccessLevel(grantedAccess));
         permissionsObject.setStringValue("users", rightHolders[0]);
         permissionsObject.setStringValue("groups", rightHolders[1]);
-        permissionsObject.setStringValue("levels", rightLevel);
+        permissionsObject.setStringValue("levels", targetLevel);
         permissionsObject.setIntValue("allow", 1);
     }
 

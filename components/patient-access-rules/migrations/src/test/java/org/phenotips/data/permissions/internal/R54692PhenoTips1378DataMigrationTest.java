@@ -63,7 +63,7 @@ public class R54692PhenoTips1378DataMigrationTest
 {
     @Rule
     public final MockitoComponentMockingRule<HibernateDataMigration> mocker =
-        new MockitoComponentMockingRule<HibernateDataMigration>(R54692PhenoTips1378DataMigration.class);
+        new MockitoComponentMockingRule<>(R54692PhenoTips1378DataMigration.class);
 
     /** Sending an event with a non-patient document doesn't alter the document. */
     @Test
@@ -79,7 +79,7 @@ public class R54692PhenoTips1378DataMigrationTest
         XWikiContext xc = mock(XWikiContext.class);
         when(ec.getProperty("xwikicontext")).thenReturn(xc);
         @SuppressWarnings("deprecation")
-        ArgumentCaptor<HibernateCallback<Object>> callbackCaptor = new ArgumentCaptor<HibernateCallback<Object>>();
+        ArgumentCaptor<HibernateCallback<Object>> callbackCaptor = new ArgumentCaptor<>();
         this.mocker.getComponentUnderTest().migrate();
         Mockito.verify(store).executeWrite(Matchers.same(xc), callbackCaptor.capture());
 
@@ -90,7 +90,7 @@ public class R54692PhenoTips1378DataMigrationTest
         Session session = mock(Session.class);
         Query q = mock(Query.class);
         when(session.createQuery(Matchers.anyString())).thenReturn(q);
-        List<String> docs = new ArrayList<String>();
+        List<String> docs = new ArrayList<>();
         docs.add("data.hasNoVisibility");
         when(q.list()).thenReturn(docs);
         DocumentReferenceResolver<String> resolver =
@@ -120,7 +120,7 @@ public class R54692PhenoTips1378DataMigrationTest
         XWikiContext xc = mock(XWikiContext.class);
         when(ec.getProperty("xwikicontext")).thenReturn(xc);
         @SuppressWarnings("deprecation")
-        ArgumentCaptor<HibernateCallback<Object>> callbackCaptor = new ArgumentCaptor<HibernateCallback<Object>>();
+        ArgumentCaptor<HibernateCallback<Object>> callbackCaptor = new ArgumentCaptor<>();
         this.mocker.getComponentUnderTest().migrate();
         Mockito.verify(store).executeWrite(Matchers.same(xc), callbackCaptor.capture());
 
@@ -131,7 +131,7 @@ public class R54692PhenoTips1378DataMigrationTest
         Session session = mock(Session.class);
         Query q = mock(Query.class);
         when(session.createQuery(Matchers.anyString())).thenReturn(q);
-        List<String> docs = new ArrayList<String>();
+        List<String> docs = new ArrayList<>();
         docs.add("data.ThrowsDME");
         when(q.list()).thenReturn(docs);
         DocumentReferenceResolver<String> resolver =
@@ -162,7 +162,7 @@ public class R54692PhenoTips1378DataMigrationTest
         XWikiContext xc = mock(XWikiContext.class);
         when(ec.getProperty("xwikicontext")).thenReturn(xc);
         @SuppressWarnings("deprecation")
-        ArgumentCaptor<HibernateCallback<Object>> callbackCaptor = new ArgumentCaptor<HibernateCallback<Object>>();
+        ArgumentCaptor<HibernateCallback<Object>> callbackCaptor = new ArgumentCaptor<>();
         this.mocker.getComponentUnderTest().migrate();
         Mockito.verify(store).executeWrite(Matchers.same(xc), callbackCaptor.capture());
 
@@ -173,7 +173,7 @@ public class R54692PhenoTips1378DataMigrationTest
         Session session = mock(Session.class);
         Query q = mock(Query.class);
         when(session.createQuery(Matchers.anyString())).thenReturn(q);
-        List<String> docs = new ArrayList<String>();
+        List<String> docs = new ArrayList<>();
         docs.add("data.NotFound");
         when(q.list()).thenReturn(docs);
         callback.doInHibernate(session);
