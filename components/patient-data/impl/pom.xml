@@ -30,7 +30,7 @@
 
   <properties>
     <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
-    <coverage.instructionRatio>0.58</coverage.instructionRatio>
+    <coverage.instructionRatio>0.59</coverage.instructionRatio>
   </properties>
 
   <dependencies>

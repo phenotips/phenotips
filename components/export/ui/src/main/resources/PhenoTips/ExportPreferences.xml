@@ -160,13 +160,14 @@
   #set($selectedValues = ['external_id', 'gender', 'phenotype', 'negative_phenotype', 'clinical_diagnosis', 'omim_id'])
 #else
   #set($ignored = {
-    'fields' : ['reports_history', 'pedigree', 'negative_phenotype', 'extended_phenotype', 'extended_negative_phenotype', 'negative_prenatal_phenotype', 'extended_prenatal_phenotype', 'extended_negative_prenatal_phenotype', 'genetic_notes', 'apgar1', 'apgar5'],
+    'fields' : ['pedigree', 'negative_phenotype', 'extended_phenotype', 'extended_negative_phenotype', 'negative_prenatal_phenotype', 'extended_prenatal_phenotype', 'extended_negative_prenatal_phenotype', 'genetic_notes', 'apgar1', 'apgar5'],
     'types'  : []
   })
   #if (${request.export_id} == 'phenotips_json_export')
     #set ($simple = true)
   #else
     #set ($simple = false)
+    #set ($discard = $ignored.fields.add('reports_history'))
   #end
   #set($customValues = {
        'doc.name' : "$services.localization.render('phenotips.exportPreferences.field.docName')",

@@ -28,6 +28,7 @@ org.phenotips.data.internal.controller.SolvedController
 org.phenotips.data.internal.controller.AllergiesController
 org.phenotips.data.internal.controller.LifeStatusController
 org.phenotips.data.internal.controller.MedicalReportsController
+org.phenotips.data.internal.controller.MedicalReportsLinksController
 org.phenotips.data.internal.controller.FeaturesController
 org.phenotips.data.internal.controller.DisordersController
 org.phenotips.data.internal.controller.ClinicalDiagnosisController
