@@ -43,16 +43,13 @@
 #macro (__export__displayOrganizedFieldList)
 #set ($remoteEnabledFields = $request.getParameterValues('enabledFields'))## fields enabled on the remote server
 #set($ignored = {
-    'fields' : ['negative_phenotype', 'negative_prenatal_phenotype', 'apgar5'],
+    'fields' : ['negative_phenotype', 'negative_prenatal_phenotype'],
     'types'  : ['PhenoTips.PedigreeClass', 'PhenoTips.MeasurementsClass', 'PhenoTips.GeneVariantClass']
 })
 #set($customExporters = {
     'PhenoTips.GeneClass' : {'name' : 'genes', 'label': "$services.localization.render('phenotips.exportPreferences.field.genes')"},
     'PhenoTips.InvestigationClass' : {'name' : 'genes', 'label': "$services.localization.render('phenotips.exportPreferences.field.genes')"},
     'PhenoTips.AllergiesDataClass' : {'name': 'allergies', 'label' : "$services.localization.render('PhenoTips.AllergiesDataClass_allergies')"}
-})
-#set ($customLabels = {
-    'apgar1' : "$services.localization.render('phenotips.exportPreferences.prenatalPerinatalHistory.apgarScores')"
 })
 #set ($targetFieldName = "columns")
 #set($valueList = ['external_id', 'gender', 'phenotype', 'negative_phenotype', 'clinical_diagnosis', 'omim_id'])
@@ -85,7 +82,7 @@
                !$ignored.fields.contains($eField) &amp;&amp;
                (!($remoteEnabledFields.size() &gt; 0) || $remoteEnabledFields.contains($eField))
             )
-            #set ($itemContent = "&lt;li class='checkbox_tree_container'&gt;&lt;label for=""${targetFieldName}_${f.name}""&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${f.name}"" value=""$f.name""#if ($valueList.contains($f.name)) checked=""checked""#end/&gt;#if($customLabels.get($f.name))${customLabels.get($f.name)}#{else}${f.translatedPrettyName}#end&lt;/label&gt;&lt;/li&gt;")
+            #set ($itemContent = "&lt;li class='checkbox_tree_container'&gt;&lt;label for=""${targetFieldName}_${f.name}""&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${f.name}"" value=""$f.name""#if ($valueList.contains($f.name)) checked=""checked""#end/&gt;${f.translatedPrettyName}&lt;/label&gt;&lt;/li&gt;")
             #set ($sectionContent = $sectionContent.concat($itemContent))
           #end
        #end
