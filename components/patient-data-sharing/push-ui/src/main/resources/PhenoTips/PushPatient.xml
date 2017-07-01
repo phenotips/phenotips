@@ -1224,7 +1224,7 @@
                     onSuccess: function(response) {
                         var patients = [];
                         response.responseJSON.each(function(item) {
-                            patients.push(item.replace("data.",""));
+                            patients.push(item.substring(item.lastIndexOf('.') + 1));
                         });
                         callbackOK(patients, selectedFields);
                     },

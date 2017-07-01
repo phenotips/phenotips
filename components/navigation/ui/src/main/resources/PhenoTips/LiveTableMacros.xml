@@ -644,5 +644,45 @@
   #end
  #end
 #end
+
+#** ******************************************************************************************** *#
+
+#**
+ * Macro to get the complete list of results matching the specified filters.
+ * This page is called via Ajax with the argument xpage=plain. It returns a
+ * set of results serialized in a JSONArray of strings, each string being a
+ * document reference.
+ *#
+#macro(listresultwithfilter $className $filterfrom $filterwhere $filterParams)
+  #set($list = [])
+  #listresultwithfilter_buildList($className $filterfrom $filterwhere $filterParams $list)
+  $jsontool.serialize($list)
+#end
+
+#**
+ * Macro to get the complete list of results matching the specified filters.
+ * The result is a list of strings, each string being a document reference,
+ * which is placed in the $list parameter.
+ *#
+#macro(listresultwithfilter_buildList $className $filterfrom $filterwhere $filterParams $list)
+  #gridresultwithfilter_buildQuery($className 'doc.name' $filterfrom $filterwhere $filterParams)
+  #set($query = $services.query.hql($sql).addFilter('hidden').addFilter('unique').bindValues($sqlParams))
+  #set($items = $query.execute())
+  #foreach($item in $items)
+    #set($discard = $list.add("${xcontext.database}:${item}"))
+  #end
+#end
+
+#**
+ * Macro to get the total number of results matching the specified filters.
+ * This page is called via Ajax with the argument xpage=plain. It returns a
+ * single number.
+ *#
+#macro(listresultwithfilterCount $className $filterfrom $filterwhere $filterParams)
+  #gridresultwithfilter_buildQuery($className 'doc.name' $filterfrom $filterwhere $filterParams)
+  #set($query = $services.query.hql($sql).addFilter('hidden').addFilter('unique').bindValues($sqlParams))
+  $query.count()
+#end
+
 {{/velocity}}</content>
 </xwikidoc>
