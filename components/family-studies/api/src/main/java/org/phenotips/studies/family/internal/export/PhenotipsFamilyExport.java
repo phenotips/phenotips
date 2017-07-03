@@ -333,7 +333,7 @@ public class PhenotipsFamilyExport
      */
     public Map<String, String> getMedicalReports(Patient patient)
     {
-        PatientData<String> links = patient.getData("medicalreports");
+        PatientData<String> links = patient.getData("medicalreportslinks");
         Map<String, String> mapOfLinks = new HashMap<>();
 
         if (this.authorizationService.hasAccess(this.userManager.getCurrentUser(), Right.VIEW,
