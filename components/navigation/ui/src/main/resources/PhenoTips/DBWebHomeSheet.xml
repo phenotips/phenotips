@@ -257,9 +257,12 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
       <code>document.observe('xwiki:dom:loaded', function() {
   $$('.xwiki-livetable-topfilters-container .toggle-filters').invoke('observe', 'click', function(event) {
     event.stop();
-    $('patients-topfilters').toggleClassName('collapsed');
+    var filtersElt = event.findElement('.xwiki-livetable-container .xwiki-livetable-topfilters-tip');
+    if (filtersElt) {
+      filtersElt.toggleClassName('collapsed');
+      filtersElt.up('.xwiki-livetable-container').toggleClassName('hidden-filters');
+    }
   });
-  $('patients-topfilters') &amp;&amp; $('patients-topfilters').addClassName('collapsed');
 });</code>
     </property>
     <property>
@@ -374,21 +377,117 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
 #document-title h1 {
   border: 0 none;
 }
-#patients-topfilters .toggle-filters:before {
-  content: "▼ ";
-}
-#patients-topfilters.collapsed .toggle-filters:before {
-  content: "► ";
-}
-#patients-topfilters.collapsed .filters {
+.entity-directory .xwiki-livetable-topfilters-tip.collapsed .filters {
   display: none;
 }
 .xwiki-livetable a:not(:link) {
   text-decoration: none;
+}
+
+.tipfilters {
+  float: left;
+  max-width: 250px;
+  margin-left: -250px;
+}
+.hidden-filters .tipfilters {
+  max-width: 40px;
+  margin-left: -40px;
+  margin-top: 210px;
+  transform: rotate(-90deg);
+}
+.tipfilters .collapsed {
+  width: 40px;
+}
+.entity-directory .xwiki-livetable-topfilters-tip {
+  margin-right: 10px;
+}
+.entity-directory .xwiki-livetable-topfilters-tip p {
+  margin: 0;
+}
+.xwiki-livetable-topfilters-container {
+  padding: 0;
+  margin-top: 5px;
+}
+.entity-directory &gt; .xwiki-livetable-container {
+  margin-left: 250px;
+}
+.entity-directory &gt; .xwiki-livetable-container.hidden-filters {
+  margin-left: 40px;
+}
+.xwiki-livetable-topfilters-container .toggle-filters {
+  border-radius: 0 !important;
+  width: 232px;
+  box-shadow: none !important;
+}
+
+.tipfilters .collapsed .toggle-filters {
+  width: 32px;
+}
+.tipfilters .collapse-marker {
+  float: right;
+  margin-top: 2px;
+}
+.tipfilters .expand-marker {
+  display: none;
+  margin-top: 2px;
+}
+.tipfilters .collapsed .label, .tipfilters .collapsed .collapse-marker {
+  display: none;
+}
+.tipfilters .collapsed .expand-marker {
+  display: inline-block;
+  float: right;
+}
+
+/* Table actions */
+tbody.xwiki-livetable-display-body td a.action {
+  display: inline-block;
+  width: 0;
+  overflow: hidden;
+}
+
+/* General filters style */
+ul.filters {
+  margin: 10px;
+  list-style-type: none;
+}
+ul.filters li {
+  padding: 0 0 10px 0;
+}
+ul.filters .accepted-suggestions {
+  margin: 0 !important;
+}
+ul.filters .xHint {
+  xdisplay: none;
+}
+
+.xwiki-livetable-topfilters-container {
+  border: 0 none !important;
+}
+.entity-directory .xwiki-livetable-topfilters-tip .tippointer {
+  display: none;
+}
+
+/*---------------------------------------------------------------*/
+.entity-directory &gt; .xwiki-livetable-container.hidden-filters {
+    margin-left: 20px;
+}
+.entity-directory .hidden-filters .tipfilters {
+    xtransform: rotate(-90deg);
+    xmargin-top: 210px;
+}
+.entity-directory .tipfilters .collapsed .toggle-filters {
+  width: 232px;
+}
+.entity-directory .tipfilters .collapsed .label {
+  display: inline;
 }</code>
     </property>
     <property>
-      <name>Minor layout fix</name>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name>Layout customizations for filters</name>
     </property>
     <property>
       <parse>0</parse>
