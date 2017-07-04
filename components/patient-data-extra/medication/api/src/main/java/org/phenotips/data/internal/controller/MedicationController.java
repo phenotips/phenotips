@@ -26,6 +26,7 @@ import org.phenotips.data.PatientWritePolicy;
 
 import org.xwiki.component.annotation.Component;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -172,12 +173,11 @@ public class MedicationController implements PatientDataController<Medication>
                     .flatMap(mapEntry -> mapEntry.getValue().stream())
                 : StreamSupport.stream(medications.spliterator(), false)
                     .filter(Objects::nonNull);
-            docX.removeXObjects(Medication.CLASS_REFERENCE);
         } else {
             medsStream = StreamSupport.stream(medications.spliterator(), false)
                 .filter(Objects::nonNull);
-            docX.removeXObjects(Medication.CLASS_REFERENCE);
         }
+        docX.removeXObjects(Medication.CLASS_REFERENCE);
         // Save each medication.
         medsStream.forEach(medication -> saveMedication(docX, medication, context));
     }
@@ -249,9 +249,13 @@ public class MedicationController implements PatientDataController<Medication>
     {
         // If a medication does not have a specified name, then can't compare between medications. Store all.
         // Otherwise, just store the new value.
-        return storedMeds.get(0).getName() == null
-            ? Stream.of(storedMeds, newMeds).flatMap(Collection::stream).collect(Collectors.toList())
-            : newMeds;
+        if (storedMeds.get(0).getName() == null) {
+            final List<Medication> mergedMeds = new ArrayList<>(storedMeds);
+            mergedMeds.addAll(newMeds);
+            return mergedMeds;
+        } else {
+            return newMeds;
+        }
     }
 
     @Override

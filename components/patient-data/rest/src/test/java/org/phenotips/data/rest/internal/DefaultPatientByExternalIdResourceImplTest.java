@@ -87,7 +87,7 @@ public class DefaultPatientByExternalIdResourceImplTest
 {
     @Rule
     public final MockitoComponentMockingRule<PatientByExternalIdResource> mocker =
-        new MockitoComponentMockingRule<PatientByExternalIdResource>(DefaultPatientByExternalIdResourceImpl.class);
+        new MockitoComponentMockingRule<>(DefaultPatientByExternalIdResourceImpl.class);
 
     @Mock
     private Patient patient;

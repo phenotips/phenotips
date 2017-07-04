@@ -24,4 +24,5 @@
 
 <suppressions>
   <suppress checks="ClassFanOutComplexityCheck" files="DefaultPatientsResourceImpl.java"/>
+  <suppress checks="ClassFanOutComplexityCheck" files="DefaultPatientByExternalIdResourceImpl.java"/>
 </suppressions>

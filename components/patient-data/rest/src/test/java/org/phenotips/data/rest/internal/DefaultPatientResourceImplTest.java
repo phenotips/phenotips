@@ -77,7 +77,7 @@ public class DefaultPatientResourceImplTest
 {
     @Rule
     public MockitoComponentMockingRule<PatientResource> mocker =
-        new MockitoComponentMockingRule<PatientResource>(DefaultPatientResourceImpl.class);
+        new MockitoComponentMockingRule<>(DefaultPatientResourceImpl.class);
 
     @Mock
     private User currentUser;

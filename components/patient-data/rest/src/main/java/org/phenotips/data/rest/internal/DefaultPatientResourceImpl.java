@@ -24,8 +24,6 @@ import org.phenotips.rest.Autolinker;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.EntityReference;
-import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.rest.XWikiResource;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
@@ -70,11 +68,6 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
 
     @Inject
     private Provider<Autolinker> autolinker;
-
-    /** Fills in missing reference fields with those from the current context document to create a full reference. */
-    @Inject
-    @Named("current")
-    private EntityReferenceResolver<EntityReference> currentResolver;
 
     @Override
     public Response getPatient(String id)

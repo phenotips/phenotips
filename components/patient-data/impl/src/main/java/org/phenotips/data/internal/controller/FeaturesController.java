@@ -349,9 +349,8 @@ public class FeaturesController extends AbstractComplexController<Feature>
         clearFeatureData(docX, dataHolder, context);
 
         featureStream
-            .map(feature -> saveFeatureData(docX, feature, context))
             .collect(Collectors.groupingBy(this::getFeatureType,
-                Collectors.mapping(Feature::getValue, Collectors.toList()))
+                Collectors.mapping(feature -> saveFeatureAndGetValue(docX, feature, context), Collectors.toList()))
             ).forEach(
                 (type, ids) -> dataHolder.set(type, ids, context)
             );
@@ -431,13 +430,14 @@ public class FeaturesController extends AbstractComplexController<Feature>
     }
 
     /**
-     * Saves data for provided {@code feature}.
+     * Saves data for provided {@code feature}, and returns its value.
      *
      * @param doc the {@link XWikiDocument} object for the patient
      * @param feature the {@link Feature} of interest
      * @param context the {@link XWikiContext}
+     * @return the {@code feature} value
      */
-    private Feature saveFeatureData(
+    private String saveFeatureAndGetValue(
         @Nonnull final XWikiDocument doc,
         @Nonnull final Feature feature,
         @Nonnull final XWikiContext context)
@@ -448,7 +448,7 @@ public class FeaturesController extends AbstractComplexController<Feature>
         } catch (final Exception e) {
             this.logger.error("Failed to update phenotypes: [{}]", e.getMessage());
         }
-        return feature;
+        return feature.getValue();
     }
 
     /**

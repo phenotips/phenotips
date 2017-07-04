@@ -24,6 +24,7 @@ import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.entities.internal.AbstractPrimaryEntity;
 
 import org.xwiki.component.manager.ComponentLookupException;
@@ -220,6 +221,12 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
     @Override
     public void updateFromJSON(JSONObject json)
     {
+        updateFromJSON(json, PatientWritePolicy.UPDATE);
+    }
+
+    @Override
+    public void updateFromJSON(JSONObject json, PatientWritePolicy policy)
+    {
         if (json.length() == 0) {
             return;
         }
@@ -237,9 +244,10 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
             for (PatientDataController<?> serializer : this.serializers.values()) {
                 try {
                     PatientData<?> patientData = serializer.readJSON(json);
-                    if (patientData != null) {
-                        this.extraData.put(patientData.getName(), patientData);
-                        serializer.save(this);
+                    if (patientData != null || PatientWritePolicy.REPLACE.equals(policy)) {
+                        this.extraData.put(patientData != null ? patientData.getName() : serializer.getName(),
+                            patientData);
+                        serializer.save(this, policy);
                         this.logger.info("Successfully updated patient form JSON using serializer [{}]",
                             serializer.getName());
                     }
