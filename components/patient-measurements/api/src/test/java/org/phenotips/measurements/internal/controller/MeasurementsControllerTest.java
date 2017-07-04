@@ -25,7 +25,6 @@ import org.phenotips.data.SimpleValuePatientData;
 import org.phenotips.measurements.MeasurementHandler;
 import org.phenotips.measurements.data.MeasurementEntry;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.model.reference.DocumentReference;
@@ -74,8 +73,6 @@ public class MeasurementsControllerTest
     @Rule
     public MockitoComponentMockingRule<PatientDataController<MeasurementEntry>> mocker =
         new MockitoComponentMockingRule<PatientDataController<MeasurementEntry>>(MeasurementsController.class);
-
-    private DocumentAccessBridge documentAccessBridge;
 
     @Mock
     private Patient patient;
@@ -134,11 +131,9 @@ public class MeasurementsControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
-        DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocument();
-        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
+        DocumentReference patientDocRef = new DocumentReference("wiki", "patient", "00000001");
+        doReturn(patientDocRef).when(this.patient).getDocumentReference();
+        doReturn(this.doc).when(this.patient).getXDocument();
 
         this.measurementXWikiObjects = new LinkedList<>();
         this.measurementXWikiObjects.add(this.obj1);
@@ -165,8 +160,8 @@ public class MeasurementsControllerTest
     @Test
     public void loadCatchesExceptionFromDocumentAccess() throws Exception
     {
-        Exception exception = new Exception();
-        doThrow(exception).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
+        Exception exception = new RuntimeException();
+        doThrow(exception).when(this.patient).getXDocument();
 
         PatientData<MeasurementEntry> result = this.mocker.getComponentUnderTest().load(this.patient);
 
@@ -546,7 +541,7 @@ public class MeasurementsControllerTest
     @Test
     public void saveWithNoDataDoesNothing() throws ComponentLookupException
     {
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
         Mockito.verifyZeroInteractions(this.doc);
     }
 
@@ -554,7 +549,7 @@ public class MeasurementsControllerTest
     public void saveWithWrongTypeOfDataDoesNothing() throws ComponentLookupException
     {
         when(this.patient.getData(CONTROLLER_NAME)).thenReturn(new SimpleValuePatientData<Object>("a", "b"));
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
         Mockito.verifyZeroInteractions(this.doc);
     }
 
@@ -566,7 +561,7 @@ public class MeasurementsControllerTest
         Provider<XWikiContext> xcontextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         XWikiContext context = xcontextProvider.get();
         when(context.getWiki()).thenReturn(this.xwiki);
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
     }
 
     @Test
@@ -581,7 +576,7 @@ public class MeasurementsControllerTest
         when(this.patient.<MeasurementEntry>getData("measurements"))
             .thenReturn(new IndexedPatientData<>("measurements", Collections.singletonList(entry)));
         when(this.doc.newXObject(eq(MEASUREMENTS_CLASS), any(XWikiContext.class))).thenReturn(this.obj1, this.obj2);
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.obj1).set(DATE_KEY, entry.getDate(), context);
         verify(this.obj1).set(AGE_KEY, entry.getAge(), context);
