@@ -25,8 +25,6 @@ import org.phenotips.measurements.MeasurementHandler;
 import org.phenotips.measurements.data.MeasurementEntry;
 import org.phenotips.measurements.internal.MeasurementUtils;
 
-import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -94,10 +92,6 @@ public class MeasurementsController implements PatientDataController<Measurement
     @Inject
     private Logger logger;
 
-    /** Provides access to the underlying data storage. */
-    @Inject
-    private DocumentAccessBridge documentAccessBridge;
-
     /**
      * Parses string representations of document references into proper references.
      */
@@ -116,7 +110,7 @@ public class MeasurementsController implements PatientDataController<Measurement
     public PatientData<MeasurementEntry> load(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            XWikiDocument doc = patient.getXDocument();
             List<BaseObject> objects = doc.getXObjects(getXClassReference());
             if (objects == null || objects.isEmpty()) {
                 return null;
@@ -188,20 +182,21 @@ public class MeasurementsController implements PatientDataController<Measurement
     }
 
     @Override
-    public void save(Patient patient, DocumentModelBridge doc)
+    public void save(Patient patient)
     {
         try {
+            XWikiDocument doc = patient.getXDocument();
             XWikiContext context = this.xcontext.get();
 
             PatientData<MeasurementEntry> entries = patient.getData(getName());
             if (!entries.isIndexed()) {
                 return;
             }
-            ((XWikiDocument) doc).removeXObjects(this.getXClassReference());
+            doc.removeXObjects(this.getXClassReference());
             Iterator<MeasurementEntry> iterator = entries.iterator();
             while (iterator.hasNext()) {
                 MeasurementEntry entry = iterator.next();
-                BaseObject wikiObject = ((XWikiDocument) doc).newXObject(this.getXClassReference(), context);
+                BaseObject wikiObject = doc.newXObject(this.getXClassReference(), context);
                 wikiObject.set(DATE, entry.getDate(), context);
                 wikiObject.set(AGE, entry.getAge(), context);
                 wikiObject.set(TYPE, entry.getType(), context);
