@@ -19,6 +19,7 @@ package org.phenotips.data.rest.internal;
 
 import org.phenotips.data.rest.ComputedMeasurementResource;
 import org.phenotips.measurements.internal.BMIMeasurementHandler;
+import org.phenotips.measurements.internal.USLSMeasurementHandler;
 
 import org.xwiki.component.annotation.Component;
 
@@ -44,8 +45,9 @@ import org.json.JSONObject;
 public class DefaultComputedMeasurementResourceImpl extends AbstractMeasurementRestResource implements
     ComputedMeasurementResource
 {
-    /** BMI short name. */
+    /** BMI and US:LS short names. */
     private static final String BMI = "bmi";
+    private static final String USLS = "usls";
 
     @Override
     public Response getComputedMeasurement(UriInfo uriInfo)
@@ -57,37 +59,54 @@ public class DefaultComputedMeasurementResourceImpl extends AbstractMeasurementR
                 "Measurement not specified."));
         }
 
+        double value;
         if (BMI.equals(measurement)) {
-            double value = handleBmi(params);
-
-            JSONObject resp = new JSONObject();
-            resp.accumulate("value", value);
-
-            return Response.ok(resp, MediaType.APPLICATION_JSON_TYPE).build();
+            String[] dependencies = {params.getFirst("weight"), params.getFirst("height")};
+            value = handleComputations(BMI, dependencies);
+        } else if (USLS.equals(measurement)) {
+            String[] dependencies = {params.getFirst("upperSeg"), params.getFirst("lowerSeg")};
+            value = handleComputations(USLS, dependencies);
         } else {
             throw new WebApplicationException(generateErrorResponse(Response.Status.NOT_FOUND,
                 "Specified measurement type not found."));
         }
+
+        JSONObject resp = new JSONObject();
+        resp.accumulate("value", value);
+
+        return Response.ok(resp, MediaType.APPLICATION_JSON_TYPE).build();
     }
 
     /**
-     * Handle BMI computation.
+     * Handle computations for measurements such as BMI and US:LS.
      *
-     * @param params query parameters
+     * @param measurement the measurement to be computed
+     * @param dependencies dependencies for the computed measurement (eg. weight, height, segment length)
      * @return computed value
      */
-    private double handleBmi(MultivaluedMap<String, String> params)
+    private double handleComputations(String measurement, String[] dependencies) throws IllegalArgumentException
     {
-        String weight = params.getFirst("weight");
-        String height = params.getFirst("height");
-        if (weight == null || height == null) {
-            throw new WebApplicationException(generateErrorResponse(Response.Status.BAD_REQUEST,
-                "Computation arguments were not all provided."));
+        for (String dep : dependencies) {
+            if (dep == null) {
+                throw new WebApplicationException(generateErrorResponse(Response.Status.BAD_REQUEST,
+                    "Computation arguments were not all provided."));
+            }
         }
 
         try {
-            double value = ((BMIMeasurementHandler) this.handlers.get(BMI)).computeBMI(Double.parseDouble(weight),
-                Double.parseDouble(height));
+            double value;
+            if (BMI.equals(measurement)) {
+                // BMI is the measurement to be computed. Pass deps 0 and 1 as the respective height and weight
+                value = ((BMIMeasurementHandler) this.handlers.get(BMI))
+                .computeBMI(Double.parseDouble(dependencies[0]), Double.parseDouble(dependencies[1]));
+            } else if (USLS.equals(measurement)) {
+                // US:LS is the measurement to be computed. Pass deps 0 and 1 as the respective upperSeg and lowerSeg
+                value = ((USLSMeasurementHandler) this.handlers.get(USLS))
+                .computeUSLS(Double.parseDouble(dependencies[0]), Double.parseDouble(dependencies[1]));
+            } else {
+                // The measurement param passed to this method does not match any known computed measuremnt types
+                throw new IllegalArgumentException();
+            }
 
             return value;
         } catch (NumberFormatException e) {
