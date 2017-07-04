@@ -91,6 +91,11 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
         #measurement($meas $enabled.contains($meas))
       #end
     #end
+    #foreach ($meas in $services.measurements.getAvailableMeasurementHandlers())
+      #if (!$isDefault &amp;&amp; !$configObj.getProperty('ordering').value.contains($meas.name))
+        #measurement($meas.name $enabled.contains($meas.name))
+      #end
+    #end
   )))
 )))
 #end
