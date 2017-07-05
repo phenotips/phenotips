@@ -457,18 +457,17 @@ ul.filters li {
 ul.filters .accepted-suggestions {
   margin: 0 !important;
 }
-+ul.filters ul {
+ul.filters ul {
   clear: both;
 }
 ul.filters .accepted-suggestions li {
   padding: 0 0 0;
 }
-ul.filters .accepted-suggestions li:last-child {
-  padding: 0 0 1em;
-}
 ul.filters .accepted-suggestions + .clear-tool {
-  margin-top: -1em;
   margin-bottom: 1em;
+}
+ul.filters .accepted-suggestions + .clear-tool.invisible {
+  display: none;
 }
 ul.filters .accepted-suggestions label {
   display: inline-block;
@@ -481,6 +480,9 @@ ul.filters .accepted-suggestions label {
 ul.filters .accepted-suggestions .xHelpButton {
   display: inline-block;
   vertical-align: middle;
+}
+ul.filters ul label input[type="radio"] {
+  margin-left: .5em;
 }
 
 .xwiki-livetable-topfilters-container {
