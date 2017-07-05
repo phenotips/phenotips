@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,7 +120,7 @@ public class PhenotipsFamily implements Family
         try {
             xwikiRelativesList = (ListProperty) familyObject.get(FAMILY_MEMBERS_FIELD);
         } catch (XWikiException e) {
-            this.logger.error("error reading family members: {}", e);
+            this.logger.error("Error reading family members: [{}]", e.getMessage(), e);
             return null;
         }
         if (xwikiRelativesList == null) {
@@ -259,12 +260,22 @@ public class PhenotipsFamily implements Family
                 image = (BaseStringProperty) pedigreeObj.get(Pedigree.IMAGE);
 
                 if (StringUtils.isNotBlank(data.toText())) {
-                    return new DefaultPedigree(new JSONObject(data.toText()), image.toText());
+                    // internally pedigree may be stored in either "old internal" or "simpleJSON" format
+                    // for now simpleJSON may only be stored after a migration, and some of the
+                    // methods
+                    JSONObject pedigreeJSON = new JSONObject(data.toText());
+                    if (DefaultPedigree.isSupportedPedigreeFormat(pedigreeJSON)) {
+                        return new DefaultPedigree(pedigreeJSON, image.toText());
+                    } else if (NewFormatPedigree.isSupportedPedigreeFormat(pedigreeJSON)) {
+                        return new NewFormatPedigree(pedigreeJSON, image.toText());
+                    }
                 }
             } catch (XWikiException e) {
-                this.logger.error("Error reading data from pedigree. {}", e.getMessage());
+                this.logger.error("Error reading data from pedigree: [{}]", e.getMessage(), e);
             } catch (IllegalArgumentException e) {
-                this.logger.error("Incorrect pedigree data. {}", e.getMessage());
+                this.logger.error("Incorrect pedigree data: [{}]", e.getMessage(), e);
+            } catch (JSONException e) {
+                this.logger.error("Pedigree data is not a valid pedigree JSON: [{}]", e.getMessage(), e);
             }
         }
         return null;

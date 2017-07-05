@@ -25,10 +25,10 @@ import com.xpn.xwiki.objects.meta.PropertyMetaClass;
  * The values are encrypted using the {@link org.phenotips.security.encryption.CryptoUtils#encryptWithSystemKey(String)
  * system encryption key}.
  *
- * @version $Id$
- * @since 1.3M2
  * @see EncryptedMetaClass
  * @see EncryptedProperty
+ * @version $Id$
+ * @since 1.3M2
  */
 public class EncryptedClass extends StringClass
 {

@@ -20,6 +20,7 @@ package org.phenotips.vocabulary.internal.solr;
 import org.phenotips.obo2solr.ParameterPreparer;
 import org.phenotips.obo2solr.SolrUpdateGenerator;
 import org.phenotips.obo2solr.TermData;
+import org.phenotips.vocabulary.VocabularyExtension;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import java.io.IOException;
@@ -64,6 +65,9 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     @Override
     public VocabularyTerm getTerm(String id)
     {
+        if (StringUtils.isBlank(id)) {
+            return null;
+        }
         VocabularyTerm result = super.getTerm(id);
         if (result == null) {
             Map<String, String> queryParameters = new HashMap<>();
@@ -76,11 +80,41 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
         return result;
     }
 
+    /**
+     * Load vocabulary data from a provided source url.
+     *
+     * @param sourceUrl the address from where to get the vocabulary source file
+     * @return vocabulary data, if exists
+     */
+    protected Map<String, TermData> load(final String sourceUrl)
+    {
+        String realOntologyUrl = StringUtils.defaultIfBlank(sourceUrl, getDefaultSourceLocation());
+
+        SolrUpdateGenerator generator = new SolrUpdateGenerator();
+        Map<String, Double> fieldSelection = new HashMap<>();
+        return generator.transform(realOntologyUrl, fieldSelection);
+    }
+
     @Override
     public int reindex(String sourceUrl)
     {
-        this.clear();
-        return this.index(sourceUrl);
+        int retval = 1;
+        try {
+            for (VocabularyExtension ext : this.extensions.get()) {
+                if (ext.isVocabularySupported(this)) {
+                    ext.indexingStarted(this);
+                }
+            }
+            this.clear();
+            retval = this.index(sourceUrl);
+        } finally {
+            for (VocabularyExtension ext : this.extensions.get()) {
+                if (ext.isVocabularySupported(this)) {
+                    ext.indexingEnded(this);
+                }
+            }
+        }
+        return retval;
     }
 
     /**
@@ -92,11 +126,8 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
      */
     protected int index(String sourceUrl)
     {
-        String realOntologyUrl = StringUtils.defaultIfBlank(sourceUrl, getDefaultSourceLocation());
+        Map<String, TermData> data = load(sourceUrl);
 
-        SolrUpdateGenerator generator = new SolrUpdateGenerator();
-        Map<String, Double> fieldSelection = new HashMap<>();
-        Map<String, TermData> data = generator.transform(realOntologyUrl, fieldSelection);
         if (data == null || data.isEmpty()) {
             return 2;
         }
@@ -119,15 +150,17 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
                         doc.addField(name, value, ParameterPreparer.DEFAULT_BOOST.floatValue());
                     }
                 }
+                extendTerm(new SolrVocabularyInputTerm(doc, this));
                 termBatch.add(doc);
                 batchCounter++;
             }
             commitTerms(termBatch);
             return 0;
         } catch (SolrServerException ex) {
-            this.logger.warn("Failed to index ontology: {}", ex.getMessage());
+            this.logger.warn("Failed to index vocabulary: {}", ex.getMessage());
         } catch (IOException ex) {
-            this.logger.warn("Failed to communicate with the Solr server while indexing ontology: {}", ex.getMessage());
+            this.logger.warn("Failed to communicate with the Solr server while indexing vocabulary: {}",
+                ex.getMessage());
         } catch (OutOfMemoryError ex) {
             this.logger.warn("Failed to add terms to the Solr. Ran out of memory. {}", ex.getMessage());
         }
@@ -137,9 +170,9 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     protected void commitTerms(Collection<SolrInputDocument> batch)
         throws SolrServerException, IOException, OutOfMemoryError
     {
-        this.externalServicesAccess.getSolrConnection().add(batch);
-        this.externalServicesAccess.getSolrConnection().commit();
-        this.externalServicesAccess.getTermCache().removeAll();
+        this.externalServicesAccess.getSolrConnection(getCoreName()).add(batch);
+        this.externalServicesAccess.getSolrConnection(getCoreName()).commit();
+        this.externalServicesAccess.getTermCache(getCoreName()).removeAll();
     }
 
     /**
@@ -150,7 +183,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     protected int clear()
     {
         try {
-            this.externalServicesAccess.getSolrConnection().deleteByQuery("*:*");
+            this.externalServicesAccess.getSolrConnection(getCoreName()).deleteByQuery("*:*");
             return 0;
         } catch (SolrServerException ex) {
             this.logger.error("SolrServerException while clearing the Solr index", ex);
@@ -171,7 +204,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
         query.setQuery("version:*");
         query.set("rows", "1");
         try {
-            response = this.externalServicesAccess.getSolrConnection().query(query);
+            response = this.externalServicesAccess.getSolrConnection(getCoreName()).query(query);
             termList = response.getResults();
 
             if (!termList.isEmpty()) {
@@ -179,7 +212,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
                 return firstDoc.getFieldValue(VERSION_FIELD_NAME).toString();
             }
         } catch (SolrServerException | SolrException | IOException ex) {
-            this.logger.warn("Failed to query ontology version: {}", ex.getMessage());
+            this.logger.warn("Failed to query vocabulary version: {}", ex.getMessage());
         }
         return null;
     }

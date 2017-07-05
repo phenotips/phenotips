@@ -24,6 +24,7 @@
 define([
         "pedigree/disorder",
         "pedigree/hpoTerm",
+        "pedigree/gene",
         "pedigree/pedigreeDate",
         "pedigree/model/helpers",
         "pedigree/view/datepicker",
@@ -32,6 +33,7 @@ define([
     ], function(
         Disorder,
         HPOTerm,
+        Gene,
         PedigreeDate,
         Helpers,
         DatePicker,
@@ -121,8 +123,8 @@ define([
             // Attach pickers and suggest widgets
             this._generatePickersAndSuggests();
 
-            // Update disorder colors
-            this._updateDisorderColor = function(id, color) {
+            // Update disorder data (color & name)
+            this._updateDisorder = function(id, color, name) {
                 this.menuBox.select('.field-disorders li input[value="' + id + '"]').each(function(item) {
                     var colorBubble = item.up('li').down('.abnormality-color');
                     if (!colorBubble) {
@@ -130,25 +132,72 @@ define([
                         item.up('li').insert({top : colorBubble});
                     }
                     colorBubble.setStyle({background : color});
+                    var nameElement = item.up().down('span');
+                    nameElement && (nameElement.innerText = name);
                 });
             }.bind(this);
+            document.observe('disorder:name', function(event) {
+                if (!event.memo || !event.memo.id || !event.memo.name) {
+                    return;
+                }
+                _this._updateDisorder(event.memo.id, editor.getDisorderLegend().getObjectColor(event.memo.id), event.memo.name);
+            });
             document.observe('disorder:color', function(event) {
                 if (!event.memo || !event.memo.id || !event.memo.color) {
                     return;
                 }
-                _this._updateDisorderColor(event.memo.id, event.memo.color);
+                _this._updateDisorder(event.memo.id, event.memo.color, editor.getDisorderLegend().getName(event.memo.id) );
             });
-            //this._setFieldValue['disease-picker'].bind(this);
 
-            // Update gene colors
-            this._updateGeneColor = function(container, id, color) {
-                container.select('li input[value="' + id + '"]').each(function(item) {
-                    var colorBubble = item.up('li').down('.abnormality-color');
-                    if (!colorBubble) {
-                        colorBubble = new Element('span', {'class' : 'abnormality-color'});
-                        item.up('li').insert({top : colorBubble});
+            // Update HPO term human readable name
+            this._updateHPOTerm = function(id, name) {
+                this.menuBox.select('.field-hpo_positive li input[value="' + id + '"]').each(function(item) {
+                    var nameElement = item.up().down('span');
+                    nameElement && (nameElement.innerText = name);
+                });
+            }.bind(this);
+            document.observe('term:name', function(event) {
+                if (!event.memo || !event.memo.id || !event.memo.name) {
+                    return;
+                }
+                _this._updateHPOTerm(event.memo.id, event.memo.name);
+            });
+
+            // Update gene: maybe only the color, maybe the symbol, maybe ID has changed
+            //              (when old ID was actually the symbol and an ensemble id was found for it)
+            this._updateGene = function(container, oldid, newid, symbol, color) {
+                // expected container HTML stucture:
+                // <li>
+                //   <span class="abnormality-color" style="background: rgb(nn,nn,nn);"></span>
+                //   <label class="accepted-suggestion" for="candidate_genes_ENSG00000213281">
+                //     <input type="hidden" name="candidate_genes" id="candidate_genes_ENSG00000213281" value="ENSG00000213281">
+                //     <span class="value">NRAS</span>
+                //   </label>
+                // </li>
+                container.select('li input[value="' + oldid + '"]').each(function(input_item) {
+                    if (color) {
+                        var colorBubble = input_item.up('li').down('.abnormality-color');
+                        if (!colorBubble) {
+                            colorBubble = new Element('span', {'class' : 'abnormality-color'});
+                            input_item.up('li').insert({top : colorBubble});
+                        }
+                        colorBubble.setStyle({background : color});
                     }
-                    colorBubble.setStyle({background : color});
+                    if (newid != oldid) {
+                        // need to update
+                        // 1) for="..._genes_OLDID" to for="..._genes_NEWID"
+                        // 2) <input id="..._genes_OLDID" to <input id="..._genes_NEWID"
+                        // 3) <input value="OLDID" to value="NEWID"
+                        input_item.value = newid;
+
+                        var oldCompleteId = input_item.id;
+                        var newCompleteId = oldCompleteId.replace(oldid, newid);
+                        input_item.id = newCompleteId;
+                        input_item.up('label').for = newCompleteId;
+                    }
+                    if (symbol != null) {
+                        input_item.up('label').down('span').innerHTML = symbol;
+                    }
                 });
             }.bind(this);
             document.observe('gene:color', function(event) {
@@ -157,9 +206,24 @@ define([
                 }
                 try {
                     var container = $$('.field-' + event.memo.prefix + "_genes")[0];
-                    _this._updateGeneColor(container, event.memo.id, event.memo.color);
+                    _this._updateGene(container, event.memo.id, event.memo.id, null, event.memo.color);
                 } catch (err) {
-                    // in case $$ returns nothing
+                    //in case of any CSS selector/DOM manipulation errors
+                }
+            });
+            document.observe('gene:loaded', function(event) {
+                if (!event.memo || !event.memo.oldid || !event.memo.newid || !event.memo.symbol) {
+                    return;
+                }
+                try {
+                    // need to update all gene fields, as more than one field may have the gene
+                    // (find all elements which start with "field-" and end with "_genes")
+                    var containers = $$("div[class^='field-'][class$='_genes']");
+                    for (var i = 0; i < containers.length; i++) {
+                        _this._updateGene(containers[i], event.memo.oldid, event.memo.newid, event.memo.symbol, null);
+                    }
+                } catch (err) {
+                    //in case of any CSS selector/DOM manipulation errors
                 }
             });
         },
@@ -286,7 +350,7 @@ define([
                         noresults: "No matching terms",
                         resultsParameter : "docs",
                         json: true,
-                        resultId : "symbol",
+                        resultId : "id",
                         resultValue : "symbol",
                         resultInfo : {},
                         enableHierarchy: false,
@@ -397,6 +461,9 @@ define([
             if (data.type == "radio") {
                 fieldNameClass += ' field-no-user-select';
             }
+            if (data.type == "checkbox") {
+                fieldNameClass += ' field-checkbox field-no-user-select';
+            }
             if (data.addCSS && typeof data.addCSS === 'object') {
                 for(var styleName in data.addCSS) {
                     result.style[styleName] = data.addCSS[styleName];
@@ -475,13 +542,16 @@ define([
 
         update: function(newTarget) {
             //console.log("Node menu: update");
-            if (newTarget)
+            if (newTarget) {
                 this.targetNode = newTarget;
+            }
 
             if (this.targetNode) {
                 this._updating = true;   // needed to avoid infinite loop: update -> _attachFieldEventListeners -> update -> ...
                 this._setCrtData(this.targetNode.getSummary());
-                this.reposition();
+                if (newTarget) {
+                    this.reposition();
+                }
                 delete this._updating;
             }
         },
@@ -551,7 +621,8 @@ define([
             },
             'text' : function (data) {
                 var result = this._generateEmptyField(data);
-                var text = new Element('input', {type: 'text', name: data.name});
+                // disable enter for text fields to avoid submitting the form and closing the pedigree editor on enter
+                var text = new Element('input', {type: 'text', name: data.name, onkeypress:'return event.keyCode != 13;'});
                 if (data.tip) {
                     text.placeholder = data.tip;
                 }
@@ -665,44 +736,48 @@ define([
                 var newPatientButton = new Element('span', {'class': 'patient-menu-button patient-create-button'}).update("Create new");
                 newPatientButton.observe('click', function(event) {
                     var setDoNotShow = function(checkBoxStatus) {
-                	    if (checkBoxStatus) {
-                	        editor.getPreferencesManager().setConfigurationOption("user", "hideShareConsentDialog", true);
-                		}
+                        if (checkBoxStatus) {
+                            editor.getPreferencesManager().setConfigurationOption("user", "hideShareConsentDialog", true);
+                        }
                     };
 
                     var _onPatientCreated = function(response) {
-                	    if (response.responseJSON && response.responseJSON.hasOwnProperty("newID")) {
-                	        console.log("Created new patient: " + Helpers.stringifyObject(response.responseJSON));
-                	        Event.fire(patientPicker, 'custom:selection:changed', { "useValue": response.responseJSON.newID, "eventDetails": {"loadPatientProperties": false, "skipConfirmDialogue" : true} });
-                	        _this.reposition();
-                	    } else {
+                        if (response.responseJSON && response.responseJSON.hasOwnProperty("newID")) {
+                            console.log("Created new patient: " + Helpers.stringifyObject(response.responseJSON));
+                            Event.fire(patientPicker, 'custom:selection:changed', { "useValue": response.responseJSON.newID, "eventDetails": {"loadPatientProperties": false, "skipConfirmDialogue" : true} });
+                            _this.reposition();
+                        } else {
                             alert("Patient creation failed");
-                		}
-                	}
+                        }
+                    }
 
                     var processCreatePatient = function() {
-                	    var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
-                	    document.fire("pedigree:load:start");
-                	    new Ajax.Request(createPatientURL, {
-                		    method: "GET",
-                		    onSuccess: _onPatientCreated,
-                		    onComplete: function() { document.fire("pedigree:load:finish"); }
-                	    });
+                        var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
+                        document.fire("pedigree:load:start");
+                        new Ajax.Request(createPatientURL, {
+                            method: "GET",
+                            onSuccess: _onPatientCreated,
+                            onComplete: function() { document.fire("pedigree:load:finish"); }
+                        });
                     }
 
-                    var processLinking = function(topMessage, notesMessage) {
-                        editor.getOkCancelDialogue().showWithCheckbox("<br><b>" + topMessage + "</b><br>" +
-                	        "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
-                		    notesMessage + "</div>",
-                		    "Add patient to the family?",
-                		    "Do not show this warning again<br>", false,
-                		    "Confirm", function(checkBoxStatus) { setDoNotShow(checkBoxStatus); processCreatePatient() },
-                		    "Cancel",  function(checkBoxStatus) { setDoNotShow(checkBoxStatus); });
-                    }
+                    if (!editor.getPreferencesManager().getConfigurationOption("hideShareConsentDialog")) {
+                        var processLinking = function(topMessage, notesMessage) {
+                            editor.getOkCancelDialogue().showWithCheckbox("<br/><b>" + topMessage + "</b><br/>" +
+                                "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br/><br/>"+
+                                notesMessage + "</div>",
+                                "Add patient to the family?",
+                                "Do not show this warning again<br/>", false,
+                                "Confirm", function(checkBoxStatus) { setDoNotShow(checkBoxStatus); processCreatePatient() },
+                                "Cancel",  function(checkBoxStatus) { setDoNotShow(checkBoxStatus); });
+                        }
 
-                    processLinking("When you create a new patient and add to this family:<br>",
-                		    "1) A copy of this pedigree will be placed in the electronic record of each family member.<br><br>"+
-                		    "2) This pedigree can be edited by any user with access to any member of the family.");
+                        processLinking("When you create a new patient and add to this family:<br/>",
+                                "1) A copy of this pedigree will be placed in the electronic record of each family member.<br/><br/>"+
+                                "2) This pedigree can be edited by any user with access to any member of the family.");
+                    } else {
+                        processCreatePatient();
+                    }
 
                     _this.reposition();
                 });
@@ -716,7 +791,7 @@ define([
                     Event.fire(patientPicker, 'custom:selection:changed', { "useValue": "" });
                     _this.reposition();
                 });
-                removeLink.insert("Unlink patient record");
+                removeLink.insert("Unlink");
                 patientLinkContainer.insert(patientLink).insert(removeLink);
                 result.insert(patientLinkContainer);
                 var _this = this;
@@ -737,7 +812,7 @@ define([
                     var container = this.up('.field-box');
                     if (container) {
                         container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
-                        results.push(item.next('.value') && item.next('.value').firstChild.nodeValue || item.value);
+                            results.push({"id": item.value, "gene": item.next('.value') && item.next('.value').firstChild.nodeValue || item.value});
                         });
                     }
                     return [results];
@@ -789,7 +864,13 @@ define([
                 if (data.values) {
                     data.values.each(_generateSelectOption);
                 } else if (data.range) {
-                    $A($R(data.range.start, data.range.end)).each(function(i) {_generateSelectOption({'actual': i, 'displayed' : i + ' ' + data.range.item[+(i!=1)]})});
+                    var createSelectionLabel = function(i, data) {
+                        if (data.range.replacementLabels && data.range.replacementLabels.hasOwnProperty(i)) {
+                            return data.range.replacementLabels[i];
+                        }
+                        return i + (data.range.labelSuffix ? (' ' + data.range.labelSuffix[+(i!=data.range.start)]) : '');
+                    }
+                    $A($R(data.range.start, data.range.end)).each(function(i) {_generateSelectOption({'actual': i, 'displayed' : createSelectionLabel(i, data)})});
                 }
                 optionHTML += "</select>";
                 span.innerHTML = optionHTML;
@@ -1233,7 +1314,7 @@ define([
                     if (values) {
                         values.each(function(v) {
                             target._suggestPicker.addItem(v.id, v.value, '');
-                            _this._updateDisorderColor(v.id, editor.getDisorderLegend().getObjectColor(v.id));
+                            _this._updateDisorder(v.id, editor.getDisorderLegend().getObjectColor(v.id), v.value);
                         })
                     }
                     target._silent = false;
@@ -1275,8 +1356,8 @@ define([
                     target._suggestPicker.clearAcceptedList();
                     if (values) {
                         values.each(function(v) {
-                            target._suggestPicker.addItem(v, v, '');
-                            _this._updateGeneColor(container, v, editor.getGeneColor(v, _this.targetNode.getID()));
+                            target._suggestPicker.addItem(v.id, v.gene, '');
+                            _this._updateGene(container, v.id, v.id, v.gene, editor.getGeneColor(v.id, _this.targetNode.getID()));
                         })
                     }
                     target._silent = false;
@@ -1287,17 +1368,21 @@ define([
 
                 var suggestContainer = container.down('div.patient-newlink-container');
                 var suggestInput     = container.down('input[type=text].suggest-patients');
+                suggestInput.placeholder = "type patient name or identifier";
 
                 var linkContainer = container.down('div.patient-link-container');
                 var link          = container.down('a.patient-link-url');
                 var linkRemove    = container.down('span.patient-link-remove');
+                var label         = container.down('.field-name');
 
                 suggestInput.value = "";
 
                 if (value == "") {
+                    if (label) {label.update("Link to an existing patient record");}
                     linkContainer.hide();
                     suggestContainer.show();
                 } else {
+                    if (label) {label.update("Linked to patient record");}
                     suggestContainer.hide();
                     link.href = editor.getExternalEndpoint().getPhenotipsPatientURL(value);
                     link.innerHTML = value;

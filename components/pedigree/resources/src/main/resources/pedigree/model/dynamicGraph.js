@@ -16,8 +16,6 @@ define([
     {
         this.DG = drawGraph;
 
-        this._probandId = 0;  // assume 0 unless explicitly set (to simplify migration from older pedigrees - TODO: check. Maybe set to -1 by default)
-
         this._heuristics = new Heuristics( drawGraph );  // heuristics & helper methods separated into a separate class
 
         this._heuristics.improvePositioning();
@@ -36,12 +34,12 @@ define([
 
         setProbandId: function(id)
         {
-            this._probandId = id;
+            this.DG.probandId = id;
         },
 
         getProbandId: function()
         {
-            return this._probandId;
+            return this.DG.probandId;
         },
 
         getAllPatientLinks: function()
@@ -144,7 +142,7 @@ define([
 
         getAllPersonIDs: function()
         {
-            return this._getAllPersonsOfGenders(null, false);
+            return this._getAllPersonsOfGenders(null);
         },
 
         getGeneration: function( id )
@@ -182,6 +180,20 @@ define([
             var byOrder = function(a,b){ return vOrder[a] - vOrder[b]; };
             twins.sort( byOrder );
             return twins;
+        },
+
+        isFetus: function( id )
+        {
+            if (!this.isPerson(id)) {
+                throw "Assertion failed: isFetus() is applied to a non-person";
+            }
+            if (this.getProperties(id).hasOwnProperty("lifeStatus")) {
+                if (this.getProperties(id).lifeStatus != "alive" &&
+                    this.getProperties(id).lifeStatus != "deceased") {
+                    return true;
+                }
+            }
+            return false;
         },
 
         isChildless: function( id )
@@ -238,7 +250,8 @@ define([
             // TODO: review
             var keepProperties = [ 'lNameAtB', 'adoptedStatus', 'childlessStatus', 'childlessReason',
                                    'cancers', 'ethnicities', 'twinGroup', 'monozygotic', 'evaluated',
-                                   'carrierStatus', 'lostContact', 'nodeNumber' ];
+                                   'carrierStatus', 'lostContact', 'nodeNumber', 'comments', 'aliveandwell',
+                                   'deceasedAge', 'deceasedCause'];
 
             var result = {};
             for (var i = 0; i < keepProperties.length; i++) {
@@ -249,7 +262,6 @@ define([
             return result;
         },
 
-        // returns false if gender as given in JSON is incompatible with this pedigree; true otherwise
         setNodeDataFromPhenotipsJSON: function( id, patientObject )
         {
             if (patientObject === null) {
@@ -258,8 +270,15 @@ define([
 
             this.DG.GG.properties[id] = {"phenotipsId": patientObject.id };
 
-            // Note: we can't blank all patient properties here, since some are pedigree-specific
-            // and not available in patient document and should be preserved in saved pedigree JSON
+            // pedigree-specific properties (added to patientObject by pedigree controller
+            // to preserve them when a patient is assigned to an existing pedigree node)
+            if (patientObject.hasOwnProperty("pedigreeProperties")) {
+                for (var prop in patientObject.pedigreeProperties) {
+                    if (patientObject.pedigreeProperties.hasOwnProperty(prop)) {
+                        this.DG.GG.properties[id][prop] = patientObject.pedigreeProperties[prop];
+                    }
+                }
+            }
 
             // Fields which are loaded from the patient document are:
             // - first_name
@@ -288,15 +307,10 @@ define([
                 }
             }
 
-            var genderOK = true;
             if (patientObject.hasOwnProperty("sex")) {
-                var probandSex = patientObject.sex;
-                var possibleGenders = this.getPossibleGenders(id);
-                if (!possibleGenders.hasOwnProperty(probandSex) || !possibleGenders[probandSex]) {
-                    probandSex = 'U';
-                    genderOK = false;
-                }
-                this.DG.GG.properties[id].gender = probandSex;
+                this.DG.GG.properties[id].gender = patientObject.sex;
+            } else {
+                this.DG.GG.properties[id].gender = "U";
             }
 
             if (patientObject.hasOwnProperty("date_of_birth")) {
@@ -308,6 +322,9 @@ define([
             if (patientObject.hasOwnProperty("date_of_death")) {
                 var deathDate = new PedigreeDate(patientObject.date_of_death);
                 this.DG.GG.properties[id].dod = deathDate.getSimpleObject();
+                if (deathDate.isSet()) {
+                    delete this.DG.GG.properties[id].aliveandwell;
+                }
             } else {
                 delete this.DG.GG.properties[id].dod;
             }
@@ -315,6 +332,10 @@ define([
                 var lifeStatus = patientObject["life_status"];
                 if (lifeStatus == "deceased" || lifeStatus == "alive") {
                     this.DG.GG.properties[id].lifeStatus = lifeStatus;
+                }
+                if (lifeStatus != "alive") {
+                    // if not removed, it will overwrite the life status to 'alive' and thus remove death date
+                    delete this.DG.GG.properties[id].aliveandwell;
                 }
             } else {
                 delete this.DG.GG.properties[id].lifeStatus;
@@ -374,22 +395,11 @@ define([
                 delete this.DG.GG.properties[id].genes;
             }
 
-            // pedigree-specific properties (may be added by pedigree controller)
-            if (patientObject.hasOwnProperty("pedigreeProperties")) {
-                for (var prop in patientObject.pedigreeProperties) {
-                    if (patientObject.pedigreeProperties.hasOwnProperty(prop)) {
-                        this.DG.GG.properties[id][prop] = patientObject.pedigreeProperties[prop];
-                    }
-                }
-            }
-
             if (patientObject.hasOwnProperty("family_history")) {
                 // stored so that on save consanguinity status can be set via family_history without losing
                 // previous family_history
                 this.DG.GG.properties[id]["family_history"] = patientObject["family_history"];
             }
-
-            return genderOK;
         },
 
         getPosition: function( v )
@@ -689,26 +699,7 @@ define([
             if (!this.isPerson(v))
                 throw "Assertion failed: hasRelationships() is applied to a non-person";
 
-            return (this.DG.GG.v[v].length > 0); // if it had relationships it must have been alive at some point
-        },
-
-        getPossibleGenders: function( v )
-        {
-            // returns: - any gender if no partners or all partners are of unknown genders;
-            //          - opposite of the partner gender if partner genders do not conflict
-            //          - "U" if has partners of different genders (for now this is suported)
-            var possible = {"M": true, "F": true, "O": true, "U": true};
-
-            var partners = this.DG.GG.getAllPartners(v);
-
-            for (var i = 0; i < partners.length; i++) {
-                var partnerGender = this.getGender(partners[i]);
-                if (partnerGender != "U" && partnerGender != "O") {
-                    possible[partnerGender] = false;
-                }
-            }
-            //console.log("Possible genders for " + v + ": " + Helpers.stringifyObject(possible));
-            return possible;
+            return (this.DG.GG.v[v].length > 0);
         },
 
         getPossibleChildrenOf: function( v )
@@ -750,44 +741,59 @@ define([
                if (this.isPersonGroup(i)) continue;
                if (this.isPlaceholder(i)) continue;
                if (this.DG.ancestors[i].hasOwnProperty(v)) continue;
-               if (this.isPerson(i) && this.isAdoptedOut(i)) continue;
                result.push(i);
             }
             return result;
         },
 
+        /**
+         * Returns all person who are not already a partner and who are not a fetus.
+         */
         getPossiblePartnersOf: function( v )
         {
-            // returns all person nodes of the other gender or unknown gender (who are not already partners)
             var oppositeGender  = this.DG.GG.getOppositeGender(v);
-            var validGendersSet = (oppositeGender == 'U') ? ['M','F','U','O'] : [oppositeGender,'U','O'];
+            var preferredGendersSet = (oppositeGender == 'U') ? ['M','F','U','O'] : [oppositeGender,'U','O'];
 
-            var result = this._getAllPersonsOfGenders(validGendersSet, true);
+            var validList = this.getAllPersonIDs();
 
+            // exclude itself
+            Helpers.removeFirstOccurrenceByValue( validList, v );
+
+            // exclude partners
             var partners = this.DG.GG.getAllPartners(v);
-            partners.push(v);
-            for (var i = 0; i < partners.length; i++)
-                Helpers.removeFirstOccurrenceByValue( result, partners[i] );
+            for (var i = 0; i < partners.length; i++) {
+                Helpers.removeFirstOccurrenceByValue( validList, partners[i] );
+            }
+
+            var result = [];
+            for (var i = 0; i < validList.length; i++) {
+                var nodeId = validList[i];
+                if (this.isFetus(nodeId)) {
+                    continue;
+                }
+                // ok to add - either add as "preferred" or not
+                var preferred = Helpers.arrayContains(preferredGendersSet, this.getGender(nodeId));
+
+                var node = { "nodeID": nodeId, "preferred": preferred };
+                result.push(node);
+            }
 
             return result;
         },
 
-        getPossiblePatientIDTarget: function(gender) {
+        getPossiblePatientIDTarget: function() {
             // Valid targets:
             //  1) not currently linked to other patients
-            //  2) gender matches or is unknown
+            //  2) (updated) any gender
 
-            var validGendersSet = (gender == 'U') ? ['M','F','U','O'] : [gender,'U'];
-            var nodesWithValidGender = this._getAllPersonsOfGenders(validGendersSet);
-
+            var allPersonNodes = this.getAllPersonIDs();
             var result = [];
             // exclude those nodes which already have a phenotipsID link
-            for (var i = 0; i < nodesWithValidGender.length; i++) {
-                if (this.getPhenotipsLinkID(nodesWithValidGender[i]) == "") {
-                    result.push(nodesWithValidGender[i]);
+            for (var i = 0; i < allPersonNodes.length; i++) {
+                if (this.getPhenotipsLinkID(allPersonNodes[i]) == "") {
+                    result.push(allPersonNodes[i]);
                 }
             }
-
             return result;
         },
 
@@ -1512,6 +1518,11 @@ define([
                 }
             }
 
+            // update proband ID, if it has changed
+            if (changedIDSet.hasOwnProperty(this.getProbandId())) {
+                this.setProbandId(changedIDSet[this.getProbandId()]);
+            }
+
             this.DG.maxRank = Math.max.apply(null, this.DG.ranks);
 
             this.DG.GG.validate();
@@ -1732,13 +1743,13 @@ define([
 
             this.DG.positions = jsonData["positions"];
 
+            this.DG.probandId = jsonData.hasOwnProperty("probandNodeID") ? jsonData["probandNodeID"] : -1;
+
             this._updateauxiliaryStructures();
 
             this.screenRankShift = 0;
 
             var newNodes = this._getAllNodes();
-
-            this._probandId = jsonData.hasOwnProperty("probandNodeID") ? jsonData["probandNodeID"] : -1;
 
             return {"new": newNodes, "removed": removedNodes};
         },
@@ -1794,6 +1805,7 @@ define([
         {
             try {
                 var newDG = new PositionedGraph( baseGraph,
+                                                 probandNodeID,
                                                  this.DG.horizontalPersonSeparationDist,
                                                  this.DG.horizontalRelSeparationDist,
                                                  this.DG.maxInitOrderingBuckets,
@@ -1808,8 +1820,6 @@ define([
 
             this.DG          = newDG;
             this._heuristics = new Heuristics( this.DG );
-
-            this._probandId = probandNodeID;
 
             //this._debugPrintAll("before improvement");
             this._heuristics.improvePositioning();
@@ -2445,7 +2455,7 @@ define([
 
         //=============================================================
 
-        _getAllPersonsOfGenders: function (validGendersSet, excludeAdoptedOut)
+        _getAllPersonsOfGenders: function (validGendersSet)
         {
             // all person nodes whose gender matches one of genders in the validGendersSet array
 
@@ -2468,7 +2478,6 @@ define([
                 if (!this.isPerson(i)) continue;
                 if (this.isPersonGroup(i)) continue;
                 if (this.isPlaceholder(i)) continue;
-                if (excludeAdoptedOut && this.isAdoptedOut(i)) continue;
                 var gender = this.getProperties(i)["gender"].toLowerCase();
                 //console.log("trying: " + i + ", gender: " + gender + ", validSet: " + Helpers.stringifyObject(validGendersSet));
                 if (Helpers.arrayContains(validGendersSet, gender))

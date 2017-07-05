@@ -48,6 +48,7 @@ import java.util.TreeSet;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -145,7 +146,7 @@ public class DefaultPushPatientService implements PushPatientService
             List<BaseObject> servers = prefsDoc.getXObjects(new DocumentReference(context.getWikiId(),
                 Constants.CODE_SPACE, "PushPatientServer"));
 
-            Set<PushServerInfo> response = new TreeSet<PushServerInfo>();
+            Set<PushServerInfo> response = new TreeSet<>();
             if (servers == null || servers.isEmpty()) {
                 return response;
             }
@@ -156,10 +157,19 @@ public class DefaultPushPatientService implements PushPatientService
                 }
                 this.logger.debug("   ...available: [{}]",
                     serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME));
-                PushServerInfo info = new DefaultPushServerInfo(
-                    serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME),
-                    serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_URL_PROPERTY_NAME),
-                    serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_DESC_PROPERTY_NAME));
+                String name =
+                    serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME);
+                String url =
+                    serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_URL_PROPERTY_NAME);
+                if (StringUtils.isBlank(name) || StringUtils.isBlank(url)) {
+                    continue;
+                }
+                PushServerInfo info =
+                    new DefaultPushServerInfo(name, url,
+                        serverConfiguration
+                            .getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_REGISTRATION_URL_PROPERTY_NAME),
+                        serverConfiguration.displayView(DefaultPushPatientData.PUSH_SERVER_CONFIG_DESC_PROPERTY_NAME,
+                            context));
                 response.add(info);
             }
             return response;
@@ -174,7 +184,7 @@ public class DefaultPushPatientService implements PushPatientService
     {
         Set<PushServerInfo> servers = getAvailablePushTargets();
 
-        Map<PushServerInfo, PatientPushHistory> response = new TreeMap<PushServerInfo, PatientPushHistory>();
+        Map<PushServerInfo, PatientPushHistory> response = new TreeMap<>();
 
         for (PushServerInfo server : servers) {
             PatientPushHistory history = getPatientPushHistory(localPatientID, server.getServerID());
@@ -220,7 +230,7 @@ public class DefaultPushPatientService implements PushPatientService
             if (listOfStrings != null) {
                 JSONArray fields = new JSONArray(listOfStrings);
                 if (fields != null) {
-                    fieldSet = new TreeSet<String>();
+                    fieldSet = new TreeSet<>();
                     for (Object field : fields) {
                         fieldSet.add(field.toString());
                     }

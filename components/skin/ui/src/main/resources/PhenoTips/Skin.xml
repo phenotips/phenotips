@@ -305,6 +305,357 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   </object>
   <object>
     <name>PhenoTips.Skin</name>
+    <number>2</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>4ce6c5c3-22da-4c43-8bf2-c1c83a04f295</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe('xwiki:dom:loaded', function() {
+  // Edit buttons for every heading in view mode
+  var editButton = $('prActionEdit');
+  if (editButton) {
+    $$('.chapter &gt; h2[id]').each(function(title) {
+      var editLink = new Element('a', {'class' : 'action-edit fa fa-pencil', 'href' : editButton.href + '#' + title.id, 'title' : 'Edit'});
+      title.insert(editLink);
+    });
+  }
+  if (!$('inline')) {return;}
+
+  // , .chapter.phenotype-info .negative_phenotype-group
+  $$('.chapter.phenotype-info .phenotype-group').invoke('addClassName', 'collapsible-group');
+
+  $$('.chapter &gt; h2').each(function(item){
+    var showIcon = '&lt;span class="fa fa-plus-square-o fa-lg"&gt;&lt;/span&gt;&amp;nbsp;';
+    var chapterShow = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update(showIcon+"$services.localization.render('phenotips.patientSheet.expandSection')");
+    var hideIcon = '&lt;span class="fa fa-minus-square-o fa-lg"&gt;&lt;/span&gt;&amp;nbsp;';
+    var chapterHide = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update(hideIcon+"$services.localization.render('phenotips.patientSheet.collapseSection')");
+    var chapterShowWrapper = new Element('span', {'class' : 'buttonwrapper show'}).insert(chapterShow);
+    var chapterHideWrapper = new Element('span', {'class' : 'buttonwrapper hide'}).insert(chapterHide);
+    var chapterExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(chapterShowWrapper).insert(chapterHideWrapper);
+    item.insert({after: chapterExpandTools});
+    [chapterShow, chapterHide, item].invoke('observe', 'click', function (event) {
+      event.element().up('.chapter').toggleClassName('collapsed');
+    });
+  });
+  $$('.chapter').each(function(item) {
+     if (window.location.hash &amp;&amp; item.down(window.location.hash)) {
+       item.removeClassName('collapsed');
+     }
+  });
+});</code>
+    </property>
+    <property>
+      <name>Expand/collapse sections</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
+    <number>3</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>a847fd11-a557-4323-9940-9302a4f11f22</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function(PhenoTips) {
+  // Start PhenoTips augmentation
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+
+  /**
+   * PhenoTips.widgets.FormUtils allows to:
+   *  - check if the form displayed on the current page has unsaved changes
+   *  - save that form and do something after saving
+   * It also performs periodical autosave every 10s (only if there are unsaved modifications).
+   *
+   * HOW TO USE:
+   *
+   *  PhenoTips.widgets.FormUtils.getFormState() - returns an object representing the state of the current form
+   *  Notes:
+   *   - it always looks for the form with the id 'inline' (which is the convention for all forms for PhenoTips entities)
+   *   - if there is no $('inline') form on the page, getFormState will still return an object
+   *
+   *  PhenoTips.widgets.FormUtils.getFormState().isFormDirty() - checks if there any unsaved changes
+   *  Note: if there's no form on the page, it will automatically return false; otherwise it will check the actual form for unsaved changes
+
+   *
+   *  PhenoTips.widgets.FormUtils.getFormState().saveForm(successCallback, failureCallback) - saves the form and calls one of the callback
+   *  functions depending on the result of the save attempt.
+   *  Notes:
+   *   - both callbacks are optional
+   *   - if there's no failureCallback, when saving fails the user is prompted if successCallback (if provided) should be pursued anyway
+   *   - if there's no form on the page, none of the callbacks is called
+   *
+   *  PhenoTips.widgets.FormUtils.getFormState().saveIfFormDirty(successCallback, failureCallback) - if there's a form with unsaved changes
+   *  on the page, it behaves like saveForm(successCallback, failureCallback), otherwise it calls successCallback (if provided).
+   *  Note: it is usually preferred to use saveIfFormDirty instead of saveForm, because:
+   *   - it avoids unnecessary versions
+   *   - it it guarantees the successCallback is executed if there aren't any pending modifications.
+   *
+   */
+  widgets.FormUtils = Class.create({
+    config : {
+      // TODO: CONFIGURE IN THE ADMINISTRATION
+      autosave : {
+        enabled: true,
+        frequency : 10 /*seconds */,
+        message: 'Automatic save'
+      }
+    },
+    initialize : function() {
+      this.form = $('inline');
+      if (this.form) {
+        this.isFormDirty = this.isFormDirty.bind(this);
+        this.form._formState = this;
+        var _this = this;
+        var recordFormData = function() {
+          _this.formData = _this.form.serialize();
+        };
+        // Some form elements are still being modified while "xwiki:dom:loaded" is fired.
+        // If the initial state of the form is recorded immediately, there will likely be
+        // differences with the state of the form when navigating away even if the user
+        // hasn't actually changed any data.
+        // Setting a timeout, even zero, delays the initialization until other
+        // form elements have been modified already.
+        setTimeout(recordFormData, 0);
+        // Record the state of the form again once the form is saved.
+        document.observe('xwiki:document:saved', recordFormData);
+        $$("input[name^='action_']").invoke('observe', 'click', recordFormData);
+        // Upon navigating away, check if anything has changed in the form and warn the user
+        // if it did.
+        window.addEventListener('beforeunload', function(event) {
+          if (_this.isFormDirty()) {
+            var message = "$!escapetool.javascript($services.localization.render('phenotips.navigation.beforeunload.warning'))";
+            (event || window.event).returnValue = message;
+            return message;
+          }
+          return undefined;
+        });
+
+        // Set up the smart autosave
+        if (this.config.autosave.enabled) {
+          this.timer = new PeriodicalExecuter(this.saveIfFormDirty.bind(this), this.config.autosave.frequency);
+        }
+      }
+    },
+    isFormDirty : function() {
+      return this.form ? (this.formData != this.form.serialize()) : false;
+    },
+    saveForm : function(successCallback, failureCallback) {
+      var onSaved = function () {
+        document.stopObserving("xwiki:document:saved", onSaved);
+        document.stopObserving("xwiki:document:saveFailed", onSaveFailed);
+        if (typeof successCallback == 'function') {
+          successCallback();
+        }
+      };
+      var onSaveFailed = function () {
+        document.stopObserving("xwiki:document:saved", onSaved);
+        document.stopObserving("xwiki:document:saveFailed", onSaveFailed);
+        if (typeof failureCallback == 'function') {
+          failureCallback();
+        } else if (typeof successCallback == 'function') {
+          // If there's NO callback for when the saving failed, ask user if it's OK to proceed anyway with the successCallback
+          (new XWiki.widgets.ConfirmationBox({
+            onYes: successCallback,
+            onNo: function(){}
+          },
+          {
+            confirmationText: "$!escapetool.javascript($services.localization.render('phenotips.save.failed.confirmProceed'))", // "Failed to save the latest modifications. Proceed anyway?"
+            showCancelButton: false
+          })).showDialog();
+        }
+      };
+      document.fire("xwiki:actions:save", {"continue": true, "form" : this.form});
+      document.observe("xwiki:document:saved", onSaved);
+      document.observe("xwiki:document:saveFailed", onSaveFailed);
+    },
+    saveIfFormDirty : function(successCallback, failureCallback) {
+      if (this.isFormDirty()) {
+        this.saveForm(successCallback, failureCallback);
+      } else {
+        // If there are no unsaved changes, just go straight to calling the successCallback function if one is provided.
+        (typeof successCallback == 'function') &amp;&amp; successCallback();
+      }
+    }
+  });
+
+  // Static function to get the form state
+  widgets.FormUtils.getFormState = function() {
+    return formState ;
+  };
+  var formState;
+  var init = function(event) {
+    formState = new PhenoTips.widgets.FormUtils();
+  };
+
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+
+  // End PhenoTips augmentation.
+  return PhenoTips;
+}(PhenoTips || {}));</code>
+    </property>
+    <property>
+      <name>Utility class for form state manipulation, including saving on demand, periodic autosave and warning users when they navigate away from a form with unsaved changes</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>always</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
     <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
     <guid>8dda95b8-cd05-43f6-9f5b-c60c9566d28d</guid>
@@ -447,6 +798,18 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
 .actionmenu {
   height: 1.8em;
 }
+.actionmenu a, .actionmenu a:visited {
+  /* (menu height - line height) / 2 = (1.8em - 1.2em) / 2 = 0.3em */
+  padding-top: .3em;
+  line-height: 1.2em;
+}
+.actionmenu a strong {
+  line-height: inherit;
+}
+/** Bug in Colibri: although the page body has 25px padding, the menus on top have 10px + 10px padding. */
+.rightmenu {
+  padding-right: 15px;
+}
 /** Bug in Colibri: a custom font is used instead of the one used everywhere else. */
 .actionmenu a, .actionmenu a:visited {
   font-family: inherit;
@@ -456,7 +819,8 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
   color: $theme.menuLinkColor;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
-  z-index: 1006;
+  /* Keep above .content-actions */
+  z-index: 1001;
 }
 #phenotips-mainmenu .menu-horizontal, #phenotips-globalTools .menu-horizontal {
   font-size: 1em;
@@ -473,11 +837,10 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   font-size: 1em;
 }
 #phenotips-globalTools .search input {
-  margin-left: 0;
-  margin-right: 5px;
-  margin-top: 0.05em;
-  min-height: 20px;
+  font-size: 1em;
+  margin: -1px;
   padding: 0 3px;
+  vertical-align: baseline;
   width: 20em;
 }
 
@@ -657,25 +1020,42 @@ h1:target, h2:target, h3:target {
   display: none;
 }
 .language-block {
-  background-color: transparent;
+  position: relative;
 }
 .language-block .rightmenu {
   top: 10px;
   margin-right: 10px;
 }
-.language-block .rightmenu select {
-  text-transform: uppercase;
+.language-block .menu-horizontal &gt; ul &gt; li &gt; span {
+  color: $theme.menuLinkColor;
+  margin: 0;
   padding: 0;
-  cursor: pointer;
-  font-size: 0.85em;
-  float: right;
+  white-space: pre;
 }
-.language-block .rightmenu a {
-  float: right;
-  cursor: default !important;
-  text-decoration: blink;
-  padding-top: 0;
-}</code>
+.language-block .menu-horizontal &gt; ul &gt; li:last-of-type {
+  padding-right: 0;
+}
+.language-block .menu-horizontal &gt; ul ul {
+  margin: 0;
+  z-index: 2000;
+}
+
+.language-block .menu-horizontal .selected {
+  position: relative;
+}
+.language-block .menu-horizontal .selected:before {
+  content: "✓";
+  display: block;
+  position: absolute;
+  left: .3em;
+}
+.xdialog-box .button {
+  min-width: 5em;
+}
+.commentcontent {
+  white-space: pre-wrap;
+}
+</code>
     </property>
     <property>
       <contentType>CSS</contentType>
@@ -795,18 +1175,25 @@ h1:target, h2:target, h3:target {
   margin: auto;
 }
 
-.menu-horizontal ul * {
-  line-height: normal;
-}
-
 .menu-horizontal li {
   cursor: default;
   line-height: 16px;
   min-height: 16px;
+  padding: .3em 1.3em;
 }
 
+.menu-horizontal li:last-of-type {
+  padding-right: 10px;
+}
+.menu .fa:before {
+  line-height: 1em !important;
+}
 .menu-horizontal img {
   vertical-align: middle;
+}
+
+.menu-horizontal &gt; ul * {
+  line-height: 1.2em;
 }
 
 /* Horizontal separator */
@@ -821,12 +1208,7 @@ h1:target, h2:target, h3:target {
 
 .menu.menu-horizontal {
   font-size: .85em;
-  height: 2em;
   padding-left: 25px;
-}
-
-.menu-horizontal li {
-  padding: 0.2em 1.3em;
 }
 
 .menu-horizontal li li:empty {
@@ -853,6 +1235,7 @@ h1:target, h2:target, h3:target {
 .menu-horizontal &gt; ul &gt; li &gt; .xDropdown:after {
   content: '\25BC';
   font-size: .8em;
+  line-height: 1em;
   margin-left: .5em;
 }
 
@@ -861,7 +1244,8 @@ h1:target, h2:target, h3:target {
   border-radius: 0 0 .8em .8em;
   box-shadow: 0 1px 1px $theme.textColor;
   display: none;
-  margin: 0.2em 0 0 -1.3em;
+  /* Top margin should be 0.3em, but due to rounding errors, sometimes it would leave a pixel-high gap between the parent menu and the submenu. */
+  margin: 0.25em 0 0 -1.3em;
   padding-bottom: .3em;
   position: absolute;
   z-index: 1000;
@@ -1006,7 +1390,8 @@ h1:target, h2:target, h3:target {
   position: absolute;
   right: 0px;
   top: 0;
-  z-index: 1002;
+  /* Keep above the page content */
+  z-index: 1000;
 }
 
 .page-actions .menu.menu-horizontal {
@@ -1021,7 +1406,7 @@ h1:target, h2:target, h3:target {
   border: 0 none;
   color: $theme.menuLinkColor;
   font-size: 1em;
-  height: 1.833em;
+  line-height: 1.2em;
   padding: 0 0 0 10px;
   text-shadow: none;
 }
@@ -1031,7 +1416,8 @@ h1:target, h2:target, h3:target {
 }
 
 .page-actions .menu-horizontal &gt; ul &gt; li {
-  padding: 0.2em 1.3em 0.2em 0.3em;
+  /* (menu height - line height) / 2 = (1.8em - 1.2em) / 2 = 0.3em */
+  padding: 0.3em 1.3em 0.3em 0.3em;
 }
 .page-actions .menu-horizontal &gt; ul {
   white-space: nowrap;
@@ -1046,7 +1432,7 @@ h1:target, h2:target, h3:target {
   /* Buttons without a border in IE don't trigger the :hover state */
   border: 1px solid transparent !important;
   color: inherit !important;
-  margin: 0 !important;
+  margin: -1px !important;
   padding: 0 !important;
   font-size: inherit !important;
   font-family: inherit !important;

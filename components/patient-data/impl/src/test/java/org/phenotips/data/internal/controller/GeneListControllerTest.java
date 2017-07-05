@@ -29,6 +29,7 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,6 +57,7 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
+import com.xpn.xwiki.objects.StringListProperty;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -68,10 +70,39 @@ import static org.mockito.Mockito.when;
 
 /**
  * Test for the {@link GeneListController} Component, only the overridden methods from {@link AbstractComplexController}
- * are tested here
+ * are tested here.
  */
 public class GeneListControllerTest
 {
+    private static final String GENES_STRING = "genes";
+
+    private static final String CONTROLLER_NAME = GENES_STRING;
+
+    private static final String GENES_ENABLING_FIELD_NAME = GENES_STRING;
+
+    private static final String GENE_KEY = "gene";
+
+    private static final String GENE_VALUE = "GENE";
+
+    private static final String STATUS_KEY = "status";
+
+    private static final String STRATEGY_KEY = "strategy";
+
+    private static final String COMMENTS_KEY = "comments";
+
+    private static final String JSON_GENE_ID = "id";
+
+    private static final String JSON_GENE_SYMBOL = GENE_KEY;
+
+    private static final String JSON_STATUS_KEY = STATUS_KEY;
+
+    private static final String JSON_STRATEGY_KEY = STRATEGY_KEY;
+
+    private static final String JSON_COMMENTS_KEY = COMMENTS_KEY;
+
+    private static final String JSON_OLD_REJECTED_GENE_KEY = "rejectedGenes";
+
+    private static final String JSON_OLD_SOLVED_GENE_KEY = "solved";
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Map<String, String>>> mocker =
@@ -84,20 +115,6 @@ public class GeneListControllerTest
     private XWikiDocument doc;
 
     private List<BaseObject> geneXWikiObjects;
-
-    private static final String GENES_STRING = "genes";
-
-    private static final String CONTROLLER_NAME = GENES_STRING;
-
-    private static final String GENES_ENABLING_FIELD_NAME = GENES_STRING;
-
-    private static final String GENE_KEY = "gene";
-
-    private static final String STATUS_KEY = "status";
-
-    private static final String STRATEGY_KEY = "strategy";
-
-    private static final String COMMENTS_KEY = "comments";
 
     @Before
     public void setUp() throws Exception
@@ -154,6 +171,47 @@ public class GeneListControllerTest
     }
 
     // --------------------load() is Overridden from AbstractSimpleController--------------------
+
+    @Test
+    public void loadWorks() throws Exception
+    {
+        for (int i = 0; i < 3; ++i) {
+            BaseObject gene = mock(BaseObject.class);
+            this.geneXWikiObjects.add(gene);
+
+            BaseStringProperty geneString = mock(BaseStringProperty.class);
+            doReturn("gene" + i).when(geneString).getValue();
+            doReturn(geneString).when(gene).getField(GENE_KEY);
+
+            BaseStringProperty statusString = mock(BaseStringProperty.class);
+            doReturn("status" + i).when(statusString).getValue();
+            doReturn(statusString).when(gene).getField(STATUS_KEY);
+
+            BaseStringProperty commentString = mock(BaseStringProperty.class);
+            doReturn("comment" + i).when(commentString).getValue();
+            doReturn(commentString).when(gene).getField(COMMENTS_KEY);
+
+            StringListProperty strategyString = mock(StringListProperty.class);
+            doReturn("strategy" + i).when(strategyString).getTextValue();
+            doReturn(Arrays.asList("strategy" + i)).when(strategyString).getList();
+            doReturn(strategyString).when(gene).getField(STRATEGY_KEY);
+
+            doReturn(Arrays.asList(geneString, statusString, commentString, strategyString)).when(gene).getFieldList();
+        }
+
+        PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
+
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.isIndexed());
+        Assert.assertEquals(3, result.size());
+        for (int i = 0; i < 3; ++i) {
+            Map<String, String> item = result.get(i);
+            Assert.assertEquals("gene" + i, item.get(GENE_KEY));
+            Assert.assertEquals("status" + i, item.get(STATUS_KEY));
+            Assert.assertEquals("comment" + i, item.get(COMMENTS_KEY));
+            Assert.assertEquals("strategy" + i, item.get(STRATEGY_KEY));
+        }
+    }
 
     @Test
     public void loadCatchesExceptionFromDocumentAccess() throws Exception
@@ -234,7 +292,6 @@ public class GeneListControllerTest
         PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertNotNull(result);
-        Assert.assertNotNull(result);
         for (int i = 0; i < comments.length; i++) {
             Assert.assertEquals(comments[i], result.get(i).get(COMMENTS_KEY));
         }
@@ -272,6 +329,10 @@ public class GeneListControllerTest
         verify(this.patient).getData(CONTROLLER_NAME);
     }
 
+    /*
+     * Tests that the passed JSON will not be affected by writeJSON in this controller if selected fields is not null,
+     * and does not contain GeneListController.GENES_ENABLING_FIELD_NAME
+     */
     @Test
     public void writeJSONReturnsWhenSelectedFieldsDoesNotContainGeneEnabler() throws ComponentLookupException
     {
@@ -280,6 +341,7 @@ public class GeneListControllerTest
         doReturn(patientData).when(this.patient).getData(CONTROLLER_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
+        // selectedFields could contain any number of random strings; it should not affect the behavior in this case
         selectedFields.add("some_string");
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
@@ -333,16 +395,17 @@ public class GeneListControllerTest
 
         Assert.assertNotNull(json.get(CONTROLLER_NAME));
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
-        Assert.assertEquals("geneName", json.getJSONArray(CONTROLLER_NAME).getJSONObject(0).get(GENE_KEY));
+        Assert.assertEquals("geneName", json.getJSONArray(CONTROLLER_NAME).getJSONObject(0).get(JSON_GENE_ID));
+        Assert.assertEquals("geneName", json.getJSONArray(CONTROLLER_NAME).getJSONObject(0).get(JSON_GENE_SYMBOL));
     }
 
     @Test
-    public void writeJSONAddsContainerWithOnlySelectedFields() throws ComponentLookupException
+    public void writeJSONWorksCorrectly() throws ComponentLookupException
     {
         List<Map<String, String>> internalList = new LinkedList<>();
 
         Map<String, String> item = new LinkedHashMap<>();
-        item.put(GENE_KEY, "GENE");
+        item.put(GENE_KEY, GENE_VALUE);
         item.put(STATUS_KEY, "Status");
         item.put(STRATEGY_KEY, "Strategy");
         item.put(COMMENTS_KEY, "Comment");
@@ -359,34 +422,14 @@ public class GeneListControllerTest
         Assert.assertNotNull(json.get(CONTROLLER_NAME));
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
         JSONObject result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
-        Assert.assertEquals("GENE", result.get(GENE_KEY));
-        Assert.assertEquals("Status", result.get(STATUS_KEY));
+        Assert.assertEquals(GENE_VALUE, result.get(JSON_GENE_SYMBOL));
+        Assert.assertEquals(GENE_VALUE, result.get(JSON_GENE_ID));
+        Assert.assertEquals("Status", result.get(JSON_STATUS_KEY));
         String[] strategyArray = { "Strategy" };
-        Assert.assertEquals(new JSONArray(strategyArray).get(0), ((JSONArray) result.get(STRATEGY_KEY)).get(0));
-        Assert.assertEquals("Comment", result.get(COMMENTS_KEY));
-
-        json = new JSONObject();
-        internalList = new LinkedList<>();
-        item = new LinkedHashMap<>();
-        item.put(GENE_KEY, "GENE");
-        item.put(STATUS_KEY, "Status");
-        item.put(STRATEGY_KEY, "Strategy");
-        item.put(COMMENTS_KEY, "Comment");
-        internalList.add(item);
-        patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
-        doReturn(patientData).when(this.patient).getData(CONTROLLER_NAME);
-        selectedFields = new LinkedList<>();
-        selectedFields.add(GENES_ENABLING_FIELD_NAME);
-
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
-
-        Assert.assertNotNull(json.get(CONTROLLER_NAME));
-        Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
-        result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
-        Assert.assertEquals("GENE", result.get(GENE_KEY));
-        Assert.assertTrue(result.has(STATUS_KEY));
-        Assert.assertTrue(result.has(STRATEGY_KEY));
-        Assert.assertEquals(4, result.length());
+        Assert.assertEquals(new JSONArray(strategyArray).get(0), ((JSONArray) result.get(JSON_STRATEGY_KEY)).get(0));
+        Assert.assertEquals("Comment", result.get(JSON_COMMENTS_KEY));
+        // id, gene, status, strategy, comment
+        Assert.assertEquals(5, result.length());
     }
 
     @Test
@@ -426,25 +469,97 @@ public class GeneListControllerTest
     {
         JSONArray data = new JSONArray();
         JSONObject item = new JSONObject();
-        item.put("gene", "GENE1");
-        item.put("comments", "Notes1");
+        item.put(JSON_GENE_SYMBOL, "GENE1");
+        item.put(JSON_COMMENTS_KEY, "Notes1");
         data.put(item);
         item = new JSONObject();
-        item.put("gene", "GENE2");
+        item.put(JSON_GENE_SYMBOL, "GENE2");
+        item.put(JSON_STATUS_KEY, "rejected");
+        data.put(item);
+        item = new JSONObject();
+        item.put(JSON_GENE_ID, "ENSG00000123456");
+        data.put(item);
+        item = new JSONObject();
+        item.put(JSON_GENE_ID, "ENSG00000098765");
+        item.put(JSON_STATUS_KEY, "incorrect_status");
         data.put(item);
         JSONObject json = new JSONObject();
         json.put(CONTROLLER_NAME, data);
         PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().readJSON(json);
         Assert.assertNotNull(result);
-        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(4, result.size());
         Assert.assertTrue(result.isIndexed());
         Iterator<Map<String, String>> it = result.iterator();
         Map<String, String> gene = it.next();
-        Assert.assertEquals("GENE1", gene.get("gene"));
-        Assert.assertEquals("Notes1", gene.get("comments"));
+        Assert.assertEquals("GENE1", gene.get(GENE_KEY));
+        Assert.assertEquals("Notes1", gene.get(COMMENTS_KEY));
+        // "candidate" is the default status added to any gene without explicitly specified status
+        Assert.assertEquals("candidate", gene.get(STATUS_KEY));
+        Assert.assertFalse(gene.containsKey(STRATEGY_KEY));
         gene = it.next();
-        Assert.assertEquals("GENE2", gene.get("gene"));
-        Assert.assertFalse(gene.containsKey("comments"));
+        Assert.assertEquals("GENE2", gene.get(GENE_KEY));
+        Assert.assertEquals("rejected", gene.get(STATUS_KEY));
+        Assert.assertFalse(gene.containsKey(COMMENTS_KEY));
+        Assert.assertFalse(gene.containsKey(STRATEGY_KEY));
+        gene = it.next();
+        Assert.assertEquals("ENSG00000123456", gene.get(GENE_KEY));
+        Assert.assertEquals("candidate", gene.get(STATUS_KEY));
+        Assert.assertFalse(gene.containsKey(COMMENTS_KEY));
+        Assert.assertFalse(gene.containsKey(STRATEGY_KEY));
+        gene = it.next();
+        Assert.assertEquals("ENSG00000098765", gene.get(GENE_KEY));
+        // any incorrect status should be replaced with "candidate"
+        Assert.assertEquals("candidate", gene.get(STATUS_KEY));
+    }
+
+    @Test
+    public void readParsedsOldJSONCorrectly() throws ComponentLookupException
+    {
+        JSONArray data = new JSONArray();
+        JSONObject item = new JSONObject();
+        item.put(JSON_GENE_SYMBOL, "GENE_1");
+        item.put(JSON_STATUS_KEY, "candidate");
+        data.put(item);
+        item = new JSONObject();
+        // this gene is duplicated 2 times - in candidate and in rejected sections. Should become rejected
+        item.put(JSON_GENE_SYMBOL, "GENE_TO_BECOME_REJECTED");
+        item.put(JSON_STATUS_KEY, "candidate");
+        data.put(item);
+        item = new JSONObject();
+        // this gene is duplicated 3 times - in candidate, rejected and solved sections. Should become solved
+        item.put(JSON_GENE_SYMBOL, "GENE_TO_BECOME_SOLVED");
+        item.put(JSON_STATUS_KEY, "candidate");
+        data.put(item);
+        JSONObject json = new JSONObject();
+        json.put(CONTROLLER_NAME, data);
+        data = new JSONArray();
+        item = new JSONObject();
+        item.put(JSON_GENE_SYMBOL, "GENE_TO_BECOME_REJECTED");
+        item.put(JSON_STATUS_KEY, "rejected");
+        data.put(item);
+        item = new JSONObject();
+        item.put(JSON_GENE_SYMBOL, "GENE_TO_BECOME_SOLVED");
+        item.put(JSON_STATUS_KEY, "rejected");
+        data.put(item);
+        json.put(JSON_OLD_REJECTED_GENE_KEY, data);
+        item = new JSONObject();
+        item.put(JSON_GENE_SYMBOL, "GENE_TO_BECOME_SOLVED");
+        json.put(JSON_OLD_SOLVED_GENE_KEY, item);
+
+        PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().readJSON(json);
+        Assert.assertNotNull(result);
+        Assert.assertEquals(3, result.size());
+        Assert.assertTrue(result.isIndexed());
+        Iterator<Map<String, String>> it = result.iterator();
+        Map<String, String> gene = it.next();
+        Assert.assertEquals("GENE_1", gene.get(GENE_KEY));
+        Assert.assertEquals("candidate", gene.get(STATUS_KEY));
+        gene = it.next();
+        Assert.assertEquals("GENE_TO_BECOME_REJECTED", gene.get(GENE_KEY));
+        Assert.assertEquals("rejected", gene.get(STATUS_KEY));
+        gene = it.next();
+        Assert.assertEquals("GENE_TO_BECOME_SOLVED", gene.get(GENE_KEY));
+        Assert.assertEquals("solved", gene.get(STATUS_KEY));
     }
 
     @Test
@@ -481,11 +596,11 @@ public class GeneListControllerTest
     {
         List<Map<String, String>> data = new LinkedList<>();
         Map<String, String> item = new HashMap<>();
-        item.put("gene", "GENE1");
-        item.put("comments", "Notes1");
+        item.put(GENE_KEY, "GENE1");
+        item.put(COMMENTS_KEY, "Notes1");
         data.add(item);
         item = new HashMap<>();
-        item.put("gene", "GENE2");
+        item.put(GENE_KEY, "GENE2");
         data.add(item);
         when(this.patient.<Map<String, String>>getData(CONTROLLER_NAME))
             .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, data));
@@ -501,10 +616,10 @@ public class GeneListControllerTest
         this.mocker.getComponentUnderTest().save(this.patient, this.doc);
 
         verify(this.doc).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
-        verify(o1).set("gene", "GENE1", context);
-        verify(o1).set("comments", "Notes1", context);
-        verify(o2).set("gene", "GENE2", context);
-        verify(o2, Mockito.never()).set(eq("comments"), anyString(), eq(context));
+        verify(o1).set(GENE_KEY, "GENE1", context);
+        verify(o1).set(COMMENTS_KEY, "Notes1", context);
+        verify(o2).set(GENE_KEY, "GENE2", context);
+        verify(o2, Mockito.never()).set(eq(COMMENTS_KEY), anyString(), eq(context));
     }
 
     // ----------------------------------------Private methods----------------------------------------

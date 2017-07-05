@@ -92,6 +92,6 @@ public interface PushServerConfigurationResponse extends PushServerResponse
      * Get the list of consents available on the remote server.
      *
      * @return The list of consents configured on the remote server.
-     * */
+     */
     JSONArray getConsents();
 }

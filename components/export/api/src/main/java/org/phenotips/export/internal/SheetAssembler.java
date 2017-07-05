@@ -61,7 +61,7 @@ public class SheetAssembler
         List<DataSection> headers = generateHeader(converter, enabledFields);
         List<List<DataSection>> bodySections = generateBody(converter, patients);
 
-        List<DataSection> patientsCombined = new LinkedList<DataSection>();
+        List<DataSection> patientsCombined = new LinkedList<>();
         for (List<DataSection> patientSections : bodySections) {
             for (DataSection section : patientSections) {
                 section.finalizeToMatrix();
@@ -105,12 +105,12 @@ public class SheetAssembler
     private List<List<DataSection>> generateBody(DataToCellConverter converter, List<Patient> patients)
         throws Exception
     {
-        List<List<DataSection>> allSections = new LinkedList<List<DataSection>>();
+        List<List<DataSection>> allSections = new LinkedList<>();
         for (Patient patient : patients) {
             if (patient == null) {
                 continue;
             }
-            List<DataSection> patientSections = new LinkedList<DataSection>();
+            List<DataSection> patientSections = new LinkedList<>();
             patientSections.add(converter.idBody(patient));
             patientSections.add(converter.documentInfoBody(patient));
             patientSections.add(converter.patientInfoBody(patient));
@@ -121,7 +121,9 @@ public class SheetAssembler
             patientSections.add(converter.isNormalBody(patient));
             patientSections.add(converter.phenotypeBody(patient));
             patientSections.add(converter.genesBody(patient));
+            patientSections.add(converter.geneticNotesBody(patient));
             patientSections.add(converter.variantsBody(patient));
+            patientSections.add(converter.clinicalDiagnosisBody(patient));
             patientSections.add(converter.disordersBody(patient));
             patientSections.add(converter.isSolvedBody(patient));
 
@@ -144,7 +146,7 @@ public class SheetAssembler
      */
     private List<DataSection> generateHeader(DataToCellConverter converter, Set<String> enabledFields) throws Exception
     {
-        List<DataSection> headerSections = new LinkedList<DataSection>();
+        List<DataSection> headerSections = new LinkedList<>();
         headerSections.add(converter.idHeader(enabledFields));
         headerSections.add(converter.documentInfoHeader(enabledFields));
         headerSections.add(converter.patientInfoHeader(enabledFields));
@@ -155,7 +157,9 @@ public class SheetAssembler
         headerSections.add(converter.isNormalHeader(enabledFields));
         headerSections.add(converter.phenotypeHeader());
         headerSections.add(converter.genesHeader());
+        headerSections.add(converter.geneticNotesHeader(enabledFields));
         headerSections.add(converter.variantsHeader());
+        headerSections.add(converter.clinicalDiagnosisHeaders(enabledFields));
         headerSections.add(converter.disordersHeaders(enabledFields));
         headerSections.add(converter.isSolvedHeader(enabledFields));
 
@@ -215,8 +219,8 @@ public class SheetAssembler
     }
 
     /**
-     * @return a {@link org.phenotips.export.internal.DataSection} that contains all {@link
-     * org.phenotips.export.internal.DataCell}s
+     * @return a {@link org.phenotips.export.internal.DataSection} that contains all
+     *         {@link org.phenotips.export.internal.DataCell}s
      */
     public DataSection getAssembled()
     {

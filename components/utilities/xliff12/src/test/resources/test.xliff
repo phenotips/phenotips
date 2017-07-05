@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="dummy_translations" datatype="plaintext" source-language="en-US" target-language="en">
+    <body>
+      <trans-unit id="DUM_0001">
+        <source>Dummy 1</source>
+        <target>Dummy 1</target>
+      </trans-unit>
+      <trans-unit id="DUM_0002">
+        <source>Dummy 2</source>
+        <target>Dummy 2</target>
+      </trans-unit>
+      <trans-unit id="DUM_0003">
+        <source>Dummy 3</source>
+        <target>Dummy 3</target>
+      </trans-unit>
+      <trans-unit id="DUM_0004">
+        <source>Dummy 4</source>
+        <target>Dummy 4</target>
+      </trans-unit>
+      <trans-unit id="DUM_0005">
+        <source>Dummy 5</source>
+        <target>Dummy 5</target>
+      </trans-unit>
+      <trans-unit id="DUM_0006">
+        <source>Dummy 6</source>
+        <target>Du<g id="g">m<ph id="m">m</ph>y</g> <mrk mtype="seg">6</mrk></target>
+      </trans-unit>
+      <trans-unit id="DUM_0090">
+        <source>Dummy 90</source>
+        <target>Dummy <g id="ninety">90</g><x id="x"/></target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -22,6 +22,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -59,23 +60,10 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Test for the {@link VariantListController} Component, only the overridden methods from
- * {@link AbstractComplexController} are tested here
+ * {@link AbstractComplexController} are tested here.
  */
 public class VariantListControllerTest
 {
-
-    @Rule
-    public MockitoComponentMockingRule<PatientDataController<Map<String, String>>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<Map<String, String>>>(VariantListController.class);
-
-    @Mock
-    private Patient patient;
-
-    @Mock
-    private XWikiDocument doc;
-
-    private List<BaseObject> variantXWikiObjects;
-
     private static final String VARIANTS_STRING = "variants";
 
     private static final String CONTROLLER_NAME = VARIANTS_STRING;
@@ -84,7 +72,7 @@ public class VariantListControllerTest
 
     private static final String VARIANT_KEY = "cdna";
 
-    private static final String GENESYMBOL_KEY = "genesymbol";
+    private static final String GENE_KEY = "gene";
 
     private static final String PROTEIN_KEY = "protein";
 
@@ -106,14 +94,39 @@ public class VariantListControllerTest
 
     private static final String SANGER_KEY = "sanger";
 
+    private static final String CHROMOSOME_KEY = "chromosome";
+
+    private static final String START_POSITION_KEY = "start_position";
+
+    private static final String END_POSITION_KEY = "end_position";
+
+    private static final String REFERENCE_GENOME_KEY = "reference_genome";
+
+    @Rule
+    public MockitoComponentMockingRule<PatientDataController<Map<String, String>>> mocker =
+        new MockitoComponentMockingRule<PatientDataController<Map<String, String>>>(VariantListController.class);
+
+    @Mock
+    private DocumentAccessBridge documentAccessBridge;
+
+    @Mock
+    private Patient patient;
+
+    @Mock
+    private XWikiDocument doc;
+
+    private List<BaseObject> variantXWikiObjects;
+
     @Before
     public void setUp() throws Exception
     {
         MockitoAnnotations.initMocks(this);
 
+        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
+
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocumentReference();
-        doReturn(this.doc).when(this.patient).getDocument();
+        doReturn(patientDocument).when(this.patient).getDocument();
+        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
         this.variantXWikiObjects = new LinkedList<>();
         doReturn(this.variantXWikiObjects).when(this.doc).getXObjects(any(EntityReference.class));
     }
@@ -138,9 +151,9 @@ public class VariantListControllerTest
         List<String> result =
             ((AbstractComplexController<Map<String, String>>) this.mocker.getComponentUnderTest()).getProperties();
 
-        Assert.assertEquals(12, result.size());
+        Assert.assertEquals(16, result.size());
         Assert.assertThat(result, Matchers.hasItem(VARIANT_KEY));
-        Assert.assertThat(result, Matchers.hasItem(GENESYMBOL_KEY));
+        Assert.assertThat(result, Matchers.hasItem(GENE_KEY));
         Assert.assertThat(result, Matchers.hasItem(PROTEIN_KEY));
         Assert.assertThat(result, Matchers.hasItem(TRANSCRIPT_KEY));
         Assert.assertThat(result, Matchers.hasItem(DBSNP_KEY));
@@ -151,6 +164,10 @@ public class VariantListControllerTest
         Assert.assertThat(result, Matchers.hasItem(EVIDENCE_KEY));
         Assert.assertThat(result, Matchers.hasItem(SEGREGATION_KEY));
         Assert.assertThat(result, Matchers.hasItem(SANGER_KEY));
+        Assert.assertThat(result, Matchers.hasItem(CHROMOSOME_KEY));
+        Assert.assertThat(result, Matchers.hasItem(START_POSITION_KEY));
+        Assert.assertThat(result, Matchers.hasItem(END_POSITION_KEY));
+        Assert.assertThat(result, Matchers.hasItem(REFERENCE_GENOME_KEY));
     }
 
     @Test
@@ -173,8 +190,8 @@ public class VariantListControllerTest
     @Test
     public void loadCatchesExceptionFromDocumentAccess() throws Exception
     {
-        RuntimeException exception = new RuntimeException();
-        doThrow(exception).when(this.patient).getDocument();
+        Exception exception = new Exception();
+        doThrow(exception).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
 
         PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
 
@@ -230,7 +247,7 @@ public class VariantListControllerTest
     public void checkLoadParsingOfInterpretationKey() throws ComponentLookupException
     {
         addVariantFields(INTERPRETATION_KEY, new String[] {
-        "pathogenic", "likely_pathogenic", "likely_benign", "benign", "variant_u_s", "investigation_n" });
+            "pathogenic", "likely_pathogenic", "likely_benign", "benign", "variant_u_s", "investigation_n" });
 
         PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
 
@@ -287,8 +304,8 @@ public class VariantListControllerTest
     public void checkLoadParsingOfEffectKey() throws ComponentLookupException
     {
         addVariantFields(EFFECT_KEY, new String[] {
-        "insertion_in_frame", "insertion_frameshift", "deletion_in_frame", "deletion_frameshift", "indel_in_frame",
-        "indel_frameshift", "repeat_expansion", "synonymous" });
+            "insertion_in_frame", "insertion_frameshift", "deletion_in_frame", "deletion_frameshift", "indel_in_frame",
+            "indel_frameshift", "repeat_expansion", "synonymous" });
 
         PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
 
@@ -325,8 +342,8 @@ public class VariantListControllerTest
         doReturn(property).when(obj).getField(VARIANT_KEY);
 
         property = mock(BaseStringProperty.class);
-        doReturn("Gene Symbol").when(property).getValue();
-        doReturn(property).when(obj).getField(GENESYMBOL_KEY);
+        doReturn("Gene").when(property).getValue();
+        doReturn(property).when(obj).getField(GENE_KEY);
 
         property = mock(BaseStringProperty.class);
         doReturn("Protein").when(property).getValue();
@@ -354,7 +371,7 @@ public class VariantListControllerTest
 
         Assert.assertNotNull(result);
         Assert.assertEquals("Variant", result.get(0).get(VARIANT_KEY));
-        Assert.assertEquals("Gene Symbol", result.get(0).get(GENESYMBOL_KEY));
+        Assert.assertEquals("Gene", result.get(0).get(GENE_KEY));
         Assert.assertEquals("Protein", result.get(0).get(PROTEIN_KEY));
         Assert.assertEquals("Transcript", result.get(0).get(TRANSCRIPT_KEY));
         Assert.assertEquals("DBSNP", result.get(0).get(DBSNP_KEY));
@@ -441,7 +458,7 @@ public class VariantListControllerTest
 
         Map<String, String> item = new LinkedHashMap<>();
         item.put(VARIANT_KEY, "variantName");
-        item.put(GENESYMBOL_KEY, "");
+        item.put(GENE_KEY, "");
         item.put(PROTEIN_KEY, null);
         internalList.add(item);
 
@@ -464,7 +481,7 @@ public class VariantListControllerTest
 
         Map<String, String> item = new LinkedHashMap<>();
         item.put(VARIANT_KEY, "variantName");
-        item.put(GENESYMBOL_KEY, "geneSymbol");
+        item.put(GENE_KEY, "gene");
         item.put(PROTEIN_KEY, "Protein");
         item.put(TRANSCRIPT_KEY, "Transcript");
         item.put(DBSNP_KEY, "DBSNP");
@@ -489,7 +506,7 @@ public class VariantListControllerTest
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
         JSONObject result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
         Assert.assertEquals("variantName", result.get(VARIANT_KEY));
-        Assert.assertEquals("geneSymbol", result.get(GENESYMBOL_KEY));
+        Assert.assertEquals("gene", result.get(GENE_KEY));
         Assert.assertEquals("Protein", result.get(PROTEIN_KEY));
         Assert.assertEquals("Transcript", result.get(TRANSCRIPT_KEY));
         Assert.assertEquals("DBSNP", result.get(DBSNP_KEY));
@@ -499,7 +516,7 @@ public class VariantListControllerTest
         internalList = new LinkedList<>();
         item = new LinkedHashMap<>();
         item.put(VARIANT_KEY, "variantName");
-        item.put(GENESYMBOL_KEY, "geneSymbol");
+        item.put(GENE_KEY, "gene");
         item.put(PROTEIN_KEY, "Protein");
         item.put(TRANSCRIPT_KEY, "Transcript");
         item.put(DBSNP_KEY, "DBSNP");

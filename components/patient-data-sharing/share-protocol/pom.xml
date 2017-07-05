@@ -23,14 +23,14 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>patient-data-sharing</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3.1</version>
   </parent>
   <artifactId>patient-data-sharing-share-protocol</artifactId>
   <name>PhenoTips - Patient data sharing - Communication Protocol Details</name>
   <dependencies>
     <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-model</artifactId>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-stability</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
   </dependencies>

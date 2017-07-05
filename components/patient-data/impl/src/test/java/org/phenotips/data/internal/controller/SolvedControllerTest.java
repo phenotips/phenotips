@@ -45,17 +45,10 @@ import static org.mockito.Mockito.doReturn;
 
 /**
  * Test for the {@link SolvedController} Component, only the overridden methods from {@link AbstractSimpleController}
- * are tested here
+ * are tested here.
  */
 public class SolvedControllerTest
 {
-    @Rule
-    public MockitoComponentMockingRule<PatientDataController<String>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<String>>(SolvedController.class);
-
-    @Mock
-    private Patient patient;
-
     private static final String SOLVED_STRING = "solved";
 
     private static final String DATA_NAME = SOLVED_STRING;
@@ -67,6 +60,13 @@ public class SolvedControllerTest
     private static final String STATUS_SOLVED = SOLVED_STRING;
 
     private static final String STATUS_UNSOLVED = "unsolved";
+
+    @Rule
+    public MockitoComponentMockingRule<PatientDataController<String>> mocker =
+        new MockitoComponentMockingRule<PatientDataController<String>>(SolvedController.class);
+
+    @Mock
+    private Patient patient;
 
     @Before
     public void setUp()

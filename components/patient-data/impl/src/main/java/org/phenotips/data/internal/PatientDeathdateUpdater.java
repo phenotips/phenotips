@@ -31,7 +31,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
- * Removes the date of death object iff "unknown date of death" is selected.
+ * Removes the date of death object iff "life_status" is "alive".
  *
  * @version $Id$
  */
@@ -56,7 +56,7 @@ public class PatientDeathdateUpdater extends AbstractEventListener
             // No patient, nothing to do
             return;
         }
-        if (patientRecordObj.getIntValue("date_of_death_unknown") == 1) {
+        if (("alive").equals(patientRecordObj.getStringValue("life_status"))) {
             patientRecordObj.setDateValue("date_of_death", null);
             patientRecordObj.setStringValue("date_of_death_entered", null);
         }

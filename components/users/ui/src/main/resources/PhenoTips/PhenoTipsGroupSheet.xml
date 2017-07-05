@@ -49,7 +49,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 (% class="xform" %)(((
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.groups.name')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.groups.nameHint')
-: {{html}}&lt;input type="text" name="title" value="$!doc.title"/&gt;{{/html}}
+: {{html}}&lt;input type="text" name="title" value="$!escapetool.xml($doc.title)"/&gt;{{/html}}
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.groups.image')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.groups.imageHint')
 : $doc.display('image')

@@ -169,7 +169,7 @@
         }
       );
     };
-      
+
     button.observe('click', function(event) {
       event.stop();
       showConfirmation();

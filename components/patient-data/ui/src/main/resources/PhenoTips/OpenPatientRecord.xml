@@ -83,7 +83,7 @@
 #if ($identifier != '')
   #set ($patientDoc = $xwiki.getDocument($services.model.createDocumentReference('', 'data', $identifier)))
   #if (!$patientDoc || $patientDoc.isNew())
-    {{error}}$services.localization.render('phenotips.OpenPatientRecord.patientNotFound'){{/error}}
+    {{error}}{{translation key="phenotips.OpenPatientRecord.patientNotFound"/}}{{/error}}
   #else
     #fixMode()
     #if ($canEditPatientRecord)
@@ -92,16 +92,20 @@
     $response.sendRedirect($patientDoc.getURL($mode))
   #end
 #elseif ($externalIdentifier != '')
-  #set ($matchingDocuments = $xwiki.wrapDocs($services.query.xwql("where doc.object(PhenoTips.PatientClass).external_id = :eid").bindValue('eid', $externalIdentifier).execute()))
+  #set ($matchingDocuments = $services.query.xwql("where doc.object(PhenoTips.PatientClass).external_id = :eid").bindValue('eid', $externalIdentifier).execute())
   #if ($matchingDocuments.size() == 1)
-    #set ($patientDoc = $matchingDocuments.get(0))
+    #set ($patientDoc = $xwiki.getDocument($matchingDocuments.get(0)))
+    #if (!$patientDoc)
+      {{error}}{{translation key="phenotips.openPatientRecord.noAccess"/}}{{/error}}
+      #break
+    #end
     #fixMode()
     #if ($canEditPatientRecord)
       #saveDataFromRequest()
     #end
     $response.sendRedirect($patientDoc.getURL($mode))
   #elseif ($matchingDocuments.size() &gt; 1)
-    {{error}}Non-unique identifier.{{/error}}
+    {{error}}{{translation key="phenotips.openPatientRecord.nonUniqueIdentifier"/}}{{/error}}
   #elseif ("$!{request.create}" == 'true')
     #set ($patient = $services.patients.create())
     #if ($patient)
@@ -112,13 +116,13 @@
       #end
       $response.sendRedirect($xwiki.getURL($patientDoc, $mode))
     #else
-    {{error}}$services.localization.render('phenotips.OpenPatientRecord.noPermission'){{/error}}
+      {{error}}{{translation key="phenotips.OpenPatientRecord.noPermission"/}}{{/error}}
     #end
   #else
-    {{error}}$services.localization.render('phenotips.OpenPatientRecord.patientNotFound'){{/error}}
+    {{error}}{{translation key="phenotips.OpenPatientRecord.patientNotFound"/}}{{/error}}
   #end
 #else
-  {{error}}$services.localization.render('phenotips.OpenPatientRecord.noPatient'){{/error}}
+  {{error}}{{translation key="phenotips.OpenPatientRecord.noPatient"/}}{{/error}}
 #end
 {{/velocity}}</content>
 </xwikidoc>

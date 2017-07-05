@@ -44,9 +44,10 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
- * Test for the {@link PatientDeathdateUpdater} component
+ * Test for the {@link PatientDeathdateUpdater} component.
  */
 public class PatientDeathdateUpdaterTest
 {
@@ -59,7 +60,7 @@ public class PatientDeathdateUpdaterTest
     private Object data;
 
     @Mock
-    public XWikiDocument source;
+    private XWikiDocument source;
 
     @Mock
     private Event event;
@@ -69,7 +70,7 @@ public class PatientDeathdateUpdaterTest
 
     private final String eventListenerName = "patient-deathdate-updater";
 
-    private final String dateOfDeathUnknown = "date_of_death_unknown";
+    private final String lifeStatus = "life_status";
 
     private final String dateOfDeath = "date_of_death";
 
@@ -96,12 +97,13 @@ public class PatientDeathdateUpdaterTest
     {
         doReturn(null).when(this.source).getXObject(Patient.CLASS_REFERENCE);
         this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
+        verifyNoMoreInteractions(this.data);
     }
 
     @Test
-    public void dateValuesAreNotSetWhenRequestReturnsZero() throws ComponentLookupException
+    public void dateValuesAreNotSetWhenRequestReturnsDeceased() throws ComponentLookupException
     {
-        doReturn(0).when(this.patientRecordObj).getIntValue(this.dateOfDeathUnknown);
+        doReturn("deceased").when(this.patientRecordObj).getStringValue(this.lifeStatus);
 
         this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
 
@@ -109,9 +111,9 @@ public class PatientDeathdateUpdaterTest
     }
 
     @Test
-    public void dateValuesAreSetWhenRequestReturnsOne() throws ComponentLookupException
+    public void dateValuesAreSetWhenRequestReturnsAlive() throws ComponentLookupException
     {
-        doReturn(1).when(this.patientRecordObj).getIntValue(this.dateOfDeathUnknown);
+        doReturn("alive").when(this.patientRecordObj).getStringValue(this.lifeStatus);
 
         this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
 

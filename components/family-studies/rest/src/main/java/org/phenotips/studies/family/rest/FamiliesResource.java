@@ -48,8 +48,8 @@ public interface FamiliesResource
     /**
      * @param start for large result set paging, the index of the first patient to display in the returned page
      * @param number for large result set paging, how many patients to display in the returned page
-     * @param fullJSON when true, complete family JSON is returned. When false, only a subset of data
-     * needed for all-data-tables is returned.
+     * @param fullJSON when true, complete family JSON is returned. When false, only a subset of data needed for
+     *            all-data-tables is returned.
      * @return a list of family records
      */
     @GET

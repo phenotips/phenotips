@@ -34,13 +34,13 @@ define([
 
         handleUndo: function(event)
         {
-            console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
+            //console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
             editor.getUndoRedoManager().undo();
         },
 
         handleRedo: function(event)
         {
-            console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
+            //console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
             editor.getUndoRedoManager().redo();
         },
 
@@ -232,26 +232,16 @@ define([
                 if (editor.getGraph().isPerson(disconnectedList[i])) {
                     var node = editor.getNode(disconnectedList[i]);
                     if (node.getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
-                        editor.getOkCancelDialogue().showError("<br>Can't remove this node because the current patient would have to be removed as well.<br><br>" +
-                                "<font style='font-size:95%'>(a pedigree can't have disconnected components; " +
-                                "removing this node would<br>cause all highlighted individuals to be disconnected from the<br>" +
-                                "proband and thus all of them would have to be removed)</font>",
-                                "Can't remove", "OK", unhighlightSelected);
+                        editor.getOkCancelDialogue().showError("This family member cannot be removed because that would cause the current patient (consultand) to be disconnected from the proband and removed as well, which is currently not supported.",
+                                "Cannot remove family member", "OK", unhighlightSelected);
                         return;
                     }
                 }
             }
 
-            if (!editor.isFamilyPage()) {
-                // ...and display a OK/Cancel dialogue, calling "removeSelected()" on OK and "unhighlightSelected" on Cancel
-                editor.getOkCancelDialogue().show( '<br>All highlighted nodes will be removed. Do you want to proceed?<br><br>' +
-                                                   '<br><font style="font-size:95%">(all persons in a pedigree should be connected, so all nodes no longer<br>connected to the proband have to be removed as well)</font>',
-                                                   'Delete nodes?', removeSelected, unhighlightSelected );
-            } else {
-                editor.getOkCancelDialogue().show( '<br>All highlighted nodes will be removed. Do you want to proceed?<br><br>' +
-                        '<br><font style="font-size:95%">(all persons in a pedigree should be connected, so one of the disconnected sets of nodes has to be removed)</font>',
-                        'Delete nodes?', removeSelected, unhighlightSelected );
-            }
+            // ...and display a OK/Cancel dialogue, calling "removeSelected()" on OK and "unhighlightSelected" on Cancel
+            editor.getOkCancelDialogue().show( 'All highlighted members will be deleted from this family. However, if a deleted family member has a patient record, that record will remain in the database. Are you sure you wish to proceed?',
+                                                   'Delete family members?', removeSelected, unhighlightSelected );
         },
 
         handleSetProperty: function(event)
@@ -259,7 +249,7 @@ define([
             //console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
             var nodeID     = event.memo.nodeID;
             var properties = event.memo.properties;
-            var undoEvent  = {"eventName": event.eventName, "memo": {"nodeID": nodeID, "properties": Helpers.cloneObject(event.memo.properties)}};
+            var undoEvent  = {"eventName": event.eventName, "memo": {"nodeID": nodeID, "properties": {}}};
 
             var node = editor.getView().getNode(nodeID);
 
@@ -284,6 +274,15 @@ define([
 
             var changedValue = false;
 
+            // some events trigger multiple property setting at once. We want to save only the original value, not
+            // the intermediate value after some properties have been set, but other have not
+            // (e.g. setLifeStatus + setAliveAndWell, both may change life status
+            var setUndoEventPropertyIfNotSet = function(propKey, propValue) {
+                if (!undoEvent.memo.properties.hasOwnProperty(propKey)) {
+                    undoEvent.memo.properties[propKey] = propValue;
+                }
+            }
+
             for (var propertySetFunction in properties) {
                 if (properties.hasOwnProperty(propertySetFunction)) {
                     var propValue = properties[propertySetFunction];
@@ -298,14 +297,14 @@ define([
                         (propertySetFunction == "setDeathDate" || propertySetFunction == "setBirthDate")) {
                         // compare Date objects
                         try {
-                            if ( oldValue.range == Helpers.cloneObject(propValue.range) &&
-                                 oldValue.year  == propValue.year &&
+                            if ( oldValue.year  == propValue.year &&
                                  oldValue.month == propValue.month &&
-                                 oldValue.day   == propValue.day )
+                                 oldValue.day   == propValue.day &&
+                                 oldValue.range.years == propValue.range.years )
                                 continue;
                         } catch (err) {
-                            // fine, one of the objects is in some other format, maybe date picker has changed
-                            // and this code was not updated
+                            // fine, one of the objects is blank or in some other format
+                            // (maybe date picker has changed and this code was not updated
                         }
                     }
                     if (Object.prototype.toString.call(oldValue) === '[object Array]') {
@@ -314,31 +313,40 @@ define([
                         oldValue = Helpers.cloneObject(oldValue);
                     }
 
-                    undoEvent.memo.properties[propertySetFunction] = oldValue;
+                    setUndoEventPropertyIfNotSet(propertySetFunction, oldValue);
 
                     // sometimes UNDO includes more then the property itself: e.g. changing life status
                     // from "dead" to "alive" also clears the death date. Need to add it to the "undo" event
-                    if (propertySetFunction == "setLifeStatus") {
-                        undoEvent.memo.properties["setDeathDate"]    = node.getDeathDate();
-                        undoEvent.memo.properties["setGestationAge"] = node.getGestationAge();
-                        undoEvent.memo.properties["setBirthDate"]    = node.getBirthDate();
-                        undoEvent.memo.properties["setAdopted"]      = node.getAdopted();
+                    if (propertySetFunction == "setLifeStatus" || propertySetFunction == "setAliveAndWell") {
+
+                        setUndoEventPropertyIfNotSet("setAliveAndWell", node.getAliveAndWell());
+                        setUndoEventPropertyIfNotSet("setLifeStatus", node.getLifeStatus());
+                        setUndoEventPropertyIfNotSet("setDeathDate", node.getDeathDate());
+                        setUndoEventPropertyIfNotSet("setGestationAge", node.getGestationAge());
+                        setUndoEventPropertyIfNotSet("setBirthDate", node.getBirthDate());
+                        setUndoEventPropertyIfNotSet("setAdopted", node.getAdopted());
+                        setUndoEventPropertyIfNotSet("setDeceasedAge", node.getDeceasedAge());
+                        setUndoEventPropertyIfNotSet("setDeceasedCause", node.getDeceasedCause());
                     }
                     if (propertySetFunction == "setDeathDate") {
-                        undoEvent.memo.properties["setLifeStatus"] = node.getLifeStatus();
+                        setUndoEventPropertyIfNotSet("setAliveAndWell", node.getAliveAndWell());
+                        setUndoEventPropertyIfNotSet("setLifeStatus", node.getLifeStatus());
                     }
                     if (propertySetFunction == "setChildlessStatus") {
-                        undoEvent.memo.properties["setChildlessReason"] = node.getChildlessReason();
+                        setUndoEventPropertyIfNotSet("setChildlessReason", node.getChildlessReason());
                     }
                     if (propertySetFunction == "setDisorders") {
-                        undoEvent.memo.properties["setCarrierStatus"] = node.getCarrierStatus();
+                        setUndoEventPropertyIfNotSet("setCarrierStatus", node.getCarrierStatus());
                     }
                     if (propertySetFunction == "setCarrierStatus") {
-                        undoEvent.memo.properties["setDisorders"] = node.getDisorders().slice(0);
+                        setUndoEventPropertyIfNotSet("setDisorders", node.getDisorders().slice(0));
                     }
-                    if (propertySetFunction == "setCausalGenes" || propertySetFunction == "setCandidateGenes") {
-                        undoEvent.memo.properties["setCausalGenes"]  = node.getCausalGenes();
-                        undoEvent.memo.properties["setCandidateGenes"]  = node.getCandidateGenes();
+                    if (propertySetFunction == "setCausalGenes" || propertySetFunction == "setCandidateGenes"
+                        || propertySetFunction == "setRejectedGenes" || propertySetFunction == "setCarrierGenes") {
+                        setUndoEventPropertyIfNotSet("setCausalGenes", node.getCausalGenes());
+                        setUndoEventPropertyIfNotSet("setCandidateGenes", node.getCandidateGenes());
+                        setUndoEventPropertyIfNotSet("setRejectedGenes", node.getRejectedGenes());
+                        setUndoEventPropertyIfNotSet("setCarrierGenes", node.getCarrierGenes());
                     }
 
                     node[propertySetFunction](propValue);
@@ -404,6 +412,9 @@ define([
                     }
                     if (propertySetFunction == "setBirthDate" || propertySetFunction == "setDeathDate") {
                         // the number of lines may vary depending on age etc., it is easier to just recompute it
+                        needUpdateYPositions = true;
+                    }
+                    if (propertySetFunction == "setDeceasedCause" || propertySetFunction == "setDeceasedAge") {
                         needUpdateYPositions = true;
                     }
                     if (propertySetFunction == "setCancers") {
@@ -479,7 +490,9 @@ define([
 
             //console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
             //console.log("Undo event: " + Helpers.stringifyObject(undoEvent));
-            if (!event.memo.noUndoRedo && changedValue) {
+            if (event.memo.replaceLastUndoState) {
+                editor.getUndoRedoManager().updateLastState();
+            } else if (!event.memo.noUndoRedo && changedValue) {
                 editor.getUndoRedoManager().addState( event, undoEvent );
             }
 
@@ -589,10 +602,7 @@ define([
                                     patientJSONObject.pedigreeProperties = node.getPatientIndependentProperties();
                                     delete patientJSONObject.pedigreeProperties.gender; // this one is loaded from the patient
 
-                                    var genderOk = editor.getGraph().setNodeDataFromPhenotipsJSON( nodeID, patientJSONObject);
-                                    if (!genderOk && !event.memo.noUndoRedo) {
-                                        alert("Gender defined in Phenotips for patient " + modValue + " is incompatible with this pedigree. Setting pedigree node gender to 'Unknown'");
-                                    }
+                                    editor.getGraph().setNodeDataFromPhenotipsJSON( nodeID, patientJSONObject);
 
                                     // update visual node's properties using data in graph model which was just loaded from phenotips
                                     node.assignProperties(editor.getGraph().getProperties(nodeID));
@@ -658,7 +668,7 @@ define([
                             Controller._checkPatientLinkValidity(setLink, nodeID, modValue, loadPatientProperties, skipConfirmDialogue);
                         } else {
                             // if this is a redo event skip all the warnings
-                            setLink(event.memo.clearOldData);
+                            setLink(event.memo.clearOldData, true);
                         }
                     }
                     else if (modificationType == "makePlaceholder") {
@@ -889,7 +899,7 @@ define([
 
             var numTwins = event.memo.twins ? event.memo.twins : 1;
 
-            var childParams = Helpers.cloneObject(event.memo.childParams);
+            var childParams = event.memo.childParams ? Helpers.cloneObject(event.memo.childParams) : {};
             if (editor.getGraph().isInfertile(partnershipID)) {
                 childParams["adoptedStatus"] = "adoptedIn";
             }
@@ -935,11 +945,7 @@ define([
 
     Controller._validatePropertyValue = function( nodeID, propertySetFunction, propValue)
     {
-        if (propertySetFunction == "setGender") {
-            var possibleGenders = editor.getGraph().getPossibleGenders(nodeID);
-
-            return possibleGenders[propValue];
-        }
+        // nothing to validate for now
         return true;
     }
 
@@ -992,10 +998,10 @@ define([
         } else {
             if (linkID == "") {
                 var oldLinkID = editor.getNode(nodeID).getPhenotipsPatientId();
-                editor.getOkCancelDialogue().showWithCheckbox("<br><b>Do you want to remove the connection between this<br>patient </b>(" + editor.getGraph().getPatientDescription(nodeID, true) +
-                        ")<b> and this pedigree node?</b><br><br><br>" +
+                editor.getOkCancelDialogue().showWithCheckbox("<br/><b>Do you want to remove the connection between this<br/>patient </b>(" + editor.getGraph().getPatientDescription(nodeID, true) +
+                        ")<b> and this pedigree node?</b><br/><br/><br/>" +
                         "<div style='margin-left: 30px; margin-right: 30px; text-align: center'>" +
-                        "Please note that if you do not assign this patient to another pedigree<br>node this patient will be removed from this family</div><br>",
+                        "Please note that if you do not assign this patient to another pedigree<br/>node this patient will be removed from this family</div><br/>",
                         'Remove the connection?', 'Clear data from this pedigree node', true, "Remove link", processLinkCallback, "Cancel", onCancelAssignPatient );
                 return;
             }
@@ -1009,7 +1015,7 @@ define([
                     editor.getView().unmarkAll();
                     onCancelAssignPatient();
                 }
-                editor.getOkCancelDialogue().showWithCheckbox("<br>Patient " + linkID + " is already in this pedigree. Do you want to transfer the record to the pedigree node currently selected?",
+                editor.getOkCancelDialogue().showWithCheckbox("<br/>Patient " + linkID + " is already in this pedigree. Do you want to transfer the record to the pedigree node currently selected?",
                                                        "Re-assign patient " + linkID + " to this node?",
                                                        'Clear data from the pedigree node currently linked to this patient', true,
                                                        "OK", processLinkCallback, "Cancel", onCancel );
@@ -1033,7 +1039,7 @@ define([
                                     // ignore trivial properties: "gender" and empty arrays
                                     if (prop != "gender" && (!Array.isArray(properties[prop]) || properties[prop].length != 0)) {
                                         // found a non-trivial property: need to warn about lost data
-                                        clearPropertiesMsg = "<br><br>3) All data entered for this individual in the pedigree will be replaced by information pulled from the patient record  " + linkID + ".";
+                                        clearPropertiesMsg = "<br/><br/>3) All data entered for this individual in the pedigree will be replaced by information pulled from the patient record  " + linkID + ".";
                                         break;
                                     }
                                 }
@@ -1052,11 +1058,11 @@ define([
                                 if ( !firstPatientInFamily
                                      && !alreadyWasInFamily
                                      && !editor.getPreferencesManager().getConfigurationOption("hideShareConsentDialog")) {
-                                    editor.getOkCancelDialogue().showWithCheckbox("<br><b>" + topMessage + "</b><br>" +
-                                            "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
+                                    editor.getOkCancelDialogue().showWithCheckbox("<br/><b>" + topMessage + "</b><br/>" +
+                                            "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br/><br/>"+
                                             notesMessage + "</div>",
                                             "Adding a patient",
-                                            "Do not show this warning again<br>", false,
+                                            "Do not show this warning again<br/>", false,
                                             "Confirm", function(checkBoxStatus) { setDoNotShow(checkBoxStatus); processLinkCallback() },
                                             "Cancel",  function(checkBoxStatus) { setDoNotShow(checkBoxStatus); onCancelAssignPatient() });
                                 } else {
@@ -1064,8 +1070,8 @@ define([
                                 }
                             }
 
-                            processLinking("Do you approve the addition of patient " + linkID + " to this family?<br>",
-                                    "1) A copy of this pedigree will be placed in the electronic record of each family member.<br><br>"+
+                            processLinking("Do you approve the addition of patient " + linkID + " to this family?<br/>",
+                                    "1) A copy of this pedigree will be placed in the electronic record of each family member.<br/><br/>"+
                                     "2) This pedigree can be edited by any user with access to any member of the family." + clearPropertiesMsg);
                         }
                     } else  {

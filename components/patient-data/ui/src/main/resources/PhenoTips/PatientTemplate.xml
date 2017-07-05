@@ -60,7 +60,7 @@
         <displayType/>
         <name>affectedRelatives</name>
         <number>51</number>
-        <prettyName>Other living affected relatives</prettyName>
+        <prettyName>Other affected relatives</prettyName>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
@@ -73,7 +73,7 @@
         <displayType>select</displayType>
         <multiSelect>0</multiSelect>
         <name>apgar1</name>
-        <number>36</number>
+        <number>37</number>
         <picker>0</picker>
         <prettyName>APGAR score (1 minute)</prettyName>
         <relationalStorage>0</relationalStorage>
@@ -94,7 +94,7 @@
         <displayType>select</displayType>
         <multiSelect>0</multiSelect>
         <name>apgar5</name>
-        <number>37</number>
+        <number>38</number>
         <picker>0</picker>
         <prettyName>APGAR score (5 minutes)</prettyName>
         <relationalStorage>0</relationalStorage>
@@ -129,7 +129,7 @@
         <displayFormType>checkbox</displayFormType>
         <displayType/>
         <name>assistedReproduction_donorsperm</name>
-        <number>48</number>
+        <number>49</number>
         <prettyName>Donor sperm</prettyName>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
@@ -143,7 +143,7 @@
         <displayFormType>checkbox</displayFormType>
         <displayType/>
         <name>assistedReproduction_fertilityMeds</name>
-        <number>38</number>
+        <number>39</number>
         <prettyName>Conception after fertility medication</prettyName>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
@@ -171,13 +171,37 @@
         <displayFormType>checkbox</displayFormType>
         <displayType/>
         <name>assistedReproduction_surrogacy</name>
-        <number>39</number>
+        <number>40</number>
         <prettyName>Gestational surrogacy</prettyName>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </assistedReproduction_surrogacy>
+      <clinical_diagnosis>
+        <cache>0</cache>
+        <classname/>
+        <customDisplay>{{include reference="PhenoTips.OrdoDisplay" /}}</customDisplay>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <idField/>
+        <multiSelect>1</multiSelect>
+        <name>clinical_diagnosis</name>
+        <number>19</number>
+        <picker>0</picker>
+        <prettyName>Clinical diagnosis</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators/>
+        <size>1</size>
+        <sort>none</sort>
+        <sql/>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <valueField/>
+        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+      </clinical_diagnosis>
       <consanguinity>
         <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
         <defaultValue/>
@@ -193,43 +217,10 @@
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </consanguinity>
       <date_of_birth>
-        <customDisplay>{{velocity}}{{html clean=false}}
-#set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
-#set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
-#if ($xcontext.action == 'edit')
-  #if ($value)
-    #set ($value = $services.jodatime.getMutableDateTime($value.time))
-    #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
-  #end
-  &lt;input type='text' id='${prefix}${name}' title="$!escapetool.xml($format)" name='${prefix}${name}' class='hidden fuzzy-date' value="$!services.jodatime.getDateTimeFormatterForPattern($definedFormat).print($value)" alt="$!services.jodatime.ISODateTimeFormatter.print($value)"/&gt;&lt;input type='hidden' name='${prefix}${name}_entered' id='${prefix}${name}_entered' value="$!{escapetool.xml($object.getProperty("${name}_entered").value)}"/&gt;
-#else
-#set ($enteredValue = $object.getProperty("${name}_entered").value)
-#if ("$!enteredValue" != '' &amp;&amp; "$!enteredValue" != '{}')
-  #set ($enteredValue = $jsontool.parse($enteredValue))
-  #if ($enteredValue.range &amp;&amp; $enteredValue.range.years &amp;&amp; $enteredValue.range.years &gt; 1)
-    &lt;span class="date"&gt;$!escapetool.xml($enteredValue.year)s&lt;/span&gt;
-  #else
-    #set ($displayedValue = $format)
-    #if ($enteredValue.year)
-      #set ($displayedValue = $displayedValue.replaceAll('y+', $enteredValue.year))
-      #if ($enteredValue.month)
-        #set ($displayedValue = $displayedValue.replaceAll('M+', $enteredValue.month))
-        #if ($enteredValue.day)
-          #set ($displayedValue = $displayedValue.replaceAll('d+', $enteredValue.day))
-        #end
-      #end
-    #end
-    #set ($displayedValue = $displayedValue.replaceAll('[a-zA-Z]+(\W|$)', '').replaceAll('^\W+|\W+$', ''))
-    ## add leading 0-s to 1-digit month and days, if missing
-    #set ($displayedValue = $displayedValue.replaceAll('(?&lt;=(^|\D))(\d)(\D|$)', '0$2$3'))
-    &lt;span class="date"&gt;$!escapetool.xml($displayedValue)&lt;/span&gt;
-  #end
-#elseif ($value)
-  #set ($value = $services.jodatime.getMutableDateTime($value.time))
-  #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
-  &lt;span class="date"&gt;$!services.jodatime.getDateTimeFormatterForPattern($format).print($value)&lt;/span&gt;
-#end
-#end
+        <customDisplay>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+{{velocity}}{{html clean=false}}
+#__displayPropertyAsDate()
 {{/html}}{{/velocity}}</customDisplay>
         <dateFormat>yyyy-MM-dd</dateFormat>
         <disabled>0</disabled>
@@ -258,43 +249,10 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </date_of_birth_entered>
       <date_of_death>
-        <customDisplay>{{velocity}}{{html clean=false}}
-#set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
-#set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
-#if ($xcontext.action == 'edit')
-  #if ($value)
-    #set ($value = $services.jodatime.getMutableDateTime($value.time))
-    #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
-  #end
-  &lt;input type='text' id='${prefix}${name}' title="$!escapetool.xml($format)" name='${prefix}${name}' class='hidden fuzzy-date' value="$!services.jodatime.getDateTimeFormatterForPattern($definedFormat).print($value)" alt="$!services.jodatime.ISODateTimeFormatter.print($value)"/&gt;&lt;input type='hidden' name='${prefix}${name}_entered' id='${prefix}${name}_entered' value="$!{escapetool.xml($object.getProperty("${name}_entered").value)}"/&gt;
-#else
-#set ($enteredValue = $object.getProperty("${name}_entered").value)
-#if ("$!enteredValue" != '' &amp;&amp; "$!enteredValue" != '{}')
-  #set ($enteredValue = $jsontool.parse($enteredValue))
-  #if ($enteredValue.range &amp;&amp; $enteredValue.range.years &amp;&amp; $enteredValue.range.years &gt; 1)
-    &lt;span class="date"&gt;$!escapetool.xml($enteredValue.year)s&lt;/span&gt;
-  #else
-    #set ($displayedValue = $format)
-    #if ($enteredValue.year)
-      #set ($displayedValue = $displayedValue.replaceAll('y+', $enteredValue.year))
-      #if ($enteredValue.month)
-        #set ($displayedValue = $displayedValue.replaceAll('M+', $enteredValue.month))
-        #if ($enteredValue.day)
-          #set ($displayedValue = $displayedValue.replaceAll('d+', $enteredValue.day))
-        #end
-      #end
-    #end
-    #set ($displayedValue = $displayedValue.replaceAll('[a-zA-Z]+(\W|$)', '').replaceAll('^\W+|\W+$', ''))
-    ## add leading 0-s to 1-digit month and days, if missing
-    #set ($displayedValue = $displayedValue.replaceAll('(?&lt;=(^|\D))(\d)(\D|$)', '0$2$3'))
-    &lt;span class="date"&gt;$!escapetool.xml($displayedValue)&lt;/span&gt;
-  #end
-#elseif ($value)
-  #set ($value = $services.jodatime.getMutableDateTime($value.time))
-  #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
-  &lt;span class="date"&gt;$!services.jodatime.getDateTimeFormatterForPattern($format).print($value)&lt;/span&gt;
-#end
-#end
+        <customDisplay>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+{{velocity}}{{html clean=false}}
+#__displayPropertyAsDate()
 {{/html}}{{/velocity}}</customDisplay>
         <dateFormat>yyyy-MM-dd</dateFormat>
         <disabled>0</disabled>
@@ -322,27 +280,13 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </date_of_death_entered>
-      <date_of_death_unknown>
-        <customDisplay/>
-        <defaultValue/>
-        <disabled>0</disabled>
-        <displayFormType>checkbox</displayFormType>
-        <displayType/>
-        <name>date_of_death_unknown</name>
-        <number>47</number>
-        <prettyName>date_of_death_unknown</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </date_of_death_unknown>
       <diagnosis_notes>
         <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>---</editor>
         <name>diagnosis_notes</name>
-        <number>29</number>
+        <number>30</number>
         <picker>0</picker>
         <prettyName>Additional comments</prettyName>
         <rows>5</rows>
@@ -429,7 +373,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>extended_negative_phenotype</name>
-        <number>34</number>
+        <number>35</number>
         <picker>0</picker>
         <prettyName>extended_negative_phenotype</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -454,7 +398,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>extended_negative_prenatal_phenotype</name>
-        <number>35</number>
+        <number>36</number>
         <picker>0</picker>
         <prettyName>extended_negative_prenatal_phenotype</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -479,7 +423,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>extended_phenotype</name>
-        <number>32</number>
+        <number>33</number>
         <picker>0</picker>
         <prettyName>extended_phenotype</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -504,7 +448,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>extended_prenatal_phenotype</name>
-        <number>33</number>
+        <number>34</number>
         <picker>0</picker>
         <prettyName>extended_prenatal_phenotype</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -539,7 +483,7 @@
         <disabled>0</disabled>
         <editor>---</editor>
         <name>family_history</name>
-        <number>27</number>
+        <number>28</number>
         <picker>0</picker>
         <prettyName>List health conditions found in family (describe the relationship with proband)</prettyName>
         <rows>5</rows>
@@ -616,9 +560,25 @@
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
-        <values>M=Male|F=Female|O=Other</values>
+        <values>M=Male|F=Female|O=Other|U=Unknown</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </gender>
+      <genetic_notes>
+        <contenttype>PureText</contenttype>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>genetic_notes</name>
+        <number>55</number>
+        <picker>0</picker>
+        <prettyName>Additional genetic notes</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </genetic_notes>
       <gestation>
         <customDisplay>{{velocity}}
 #if ($type == 'edit')
@@ -631,7 +591,7 @@
 {{/velocity}}</customDisplay>
         <disabled>0</disabled>
         <name>gestation</name>
-        <number>26</number>
+        <number>27</number>
         <numberType>integer</numberType>
         <prettyName>Gestation at delivery (weeks)</prettyName>
         <size>30</size>
@@ -754,7 +714,7 @@
         <displayFormType>checkbox</displayFormType>
         <displayType/>
         <name>icsi</name>
-        <number>49</number>
+        <number>50</number>
         <prettyName>Intra-cytoplasmic sperm injection</prettyName>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
@@ -762,12 +722,12 @@
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </icsi>
       <identifier>
-        <customDisplay/>
+        <customDisplay>{{velocity}}$!value{{/velocity}}</customDisplay>
         <disabled>0</disabled>
         <name>identifier</name>
         <number>1</number>
         <numberType>long</numberType>
-        <prettyName>Identifier</prettyName>
+        <prettyName>PhenoTips identifier</prettyName>
         <size>30</size>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
@@ -817,14 +777,35 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </last_name>
+      <life_status>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>life_status</name>
+        <number>48</number>
+        <picker>0</picker>
+        <prettyName>life_status</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>alive|deceased</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </life_status>
       <maternal_ethnicity>
         <cache>0</cache>
         <customDisplay>{{velocity filter="indent"}}{{html wiki=true clean=false}}
 #if ($xcontext.action == 'edit' || $xcontext.action == 'inline')
 #set ($suggest_script = $xwiki.getURL('PhenoTips.EthnicitySearch', 'get', 'outputSyntax=plain'))
-{{html wiki=false clean=false}}&lt;input name="xwiki-free-multiselect-suggest-script" type="hidden" value="$!escapetool.xml($suggest_script)"/&gt;{{/html}}
+{{html wiki=false clean=false}}&lt;input name="xwiki-free-multiselect-suggest-script" type="hidden" value="$!escapetool.xml($suggest_script)"/&gt;&lt;input name="${prefix}${name}" type="hidden" value=""/&gt;{{/html}}
 #end
-#macro (_fms__displayValue $v $counter) #if($xcontext.action == 'edit' || $xcontext.action == 'inline') {{html wiki=false clean=false}}&lt;input class="xwiki-free-multiselect-value" type="text" size="30" name="${prefix}${name}" id="${prefix}${name}_${counter}" value="$!escapetool.xml($v)"/&gt;{{/html}} #else $escapetool.xml($v) #end#end
+#macro (_fms__displayValue $v $counter) #if($xcontext.action == 'edit' || $xcontext.action == 'inline'){{html wiki=false clean=false}}&lt;input class="xwiki-free-multiselect-value" type="text" size="30" name="${prefix}${name}" id="${prefix}${name}_${counter}" value="$!escapetool.xml($v)"/&gt;{{/html}}#else$!{services.rendering.escape($v, $doc.syntax)}#end#end
 (% class="xwiki-free-multiselect"%)
 #foreach ($v in $value)
 1. #_fms__displayValue($v ${foreach.count})
@@ -858,7 +839,7 @@
         <disabled>0</disabled>
         <editor>---</editor>
         <name>medical_history</name>
-        <number>30</number>
+        <number>31</number>
         <picker>0</picker>
         <prettyName>Medical and developmental history</prettyName>
         <rows>5</rows>
@@ -905,7 +886,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>negative_phenotype</name>
-        <number>22</number>
+        <number>23</number>
         <picker>0</picker>
         <prettyName>Symptoms NOT observed in this patient</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -930,7 +911,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>negative_prenatal_phenotype</name>
-        <number>24</number>
+        <number>25</number>
         <picker>0</picker>
         <prettyName>Prenatal symptoms NOT observed in this patient</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -955,7 +936,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>omim_id</name>
-        <number>19</number>
+        <number>20</number>
         <picker>0</picker>
         <prettyName>OMIM disorder</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -976,9 +957,9 @@
         <customDisplay>{{velocity filter="indent"}}{{html wiki=true clean=false}}
 #if ($xcontext.action == 'edit' || $xcontext.action == 'inline')
 #set ($suggest_script = $xwiki.getURL('PhenoTips.EthnicitySearch', 'get', 'outputSyntax=plain'))
-{{html wiki=false clean=false}}&lt;input name="xwiki-free-multiselect-suggest-script" type="hidden" value="$!escapetool.xml($suggest_script)"/&gt;{{/html}}
+{{html wiki=false clean=false}}&lt;input name="xwiki-free-multiselect-suggest-script" type="hidden" value="$!escapetool.xml($suggest_script)"/&gt;&lt;input name="${prefix}${name}" type="hidden" value=""/&gt;{{/html}}
 #end
-#macro (_fms__displayValue $v $counter) #if($xcontext.action == 'edit' || $xcontext.action == 'inline') {{html wiki=false clean=false}}&lt;input class="xwiki-free-multiselect-value" type="text" size="30" name="${prefix}${name}" id="${prefix}${name}_${counter}" value="$!escapetool.xml($v)"/&gt;{{/html}} #else $escapetool.xml($v) #end#end
+#macro (_fms__displayValue $v $counter) #if($xcontext.action == 'edit' || $xcontext.action == 'inline'){{html wiki=false clean=false}}&lt;input class="xwiki-free-multiselect-value" type="text" size="30" name="${prefix}${name}" id="${prefix}${name}_${counter}" value="$!escapetool.xml($v)"/&gt;{{/html}}#else$!{services.rendering.escape($v, $doc.syntax)}#end#end
 (% class="xwiki-free-multiselect"%)
 #foreach ($v in $value)
 1. #_fms__displayValue($v ${foreach.count})
@@ -1015,7 +996,7 @@
         <idField/>
         <multiSelect>0</multiSelect>
         <name>pedigree</name>
-        <number>28</number>
+        <number>29</number>
         <picker>0</picker>
         <prettyName>Pedigree</prettyName>
         <relationalStorage>0</relationalStorage>
@@ -1044,7 +1025,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>phenotype</name>
-        <number>21</number>
+        <number>22</number>
         <picker>0</picker>
         <prettyName>Clinical symptoms &amp; physical findings</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -1066,7 +1047,7 @@
         <disabled>0</disabled>
         <editor>---</editor>
         <name>prenatal_development</name>
-        <number>25</number>
+        <number>26</number>
         <picker>0</picker>
         <prettyName>Notes</prettyName>
         <rows>5</rows>
@@ -1090,7 +1071,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>prenatal_phenotype</name>
-        <number>23</number>
+        <number>24</number>
         <picker>0</picker>
         <prettyName>Prenatal and Perinatal History</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -1135,7 +1116,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>reports_history</name>
-        <number>31</number>
+        <number>32</number>
         <picker>0</picker>
         <prettyName>Reports</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -1157,7 +1138,7 @@
         <displayFormType>checkbox</displayFormType>
         <displayType/>
         <name>solved</name>
-        <number>40</number>
+        <number>41</number>
         <prettyName>Case solved</prettyName>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
@@ -1184,7 +1165,7 @@
         <customDisplay/>
         <disabled>0</disabled>
         <name>solved__pubmed_id</name>
-        <number>41</number>
+        <number>42</number>
         <picker>0</picker>
         <prettyName>Pubmed ID</prettyName>
         <size>30</size>
@@ -1193,6 +1174,27 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </solved__pubmed_id>
+      <twinNumber>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>twinNumber</name>
+        <number>54</number>
+        <picker>0</picker>
+        <prettyName>Twin number</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>Unknown|A|B|Other</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </twinNumber>
       <unaffected>
         <customDisplay/>
         <defaultValue/>
@@ -1200,7 +1202,7 @@
         <displayFormType>checkbox</displayFormType>
         <displayType/>
         <name>unaffected</name>
-        <number>20</number>
+        <number>21</number>
         <prettyName>This patient is clinically normal</prettyName>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
@@ -1260,6 +1262,9 @@
       <gender/>
     </property>
     <property>
+      <genetic_notes/>
+    </property>
+    <property>
       <gestation/>
     </property>
     <property>
@@ -1279,6 +1284,9 @@
     </property>
     <property>
       <last_name/>
+    </property>
+    <property>
+      <life_status>alive</life_status>
     </property>
     <property>
       <maternal_ethnicity/>
@@ -1320,9 +1328,6 @@
       <solved>0</solved>
     </property>
     <property>
-      <solved__gene_id/>
-    </property>
-    <property>
       <solved__notes/>
     </property>
     <property>
@@ -1330,79 +1335,6 @@
     </property>
     <property>
       <unaffected>0</unaffected>
-    </property>
-  </object>
-  <object>
-    <name>PhenoTips.PatientTemplate</name>
-    <number>0</number>
-    <className>PhenoTips.PedigreeClass</className>
-    <guid>09879ef6-e139-47bc-adce-6feedb4c4d70</guid>
-    <class>
-      <name>PhenoTips.PedigreeClass</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <data>
-        <contenttype>PureText</contenttype>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <editor>PureText</editor>
-        <name>data</name>
-        <number>1</number>
-        <picker>0</picker>
-        <prettyName>data</prettyName>
-        <rows>5</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </data>
-      <description>
-        <contenttype>PureText</contenttype>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <editor>PureText</editor>
-        <name>description</name>
-        <number>3</number>
-        <picker>0</picker>
-        <prettyName>Description</prettyName>
-        <rows>5</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </description>
-      <image>
-        <contenttype>PureText</contenttype>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <editor>PureText</editor>
-        <name>image</name>
-        <number>2</number>
-        <picker>0</picker>
-        <prettyName>Image</prettyName>
-        <rows>5</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </image>
-    </class>
-    <property>
-      <data/>
-    </property>
-    <property>
-      <description/>
-    </property>
-    <property>
-      <image/>
     </property>
   </object>
   <object>

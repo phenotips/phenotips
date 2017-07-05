@@ -91,6 +91,7 @@ $!value
       <customDisplay>**{{translation key="phenotips.DBConfigurationClass.metaInfo" /}}**
 
 {{velocity output=false}}
+$xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
 #set ($docFields = ['doc.name', 'doc.creator', 'doc.author', 'doc.creationDate', 'doc.date'])
 #macro(__xclass__displayLivetableColOption $option $value)
   &lt;li&gt;
@@ -103,7 +104,7 @@ $!value
 {{/velocity}}
 
 {{velocity}}{{html wiki=false clean=false}}
-&lt;ul style="list-style-type: none; margin: 0 0 0 16px"&gt;
+&lt;ul class="custom-display-list"&gt;
 #foreach ($option in $docFields)
   #__xclass__displayLivetableColOption($option $value)
 #end
@@ -199,7 +200,13 @@ $!value
     <phenotypeMapping>
       <cache>0</cache>
       <classname>PhenoTips.PhenotypeMappingClass</classname>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+{{html clean="false"}}
+#foreach ($option in $field.getMapValues().keySet())
+  &lt;label class="xwiki-form-listclass" for="xwiki-form-${escapetool.xml("${prefix}${name}")}-${foreach.index}"&gt;&lt;input type="radio" name="${prefix}${name}" id="xwiki-form-${escapetool.xml("${prefix}${name}")}-${foreach.index}" value="${escapetool.xml($option)}"#if ($value == $option) checked="checked"#end/&gt; $escapetool.xml($xwiki.getDocument($option).plainTitle)&lt;/label&gt;
+#end
+{{/html}}
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <displayType>radio</displayType>
       <idField>doc.fullName</idField>
@@ -213,7 +220,7 @@ $!value
       <separators/>
       <size>30</size>
       <sort>none</sort>
-      <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where doc.fullName &lt;&gt; 'PhenoTips.PhenotypeMappingTemplate' and obj.name = doc.fullName and obj.className = 'PhenoTips.PhenotypeMappingClass'</sql>
+      <sql>select distinct doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where doc.fullName &lt;&gt; 'PhenoTips.PhenotypeMappingTemplate' and obj.name = doc.fullName and obj.className = 'PhenoTips.PhenotypeMappingClass'</sql>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
@@ -320,7 +327,7 @@ $!value
       <code>#template('colorThemeInit.vm')
 ul.custom-display-list {
   list-style-type: none;
-  margin: 0 0 0 16px;
+  margin: 1em 0 1em 1em;
 }
 ul.col-2 {
   -moz-column-count: 2;

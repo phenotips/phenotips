@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>patient-data</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3.1</version>
   </parent>
   <artifactId>patient-data-pageobjects</artifactId>
   <name>PhenoTips - Patient data - Page Objects</name>
@@ -40,9 +40,17 @@
       <version>${testframework.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-test</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-java</artifactId>
-      <scope>compile</scope>
+      <artifactId>selenium-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-support</artifactId>
     </dependency>
   </dependencies>
 </project>

@@ -231,7 +231,7 @@
   padding: .5em .5em .5em 1em;
 }
 .legend-container {
-  top:5px;
+  top: 0;
   position: absolute;
   right: 0;
   z-index: 10000;
@@ -486,7 +486,7 @@
 }
 .export-subconfig-label {
   float: left;
-  margin: 0 1em 0 3.5em;
+  margin: 0 1em 0 0.3em;
   text-align: left;
 }
 .export-subconfig-label.ped-option {
@@ -494,7 +494,7 @@
 }
 .ped-special-options .export-config-header {
   margin-top: 0.5em;
-  margin-left: 4em;
+  margin-left: 1em;
   text-transform: capitalize;
 }
 .ped-special-options .export-config-header.ped-header{
@@ -502,7 +502,7 @@
   text-transform: none;
 }
 .ped-special-options .export-subconfig-label {
-  margin-left: 5em;
+  margin-left: 2em;
 }
 .import-mark-label1 {
   float: left;
@@ -518,6 +518,11 @@
 .menu-box .field-name {
   display: block;
   font-weight: bold;
+}
+.menu-box .field-checkbox {
+  cursor: pointer;
+  display: inline-block;
+  padding-right: 1.5em;
 }
 .menu-box .accepted-suggestions li {
   line-height: 1em;
@@ -601,6 +606,28 @@
   width: 48%;
   float: right;
 }
+.menu-box .field-deceasedAge {
+  width: 47%;
+  float: left;
+}
+.menu-box .field-deceasedCause {
+  width: 48%;
+  float: right;
+}
+.menu-box .field-deceasedAge {
+  padding-top: 0;
+  padding-bottom: 0.8em;
+}
+.menu-box .field-deceasedCause {
+  padding-top: 0;
+  padding-bottom: 0.8em;
+}
+.menu-box .field-deceasedAge .field-name {
+  font-weight: normal;
+}
+.menu-box .field-deceasedCause .field-name {
+  font-weight: normal;
+}
 .menu-box .field-last_name_birth {
   width: 47%;
   float: left;
@@ -652,6 +679,13 @@
 .menu-box .field-evaluated .field-name {
   font-weight: normal;
 }
+.menu-box .field-aliveandwell{
+  padding-top: 0;
+}
+.menu-box .field-aliveandwell .field-name {
+  font-weight: normal;
+  cursor: pointer;
+}
 .menu-box .field-carrier {
   padding-top: 0.8em;
   padding-bottom: 0.6em;
@@ -690,7 +724,7 @@
   background: #E6CE85;
 }
 .menu-box .patient-create-button {
-  margin-top: 3px !important;
+  margin-top: 0 !important;
   font-size: 14px !important;  /* make sure button size is the same and does not grow with different font sizes and break the layout */
 }
 .menu-box .patient-create-button:hover {
@@ -777,7 +811,7 @@
   background: #EEE;
   text-align: center;
   white-space: nowrap !important;
-  box-shadow: 0 0 6px #FF9, 0 0 25px #DDDDDD inset;
+  box-shadow: 0 0 6px #8f8f8f, 0 0 25px #DDDDDD inset;
 }
 .callout .callout-handle {
   position: absolute;
@@ -1166,4 +1200,23 @@
   z-index: 10000;
   min-width: 200px;
   max-width: 550px;
+}
+.at-age-input, .cause-input {
+    margin-top: 3px;
+    width: 120px !important;
+    padding: 0;
+}
+.deceased-node-type-options {
+    width: 125px;
+    border: 1px solid #e0e0e0;
+}
+.deceased .callout-handle {
+  margin-left: 0px;
+}
+#scrollable-container {
+  overflow: auto;
+  margin-left: 3em;
+  margin-top: 0.5em;
+  background-color: #fdfeff;
+  padding-bottom: 0.5em;
 }

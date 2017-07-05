@@ -85,7 +85,7 @@ public class HPOScriptServiceTest
 
         SolrVocabularyResourceManager externalServicesAccess =
             this.mocker.getInstance(SolrVocabularyResourceManager.class);
-        Mockito.doReturn(this.server).when(externalServicesAccess).getSolrConnection();
+        Mockito.doReturn(this.server).when(externalServicesAccess).getSolrConnection("hpo");
 
         CacheManager cacheFactory = this.mocker.getInstance(CacheManager.class);
         Mockito.doReturn(this.cache).when(cacheFactory).createNewLocalCache(any(CacheConfiguration.class));

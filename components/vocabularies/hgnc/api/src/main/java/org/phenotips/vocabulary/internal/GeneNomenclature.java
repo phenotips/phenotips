@@ -44,19 +44,19 @@ import javax.inject.Singleton;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.DisMaxParams;
-import org.apache.solr.common.params.ModifiableSolrParams;
-import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.params.SpellingParams;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
 /**
- * Provides access to the HUGO Gene Nomenclature Committee's GeneNames ontology. The ontology prefix is {@code HGNC}.
+ * Provides access to the HUGO Gene Nomenclature Committee's GeneNames vocabulary. The vocabulary prefix is
+ * {@code HGNC}.
  *
  * @version $Id$
  * @since 1.2RC1
@@ -108,7 +108,8 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         options = new HashMap<>();
         options.putAll(COMMON_SEARCH_OPTIONS);
         options.put(spellcheck, Boolean.toString(false));
-        options.put(DisMaxParams.QF, "symbol^50 symbolStub^25 alt_id^20 alt_idStub^10");
+        options.put(DisMaxParams.QF,
+            "symbol^50 symbolStub^25 alt_id^20 alt_idStub^10 ensembl_gene_id^40 ensembl_gene_idStub^20");
         IDENTIFIER_SEARCH_OPTIONS = Collections.unmodifiableMap(options);
 
         options = new HashMap<>();
@@ -160,27 +161,34 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
     @Override
     public Set<String> getAliases()
     {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         result.add(getIdentifier());
         result.add("HGNC");
         return result;
     }
 
     @Override
-    public String getWebsite() {
+    public String getWebsite()
+    {
         return "http://www.genenames.org/";
     }
 
     @Override
-    public String getCitation() {
+    public String getCitation()
+    {
         return "HGNC Database, HUGO Gene Nomenclature Committee (HGNC), EMBL Outstation - Hinxton, European"
-                + " Bioinformatics Institute, Wellcome Trust Genome Campus, Hinxton, Cambridgeshire, CB10 1SD, UK";
+            + " Bioinformatics Institute, Wellcome Trust Genome Campus, Hinxton, Cambridgeshire, CB10 1SD, UK";
     }
 
     @Override
     public VocabularyTerm getTerm(String symbol)
     {
-        String escapedSymbol = ClientUtils.escapeQueryChars(symbol);
+        if (StringUtils.isBlank(symbol)) {
+            return null;
+        }
+
+        String escapedSymbol = ClientUtils
+            .escapeQueryChars(StringUtils.contains(symbol, ":") ? StringUtils.substringAfter(symbol, ":") : symbol);
 
         VocabularyTerm result = getTermById(escapedSymbol);
         if (result != null) {
@@ -196,7 +204,7 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
 
     private VocabularyTerm getTermById(String id)
     {
-        return requestTerm(ID_FIELD_NAME + ':' + id, null);
+        return requestTerm(ID_FIELD_NAME + ":HGNC\\:" + id, null);
     }
 
     private VocabularyTerm getTermBySymbolOrAlias(String id)
@@ -217,13 +225,16 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         return requestTerm(ALTERNATIVE_ID_FIELD_NAME + ':' + id, null);
     }
 
-    private SolrParams produceDynamicSolrParams(String originalQuery, Integer rows, String sort, String customFilter)
+    private SolrQuery produceDynamicSolrParams(Map<String, String> staticOptions, String originalQuery, Integer rows,
+        String sort, String customFilter)
     {
         String escapedQuery = ClientUtils.escapeQueryChars(originalQuery.trim());
 
-        ModifiableSolrParams params = new ModifiableSolrParams();
-        params.add(CommonParams.Q, escapedQuery);
-        params.add(CommonParams.ROWS, rows.toString());
+        SolrQuery params = new SolrQuery(escapedQuery);
+        for (Map.Entry<String, String> option : staticOptions.entrySet()) {
+            params.set(option.getKey(), option.getValue());
+        }
+        params.setRows(rows);
         if (StringUtils.isNotBlank(sort)) {
             params.add(CommonParams.SORT, sort);
         }
@@ -249,9 +260,9 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
 
     private List<VocabularyTerm> searchIdentifiers(String input, int maxResults, String sort, String customFilter)
     {
-        SolrParams params = produceDynamicSolrParams(input, maxResults, sort, customFilter);
+        SolrQuery params = produceDynamicSolrParams(IDENTIFIER_SEARCH_OPTIONS, input, maxResults, sort, customFilter);
         List<VocabularyTerm> result = new LinkedList<>();
-        for (SolrDocument doc : this.search(params, IDENTIFIER_SEARCH_OPTIONS)) {
+        for (SolrDocument doc : this.search(params)) {
             result.add(new SolrVocabularyTerm(doc, this));
         }
         return result;
@@ -259,9 +270,9 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
 
     private List<VocabularyTerm> searchText(String input, int maxResults, String sort, String customFilter)
     {
-        SolrParams params = produceDynamicSolrParams(input, maxResults, sort, customFilter);
+        SolrQuery params = produceDynamicSolrParams(TEXT_SEARCH_OPTIONS, input, maxResults, sort, customFilter);
         List<VocabularyTerm> result = new LinkedList<>();
-        for (SolrDocument doc : this.search(params, TEXT_SEARCH_OPTIONS)) {
+        for (SolrDocument doc : this.search(params)) {
             result.add(new SolrVocabularyTerm(doc, this));
         }
         return result;
@@ -269,9 +280,10 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
 
     private List<VocabularyTerm> searchTextSpellchecked(String input, int maxResults, String sort, String customFilter)
     {
-        SolrParams params = produceDynamicSolrParams(input, maxResults, sort, customFilter);
+        SolrQuery params =
+            produceDynamicSolrParams(SPELLCHECKED_TEXT_SEARCH_OPTIONS, input, maxResults, sort, customFilter);
         List<VocabularyTerm> result = new LinkedList<>();
-        for (SolrDocument doc : this.search(params, SPELLCHECKED_TEXT_SEARCH_OPTIONS)) {
+        for (SolrDocument doc : this.search(params)) {
             result.add(new SolrVocabularyTerm(doc, this));
         }
         return result;
@@ -308,7 +320,7 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
     protected Collection<SolrInputDocument> load(URL url)
     {
         try {
-            Collection<SolrInputDocument> solrDocuments = new HashSet<SolrInputDocument>();
+            Collection<SolrInputDocument> solrDocuments = new HashSet<>();
 
             Reader in = new InputStreamReader(url.openConnection().getInputStream(), Charset.forName("UTF-8"));
             for (CSVRecord row : CSVFormat.TDF.withHeader().parse(in)) {

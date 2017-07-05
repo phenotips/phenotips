@@ -96,7 +96,7 @@ public class PatientFamilyLockModule implements LockModule
             }
 
             String documentId = xdoc.getDocumentReference().getName();
-            Patient patient = this.patientRepository.getPatientById(documentId);
+            Patient patient = this.patientRepository.get(documentId);
             if (patient == null) {
                 return null;
             }

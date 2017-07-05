@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-components</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3.1</version>
   </parent>
   <artifactId>xwiki-locks</artifactId>
   <name>XWiki - Locks</name>
@@ -36,11 +36,6 @@
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-component-api</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-context</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
@@ -70,18 +65,18 @@
     </dependency>
     <!-- Test dependencies -->
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-tool-test-component</artifactId>
       <version>${xwiki.version}</version>
       <scope>test</scope>
     </dependency>
-    </dependencies>
-      <properties>
-      <coverage.instructionRatio>0.11</coverage.instructionRatio>
-    </properties>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <properties>
+    <coverage.instructionRatio>0.24</coverage.instructionRatio>
+  </properties>
 </project>

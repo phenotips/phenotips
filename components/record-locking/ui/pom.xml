@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>patient-record-locking</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3.1</version>
   </parent>
   <artifactId>phenotips-record-locking-ui</artifactId>
   <name>PhenoTips - Record Locking - UI - Documents providing record locking functionality</name>
@@ -69,14 +69,4 @@
       <scope>runtime</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <extensions>
-      <extension>
-        <groupId>org.xwiki.commons</groupId>
-        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
-        <version>${xwiki.version}</version>
-      </extension>
-    </extensions>
-  </build>
 </project>

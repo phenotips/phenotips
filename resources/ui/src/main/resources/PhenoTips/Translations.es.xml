@@ -25,18 +25,18 @@
   <defaultLanguage>en</defaultLanguage>
   <translation>1</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1472238739000</creationDate>
+  <creationDate>1401822201000</creationDate>
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1472238751000</date>
-  <contentUpdateDate>1472238739000</contentUpdateDate>
+  <date>1401822201000</date>
+  <contentUpdateDate>1401822201000</contentUpdateDate>
   <version>1.1</version>
   <title>Translations</title>
   <comment/>
   <minorEdit>false</minorEdit>
-  <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <syntaxId>plain/1.0</syntaxId>
+  <hidden>true</hidden>
   <content>admin.ontology=Índice de ontologías
 admin.workgroups=Grupos de trabajo
 admin.studies=Estudios
@@ -54,7 +54,7 @@ XWiki.XWikiUsers_comment=Acerca de
 core.widgets.confirmationBox.button.cancel=Cancelar
 
 phenotips.globalHeader.allData=Ver todos los pacientes
-phenotips.globalHeader.search.placeholder=Buscar un registro de paciente...
+phenotips.globalHeader.search.placeholder=Buscar...
 
 phenotips.OmimPredictService.linkToDisorder=Leer sobre este trastorno en OMIM
 phenotips.OmimPredictService.noMatches=No se encuentran coincidencias
@@ -72,5 +72,7 @@ phenotips.UIXDirectory.options.download=Exportar esta extensión como xar
 phenotips.UIXDirectory.options.delete=Eliminar esta extensión
 phenotips.UIXDirectory.newExtension.create=Crear
 phenotips.UIXDirectory.sortedBy=Ordenado por {0}
-phenotips.UIXDirectory.sortBy=Ordenar por {0}</content>
+phenotips.UIXDirectory.sortBy=Ordenar por {0}
+
+core.shortcuts.edit.saveandcontinue=Alt+Shift+S</content>
 </xwikidoc>

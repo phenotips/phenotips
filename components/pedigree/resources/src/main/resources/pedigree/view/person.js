@@ -68,12 +68,15 @@ define([
             this._cancers = {};
             this._hpo = [];
             this._ethnicities = [];
-            this._genes = {};
+            this._genes = [];
             this._twinGroup = null;
             this._monozygotic = false;
             this._evaluated = false;
             this._pedNumber = "";
             this._lostContact = false;
+            this._aliveandwell = false;
+            this._deceasedAge = "";
+            this._deceasedCause = "";
         },
 
         /**
@@ -311,7 +314,7 @@ define([
         setEvaluated: function(evaluationStatus) {
             if (evaluationStatus == this._evaluated) return;
             this._evaluated = evaluationStatus;
-            this.getGraphics().updateEvaluationLabel();
+            this.getGraphics().updateEvaluationGraphic();
         },
 
         /**
@@ -367,6 +370,58 @@ define([
         },
 
         /**
+         * Returns the if the Person is alive and well status
+         *
+         * @method getAliveAndWell
+         * @return {boolean} true if the person is alive and well, false otherwise
+         */
+        getAliveAndWell: function() {
+            return this._aliveandwell;
+        },
+
+        /**
+         * Returns the age of person death
+         *
+         * @method getDeceasedAge
+         * @return {String} the age of person's death
+         */
+        getDeceasedAge: function() {
+            return this._deceasedAge;
+        },
+
+        /**
+         * Returns the cause of person's death
+         *
+         * @method getDeceasedCause
+         * @return {String} the cause of person's death
+         */
+        getDeceasedCause: function() {
+            return this._deceasedCause;
+        },
+
+        /**
+         * Changes the age of person death
+         *
+         * @method setDeceasedAge
+         * @param {String} age the age of person's death
+         */
+        setDeceasedAge: function(age) {
+            this._deceasedAge = age;
+            this.getGraphics().updateDeathDetailsLabel();
+        },
+
+        /**
+         * Changes the cause of person's death
+         *
+         * @method setDeceasedCause
+         * @param {String} cause the cause of person's death
+         */
+        setDeceasedCause: function(cause) {
+            this._deceasedCause = cause;
+            this.getGraphics().updateDeathDetailsLabel();
+        },
+
+        /**
          * Returns True if this node's status is not 'alive' or 'deceased'.
          *
          * @method isFetus
@@ -405,8 +460,13 @@ define([
 
                 this._lifeStatus = newStatus;
 
-                (newStatus != 'deceased') && this.setDeathDate("");
+                if (newStatus != 'deceased') {
+                    this.setDeathDate("");
+                    this.setDeceasedAge("");
+                    this.setDeceasedCause("");
+                }
                 (newStatus == 'alive') && this.setGestationAge();
+                (newStatus != 'alive') && this.setAliveAndWell(false);
                 this.getGraphics().updateSBLabel();
 
                 if(this.isFetus()) {
@@ -420,6 +480,23 @@ define([
                 this.getGraphics().updateLifeStatusShapes(oldStatus);
                 this.getGraphics().getHoverBox().regenerateHandles();
                 this.getGraphics().getHoverBox().regenerateButtons();
+            }
+        },
+
+        /**
+         * Changes the alive and well status of the Person
+         *
+         * @method setAliveAndWell
+         * @param {boolean} true if the person is alive and well, false otherwise
+         */
+        setAliveAndWell: function(newStatus) {
+            if (typeof(newStatus) == "boolean" && newStatus != this._aliveandwell) {
+                this._aliveandwell = newStatus;
+                if (newStatus && this.getLifeStatus() != "alive") {
+                        this.setLifeStatus("alive");
+                }
+                this.getGraphics().getHoverBox().regenerateButtons();
+                this.getGraphics().updateAliveAndWellGraphic();
             }
         },
 
@@ -615,12 +692,10 @@ define([
             for (var i = 0; i < this.getDisorders().length; i++) {
                 result.push(editor.getDisorderLegend().getObjectColor(this.getDisorders()[i]));
             }
-            for (var gene in this.getGenes()) {
-                if (this.getGenes().hasOwnProperty(gene)) {
-                    var geneColor = editor.getGeneColor(gene, this.getID());
-                    if (geneColor) {
-                        result.push(geneColor);
-                    }
+            for (var i = 0; i < this.getGenes().length; i++) {
+                var geneColor = editor.getGeneColor(this.getGenes()[i].id, this.getID());
+                if (geneColor) {
+                    result.push(geneColor);
                 }
             }
             for (var cancer in this.getCancers()) {
@@ -807,59 +882,73 @@ define([
         /**
          * Adds gene to the list of this node's genes.
          *
+         * @param {Object} gene an object with "id" and "gene" properties, and posibly other properties
          * @param {String} status Status of the gene ("candidate", "solved", etc.)
-         * @param {Object} properties (optional) a key-value object of any other properties of the gene
          * @method addGene
          */
-        _addGene: function(gene, status, properties) {
-            // already have the gene
-            if (this.getGenes().hasOwnProperty(gene) && this.getGenes()[gene].status == status) {
-                return;
+        _addGene: function(gene, status) {
+            if (!gene.hasOwnProperty("id")) {
+                gene.id = gene.gene;
             }
-            if (!this.getGenes().hasOwnProperty(gene)) {
-                // new gene
-                var newGene = { "gene": gene, "status": status };
-                if (properties) {
-                    Helpers.copyProperties(properties, newGene);
+
+            var geneIndex = Person.getGeneIndex(gene.id, this.getGenes());
+
+            if (geneIndex < 0 || this.getGenes()[geneIndex].status != status) {
+                // unless already have the gene with the same status
+
+                if (geneIndex == -1) {
+                    // new gene
+                    var newGene = Helpers.cloneObject(gene);
+                    newGene["status"] = status;
+                    this.getGenes().push(newGene);
+                    geneIndex = this.getGenes().length - 1;
+                } else {
+                    // change of status from the previous (by this point we know old_status != new_status)
+                    var oldStatus = this.getGenes()[geneIndex].status;
+                    this.getGenes()[geneIndex].status = status;
+                    // some statuses may have no legend
+                    editor.getGeneLegend(oldStatus) && editor.getGeneLegend(oldStatus).removeCase(gene.id, this.getID());
                 }
-                this.getGenes()[gene] = newGene;
-            } else {
-                // chanage of status from the previous (by this point we know old_status != new_status)
-                var oldStatus = this.getGenes()[gene].status;
-                this.getGenes()[gene].status = status;
-                // some statuses may have no legend
-                editor.getGeneLegend(oldStatus) && editor.getGeneLegend(oldStatus).removeCase(gene, this.getID());
+                // add to the legend corresponding to new status
+                editor.getGeneLegend(status) && editor.getGeneLegend(status).addCase(gene.id, gene.gene, this.getID());
             }
-            // in any case, add to appropriate legend
-            editor.getGeneLegend(status) && editor.getGeneLegend(status).addCase(gene, gene, this.getID());
+
+            // in all cases update gene symbol to match the latest known for this ID by geneLegend
+            if (editor.getGeneLegend(status)) {
+                this.getGenes()[geneIndex].gene = editor.getGeneLegend(status).getGene(gene.id).getSymbol();
+            }
         },
 
         /**
          * Removes gene from the list of this node's genes
          *
+         * @param {String} geneID gene id
          * @method removeGene
          */
-        _removeGene: function(gene, status) {
-            if (this.getGenes().hasOwnProperty(gene)) {
-                editor.getGeneLegend(status).removeCase(gene, this.getID());
-                delete this.getGenes()[gene];
+        _removeGene: function(geneID, status) {
+            var geneIndex = Person.getGeneIndex(geneID, this.getGenes());
+            if (geneIndex >=0) {
+                editor.getGeneLegend(status).removeCase(geneID, this.getID());
+                this.getGenes().splice(geneIndex, 1);
             }
         },
 
-        _setGenes: function(genes, status) {
-            // remove genes that are no longer in the list
-            var geneMap = Helpers.toObjectWithTrue(genes);
-            for (var gene in this.getGenes()) {
-                if ( this.getGenes().hasOwnProperty(gene)
-                     && this.getGenes()[gene].status == status
-                     && !geneMap.hasOwnProperty(gene)) {
-                    this._removeGene(gene, status);
+        /**
+         * Sets the genes for this person. If `status` is defined, all given genes will be given that status.
+         * If not, each gene will preserve the status defined for the gene in the newGenes array.
+         */
+        _setGenes: function(newGenes, status) {
+            // remove genes that are no longer in the list.
+            // iterating in reverse since array size may get decreased during removals
+            for (var i = this.getGenes().length - 1; i >= 0; i--) {
+                if ((!status || this.getGenes()[i].status == status) && Person.getGeneIndex(this.getGenes()[i].id, newGenes) == -1) {
+                    this._removeGene(this.getGenes()[i].id, status ? status : this.getGenes()[i].status);
                 }
             }
 
             // add all genes which should be present (adding an already existing gene works as expected)
-            for(var i = 0; i < genes.length; i++) {
-                this._addGene( genes[i], status );
+            for(var i = 0; i < newGenes.length; i++) {
+                this._addGene( newGenes[i], status ? status : newGenes[i].status );
             }
             this.getGraphics().updateDisorderShapes();
         },
@@ -884,40 +973,70 @@ define([
             this._setGenes(genes, "solved");
         },
 
+        /**
+         * Sets the list of rejected genes of this person to the given list
+         *
+         * @method setRejectedGenes
+         * @param {Array} genes List of gene names (as strings)
+         */
+        setRejectedGenes: function(genes) {
+            this._setGenes(genes, "rejected");
+        },
+
+        /**
+         * Sets the list of carrier genes of this person to the given list
+         *
+         * @method setCarrierGenes
+         * @param {Array} genes List of gene names (as strings)
+         */
+        setCarrierGenes: function(genes) {
+            this._setGenes(genes, "carrier");
+        },
+
         // used by controller in conjuntion with setCandidateGenes
         getCandidateGenes: function() {
             return this._getGeneArray("candidate");
         },
 
-        // used by controller in conjuntion with setCandidateGenes
         getCausalGenes: function() {
             return this._getGeneArray("solved");
         },
 
-        // used by controller in conjuntion with setCandidateGenes
         getRejectedGenes: function() {
             return this._getGeneArray("rejected");
         },
 
-        // returns genes in an array, as accepted by nodeMenu
-        // TODO: fix, make nodeMenu accept full format
+        getCarrierGenes: function() {
+            return this._getGeneArray("carrier");
+        },
+
+        // returns null if geneID is not present, or gene status if it is
+        getGeneStatus: function(geneID) {
+            var geneIndex = Person.getGeneIndex(geneID, this.getGenes());
+            if (geneIndex == -1) {
+                return null;
+            }
+            return this.getGenes()[geneIndex].status;
+        },
+
+        // returns an array of Gene objects (as accepted by NodeMenu) of genes which are
+        // present in this patient with the given status
         _getGeneArray: function(geneStatus) {
             var geneArray = [];
-            for (var gene in this.getGenes()) {
-                if (this.getGenes().hasOwnProperty(gene)) {
-                    if (this.getGenes()[gene].status == geneStatus) {
-                        geneArray.push(gene);
-                    }
+            for (var i = 0; i < this.getGenes().length; i++) {
+                if (this.getGenes()[i].status == geneStatus) {
+                    geneArray.push(Helpers.cloneObject(this.getGenes()[i]));
                 }
             }
             return geneArray;
         },
 
         /**
-         * Returns a set of reported genes for this person (both causal and candidate and other)
+         * Returns a list of reported genes for this person (both causal and candidate and other)
          *
          * @method getGenes
-         * @return {Object} Map of gene_name -> gene_details
+         * @return {Array} Array of gene objects, each having properties "id","gene", "status" and possibly
+         *                 others such as "comments","strategy", etc.
          */
         getGenes: function() {
             return this._genes;
@@ -1049,18 +1168,6 @@ define([
                 Helpers.removeFirstOccurrenceByValue(disabledStates,this.getLifeStatus())
             }
 
-            var disabledGenders = false;
-            var inactiveGenders = false;
-            var genderSet = editor.getGraph().getPossibleGenders(this.getID());
-            for (gender in genderSet) {
-                if (genderSet.hasOwnProperty(gender))
-                    if (!genderSet[gender]) {
-                        if (!inactiveGenders)
-                            inactiveGenders = [];
-                        inactiveGenders.push(gender);
-                    }
-            }
-
             var childlessInactive = this.isFetus();  // TODO: can a person which already has children become childless?
                                                      // maybe: use editor.getGraph().hasNonPlaceholderNonAdoptedChildren() ?
             var disorders = [];
@@ -1075,10 +1182,6 @@ define([
             });
 
             var cantChangeAdopted = this.isFetus() || editor.getGraph().hasToBeAdopted(this.getID());
-            // a person which has relationships can't be adopted out - we wouldn't know details in that case
-            if (!cantChangeAdopted && onceAlive) {
-                cantChangeAdopted = ["adoptedOut", "disableViaOpacity"];
-            }
 
             var inactiveMonozygothic = true;
             var disableMonozygothic  = true;
@@ -1111,41 +1214,48 @@ define([
             var inactiveLostContact = this.isProband() || !editor.getGraph().isRelatedToProband(this.getID());
 
             var rejectedGeneList = this.getRejectedGenes();
+            var carrierGeneList  = this.getCarrierGenes();
+
+            var disabledDeathDetails = (this.getLifeStatus() != 'stillborn' && this.getLifeStatus() != 'miscarriage' && this.getLifeStatus() != 'deceased');
 
             // TODO: only suggest posible birth dates which are after the latest
             //       birth date of any ancestors; only suggest death dates which are after birth date
 
             var menuData = {
-                identifier:    {value : this.getID()},
-                first_name:    {value : this.getFirstName(), disabled: false},
-                last_name:     {value : this.getLastName(), disabled: false},
+                identifier:      {value : this.getID()},
+                first_name:      {value : this.getFirstName(), disabled: false},
+                last_name:       {value : this.getLastName(), disabled: false},
                 last_name_birth: {value: this.getLastNameAtBirth()}, //, inactive: (this.getGender() != 'F')},
-                external_id:   {value : this.getExternalID(), disabled: false},
-                gender:        {value : this.getGender(), inactive: inactiveGenders, disabled: disabledGenders},
-                date_of_birth: {value : this.getBirthDate(), inactive: this.isFetus(), disabled: false},
-                carrier:       {value : this.getCarrierStatus(), disabled: inactiveCarriers},
-                disorders:     {value : disorders, disabled: false},
-                ethnicity:     {value : this.getEthnicities()},
+                external_id:     {value : this.getExternalID(), disabled: false},
+                gender:          {value : this.getGender()},
+                date_of_birth:   {value : this.getBirthDate(), inactive: this.isFetus(), disabled: false},
+                carrier:         {value : this.getCarrierStatus(), disabled: inactiveCarriers},
+                disorders:       {value : disorders, disabled: false},
+                ethnicity:       {value : this.getEthnicities()},
                 candidate_genes: {value : this.getCandidateGenes(), disabled: false},
                 causal_genes:    {value : this.getCausalGenes(), disabled: false},
+                carrier_genes:   {value : this.getCarrierGenes(), disabled: false},
                 rejected_genes:  {value : rejectedGeneList, disabled: true, inactive: (rejectedGeneList.length == 0)},
-                adopted:       {value : this.getAdopted(), inactive: cantChangeAdopted},
-                state:         {value : this.getLifeStatus(), inactive: inactiveStates, disabled: disabledStates},
-                date_of_death: {value : this.getDeathDate(), inactive: this.isFetus(), disabled: false},
+                adopted:         {value : this.getAdopted(), inactive: cantChangeAdopted},
+                state:           {value : this.getLifeStatus(), inactive: inactiveStates, disabled: disabledStates},
+                aliveandwell:    {value : this.getAliveAndWell(), inactive: this.isFetus()},
+                deceasedAge:     {value : this.getDeceasedAge(), inactive: this.isFetus(), disabled : disabledDeathDetails},
+                deceasedCause:   {value : this.getDeceasedCause(), disabled : disabledDeathDetails},
+                date_of_death:   {value : this.getDeathDate(), inactive: this.isFetus(), disabled: false},
                 commentsClinical:{value : this.getComments(), inactive: false},
                 commentsPersonal:{value : this.getComments(), inactive: false},  // so far the same set of comments is displayed on all tabs
                 commentsCancers: {value : this.getComments(), inactive: false},
-                gestation_age: {value : this.getGestationAge(), inactive : !this.isFetus()},
+                gestation_age:   {value : this.getGestationAge(), inactive : !this.isFetus()},
                 childlessSelect: {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none', inactive : childlessInactive},
                 childlessText:   {value : this.getChildlessReason() ? this.getChildlessReason() : undefined, inactive : childlessInactive, disabled : !this.getChildlessStatus()},
-                placeholder:   {value : false, inactive: true },
-                monozygotic:   {value : this.getMonozygotic(), inactive: inactiveMonozygothic, disabled: disableMonozygothic },
-                evaluated:     {value : this.getEvaluated() },
-                hpo_positive:  {value : hpoTerms, disabled: false },
-                nocontact:     {value : this.getLostContact(), inactive: inactiveLostContact },
-                cancers:       {value : this.getCancers() },
-                phenotipsid:   {value : this.getPhenotipsPatientId() },
-                setproband:    {value : "allow", inactive: this.isProband() }
+                placeholder:     {value : false, inactive: true },
+                monozygotic:     {value : this.getMonozygotic(), inactive: inactiveMonozygothic, disabled: disableMonozygothic },
+                evaluated:       {value : this.getEvaluated() },
+                hpo_positive:    {value : hpoTerms, disabled: false },
+                nocontact:       {value : this.getLostContact(), inactive: inactiveLostContact },
+                cancers:         {value : this.getCancers() },
+                phenotipsid:     {value : this.getPhenotipsPatientId() },
+                setproband:      {value : "allow", inactive: this.isProband() }
             };
 
             var extensionParameters = { "menuData": menuData, "node": this };
@@ -1194,6 +1304,12 @@ define([
                 info['adoptedStatus'] = this.getAdopted();
             if (this.getLifeStatus() != 'alive')
                 info['lifeStatus'] = this.getLifeStatus();
+            if (this.getAliveAndWell())
+                info['aliveandwell'] = this.getAliveAndWell();
+            if (this.getDeceasedAge() != "")
+                info['deceasedAge'] = this.getDeceasedAge();
+            if (this.getDeceasedCause() != "")
+                info['deceasedCause'] = this.getDeceasedCause();
             if (this.getDeathDate() != null)
                 info['dod'] = this.getDeathDate().getSimpleObject();
             if (this.getGestationAge() != null)
@@ -1214,7 +1330,7 @@ define([
             info['nonstandard_features'] = phenotipsFeatures.nonstandard_features;
 
             // convert pedigree genes to PhenoTips gene format
-            info['genes'] = this.getPhenotipsFormattedGenes();
+            info['genes'] = this.getGenes();
 
             if (this.getEthnicities().length > 0)
                 info['ethnicities'] = this.getEthnicities();
@@ -1326,28 +1442,9 @@ define([
          },
 
          /**
-          * Converts internal representation of genes (object of gene_name -> gene_properties)
-          * into a PhenoTips compatible representation (an array of objects).
-          *
-          * PhenoTips sample representation:
-          *   genes: [ {gene: 'JADE3', status: 'candidate', comments: 'abc'},
-          *            {gene: 'GK-AS1', status: 'rejected', strategy: ['deletion']},
-          *            {gene: 'FLAD1', status: 'solved'} ]
-          */
-         getPhenotipsFormattedGenes: function() {
-             var result = [];
-             for (var gene in this.getGenes()) {
-                 if (this.getGenes().hasOwnProperty(gene)) {
-                     result.push(Helpers.cloneObject(this.getGenes()[gene]));
-                 }
-             }
-             return result;
-         },
-
-         /**
           * These properties are related to pedigree structure, but not to PhenoTips patient.
           *
-          * Used to decide whichproperties to keep when the link to PhenoTips patient is removed
+          * Used to decide which properties to keep when the link to PhenoTips patient is removed
           */
          getPatientIndependentProperties: function() {
              // TODO: review the set of properties retained
@@ -1476,19 +1573,14 @@ define([
                     this.setEthnicities([]);
                 }
 
-                this._genes = {};
                 if(info.genes) {
-                    // genes: [ {gene: 'JADE3', status: 'candidate', comments: 'abc'},
-                    //          {gene: 'GK-AS1', status: 'rejected', strategy: ['deletion']},
-                    //          {gene: 'FLAD1', status: 'solved'} ]
-                    for (var i = 0; i < info.genes.length; i++) {
-                        var pedigreeGene = Helpers.cloneObject(info.genes[i]);
-                        this._addGene(pedigreeGene.gene, pedigreeGene.status, pedigreeGene);
-                    }
-                    // setGenes() works on a nodeMenu specific format, and can't be used
-                    // to set genes from the full format, so need to manually call redraw
-                    // TODO: fix, make nodeMenu and setGenes() accept full format
-                    this.getGraphics().updateDisorderShapes();
+                    // genes: [ {id: 'ENSG00000168765', gene: 'GSTM4', status: 'candidate', comments: 'abc'},
+                    //          {id: 'ENSG00000243055', gene: 'GK-AS1', status: 'rejected', strategy: ['deletion']},
+                    //          {id: 'ENSG00000160688', gene: 'FLAD1', status: 'solved'},
+                    //          {id: 'custom', 'gene': 'custom', status: 'candidate'} ]
+                    this._setGenes(info.genes);
+                } else {
+                    this._setGenes([]);
                 }
 
                 if(info.hasOwnProperty("adoptedStatus")) {
@@ -1504,6 +1596,27 @@ define([
                     }
                 } else {
                     this.setLifeStatus('alive');
+                }
+                if(info.hasOwnProperty('aliveandwell')) {
+                    if (this.getAliveAndWell() != info.aliveandwell) {
+                        this.setAliveAndWell(info.aliveandwell);
+                    }
+                } else {
+                    this.setAliveAndWell(false);
+                }
+                if(info.hasOwnProperty('deceasedAge')) {
+                    if (this.getDeceasedAge() != info.deceasedAge) {
+                        this.setDeceasedAge(info.deceasedAge);
+                    }
+                } else {
+                    this.setDeceasedAge("");
+                }
+                if(info.hasOwnProperty('deceasedCause')) {
+                    if (this.getDeceasedCause() != info.deceasedCause) {
+                        this.setDeceasedCause(info.deceasedCause);
+                    }
+                } else {
+                    this.setDeceasedCause("");
                 }
                 if(info.gestationAge) {
                     if (this.getGestationAge() != info.gestationAge) {
@@ -1587,5 +1700,30 @@ define([
 
     //ATTACHES CHILDLESS BEHAVIOR METHODS TO THIS CLASS
     Person.addMethods(ChildlessBehavior);
+
+    /**
+     * Returns the index of the given gene in the given gene array
+     * (assuming gene array format is the one used internally by Person),
+     * or -1 if not present.
+     *
+     * @param {String} geneID
+     * @param {Array} geneArray
+     */
+    Person.getGeneIndex = function(geneID, geneArray)
+    {
+        for (var i = 0; i < geneArray.length; i++) {
+            if (geneArray[i].hasOwnProperty("id")) {
+                if (geneArray[i].id.toUpperCase() == geneID.toUpperCase()) {
+                    return i;
+                }
+            } else {
+                if (geneArray.hasOwnProperty("gene") && geneArray[i].gene.toUpperCase() == geneID.toUpperCase()) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
     return Person;
 });

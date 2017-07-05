@@ -22,6 +22,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -48,19 +49,21 @@ import static org.mockito.Mockito.doReturn;
 
 /**
  * Tests for the {@link APGARController} Component, implementation of the
- * {@link org.phenotips.data.PatientDataController} interface
+ * {@link org.phenotips.data.PatientDataController} interface.
  */
 public class APGARControllerTest
 {
-    @Rule
-    public MockitoComponentMockingRule<PatientDataController<Integer>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<Integer>>(APGARController.class);
-
     private static final String DATA_NAME = "apgar";
 
     private static final String APGAR_1 = "apgar1";
 
     private static final String APGAR_5 = "apgar5";
+
+    @Rule
+    public MockitoComponentMockingRule<PatientDataController<Integer>> mocker =
+        new MockitoComponentMockingRule<PatientDataController<Integer>>(APGARController.class);
+
+    private DocumentAccessBridge documentAccessBridge;
 
     @Mock
     private Patient patient;
@@ -69,17 +72,19 @@ public class APGARControllerTest
     private XWikiDocument doc;
 
     @Mock
-    private BaseObject data;
+    private BaseObject dataHolder;
 
     @Before
     public void setUp() throws Exception
     {
         MockitoAnnotations.initMocks(this);
 
+        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
+
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        doReturn(patientDocument).when(this.patient).getDocumentReference();
-        doReturn(this.doc).when(this.patient).getDocument();
-        doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
+        doReturn(patientDocument).when(this.patient).getDocument();
+        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
+        doReturn(this.dataHolder).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
     }
 
     @Test
@@ -95,7 +100,7 @@ public class APGARControllerTest
     @Test
     public void loadDoesNotReturnNullIntegers() throws ComponentLookupException
     {
-        doReturn(null).when(this.data).getStringValue(anyString());
+        doReturn(null).when(this.dataHolder).getStringValue(anyString());
 
         PatientData<Integer> result = this.mocker.getComponentUnderTest().load(this.patient);
 
@@ -105,7 +110,7 @@ public class APGARControllerTest
     @Test
     public void loadDoesNotReturnNonIntegerStrings() throws ComponentLookupException
     {
-        doReturn("STRING").when(this.data).getStringValue(anyString());
+        doReturn("STRING").when(this.dataHolder).getStringValue(anyString());
 
         PatientData<Integer> result = this.mocker.getComponentUnderTest().load(this.patient);
 
@@ -115,8 +120,8 @@ public class APGARControllerTest
     @Test
     public void loadReturnsExpectedIntegers() throws ComponentLookupException
     {
-        doReturn("1").when(this.data).getStringValue(APGAR_1);
-        doReturn("2").when(this.data).getStringValue(APGAR_5);
+        doReturn("1").when(this.dataHolder).getStringValue(APGAR_1);
+        doReturn("2").when(this.dataHolder).getStringValue(APGAR_5);
 
         PatientData<Integer> result = this.mocker.getComponentUnderTest().load(this.patient);
 

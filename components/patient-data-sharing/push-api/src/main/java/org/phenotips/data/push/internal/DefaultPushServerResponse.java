@@ -19,6 +19,7 @@ package org.phenotips.data.push.internal;
 
 import org.phenotips.data.push.PushServerResponse;
 import org.phenotips.data.shareprotocol.ShareProtocol;
+
 import org.json.JSONObject;
 
 public class DefaultPushServerResponse implements PushServerResponse

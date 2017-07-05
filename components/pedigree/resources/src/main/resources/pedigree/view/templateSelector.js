@@ -78,7 +78,7 @@ define([
                 document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Image", "1.1")) {
                 pictureBox.update(getSubSelectorTextFromXML(response.responseXML, "property", "name", "image", "value"));
             } else {
-                pictureBox.innerHTML = "<table bgcolor='#FFFAFA'><tr><td><br>&nbsp;" + pictureBox.description + "&nbsp;<br><br></td></tr></table>";
+                pictureBox.innerHTML = "<table bgcolor='#FFFAFA'><tr><td><br/>&nbsp;" + pictureBox.description + "&nbsp;<br/><br/></td></tr></table>";
             }
             pictureBox.observe('click', this._onTemplateSelected.bindAsEventListener(this, pictureBox));
         },

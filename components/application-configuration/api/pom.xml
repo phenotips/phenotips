@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>application-configuration</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3.1</version>
   </parent>
   <artifactId>application-configuration-api</artifactId>
   <name>PhenoTips - Application configuration - Java APIs</name>
@@ -37,11 +37,6 @@
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-script</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-context</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
@@ -115,7 +110,7 @@
   </build>
 
   <properties>
-    <!-- todo. Used to be 0.94. Since the module needs redisgin, it would be wasteful to write tests now. -->
+    <!-- TODO: Used to be 0.94. Since the module needs redesign, it would be wasteful to write tests now. -->
     <coverage.instructionRatio>0.76</coverage.instructionRatio>
   </properties>
 </project>

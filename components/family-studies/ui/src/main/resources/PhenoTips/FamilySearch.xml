@@ -44,9 +44,14 @@
 #set ($input = "$!request.input.toLowerCase()")
 #set ($nb = "$!request.nb")
 #if ($nb != '')
-  #set ($nb = $mathtool.toInteger($nb) + 1)
+  #set ($nb = $mathtool.toInteger($nb))
 #else
   #set ($nb = 6)
+#end
+#if ($request.json)
+  #set ($generateJSON = $request.json)
+#else
+  #set ($generateJSON = false)
 #end
 #if ($request.permission)
   #set ($requiredPermissions = $request.permission)
@@ -57,13 +62,17 @@
 ## Query execution, results formatting
 ## -----------------------------------
 #if ($input != '')
-  #if ($request.json)
+  #if ($generateJSON)
     #set ($discard = $response.setContentType('application/json'))
   #else
     #set ($discard = $response.setContentType('text/xml'))
     &lt;?xml version="1.0" encoding="UTF-8"?&gt;
   #end
-  $services.families.searchFamilies($input, $nb, $requiredPermissions, $request.json)
+  $services.families.searchFamilies($input, $nb, $requiredPermissions, $generateJSON)
+#else
+  {{info}}
+    $services.localization.render('phenotips.SuggestPatientService.serviceInfo',["[[$doc.getExternalURL('get', 'outputSyntax=plain&amp;query=__INPUT__*&amp;input=test')]]"])
+  {{/info}}
 #end
 {{/velocity}}
 </content>

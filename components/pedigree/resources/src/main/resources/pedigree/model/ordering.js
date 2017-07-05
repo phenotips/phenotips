@@ -21,6 +21,10 @@ define([
             this.vOrder = [];
             //console.log("Order deserialization: [" + Helpers.stringifyObject(this.order) + "]");
 
+            this._updateVOrderArray();
+        },
+
+        _updateVOrderArray: function() {
             // recompute vOrders
             for (var r = 0; r < this.order.length; r++) {
                 var ordersAtRank = this.order[r];
@@ -200,6 +204,14 @@ define([
                 }
             }
             return result;
+        },
+
+        // makes a mirror left-right ordering flip
+        flipOrders: function() {
+            for (var r = 0; r < this.order.length; r++) {
+                this.order[r].reverse();
+            }
+            this._updateVOrderArray();
         }
     };
 

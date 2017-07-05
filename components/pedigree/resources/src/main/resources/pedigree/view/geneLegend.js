@@ -6,21 +6,94 @@
  * @constructor
  */
  define([ "pedigree/view/legend",
+          "pedigree/gene",
+          "pedigree/view/person",
           "pedigree/model/helpers" ],
     function( Legend,
+              Gene,
+              Person,
               Helpers) {
     var GeneLegend = Class.create( Legend, {
 
-        initialize: function($super, title, droppableName, prefix, palette, getOperation, setOperation) {
+        initialize: function($super, title, droppableName, prefix, palette, getOperation, setOperation, hiddenLegend) {
             this.prefix = prefix;
             this.prefColors = palette;
             this.setOperation = setOperation; // for drag and drop
             this.getOperation = getOperation; // for drag and drop
-            $super(title, droppableName, true);
+
+            $super(title, droppableName, true, false, hiddenLegend);
+
+            if (editor._geneCache == undefined) {
+                // one cache for all gene types
+                editor._geneCache = {};
+            }
+
+            document.observe('gene:loaded', function(event) {
+                if (!event.memo || !event.memo.oldid || !event.memo.newid || !event.memo.symbol) {
+                    return;
+                }
+
+                // get the list affected patients before it gets removed
+                var affectedPatients = this._affectedNodes.hasOwnProperty(event.memo.oldid) ? this._affectedNodes[event.memo.oldid].slice(0) : [];
+
+                console.log("[" + this._getPrefix() + "] updating gene " + event.memo.oldid + " to ID=" + event.memo.newid + ", SYMBOL=" + event.memo.symbol);
+                this.updateGeneData(event.memo.oldid, event.memo.newid, event.memo.symbol);
+
+                // update all patient data
+                for (var i = 0; i < affectedPatients.length; i++) {
+                    var node = editor.getNode(affectedPatients[i]);
+
+                    var currentGenes = node[this.getOperation]();
+                    var geneIndex = Person.getGeneIndex(event.memo.oldid, currentGenes);
+                    if (geneIndex >= 0) {
+                        currentGenes[geneIndex].id = event.memo.newid;
+                        currentGenes[geneIndex].gene = event.memo.symbol;
+                    }
+                    var properties = {};
+                    properties[this.setOperation] = currentGenes;
+                    // note: users shouldnot be able to "undo" a gene update operation
+                    var personUpdateEvent = { "nodeID": node.getID(), "properties": properties, "replaceLastUndoState": true };
+                    document.fire("pedigree:node:setproperty", personUpdateEvent);
+                }
+            }.bind(this));
         },
 
         _getPrefix: function(id) {
             return this.prefix + "gene";
+        },
+
+        /**
+         * Returns the Gene object with the given ID. If object is not in cache yet
+         * returns a newly created one which may have the gene symbol & other attributes not loaded yet
+         *
+         * @method getGene
+         * @return {Object}
+         */
+        getGene: function(geneID) {
+            if (!editor._geneCache.hasOwnProperty(geneID)) {
+                editor._geneCache[geneID] = new Gene(geneID);
+            }
+            return editor._geneCache[geneID];
+        },
+
+        /**
+         * Returns a symbol for a gene with the given ID (ID and symbol are the same for genes without EnsembleID)
+         *
+         * @param {String|Number} Gene ID
+         * @return {String} associated gene symbol taken from the vocabulary and loaded via AJAX call
+         */
+        getSymbol: function($super, geneID) {
+            return this.getGene(geneID).getSymbol();
+        },
+
+        /**
+         * Returns a string which shoudl be displayed for the given gene (in case of genes it is a symbol)
+         *
+         * @param {String|Number} Gene ID
+         * @return {String} human-readable gene name (which is curently the gene symbol)
+         */
+        getName: function($super, geneID) {
+            return this.getSymbol(geneID);
         },
 
         /**
@@ -33,6 +106,57 @@
                 return this.getObjectColor(geneID);
             }
             return undefined;
+        },
+
+        /**
+         * When an ID changes (e.g. a gene was added by symbol and an ID was loaded using geneNameService)
+         * need to remove all cases with oldID and add cases with newID, this will take care of correctly
+         * updating counts in case newID already has some cases independent form oldID.
+         */
+        updateGeneData: function(oldId, newId, symbol) {
+            // update symbol
+            var name = this._legendBox.down('li#' + this._getPrefix() + '-' + this._hashID(oldId) + ' .disorder-name');
+            name && name.update(symbol);
+
+            if (oldId != newId) {
+                if (!editor._geneCache.hasOwnProperty(newId) && editor._geneCache.hasOwnProperty(oldId)) {
+                    editor._geneCache[newId] = editor._geneCache[oldId];
+                }
+                delete editor._geneCache[oldId];
+
+                if (!this._objectColors.hasOwnProperty(newId) && this._objectColors.hasOwnProperty(oldId)) {
+                    this._objectColors[newId] = this._objectColors[oldId];
+                }
+                if (!this._preferredColors.hasOwnProperty(newId) && this._preferredColors.hasOwnProperty(oldId)) {
+                    this._preferredColors[newId] = this._preferredColors[oldId];
+                }
+                if (this._hasAffectedNodes(oldId)) {
+                    delete this._affectedNodes[oldId];
+                    delete this._objectColors[oldId];
+                    var htmlElement = this._getListElementForObjectWithID(oldId);
+                    htmlElement && htmlElement.remove();
+                }
+            }
+        },
+
+        /**
+         * Registers an occurrence of a gene.
+         *
+         * @method addCase
+         * @param {Number|String} id ID for this gene (not displayed)
+         * @param {String} symbol The gene symbol (displayed)
+         * @param {Number} nodeID ID of the Person who has this phenotype
+         */
+        addCase: function($super, id, symbol, nodeID) {
+            if (!editor._geneCache.hasOwnProperty(id)) {
+                console.log("[" + this._getPrefix() + "] adding new case " + id);
+                editor._geneCache[id] = new Gene(id, symbol);
+            }
+            if (symbol != this.getSymbol(id)) {
+                symbol = this.getSymbol(id);
+            }
+
+            $super(id, symbol, nodeID);
         },
 
         /**
@@ -64,10 +188,14 @@
             if (!$super(node, geneID)) {
                 return false;
             }
-            var currentGenes = node[this.getOperation]();
-            // TODO: check if indexof STILL MAKES SENSE
-            if (currentGenes.indexOf(geneID) == -1) {   // only if the node does not have this gene yet
-                currentGenes.push(geneID);
+
+            if (node.getGeneStatus(geneID) != this._droppableName) {
+                // only if the node does not already have this gene in this status
+                var gene = this.getGene(geneID);
+
+                var currentGenes = node[this.getOperation]();
+                currentGenes.push({"id": geneID, "gene": gene.getSymbol()});
+
                 editor.getView().unmarkAll();
                 var properties = {};
                 properties[this.setOperation] = currentGenes;

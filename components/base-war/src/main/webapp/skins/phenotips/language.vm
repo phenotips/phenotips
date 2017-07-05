@@ -24,7 +24,7 @@
   #drawerTopItemStart($services.localization.render('languages'), 'tmLanguages')
   #foreach($lang in $allangs)
     #set($discard = $queryStringMap.put('language', $lang))
-    #drawerItem($!doc.getURL('view', $escapetool.url($queryStringMap)), $lang, "#displayLanguagePrettyName($lang)")
+    #drawerItem($!doc.getURL($xcontext.action, $escapetool.url($queryStringMap)), $lang, "#displayLanguagePrettyName($lang)")
   #end
   #drawerTopItemStop()
 #end
@@ -48,7 +48,7 @@ $services.localization.render('defaultlanguage')##
  * @param $text the full language name
  *#
 #macro(drawerItem $url $shortName $text)
-<option value="$url" label="$shortName" title="$text" #if ($shortName == "$!{xcontext.getLocale()}")selected="selected"#end>$shortName</option>
+<li #if ($shortName == "$!{xcontext.getLocale()}")class="selected"#end><a href="$url" title="$text">$text</a></li>
 #end
 #**
  * Display the top element of a foldable drawer item.
@@ -57,16 +57,19 @@ $services.localization.render('defaultlanguage')##
  * @param $id (optional) the HTML id of the element
  *#
 #macro(drawerTopItemStart $text $id)
-<div class="actionmenu language-block" id="${id}_menu">
-  <div class="rightmenu">
-    <select onchange="if (this.value) window.location.href=this.value">
+<div class="language-block" id="${id}_menu">
+  <div class="menu menu-horizontal rightmenu">
+    <ul>
+      <li><span class="xDropdown">$services.localization.render('language'): $!{xcontext.getLocale()}</span>
+        <ul>
 #end
 #**
  * Close an foldable drawer item
  *#
 #macro(drawerTopItemStop)
-    </select>
-    <a class="tme">$services.localization.render('language'): </a>
+          </ul>
+        </li>
+     </ul>
   </div>
 </div>
 #end

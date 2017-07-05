@@ -41,7 +41,7 @@ public class FormSection extends FormGroup
     {
         super(title);
         this.propertyName = propertyName;
-        this.categories = new LinkedList<String>();
+        this.categories = new LinkedList<>();
         if (categories != null) {
             this.categories.addAll(categories);
         }
@@ -100,16 +100,17 @@ public class FormSection extends FormGroup
         String result = "";
         String id = fieldNames[YES] + "_" + Math.random();
         String displayedLabel = "Other";
-        result += String.format("<label for='%s' class='label-other label-other-%s'>%s</label>", id, fieldNames[YES],
-            displayedLabel);
         String placeholder = "enter free text and choose among suggested vocabulary terms";
         try {
             TranslationManager tm =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(TranslationManager.class);
+            displayedLabel = tm.translate("phenotips.patients.phenotypes.other");
             placeholder = tm.translate("Phenotips.FormSection.suggestTermPlaceholder");
         } catch (ComponentLookupException ex) {
             // Will not happen, and if it does, it doesn't matter, placeholder is not that critical
         }
+        result += String.format("<label for='%s' class='label-other label-other-%s'>%s</label>", id, fieldNames[YES],
+            displayedLabel);
         result += String.format("<input type='text' name='%s' class='suggested multi suggest-hpo %s accept-value'"
             + " value='' size='16' id='%s' placeholder='%s'/>", fieldNames[YES],
             (fieldNames[NO] == null ? "generateCheckboxes" : "generateYesNo"), id, placeholder);

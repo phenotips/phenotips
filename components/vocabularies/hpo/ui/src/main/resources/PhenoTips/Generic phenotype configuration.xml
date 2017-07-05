@@ -22,7 +22,7 @@
   <web>PhenoTips</web>
   <name>Generic phenotype configuration</name>
   <language/>
-  <defaultLanguage/>
+  <defaultLanguage>en</defaultLanguage>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
   <creationDate>1401822211000</creationDate>
@@ -409,6 +409,7 @@
       <nameField/>
       <validationScript/>
       <description>
+        <contenttype>PureText</contenttype>
         <disabled>0</disabled>
         <name>description</name>
         <number>1</number>
@@ -420,7 +421,7 @@
       </description>
     </class>
     <property>
-      <description>A generic set of common phenotypes, covering most anatomical systems from top to bottom, and including neurological and behavioral signs.</description>
+      <description>$services.localization.render('phenotips.genericPhenotypeConfig.description')</description>
     </property>
   </object>
 </xwikidoc>

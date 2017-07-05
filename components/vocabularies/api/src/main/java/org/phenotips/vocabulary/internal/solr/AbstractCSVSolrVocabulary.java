@@ -17,6 +17,7 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
+import org.phenotips.vocabulary.VocabularyExtension;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.stability.Unstable;
@@ -28,6 +29,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -63,12 +65,27 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
     @Override
     public int reindex(String sourceUrl)
     {
-        this.clear();
-        return this.index(sourceUrl);
+        int retval = 1;
+        try {
+            for (VocabularyExtension ext : this.extensions.get()) {
+                if (ext.isVocabularySupported(this)) {
+                    ext.indexingStarted(this);
+                }
+            }
+            this.clear();
+            retval = this.index(sourceUrl);
+        } finally {
+            for (VocabularyExtension ext : this.extensions.get()) {
+                if (ext.isVocabularySupported(this)) {
+                    ext.indexingEnded(this);
+                }
+            }
+        }
+        return retval;
     }
 
     /**
-     * Add an ontology to the index.
+     * Add a vocabulary to the index.
      *
      * @param sourceUrl the URL to be indexed
      * @return {@code 0} if the indexing succeeded, {@code 1} if writing to the Solr server failed, {@code 2} if the
@@ -76,9 +93,10 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
      */
     protected int index(String sourceUrl)
     {
+        String url = StringUtils.defaultIfBlank(sourceUrl, getDefaultSourceLocation());
         Collection<SolrInputDocument> data = null;
         try {
-            data = load(new URL(sourceUrl));
+            data = load(new URL(url));
         } catch (MalformedURLException e) {
             return 2;
         }
@@ -97,15 +115,17 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
                     batchCounter = 0;
                 }
                 SolrInputDocument item = dataIterator.next();
+                extendTerm(new SolrVocabularyInputTerm(item, this));
                 termBatch.add(item);
                 batchCounter++;
             }
             commitTerms(termBatch);
             return 0;
         } catch (SolrServerException ex) {
-            this.logger.warn("Failed to index ontology: {}", ex.getMessage());
+            this.logger.warn("Failed to index vocabulary: {}", ex.getMessage());
         } catch (IOException ex) {
-            this.logger.warn("Failed to communicate with the Solr server while indexing ontology: {}", ex.getMessage());
+            this.logger.warn("Failed to communicate with the Solr server while indexing vocabulary: {}",
+                ex.getMessage());
         } catch (OutOfMemoryError ex) {
             this.logger.warn("Failed to add terms to the Solr. Ran out of memory. {}", ex.getMessage());
         }
@@ -115,9 +135,9 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
     protected void commitTerms(Collection<SolrInputDocument> batch)
         throws SolrServerException, IOException, OutOfMemoryError
     {
-        this.externalServicesAccess.getSolrConnection().add(batch);
-        this.externalServicesAccess.getSolrConnection().commit();
-        this.externalServicesAccess.getTermCache().removeAll();
+        this.externalServicesAccess.getSolrConnection(getCoreName()).add(batch);
+        this.externalServicesAccess.getSolrConnection(getCoreName()).commit();
+        this.externalServicesAccess.getTermCache(getCoreName()).removeAll();
     }
 
     /**
@@ -128,7 +148,7 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
     protected int clear()
     {
         try {
-            this.externalServicesAccess.getSolrConnection().deleteByQuery("*:*");
+            this.externalServicesAccess.getSolrConnection(getCoreName()).deleteByQuery("*:*");
             return 0;
         } catch (SolrServerException ex) {
             this.logger.error("SolrServerException while clearing the Solr index", ex);
@@ -151,7 +171,7 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
         }
 
         try {
-            response = this.externalServicesAccess.getSolrConnection().query(query);
+            response = this.externalServicesAccess.getSolrConnection(getCoreName()).query(query);
             termList = response.getResults();
 
             if (!termList.isEmpty()) {
@@ -159,9 +179,9 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
                 return term;
             }
         } catch (SolrServerException | SolrException ex) {
-            this.logger.warn("Failed to query ontology term: {} ", ex.getMessage());
+            this.logger.warn("Failed to query vocabulary term: {} ", ex.getMessage());
         } catch (IOException ex) {
-            this.logger.error("IOException while getting ontology term ", ex);
+            this.logger.error("IOException while getting vocabulary term ", ex);
         }
         return null;
     }
@@ -177,7 +197,7 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
         query.setQuery("version:*");
         query.set(CommonParams.ROWS, "1");
         try {
-            response = this.externalServicesAccess.getSolrConnection().query(query);
+            response = this.externalServicesAccess.getSolrConnection(getCoreName()).query(query);
             termList = response.getResults();
 
             if (!termList.isEmpty()) {
@@ -185,9 +205,9 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
                 return firstDoc.getFieldValue(VERSION_FIELD_NAME).toString();
             }
         } catch (SolrServerException | SolrException ex) {
-            this.logger.warn("Failed to query ontology version: {}", ex.getMessage());
+            this.logger.warn("Failed to query vocabulary version: {}", ex.getMessage());
         } catch (IOException ex) {
-            this.logger.error("IOException while getting ontology version", ex);
+            this.logger.error("IOException while getting vocabulary version", ex);
         }
         return null;
     }

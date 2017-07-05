@@ -28,7 +28,7 @@
     <!-- Data files -->
     <fileSet>
       <directory>${project.build.directory}/data/</directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory></outputDirectory>
     </fileSet>
     <!-- Add License/Notice files -->
     <fileSet>

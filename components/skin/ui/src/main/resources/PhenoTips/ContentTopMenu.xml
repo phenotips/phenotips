@@ -267,7 +267,7 @@
           onSuccess: onFamilyDataReadyBeforeDeletion.bind(this)
         });
       } else {
-        standartPatientDelete();
+        standardPatientDelete();
       }
     }
   });
@@ -280,7 +280,7 @@
       var familyExternalId = response.responseJSON.family.externalId;
 
       if (familyMembers.length &gt; 1) {
-        standartPatientDelete();
+        standardPatientDelete();
       } else {
         // check if the user has delete rights to delete family
         new Ajax.Request(baseUrl, {
@@ -294,9 +294,9 @@
                                        "$services.localization.render('phenotips.patientRecord.pedigree.deleteFamilyWarning')" + " " + familyString + "." +
                                        "$services.localization.render('phenotips.patientRecord.pedigree.deleteFamilyWarningQuestion')" + "&lt;br&gt;&lt;br&gt;";
                 var parameters = {"action": "deletefamily", "removemembers": true, "family_id": familyId};
-                standartPatientDelete(confirmationText);
+                standardPatientDelete(confirmationText, familyId);
               } else {
-                standartPatientDelete();
+                standardPatientDelete();
               }
             }
          });
@@ -305,7 +305,7 @@
     }
   }
 
-  var standartPatientDelete = function (confirmationText) {
+  var standardPatientDelete = function (confirmationText, familyId) {
     var item = $('prActionDelete');
     var url = item.readAttribute('href') + "?confirm=1&amp;form_token=" + $$('meta[name=form_token]')[0].content + (Prototype.Browser.Opera ? "" : "&amp;ajax=1");
     if (confirmationText)
@@ -349,7 +349,7 @@
       deleteFamilyButton.observe("click", function(event) {
           event.stop();
           confirmationDialog.closeDialog();
-          var parameters = {"action": "deletefamily", "removemembers": true, "family_id": familyId};
+          var parameters = {"action": "deletefamily", "removemembers": true, "family_id": familyId, "form_token": $$('meta[name=form_token]')[0].content};
           sendDeleteRequest(parameters);
      });
     }
@@ -758,19 +758,10 @@
   var exportLinks = $$(' .export-link');
   exportLinks.invoke('observe', 'click', function (event) {
     event.stop();
-    if (typeof event.findElement('.editbody') !== "undefined") {
-      // We are in edit mode.
-      var myWindow = window.open("","_blank");
-      var exportAfterSave = function() {
-        myWindow.location = event.findElement().href;
-        document.stopObserving('xwiki:document:saved', exportAfterSave);
-      };
-      document.observe('xwiki:document:saved', exportAfterSave);
-      document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
-    } else {
-      // View mode
-      window.open(event.findElement().href,"_blank");
-    }
+    var newWindow = window.open("", "_blank");
+    PhenoTips.widgets.FormUtils.getFormState().saveIfFormDirty(function () {
+      newWindow.location = event.findElement().href;
+    });
   });
 });</code>
     </property>
@@ -891,10 +882,18 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
 #else
   #set ($pdfTemplate = 'PhenoTips.PatientSheetCode')
 #end
+#if ($isAdvancedUser &amp;&amp; $hasEdit &amp;&amp; !$isReadOnly)
+$xwiki.jsx.use('PhenoTips.JSONImportDialog')##
+$xwiki.ssx.use('PhenoTips.JSONImportDialog')##
+** (% class="empty" %)----
+** (% class="json-import single-patient-import" %){{html clean="false"}}&lt;a href="#" name="single_patient_import"&gt;$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.importJSON')&lt;/a&gt;{{/html}}
+#end
 ** (% class="empty" %)----
 ** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.exportPDF')&gt;&gt;path:$doc.getURL('export', "format=pdf&amp;pdfcover=0&amp;pdftoc=0&amp;pdftemplate=${pdfTemplate}")|| class="export-link"]]
 #if($isAdvancedUser)
+#if ($hasAdmin)
 ** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.exportXAR')&gt;&gt;path:$doc.getURL('export', "format=xar&amp;name=${doc.fullName}&amp;pages=${doc.fullName}")|| class="export-link"]]
+#end
 ** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.exportJSON')&gt;&gt;path:$xwiki.getURL('PhenoTips.ExportPatient', 'get', "id=${escapetool.url($doc.documentReference.name)}&amp;outputSyntax=plain")|| class="export-link"]]
 #end
 #foreach ($e in $services.uix.getExtensions("org.phenotips.patientRecordMenu.moreActions"))
@@ -914,12 +913,14 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
 (% id="patient-directory-actions" class="content-actions directory-actions" %)(((
 (% id="pd-more-actions-menu" class="menu menu-horizontal" %)(((
 #if($hasCreatePage)
+$xwiki.jsx.use('PhenoTips.JSONImportDialog')##
+$xwiki.ssx.use('PhenoTips.JSONImportDialog')##
 * {{html}}&lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;$services.localization.render('phenotips.globalHeader.createPatient')&lt;/label&gt;{{/html}}
+* #__icon("upload") {{html}}&lt;label for="phenotips_json_import"&gt;&lt;span class="upload"&gt; &lt;/span&gt;&lt;a href="#" id="phenotips_json_import" class="json-import multi-patient-import" title="$services.localization.render('phenotips.allData.menu.import.json.tooltip')" role="button"&gt;$services.localization.render('phenotips.allData.menu.import.json')&lt;/a&gt;&lt;/label&gt;{{/html}}
 #end
-* (% class="xDropdown" %)#__icon("download") Export##$services.localization.render('phenotips.contentTopMenu.exportMenu')
-
-** [[$services.localization.render('phenotips.allData.exportExcel')&gt;&gt;path:$xwiki.getURL('PhenoTips.Export', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")|| id="phenotips_export" class="phenotips_export_tool" title="$services.localization.render('phenotips.allData.exportExcelTitle')"]]
-** [[$services.localization.render('phenotips.allData.exportJSON')&gt;&gt;path:$xwiki.getURL('PhenoTips.ExportJSON', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")|| id="phenotips_json_export" class="phenotips_export_tool" title="$services.localization.render('phenotips.allData.exportJSONTitle')"]]
+* (% class="xDropdown" %)#__icon("download") $services.localization.render('phenotips.allData.menu.export')
+** [[$services.localization.render('phenotips.allData.menu.export.excel')&gt;&gt;path:$xwiki.getURL('PhenoTips.Export', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")|| id="phenotips_export" class="phenotips_export_tool" title="$services.localization.render('phenotips.allData.menu.export.excel.tooltip')"]]
+** [[$services.localization.render('phenotips.allData.menu.export.json')&gt;&gt;path:$xwiki.getURL('PhenoTips.ExportJSON', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")|| id="phenotips_json_export" class="phenotips_export_tool" title="$services.localization.render('phenotips.allData.menu.export.json.tooltip')"]]
 #set ($service = $services.pushPatient)##
 #set ($configuredServers = $service.getPushTargetsWithHistory(""))##
 #if ($configuredServers.size() &gt; 0)
@@ -927,11 +928,11 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
     #set ($indent = "* #__icon('share')")
   #else
     #set ($indent = '**')
-* (% class="xDropdown" %)#__icon("share") $services.localization.render('phenotips.allData.push.toAnotherDB')
+* (% class="xDropdown" %)#__icon("share") $services.localization.render('phenotips.allData.menu.push.toAnotherDB')
   #end
 #foreach ($mapEntry in $configuredServers.entrySet())##
   #set ($serverName = $mapEntry.key.getServerID())##
-${indent} {{html wiki=false clean=false}}&lt;a href="#" id="pushall-server-${foreach.index}" name="$serverName" title="$services.localization.render('phenotips.allData.pushTitle',[$serverName])"&gt;$services.localization.render('phenotips.allData.push', [$serverName])&lt;/a&gt;{{/html}}
+${indent} {{html wiki=false clean=false}}&lt;a href="#" id="pushall-server-${foreach.index}" name="$serverName" title="$services.localization.render('phenotips.allData.menu.push.tooltip', [$serverName])"&gt;$services.localization.render('phenotips.allData.menu.push', [$serverName])&lt;/a&gt;{{/html}}
 #end##
 #end##
 )))

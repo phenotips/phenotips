@@ -57,14 +57,17 @@ import com.xpn.xwiki.objects.StringProperty;
  */
 public class PhenoTipsFeature extends AbstractPhenoTipsVocabularyProperty implements Feature
 {
-    static final String META_PROPERTY_NAME = "target_property_name";
+    /** target_property_name. */
+    public static final String META_PROPERTY_NAME = "target_property_name";
 
-    static final String META_PROPERTY_VALUE = "target_property_value";
+    /** target_property_value. */
+    public static final String META_PROPERTY_VALUE = "target_property_value";
 
-    static final String META_PROPERTY_CATEGORIES = "target_property_category";
+    /** target_property_category. */
+    public static final String META_PROPERTY_CATEGORIES = "target_property_category";
 
     /** The XClass used for storing category phenotype metadata. */
-    static final EntityReference CATEGORY_CLASS_REFERENCE = new EntityReference("PhenotypeCategoryClass",
+    public static final EntityReference CATEGORY_CLASS_REFERENCE = new EntityReference("PhenotypeCategoryClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /**
@@ -72,7 +75,7 @@ public class PhenoTipsFeature extends AbstractPhenoTipsVocabularyProperty implem
      *
      * @see #isPresent()
      */
-    private static final String NEGATIVE_PHENOTYPE_PREFIX = "negative_";
+    public static final String NEGATIVE_PHENOTYPE_PREFIX = "negative_";
 
     private static final Pattern NEGATIVE_PREFIX = Pattern.compile("^" + NEGATIVE_PHENOTYPE_PREFIX);
 
@@ -118,7 +121,7 @@ public class PhenoTipsFeature extends AbstractPhenoTipsVocabularyProperty implem
      * @param property the feature category XProperty
      * @param value the specific value from the property represented by this object
      */
-    PhenoTipsFeature(XWikiDocument doc, ListProperty property, String value)
+    public PhenoTipsFeature(XWikiDocument doc, ListProperty property, String value)
     {
         super(value);
         this.propertyName = property.getName();
@@ -167,7 +170,7 @@ public class PhenoTipsFeature extends AbstractPhenoTipsVocabularyProperty implem
      *
      * @param json JSON object describing this property
      */
-    PhenoTipsFeature(JSONObject json)
+    public PhenoTipsFeature(JSONObject json)
     {
         super(json);
         this.present =

@@ -129,9 +129,7 @@ define([
                             // such as cancers and pedigree specific stuff
                             patientJSONObject.pedigreeProperties = editor.getGraph().getNodePropertiesNotStoredInPatientProfile(nodeID);
 
-                            var genderOk = editor.getGraph().setNodeDataFromPhenotipsJSON( nodeID, patientJSONObject);
-                            if (!genderOk)
-                                alert("Gender defined in Phenotips for patient " + patient + " is incompatible with this pedigree. Setting pedigree node gender to 'Unknown'");
+                            editor.getGraph().setNodeDataFromPhenotipsJSON( nodeID, patientJSONObject);
                         }
                     }
 
@@ -322,14 +320,28 @@ define([
                 }
 
                 try {
-                    var updatedJSONData = editor.getVersionUpdater().updateToCurrentVersion(JSON.stringify(responseJSON.pedigree));
-
                     var addSaveEventOnceLoaded = function() {
                         // since we just loaded data from disk data in memory is equivalent to data on disk
                         editor.getUndoRedoManager().addSaveEvent();
                     }
 
-                    this.createGraphFromSerializedData(updatedJSONData, false, true, addSaveEventOnceLoaded, "familyPedigree");
+                    // Auto-detect pedigree format: "internal" or "simpleJSON"
+                    if (!responseJSON.pedigree.hasOwnProperty("GG")
+                        && responseJSON.pedigree.hasOwnProperty("data")
+                        && Array.isArray(responseJSON.pedigree.data)) {
+                        // looks like SimpleJSON format
+                        this.createGraphFromImportData(JSON.stringify(responseJSON.pedigree.data), "simpleJSON", undefined,
+                                false, true, addSaveEventOnceLoaded, "familyPedigree");
+                    } else {
+                        // else: old internal format
+
+                        // run migrator from older versions
+                        // (some updates are done in JS, but eventually all are supposed to be moved to JAVA database migrators)
+                        var updatedJSONData = editor.getVersionUpdater().updateToCurrentVersion(JSON.stringify(responseJSON.pedigree));
+
+                        this.createGraphFromSerializedData(updatedJSONData,
+                                false, true, addSaveEventOnceLoaded, "familyPedigree");
+                    }
                 } catch (error) {
                     console.log("[LOAD] error parsing pedigree JSON");
                     this.initializeNewPedigree();
@@ -352,7 +364,7 @@ define([
     SaveLoadEngine._displayFamilyPedigreeInterfaceError = function(replyJSON, title, messageIntro, callWhenDone)
     {
         var errorMessage = replyJSON.errorMessage ? replyJSON.errorMessage : "Unknown problem";
-        errorMessage = "<font color='#660000'>" + errorMessage + "</font><br><br>";
+        errorMessage = "<font color='#660000'>" + errorMessage + "</font><br/><br/>";
         if (replyJSON.errorType == "familyConflict") {
             //errorMessage += "(for now it is only possible to add persons who is not in another family to a family)";
         }
@@ -363,7 +375,7 @@ define([
             //errorMessage += "(you need to have edit permissions for the patient to be able to add it to a family)";
         }
         //errorMessage = "<font color='#660000'>" + errorMessage + "</font><br><br>";
-        editor.getOkCancelDialogue().showError('<br>' + messageIntro + errorMessage, title, "OK", callWhenDone );
+        editor.getOkCancelDialogue().showError('<br/>' + messageIntro + errorMessage, title, "OK", callWhenDone );
     }
 
     return SaveLoadEngine;

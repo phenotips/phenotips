@@ -47,7 +47,8 @@ define([
             this._childlessShape = null;
             this._isSelected = false;
             this._carrierGraphic = null;
-            this._evalLabel = null;
+            this._evalGraphic = null;
+            this._awGraphic = null;
             //timer.printSinceLast("Person visuals time");
         },
 
@@ -138,7 +139,7 @@ define([
             }
             this.updateDisorderShapes();
             this.updateCarrierGraphic();
-            this.updateEvaluationLabel();
+            this.updateEvaluationGraphic();
             if (this.getNode().getLifeStatus() == "unborn"){
                 this.updateLifeStatusShapes("unborn");
             }
@@ -163,7 +164,7 @@ define([
                 } else if (this.getNode().getGender() == 'F') {
                     x += 6;
                     y -= 6;
-                } else if (this.getNode().getGender() == 'U') {
+                } else if (this.getNode().getGender() == 'U' || this.getNode().getGender() == 'O') {
                     x += 2;
                     y -= 2;
                 }
@@ -210,7 +211,7 @@ define([
             this._externalIDLabel && this._externalIDLabel.remove();
 
             if (this.getNode().getExternalID()) {
-                var text = '[' + this.getNode().getExternalID() + "]";
+                var text = '[ ' + this.getNode().getExternalID() + " ]";
                 this._externalIDLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditorParameters.attributes.radius, text).attr(PedigreeEditorParameters.attributes.externalIDLabels);
             } else {
                 this._externalIDLabel = null;
@@ -275,6 +276,51 @@ define([
          */
         getNameLabel: function() {
             return this._nameLabel;
+        },
+
+        /**
+         * Updates the death details label for this Person
+         *
+         * @method updateDeathDetailsLabel
+         */
+        updateDeathDetailsLabel: function() {
+            this._deathDetailsLabel && this._deathDetailsLabel.remove();
+            var deceasedAgeKnown = (this.getNode().getDeceasedAge() != "");
+            var deceasedCauseKnown = (this.getNode().getDeceasedCause() != "");
+            if (!deceasedAgeKnown && !deceasedCauseKnown) {
+                this._deathDetailsLabel = null;
+            } else {
+                // one of:
+                //  a) (AGE, cause) or  (cause) or (AGE) -> if death date is known, "d." will already be present on the line above
+                //  b) d. AGE (cause) or (d. cause) -> otherwise add a "d." inside or outside the brackets
+                var deathDateKnown = this.getNode().getDeathDate() != null && this.getNode().getDeathDate().isComplete();
+
+                var text = "";
+                if (deathDateKnown) {
+                    text += "(";
+                    text += deceasedAgeKnown ? this.getNode().getDeceasedAge() : "";
+                    text += (deceasedAgeKnown && deceasedCauseKnown) ? ", " : "";
+                    text += deceasedCauseKnown ? this.getNode().getDeceasedCause() : "";
+                    text += ")";
+                } else {
+                    text += deceasedAgeKnown ? ("d. " + this.getNode().getDeceasedAge() + (deceasedCauseKnown ? " (" : "")) : "(d. ";
+                    text += deceasedCauseKnown ? this.getNode().getDeceasedCause() : "";
+                    text += deceasedCauseKnown ? ")" : "";
+                }
+                this._deathDetailsLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditorParameters.attributes.radius, text).attr(PedigreeEditorParameters.attributes.externalIDLabels);
+                this._deathDetailsLabel.addGapAfter = true;
+            }
+            this.drawLabels();
+        },
+
+        /**
+         * Returns the Person's death details label
+         *
+         * @method getDeathDetailsLabel
+         * @return {Raphael.el}
+         */
+        getDeathDetailsLabel: function() {
+            return this._deathDetailsLabel;
         },
 
         /**
@@ -451,7 +497,7 @@ define([
                             text = person.getBirthDate().getBestPrecisionStringDDMMYYY(dateFormat) + " – " + person.getDeathDate().getBestPrecisionStringDDMMYYY(dateFormat);
                             if (person.getBirthDate().getYear() !== null && person.getDeathDate().getYear() !== null) {
                                 var ageString = AgeCalc.getAgeString(person.getBirthDate(), person.getDeathDate(), dateFormat);
-                                text += "\n" + ageString;
+                                text += "\nd. " + ageString;
                             }
                         }
                         else if (deathDate && deathDate.isComplete()) {
@@ -491,12 +537,12 @@ define([
                             var ageString = AgeCalc.getAgeString(birthDate, deathDate, dateFormat);
                             if (deathDate.getYear() != null && deathDate.getYear() != birthDate.getYear() && deathDate.getMonth() != null &&
                                 (ageString.indexOf("day") != -1 || ageString.indexOf("wk") != -1 || ageString.indexOf("mo") != -1) ) {
-                                text = "d. " + deathDate.getYear(true);
+                                text = "d. " + deathDate.getYear(true) + " (" + ageString + ")";
                             } else {
                                 text = birthDate.getBestPrecisionStringYear() + " – " + deathDate.getBestPrecisionStringYear();
-                            }
-                            if (ageString !== "") {
-                                text += "\n" + ageString;
+                                if (ageString !== "") {
+                                    text += "\nd. " + ageString;
+                                }
                             }
                         }
                         else if (deathDate && deathDate.isComplete()) {
@@ -516,7 +562,7 @@ define([
                     this._ageLabel.alignTop = true;
                 }
             }
-            this.drawLabels();
+            this.updateDeathDetailsLabel();  // ...which calls this.drawLabels()
         },
 
         /**
@@ -548,10 +594,11 @@ define([
         /**
          * Draws the evaluation status symbol for this Person
          *
-         * @method updateEvaluationLabel
+         * @method updateEvaluationGraphic
          */
-        updateEvaluationLabel: function() {
-            this._evalLabel && this._evalLabel.remove();
+        updateEvaluationGraphic: function() {
+            this._evalGraphic && this._evalGraphic.remove();
+            var gender = this.getNode().getGender();
             if (this.getNode().getEvaluated()) {
                 if (this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
                     var x = this.getX() + this._shapeRadius * 1.6;
@@ -559,15 +606,19 @@ define([
                 }
                 else {
                     var mult = 1.1;
-                    if (this.getNode().getGender() == 'U') mult = 1.3;
-                    else if (this.getNode().getGender() == 'M') mult = 1.4;
-                    if (this.getNode().isProband) mult *= 1.1;
-                    var x = this.getX() + this._shapeRadius*mult - 5;
-                    var y = this.getY() + this._shapeRadius*mult;
+                    if (gender != 'F') {mult = 1.3;}
+                    if (this.getNode().isProband) {mult *= 1.1;}
+                    var x = this.getX() + this._shapeRadius*mult;
+                    var y = this.getY() + this._shapeRadius*mult - 10; // adjusting position not to collide with A&W status
+                    if (this.getNode().getAdopted() != "") { // to avoid intersection with adopted status brackets
+                        if (gender == 'F') {y += 4; x -= 6;}
+                        if (gender == 'M') {x += 3;}
+                        if (gender == 'U' || gender == 'O') {y += 7; x -= 2;}
+                    }
                 }
-                this._evalLabel = editor.getPaper().text(x, y, "*").attr(PedigreeEditorParameters.attributes.evaluationShape).toBack();
+                this._evalGraphic = editor.getPaper().text(x, y, "*").attr(PedigreeEditorParameters.attributes.evaluationShape).toBack();
             } else {
-                this._evalLabel = null;
+                this._evalGraphic = null;
             }
         },
 
@@ -578,7 +629,32 @@ define([
          * @return {Raphael.el}
          */
         getEvaluationGraphics: function() {
-            return this._evalLabel;
+            return this._evalGraphic;
+        },
+
+        /**
+         * Draws the "alive and well" status symbol for this Person
+         *
+         * @method updateAliveAndWellGraphic
+         */
+        updateAliveAndWellGraphic: function(isAliveAndWell) {
+            this._awGraphic && this._awGraphic.remove();
+            var gender = this.getNode().getGender();
+            if (this.getNode().getAliveAndWell()) {
+                var mult = 1.2;
+                if (gender != 'F') {mult = 1.4;}
+                if (this.getNode().isProband) {mult *= 1.1;}
+                var x = this.getX() + this._shapeRadius*mult - 10; // adjusting position not to collide with evaluation status
+                var y = this.getY() + this._shapeRadius*mult;
+                if (this.getNode().getAdopted() != "") { // to avoid intersection with adopted status brackets
+                    if (gender == 'F') {y += 13; x -= 3;}
+                    if (gender == 'M') {y += 4; x -= 6;}
+                    if (gender == 'U' || gender == 'O') {y += 17;}
+                }
+                this._awGraphic = editor.getPaper().text(x, y, "A&W").attr(PedigreeEditorParameters.attributes.aliveAndWellShape).toBack();
+            } else {
+                this._awGraphic = null;
+            }
         },
 
         /**
@@ -897,6 +973,10 @@ define([
                     this.getAgeLabel().show();
                     labels.push(this.getAgeLabel());
                 }
+                if (this.getDeathDetailsLabel()) {
+                    this.getDeathDetailsLabel().show();
+                    labels.push(this.getDeathDetailsLabel());
+                }
                 if (this.getExternalIDLabel()) {
                     this.getExternalIDLabel().show();
                     labels.push(this.getExternalIDLabel());
@@ -906,6 +986,7 @@ define([
                 this.getNameLabel() && this.getNameLabel().hide();
                 this.getAgeLabel() && this.getAgeLabel().hide();
                 this.getExternalIDLabel() && this.getExternalIDLabel().hide();
+                this.getDeathDetailsLabel() && this.getDeathDetailsLabel().hide();
             }
             if (!this._anonymized.hasOwnProperty("removeComments") || !this._anonymized.removeComments) {
                 if (this.getCommentsLabel()) {
@@ -979,7 +1060,11 @@ define([
                 this._linkArea && this._linkArea.remove();
                 var boundingBox = this._linkLabel.getBBox();
                 var patientURL = this.getNode().getPhenotipsPatientURL();
-                this._linkArea = editor.getPaper().rect(boundingBox.x-50, boundingBox.y-3, boundingBox.width+100, boundingBox.height+6).attr({
+                // the hack should cover the bottom part of the hoverbox to make sure mouse can be moved to the link from
+                // the left, right and the bottom without making the hoverbox trigger and move the link
+                var startY = boundingBox.y-3;
+                var hackHeight = Math.max(boundingBox.height+6, this.getHoverBox().getY() + this.getHoverBox().getHeight() - startY);
+                this._linkArea = editor.getPaper().rect(this.getHoverBox().getX(), startY, this.getHoverBox().getWidth(), hackHeight).attr({
                     fill: "#F00",
                     opacity: 0
                   });
@@ -995,7 +1080,8 @@ define([
         },
 
         _labelSelectionOffset: function() {
-            var selectionOffset = this.isSelected() ? PedigreeEditorParameters.attributes.radius/1.4 : 0;
+            var labelsOffset = this.getHoverBox().getBottomExtensionHeight();
+            var selectionOffset = this.isSelected() ? PedigreeEditorParameters.attributes.radius/1.4 + labelsOffset : 0;
 
             if (this.isSelected() && this.getNode().isPersonGroup())
                 selectionOffset += PedigreeEditorParameters.attributes.radius * (1-PedigreeEditorParameters.attributes.groupNodesScale) + 5;
@@ -1041,7 +1127,7 @@ define([
          */
         getAllGraphics: function($super) {
             //console.log("Node " + this.getNode().getID() + " getAllGraphics");
-            return $super().push(this.getHoverBox().getBackElements(), this.getLabels(), this._linkArea, this.getCarrierGraphics(), this.getEvaluationGraphics(), this.getHoverBox().getFrontElements());
+            return $super().push(this.getHoverBox().getBackElements(), this.getLabels(), this._awGraphic, this._linkArea, this.getCarrierGraphics(), this.getEvaluationGraphics(), this.getHoverBox().getFrontElements());
         },
 
         /**

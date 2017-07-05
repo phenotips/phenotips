@@ -84,9 +84,6 @@ public class PhenotipsFamilyTools implements FamilyTools
     @Override
     public Family getFamilyById(String familyId)
     {
-        if (familyId == null) {
-            return null;
-        }
         Family family = this.familyRepository.getFamilyById(familyId);
         if (family == null) {
             return null;
@@ -195,7 +192,22 @@ public class PhenotipsFamilyTools implements FamilyTools
     }
 
     @Override
-    public boolean currentUserHasAccessRight(Family family, Right right)
+    public boolean familyExists(String familyId)
+    {
+        return this.familyRepository.getFamilyById(familyId) != null;
+    }
+
+    @Override
+    public boolean currentUserHasAccessRight(String familyId, Right right)
+    {
+        Family family = this.familyRepository.getFamilyById(familyId);
+        if (family == null) {
+            return false;
+        }
+        return this.currentUserHasAccessRight(family, right);
+    }
+
+    private boolean currentUserHasAccessRight(Family family, Right right)
     {
         if (family == null) {
             return false;

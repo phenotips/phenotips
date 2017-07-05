@@ -78,7 +78,7 @@ public class ParameterPreparer
 
     public Map<String, Double> getFieldSelection(String fieldSelection)
     {
-        Map<String, Double> result = new HashMap<String, Double>();
+        Map<String, Double> result = new HashMap<>();
         String[] fields = fieldSelection.split(FIELD_SEP);
         for (String field : fields) {
             if (!"".equals(field)) {

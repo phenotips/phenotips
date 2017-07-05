@@ -36,7 +36,7 @@ import javax.ws.rs.core.Response;
  * @since 1.3M1
  */
 @Unstable("New API introduced in 1.3")
-@Path("/vocabularies/terms/{vocabulary-id}/{term-id}")
+@Path("/vocabularies/{vocabulary-id}/{term-id}")
 @ParentResource(VocabularyResource.class)
 @Relation("https://phenotips.org/rel/vocabularyTerm")
 public interface VocabularyTermResource

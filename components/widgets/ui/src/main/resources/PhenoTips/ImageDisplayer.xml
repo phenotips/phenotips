@@ -119,7 +119,7 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
   &lt;a class='action delete fa fa-times-circle fa-lg fa-fw' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($xcontext.action, $request.queryString))}")" title="$services.localization.render('phenotips.imageDisplayer.delete')"&gt;&lt;/a&gt;##
   #end
   #if($options.isImage)(% class="attachment-preview" %)((([[image:${services.rendering.escape($targetDoc.fullName, $doc.syntax)}@${services.rendering.escape($attachment.filename, $doc.syntax)}||title="${services.rendering.escape($attachment.filename, $doc.syntax)}"]])))#else##
- &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="$services.localization.render('phenotips.imageDisplayer.openImage', [$!{attachment.filename}])"&gt; [open]&lt;/a&gt;#end##
+ #* *# &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="$services.localization.render('phenotips.imageDisplayer.openImage', [$!{attachment.filename}])"&gt;$services.localization.render('phenotips.imageDisplayer.open')&lt;/a&gt;#end##
   &lt;/div&gt;{{/html}}##
 #end
 
@@ -169,7 +169,16 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
 #macro (__displayGallery $targetDocument  $selection)
   #set ($content = '')
   #foreach ($name in  $selection)
-    #if ("$!{targetDocument.getAttachment(${name})}" != '')
+    ## This filters file names that already contain another document reference
+    ## Regexp means: contains @, not preceded by an odd (2n+1) number of escape characters
+    ## Since lookbehinds must have a known maximum length, only check for at most 11 preceding tildas
+    #if ($name.matches('.*(?&lt;!([^~]|^)(~~){0,5}+~)+@.*'))
+      #if ($options.isImage)
+        #set ($content = "$!{content}[[image:${services.rendering.escape($name, $doc.syntax)}||style=""max-width:100%""]]${util.newline}")
+      #else
+        #set ($content = "$!{content}[[attach:${services.rendering.escape($name, $doc.syntax)}||class='attachment-link #__getExtension($name)']]${util.newline}")
+      #end
+    #elseif ("$!{targetDocument.getAttachment(${name})}" != '')
       #if ($options.isImage)
         #set ($content = "$!{content}[[image:${services.rendering.escape($targetDocument.fullName, $doc.syntax)}@${services.rendering.escape($name, $doc.syntax)}||style=""max-width:100%""]]${util.newline}")
       #else
@@ -404,11 +413,10 @@ $content
                                + "&amp;" + this.CHECK_LASTATT_MARKER + "=" + this.getFileName(uploadForm.down('input[type=file]').value)
                                + (this.reloadTargetId ? '#' + this.reloadTargetId : '');
             }
-            document.observe('xwiki:document:saved', function() {
+            PhenoTips.widgets.FormUtils.getFormState().saveIfFormDirty(function() {
               new XWiki.widgets.Notification("$services.localization.render('xe.attachmentSelector.upload.inProgress')", 'inprogress');
               uploadForm.submit();
-            })
-            document.fire('xwiki:actions:save', {'continue': true, form: $('edit') || $('inline')});
+            });
           }
         }.bindAsEventListener(this));
       }
@@ -473,7 +481,8 @@ $content
         var image = item.down('.attachment-preview img');
         var viewlink = item.down('a.view.hidden');
         var id = input.id.substring(XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX.length);
-        var lItem = new Element('div', {'class' : item.className + (input.checked &amp;&amp; ' selected' || '')});
+        var lItem = new Element('div', {'class' : item.className});
+        lItem.toggleClassName('selected', input.checked)
         lItem.insert({
                   'top' : new Element('label', {'for' : id, 'title' : input.value}).update(input.value).insert({
                               top : new Element('input', {

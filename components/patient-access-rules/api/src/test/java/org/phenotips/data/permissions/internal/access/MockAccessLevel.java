@@ -19,8 +19,6 @@ package org.phenotips.data.permissions.internal.access;
 
 import org.phenotips.data.permissions.internal.AbstractAccessLevel;
 
-import org.xwiki.security.authorization.Right;
-
 /**
  * @version $Id$
  */
@@ -38,11 +36,5 @@ public class MockAccessLevel extends AbstractAccessLevel
     public String getName()
     {
         return this.name;
-    }
-
-    @Override
-    public Right getGrantedRight()
-    {
-        return Right.ILLEGAL;
     }
 }

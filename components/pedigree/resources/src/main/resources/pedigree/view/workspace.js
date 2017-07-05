@@ -33,7 +33,7 @@ define([
             this.background.node.setAttribute("class", "panning-background");
 
             this.adjustSizeToScreen = this.adjustSizeToScreen.bind(this);
-            Event.observe (this.canvas, 'resize', me.adjustSizeToScreen);
+            Event.observe (window, 'resize', me.adjustSizeToScreen);
             this.generateViewControls();
 
             //Initialize pan by dragging
@@ -181,7 +181,7 @@ define([
             // Firefox, Safari root NS issue fix
             svgText = svgText.replace(' xlink=', ' xmlns:xlink=');
             // Safari xlink NS issue fix
-            svgText = svgText.replace(/NS\d+:href/g, 'xlink:href');
+            svgText = svgText.replace(/NS\d+:(href|show)/g, 'xlink:$1');
             // Remove "current patient arrow and "C" indicator, plus the proband "P" indicator
             svgText = svgText.replace(/<[^<>]+?node-arrow-text[^<>]*([^/]>\s*(<tspan(.*?)\/tspan>)\s*<\/\w+|\/)>/g, "");
             svgText = svgText.replace(/<[^<>]+?node-arrow-type-C[^<>]*([^/]><\/\w+|\/)>/g, "");

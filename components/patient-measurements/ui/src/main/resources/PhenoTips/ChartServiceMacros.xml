@@ -107,7 +107,7 @@
   #if ("$!{ages}" != "")
     #foreach ($measurementName in $services.measurements.getAvailableMeasurementNames())
       #_buildMeasurementFromRequest($measurements.get($measurementName) $measurementName)
-    #end 
+    #end
   #end
   #set ($sex = ($request.getParameter('s') != 'F'))
 #end

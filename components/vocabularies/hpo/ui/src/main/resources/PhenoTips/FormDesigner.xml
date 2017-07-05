@@ -264,7 +264,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
   #set ($formSubmit = "update_extensions")
   #set ($formParams = {
     "update_extensions" : "1",
-    "sections" : "" 
+    "sections" : ""
   })
 #else
   #set ($prefix = "${studyConfig.xWikiClass.name}_${studyConfig.number}_")
@@ -337,7 +337,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 #end
 
 ## ----------------------------------------------------------------------
-## Display one section extension 
+## Display one section extension
 ## ----------------------------------------------------------------------
 #macro(_formDesigner__displaySection $section $showTools)
 (% class="section-maquette #if ($showTools &amp;&amp; !$section.enabled) disabled #end" id="${section.id}"%)(((
@@ -348,7 +348,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 #end
 
 ## ----------------------------------------------------------------------
-## Display section extensions 
+## Display section extensions
 ## ----------------------------------------------------------------------
 #macro(_formDesigner__displaySections)
   #set ($sectionsData = [])
@@ -360,7 +360,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 
 ## ----------------------------------------------------------------------
 ## Display the section with a specific id suffix
-## ---------------------------------------------------------------------- 
+## ----------------------------------------------------------------------
 #macro (_formDesigner__displaySectionWithId $id)
   #set ($sectionsData = [])
   #_formDesigner__getExtensionsData('section', 'name', "${sectionExtensionIdPrefix}${id}", $sectionExtensionPointId, $!studyConfig.getProperty('sections').value, $sectionsData)
@@ -495,7 +495,7 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -540,10 +540,10 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -557,7 +557,7 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##
 
     _ENHANCED_TOOL_CSS_CLASS : 'initialized',
     _NEW_TOOL_SELECTOR: ':not(.initialized)',
-    
+
     initialize : function (element) {
       if (!element) return;
       this._element = element;
@@ -737,7 +737,7 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##
          });
        });
     },
-   
+
     _updateOrder : function (container, updateContainer) {
        var i = 0;
        container.select ((updateContainer ? '.extension' : '.section') + '-title input.uix-order').each(function(item) {
@@ -909,7 +909,7 @@ document.observe("xwiki:dom:loaded", function(){
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -925,6 +925,22 @@ document.observe("xwiki:dom:loaded", function(){
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
       <name>
         <disabled>0</disabled>
         <name>name</name>
@@ -954,10 +970,10 @@ document.observe("xwiki:dom:loaded", function(){
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -1083,7 +1099,10 @@ document.observe("xwiki:dom:loaded", function(){
 }
 
 .designer-panel.sections .disabled {
-  opacity: .3;
+  opacity: .8;
+}
+.designer-panel.sections .disabled .section-contents {
+  opacity: .4;
 }
 .designer-panel.extensions input[type="checkbox"] {
   display: none;

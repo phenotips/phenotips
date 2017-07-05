@@ -35,7 +35,7 @@
   <title/>
   <comment/>
   <minorEdit>false</minorEdit>
-  <syntaxId>xwiki/2.1</syntaxId>
+  <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
   <content>phenotips.specificityMeter.label=How informative is your phenotypic description:
 phenotips.specificityMeter.level.0=None
@@ -71,7 +71,7 @@ phenotips.specificityMeter.info=This meter assesses the breadth and depth of you
         <prettyName>Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>GLOBAL|WIKI|USER|ON_DEMAND</values>

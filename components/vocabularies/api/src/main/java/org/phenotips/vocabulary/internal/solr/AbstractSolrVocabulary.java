@@ -19,10 +19,10 @@ package org.phenotips.vocabulary.internal.solr;
 
 import org.phenotips.vocabulary.SolrVocabularyResourceManager;
 import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyExtension;
+import org.phenotips.vocabulary.VocabularyInputTerm;
 import org.phenotips.vocabulary.VocabularyTerm;
 
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,26 +33,25 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.common.params.CommonParams;
-import org.apache.solr.common.params.ModifiableSolrParams;
-import org.apache.solr.common.params.SolrParams;
 import org.slf4j.Logger;
 
 /**
- * Provides access to the Solr server, with the main purpose of providing access to an indexed ontology. There are two
- * ways of accessing items in the ontology: getting a single term by its identifier, or searching for terms matching a
+ * Provides access to the Solr server, with the main purpose of providing access to an indexed vocabulary. There are two
+ * ways of accessing items in the vocabulary: getting a single term by its identifier, or searching for terms matching a
  * given query in the Lucene query language.
  *
  * @version $Id$
  * @since 1.2M4 (under different names since 1.0M8)
  */
-public abstract class AbstractSolrVocabulary implements Vocabulary, Initializable
+public abstract class AbstractSolrVocabulary implements Vocabulary
 {
     /** The name of the ID field. */
     protected static final String ID_FIELD_NAME = "id";
@@ -71,11 +70,9 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     @Inject
     protected SolrVocabularyResourceManager externalServicesAccess;
 
-    @Override
-    public void initialize() throws InitializationException
-    {
-        this.externalServicesAccess.initialize(this.getCoreName());
-    }
+    /** The extensions that apply to this vocabulary. */
+    @Inject
+    protected Provider<List<VocabularyExtension>> extensions;
 
     // Dilemma:
     // In an ideal world there should be a getter methods for server and cache instances.
@@ -91,16 +88,18 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     @Override
     public VocabularyTerm getTerm(String id)
     {
-        VocabularyTerm result = this.externalServicesAccess.getTermCache().get(id);
+        if (StringUtils.isBlank(id)) {
+            return null;
+        }
+        VocabularyTerm result = this.externalServicesAccess.getTermCache(getCoreName()).get(id);
         if (result == null) {
-            ModifiableSolrParams params = new ModifiableSolrParams();
-            params.set(CommonParams.Q, ID_FIELD_NAME + ':' + ClientUtils.escapeQueryChars(id));
-            SolrDocumentList allResults = this.search(params);
+            SolrQuery query = new SolrQuery(ID_FIELD_NAME + ':' + ClientUtils.escapeQueryChars(id));
+            SolrDocumentList allResults = this.search(query);
             if (allResults != null && !allResults.isEmpty()) {
                 result = new SolrVocabularyTerm(allResults.get(0), this);
-                this.externalServicesAccess.getTermCache().set(id, result);
+                this.externalServicesAccess.getTermCache(getCoreName()).set(id, result);
             } else {
-                this.externalServicesAccess.getTermCache().set(id, EMPTY_MARKER);
+                this.externalServicesAccess.getTermCache(getCoreName()).set(id, EMPTY_MARKER);
             }
         }
         return (result == EMPTY_MARKER) ? null : result;
@@ -112,7 +111,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
         Map<String, VocabularyTerm> rawResult = new HashMap<>();
         StringBuilder query = new StringBuilder("id:(");
         for (String id : ids) {
-            VocabularyTerm cachedTerm = this.externalServicesAccess.getTermCache().get(id);
+            VocabularyTerm cachedTerm = this.externalServicesAccess.getTermCache(getCoreName()).get(id);
             if (cachedTerm != null) {
                 if (cachedTerm != EMPTY_MARKER) {
                     rawResult.put(id, cachedTerm);
@@ -126,7 +125,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
 
         // There's at least one more term not found in the cache
         if (query.length() > 5) {
-            for (SolrDocument doc : this.search(SolrQueryUtils.transformQueryToSolrParams(query.toString()))) {
+            for (SolrDocument doc : this.search(new SolrQuery(query.toString()))) {
                 VocabularyTerm term = new SolrVocabularyTerm(doc, this);
                 rawResult.put(term.getId(), term);
             }
@@ -134,7 +133,9 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
 
         Set<VocabularyTerm> result = new LinkedHashSet<>();
         for (String id : ids) {
-            result.add(rawResult.get(id));
+            if (rawResult.containsKey(id) && rawResult.get(id) != null) {
+                result.add(rawResult.get(id));
+            }
         }
         return result;
     }
@@ -149,8 +150,8 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     public List<VocabularyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions)
     {
         List<VocabularyTerm> result = new LinkedList<>();
-        for (SolrDocument doc : this.search(
-            SolrQueryUtils.transformQueryToSolrParams(generateLuceneQuery(fieldValues)), queryOptions)) {
+        for (SolrDocument doc : this
+            .search(SolrQueryUtils.generateQuery(new SolrQuery(generateLuceneQuery(fieldValues)), queryOptions))) {
             result.add(new SolrVocabularyTerm(doc, this));
         }
         return result;
@@ -171,7 +172,6 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     @Override
     public int reindex(String sourceUrl)
     {
-        // FIXME Not implemented yet
         throw new UnsupportedOperationException();
     }
 
@@ -197,6 +197,12 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     }
 
     @Override
+    public List<VocabularyTerm> search(String input)
+    {
+        return search(input, 10, null, null);
+    }
+
+    @Override
     public List<VocabularyTerm> search(String input, int maxResults, String sort, String customFilter)
     {
         throw new UnsupportedOperationException();
@@ -206,38 +212,29 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
      * Perform a search, falling back on the suggested spellchecked query if the original query fails to return any
      * results.
      *
-     * @param params the Solr parameters to use, should contain at least a value for the "q" parameter
+     * @param query the Solr query to use, should contain at least a value for the "q" parameter
      * @return the list of matching documents, empty if there are no matching terms
      */
-    protected SolrDocumentList search(SolrParams params)
-    {
-        return search(params, null);
-    }
-
-    /**
-     * Perform a search, falling back on the suggested spellchecked query if the original query fails to return any
-     * results.
-     *
-     * @param params the Solr parameters to use, should contain at least a value for the "q" parameter
-     * @param queryOptions extra options to include in the query; these override the default values, but don't override
-     *            values already set in the query
-     * @return the list of matching documents, empty if there are no matching terms
-     */
-    protected SolrDocumentList search(SolrParams params, Map<String, String> queryOptions)
+    protected SolrDocumentList search(SolrQuery query)
     {
         try {
-            SolrParams enhancedParams = SolrQueryUtils.enhanceParams(params, queryOptions);
-            this.logger.debug("Searching [{}] with query [{}]", getCoreName(), enhancedParams);
-            QueryResponse response = this.externalServicesAccess.getSolrConnection().query(enhancedParams);
+            query.setIncludeScore(true);
+            this.logger.debug("Extending query [{}] for vocabulary [{}]", query, getCoreName());
+            for (VocabularyExtension extension : this.extensions.get()) {
+                if (extension.isVocabularySupported(this)) {
+                    extension.extendQuery(query, this);
+                }
+            }
+            this.logger.debug("Searching [{}] with query [{}]", getCoreName(), query);
+            QueryResponse response = this.externalServicesAccess.getSolrConnection(getCoreName()).query(query);
             SolrDocumentList results = response.getResults();
             if (response.getSpellCheckResponse() != null && !response.getSpellCheckResponse().isCorrectlySpelled()
                 && StringUtils.isNotEmpty(response.getSpellCheckResponse().getCollatedResult())) {
-                enhancedParams =
-                    SolrQueryUtils.applySpellcheckSuggestion(enhancedParams, response.getSpellCheckResponse()
-                        .getCollatedResult());
-                this.logger.debug("Searching [{}] with spellchecked query [{}]", getCoreName(), enhancedParams);
+                SolrQueryUtils.applySpellcheckSuggestion(query,
+                    response.getSpellCheckResponse().getCollatedResult());
+                this.logger.debug("Searching [{}] with spellchecked query [{}]", getCoreName(), query);
                 SolrDocumentList spellcheckResults =
-                    this.externalServicesAccess.getSolrConnection().query(enhancedParams).getResults();
+                    this.externalServicesAccess.getSolrConnection(getCoreName()).query(query).getResults();
                 if (results.getMaxScore() < spellcheckResults.getMaxScore()) {
                     results = spellcheckResults;
                 }
@@ -252,22 +249,21 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     /**
      * Get the number of entries that match a specific Lucene query.
      *
-     * @param query a valid the Lucene query as string
+     * @param query a valid Lucene query as string
      * @return the number of entries matching the query
      */
     protected long count(String query)
     {
-        ModifiableSolrParams params = new ModifiableSolrParams();
-        params.set(CommonParams.Q, query);
-        params.set(CommonParams.START, "0");
-        params.set(CommonParams.ROWS, "0");
+        SolrQuery params = new SolrQuery(query);
+        params.setStart(0);
+        params.setRows(0);
         SolrDocumentList results;
         try {
             this.logger.debug("Counting terms matching [{}] in [{}]", query, getCoreName());
-            results = this.externalServicesAccess.getSolrConnection().query(params).getResults();
+            results = this.externalServicesAccess.getSolrConnection(getCoreName()).query(params).getResults();
             return results.getNumFound();
         } catch (Exception ex) {
-            this.logger.error("Failed to count ontology terms: {}", ex.getMessage(), ex);
+            this.logger.error("Failed to count vocabulary terms: {}", ex.getMessage(), ex);
             return -1;
         }
     }
@@ -306,5 +302,19 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
             query.append(')');
         }
         return query.toString();
+    }
+
+    /**
+     * Runs the term given through all the vocabulary extensions we have.
+     *
+     * @param term the term being processed
+     */
+    protected void extendTerm(VocabularyInputTerm term)
+    {
+        for (VocabularyExtension extension : this.extensions.get()) {
+            if (extension.isVocabularySupported(this)) {
+                extension.extendTerm(term, this);
+            }
+        }
     }
 }

@@ -23,14 +23,13 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>vocabulary-omim</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3.1</version>
   </parent>
   <artifactId>vocabulary-omim-api</artifactId>
   <name>PhenoTips - Vocabularies - Online Mendelian Inheritance in Man integration - APIs</name>
 
   <properties>
     <!-- More tests should be added when the Solr core becomes a component -->
-    <!-- Changed from 0.15 to 0.00 during refactoring. No tests present at the time -->
     <coverage.instructionRatio>0.00</coverage.instructionRatio>
   </properties>
 
@@ -62,19 +61,19 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-csv</artifactId>
-      <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-cache-api</artifactId>
+      <version>${xwiki.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
-    <!-- Test dependencies -->
-    <!-- Unused import. Left in here since, in an ideal world there should be some tests -->
     <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-tool-test-component</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>test</scope>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
     </dependency>
   </dependencies>
 </project>

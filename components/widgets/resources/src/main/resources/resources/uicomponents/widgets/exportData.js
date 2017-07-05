@@ -17,6 +17,19 @@ document.observe('xwiki:dom:loading', function() {
             fadeOnClear : false,
             timeout : 30000
         },
+        "ordo" : {
+            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get", "vocabulary=ordo") + "&",
+            varname: "q",
+            noresults: "$services.localization.render('phenotips.DBWebHomeSheet.noResults')",
+            json: true,
+            resultsParameter : "rows",
+            resultId : "id",
+            resultValue : "name",
+            tooltip: 'ordo-disease-info',
+            enableHierarchy: false,
+            fadeOnClear : false,
+            timeout : 30000
+        },
         "omim" : {
             script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get", "vocabulary=omim") + "&",
             varname: "q",
@@ -39,7 +52,7 @@ document.observe('xwiki:dom:loading', function() {
             noresults: "No matching gene names",
             json: true,
             resultsParameter : "docs",
-            resultId : 'symbol',
+            resultId : 'id',
             resultValue : 'symbol',
             resultAltName : "alias_symbol",
             enableHierarchy: false,
@@ -57,7 +70,7 @@ document.observe('xwiki:dom:loading', function() {
     'generateShortList' : {
                   'showKey' : true,
                   'showTooltip' : false,
-                  'showDeleteTool' : true,
+                  'showDeleteTool' : false,
                   'enableSort' : false,
                   'showClearTool' : true,
                   'inputType': 'checkbox'
@@ -65,7 +78,7 @@ document.observe('xwiki:dom:loading', function() {
     'generateCheckboxes' : {
                   'showKey' : false,
                   'showTooltip' : false,
-                  'showDeleteTool' : true,
+                  'showDeleteTool' : false,
                   'enableSort' : false,
                   'showClearTool' : true,
                   'inputType': 'checkbox',
@@ -230,7 +243,6 @@ document.observe('xwiki:dom:loading', function() {
           });
           // leave patient info section expanded
           if (index != 0) {
-            sectionList.toggleClassName('v-collapsed');
             chapterHideWrapper.toggleClassName('v-collapsed');
           } else {
             chapterShowWrapper.toggleClassName('v-collapsed');
@@ -314,12 +326,10 @@ document.observe('xwiki:dom:loading', function() {
     var checkboxList = content.select('.section.columns input[type=checkbox]');
     var columnList = content.down('.section.columns h3');
     if (columnList && checkboxList) {
-      var selectionTools = new Element('div', { 'class' : 'selection-tools' }).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.label') ");
-      var all = new Element('span', {'class' : 'selection-tool select-all'}).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.all')");
-      var none = new Element('span', {'class' : 'selection-tool select-none'}).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.none')");
-      var invert = new Element('span', {'class' : 'selection-tool select-invert'}).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.invert')");
-      var restore = new Element('span', {'class' : 'selection-tool select-restore'}).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.restore')");
-      selectionTools.insert(all).insert(' · ').insert(none).insert(' · ').insert(invert).insert(' · ').insert(restore);
+      var all = $$('.selection-tool.select-all')[0];
+      var none = $$('.selection-tool.select-none')[0];
+      var invert = $$('.selection-tool.select-invert')[0];
+      var restore = $$('.selection-tool.select-restore')[0];
 
       checkboxList.each(function(elt) {
           elt._originallyChecked = elt.checked;
@@ -341,7 +351,6 @@ document.observe('xwiki:dom:loading', function() {
           elt.indeterminate = elt._originallyIndeterminate;
         });
       });
-      columnList.insert({'after' : selectionTools});
     }
 
 

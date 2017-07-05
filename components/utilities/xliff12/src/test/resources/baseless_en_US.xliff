@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="dummy_translations" datatype="plaintext" source-language="en-US" target-language="en">
+    <body>
+      <trans-unit id="DUM_0001">
+        <source>Dummy 1</source>
+        <target>Dummy 1</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

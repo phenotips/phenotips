@@ -87,6 +87,7 @@ public class JsSkinFileExtensionPlugin extends AbstractSkinExtensionPlugin
         result.append(sanitize(Utils.getComponent(DistributionManager.class)
             .getDistributionExtension().getId().getVersion().getValue()));
         if (forceSkinAction) {
+            result.append("&amp;language=" + sanitize(context.getLanguage()));
             result.append(parametersAsQueryString(filename, context));
         }
         // check if js should be deferred, defaults to the preference configured in the cfg file, which defaults to true

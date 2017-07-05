@@ -141,6 +141,10 @@ public class PedigreeScriptService implements ScriptService
     public JSONResponse canPatientBeLinked(String familyId, String patientToLinkId)
     {
         try {
+            if (!this.familyTools.familyExists(familyId)) {
+                return new InvalidFamilyIdResponse();
+            }
+
             Family family = this.familyTools.getFamilyById(familyId);
             Patient patient = this.patientRepository.get(patientToLinkId);
 
@@ -166,6 +170,14 @@ public class PedigreeScriptService implements ScriptService
     public JSONResponse savePedigree(String familyId, String json, String image)
     {
         try {
+            if (!this.familyTools.familyExists(familyId)) {
+                return new InvalidFamilyIdResponse();
+            }
+
+            if (!this.familyTools.currentUserHasAccessRight(familyId, Right.EDIT)) {
+                return new NotEnoughPermissionsOnFamilyResponse();
+            }
+
             Family family = this.familyTools.getFamilyById(familyId);
 
             JSONObject pedigreeJSON;

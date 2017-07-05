@@ -55,7 +55,9 @@ import org.slf4j.Logger;
 public class DefaultPatientConsentResourceImpl extends XWikiResource implements PatientConsentResource
 {
     private static final Response.Status INVALID_CONSENT_ID_CODE = Response.Status.BAD_REQUEST;
+
     private static final Response.Status PATIENT_NOT_FOUND = Response.Status.NOT_FOUND;
+
     private static final Response.Status ACCESS_DENIED = Response.Status.FORBIDDEN;
 
     @Inject
@@ -79,8 +81,8 @@ public class DefaultPatientConsentResourceImpl extends XWikiResource implements 
         this.logger.debug("Retrieving consents from patient record [{}] via REST", patientId);
         Security security = this.securityCheck(patientId, Right.VIEW);
         if (security.isAllowed()) {
-            Set<Consent> consents = consentManager.getAllConsentsForPatient(security.getPatient());
-            JSONArray json = consentManager.toJSON(consents);
+            Set<Consent> consents = this.consentManager.getAllConsentsForPatient(security.getPatient());
+            JSONArray json = this.consentManager.toJSON(consents);
             return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
         } else {
             return security.getFailResponse();
@@ -132,7 +134,7 @@ public class DefaultPatientConsentResourceImpl extends XWikiResource implements 
             Security security = this.securityCheck(patientId, Right.EDIT);
             if (security.isAllowed()) {
                 JSONArray consentsJSON = json == null ? null : new JSONArray(json);
-                Set<String> consentIds = new HashSet<String>();
+                Set<String> consentIds = new HashSet<>();
                 for (int i = 0; i < consentsJSON.length(); i++) {
                     String consentId = consentsJSON.optString(i);
                     if (consentId != null) {

@@ -84,7 +84,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>GRCh37=GRCh37 (hg19)|GRCh38=GRCh38 (hg38)|NCBI36=NCBI36 (hg18)</values>
+      <values>GRCh38=GRCh38 (hg38)|GRCh37=GRCh37 (hg19)|NCBI36=NCBI36 (hg18)</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </reference_genome>
   </class>
@@ -182,7 +182,7 @@
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -202,11 +202,7 @@
 
 #set ($originalObj = $obj)
 #set ($originalClass = $class)
-#set ($obj = $doc.getObject('PhenoTips.VCF'))
-#if (!$obj)
-  #set ($obj = $doc.getObject('PhenoTips.VCF', true))
-  #set ($discard = $doc.save('Added mandatory PhenoTips.VCF object', true))
-#end
+#set ($obj = $doc.getObject('PhenoTips.VCF', true))
 #set ($class = $xwiki.getClass('PhenoTips.VCF'))
 #set ($discard = $doc.use($obj))
 #__displayIfNotEmpty('filename')
@@ -218,9 +214,7 @@
 #elseif ($xcontext.action == 'view' &amp;&amp; $doc.getObject('PhenoTips.VCF').getProperty('filename').value.isEmpty() == false)
 === $services.localization.render('phenotips.vcf.sheetTitle') ===
 
-[[attach:${doc.getObject('PhenoTips.VCF').getProperty('filename').value}]] (reference genome ${doc.getObject('PhenoTips.VCF').getProperty('reference_genome').value})
-#elseif ($xcontext.action == 'export')
-##
+[[attach:${doc.getObject('PhenoTips.VCF').getProperty('filename').value}]] $services.localization.render("phenotips.vcf.referenceGenome", ["$!{doc.getObject('PhenoTips.VCF').getProperty('reference_genome').value}"])
 #end
 {{/velocity}}</content>
     </property>

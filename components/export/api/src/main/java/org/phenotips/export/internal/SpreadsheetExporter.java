@@ -128,7 +128,7 @@ public class SpreadsheetExporter
 
         for (int col = 0; section.getMaxX() >= col; col++) {
             sheet.autoSizeColumn(col);
-            int correctWidth = DataToCellConverter.charactersPerLine * 210;
+            int correctWidth = DataToCellConverter.MAX_CHARACTERS_PER_LINE * 210;
             if (sheet.getColumnWidth(col) > correctWidth) {
                 sheet.setColumnWidth(col, correctWidth);
             }

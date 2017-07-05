@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-resources</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3.1</version>
   </parent>
   <artifactId>phenotips-ui</artifactId>
   <name>PhenoTips - Application interface</name>
@@ -33,6 +33,7 @@
     <xwiki.extension.features>edu.toronto.cs.phenotips:phenotips-ui</xwiki.extension.features>
   </properties>
   <dependencies>
+    <!-- Keep this one first, so that skin extensions requiring programming rights are correctly registered when installing via the distribution wizard -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-default-settings</artifactId>
@@ -180,6 +181,12 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-entities-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>patient-data-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
@@ -232,14 +239,11 @@
       <version>${project.version}</version>
       <type>xar</type>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>gene-panels-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+    </dependency>
   </dependencies>
-  <build>
-    <extensions>
-      <extension>
-        <groupId>org.xwiki.commons</groupId>
-        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
-        <version>${xwiki.version}</version>
-      </extension>
-    </extensions>
-  </build>
 </project>

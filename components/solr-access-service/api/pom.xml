@@ -23,13 +23,13 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>solr-access-service</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3.1</version>
   </parent>
   <artifactId>solr-access-service-api</artifactId>
   <name>PhenoTips - Solr Access Service - Java code</name>
   <properties>
     <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
-    <coverage.instructionRatio>0.43</coverage.instructionRatio>
+    <coverage.instructionRatio>0.42</coverage.instructionRatio>
     <!-- Module soon to be removed, disable checks -->
     <clirr.skip>true</clirr.skip>
   </properties>
@@ -42,6 +42,11 @@
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-script</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-configuration-api</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
@@ -82,12 +87,6 @@
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-tool-test-component</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-component-default</artifactId>
       <version>${xwiki.version}</version>
       <scope>test</scope>
     </dependency>

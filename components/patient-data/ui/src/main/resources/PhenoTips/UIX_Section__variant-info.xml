@@ -100,7 +100,7 @@
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -120,7 +120,7 @@
       <parameters>title=$services.localization.render('phenotips.UIXSection.variantInfo')
 enabled=false
 required=
-order=7</parameters>
+order=9</parameters>
     </property>
     <property>
       <scope>wiki</scope>

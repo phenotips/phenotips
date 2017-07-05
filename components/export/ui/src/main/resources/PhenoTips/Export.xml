@@ -40,7 +40,7 @@
   <content>{{include reference="PhenoTips.ExportFilter" /}}
 
 {{velocity wiki="true"}}{{{
-#set ($codeProperties = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
+#set ($codeProperties = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'clinical_diagnosis', 'omim_id'])
 #set ($enabledFields = $request.getParameterValues('columns'))
 #set ($displayedFields = [])
 #foreach ($field in $activeFields)

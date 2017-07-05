@@ -17,14 +17,12 @@
  */
 package org.phenotips.studies.family.rest;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -57,7 +55,6 @@ public interface FamilyResource
      * @return a status message
      */
     @DELETE
-    @Consumes(MediaType.APPLICATION_JSON)
     Response deleteFamily(@PathParam("id") String id,
         @QueryParam("delete_all_members") @DefaultValue("false") Boolean deleteMembers);
 }

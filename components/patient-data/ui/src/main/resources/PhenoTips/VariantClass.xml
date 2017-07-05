@@ -149,7 +149,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>GRCh37=GRCh37 (hg19)|GRCh38=GRCh38 (hg38)|NCBI36=NCBI36 (hg18)</values>
+      <values>GRCh38=GRCh38 (hg38)|GRCh37=GRCh37 (hg19)|NCBI36=NCBI36 (hg18)</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </reference_genome>
     <start>

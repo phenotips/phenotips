@@ -17,10 +17,9 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.DisMaxParams;
-import org.apache.solr.common.params.ModifiableSolrParams;
-import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.params.SpellingParams;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,27 +31,14 @@ import org.junit.Test;
  */
 public class SolrQueryUtilsTest
 {
-    @Test
-    public void testTransformQueryToSolrParams()
-    {
-        SolrParams output = SolrQueryUtils.transformQueryToSolrParams("field:value");
-        Assert.assertEquals("field:value", output.get(CommonParams.Q));
-    }
-
-    @Test
-    public void testTransformQueryToSolrParamsWithNullValue()
-    {
-        SolrParams output = SolrQueryUtils.transformQueryToSolrParams(null);
-        Assert.assertNull(output.get(CommonParams.Q));
-    }
 
     @Test
     public void testEnhanceParamsDefaultValues()
     {
-        ModifiableSolrParams input = new ModifiableSolrParams();
-        SolrParams output = SolrQueryUtils.enhanceParams(input);
+        SolrQuery input = new SolrQuery();
+        SolrQuery output = SolrQueryUtils.generateQuery(input, null);
         Assert.assertNull(output.get(CommonParams.Q));
-        Assert.assertEquals("* score", output.get(CommonParams.FL));
+        Assert.assertEquals("*,score", output.get(CommonParams.FL));
         Assert.assertEquals(true, output.getBool(SpellingParams.SPELLCHECK_COLLATE));
         Assert.assertEquals(0, (int) output.getInt(CommonParams.START));
         Assert.assertTrue(output.getInt(CommonParams.ROWS) > 100);
@@ -61,12 +47,11 @@ public class SolrQueryUtilsTest
     @Test
     public void testEnhanceParamsDoesntReplaceExistingValues()
     {
-        ModifiableSolrParams input = new ModifiableSolrParams();
-        input.set(CommonParams.Q, "field:value");
+        SolrQuery input = new SolrQuery("field:value");
         input.set(CommonParams.FL, "id");
-        input.set(CommonParams.START, 30);
-        input.set(CommonParams.ROWS, 10);
-        SolrParams output = SolrQueryUtils.enhanceParams(input);
+        input.setStart(30);
+        input.setRows(10);
+        SolrQuery output = SolrQueryUtils.generateQuery(input, null);
         Assert.assertEquals("field:value", output.get(CommonParams.Q));
         Assert.assertEquals("id", output.get(CommonParams.FL));
         Assert.assertEquals(true, output.getBool(SpellingParams.SPELLCHECK_COLLATE));
@@ -77,15 +62,14 @@ public class SolrQueryUtilsTest
     @Test
     public void testEnhanceParamsWithNull()
     {
-        Assert.assertNull(SolrQueryUtils.enhanceParams(null));
+        Assert.assertNull(SolrQueryUtils.generateQuery(null, null));
     }
 
     @Test
     public void testApplySpellcheckSuggestions()
     {
-        ModifiableSolrParams input = new ModifiableSolrParams();
-        input.set(CommonParams.Q, "original");
-        SolrParams output = SolrQueryUtils.applySpellcheckSuggestion(input, "fixed");
+        SolrQuery input = new SolrQuery("original");
+        SolrQuery output = SolrQueryUtils.applySpellcheckSuggestion(input, "fixed");
         Assert.assertNotNull(output);
         Assert.assertEquals("fixed", output.get(CommonParams.Q));
     }
@@ -93,10 +77,9 @@ public class SolrQueryUtilsTest
     @Test
     public void testApplySpellcheckSuggestionsWithBoostQuery()
     {
-        ModifiableSolrParams input = new ModifiableSolrParams();
-        input.set(CommonParams.Q, "original with text:stab*");
+        SolrQuery input = new SolrQuery("original with text:stab*");
         input.set(DisMaxParams.BQ, "text:stab* name:stab*^5");
-        SolrParams output = SolrQueryUtils.applySpellcheckSuggestion(input, "fixed with text:stub*");
+        SolrQuery output = SolrQueryUtils.applySpellcheckSuggestion(input, "fixed with text:stub*");
         Assert.assertNotNull(output);
         Assert.assertEquals("fixed with text:stub* text:stab*^1.5", output.get(CommonParams.Q));
         Assert.assertArrayEquals(new String[] { "text:stab* name:stab*^5", "text:stub* name:stub*^5" },
@@ -106,28 +89,15 @@ public class SolrQueryUtilsTest
     @Test
     public void testApplySpellcheckSuggestionsWithNull()
     {
-        SolrParams output = SolrQueryUtils.applySpellcheckSuggestion(null, null);
+        SolrQuery output = SolrQueryUtils.applySpellcheckSuggestion(null, null);
         Assert.assertNull(output);
 
-        ModifiableSolrParams input = new ModifiableSolrParams();
-        input.set(CommonParams.Q, "original");
+        SolrQuery input = new SolrQuery("original");
         output = SolrQueryUtils.applySpellcheckSuggestion(input, null);
         Assert.assertNotNull(output);
         Assert.assertEquals("original", output.get(CommonParams.Q));
 
         output = SolrQueryUtils.applySpellcheckSuggestion(null, "fixed");
         Assert.assertNull(output);
-    }
-
-    @Test
-    public void testGetCacheKey()
-    {
-        ModifiableSolrParams input = new ModifiableSolrParams();
-        input.set(CommonParams.Q, "some value");
-        input.add(DisMaxParams.BQ, "text:stub*");
-        input.add(DisMaxParams.BQ, "stub*");
-        input.set(CommonParams.FQ, "is_a:HP\\:0000108");
-        String output = SolrQueryUtils.getCacheKey(input);
-        Assert.assertEquals("{q:[some value]\nbq:[text:stub*, stub*]\nfq:[is_a:HP\\:0000108]\n}", output);
     }
 }

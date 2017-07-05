@@ -35,10 +35,9 @@
   <title>Translations</title>
   <comment/>
   <minorEdit>false</minorEdit>
-  <syntaxId>xwiki/2.1</syntaxId>
+  <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
-  <content>admin.ontology=Ontology index
-admin.workgroups=Work groups
+  <content>admin.workgroups=Work groups
 admin.studies=Studies
 
 saveandview=Save and view summary
@@ -54,7 +53,7 @@ XWiki.XWikiUsers_comment=About
 core.widgets.confirmationBox.button.cancel=Cancel
 
 phenotips.globalHeader.allData=Browse all patients
-phenotips.globalHeader.search.placeholder=Search for a patient record...
+phenotips.globalHeader.search.placeholder=Search…
 
 phenotips.OmimPredictService.linkToDisorder=Read about this disorder on OMIM
 phenotips.OmimPredictService.noMatches=No matches found

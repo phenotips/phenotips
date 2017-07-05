@@ -41,7 +41,7 @@ public class SolrUpdateGenerator
 
     private TermData crtTerm = new TermData();
 
-    private Map<String, TermData> data = new LinkedHashMap<String, TermData>();
+    private Map<String, TermData> data = new LinkedHashMap<>();
 
     private Map<String, Double> fieldSelection;
 
@@ -131,7 +131,8 @@ public class SolrUpdateGenerator
         if (!(isFieldSelected(name))) {
             return;
         }
-        this.crtTerm.addTo(name, value.replaceFirst("^\"(.+)\"\\s*?(?:[A-Z]+|\\[).*", "$1").replace("\\\"", "\""));
+        this.crtTerm.addTo(name, value.replaceFirst("^\"(.+)\"\\s*?(?:[A-Z]+|\\[).*", "$1")
+            .replaceFirst("\\s+\\{.*$", "").replaceFirst("^(HP:\\d{7}) ! .*$", "$1").replace("\\\"", "\""));
     }
 
     private void propagateAncestors()

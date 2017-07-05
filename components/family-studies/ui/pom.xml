@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>family-studies</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3.1</version>
   </parent>
   <artifactId>family-studies-ui</artifactId>
   <name>PhenoTips - Family Studies - UI</name>
@@ -35,14 +35,4 @@
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Family studies</xwiki.extension.name>
   </properties>
-
-  <build>
-    <extensions>
-      <extension>
-        <groupId>org.xwiki.commons</groupId>
-        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
-        <version>${xwiki.version}</version>
-      </extension>
-    </extensions>
-  </build>
 </project>

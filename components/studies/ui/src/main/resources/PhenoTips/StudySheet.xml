@@ -48,7 +48,7 @@ $xwiki.jsx.use('PhenoTips.StudySheet')##
 (% class="xform" %)(((
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.studySheet.studyName')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.studySheet.studyName.hint')
-: {{html}}&lt;input type="text" name="title" value="$!doc.title"/&gt;{{/html}}
+: {{html}}&lt;input type="text" name="title" value="$!escapetool.xml($doc.title)"/&gt;{{/html}}
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.studySheet.studyDescription')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.studySheet.studyDescription.hint')
 : {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="20" cols="80"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
@@ -61,8 +61,8 @@ $!doc.content
 #if ($xcontext.action == 'view')
 #set ($filterVal = $services.rendering.escape($doc.fullName, $doc.syntax))
 #set ($sections = [
-  {'id' : 'members', 'name' : "$services.localization.render('phenotips.studySheet.groupsSection', [$groupsCount])", 'icon' : 'group',       'content' : "((({{phenotips-groups filterby='studies' filterval='$filterVal' /}})))"},
   {'id' : 'cases',   'name' : "$services.localization.render('phenotips.studySheet.casesSection', [$casesCount])",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.StudyCases"/}}'},
+  {'id' : 'members', 'name' : "$services.localization.render('phenotips.studySheet.groupsSection', [$groupsCount])", 'icon' : 'group',       'content' : "((({{phenotips-groups filterby='studies' filterval='$filterVal' /}})))"},
   {'id' : 'form' ,   'name' : "$services.localization.render('phenotips.studySheet.formConfigSection')",  'icon' : 'cog',        'content' : "{{include reference='PhenoTips.FormDesigner' /}}"}
 ])
 #set ($menu = [])
@@ -175,7 +175,10 @@ $!doc.content
     <property>
       <code>document.observe("xwiki:dom:loaded", function () {
   (function(link) {
-    var saveAfterClick = function() {
+    if (!link) {
+      return;
+    }
+    var saveAfterClick = function(event) {
       event.stop();
       document.observe('xwiki:document:saved', followLinkAfterSave);
       document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
@@ -309,13 +312,13 @@ $!doc.content
 }
 .group-logo {
   float: left;
-  max-width: 30%;
   margin: 0 10px 10px 0;
+  max-width: 30%;
 }
 .vertical-menu a {
   color: $theme.textColor !important;
-  text-transform: uppercase;
   padding-left: .5em;
+  text-transform: uppercase;
 }
 .vertical-menu i {
   font-size: 1.2em;
@@ -331,6 +334,9 @@ $!doc.content
 }</code>
     </property>
     <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
       <name/>
     </property>
     <property>
@@ -338,6 +344,96 @@ $!doc.content
     </property>
     <property>
       <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.StudySheet</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>19edea0e-be38-41d3-a6dc-b9d8bc6d2db5</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content>{{velocity}}
+#if ($xcontext.action == 'view' &amp;&amp; $hasEdit &amp;&amp; $doc.getObject('PhenoTips.StudyClass'))
+$xwiki.ssx.use('PhenoTips.StudySheet')##
+(% class="doc-tools buttonwrapper" %)((([[ {{icon name="pencil"/}}&gt;&gt;path:$doc.getURL('edit') || title="$services.localization.render('phenotips.studyClass.edit')" class="doc-tool edit button"]])))
+#end
+{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.xwiki.platform.content.top</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.studySheet.tools</name>
+    </property>
+    <property>
+      <parameters/>
+    </property>
+    <property>
+      <scope>wiki</scope>
     </property>
   </object>
 </xwikidoc>

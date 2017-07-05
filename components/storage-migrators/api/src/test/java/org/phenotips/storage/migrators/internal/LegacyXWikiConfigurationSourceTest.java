@@ -27,7 +27,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -198,7 +198,7 @@ public class LegacyXWikiConfigurationSourceTest
     public void failedConfigurationIsOK() throws ComponentLookupException
     {
         Environment env = this.mocker.getInstance(Environment.class);
-        when(env.getResourceAsStream("/WEB-INF/xwiki.cfg")).thenThrow(new NotImplementedException());
+        when(env.getResourceAsStream("/WEB-INF/xwiki.cfg")).thenThrow(new NotImplementedException(""));
         Assert.assertTrue(this.mocker.getComponentUnderTest().isEmpty());
         Assert.assertFalse(this.mocker.getComponentUnderTest().containsKey("a.string"));
         Assert.assertNull(this.mocker.getComponentUnderTest().getProperty("a.string"));

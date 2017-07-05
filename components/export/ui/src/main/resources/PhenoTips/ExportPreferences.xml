@@ -52,7 +52,7 @@
     'PhenoTips.AllergiesDataClass' : {'name': 'allergies', 'label' : "$services.localization.render('PhenoTips.AllergiesDataClass_allergies')"}
 })
 #set ($targetFieldName = "columns")
-#set($valueList = ['external_id', 'gender', 'phenotype', 'negative_phenotype', 'omim_id'])
+#set($valueList = ['external_id', 'gender', 'phenotype', 'negative_phenotype', 'clinical_diagnosis', 'omim_id'])
 {{html clean="false" wiki="false"}}
 ## Extensions making up the main content, the actual information about the patient
 #set ($recordConfiguration = $services.recordConfiguration.getActiveConfiguration())
@@ -93,7 +93,7 @@
 
  &lt;div class="checkbox_tree_container"&gt;
  &lt;h5&gt;&lt;label for=""&gt;&lt;input type="checkbox" name="" id="" value="" /&gt;&lt;span class="section-name-header field-no-user-select"&gt;$section.name&lt;/span&gt;&lt;/label&gt;&lt;/h5&gt;
- &lt;ul class="field-list"&gt;
+ &lt;ul class="field-list#if ($foreach.index &gt; 0) v-collapsed#end"&gt;
  $sectionContent
  &lt;/ul&gt;
  &lt;/div&gt;
@@ -167,15 +167,15 @@
        'rejectedGenes_comments': "$services.localization.render('phenotips.exportPreferences.field.rejectGenesComments')"
   })
   #set($ignored = {
-    'fields' : ['family_history', 'pedigree', 'date_of_death_unknown'],
+    'fields' : ['family_history', 'pedigree'],
     'types'  : []
   })
   #set($codeFields = [])
   #set($metaFields = [])
-  #set($selectedValues = ['external_id', 'gender', 'phenotype', 'negative_phenotype', 'omim_id'])
+  #set($selectedValues = ['external_id', 'gender', 'phenotype', 'negative_phenotype', 'clinical_diagnosis', 'omim_id'])
 #else
   #set($ignored = {
-    'fields' : ['reports_history', 'pedigree', 'extended_negative_phenotype', 'extended_phenotype', 'extended_prenatal_phenotype', 'extended_negative_prenatal_phenotype'],
+    'fields' : ['reports_history', 'pedigree', 'extended_negative_phenotype', 'extended_phenotype', 'extended_prenatal_phenotype', 'extended_negative_prenatal_phenotype', 'genetic_notes'],
     'types'  : []
   })
   #if (${request.export_id} == 'phenotips_json_export')
@@ -195,6 +195,7 @@
        'genes_status' : "$services.localization.render('phenotips.exportPreferences.field.genesStatus')",
        'genes_strategy' : "$services.localization.render('phenotips.exportPreferences.field.genesStrategy')",
        'genes_comments' : "$services.localization.render('phenotips.exportPreferences.field.genesComments')",
+       'genetic_notes' : "$services.localization.render('phenotips.exportPreferences.field.geneticNotes')",
        'variants' : "$services.localization.render('phenotips.exportPreferences.field.variants')",
        'variants_protein' : "$services.localization.render('phenotips.exportPreferences.field.variantsProtein')",
        'variants_transcript' : "$services.localization.render('phenotips.exportPreferences.field.variantsTranscript')",
@@ -205,9 +206,10 @@
        'variants_inheritance' : "$services.localization.render('phenotips.exportPreferences.field.variantsInheritance')",
        'variants_evidence' : "$services.localization.render('phenotips.exportPreferences.field.variantsEvidence')",
        'variants_segregation' : "$services.localization.render('phenotips.exportPreferences.field.variantsSegregation')",
-       'variants_sanger' : "$services.localization.render('phenotips.exportPreferences.field.variantsSanger')"
+       'variants_sanger' : "$services.localization.render('phenotips.exportPreferences.field.variantsSanger')",
+       'variants_coordinates' : "$services.localization.render('phenotips.exportPreferences.field.variantsCoordinates')"
   })
-  #set($codeFields = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
+  #set($codeFields = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'clinical_diagnosis', 'omim_id'])
   #set($metaFields = ['phenotype'])
   #set($selectedValues = [])
 #end
@@ -228,16 +230,19 @@
  )))##section filters
 #end
 
+#set($selectionTools = "&lt;div class='selection-tools'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.label') &lt;span class='selection-tool select-all'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.all')&lt;/span&gt; · &lt;span class='selection-tool select-none'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.none')&lt;/span&gt; · &lt;span class='selection-tool select-invert'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.invert')&lt;/span&gt; · &lt;span class='selection-tool select-restore'&gt;$services.localization.render('phenotips.DBWebHomeSheet.colSelect.restore')&lt;/span&gt;&lt;/div&gt;")
 #if ($request.push)
   #if ($request.multipatient)
     (% class="push-fields section columns"%)(((
     === (% class="step" %)2(%%) $services.localization.render('phenotips.exportPreferences.selectFields') ===
+    {{html clean="false"}}$selectionTools{{/html}}##
     #__export__displayOrganizedFieldList()
     #set($exportTitle = "$services.localization.render('phenotips.exportPreferences.push.submit', [$request.remoteserver])")
     #set($exportButtonID = "push-multiple-patients")
   #else
     (% class="push-fields section columns singlepatient"%)(((
     === $services.localization.render('phenotips.exportPreferences.selectFields') ===
+    {{html clean="false"}}$selectionTools{{/html}}##
     #__export__displayOrganizedFieldList()
     #set($exportTitle = "$services.localization.render('phenotips.exportPreferences.push.submit', [$request.remoteserver])")
     #set($exportButtonID = "push-patient")
@@ -245,6 +250,7 @@
 #else
   (% class="section columns"%)(((
   === (% class="step" %)2(%%) $services.localization.render('phenotips.exportPreferences.selectFields') ===
+  {{html clean="false"}}$selectionTools{{/html}}##
   #__export__displayFieldList( "PhenoTips.PatientClass" 'columns' $customValues $ignored $codeFields $selectedValues $simple)
   #set($exportTitle = "$services.localization.render('phenotips.exportPreferences.export')")
   #set($exportButtonID = "export-multiple-patients")

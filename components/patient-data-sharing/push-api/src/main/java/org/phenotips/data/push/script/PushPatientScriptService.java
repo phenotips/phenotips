@@ -23,6 +23,7 @@ import org.phenotips.data.push.PushServerConfigurationResponse;
 import org.phenotips.data.push.PushServerGetPatientIDResponse;
 import org.phenotips.data.push.PushServerInfo;
 import org.phenotips.data.push.PushServerSendPatientResponse;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.stability.Unstable;

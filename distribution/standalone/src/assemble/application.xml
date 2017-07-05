@@ -39,7 +39,7 @@
       <includes>
         <include>${project.groupId}:database-zip</include>
       </includes>
-      <outputDirectory>/data</outputDirectory>
+      <outputDirectory>data</outputDirectory>
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
@@ -48,7 +48,7 @@
       <includes>
         <include>${project.groupId}:solr-configuration</include>
       </includes>
-      <outputDirectory>/data/solr/</outputDirectory>
+      <outputDirectory>data/solr/</outputDirectory>
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
@@ -57,7 +57,7 @@
       <includes>
         <include>${project.groupId}:jetty-resources</include>
       </includes>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory></outputDirectory>
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>

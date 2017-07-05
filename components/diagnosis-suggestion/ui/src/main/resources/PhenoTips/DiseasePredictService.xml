@@ -56,22 +56,23 @@
 #if ("$!{request.format}" == 'html')
 #set ($results = $services.diagnosis.get($symptoms, $freeSymptoms, $limit))
 #if ($results.size() &gt; 0)
-{{html clean="false"  wiki="false"}}##
-&lt;ul&gt;
+{{html clean="false" wiki="false"}}##
+&lt;ul class="vocabulary-term-list"&gt;
 #foreach($term in $results)
-  #set($name = $term.getName())
-  #set ($indexOfSeparator = $name.indexOf(';'))
-  #if ($indexOfSeparator &gt; 0)
-    #set($shortName = $name.substring(0, $indexOfSeparator))
-    #set($fullName = $name.replaceAll(';;', ';'))
+  #set ($name = $term.getName())
+  #set ($id = $term.getId())
+  #if ($term.id.indexOf(':') &gt;= 0)
+    #set ($unprefixedId = $stringtool.substringAfter($term.id, ':'))
   #else
-    #set($shortName = $name)
-    #set($fullName = $name)
+    #set ($unprefixedId = $term.id)
   #end
-  #set($id = $term.getId())
+  #set ($fullName = $name)
+  #if ($term.short_name &amp;&amp; $term.short_name.size() &gt; 0)
+    #set ($fullName = $fullName.concat('; ').concat($stringtool.join($term.short_name, ', ')))
+  #end
   &lt;li class="disorder"&gt;
-    &lt;span class="id" title="${id}"&gt;&lt;a href="http://www.omim.org/entry/${id}" target="_blank" title="Read about this disorder on OMIM"&gt;[MIM:${id}]&lt;/a&gt;&lt;/span&gt;
-    &lt;span class="title" title="${fullName}"&gt;${shortName}&lt;/span&gt;
+    &lt;span class="term-id" title="${id}"&gt;&lt;a href="http://www.omim.org/entry/${unprefixedId}" target="_blank" title="${services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.result.title')}"&gt;${stringtool.defaultString($!term.symbol, ' ')}${unprefixedId}&lt;/a&gt;&lt;/span&gt;
+    &lt;span class="term-name" title="${fullName}"&gt;${name}&lt;/span&gt;
   &lt;/li&gt;
 #end ## foreach item
 &lt;/ul&gt;

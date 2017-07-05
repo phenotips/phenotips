@@ -38,11 +38,14 @@ define([
               var x    = this.getX();
               var y    = this.getY();
               var r    = PedigreeEditorParameters.attributes.infertileMarkerWidth;
-              var lowY = this.getBottomY() + PedigreeEditorParameters.attributes.infertileMarkerHeight;
+              var lowY = this.getBottomY() + (status == 'infertile'
+                         ? PedigreeEditorParameters.attributes.infertileMarkerHeight
+                         : PedigreeEditorParameters.attributes.childlessMarkerHeight);
 
               var childlessPath = [["M", x, y],["L", x, lowY],["M", x - r, lowY], ["l", 2 * r, 0]];
-              if(status == 'infertile')
+              if (status == 'infertile') {
                   childlessPath.push(["M", x - r, lowY + 6], ["l", 2 * r, 0]);
+              }
 
                 this._childlessShape = editor.getPaper().path(childlessPath);
                 if (this.getChildlessShapeAttr) {

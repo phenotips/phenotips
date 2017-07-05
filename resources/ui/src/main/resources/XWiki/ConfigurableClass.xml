@@ -409,11 +409,11 @@ $doc.dropPermissions()##
       #end
       &lt;span&gt;
       &lt;img src="$icon" alt="$escapetool.xml($sectionToAdd) icon"/&gt;
-      ## Try to translate the names of the sections, build the key by adding an "admin." in front. 
+      ## Try to translate the names of the sections, build the key by adding an "admin." in front.
       ## Not the best way to translate, but very inline with the way the translations are done in XWiki.AdminSheet for individual administration page titles.
       ## If there is no translation (translated message is equals to key), don't display the message key, but the section name instead.
-      #if($services.localization.get("admin.${sectionToAdd.toLowerCase()}")) 
-        #set($sectionDisplayName = $services.localization.render("admin.${sectionToAdd.toLowerCase()}")) 
+      #if($services.localization.get("admin.${sectionToAdd.toLowerCase()}"))
+        #set($sectionDisplayName = $services.localization.render("admin.${sectionToAdd.toLowerCase()}"))
       #else
         #set($sectionDisplayName = $sectionToAdd)
       #end
@@ -646,7 +646,7 @@ $doc.dropPermissions()##
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -691,10 +691,10 @@ $doc.dropPermissions()##
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>

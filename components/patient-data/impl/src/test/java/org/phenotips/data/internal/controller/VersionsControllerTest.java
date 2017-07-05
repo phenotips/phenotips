@@ -64,10 +64,16 @@ import static org.mockito.Mockito.when;
 
 /**
  * Test for the {@link VersionsController} Component, only the overridden methods from {@link AbstractSimpleController}
- * are tested here
+ * are tested here.
  */
 public class VersionsControllerTest
 {
+    private static final EntityReference ONTOLOGY_VERSION_CLASS_REFERENCE =
+        new EntityReference("OntologyVersionClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
+    private static final String DATA_NAME = "versions";
+
+    private static final String PHENOTIPS_VERSION_STRING = "PHENOTIPS_VERSION";
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
@@ -93,13 +99,6 @@ public class VersionsControllerTest
 
     @Mock
     private DistributionManager distributionManager;
-
-    private static final EntityReference ONTOLOGY_VERSION_CLASS_REFERENCE =
-        new EntityReference("OntologyVersionClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
-    private static final String DATA_NAME = "versions";
-
-    private static final String PHENOTIPS_VERSION_STRING = "PHENOTIPS_VERSION";
 
     @Before
     public void setUp() throws Exception

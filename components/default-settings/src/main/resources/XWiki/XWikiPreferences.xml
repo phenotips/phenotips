@@ -1258,7 +1258,7 @@
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
-        <values>MDY=mmm dd, yyyy|DMY=dd-mm-yyyy|MY=mm-yyyy|MMY=mmm yyyy</values>
+        <values>MDY=mmm dd, yyyy|DMY=dd-mm-yyyy|MY=mm-yyyy|Y=yyyy|MMY=mmm yyyy</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </dateDisplayFormat>
       <dateInputFormat>
@@ -1279,7 +1279,7 @@
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
-        <values>YMD=yyyy-mm-dd|DMY=dd-mm-yyyy|MY=mm-yyyy</values>
+        <values>YMD=yyyy-mm-dd|DMY=dd-mm-yyyy|MY=mm-yyyy|Y=yyyy</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </dateInputFormat>
       <lineStyle>
@@ -1317,20 +1317,6 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </nonStandardAdoptedOutGraphic>
-      <propagateFatherLastName>
-        <customDisplay/>
-        <defaultValue>1</defaultValue>
-        <disabled>0</disabled>
-        <displayFormType>checkbox</displayFormType>
-        <displayType/>
-        <name>propagateFatherLastName</name>
-        <number>2</number>
-        <prettyName>Propagate father's last name to descendants</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </propagateFatherLastName>
       <pedigreePreviewSize>
         <cache>0</cache>
         <customDisplay/>
@@ -1349,9 +1335,37 @@
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
-        <values>Small=small|Medium=medium|Large=large</values>
+        <values>small=Small|medium=Medium|large=Large</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </pedigreePreviewSize>
+      <propagateFatherLastName>
+        <customDisplay/>
+        <defaultValue>1</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>propagateFatherLastName</name>
+        <number>2</number>
+        <prettyName>Propagate father's last name to descendants</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </propagateFatherLastName>
+      <uiGradientNodes>
+        <customDisplay/>
+        <defaultValue>0</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>uiGradientNodes</name>
+        <number>3</number>
+        <prettyName>Apply color gradient to pedigree nodes</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </uiGradientNodes>
     </class>
     <property>
       <dateDisplayFormat>MDY</dateDisplayFormat>
@@ -1366,10 +1380,10 @@
       <nonStandardAdoptedOutGraphic>0</nonStandardAdoptedOutGraphic>
     </property>
     <property>
-      <propagateFatherLastName>1</propagateFatherLastName>
+      <pedigreePreviewSize>small</pedigreePreviewSize>
     </property>
     <property>
-      <pedigreePreviewSize>small</pedigreePreviewSize>
+      <propagateFatherLastName>1</propagateFatherLastName>
     </property>
   </object>
   <object>
@@ -1414,6 +1428,19 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
+      <registration_url>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>registration_url</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>Registration URL</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </registration_url>
       <url>
         <customDisplay/>
         <disabled>0</disabled>
@@ -1429,10 +1456,13 @@
       </url>
     </class>
     <property>
-      <description>PhenomeCentral is a repository for secure data sharing targeted to clinicians and scientists working in the rare disorder community. PhenomeCentral encourages global scientific collaboration while respecting the privacy of patients profiled in this centralized database.</description>
+      <description>{{translation key="phenotips.patientSharing.push.configuration.phenomecentral.description"/}}</description>
     </property>
     <property>
       <name>PhenomeCentral</name>
+    </property>
+    <property>
+      <registration_url>https://phenomecentral.org/register/PhenomeCentral/</registration_url>
     </property>
     <property>
       <url>https://phenomecentral.org/</url>
@@ -1452,30 +1482,31 @@
       <defaultWeb/>
       <nameField/>
       <validationScript/>
-      <AllowPushesFromNonListedServers>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <name>AllowPushesFromNonListedServers</name>
-        <number>1</number>
-        <prettyName>AllowPushesFromNonListedServers</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </AllowPushesFromNonListedServers>
       <AllowNoConsentsFromOldClients>
         <disabled>0</disabled>
         <displayFormType>select</displayFormType>
         <name>AllowNoConsentsFromOldClients</name>
-        <number>1</number>
-        <prettyName>AllowNoConsentsFromOldClients</prettyName>
+        <number>2</number>
+        <prettyName>Accept data from old clients that cannot push consent information</prettyName>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </AllowNoConsentsFromOldClients>
+      <AllowPushesFromNonListedServers>
+        <defaultValue>0</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <name>AllowPushesFromNonListedServers</name>
+        <number>1</number>
+        <prettyName>Allow pushes from servers not listed below</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </AllowPushesFromNonListedServers>
     </class>
     <property>
-      <AllowPushesFromNonListedServers>0</AllowPushesFromNonListedServers>
+      <AllowNoConsentsFromOldClients>0</AllowNoConsentsFromOldClients>
     </property>
     <property>
-      <AllowNoConsentsFromOldClients>0</AllowNoConsentsFromOldClients>
+      <AllowPushesFromNonListedServers>0</AllowPushesFromNonListedServers>
     </property>
   </object>
   <object>
@@ -1508,6 +1539,54 @@
     </class>
     <property>
       <sheet>AdminSheet</sheet>
+    </property>
+  </object>
+  <object>
+    <name>XWiki.XWikiPreferences</name>
+    <number>0</number>
+    <className>XWiki.ConfigurationClass</className>
+    <guid>39bd5687-3841-4e68-8b90-6c28277f932a</guid>
+    <class>
+      <name>XWiki.ConfigurationClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <property>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>property</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>Property</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </property>
+      <value>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>value</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Value</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </value>
+    </class>
+    <property>
+      <property>study-visibility-option</property>
+    </property>
+    <property>
+      <value>unrestricted</value>
     </property>
   </object>
   <object>
@@ -1587,7 +1666,7 @@
       <groups>XWiki.XWikiAdminGroup</groups>
     </property>
     <property>
-      <levels>admin,edit,undelete,delete,programming,register</levels>
+      <levels>admin,comment,edit,undelete,delete,programming,register</levels>
     </property>
     <property>
       <users/>
@@ -1670,7 +1749,7 @@
       <groups>XWiki.XWikiAllGroup</groups>
     </property>
     <property>
-      <levels>view,comment</levels>
+      <levels>view</levels>
     </property>
     <property>
       <users/>
@@ -2934,7 +3013,7 @@ Your account on ${wikiname} has been successfully activated. You can now login a
       <invitation_email_content/>
     </property>
     <property>
-      <languages/>
+      <languages>en, es</languages>
     </property>
     <property>
       <leftPanels/>
@@ -3015,6 +3094,9 @@ $xwiki.ssx.use($xwiki.getSpacePreference('colorTheme'))</meta>
       <stylesheets>style.css</stylesheets>
     </property>
     <property>
+      <timezone/>
+    </property>
+    <property>
       <title>#if ($doc.name != 'WebHome')$tdoc.getRenderedTitle("plain/1.0") | #{end}$!xwiki.getDocument("$!{doc.space}.WebHome").getRenderedTitle("plain/1.0")</title>
     </property>
     <property>
@@ -3034,10 +3116,10 @@ In order to activate your account, please follow this link:
 ${host}${xwiki.getURL('XWiki.AccountValidation', 'view', "validkey=${validkey}&amp;xwikiname=${xwikiname}")}</validation_email_content>
     </property>
     <property>
-      <version>&lt;a href="http://phenotips.org"&gt;PhenoTips&lt;/a&gt; version $!{services.distribution.distributionExtension.id.version}</version>
+      <version>$services.localization.render('phenotips.defaultSettings.version', [$!{services.distribution.distributionExtension.id.version}])</version>
     </property>
     <property>
-      <webcopyright>Reproducing or distributing this clinical information without permission from the institution that owns it is strictly forbidden.</webcopyright>
+      <webcopyright>$services.localization.render('phenotips.defaultSettings.webcopyright')</webcopyright>
     </property>
     <property>
       <xwiki.title.mandatory>0</xwiki.title.mandatory>

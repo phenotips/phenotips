@@ -97,6 +97,45 @@
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </members>
+    <proband_id>
+      <cache>0</cache>
+      <classname/>
+      <customDisplay>{{velocity}}
+#set ($patient = $services.patients.get($value))
+#if ($patient)
+  #set ($id = "$!patient.externalId")
+  #if ($id == '')
+    #set ($id = $patient.id)
+  #end
+  #set ($name = "$!{patient.getData('patientName').first_name} $!{patient.getData('patientName').last_name}")
+  #set ($name = $name.trim())
+  #set ($dob = "$!{patient.getData('dates').date_of_birth.toYYYYMMDDString()}")
+  #set ($meta = "$name#if($name != '' &amp;&amp; $dob != ''), #end$dob")
+  #set ($patientLabel = "$id#if ($meta != '') ($meta)#end")
+* [[$patientLabel&gt;&gt;$patient.document||rel="__blank"]]
+#end
+{{/velocity}}
+</customDisplay>
+      <disabled>0</disabled>
+      <displayType>input</displayType>
+      <idField/>
+      <multiSelect>0</multiSelect>
+      <name>proband_id</name>
+      <number>7</number>
+      <picker>0</picker>
+      <prettyName>Proband Identifier</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator/>
+      <separators/>
+      <size>30</size>
+      <sort>none</sort>
+      <sql/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
+    </proband_id>
     <reports>
       <cache>0</cache>
       <classname/>
@@ -157,45 +196,6 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </warning_message>
-    <proband_id>
-      <cache>0</cache>
-      <classname/>
-      <customDisplay>{{velocity}}
-#set ($patient = $services.patients.get($value))
-#if ($patient)
-  #set ($id = "$!patient.externalId")
-  #if ($id == '')
-    #set ($id = $patient.id)
-  #end
-  #set ($name = "$!{patient.getData('patientName').first_name} $!{patient.getData('patientName').last_name}")
-  #set ($name = $name.trim())
-  #set ($dob = "$!{patient.getData('dates').date_of_birth.toYYYYMMDDString()}")
-  #set ($meta = "$name#if($name != '' &amp;&amp; $dob != ''), #end$dob")
-  #set ($patientLabel = "$id#if ($meta != '') ($meta)#end")
-* [[$patientLabel&gt;&gt;$patient.document||rel="__blank"]]
-#end
-{{/velocity}}
-</customDisplay>
-      <disabled>0</disabled>
-      <displayType>input</displayType>
-      <idField/>
-      <multiSelect>0</multiSelect>
-      <name>proband_id</name>
-      <number>7</number>
-      <picker>0</picker>
-      <prettyName>Proband Identifier</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator/>
-      <separators/>
-      <size>30</size>
-      <sort>none</sort>
-      <sql/>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <valueField/>
-      <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
-    </proband_id>
   </class>
   <object>
     <name>PhenoTips.FamilyClass</name>

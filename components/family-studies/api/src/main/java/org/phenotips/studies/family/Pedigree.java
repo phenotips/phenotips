@@ -79,14 +79,14 @@ public interface Pedigree
     List<String> extractIds();
 
     /**
-     * @return phenotipsID of the patient which is the proband of the family, or null if pedigree has no proband or
-     *         proband node is not linked to a patient record
+     * @return phenotipsID of the patient which is the proband of the family, or null if
+     *         pedigree has no proband or proband node is not linked to a patient record
      */
     String getProbandId();
 
     /**
-     * @return last name of the proband patient IFF it is linked to a PhenoTips patient, or null if pedigree has no
-     *         proband or proband node is not linked to a patient record, or last name is not set
+     * @return last name of the proband patient IFF it is linked to a PhenoTips patient, or null if
+     *         pedigree has no proband or proband node is not linked to a patient record, or last name is not set
      */
     String getProbandPatientLastName();
 

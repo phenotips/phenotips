@@ -100,7 +100,7 @@
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -111,11 +111,9 @@
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-#if ($xcontext.action == 'edit')
-  $xwiki.ssx.use('XWiki.DateTimePicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-  $xwiki.jsx.use('XWiki.DateTimePicker')##
-#end
-#__displayFormatted('2-col' 'date_of_birth' '' 'date' '')
+(% id="date-of-birth-block" %)(((
+  #__displayFormatted('2-col' 'date_of_birth' '' 'date' '')
+)))
 {{/velocity}}</content>
     </property>
     <property>
@@ -128,7 +126,7 @@
       <parameters>title=$services.localization.render('phenotips.UIXField.dateOfBirth')
 enabled=true
 required=
-order=5
+order=6
 fields=date_of_birth
 contains_PII=true</parameters>
     </property>

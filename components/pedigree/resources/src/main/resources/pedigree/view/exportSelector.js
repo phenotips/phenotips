@@ -5,14 +5,21 @@
  */
 define([
         "pedigree/filesaver/FileSaver",
-        "pedigree/model/export"
+        "pedigree/model/export",
+        "pedigree/pedigreeEditorParameters",
+        "pedigree/view/graphicHelpers"
     ], function(
         FileSaver,
-        PedigreeExport
+        PedigreeExport,
+        PedigreeEditorParameters,
+        GraphicHelpers
     ){
     var ExportSelector = Class.create( {
 
         initialize: function() {
+            this._minPreviewHeight = PedigreeEditorParameters.attributes.minPrintPreviewPaneHeight;
+            this._maxPreviewHeight = PedigreeEditorParameters.attributes.maxPrintPreviewPaneHeight;
+
             var _this = this;
 
             var mainDiv = new Element('div', {'class': 'export-selector'});
@@ -20,7 +27,7 @@ define([
             var _addTypeOption = function (checked, labelText, value) {
                 var optionWrapper = new Element('tr');
                 var input = new Element('input', {"type" : "radio", "value": value, "name": "export-type"});
-                input.observe('click', _this.disableEnableOptions );
+                input.observe('click', _this.disableEnableOptions.bind(_this));
                 if (checked) {
                   input.checked = true;
                 }
@@ -38,26 +45,22 @@ define([
             var fileDownload = new Element('a', {"id": 'downloadLink', "style": 'display:none'});
             mainDiv.insert(fileDownload);
 
-            var promptType = new Element('div', {'class': 'import-section'}).update("Data format:");
+            var promptType = new Element('div', {'class': 'import-section'}).update("Format:");
             var dataSection2 = new Element('div', {'class': 'import-block'});
             dataSection2.insert(promptType).insert(typeListElement);
             mainDiv.insert(dataSection2);
 
             var configListElementJSON = new Element('table', {"id": "jsonOptions", "style": 'display:none'});
-            configListElementJSON.insert(this._addConfigOption(true,  "export-options", "import-config-label", "All data", "all"));
-            configListElementJSON.insert(this._addConfigOption(false, "export-options", "import-config-label", "Remove personal information (name and age)", "nopersonal"));
-            configListElementJSON.insert(this._addConfigOption(false, "export-options", "import-config-label", "Remove personal information and free-form comments", "minimal"));
+            configListElementJSON.insert(this._addConfigOption(true,  "export-options", "export-subconfig-label", "All data", "all"));
+            configListElementJSON.insert(this._addConfigOption(false, "export-options", "export-subconfig-label", "Remove personal information (name and age)", "nopersonal"));
+            configListElementJSON.insert(this._addConfigOption(false, "export-options", "export-subconfig-label", "Remove personal information and free-form comments", "minimal"));
 
             var configListElementPED = new Element('table', {"id": "pedOptions"});
-            var label = new Element('label', {'class': 'export-config-header'}).insert("How should person IDs be assigned in the generated file?");
-            configListElementPED.insert(label.wrap('td').wrap('tr'));
-            configListElementPED.insert(this._addConfigOption(true,  "ped-options", "export-subconfig-label", "Using External IDs (when available)", "external"));
-            configListElementPED.insert(this._addConfigOption(false, "ped-options", "export-subconfig-label", "Generate new numeric IDs", "newid"));
-            configListElementPED.insert(this._addConfigOption(false, "ped-options", "export-subconfig-label", "Using Names (when available)", "name"));
+            configListElementPED.insert(this._addConfigOption(true,  "ped-options", "export-subconfig-label", "Use patient identifier, if available", "external"));
+            configListElementPED.insert(this._addConfigOption(false, "ped-options", "export-subconfig-label", "Generate numeric labels instead of personal identifiers", "newid"));
+            configListElementPED.insert(this._addConfigOption(false, "ped-options", "export-subconfig-label", "Use names, if available", "name"));
 
             var configListElementImage = new Element('table', {"id": "imageOptions", "style": 'display:none'});
-            var label = new Element('label', {'class': 'export-config-header'}).insert("Select type of generated pedigree image");
-            configListElementImage.insert(label.wrap('td').wrap('tr'));
             configListElementImage.insert(this._addConfigOption(true,  "image-options", "export-subconfig-label", "Raster image (PNG)", "png"));
             configListElementImage.insert(this._addConfigOption(false, "image-options", "export-subconfig-label", "Scalable image (SVG)", "svg"));
 
@@ -82,6 +85,8 @@ define([
 
             var closeShortcut = ['Esc'];
             this.dialog = new PhenoTips.widgets.ModalPopup(mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-import-chooser", title: "Pedigree export", displayCloseButton: false, verticalPosition: "top"});
+
+            Event.observe(window, 'resize', GraphicHelpers.adjustPreviewWindowHeight.bind(_this, "pedigree-import-chooser", 'scrollable-container', this._minPreviewHeight, this._maxPreviewHeight));
         },
 
         /*
@@ -123,6 +128,7 @@ define([
                     imageOptionsTable.show();
                 }
             }
+            GraphicHelpers.adjustPreviewWindowHeight('pedigree-import-chooser', 'scrollable-container', this._minPreviewHeight, this._maxPreviewHeight);
         },
 
         _onExportStarted: function() {
@@ -242,6 +248,7 @@ define([
             var cancers = editor.getCancerLegend().getAllNames();
             var candidateGenes = editor.getCandidateGeneLegend().getAllNames();
             var causalGenes = editor.getCausalGeneLegend().getAllNames();
+            var carrierGenes = editor.getCarrierGeneLegend().getAllNames();
 
             var pedContainer = this.dialog.content.select('#pedOptions')[0];
 
@@ -250,19 +257,30 @@ define([
             var hasCancers = Object.keys(cancers).length > 0;
             var hasCandidateGenes = Object.keys(candidateGenes).length > 0;
             var hasCausalGenes = Object.keys(causalGenes).length > 0;
+            var hasCarrierGenes = Object.keys(carrierGenes).length > 0;
 
-            if (hasDisorders || hasPhenotypes || hasCancers || hasCandidateGenes || hasCausalGenes) {
+            if (hasDisorders || hasPhenotypes || hasCancers || hasCandidateGenes || hasCausalGenes || hasCarrierGenes) {
                 var label = new Element('label', {'class': 'export-config-header ped-header'}).insert("Which of the following should be reflected in the affected column in PED file? ");
                 pedContainer.insert(label.wrap('td').wrap('tr', {'class' : "ped-special-options"}));
 
-                hasDisorders && this._addPedOption("disorders", disorders, pedContainer);
-                hasPhenotypes && this._addPedOption("phenotypes", hpos, pedContainer);
-                hasCancers && this._addPedOption("cancers", cancers, pedContainer);
-                hasCandidateGenes && this._addPedOption("candidateGenes", candidateGenes, pedContainer, "candidate genes");
-                hasCausalGenes && this._addPedOption("causalGenes", causalGenes, pedContainer, "confirmed causal genes");
-            }
+                var traitsContainner = new Element('table');
 
+                hasDisorders && this._addPedOption("disorders", disorders, traitsContainner);
+                hasPhenotypes && this._addPedOption("phenotypes", hpos, traitsContainner);
+                hasCancers && this._addPedOption("cancers", cancers, traitsContainner);
+                hasCandidateGenes && this._addPedOption("candidateGenes", candidateGenes, traitsContainner, "candidate genes");
+                hasCausalGenes && this._addPedOption("causalGenes", causalGenes, traitsContainner, "confirmed causal genes");
+                hasCarrierGenes && this._addPedOption("carrierGenes", carrierGenes, traitsContainner, "confirmed carrier genes");
+
+                pedContainer.insert(traitsContainner.wrap('div', {'id': 'scrollable-container'}).wrap('td').wrap('tr', {'class': 'ped-special-options'}));
+
+                var exportType = $$('input:checked[type=radio][name="export-type"]')[0];
+                if (exportType && exportType.value != "ped") {
+                    $$('.ped-special-options').each( function(item) {item.hide();});
+                }
+            }
             this.dialog.show();
+            GraphicHelpers.adjustPreviewWindowHeight('pedigree-import-chooser', 'scrollable-container', this._minPreviewHeight, this._maxPreviewHeight);
         },
 
         /**
@@ -275,8 +293,8 @@ define([
             this.dialog.closeDialog();
         },
 
-        _addConfigOption: function (checked, name, cssClass, labelText, value, type, isPedSpecialOption) {
-            var optionWrapper = new Element('tr', {'class' : (isPedSpecialOption) ? "ped-special-options" : ""});
+        _addConfigOption: function (checked, name, cssClass, labelText, value, type) {
+            var optionWrapper = new Element('tr');
             var itype = type ? type : "radio";
             var input = new Element('input', {"type" : itype, "value": value, "name": name });
             if (checked) {
@@ -291,18 +309,17 @@ define([
             var cssClass = "ped-" + type + "-options";
             var text = (labelText) ? labelText : type;
             var label = new Element('label', {'class': 'export-config-header ' + cssClass, 'name' : cssClass}).insert(text + ":");
-            pedContainer.insert(label.wrap('td').wrap('tr', {'class' : "ped-special-options"}));
+            pedContainer.insert(label.wrap('td').wrap('tr'));
 
             // adding "All" checkbox
             if (Object.keys(data).length > 1) {
-                pedContainer.insert(this._addConfigOption((type == "disorders"), cssClass, "export-subconfig-label", "All", "all", "checkbox", true));
+                pedContainer.insert(this._addConfigOption((type == "disorders"), cssClass, "export-subconfig-label", "All", "all", "checkbox"));
                 pedContainer.on('click', 'input[type=checkbox][name="' + cssClass + '"]', function(event, element) {
                     if (element.value == "all") {
                         $$('input[name="' + cssClass + '"]').each( function(item) {item.checked = element.checked;});
                     } else {
-
-                        // either uncheck checkbox for "All" if some sub-items are unchcked, or check it if all
-                        // subitems became checked
+                        // either uncheck checkbox for "All" if some sub-items are unchecked,
+                        // or check it if all subitems became checked
                         var unchecked = false;
                         $$('input[name="' + cssClass + '"]').each( function(item) {if (item.value != "all" && !item.checked) { unchecked = true; };});
 
@@ -313,9 +330,9 @@ define([
 
             for (var item in data) {
                 if (type == "disorders" && item == "affected") {
-                    pedContainer.insert(this._addConfigOption((type == "disorders"), cssClass, "export-subconfig-label ped-option", "Unspecified disorder", "affected", "checkbox", true));
+                    pedContainer.insert(this._addConfigOption((type == "disorders"), cssClass, "export-subconfig-label ped-option", "Unspecified disorder", "affected", "checkbox"));
                 } else {
-                    pedContainer.insert(this._addConfigOption((type == "disorders"), cssClass, "export-subconfig-label ped-option", data[item], item, "checkbox", true));
+                    pedContainer.insert(this._addConfigOption((type == "disorders"), cssClass, "export-subconfig-label ped-option", data[item], item, "checkbox"));
                 }
             }
         }

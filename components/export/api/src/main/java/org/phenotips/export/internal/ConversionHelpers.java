@@ -21,9 +21,11 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Feature;
 import org.phenotips.tools.PhenotypeMappingService;
 import org.phenotips.tools.PropertyDisplayer;
+import org.phenotips.translation.TranslationManager;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.script.service.ScriptService;
 
@@ -38,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 
 /**
  * Contains supplementary functions to the main conversion functions. It is used as an instance, rather that a
@@ -48,11 +51,11 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ConversionHelpers
 {
-    private static final String YES = "Yes";
+    private static final String YESNO_TRANSLATION_PREFIX = "yesno_";
 
-    private static final String NO = "No";
+    private static final String NA = "-";
 
-    private static final String NA = "N/A";
+    private static TranslationManager translationManager;
 
     /** Global parameter for whether to include phenotypes with "present" status. */
     private Boolean positive;
@@ -69,13 +72,23 @@ public class ConversionHelpers
     /** Phenotypic feature to phenotypic category section map. Used for sorting features by category. */
     private Map<String, String> sectionFeatureTree;
 
+    static {
+        try {
+            translationManager = ComponentManagerRegistry.getContextComponentManager().getInstance(
+                TranslationManager.class);
+        } catch (ComponentLookupException ex) {
+            LoggerFactory.getLogger(ConversionHelpers.class).warn("Failed to lookup TranslationManager component: [{}]",
+                ex.getMessage());
+        }
+    }
+
     /**
      * Clears the {@link #sectionFeatureTree} and must be called before processing each patient, as each patient has a
      * different set of phenotypes.
      */
     public void newPatient()
     {
-        this.sectionFeatureTree = new HashMap<String, String>();
+        this.sectionFeatureTree = new HashMap<>();
     }
 
     /**
@@ -84,8 +97,8 @@ public class ConversionHelpers
      * @param positive sets the global parameter {@link #positive}
      * @param negative same as the above positive parameter, but for {@link #negative}
      * @param mapCategories whether the phenotypes will be sorted by which category they belong to
-     * @throws java.lang.Exception Could happen if the {@link org.phenotips.vocabulary.Vocabulary} for HPO could not
-     * be accessed or is the phenotype category list is not available
+     * @throws java.lang.Exception Could happen if the {@link org.phenotips.vocabulary.Vocabulary} for HPO could not be
+     *             accessed or is the phenotype category list is not available
      */
     public void featureSetUp(Boolean positive, Boolean negative, Boolean mapCategories) throws Exception
     {
@@ -96,8 +109,10 @@ public class ConversionHelpers
             return;
         }
 
-        /* Gets a list of all categories, and maps each category's title to a list of HPO ids which represent it.
-         * This step is necessary only if {@link #mapCategories} is true. */
+        /*
+         * Gets a list of all categories, and maps each category's title to a list of HPO ids which represent it. This
+         * step is necessary only if {@link #mapCategories} is true.
+         */
         ComponentManager cm = getComponentManager();
         this.ontologyService = cm.getInstance(Vocabulary.class, "hpo");
         PhenotypeMappingService mappingService = cm.getInstance(ScriptService.class, "phenotypeMapping");
@@ -127,7 +142,7 @@ public class ConversionHelpers
      */
     private List<Feature> filterFeaturesByPresentStatus(Set<? extends Feature> features, Boolean status)
     {
-        List<Feature> filteredFeatures = new LinkedList<Feature>();
+        List<Feature> filteredFeatures = new LinkedList<>();
         boolean include = status ? this.positive : this.negative;
         if (include) {
             for (Feature feature : features) {
@@ -157,8 +172,9 @@ public class ConversionHelpers
 
     /**
      * Sorts passed in features by phenotypic category section, first sorting the features with the "is present" status
-     * and then with the "not present" status. Since it uses {@link #filterFeaturesByPresentStatus(java.util.Set,
-     * Boolean)}, the returned list of features is subject to the global {@link #positive} and {@link #negative}.
+     * and then with the "not present" status. Since it uses
+     * {@link #filterFeaturesByPresentStatus(java.util.Set, Boolean)}, the returned list of features is subject to the
+     * global {@link #positive} and {@link #negative}.
      *
      * @param features set of features to sort. Cannot be null
      * @return a subset of the passed in features in a specific order
@@ -174,15 +190,15 @@ public class ConversionHelpers
 
     /**
      * Fills {@link #sectionFeatureTree} with feature ids mapped to section names. This function is used internally only
-     * in {@link #sortFeaturesWithSections(java.util.Set)}; if changing that, keep in mind the mutation of {@link
-     * #sectionFeatureTree}.
+     * in {@link #sortFeaturesWithSections(java.util.Set)}; if changing that, keep in mind the mutation of
+     * {@link #sectionFeatureTree}.
      *
      * @param features list of features to be sorted. Cannot be null
      * @return list of features sorted in the same order as {@link #categoryMapping}
      */
     private List<Feature> sortFeaturesBySection(List<Feature> features)
     {
-        List<Feature> sortedFeatures = new LinkedList<Feature>();
+        List<Feature> sortedFeatures = new LinkedList<>();
 
         Map<String, List<String>> mapping = this.getCategoryMapping();
         for (String section : mapping.keySet()) {
@@ -196,8 +212,7 @@ public class ConversionHelpers
                 while (iter.hasNext()) {
                     Feature feature = iter.next();
                     if (getCategoriesFromOntology(feature.getId()).contains(category)
-                        || StringUtils.equals(feature.getId(), category))
-                    {
+                        || StringUtils.equals(feature.getId(), category)) {
                         this.sectionFeatureTree.put(feature.getId(), section);
                         sortedFeatures.add(feature);
                         iter.remove();
@@ -235,7 +250,7 @@ public class ConversionHelpers
      *
      * @param value must start with "HP:"
      * @return a list of categories as HPO ids, excluding the passed in id, or an empty list if the categories could not
-     * be determined
+     *         be determined
      */
     @SuppressWarnings("unchecked")
     private List<String> getCategoriesFromOntology(String value)
@@ -245,11 +260,10 @@ public class ConversionHelpers
         }
         VocabularyTerm termObj = this.ontologyService.getTerm(value);
         if (termObj != null && termObj.get(PropertyDisplayer.INDEXED_CATEGORY_KEY) != null
-            && List.class.isAssignableFrom(termObj.get(PropertyDisplayer.INDEXED_CATEGORY_KEY).getClass()))
-        {
+            && List.class.isAssignableFrom(termObj.get(PropertyDisplayer.INDEXED_CATEGORY_KEY).getClass())) {
             return (List<String>) termObj.get(PropertyDisplayer.INDEXED_CATEGORY_KEY);
         }
-        return new LinkedList<String>();
+        return new LinkedList<>();
     }
 
     /**
@@ -276,10 +290,8 @@ public class ConversionHelpers
      */
     public static String strIntegerToStrBool(String strInt)
     {
-        if (StringUtils.equals("0", strInt)) {
-            return NO;
-        } else if (StringUtils.equals("1", strInt)) {
-            return YES;
+        if (StringUtils.equals("0", strInt) || StringUtils.equals("1", strInt)) {
+            return translationManager.translate(YESNO_TRANSLATION_PREFIX + strInt);
         } else if (StringUtils.equals("", strInt)) {
             return "";
         } else {
@@ -298,10 +310,8 @@ public class ConversionHelpers
         if (integer == null) {
             return "";
         }
-        if (integer == 0) {
-            return NO;
-        } else if (integer == 1) {
-            return YES;
+        if (integer >= 0) {
+            return translationManager.translate(YESNO_TRANSLATION_PREFIX + integer);
         } else {
             return NA;
         }
@@ -312,11 +322,11 @@ public class ConversionHelpers
      * cell's contents are split into several cells, which are positioned under each other.
      *
      * @param value the value for a {@link org.phenotips.export.internal.DataCell}, which is checked to be shorter than
-     * 32k characters. Can be {@code null}
+     *            32k characters. Can be {@code null}
      * @param x the initial x position for the returned cells
      * @param y the initial y position for the returned cells
      * @return a list of {@link org.phenotips.export.internal.DataCell}s, which in combination will contain the whole
-     * string passed in under `value` parameter
+     *         string passed in under `value` parameter
      */
     public static List<DataCell> preventOverflow(String value, int x, int y)
     {
@@ -338,6 +348,7 @@ public class ConversionHelpers
 
     /**
      * Splits a sting into chunks with size equal or smaller than the specified guided by paragraphs and sentences.
+     *
      * @param holder there are side effects on this variable; chunks are recursively added into this list
      */
     private static void determineSplit(String value, int chunkSizeLimit, List<String> holder)

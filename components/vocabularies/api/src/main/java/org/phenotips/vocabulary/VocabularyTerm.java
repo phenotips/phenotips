@@ -19,6 +19,7 @@ package org.phenotips.vocabulary;
 
 import org.xwiki.stability.Unstable;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.json.JSONObject;
@@ -46,9 +47,18 @@ public interface VocabularyTerm
     /**
      * The short human-readable term name, for example {@code Gait ataxia}.
      *
-     * @return the term name, or {@code null} if the term doesn't have an associated identifier
+     * @return the term name, or {@code null} if the term doesn't have an associated name
      */
     String getName();
+
+    /**
+     * The short human-readable term name, translated in the current locale if a translation is available, for example
+     * {@code Marcha atáxica} if the current user is browsing in Spanish.
+     *
+     * @return the translated term name, if available, or the default term name, or {@code null} if the term doesn't
+     *         have an associated name
+     */
+    String getTranslatedName();
 
     /**
      * The human-readable term description, usually a longer phrase or paragraph that describes the term.
@@ -56,6 +66,15 @@ public interface VocabularyTerm
      * @return the term description, or {@code null} if the term doesn't have a description
      */
     String getDescription();
+
+    /**
+     * The human-readable term description, translated in the current locale if a translation is available, usually a
+     * longer phrase or paragraph that describes the term.
+     *
+     * @return the translated term description, if available, or the default term description, or {@code null} if the
+     *         term doesn't have a description
+     */
+    String getTranslatedDescription();
 
     /**
      * Returns the parents (direct ancestors) of this term.
@@ -97,6 +116,17 @@ public interface VocabularyTerm
      * @return the value defined for the requested property in the vocabulary, or {@code null} if no value is defined
      */
     Object get(String name);
+
+    /**
+     * Generic translated property access. For the requested base property name, given the locale used in the current
+     * request (if any), returns the values for the property whose name is suffixed with the locale name, or a more
+     * generic locale, or, if no translated property is set, the untranslated values for the exact property name.
+     *
+     * @param name the name of the translatable property to access
+     * @return the values defined for the translated requested property in the vocabulary, or the value for the
+     *         untranslated property, or {@code null} if no value is defined
+     */
+    Collection<?> getTranslatedValues(String name);
 
     /**
      * Returns the vocabulary where this term is defined.

@@ -62,19 +62,15 @@
   $jsontool.serialize({"error" : "Term not found."})
   #break
 #end
-
 #set ($result = {
   'id' : "$!term.id",
-  'label' : "$!term.name",
-  'def' : "$!term.def"
+  'label' : "$!term.translatedName",
+  'def' : "$!term.translatedDescription"
 })
-#if ("$!term.is_a" != '')
+#if (!$term.parents.empty)
   #set ($result.is_a = [])
-  #foreach ($p in $!term.is_a)
-    #set($parts = $p.split(" ! "))
-    #if ($parts.size() == 2)
-      #set($discard = $result.is_a.add({'id' : $parts[0], 'label' : $parts[1]}))
-    #end
+  #foreach ($p in $term.parents)
+    #set($discard = $result.is_a.add({'id': $p.id, 'label': $p.translatedName}))
   #end
 #end
 #if ("$!term.synonym" != '')

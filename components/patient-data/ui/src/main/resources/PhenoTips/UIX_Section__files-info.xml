@@ -100,7 +100,7 @@
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -120,7 +120,7 @@
       <parameters>title=$services.localization.render('phenotips.UIXSection.filesInfo')
 enabled=false
 required=
-order=10</parameters>
+order=11</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -63,7 +63,6 @@
   #break
 #end
 
-#set ($names = $term.name.split('\s*;;\s*'))
 #set ($symptoms = [])
 #foreach ($s in $term.actual_symptom)
   #set ($discard = $symptoms.add({'id' : $s, 'label' : $services.vocabularies.resolveTerm($s).name}))
@@ -75,7 +74,11 @@
 
 #set ($result = {
   'id' : "$!term.id",
-  'label' : $names,
+  'symbol' : $term.symbol,
+  'translated_name' : $term.translatedName,
+  'short_name': $term.short_name,
+  'synonym': $term.synonym,
+  'included_name': $term.included_name,
   'symptoms' : $symptoms,
   'not_symptoms' : $not_symptoms,
   'gene_reviews_link' : "$!term.get('gene_reviews_link')"

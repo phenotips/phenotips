@@ -17,7 +17,7 @@ define([
             if (name == null && !Helpers.isInt(disorderID)) {
                 name = disorderID;
             }
-            
+
             this._disorderID = disorderID;
             this._name       = name ? name : "loading...";
 
@@ -59,6 +59,8 @@ define([
                 if (parsed.hasOwnProperty("rows") && parsed.rows.length > 0) {
                     console.log("LOADED DISORDER: disorder id = " + this._disorderID + ", name = " + parsed.rows[0].name);
                     this._name = parsed.rows[0].name;
+                } else {
+                    console.log("LOADED DISORDER: id = " + this._disorderID + " -> NO DATA");
                 }
             } catch (err) {
                 console.log("[LOAD DISORDER] Parse error: " +  err);

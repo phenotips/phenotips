@@ -80,10 +80,6 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     private static final EntityReference FAMILY_TEMPLATE =
         new EntityReference("FamilyTemplate", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
-    /** XWiki class that represents objects that contain a string reference to a family document. */
-    private static final EntityReference FAMILY_REFERENCE = new EntityReference("FamilyReferenceClass",
-        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
     private static final String FAMILY_REFERENCE_FIELD = "reference";
 
     @Inject
@@ -139,9 +135,6 @@ public class PhenotipsFamilyRepository implements FamilyRepository
         if (!canDeleteFamily(family, updatingUser, deleteAllMembers, false)) {
             return false;
         }
-        if (!this.forceRemoveAllMembers(family, updatingUser)) {
-            return false;
-        }
         if (deleteAllMembers) {
             for (Patient patient : family.getMembers()) {
                 if (!this.patientRepository.delete(patient)) {
@@ -150,7 +143,10 @@ public class PhenotipsFamilyRepository implements FamilyRepository
                     return false;
                 }
             }
+        } else if (!this.forceRemoveAllMembers(family, updatingUser)) {
+            return false;
         }
+
         try {
             XWikiContext context = this.provider.get();
             XWiki xwiki = context.getWiki();
@@ -184,6 +180,9 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     @Override
     public Family getFamilyById(String id)
     {
+        if (StringUtils.isEmpty(id)) {
+            return null;
+        }
         DocumentReference reference = this.referenceResolver.resolve(id, Family.DATA_SPACE);
         XWikiContext context = this.provider.get();
         try {
@@ -194,7 +193,6 @@ public class PhenotipsFamilyRepository implements FamilyRepository
         } catch (XWikiException ex) {
             this.logger.error("Failed to load document for family [{}]: {}", id, ex.getMessage(), ex);
         }
-        this.logger.info("Requested family [{}] not found", id);
         return null;
     }
 
@@ -241,12 +239,6 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     /**
      * This method may be called either as a standalone invocation, or internally as part of family pedigree update. The
      * latter invocation may add multiple patients (a "batch update")
-     *
-     * @param family
-     * @param patient
-     * @param updatingUser
-     * @param batchUpdate
-     * @throws PTException
      */
     private void addMember(Family family, Patient patient, User updatingUser, boolean batchUpdate) throws PTException
     {
@@ -657,7 +649,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
      */
     private DocumentReference getFamilyReference(XWikiDocument patientDocument)
     {
-        BaseObject familyObject = patientDocument.getXObject(FAMILY_REFERENCE);
+        BaseObject familyObject = patientDocument.getXObject(Family.REFERENCE_CLASS_REFERENCE);
         if (familyObject == null) {
             return null;
         }
@@ -680,15 +672,15 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     {
         XWikiContext context = this.provider.get();
         XWiki wiki = context.getWiki();
-        long nextId = getLastUsedId() + 1;
-        String nextStringId = String.format("%s%07d", PREFIX, nextId);
+        long nextId = getLastUsedId();
 
-        EntityReference newFamilyRef =
-            new EntityReference(nextStringId, EntityType.DOCUMENT, Family.DATA_SPACE);
+        DocumentReference newFamilyRef;
+        do {
+            newFamilyRef = this.entityReferenceResolver.resolve(new EntityReference(
+                String.format("%s%07d", PREFIX, ++nextId), EntityType.DOCUMENT, Family.DATA_SPACE));
+        } while (wiki.exists(newFamilyRef, context));
+
         XWikiDocument newFamilyDoc = wiki.getDocument(newFamilyRef, context);
-        if (!newFamilyDoc.isNew()) {
-            throw new IllegalArgumentException("The new family id was already taken.");
-        }
 
         // Copying all objects from template to family
         newFamilyDoc.readFromTemplate(
@@ -708,6 +700,8 @@ public class PhenotipsFamilyRepository implements FamilyRepository
             newFamilyDoc.setContentAuthorReference(creatorRef);
         }
 
+        this.updateFamilyPermissions(new PhenotipsFamily(newFamilyDoc), context, false);
+
         wiki.saveDocument(newFamilyDoc, context);
 
         return newFamilyDoc;
@@ -724,10 +718,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     private boolean setFamilyReference(XWikiDocument patientDoc, XWikiDocument familyDoc, XWikiContext context)
     {
         try {
-            BaseObject pointer = patientDoc.getXObject(FAMILY_REFERENCE);
-            if (pointer == null) {
-                pointer = patientDoc.newXObject(FAMILY_REFERENCE, context);
-            }
+            BaseObject pointer = patientDoc.getXObject(Family.REFERENCE_CLASS_REFERENCE, true, context);
             pointer.set(FAMILY_REFERENCE_FIELD, familyDoc.getDocumentReference().toString(), context);
             return true;
         } catch (Exception ex) {
@@ -746,7 +737,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     private boolean removeFamilyReference(XWikiDocument patientDoc)
     {
         try {
-            BaseObject pointer = patientDoc.getXObject(FAMILY_REFERENCE);
+            BaseObject pointer = patientDoc.getXObject(Family.REFERENCE_CLASS_REFERENCE);
             if (pointer != null) {
                 return patientDoc.removeXObject(pointer);
             }

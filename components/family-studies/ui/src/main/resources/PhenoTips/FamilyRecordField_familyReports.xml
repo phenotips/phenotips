@@ -41,107 +41,6 @@
   <object>
     <name>PhenoTips.FamilyRecordField_familyReports</name>
     <number>0</number>
-    <className>XWiki.UIExtensionClass</className>
-    <guid>c375072d-e369-4297-a164-632042ee3fda</guid>
-    <class>
-      <name>XWiki.UIExtensionClass</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <content>
-        <disabled>0</disabled>
-        <name>content</name>
-        <number>3</number>
-        <prettyName>Extension Content</prettyName>
-        <rows>10</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </content>
-      <extensionPointId>
-        <disabled>0</disabled>
-        <name>extensionPointId</name>
-        <number>1</number>
-        <prettyName>Extension Point ID</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </extensionPointId>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>2</number>
-        <prettyName>Extension ID</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parameters>
-        <disabled>0</disabled>
-        <name>parameters</name>
-        <number>4</number>
-        <prettyName>Extension Parameters</prettyName>
-        <rows>10</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </parameters>
-      <scope>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>scope</name>
-        <number>5</number>
-        <prettyName>Extension Scope</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>wiki=Current Wiki|user=Current User|global=Global</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </scope>
-    </class>
-    <property>
-      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
-
-{{velocity}}
-#if($xcontext.action == 'edit' || $doc.display('reports') != '')
-  $xwiki.ssx.use('PhenoTips.FamilyRecordField_familyReports')##
-  (% class="report_upload"%)((()))
-  #__hasDataToDisplay('reports' $showReportsHistory)
-  #if ($xcontext.action != 'export' &amp;&amp; $showReportsHistory)
-    $doc.display('reports')
-  (% class="clearfloats" %)((()))
-  #end
-#end
-{{/velocity}}</content>
-    </property>
-    <property>
-      <extensionPointId>phenotips.familyRecord.section.reports</extensionPointId>
-    </property>
-    <property>
-      <name>phenotips.familyRecord.field.familyReports</name>
-    </property>
-    <property>
-      <parameters>title=$services.localization.render('phenotips.familyRecord.field.familyReports')
-enabled=true
-required=
-order=1
-fields=reports</parameters>
-    </property>
-    <property>
-      <scope>wiki</scope>
-    </property>
-  </object>
-  <object>
-    <name>PhenoTips.FamilyRecordField_familyReports</name>
-    <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
     <guid>e6a95ef3-d5c4-4816-9b13-3263103c2ffb</guid>
     <class>
@@ -250,6 +149,107 @@ fields=reports</parameters>
     </property>
     <property>
       <use>currentPage</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.FamilyRecordField_familyReports</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>c375072d-e369-4297-a164-632042ee3fda</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+{{velocity}}
+#if($xcontext.action == 'edit' || $doc.display('reports') != '')
+  $xwiki.ssx.use('PhenoTips.FamilyRecordField_familyReports')##
+  (% class="report_upload"%)((()))
+  #__hasDataToDisplay('reports' $showReportsHistory)
+  #if ($xcontext.action != 'export' &amp;&amp; $showReportsHistory)
+    $doc.display('reports')
+  (% class="clearfloats" %)((()))
+  #end
+#end
+{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>phenotips.familyRecord.section.reports</extensionPointId>
+    </property>
+    <property>
+      <name>phenotips.familyRecord.field.familyReports</name>
+    </property>
+    <property>
+      <parameters>title=$services.localization.render('phenotips.familyRecord.field.familyReports')
+enabled=true
+required=
+order=1
+fields=reports</parameters>
+    </property>
+    <property>
+      <scope>wiki</scope>
     </property>
   </object>
 </xwikidoc>

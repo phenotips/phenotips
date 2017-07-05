@@ -31,7 +31,7 @@ import org.junit.Test;
 
 /**
  * Test for the {@link TextNotesController} Component, only the overridden methods from {@link AbstractSimpleController}
- * are tested here
+ * are tested here.
  */
 public class TextNotesControllerTest
 {
@@ -58,11 +58,12 @@ public class TextNotesControllerTest
     {
         List<String> result = ((AbstractSimpleController) this.mocker.getComponentUnderTest()).getProperties();
 
-        Assert.assertEquals(5, result.size());
+        Assert.assertEquals(6, result.size());
         Assert.assertThat(result, Matchers.hasItem("indication_for_referral"));
         Assert.assertThat(result, Matchers.hasItem("family_history"));
         Assert.assertThat(result, Matchers.hasItem("prenatal_development"));
         Assert.assertThat(result, Matchers.hasItem("medical_history"));
         Assert.assertThat(result, Matchers.hasItem("diagnosis_notes"));
+        Assert.assertThat(result, Matchers.hasItem("genetic_notes"));
     }
 }

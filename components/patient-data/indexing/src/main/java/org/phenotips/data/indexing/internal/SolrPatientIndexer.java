@@ -72,11 +72,15 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
 
     private static final String GENE_STATUS_REJECTED = "rejected";
 
+    private static final String GENE_STATUS_CARRIER = "carrier";
+
     private static final String SOLR_FIELD_SOLVED_GENES = "solved_genes";
 
     private static final String SOLR_FIELD_CANDIDATE_GENES = "candidate_genes";
 
     private static final String SOLR_FIELD_REJECTED_GENES = "rejected_genes";
+
+    private static final String SOLR_FIELD_CARRIER_GENES = "carrier_genes";
 
     /** Logging helper object. */
     @Inject
@@ -206,6 +210,8 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
                     field = SOLR_FIELD_SOLVED_GENES;
                 } else if (GENE_STATUS_REJECTED.equals(status)) {
                     field = SOLR_FIELD_REJECTED_GENES;
+                } else if (GENE_STATUS_CARRIER.equals(status)) {
+                    field = SOLR_FIELD_CARRIER_GENES;
                 } else {
                     this.logger.warn("Unexpected gene status: " + status);
                     continue;

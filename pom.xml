@@ -23,7 +23,7 @@
 
   <groupId>org.phenotips</groupId>
   <artifactId>phenotips-parent</artifactId>
-  <version>1.3-SNAPSHOT</version>
+  <version>1.3.1</version>
   <packaging>pom</packaging>
 
   <prerequisites>
@@ -47,7 +47,7 @@
     <connection>scm:git:git://github.com/phenotips/phenotips.git</connection>
     <developerConnection>scm:git:git@github.com:phenotips/phenotips.git</developerConnection>
     <url>https://github.com/phenotips/phenotips.git/tree/master/</url>
-    <tag>HEAD</tag>
+    <tag>phenotips-1.3.1</tag>
   </scm>
 
   <organization>
@@ -138,13 +138,20 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <phenotips.version>1.3-SNAPSHOT</phenotips.version>
-    <phenotips.version.previous>1.2</phenotips.version.previous>
+    <phenotips.version>1.3.1</phenotips.version>
+    <project.version.previous>1.2</project.version.previous>
     <xwiki.version>7.1.4</xwiki.version>
-    <slf4j.version>1.7.21</slf4j.version>
+    <slf4j.version>1.7.22</slf4j.version>
+    <poi.version>3.11</poi.version>
+    <selenium.version>2.53.1</selenium.version>
+    <jackson.codehaus.version>1.9.13</jackson.codehaus.version>
+    <jackson.fasterxml.version>2.8.6</jackson.fasterxml.version>
+    <restlet.version>2.0.15</restlet.version>
     <buildtools.version>1.6</buildtools.version>
     <testframework.version>1.1</testframework.version>
-    <solr.version>5.5.3</solr.version>
+    <solr.version>5.5.4</solr.version>
+    <jaxb2-fluent-api.version>3.0</jaxb2-fluent-api.version>
+    <maven-jaxb2-plugin.version>0.12.3</maven-jaxb2-plugin.version>
     <enforcer.skip>false</enforcer.skip>
     <checkstyle.skip>false</checkstyle.skip>
     <clirr.skip>false</clirr.skip>
@@ -171,6 +178,16 @@
         <artifactId>commons-lang3</artifactId>
         <version>3.5</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-collections4</artifactId>
+        <version>4.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-csv</artifactId>
+        <version>1.4</version>
+      </dependency>
       <!-- Everybody logs -->
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -191,7 +208,7 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.1.7</version>
+        <version>1.1.9</version>
       </dependency>
       <!-- Most plugins depend on the servlet API -->
       <dependency>
@@ -204,7 +221,7 @@
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-        <version>2.9.4</version>
+        <version>2.9.7</version>
       </dependency>
       <!-- JSON serialization and deserialization -->
       <dependency>
@@ -227,11 +244,6 @@
       <!-- HTTP libraries -->
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpcore-nio</artifactId>
-        <version>4.4.5</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
         <version>4.4.5</version>
       </dependency>
@@ -245,11 +257,6 @@
             <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpmime</artifactId>
-        <version>4.5.2</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -285,49 +292,43 @@
         <artifactId>commons-io</artifactId>
         <version>2.5</version>
       </dependency>
-      <dependency>
-        <groupId>commons-collections</groupId>
-        <artifactId>commons-collections</artifactId>
-        <version>3.2.2</version>
-      </dependency>
-      <dependency>
-        <groupId>xalan</groupId>
-        <artifactId>xalan</artifactId>
-        <version>2.7.2</version>
-      </dependency>
       <!-- Use the latest Selenium version for browser compatibility -->
       <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
-        <artifactId>selenium-java</artifactId>
-        <version>2.53.1</version>
-        <scope>test</scope>
+        <artifactId>selenium-api</artifactId>
+        <version>${selenium.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-support</artifactId>
+        <version>${selenium.version}</version>
       </dependency>
       <!-- Use a more recent version of Jackson 1.x, the latest compatible with the version of restlet in use -->
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
         <artifactId>jackson-core-asl</artifactId>
-        <version>1.9.13</version>
+        <version>${jackson.codehaus.version}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
         <artifactId>jackson-mapper-asl</artifactId>
-        <version>1.9.13</version>
+        <version>${jackson.codehaus.version}</version>
       </dependency>
       <!-- Use a more recent version of Jackson 2.x -->
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
-        <version>2.8.3</version>
+        <version>${jackson.fasterxml.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>2.8.3</version>
+        <version>${jackson.fasterxml.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
-        <version>2.8.3</version>
+        <version>${jackson.fasterxml.version}</version>
       </dependency>
       <!-- REST -->
       <dependency>
@@ -338,23 +339,76 @@
       <dependency>
         <groupId>org.restlet.jse</groupId>
         <artifactId>org.restlet</artifactId>
-        <version>2.0.14</version>
+        <version>${restlet.version}</version>
       </dependency>
       <dependency>
         <groupId>org.restlet.jse</groupId>
         <artifactId>org.restlet.ext.jackson</artifactId>
-        <version>2.0.14</version>
+        <version>${restlet.version}</version>
       </dependency>
       <dependency>
         <groupId>org.restlet.jse</groupId>
         <artifactId>org.restlet.ext.jaxrs</artifactId>
-        <version>2.0.14</version>
+        <version>${restlet.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.restlet.jse</groupId>
             <artifactId>org.restlet.lib.org.json</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <!-- TEST -->
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>1.10.19</version>
+        <scope>test</scope>
+      </dependency>
+        <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>3.6.9.Final</version>
+      </dependency>
+      <!-- Security -->
+      <dependency>
+        <groupId>org.jasypt</groupId>
+        <artifactId>jasypt</artifactId>
+        <version>1.9.2</version>
+      </dependency>
+      <!-- Database connectors for MySQL and HSQLDB, the most commonly used ones. -->
+      <dependency>
+        <groupId>org.hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <version>2.3.4</version>
+      </dependency>
+      <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>5.1.40</version>
+      </dependency>
+      <!-- XWiki dependencies -->
+      <!-- Make sure to include the proper version of antlr for hibernate-core -->
+      <dependency>
+        <groupId>antlr</groupId>
+        <artifactId>antlr</artifactId>
+        <version>2.7.6</version>
+      </dependency>
+      <!-- The new version of HTMLCleaner is required for PDFs to work properly -->
+      <dependency>
+        <groupId>net.sourceforge.htmlcleaner</groupId>
+        <artifactId>htmlcleaner</artifactId>
+        <version>2.18</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>14.0.1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -367,11 +421,17 @@
         <artifactId>wagon-webdav-jackrabbit</artifactId>
         <version>2.6</version>
       </extension>
-      <!-- Needed to add support for the "functional-tests" packaging -->
+      <!-- Adds support for the "functional-tests" packaging -->
       <extension>
         <groupId>org.phenotips</groupId>
         <artifactId>phenotips-functional-tests-lifecycle</artifactId>
         <version>${testframework.version}</version>
+      </extension>
+      <!-- Adds support for the "xar" packaging -->
+      <extension>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
+        <version>${xwiki.version}</version>
       </extension>
     </extensions>
     <plugins>
@@ -400,7 +460,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>clirr-maven-plugin</artifactId>
         <configuration>
-          <comparisonVersion>${phenotips.version.previous}</comparisonVersion>
+          <comparisonVersion>${project.version.previous}</comparisonVersion>
           <!-- List of specific CLIRR excludes.
                See http://www.mojohaus.org/clirr-maven-plugin/examples/ignored-differences.html
           -->
@@ -436,6 +496,38 @@
               <method>java.lang.String getCitation()</method>
               <justification>New methods for better vocabulary identification</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/vocabulary/Vocabulary</className>
+              <differenceType>7012</differenceType>
+              <method>java.util.List search(java.lang.String)</method>
+              <justification>New search method for a simpler API</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/vocabulary/VocabularyTerm</className>
+              <differenceType>7012</differenceType>
+              <method>* getTranslated*(*)</method>
+              <justification>New methods for vocabulary term translations</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/vocabulary/SolrVocabularyResourceManager</className>
+              <differenceType>7002</differenceType>
+              <method>void initialize(java.lang.String)</method>
+              <justification>Transformed the class into a singleton</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/vocabulary/SolrVocabularyResourceManager</className>
+              <differenceType>7004</differenceType>
+              <method>org.xwiki.cache.Cache getTermCache()</method>
+              <to>org.xwiki.cache.Cache getTermCache(String)</to>
+              <justification>Transformed the class into a singleton</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/vocabulary/SolrVocabularyResourceManager</className>
+              <differenceType>7004</differenceType>
+              <method>org.apache.solr.client.solrj.SolrClient getSolrConnection()</method>
+              <to>org.apache.solr.client.solrj.SolrClient getSolrConnection(String)</to>
+              <justification>Transformed the class into a singleton</justification>
+            </difference>
 
             <difference>
               <className>org/phenotips/data/permissions/PermissionsManager</className>
@@ -454,6 +546,12 @@
               <differenceType>7012</differenceType>
               <method>boolean isDisabled()</method>
               <justification>New methods in support of disabled visibilities.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/push/PushServerInfo</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getServerRegistrationURL()</method>
+              <justification>New method to expose push server registration URL.</justification>
             </difference>
 
             <difference>
@@ -713,7 +811,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.5.201505241946</version>
+        <version>0.7.9</version>
         <executions>
           <execution>
             <id>jacoco-prepare</id>
@@ -857,7 +955,7 @@
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.11</version>
+          <version>3.0</version>
           <configuration>
             <skip>${license.skip}</skip>
             <header>license.txt</header>
@@ -918,7 +1016,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.7</version>
+          <version>3.0.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -946,19 +1044,19 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.6.1</version>
+          <version>3.0.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.4</version>
+          <version>3.0.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-plugin-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.4</version>
+          <version>3.5</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -970,7 +1068,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.3</version>
+          <version>3.6.1</version>
           <!-- Java 1.7 is required -->
           <configuration>
             <source>1.7</source>
@@ -981,7 +1079,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.19</version>
+          <version>2.19.1</version>
           <!-- Rule is to put tests in *Test classes -->
           <configuration>
             <includes>
@@ -1045,7 +1143,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.6</version>
+          <version>3.0.2</version>
           <configuration>
             <!-- Add some useful information about the extension in the manifest file. -->
             <archive>
@@ -1059,19 +1157,31 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.6</version>
+          <version>3.0.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.10</version>
+          <version>3.0.0</version>
+          <configuration>
+            <ignoredUsedUndeclaredDependencies>
+              <ignoredUsedUndeclaredDependency>javax.inject:javax.inject</ignoredUsedUndeclaredDependency>
+              <ignoredUsedUndeclaredDependency>org.xwiki.commons:xwiki-commons-stability</ignoredUsedUndeclaredDependency>
+              <ignoredUsedUndeclaredDependency>org.mockito:mockito-core</ignoredUsedUndeclaredDependency>
+              <ignoredUsedUndeclaredDependency>junit:junit</ignoredUsedUndeclaredDependency>
+              <ignoredUsedUndeclaredDependency>org.hamcrest:hamcrest-library</ignoredUsedUndeclaredDependency>
+            </ignoredUsedUndeclaredDependencies>
+            <ignoredUnusedDeclaredDependencies>
+              <ignoredUnusedDeclaredDependency>javax.servlet:javax.servlet-api</ignoredUnusedDeclaredDependency>
+            </ignoredUnusedDeclaredDependencies>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-war-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.6</version>
+          <version>3.0.0</version>
           <configuration>
             <!-- Add some useful information about the extension in the manifest file. -->
             <archive>
@@ -1104,13 +1214,13 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.8.1</version>
+          <version>2.9</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>clirr-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.7</version>
+          <version>2.8</version>
           <executions>
             <execution>
               <id>clirr-check</id>
@@ -1135,7 +1245,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.10.3</version>
+          <version>2.10.4</version>
           <configuration>
             <!-- Always exclude the internal package since it's not user-public -->
             <excludePackageNames>*.internal.*</excludePackageNames>
@@ -1166,7 +1276,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.4</version>
+          <version>3.6</version>
           <!-- Site Plugin doesn't automatically pull the Apache Wagon implementation -->
           <dependencies>
             <dependency>
@@ -1225,9 +1335,22 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>${testframework.version}</version>
         </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.5.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.12</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
+
   <profiles>
     <profile>
       <!-- Use this ( mvn install -Pquick ) when trying to get a quicker test build, without running any quality control checks. -->
@@ -1298,35 +1421,6 @@
             </executions>
           </plugin>
         </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>mac</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-        <os>
-          <family>mac</family>
-          <name>mac os x</name>
-        </os>
-      </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>exec-maven-plugin</artifactId>
-              <!-- Lock down plugin version for build reproducibility -->
-              <version>1.4.0</version>
-            </plugin>
-            <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>build-helper-maven-plugin</artifactId>
-              <!-- Lock down plugin version for build reproducibility -->
-              <version>1.9.1</version>
-            </plugin>
-          </plugins>
-        </pluginManagement>
       </build>
     </profile>
 

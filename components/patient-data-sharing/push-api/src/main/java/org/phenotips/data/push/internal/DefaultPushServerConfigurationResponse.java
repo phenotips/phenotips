@@ -45,7 +45,7 @@ public class DefaultPushServerConfigurationResponse extends DefaultPushServerRes
             return null;
         }
 
-        Set<String> result = new TreeSet<String>(); // to make sure order is unchanged
+        Set<String> result = new TreeSet<>(); // to make sure order is unchanged
         for (Object field : stringList) {
             result.add(field.toString());
         }
@@ -80,20 +80,19 @@ public class DefaultPushServerConfigurationResponse extends DefaultPushServerRes
     @Override
     public Set<String> getPushableFields(String groupName)
     {
-        try
-        {
+        try {
             Set<String> remoteAcceptedFields = getRemoteAcceptedPatientFields(groupName);
 
             if (remoteAcceptedFields == null) {
                 return Collections.emptySet();
             }
 
-            RecordConfigurationManager configurationManager = ComponentManagerRegistry.getContextComponentManager().
-                getInstance(RecordConfigurationManager.class);
+            RecordConfigurationManager configurationManager =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(RecordConfigurationManager.class);
 
             RecordConfiguration patientConfig = configurationManager.getActiveConfiguration();
 
-            Set<String> commonFields = new TreeSet<String>(patientConfig.getEnabledFieldNames());
+            Set<String> commonFields = new TreeSet<>(patientConfig.getEnabledFieldNames());
 
             // From the non-PII fields available, keep only those that are also enabled on the remote server
             commonFields.retainAll(remoteAcceptedFields);

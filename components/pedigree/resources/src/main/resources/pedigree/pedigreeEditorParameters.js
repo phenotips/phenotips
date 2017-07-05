@@ -49,7 +49,9 @@ define([], function(){
         radius: 40,
         orbRadius: 6,
         touchOrbRadius: 8,
-        personHoverBoxRadius: 90,  // 80    for old handles, 90 for new
+        personHoverBoxWidth: 180,  // 160 for old handles
+        personHoverBoxHeight: 180, // 160 for old handles
+        personHoverBoxAWExtensionHeight: 63,
         newHandles: true,          // false for old handles
         personHandleLength: 75,    // 60    for old handles, 75 for new
         personHandleBreakX: 55,
@@ -59,7 +61,8 @@ define([], function(){
         enableHandleHintImages: true,
         handleStrokeWidth: 5,
         groupNodesScale: 0.85,
-        infertileMarkerHeight: 4,
+        childlessMarkerHeight: 4,
+        infertileMarkerHeight: 1,
         infertileMarkerWidth: 14,
         twinCommonVerticalLength: 6,
         twinMonozygothicLineShiftY: 24,
@@ -72,6 +75,7 @@ define([], function(){
         uncertainShape:      {'font-size': '45px', 'font-family': 'Arial', 'fill': '#696969', 'font-weight': 'bold'},
         uncertainSmallShape: {'font-size': '30px', 'font-family': 'Arial', 'fill': '#696969', 'font-weight': 'bold'},
         evaluationShape: {'font-size': 40, 'font-family': 'Arial'},
+        aliveAndWellShape: {'font-size': 16, 'font-family': 'Arial', 'font-weight': 'bold', 'fill' : '#6f6f6f'},
         nodeShapeFemale: PedigreeEditorParameters.styles.blackAndWhite.nodeShapeFemale,
         nodeShapeMale:   PedigreeEditorParameters.styles.blackAndWhite.nodeShapeMale,
         nodeShapeOther:  PedigreeEditorParameters.styles.blackAndWhite.nodeShapeOther,
@@ -94,6 +98,8 @@ define([], function(){
         pedNumberLabel: {'font-size': 19, 'font-family': 'Serif'},
         descendantGroupLabel: {'font-size': 21, 'font-family': 'Tahoma'},
         label: {'font-size': 20, 'font-family': 'Arial'},
+        awLabel: {'font-size': 17, 'font-family': 'Arial', 'text-anchor': 'start'},
+        awRect: {'fill': '#000000', 'cursor' : 'pointer', 'stroke': 'none', 'fill-opacity':0},
         nameLabels: {'font-size': 20, 'font-family': 'Arial'},
         commentLabel: {'font-size': 19, 'font-family': 'Arial' },
         cancerAgeOfOnsetLabels: {'font-size': 19, 'font-family': 'Arial' },
@@ -118,7 +124,10 @@ define([], function(){
         layoutRelativeOtherWidth: 2,
         layoutScale: { xscale: 12.0, yscale: 8 },
         maxPrintPreviewPaneHeight: 600,
-        minPrintPreviewPaneHeight: 250
+        minPrintPreviewPaneHeight: 250,
+        hoverboxHighlightColor: "green",
+        mainGlowColor: "green",
+        secondaryGlowColor: "#556B2F"
     };
 
     return PedigreeEditorParameters;

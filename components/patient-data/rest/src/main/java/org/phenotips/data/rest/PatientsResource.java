@@ -50,7 +50,7 @@ public interface PatientsResource
      *
      * @param json the JSON representation of the new patient(s) to add
      * @return the location of the newly created patient if one patient was created and the operation was successful,
-     * null upon successful creation of several patients, and an error report otherwise
+     *         null upon successful creation of several patients, and an error report otherwise
      */
     @Consumes(MediaType.APPLICATION_JSON)
     @POST

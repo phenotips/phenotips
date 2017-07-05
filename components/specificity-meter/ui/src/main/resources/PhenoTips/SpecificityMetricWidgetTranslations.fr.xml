@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>SpecificityMetricWidgetTranslations</name>
+  <language>fr</language>
+  <defaultLanguage>en</defaultLanguage>
+  <translation>1</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822215000</creationDate>
+  <parent>PhenoTips.SpecificityMetricWidget</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1401822215000</date>
+  <contentUpdateDate>1401822215000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>plain/1.0</syntaxId>
+  <hidden>true</hidden>
+  <content>phenotips.specificityMeter.label=Quelle est l'informativitité de votre description phénotypique\:
+phenotips.specificityMeter.level.0=Aucune
+phenotips.specificityMeter.level.1=Faible
+phenotips.specificityMeter.level.2=Satisfaisante
+phenotips.specificityMeter.level.3=Bonne
+phenotips.specificityMeter.level.4=Très bonne
+phenotips.specificityMeter.level.5=Excellente
+phenotips.specificityMeter.info.label=Qu'est-ce que c'est?
+phenotips.specificityMeter.info.title=A propos de la mesure de spécificité phénotypique Monarch
+phenotips.specificityMeter.info=Cette évaluation représente l’ampleur et la profondeur de votre annotation phénotypique pour un patient donné, contextualisé dans les ontologies organisées humaines et animales intégrées dans Monarch. L’objectif est de rendre votre description phénotypique suffisamment précise pour exclure des maladies similaires et d’identifier des organismes modèles avec un phénotype semblable, qui pourraient avoir des mutations dans des gènes ou voies cellulaires comparables. En utilisant la même technologie, l'annotation phénotypique du patient est également utilisée pour faciliter la priorisation de l’exome.</content>
+</xwikidoc>

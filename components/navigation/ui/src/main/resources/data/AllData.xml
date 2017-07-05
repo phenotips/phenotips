@@ -83,13 +83,13 @@ $xwiki.ssx.use('PhenoTips.PatientConsent')##
 #set ($columnsProperties = {
   '_actions' : {'actions': ['edit', 'delete']}
 })
-#set($columnFiltersContent = '')
+#set ($columnFiltersContent = '')
 #foreach ($f in $columnFilters.keySet())
   #set($columnFiltersContent = "${columnFiltersContent}&lt;input type='hidden' name='$escapetool.xml($f)' value='$escapetool.xml($columnFilters.get($f))'/&gt;")
 #end
 #foreach ($column in $columns)
   #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0) &amp;&amp; ($column != 'doc.creator') &amp;&amp; ($column != 'doc.author'))
-  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'field', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true}))
+  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'field', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true }))
 #end
 #set ($discard = $columnsProperties.get('doc.name').put('link', 'view'))
 #set ($discard = $columnsProperties.identifier.put('link', 'view'))
@@ -317,7 +317,7 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
       <groups>XWiki.XWikiAdminGroup</groups>
     </property>
     <property>
-      <levels>edit</levels>
+      <levels>edit,comment</levels>
     </property>
     <property>
       <users/>

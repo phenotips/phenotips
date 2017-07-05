@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="HPO_classes" datatype="plaintext" source-language="en-US" target-language="es">
+    <body>
+      <trans-unit id="HP_0000001_label">
+        <source>All</source>
+      </trans-unit>
+      <trans-unit id="HP_0000002_label">
+        <source>Abnormality of body height</source>
+        <target>Anormalidad de la estatura</target>
+      </trans-unit>
+      <trans-unit id="HP_0000002_definition">
+        <source>Deviation from the norm of height with respect to that which is expected according to age and gender norms</source>
+      </trans-unit>
+      <trans-unit id="HP_0000003_label">
+        <source>Multicystic kidney dysplasia</source>
+        <target>Displasia renal multiquística</target>
+      </trans-unit>
+      <trans-unit id="HP_0000003_definition">
+        <source>Multicystic dysplasia of the kidney is characterized by...</source>
+        <target>La displasia multicística del riñón se caracteriza...</target>
+      </trans-unit>
+      <trans-unit id="HP_0000003_synonyms">
+        <source>#Multicystic dysplastic kidney #Multicystic kidneys #Multicystic renal dysplasia</source>
+        <target>#Riñón displásico multicística #Riñones multicísticos #Displasia renal multicística</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

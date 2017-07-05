@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-distribution</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3.1</version>
   </parent>
   <artifactId>phenotips-war</artifactId>
   <name>PhenoTips - War package</name>
@@ -49,14 +49,12 @@
     <dependency>
       <groupId>antlr</groupId>
       <artifactId>antlr</artifactId>
-      <version>2.7.6</version>
     </dependency>
 
     <!-- The new version of HTMLCleaner is required for PDFs to work properly -->
     <dependency>
       <groupId>net.sourceforge.htmlcleaner</groupId>
       <artifactId>htmlcleaner</artifactId>
-      <version>2.16</version>
     </dependency>
 
     <!-- The Big Old Core -->
@@ -560,6 +558,12 @@
       <artifactId>xwiki-platform-resource-servlet</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
+    <!-- Add support for HTTPS certificates signed by Let's Encrypt, such as the one used by nexus.phenotips.org -->
+    <dependency>
+      <groupId>org.xwiki.contrib</groupId>
+      <artifactId>letsencrypt</artifactId>
+      <version>1.1</version>
+    </dependency>
     <!-- PhenoTips components -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -569,6 +573,16 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>solr-access-service-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>gene-panels-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>gene-panels-rest</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -584,6 +598,16 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>vocabulary-hpo-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>vocabulary-hpo-annotations</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>vocabulary-hpo-translation-spanish</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -604,6 +628,16 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>vocabulary-ethnicity-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>vocabulary-ordo-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>patient-contacts</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -794,12 +828,12 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>pingback-common</artifactId>
-      <version>1.0</version>
+      <version>1.3</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>pingback-client-api</artifactId>
-      <version>1.0</version>
+      <version>1.3</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

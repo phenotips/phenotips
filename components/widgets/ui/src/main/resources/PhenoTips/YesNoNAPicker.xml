@@ -238,7 +238,7 @@ $xwiki.ssx.use('PhenoTips.YesNoNAPicker')##
          if (name == "yes") {
            dropDownEnabled = input._dropDown.show(true);
            dropDownEnabled ? input._trigger._root._expanded = false : null;
-         } 
+         }
          if (dropDownEnabled) {
            input._trigger.click();
          }
@@ -260,7 +260,7 @@ $xwiki.ssx.use('PhenoTips.YesNoNAPicker')##
          if (name == "yes") {
            dropDownEnabled = input._dropDown.show(true);
            dropDownEnabled ? input._trigger._root._expanded = true : null;
-         } 
+         }
          if (dropDownEnabled) {
            input._trigger.click();
          }

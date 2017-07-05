@@ -100,7 +100,7 @@
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -113,9 +113,9 @@
   #foreach ($o in $doc.getObjects('PhenoTips.ExternalImageClass'))
     #if ("$!{o.getProperty('file').value}" != '' &amp;&amp; ${o.getProperty('print').value} == '1')
       {{html clean=false}}#pagebreak(){{/html}}
-      [[image:@$!{o.getProperty('file').value}]]
+      [[image:@$!{services.rendering.escape($o.getProperty('file').value, $doc.syntax)}]]
 
-      $!{o.getProperty('comments').value}
+      ${doc.display('comments', 'view', $o).replaceFirst('^(\{\{html clean="false" wiki="false"}})?', '{{content syntax="plain/1.0"}}').replaceFirst('(\{\{/html}})?$', '{{/content}}')}
     #end
   #end
 #end
@@ -125,7 +125,7 @@
       <extensionPointId>org.phenotips.patientSheet.after</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.field.additiona-images-exported</name>
+      <name>org.phenotips.patientSheet.field.additional-images-exported</name>
     </property>
     <property>
       <parameters>title=$services.localization.render('phenotips.UIXField.additionalImageExports')

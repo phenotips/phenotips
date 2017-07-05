@@ -100,7 +100,7 @@
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -118,7 +118,7 @@
     </property>
     <property>
       <parameters>enabled=true
-order=11
+order=12
 title=$services.localization.render('phenotips.UIXSection.solved')</parameters>
     </property>
     <property>

@@ -113,7 +113,7 @@
       <param-value>text/javascript</param-value>
     </init-param>
   </filter>
-  
+
   <!-- We need this filter because cross domain request for fonts are not allowed if some headers are not set.
        See http://jira.xwiki.org/browse/XWIKI-11300 for more informations. -->
   <filter>
@@ -182,24 +182,24 @@
     <filter-name>Set Content-Script-Type</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  
+
   <!-- We set the CORS policy globally for webjars because the <url-pattern> option does not filter on query strings 
        TODO: Remove this when http://jira.xwiki.org/browse/XWIKI-10881 is fixed -->
   <filter-mapping>
     <filter-name>Set CORS policy for fonts</filter-name>
     <url-pattern>/bin/webjars/*</url-pattern>
   </filter-mapping>
-  
+
   <filter-mapping>
     <filter-name>Set CORS policy for fonts</filter-name>
     <url-pattern>*.woff</url-pattern>
   </filter-mapping>
-  
+
   <filter-mapping>
     <filter-name>Set CORS policy for fonts</filter-name>
     <url-pattern>*.eot</url-pattern>
   </filter-mapping>
-  
+
   <filter-mapping>
     <filter-name>Set CORS policy for fonts</filter-name>
     <url-pattern>*.ttf</url-pattern>

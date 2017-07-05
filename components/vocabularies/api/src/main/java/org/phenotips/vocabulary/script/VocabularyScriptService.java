@@ -25,6 +25,8 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.stability.Unstable;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -84,5 +86,16 @@ public class VocabularyScriptService implements ScriptService
     public Vocabulary get(String vocabularyId)
     {
         return this.manager.getVocabulary(vocabularyId);
+    }
+
+    /**
+     * Retrieves a list of vocabulary ids that are available for use with {@link #getVocabulary(String)}.
+     *
+     * @return a list of {@link Vocabulary#getIdentifier() vocabulary identifiers}, one for each vocabulary
+     * @since 1.3
+     */
+    public List<String> getAvailableVocabularies()
+    {
+        return this.manager.getAvailableVocabularies();
     }
 }

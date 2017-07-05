@@ -1,0 +1,3 @@
+org.phenotips.vocabulary.internal.hpoannotations.GeneForPhenotypesAnnotationsExtension
+org.phenotips.vocabulary.internal.hpoannotations.NegativePhenotypeForDiseaseAnnotationsExtension
+org.phenotips.vocabulary.internal.hpoannotations.PositivePhenotypeForDiseaseAnnotationsExtension

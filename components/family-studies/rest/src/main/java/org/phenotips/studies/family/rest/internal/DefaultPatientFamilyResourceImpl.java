@@ -61,7 +61,7 @@ public class DefaultPatientFamilyResourceImpl extends XWikiResource implements P
     {
         this.logger.debug("Retrieving patient [{}] family information via REST", id);
 
-        Family family = familyTools.getFamilyForPatient(id);
+        Family family = this.familyTools.getFamilyForPatient(id);
 
         if (family == null) {
             this.logger.debug("No patint with id [{}] or the patient has no family", id);

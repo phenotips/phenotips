@@ -141,6 +141,8 @@
     method : "get",
     // The name of the request parameter holding the input stub
     varname : "input",
+    // The name of the request parameter holding the input stub for exact term search
+    matchVarname : "id",
     // The CSS classname of the suggest list
     className : "ajaxsuggest",
     timeout : 2500,
@@ -208,6 +210,10 @@
   aSuggestions : [],
   iHighlighted : null,
   isActive : false,
+  // True iff the suggest dropdown is displayed, or an item from it was just selected.
+  suggestionSelected: false,
+  // Input that has been submitted.
+  lastSubmitted: "",
 
   /**
    * Initialize the suggest
@@ -251,6 +257,7 @@
     // (less unneccessary DOM manipulation, and less unneccessary highlighting computation).
     this.latestRequest = 0;
 
+    this.addInputObservers();
   },
 
   /**
@@ -281,6 +288,14 @@
     }.bind(this));
   },
 
+  addInputObservers: function() {
+    $(document).observe("ms:suggest:containerCreated", this.onSuggestCreated.bindAsEventListener(this));
+
+    $(document).observe("ms:suggest:selected", this.onDataSubmitted.bindAsEventListener(this));
+
+    this.fld.observe("blur", this.onInputBlurred.bindAsEventListener(this));
+  },
+
   /**
    * Treats normal characters and triggers the autocompletion behavior. This is needed since the field value is not
    * updated when keydown/keypress are called, so the suggest would work with the previous value. The disadvantage is
@@ -293,6 +308,7 @@
     switch(key) {
       // Ignore special keys, which are treated in onKeyPress
       case Event.KEY_RETURN:
+      case Event.KEY_TAB:
       case Event.KEY_ESC:
       case Event.KEY_UP:
       case Event.KEY_DOWN:
@@ -349,6 +365,9 @@
         this.setHighlightedValue();
         Event.stop(event);
         break;
+      case Event.KEY_TAB:
+        this.clearSuggestions();
+        break;
       case Event.KEY_ESC:
         this.clearSuggestions();
         Event.stop(event);
@@ -363,6 +382,219 @@
         break;
       default:
         break;
+    }
+  },
+
+  /**
+   * Attaches mousedown observers on newly created suggests.
+   *
+   * @param event the event being observed
+   */
+  onSuggestCreated : function (event) {
+    this.suggestionSelected = false;
+    var _this = this;
+    // A mousedown event occurred in the suggest. Don't want onInputBlurred to perform a search on this loss of focus
+    event.memo.container &amp;&amp; $(event.memo.container).observe("mousedown", function(event) {
+      _this.suggestionSelected = true;
+    });
+  },
+
+  /**
+   * Reset the suggest variable.
+   *
+   * @param event the event being observed
+   */
+  onDataSubmitted : function (event) {
+    // Prevents the onInputBlurred performing searches unnecessarily, as an item was just selected from dropdown.
+    this.suggestionSelected = true;
+    this.lastSubmitted = event.memo.value || this.fld.value.strip();
+  },
+
+  /**
+   * If no items are selected from the suggest dropdown, checks the suggest widget suggestions for exact matches.
+   * If no exact match is found, performs a server-side search for the exact match.
+   *
+   * @param event the event being observed
+   */
+  onInputBlurred : function (event) {
+    if (this.suggestionSelected || this.fld.value.length &lt; this.options.minchars) {
+      this.suggestionSelected = false;
+      return;
+    }
+    // Prepare the query.
+    var query = this.fld.value.strip();
+
+    // Try to find a match among the suggest items.
+    var matchSubmitted = this.submitDropdownMatch(query);
+
+    // If no match found in suggest widget, perform a server-side search for the exact match.
+    // This will most likely never happen.
+    if (!matchSubmitted) {
+      // Our input didn't change. No need to search again.
+      if (query == this.lastSubmitted &amp;&amp; query.length &gt; 1) {
+        return;
+      }
+      clearTimeout(this.ajID);
+      this.submitAjaxSearchMatch(query, ++this.latestRequest);
+    }
+  },
+
+  /**
+   * Finds a match among the dropdown menu items, if exists, and submits it through the suggest widget.
+   *
+   * @param query the search query
+   * @return {boolean} true iff a match was found, false otherwise
+   */
+  submitDropdownMatch : function (query) {
+    if (typeof this.aSuggestions == 'undefined' || this.aSuggestions.length &lt;= 0) {
+      return false;
+    }
+    var modQuery = query.toUpperCase();
+    for (var i = 0; i &lt; this.aSuggestions.length; i++) {
+      var item = this.aSuggestions[i];
+      if (item.value.strip().toUpperCase() === modQuery || item.id.strip().toUpperCase() === modQuery) {
+        this.acceptEntry(item, item.value, item.value);
+        return true;
+      }
+    }
+    return false;
+  },
+
+  /**
+   * Performs a server-side search for the query, and submits if an exact match exists.
+   *
+   * @param query the search query
+   * @param requestId the id of the current request
+   */
+  submitAjaxSearchMatch : function (query, requestId) {
+    this.lastSubmitted = this.fld.value.strip();
+    if (requestId &lt; this.latestRequest || this.fld.value.strip().length &lt; this.options.minchars) {
+      return;
+    }
+
+    for (var i = 0; i &lt; this.sources.length; i++) {
+      var source = this.sources[i];
+
+      if (!source.matchScript) {
+        continue;
+      }
+
+      var param = {};
+
+      if (this.options.queryProcessor != null &amp;&amp; typeof(this.options.queryProcessor.generateParameters) == "function") {
+        param = this.options.queryProcessor.generateParameters(query);
+      }
+      if (this.options.queryProcessor != null &amp;&amp; typeof(this.options.queryProcessor.processQuery) == "function") {
+        query = this.options.queryProcessor.processQuery(query);
+      }
+
+      var url = source.matchScript + source.matchVarname + "=" + encodeURIComponent(query);
+      var method = source.method || "get";
+      var headers = {};
+      if (source.json) {
+        headers.Accept = "application/json";
+      } else {
+        headers.Accept = "application/xml";
+      }
+      var ajx = new Ajax.Request(url, {
+        method: method,
+        parameter: param,
+        requestHeaders: headers,
+        onCreate : function () {
+          this.fld.addClassName("loading");
+        }.bind(this),
+        onSuccess: this.setSearchData.bindAsEventListener(this, source, query, requestId),
+        onComplete : function () {
+          if (requestId &lt; this.latestRequest) {
+            return;
+          }
+          this.fld.removeClassName("loading");
+        }.bind(this)
+      });
+    }
+  },
+
+  /**
+   * Process and set the data obtained from the ajax request.
+   *
+   * @param response the response from the ajax request
+   * @param source
+   * @param query the user-entered query term
+   * @param requestId the ID of the current request
+   * @return {boolean} false iff no json or xml data is available
+   */
+  setSearchData : function (response, source, query, requestId) {
+    if (requestId &lt; this.latestRequest) {
+      return false;
+    }
+
+    var result, _getResultFieldValue, _getResultFieldValueAsArray;
+    if (source &amp;&amp; source.json) {
+      var result = response.responseJSON;
+      if (!result) {
+        return false;
+      }
+
+      _getResultFieldValue = function(data, fieldName) {
+        return data &amp;&amp; (data[fieldName + "_translated"] || data[fieldName]) || '';
+      };
+
+      _getResultFieldValueAsArray = function(data, fieldName) {
+        return new Array(data &amp;&amp; (data[fieldName + "_translated"] || data[fieldName]) || '').flatten();
+      };
+    } else {
+      var result = response.responseXML;
+      if (!result) {
+        return false;
+      }
+
+      _getResultFieldValue = function(data, selector) {
+        var element = data &amp;&amp; Element.down(data, selector);
+      return element &amp;&amp; element.firstChild &amp;&amp; element.firstChild.nodeValue || '';
+      };
+
+      _getResultFieldValueAsArray = function(data, selector) {
+        var result = [];
+        if (data) {
+          Element.select(data, selector).each(function(item) {
+            var value = item.firstChild &amp;&amp; item.firstChild.nodeValue;
+            if (value) {
+              result.push(value);
+            }
+          });
+        }
+        return result;
+      };
+    }
+    var data = {
+      'suggest' : this,
+      'id': _getResultFieldValue(result, source.resultId || this.options.resultId),
+      'value': _getResultFieldValue(result, source.resultValue || this.options.resultValue),
+      'info'    : this.generateResultInfo(result, _getResultFieldValueAsArray),
+      'icon': _getResultFieldValue(result, source.resultIcon || this.options.resultIcon),
+      'category': this.generateResultCategory(result, _getResultFieldValueAsArray)
+    };
+
+    this.acceptTypedInput(data, data.value)
+  },
+
+  /**
+   * Accept the data provided.
+   *
+   * @param data the provided data
+   * @param newValue the new displayed value for the input
+   * @param silent true if the data should not be displayed in the input
+   */
+  acceptTypedInput : function (data, newValue, silent) {
+    var event = Event.fire(this.fld, "ms:suggest:selected", data);
+    if (!event.stopped) {
+      if (!silent) {
+        this.fld.value = newValue || this.fld.defaultValue || '';
+      }
+      // pass selected object to callback function, if exists
+      if (typeof(this.options.callback) == "function") {
+        this.options.callback(data);
+      }
     }
   },
 
@@ -517,11 +749,11 @@
       var results = jsondata[source.resultsParameter || this.options.resultsParameter];
 
       var _getResultFieldValue = function(data, fieldName) {
-        return data &amp;&amp; data[fieldName] || '';
+        return data &amp;&amp; (data[fieldName + "_translated"] || data[fieldName]) || '';
       }
 
       var _getResultFieldValueAsArray = function(data, fieldName) {
-        return new Array(data &amp;&amp; data[fieldName] || '').flatten();
+        return new Array(data &amp;&amp; (data[fieldName + "_translated"] || data[fieldName]) || '').flatten();
       };
     } else {
       var xmldata = req.responseXML;
@@ -549,70 +781,9 @@
       };
     }
 
-    var _getExpandCollapseTriggerSymbol = function(isCollapsed) {
-      if (isCollapsed) return "&amp;#x25B8;";
-      return "&amp;#x25BE;";
-    }
     for (var i = 0; i &lt; results.length; i++) {
-      var info = new Element("dl");
-      for (var section in this.options.resultInfo) {
-        var sOptions = this.options.resultInfo[section];
-
-        sectionClass = section.strip().toLowerCase().replace(/[^a-z0-9 ]/gi, '').replace(/\s+/gi, "-");
-
-        var sectionState = ""
-        if (sOptions.collapsed) {
-          sectionState = "collapsed";
-        }
-
-        var processingFunction = sOptions.processor;
-
-        if (sOptions.extern) {
-          var trigger =  new Element("a").update(section);
-          trigger._processingFunction = processingFunction;
-          info.insert({"bottom" : new Element("dt", {'class' : sectionState + " " + sectionClass}).insert({'bottom' : trigger})});
-          trigger._processingFunction.call(this, trigger);
-          continue;
-        }
-
-        var selector = sOptions.selector;
-        if (!selector) {
-          continue;
-        }
-
-        var sectionContents = null;
-        _getResultFieldValueAsArray(results[i], selector).each(function(item) {
-          var text = item || '';
-          if (typeof (processingFunction) == "function") {
-            text = processingFunction(text);
-          }
-          if (text == '') {return;}
-          if (!sectionContents) {
-            var trigger = new Element("a", {'class' : 'expand-tool'}).update(_getExpandCollapseTriggerSymbol(sOptions.collapsed));
-            info.insert({"bottom" : new Element("dt", {'class' : sectionState}).insert({'top' : trigger}).insert({'bottom' : section})});
-            sectionContents = new Element("dd", {'class' : 'expandable'});
-            info.insert({"bottom" : sectionContents});
-            trigger.observe('click', function(event) {
-              event.stop();
-              trigger.up().toggleClassName('collapsed');
-              trigger.update(_getExpandCollapseTriggerSymbol(trigger.up().hasClassName('collapsed')));
-            }.bindAsEventListener(this));
-          }
-          sectionContents.insert({"bottom" : new Element("div").update(text)});
-        });
-      }
-      if (!info.hasChildNodes()) {
-        info = '';
-      }
-      if (this.options.resultCategory) {
-        var category = new Element("span", {'class' : 'hidden term-category'});
-        _getResultFieldValueAsArray(results[i], this.options.resultCategory).each(function(c) {
-           category.insert(new Element('input', {'type' : 'hidden', 'value' : c}));
-        });
-      }
-      if (!this.options.resultCategory || !category.hasChildNodes()) {
-        category = '';
-      }
+      var info = this.generateResultInfo(results[i], _getResultFieldValueAsArray);
+      var category = this.generateResultCategory(results[i], _getResultFieldValueAsArray);
 
       if (this.options.resultAltName) {
         var bestNameMatch = '';
@@ -638,6 +809,93 @@
       });
     }
     return aSuggestions;
+  },
+
+  /**
+   * Generates HTML containing the result information.
+   *
+   * @param result the ajax search result
+   * @param getResultValueAsArray callback function
+   * @return {*} the info html string
+   * @private
+   */
+  generateResultInfo : function (result, getResultValueAsArray) {
+    var info = new Element("dl");
+    var _this = this;
+    for (var section in this.options.resultInfo) {
+      var sOptions = this.options.resultInfo[section];
+      var sectionClass = section.strip().toLowerCase().replace(/[^a-z0-9 ]/gi, '').replace(/\s+/gi, "-");
+      var sectionState = "";
+      if (sOptions.collapsed) {
+        sectionState = "collapsed";
+      }
+      var processingFunction = sOptions.processor;
+      if (sOptions.extern) {
+        var trigger =  new Element("a").update(section);
+        trigger._processingFunction = processingFunction;
+        info.insert({"bottom" : new Element("dt", {'class' : sectionState + " " + sectionClass})
+          .insert({'bottom' : trigger})});
+        trigger._processingFunction.call(this, trigger);
+        continue;
+      }
+      var selector = sOptions.selector;
+      if (!selector) {
+        continue;
+      }
+      var sectionContents = null;
+      getResultValueAsArray(result, selector).each(function(item) {
+        var text = item || '';
+        if (typeof (processingFunction) == "function") {
+          text = processingFunction(text);
+        }
+        if (text == '') {return;}
+        if (!sectionContents) {
+          var trigger = new Element("a", {'class' : 'expand-tool'})
+            .update(_this._getExpandCollapseTriggerSymbol(sOptions.collapsed));
+          info.insert({"bottom" : new Element("dt", {'class' : sectionState})
+            .insert({'top' : trigger})
+            .insert({'bottom' : section})});
+          sectionContents = new Element("dd", {'class' : 'expandable'});
+          info.insert({"bottom" : sectionContents});
+          trigger.observe('click', function(event) {
+            event.stop();
+            trigger.up().toggleClassName('collapsed');
+            trigger.update(_this._getExpandCollapseTriggerSymbol(trigger.up().hasClassName('collapsed')));
+          }.bindAsEventListener(this));
+        }
+        sectionContents.insert({"bottom" : new Element("div").update(text)});
+      });
+    }
+    if (!info.hasChildNodes()) {
+      info = '';
+    }
+    return info;
+  },
+
+  /**
+   * Generates HTML if result category is set.
+   *
+   * @param result the ajax search result
+   * @param getResultValueAsArray callback function
+   * @return {*} the category html string
+   * @private
+   */
+  generateResultCategory : function (result, getResultValueAsArray) {
+    if (this.options.resultCategory) {
+      var category = new Element("span", {'class' : 'hidden term-category'});
+      getResultValueAsArray(result, this.options.resultCategory).each(function(c) {
+        category.insert(new Element('input', {'type' : 'hidden', 'value' : c}));
+      });
+    }
+    if (!this.options.resultCategory || !category.hasChildNodes()) {
+      category = '';
+    }
+    return category;
+  },
+
+  _getExpandCollapseTriggerSymbol : function(isCollapsed) {
+    if (isCollapsed) return "&amp;#x25B8;";
+    return "&amp;#x25BE;";
   },
 
   /**
@@ -1839,7 +2097,7 @@ widgets.ModalPopup = Class.create({
         try {
           // if parent element is longer than the screen (e.g. patient form) make sure dialog pops up within the
           // area currently visible by the user, which can be achieved by absolute positioning
-          if (this.dialogBox.parentElement.clientHeight > window.innerHeight) {
+          if (this.dialogBox.parentElement.clientHeight &gt; window.innerHeight) {
               targetPosition = Math.floor(window.pageYOffset + window.innerHeight * targetPercentage / 100) + "px";
           }
         } catch (err) {
@@ -2348,12 +2606,9 @@ return PhenoTips;
     resultValue : "name",
     resultCategory : "term_category",
     resultParent : {
-      selector : 'is_a',
-      processingFunction : function (text){
-        var data = {};
-        data.id = text.replace(/\s+/gm, ' ').replace(/(HP:[0-9]+)\s*!\s*(.*)/m, "$1");
-        data.value = text.replace(/\s+/gm, ' ').replace(/(HP:[0-9]+)\s*!\s*(.*)/m, "$2");
-        return data;
+      selector : 'parents',
+      processingFunction : function (parent) {
+        return {'id': parent.id, 'value': parent.name_translated || parent.name};
       }
     },
     noresults: "No sub-terms",
@@ -2376,13 +2631,13 @@ return PhenoTips;
   initialize: function(suggest, container, options) {
     this.options = Object.extend(Object.clone(this.options), options || { });
     this.suggest = suggest;
-    this.loadingMessage = new Element('div', {'class' : 'plainmessage loading'}).update("Loading...");
+    this.loadingMessage = new Element('div', {'class' : 'plainmessage loading'}).update("$escapetool.javascript($services.localization.render('phenotips.widgets.vocabularyBrowser.loading'))");
     if (container) {
       this.container = container;
     } else {
       this.container = new PhenoTips.widgets.ModalPopup(this.loadingMessage, {}, {
         idPrefix : 'ontology-browser-window-',
-        title : "Related terms",
+        title : "$escapetool.javascript($services.localization.render('phenotips.widgets.vocabularyBrowser.title'))",
         backgroundColor : "#ffffff",
         verticalPosition : "top",
         extraDialogClassName : "dialog-ontology-browser",
@@ -2419,7 +2674,7 @@ return PhenoTips;
           }
         }.bind(this),
         onFailure: function (response) {
-          this.setContent("Failed to retrieve data : " + response.statusText);
+          this.setContent("$escapetool.javascript($services.localization.render('phenotips.widgets.vocabularyBrowser.loading.error'))" + response.statusText);
           this.__crtRoot = '';
         }.bind(this)
       });
@@ -2503,7 +2758,7 @@ return PhenoTips;
           Event.fire(document, "ms:popup:content-updated", {popup: this.container});
         }.bind(this),
         onFailure: function (response) {
-          Event.fire(element, 'obrowser:expand:failed', {data: new Element('div', {'class' : 'error'}).update("Failed to retrieve data : " + response.statusText), count: -1});
+          Event.fire(element, 'obrowser:expand:failed', {data: new Element('div', {'class' : 'error'}).update("$escapetool.javascript($services.localization.render('phenotips.widgets.vocabularyBrowser.expand.error'))" + response.statusText), count: -1});
         },
         onComplete: function() {this._unlockExpandTool(element)}.bind(this)
       });
@@ -2519,10 +2774,10 @@ return PhenoTips;
     return data &amp;&amp; data[fieldName] || [];
   },
   _getResultFieldValue_json : function(data, fieldName) {
-    return data &amp;&amp; data[fieldName] || '';
+    return data &amp;&amp; (data[fieldName + "_translated"] || data[fieldName]) || '';
   },
   _getResultFieldValueAsArray_json : function(data, fieldName) {
-    return new Array(data &amp;&amp; data[fieldName] || '').flatten();
+    return new Array(data &amp;&amp; (data[fieldName + "_translated"] || data[fieldName]) || '').flatten();
   },
   _getResultset_xml : function(data, selector) {
     var elements = data &amp;&amp; data.getElementsByTagName(selector);
@@ -2704,13 +2959,13 @@ return PhenoTips;
       Event.fire(target, "obrowser:expand:finished");
     }
     target.removeClassName('collapsed');
-    target.down('.expand-tool').update(this._getExpandCollapseSymbol(false));
+    target.down('.expand-tool') &amp;&amp; target.down('.expand-tool').update(this._getExpandCollapseSymbol(false));
   },
   _collapseEntry : function(target) {
     if(!target) return;
     target.addClassName('collapsed');
     Event.fire(target, "obrowser:expand:finished");
-    target.down('.expand-tool').update(this._getExpandCollapseSymbol(true));
+    target.down('.expand-tool') &amp;&amp; target.down('.expand-tool').update(this._getExpandCollapseSymbol(true));
   },
   _toggleExpandState : function(target) {
     if (target) {
@@ -3327,7 +3582,7 @@ return PhenoTips;
 
       // Generate and insert the "add" button, edit mode only
       if (element.down('input.xwiki-free-multiselect-value')) {
-        var addTool = new Element('a', {'title' : 'add', 'href' : '#' + element.id}).update('+...');
+        var addTool = new Element('a', {'title' : 'add', 'href' : '#' + element.id}).update('+…');
         element.insert(addTool.wrap('li'));
         addTool.observe('click', function(event) {
           event.stop();
@@ -3966,7 +4221,7 @@ document.observe("xwiki:dom:updated", init);
        },
       'phenotype-info' : {
         'hint'     : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.hint')",
-        'service'  : "$xwiki.getURL('PhenoTips.PhenotypeInfoService', 'get')",
+        'vocabulary' : 'hpo',
         'database' : {
           'name' : "$services.vocabularies.hpo.name",
           'link' : "$services.vocabularies.hpo.website",
@@ -3982,17 +4237,17 @@ document.observe("xwiki:dom:updated", init);
           c.update(
                     elt('span', 'info').insert(elt('span', 'key').update(json.id))
                                        .insert(' ')
-                                       .insert(elt('span', 'value').update(json.label))
+                                       .insert(elt('span', 'value').update(json.name_translated))
                   );
-          json.def &amp;&amp; c.insert(elt('p').update(json.def.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;')));
+          json.def_translated &amp;&amp; c.insert(elt('p').update(json.def_translated.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;')));
 
-          var labels = {'synonym' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.synonym')", 'is_a' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.typeOf')"};
+          var labels = {'synonym' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.synonym')", 'parents' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.typeOf')"};
           var advancedInfo = elt('dl');
           for (var l in labels) {
             if (json[l]) {
               advancedInfo.insert(elt('dt', '', labels[l]));
               json[l].each(function (item) {
-                advancedInfo.insert(elt('dd', '', item.label || item));
+                advancedInfo.insert(elt('dd', '', item.name_translated || item));
               })
             }
           }
@@ -4022,7 +4277,7 @@ document.observe("xwiki:dom:updated", init);
       },
       'phenotype-qualifier-info' : {
         'hint'     : "$services.localization.render('phenotips.widgets.helpButtons.phenotypeQualifier.hint')",
-        'service'  : "$xwiki.getURL('PhenoTips.PhenotypeInfoService', 'get')",
+        'vocabulary' : 'hpo',
         'database' : {
           'name' : "$services.vocabularies.hpo.name",
           'link' : "$services.vocabularies.hpo.website",
@@ -4037,9 +4292,9 @@ document.observe("xwiki:dom:updated", init);
           c.update(
                     elt('span', 'info').insert(elt('span', 'key').update(json.id))
                                        .insert(' ')
-                                       .insert(elt('span', 'value').update(json.label))
+                                       .insert(elt('span', 'value').update(json.name_translated))
                   );
-          json.def &amp;&amp; c.insert(elt('p').update(json.def.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;')));
+          json.def_translated &amp;&amp; c.insert(elt('p').update(json.def_translated.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;')));
         }
       },
       'omim-disease-info' : {
@@ -4058,12 +4313,16 @@ document.observe("xwiki:dom:updated", init);
           };
 
           c.update(
-                    elt('span', 'info').insert(elt('span', 'key').update(json.id))
+                    elt('span', 'info').insert(elt('span', 'key').update((json.symbol || '') + json.id))
                                        .insert(' ')
-                                       .insert(elt('span', 'value').update(json.label.splice(0, 1)[0]))
+                                       .insert(elt('span', 'value').update(json.translated_name))
                   );
 
-          var labels = {'label' : '', 'symptoms' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.symptoms')", 'not_symptoms' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.notSymptoms')"};
+          var labels = {'short_name' : '',
+            'synonym': "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.synonym')",
+            'included_name': "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.included')",
+            'symptoms' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.symptoms')",
+            'not_symptoms' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.notSymptoms')"};
           var advancedInfo = elt('dl');
           for (var l in labels) {
             if (json[l] &amp;&amp; json[l].length &gt; 0) {
@@ -4083,7 +4342,7 @@ document.observe("xwiki:dom:updated", init);
             window.open(viewButton.href);
           });
           if (json.gene_reviews_link) {
-            var geneReviewsButton = new Element('a', {'class' : 'button', href : json.gene_reviews_link, 'target' : '_blank'}).update('Read about it on Gene Reviews...');
+            var geneReviewsButton = new Element('a', {'class' : 'button', href : json.gene_reviews_link, 'target' : '_blank'}).update("$services.localization.render('phenotips.widgets.helpButtons.omimDisease.linkToGeneReviews')");
             c.insert(elt('div', 'term-tools').insert(geneReviewsButton.wrap('span', {'class' : 'buttonwrapper'})));
             geneReviewsButton.observe('click', function(event) {
               event.stop();
@@ -4092,15 +4351,98 @@ document.observe("xwiki:dom:updated", init);
           }
         }
       },
+      'ordo-disease-info' : {
+        'hint' : "$services.localization.render('phenotips.widgets.helpButtons.ordoDisease.hint')",
+        'vocabulary' : 'ordo',
+        'database' : {
+          'name' : "$services.vocabularies.ordo.name",
+          'link' : "$services.vocabularies.ordo.website",
+          'citation' : "$services.vocabularies.ordo.citation",
+          'version': "$services.vocabularies.ordo.version"
+        },
+        'externalDBs' : [
+                        { name : 'Ensembl', url : 'http://useast.ensembl.org/Homo_sapiens/Gene/Compara_Tree?g=', field : 'ensembl_id'},
+                        { name : 'GenAtlas', url : 'http://genatlas.medecine.univ-paris5.fr/fiche.php?symbol=', field : 'genatlas_id'},
+                        { name : 'HGNC', url : 'http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=', field : 'hgnc_id'},
+                        { name : 'ICD-10', url : 'http://icdlist.com/icd-10/', field : 'icd-10_id'},
+                        { name : 'IUPHAR', url : 'http://guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=', field : 'iuphar_id'},
+                        { name : 'MedDRA', url : 'http://purl.bioontology.org/ontology/MEDDRA/', field : 'meddra_id'},
+                        { name : 'MeSH', url : 'https://www.ncbi.nlm.nih.gov/mesh/', field : 'mesh_id'},
+                        { name : 'OMIM', url : 'http://www.omim.org/entry/', field : 'omim_id'},
+                        { name : 'UniProt', url : 'http://www.uniprot.org/uniprot/', field : 'swissprot_id'},
+                        { name : 'UMLS', url : 'https://uts.nlm.nih.gov/metathesaurus.html?cui=', field : 'umls_id'}
+        ],
+        'callback' : function (helpButton, json) {
+          var c = helpButton.helpBox.content;
+          var elt = function(type, cssClass, content) {
+            return new Element(type, cssClass &amp;&amp; {'class' : cssClass} || {}).update(content || '');
+          };
+
+          c.update(
+                    elt('span', 'info').insert(elt('span', 'key').update(json.id))
+                                       .insert(' ')
+                                       .insert(elt('span', 'value').update(json.name_translated))
+                  );
+          json.def_translated &amp;&amp; c.insert(elt('p').update(json.def_translated.replace(/\s*\n\s*/, ' ')));
+
+          var labels = {'alternative_term' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.synonym')", 'parents' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.typeOf')"};
+          var advancedInfo = elt('dl');
+          for (var l in labels) {
+            if (json[l]) {
+              advancedInfo.insert(elt('dt', '', labels[l]));
+              json[l].each(function (item) {
+                advancedInfo.insert(elt('dd', '', item.name_translated || item));
+              })
+            }
+          }
+          if (advancedInfo.firstDescendant()) {
+            c.insert(advancedInfo);
+          }
+
+          var tools = elt('div', 'term-tools');
+          this.externalDBs.each(function (item) {
+            var value = json[item.field];
+            if (value) {
+              if (!value.each) {
+                value = [value];
+              }
+              value.each (function (id) {
+                tools.insert(new Element('a', {
+                  'href'   : item.url + id,
+                  'class'  : 'button'
+                }).update(item.name + ': ' + id).wrap('span', {'class' : 'buttonwrapper'}));
+              });
+            }
+          });
+          // We must stop the event, otherwise this item will be selected; as a consequence, we must also manually open the link
+          tools.select('a').each(function(item) {
+            item.observe('click', function(event) {
+              event.stop();
+              window.open(item.href);
+            })
+          });
+          if (tools.firstDescendant()) {
+            c.insert(tools);
+          }
+        }
+      },
       'gene-info' : {
         'hint' : "$services.localization.render('phenotips.widgets.helpButtons.gene.hint')",
-        'service'  : "$xwiki.getURL('PhenoTips.GeneInfoService', 'get')",
+        'vocabulary' : 'hgnc',
         'database' : {
           'name' : "$services.vocabularies.hgnc.name",
           'link' : "$services.vocabularies.hgnc.website",
           'citation' : "$services.vocabularies.hgnc.citation",
           'version': "$services.vocabularies.hgnc.version"
         },
+        externalDBs : [
+                        { name : 'GENECARDS',    url : 'http://www.genecards.org/cgi-bin/carddisp.pl?gene=',          field : 'genecards_id'},
+                        { name : 'OMIM',         url : 'http://www.omim.org/entry/',                                  field : 'omim_id'},
+                        { name : 'Entrez',       url : 'http://www.ncbi.nlm.nih.gov/gene/?term=',                     field : 'entrez_id'},
+                        { name : 'RefSeq',       url : 'http://www.ncbi.nlm.nih.gov/nuccore/',                        field : 'refseq_accession'},
+                        { name : 'Ensembl',      url : 'http://useast.ensembl.org/Homo_sapiens/Gene/Compara_Tree?g=', field : 'ensembl_gene_id'},
+                        { name : 'Gene panels',  url : 'https://www.ncbi.nlm.nih.gov/gtr/all/tests/?term=',           field : 'genecards_id'}
+            ],
         'callback' : function (helpButton, json) {
           var c = helpButton.helpBox.content;
           var elt = function(type, cssClass, content) {
@@ -4110,7 +4452,7 @@ document.observe("xwiki:dom:updated", init);
           c.update(
                     elt('span', 'info').insert(elt('span', 'key').update(json.symbol))
                                        .insert(' ')
-                                       .insert(elt('span', 'value').update(json.name))
+                                       .insert(elt('span', 'value').update(json.name_translated))
                   );
 
           var labels = {'alias_symbol' : "$services.localization.render('phenotips.widgets.helpButtons.gene.alias')", 'prev_symbol' : "$services.localization.render('phenotips.widgets.helpButtons.gene.previousSymbols')", 'gene_family' : "$services.localization.render('phenotips.widgets.helpButtons.gene.family')"};
@@ -4120,7 +4462,7 @@ document.observe("xwiki:dom:updated", init);
               advancedInfo.insert(elt('dt', '', labels[l]));
               if (Object.prototype.toString.call(json[l]) === '[object Array]') {
                 json[l].each(function (item) {
-                  advancedInfo.insert(elt('dd', '', item.label || item));
+                  advancedInfo.insert(elt('dd', '', item.name_translated || item));
                 })
               } else {
                  advancedInfo.insert(elt('dd', '', json[l]));
@@ -4131,36 +4473,29 @@ document.observe("xwiki:dom:updated", init);
             c.insert(advancedInfo);
           }
 
-          if (json.external_ids) {
-            var tools = elt('div', 'term-tools');
-            var externalDBs = [
-                          { name : 'GENECARDS', url : 'http://www.genecards.org/cgi-bin/carddisp.pl?gene=',          field : 'genecards_id'},
-                          { name : 'OMIM',      url : 'http://www.omim.org/entry/',                                  field : 'omim_id'},
-                          { name : 'Entrez',    url : 'http://www.ncbi.nlm.nih.gov/gene/?term=',                     field : 'entrez_id'},
-                          { name : 'RefSeq',    url : 'http://www.ncbi.nlm.nih.gov/nuccore/',                        field : 'refseq_accession'},
-                          { name : 'Ensembl',   url : 'http://useast.ensembl.org/Homo_sapiens/Gene/Compara_Tree?g=', field : 'ensembl_gene_id'}
-            ];
-            externalDBs.each(function (item) {
-                         var value = json.external_ids[item.field];
-                         if (value) {
-                           if (!value.each) {
-                             value = [value];
-                           }
-                           value.each (function (id) {
-                             tools.insert(new Element('a', {
-                               'href'   : item.url + id,
-                               'class'  : 'button'
-                             }).update(item.name + ': ' + id).wrap('span', {'class' : 'buttonwrapper'}));
-                           });
-                         }
-            });
-            // We must stop the event, otherwise this item will be selected; as a consequence, we must also manually open the link
-            tools.select('a').each(function(item) {
-                         item.observe('click', function(event) {
-                            event.stop();
-                            window.open(item.href);
-                         })
-            });
+          var tools = elt('div', 'term-tools');
+          this.externalDBs.each(function (item) {
+            var value = json[item.field];
+            if (value) {
+              if (!value.each) {
+                value = [value];
+              }
+              value.each (function (id) {
+                tools.insert(new Element('a', {
+                  'href'   : item.url + id,
+                  'class'  : 'button'
+                }).update(item.name + ': ' + id).wrap('span', {'class' : 'buttonwrapper'}));
+              });
+            }
+          });
+          // We must stop the event, otherwise this item will be selected; as a consequence, we must also manually open the link
+          tools.select('a').each(function(item) {
+            item.observe('click', function(event) {
+              event.stop();
+              window.open(item.href);
+            })
+          });
+          if (tools.firstDescendant()) {
             c.insert(tools);
           }
         }
@@ -4229,7 +4564,7 @@ document.observe("xwiki:dom:updated", init);
       this.helpBox.content = new Element('div');
       this.helpBox.insert(this.helpBox.content);
 
-      if (this._builder.service) {
+      if (this._builder.service || this._builder.vocabulary) {
         this.createHelpContentFromService();
       } else {
         this._builder.callback &amp;&amp; this._builder.callback(this);
@@ -4244,8 +4579,10 @@ document.observe("xwiki:dom:updated", init);
 
     createHelpContentFromService : function() {
       var _this = this;
-      new Ajax.Request(_this._builder.service, {
+      var url = _this._builder.service || (XWiki.contextPath + "/rest/vocabularies/" + _this._builder.vocabulary + "/" + _this._information);
+      new Ajax.Request(url, {
         parameters: {'id' : _this._information},
+        method : 'get',
         onCreate : function () {
           _this.helpBox.content.update(new Element('span', {'class' : 'hint temporary'}).update("$services.localization.render('phenotips.widgets.helpButtons.loading')"));
         },
@@ -4262,7 +4599,7 @@ document.observe("xwiki:dom:updated", init);
     },
 
     addDatabaseCreditInfo : function () {
-      var version = "$services.localization.render('phenotips.IndexOntology.version', ['" + this._builder.database.version + "'])";
+      var version = "$services.localization.render('phenotips.indexVocabulary.version', ['" + this._builder.database.version + "'])";
       var citation = this._builder.database.citation.concat(". ").concat(version);
       var credits = new Element('a', {'class' : 'reference', href : this._builder.database.link, 'target' : '_blank', 'title' : citation}).update(this._builder.database.name);
       var creditsWrapper = new Element('div', {'class' : 'hint'}).update(credits.wrap('span', {'class' : 'reference-wrapper'}));
@@ -4542,7 +4879,7 @@ document.observe("xwiki:dom:updated", init);
       var range = (this.__date.hasOwnProperty("range") &amp;&amp; this.__date.range.hasOwnProperty("years")) ? this.__date.range.years : 1;
       var year = this.__date.hasOwnProperty("year") ? this.__date.year : null;
       var values = [];
-      if (year > crtYear) {
+      if (year &gt; crtYear) {
           values.push({"value" : year, "selected" : true });
       }
       for (var y = crtYear; y &gt;= startYear; --y) {
@@ -5002,6 +5339,137 @@ document.observe("xwiki:dom:updated", init);
   </object>
   <object>
     <name>PhenoTips.Widgets</name>
+    <number>14</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>d823f086-78f1-4019-8747-fcd55d2bd449</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var XWiki = (function(XWiki) {
+  // Start XWiki augmentation
+  var widgets = XWiki.widgets = XWiki.widgets || {};
+
+  widgets.SingleSubmitForm = Class.create({
+    initialize: function(form) {
+      this.form = form;
+      this.form.observe('submit', this.lockForm.bindAsEventListener(this));
+      window.addEventListener('pageshow', this.unlockForm.bindAsEventListener(this));
+    },
+    lockForm: function(event) {
+      if (this.submitted) {
+        event.stop();
+      } else {
+        this.submitted = true;
+      }
+    },
+    unlockForm: function(event) {
+      this.submitted = false;
+    }
+  });
+
+  var init = function(event) {
+    ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      element.select("form.x-single-submit-form").each(function(form) {
+        if (!form.__singleSubmit) {
+          form.__singleSubmit = new XWiki.widgets.SingleSubmitForm(form);
+        }
+      });
+    });
+    return true;
+  };
+
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+  document.observe("xwiki:dom:updated", init);
+
+  // End XWiki augmentation.
+  return XWiki;
+}(XWiki || {}));
+</code>
+    </property>
+    <property>
+      <name>Prevent multiple clicks on forms that should only be submitted once</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
     <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
     <guid>3adf8acf-b6e8-4d05-a382-fa56ee969cf9</guid>
@@ -5370,13 +5838,13 @@ div.suggestItems span.matching-alternative-name {
 }
 
 div.suggestItems span.matching-alternative-name:before {
-  content: "(also known as: ";
+  content: "$services.localization.render('phenotips.widgets.suggest.matchingAlternativeName.before')";
   font-size: 0.8em;
   opacity: .4;
 }
 
 div.suggestItems span.matching-alternative-name:after {
-  content: ")";
+  content: "$services.localization.render('phenotips.widgets.suggest.matchingAlternativeName.after')";
   font-size: 0.8em;
   opacity: .4;
 }
@@ -5855,9 +6323,6 @@ div.resultContainer div.sourceContent.loading {
   list-style-type: none;
   margin: 0 0 0 1em;
   padding: 0;
-}
-.ontology-tree .hint {
-  margin-left: 1.6em;
 }
 .ontology-tree .entry-tools {
   /* float: right; */

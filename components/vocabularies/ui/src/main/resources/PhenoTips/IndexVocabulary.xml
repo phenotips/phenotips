@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>IndexVocabulary</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822213000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1489775836000</date>
+  <contentUpdateDate>1489775682000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity}}
+#if ("$!{request.url}" != '' &amp;&amp; "$!{request.vocabulary}" != '' &amp;&amp; $request.form_token &amp;&amp; $services.csrf.isTokenValid("$!{request.form_token}"))
+  #set($result = '')
+  #set($result = $services.vocabularies.get($request.vocabulary).reindex("$!{request.url}"))
+
+  #if ("$!{request.ajax}" == '1')
+    #if ($result == 0)
+      $services.localization.render('phenotips.indexVocabulary.success')
+    #else
+      $response.setStatus(500)##
+      $services.localization.render('phenotips.indexVocabulary.failure')
+    #end
+
+  #else
+    #if ($result == 0)
+      #set ($indexMessage = "{{info}}$services.localization.render('phenotips.indexVocabulary.successMessage', [$!{request.url}]){{/info}}")
+    #else
+      #set ($indexMessage = "{{error}}$services.localization.render('phenotips.indexVocabulary.failureMessage', [$!{request.url}]){{/error}}")
+    #end
+  #end
+#end
+#if ("$!{request.ajax}" != '1')
+$xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
+$xwiki.jsx.use('PhenoTips.IndexVocabulary')##
+$xwiki.ssx.use('PhenoTips.IndexVocabulary')##
+$xwiki.jsx.use('PhenoTips.Widgets')##
+$xwiki.ssx.use('PhenoTips.Widgets')##
+== $services.localization.render('phenotips.indexVocabulary.heading') ==
+(% class="half" %)(((
+
+{{info}}$services.localization.render('phenotips.indexVocabulary.URLhint'){{/info}}
+
+{{warning}}$services.localization.render('phenotips.indexVocabulary.longWaitWarning'){{/warning}}
+
+{{html wiki=false clean=false}}
+#foreach ($vocabularyId in $services.vocabularies.getAvailableVocabularies())
+#set ($vocabulary = $services.vocabularies.get($vocabularyId))
+#try()
+#set ($vocabularySource = $vocabulary.DefaultSourceLocation)
+#if ($vocabularySource != '')
+## We can index this vocabulary
+&lt;form class="xform solr-admin" action='' method="post"&gt;
+  &lt;dl&gt;
+    &lt;dt&gt;
+      &lt;label style="display:inline" for="vocabulary-${vocabularyId}-url"&gt;$vocabulary.name&lt;/label&gt;
+      #set ($citation = "$vocabulary.citation")
+      #set ($link = "$vocabulary.website")
+      &lt;span class="fa fa-info-circle xHelpButton" title='$citation, &lt;a href="$link" target="_blank"&gt;$link&lt;/a&gt;'&gt;&lt;/span&gt;
+      #set ($version = $vocabulary.version)
+      #if ($version)
+        #set ($versionText = $services.localization.render('phenotips.indexVocabulary.version',[$version]))
+        #set ($buttonText = $services.localization.render('phenotips.indexVocabulary.startReindex'))
+      #else
+        #set ($versionText = $services.localization.render('phenotips.indexVocabulary.noVersion'))
+        #set ($buttonText = $services.localization.render('phenotips.indexVocabulary.startIndex'))
+      #end
+      &lt;span class="xHint vocabulary-version"&gt;$versionText&lt;/span&gt;
+
+      #set($vocabularyHint = $services.localization.render("phenotips.indexVocabulary.hint.${vocabularyId}"))
+      #if ($vocabularyHint != "phenotips.indexVocabulary.hint.${vocabularyId}") ## a hint exists
+        &lt;span class="xHint vocabulary-hint"&gt;$vocabularyHint&lt;/span&gt;
+      #end
+    &lt;/dt&gt;
+    &lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="vocabulary-${vocabularyId}-url" value="$vocabularySource"/&gt;&lt;/dd&gt;
+  &lt;/dl&gt;
+  &lt;div&gt;
+    &lt;input type="hidden" name="vocabulary" value="${vocabularyId}"/&gt;
+    &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}"/&gt;
+    &lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="actionindex" value="$buttonText"/&gt;&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+#end
+#end
+#end
+{{/html}}
+
+)))
+#end
+{{/velocity}}</content>
+  <object>
+    <name>PhenoTips.IndexVocabulary</name>
+    <number>0</number>
+    <className>XWiki.ConfigurableClass</className>
+    <guid>bfa12267-9ccc-4695-8b23-5dd115b15792</guid>
+    <class>
+      <name>XWiki.ConfigurableClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <advancedOnly>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType/>
+        <name>advancedOnly</name>
+        <number>5</number>
+        <prettyName>advancedOnly</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </advancedOnly>
+      <categoryPriority>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>categoryPriority</name>
+        <number>2</number>
+        <numberType>integer</numberType>
+        <prettyName>categoryPriority</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </categoryPriority>
+      <codeToExecute>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>codeToExecute</name>
+        <number>11</number>
+        <picker>0</picker>
+        <prettyName>codeToExecute</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </codeToExecute>
+      <configurationClass>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>configurationClass</name>
+        <number>7</number>
+        <picker>0</picker>
+        <prettyName>configurationClass</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </configurationClass>
+      <configureGlobally>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>configureGlobally</name>
+        <number>8</number>
+        <prettyName>configureGlobally</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </configureGlobally>
+      <displayInCategory>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayInCategory</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>displayInCategory</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayInCategory>
+      <displayInSection>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayInSection</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>displayInSection</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayInSection>
+      <heading>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>heading</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>heading</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </heading>
+      <iconAttachment>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>iconAttachment</name>
+        <number>12</number>
+        <picker>0</picker>
+        <prettyName>iconAttachment</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </iconAttachment>
+      <linkPrefix>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>linkPrefix</name>
+        <number>9</number>
+        <picker>0</picker>
+        <prettyName>linkPrefix</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </linkPrefix>
+      <propertiesToShow>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>propertiesToShow</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>propertiesToShow</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>20</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </propertiesToShow>
+      <sectionPriority>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sectionPriority</name>
+        <number>4</number>
+        <numberType>integer</numberType>
+        <prettyName>sectionPriority</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </sectionPriority>
+    </class>
+    <property>
+      <advancedOnly>0</advancedOnly>
+    </property>
+    <property>
+      <categoryPriority>0</categoryPriority>
+    </property>
+    <property>
+      <codeToExecute>{{include reference="PhenoTips.IndexVocabulary" /}}</codeToExecute>
+    </property>
+    <property>
+      <configurationClass/>
+    </property>
+    <property>
+      <configureGlobally>1</configureGlobally>
+    </property>
+    <property>
+      <displayInCategory>phenotips</displayInCategory>
+    </property>
+    <property>
+      <displayInSection>Vocabulary</displayInSection>
+    </property>
+    <property>
+      <heading/>
+    </property>
+    <property>
+      <iconAttachment/>
+    </property>
+    <property>
+      <linkPrefix/>
+    </property>
+    <property>
+      <propertiesToShow/>
+    </property>
+    <property>
+      <sectionPriority>600</sectionPriority>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.IndexVocabulary</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>3e621fc8-cc16-4522-8394-6ae0f682dbeb</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe('xwiki:dom:loaded', function (){
+   $$('form.solr-admin').invoke('observe', 'submit', function(event) {
+      event.stop();
+      var form = event.element();
+      var mandatoryElt = form.down('.mandatory input');
+      if (!mandatoryElt || mandatoryElt.value != "") {
+        var formData = new Hash(form.serialize(true));
+        formData.set('outputSyntax', 'plain');
+        formData.set('ajax', '1');
+        // Create a notification message to display to the user when the submit is being sent
+        form._x_notification = new XWiki.widgets.Notification("$!escapetool.javascript($services.localization.render('phenotips.indexVocabulary.inProgress'))", "inprogress");
+        form.disable();
+        // FIXME Use the XWiki.Document JS API after upgrading to XWiki 6.0
+        new Ajax.Request("$xwiki.getURL('PhenoTips.IndexVocabulary', 'get')", {
+            method : 'post',
+            parameters : formData,
+            onSuccess : function (response) {
+              form._x_notification.replace(new XWiki.widgets.Notification(response.responseText, "done"));
+            }.bind(this),
+            onFailure : function (response) {
+              var failureReason = response.statusText;
+              if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
+                failureReason = "$!escapetool.javascript($services.localization.render('phenotips.indexVocabulary.noResponse'))";
+              }
+              form._x_notification.replace(new XWiki.widgets.Notification("Failed: " + failureReason, "error"));
+            }.bind(this),
+            on0 : function (response) {
+              response.request.options.onFailure(response);
+            },
+            onComplete : function (response) {
+              form.enable();
+            }
+        });
+      }
+   });
+   // Replace the title for the information buttons with something more relevant to the context.
+   $$(".xHelpButton").each(function(elem) {
+     elem.title = "$!escapetool.javascript($services.localization.render('phenotips.indexVocabulary.helpButtons.vocabulary.hint'))";
+   });
+});</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.IndexVocabulary</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>2c107cb4-88a8-40cf-b1c3-b09c03fcd569</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>form.solr-admin {
+  margin: 0 0 2em 0;
+}
+form.solr-admin input[type="text"] {
+  box-sizing: border-box;
+  margin: .5em 0;
+  width: 100%;
+}
+
+form.solr-admin .vocabulary-version {
+  float: right;
+}
+form.solr-admin .vocabulary-hint {
+  clear: right;
+}
+form.solr-admin .xTooltip {
+  font-style: normal;
+  font-weight: 400;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+</xwikidoc>

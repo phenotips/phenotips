@@ -53,7 +53,7 @@ public interface FamilyRepository
     Family createFamily(User creator);
 
     /**
-     * Deletes the family: unlinkes all patients, removes family document.
+     * Deletes the family: unlinks or deletes all patients, then removes family document.
      *
      * @param family the family
      * @param deleteAllMembers if true, also removes all member patients documents
@@ -63,9 +63,8 @@ public interface FamilyRepository
     boolean deleteFamily(Family family, User updatingUser, boolean deleteAllMembers);
 
     /**
-     * Similar to deleteFamily, but does not delete the family document (unlinkes all patients from the family). It is
-     * supposed to be used in the event handler for xwiki remove action, when the document will be removed by the
-     * framework itself.
+     * Unlinks all patients from the family. It is supposed to be used in the event handler for xwiki remove action,
+     * when the document will be removed by the framework itself.
      *
      * @param family the family
      * @param updatingUser right checks are done for this user

@@ -21,6 +21,8 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.studies.family.Family;
 
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -69,6 +71,21 @@ public class FamilySearchResult
         this(family, requiredPermissions);
         addPatientDescription(patient, usePatientName);
 
+    }
+
+    @Override
+    public boolean equals(Object other)
+    {
+        if (!(other instanceof FamilySearchResult)) {
+            return false;
+        }
+        return (this.id == ((FamilySearchResult) other).getId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(this.id);
     }
 
     private void setBasicDescription()

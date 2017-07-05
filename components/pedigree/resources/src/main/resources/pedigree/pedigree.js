@@ -26,11 +26,14 @@ define([
         "pedigree/view/exportSelector",
         "pedigree/view/candidateGeneLegend",
         "pedigree/view/causalGeneLegend",
+        "pedigree/view/rejectedGeneLegend",
+        "pedigree/view/carrierGeneLegend",
         "pedigree/view/hpoLegend",
         "pedigree/view/patientDropLegend",
         "pedigree/view/importSelector",
         "pedigree/view/cancersLegend",
         "pedigree/view/nodeMenu",
+        "pedigree/view/deceasedMenu",
         "pedigree/view/nodetypeSelectionBubble",
         "pedigree/view/okCancelDialogue",
         "pedigree/view/saveLoadIndicator",
@@ -58,11 +61,14 @@ define([
         ExportSelector,
         CandidateGeneLegend,
         CausalGeneLegend,
+        RejectedGeneLegend,
+        CarrierGeneLegend,
         HPOLegend,
         PatientDropLegend,
         ImportSelector,
         CancerLegend,
         NodeMenu,
+        DeceasedMenu,
         NodetypeSelectionBubble,
         OkCancelDialogue,
         SaveLoadIndicator,
@@ -116,6 +122,8 @@ define([
             this._disorderLegend = new DisorderLegend();
             this._candidateGeneLegend = new CandidateGeneLegend();
             this._causalGeneLegend = new CausalGeneLegend();
+            this._rejectedGeneLegend = new RejectedGeneLegend();
+            this._carrierGeneLegend = new CarrierGeneLegend();
             this._hpoLegend = new HPOLegend();
             this._cancerLegend = new CancerLegend();
             this._patientLegend = new PatientDropLegend();
@@ -159,6 +167,7 @@ define([
 
                     // generate various dialogues after preferences have been loaded
                     this._nodeMenu = this.generateNodeMenu();
+                    this._deceasedMenu = this.generateDeceasedMenu();
                     this._nodeGroupMenu = this.generateNodeGroupMenu();
                     this._partnershipMenu = this.generatePartnershipMenu();
                     this._exportSelector = new ExportSelector();
@@ -290,8 +299,8 @@ define([
                 noPatientsAreLinked = false;
             }
 
-            var noPatientsLinkedMessage = "There are no patients linked to this pedigree and thus family has no members.<br><br>";
-            var currentPatientUnlinkedMessage = "Current patient is not linked to the pedigree and thus not part of the family.<br><br>";
+            var noPatientsLinkedMessage = "There are no patients linked to this pedigree and thus family has no members.<br/><br/>";
+            var currentPatientUnlinkedMessage = "Current patient is not linked to the pedigree and thus not part of the family.<br/><br/>";
 
             //-----------------
             var saveWithChecks = function(quitAfterSave) {
@@ -353,7 +362,7 @@ define([
                         editor.getOkCancelDialogue().showCustomized(currentPatientUnlinkedMessage +
                                 "Do you want to save the pedigree and remove current patient from the family?",
                                 "Proceed with save?",
-                                "Keep editing pedigree", undefined, true,
+                                "Keep editing pedigree", undefined,
                                 "Save pedigree with current patient excluded from the family", saveAndKeepEditingFunc);
                     }
                 } else {
@@ -546,13 +555,17 @@ define([
                 return this.getCandidateGeneLegend();
             } else if (geneStatus == "solved") {
                 return this.getCausalGeneLegend();
+            } else if (geneStatus == "rejected") {
+                return this.getRejectedGeneLegend();
+            } else if (geneStatus == "carrier") {
+                return this.getCarrierGeneLegend();
             }
             return null;
         },
 
         /**
          * @method getCausalGeneLegend
-         * @return {Legend} Responsible for managing and displaying the causal genes legend
+         * @return {Legend} Responsible for managing and displaying the causal genes
          */
         getCausalGeneLegend: function() {
             return this._causalGeneLegend;
@@ -560,18 +573,35 @@ define([
 
         /**
          * @method getCandidateGeneLegend
-         * @return {Legend} Responsible for managing and displaying the candidate genes legend
+         * @return {Legend} Responsible for managing and displaying the candidate genes
          */
         getCandidateGeneLegend: function() {
             return this._candidateGeneLegend;
         },
 
         /**
-         * Returns the color of the gene for a given person.
+         * @method getRejectedGeneLegend
+         * @return {Legend} Responsible for managing rejected genes
+         */
+        getRejectedGeneLegend: function() {
+            return this._rejectedGeneLegend;
+        },
+
+        /**
+         * @method getCarrierGeneLegend
+         * @return {Legend} Responsible for managing carrier genes
+         */
+        getCarrierGeneLegend: function() {
+            return this._carrierGeneLegend;
+        },
+
+        /**
+         * Returns the color of the gene for a given person (the color may be different for different people
+         * because the same gene my be causal for one person and candidate or rejected for another).
          * If a gene does not belong to any legend "undefined" is returned.
          */
         getGeneColor: function(geneId, nodeID) {
-            var availableLegends = ["solved", "candidate"];
+            var availableLegends = ["solved", "candidate", "carrier"];
             for (var i = 0; i < availableLegends.length; i++) {
                 var colorInLegendForNode = this.getGeneLegend(availableLegends[i]).getGeneColor(geneId, nodeID);
                 if (colorInLegendForNode) {
@@ -755,11 +785,30 @@ define([
         },
 
         /**
+         * Creates the deceased inputs menu for Person nodes
+         *
+         * @method generateDeceasedMenu
+         * @return {DeceasedMenu}
+         */
+        generateDeceasedMenu: function() {
+            if (this.isReadOnlyMode()) return null;
+            return new DeceasedMenu();
+        },
+
+        /**
          * @method getNodeMenu
          * @return {NodeMenu} Context menu for nodes
          */
         getNodeMenu: function() {
             return this._nodeMenu;
+        },
+
+        /**
+         * @method getDeceasedMenu
+         * @return {DeceasedMenu} Deceased inputs menu for nodes
+         */
+        getDeceasedMenu: function() {
+            return this._deceasedMenu;
         },
 
         /**

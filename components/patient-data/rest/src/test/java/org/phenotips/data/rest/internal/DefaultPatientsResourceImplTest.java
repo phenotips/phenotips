@@ -191,7 +191,8 @@ public class DefaultPatientsResourceImplTest
     }
 
     @Test
-    public void creatingOneOfThePatientsFails() {
+    public void creatingOneOfThePatientsFails()
+    {
         JSONArray json = new JSONArray("[{}, {}, {}]");
         Exception exception = new NullPointerException();
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
@@ -203,7 +204,8 @@ public class DefaultPatientsResourceImplTest
     }
 
     @Test
-    public void addPatientsAsJSONEmptyArray() {
+    public void addPatientsAsJSONEmptyArray()
+    {
         JSONArray json = new JSONArray();
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
             any(EntityReference.class));
@@ -226,7 +228,8 @@ public class DefaultPatientsResourceImplTest
     }
 
     @Test
-    public void addPatientsAsJSON() {
+    public void addPatientsAsJSON()
+    {
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
             any(EntityReference.class));
         doReturn(this.patient).when(this.repository).create();

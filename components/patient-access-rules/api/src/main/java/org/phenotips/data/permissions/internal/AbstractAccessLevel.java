@@ -21,6 +21,7 @@ import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.translation.TranslationManager;
 
 import org.xwiki.rendering.renderer.BlockRenderer;
+import org.xwiki.security.authorization.Right;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -82,6 +83,12 @@ public abstract class AbstractAccessLevel implements AccessLevel
     public boolean isAssignable()
     {
         return this.assignable;
+    }
+
+    @Override
+    public Right getGrantedRight()
+    {
+        return Right.ILLEGAL;
     }
 
     @Override

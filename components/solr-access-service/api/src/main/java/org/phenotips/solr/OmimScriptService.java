@@ -97,7 +97,7 @@ public class OmimScriptService extends AbstractSolrScriptService
     {
         HPOScriptService hpoService = (HPOScriptService) this.service;
         QueryResponse response;
-        List<SuggestedPhenotype> result = new LinkedList<SuggestedPhenotype>();
+        List<SuggestedPhenotype> result = new LinkedList<>();
         try {
             response = this.server.query(prepareParams(phenotypes, nphenotypes));
         } catch (SolrServerException | IOException ex) {
@@ -106,9 +106,9 @@ public class OmimScriptService extends AbstractSolrScriptService
         }
         SolrDocumentList matchingDisorders = response.getResults();
         Map<?, ?> explanations = response.getExplainMap();
-        SumMap<String> cummulativeScore = new SumMap<String>();
-        CounterMap<String> matchCounter = new CounterMap<String>();
-        Set<String> allAncestors = new HashSet<String>();
+        SumMap<String> cummulativeScore = new SumMap<>();
+        CounterMap<String> matchCounter = new CounterMap<>();
+        Set<String> allAncestors = new HashSet<>();
         for (String phenotype : phenotypes) {
             allAncestors.addAll(hpoService.getAllAncestorsAndSelfIDs(phenotype));
         }
@@ -137,7 +137,7 @@ public class OmimScriptService extends AbstractSolrScriptService
             }
             Collections.sort(result);
         }
-        return result.subList(0, limit);
+        return result.subList(0, Math.min(limit, result.size()));
     }
 
     /**
@@ -150,7 +150,7 @@ public class OmimScriptService extends AbstractSolrScriptService
      */
     private MapSolrParams prepareParams(Collection<String> phenotypes, Collection<String> nphenotypes)
     {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         String q = "symptom:" + StringUtils.join(phenotypes, " symptom:");
         if (!nphenotypes.isEmpty()) {
             q += "  not_symptom:" + StringUtils.join(nphenotypes, " not_symptom:");

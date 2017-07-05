@@ -3,3 +3,4 @@ org.phenotips.data.rest.internal.DefaultPatientByExternalIdResourceImpl
 org.phenotips.data.rest.internal.DefaultPatientResourceImpl
 org.phenotips.data.rest.internal.DefaultPatientsResourceImpl
 org.phenotips.data.rest.internal.DefaultPatientConsentResourceImpl
+org.phenotips.data.rest.internal.DefaultPatientsFetchResourceImpl

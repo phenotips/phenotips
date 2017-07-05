@@ -143,7 +143,7 @@ define([
         return {
             identifier:    {value : this.getID()},
             childlessSelect : {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none', inactive: childlessInactive},
-            childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : 'none', inactive: childlessTextInactive},
+            childlessText:   {value : this.getChildlessReason() ? this.getChildlessReason() : undefined, inactive : childlessTextInactive, disabled : !this.getChildlessStatus()},
             consangr: {value: this._consangrMode, inactive: false},
             broken: {value: this.getBrokenStatus(), inactive: false}
         };

@@ -47,8 +47,8 @@ public interface Consent
     String getLabel();
 
     /**
-     * An optional (potentially long) description which is supposed to be displayed under a consent, possibly with
-     * links to external documents such as consent form(s).
+     * An optional (potentially long) description which is supposed to be displayed under a consent, possibly with links
+     * to external documents such as consent form(s).
      *
      * @return the long description of this consent
      */
@@ -65,6 +65,7 @@ public interface Consent
 
     /**
      * A convenience method to check if Consent status is Yes.
+     *
      * @return {@code true} iff getStatus() == Yes, {@code false} otherwise
      */
     boolean isGranted();
@@ -84,24 +85,25 @@ public interface Consent
     boolean isRequired();
 
     /**
-     * The list of (patient form) fields only available if consent is granted.
-     * If a field is affected by more than one consent, all of the consents have to be granted in order
-     * to enable the field.
+     * The list of (patient form) fields only available if consent is granted. If a field is affected by more than one
+     * consent, all of the consents have to be granted in order to enable the field.
      *
-     * @return A list of field IDs of the affected fields. If all fields are affected an empty list is returned.
-     * If no fields are affected {@code null} is returned.
+     * @return A list of field IDs of the affected fields. If all fields are affected an empty list is returned. If no
+     *         fields are affected {@code null} is returned.
      */
     List<String> getFields();
 
     /**
      * A convenience method to determine that all or no fields are affected.
+     *
      * @return {@code true} if all fields are affected, {@code false} otherwise
      */
     boolean affectsAllFields();
 
     /**
-     * A convenience method to determine that at least one field is affected (e.g. a consent may be
-     * requred for something other than fields).
+     * A convenience method to determine that at least one field is affected (e.g. a consent may be requred for
+     * something other than fields).
+     *
      * @return {@code true} if at least one fields is affected.
      */
     boolean affectsSomeFields();

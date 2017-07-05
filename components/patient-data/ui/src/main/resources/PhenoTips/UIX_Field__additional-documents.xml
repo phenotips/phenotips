@@ -100,7 +100,7 @@
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -117,7 +117,7 @@ $xwiki.ssx.use('PhenoTips.ImageDisplayer', {'colorTheme' : "$xwiki.getSpacePrefe
 $xwiki.jsx.use('PhenoTips.ImageDisplayer')##
 #set ($targetClassName = 'PhenoTips.ExternalFileClass')
 #if ($xcontext.action == 'edit' || $xcontext.action != 'export' &amp;&amp; $doc.getObject($targetClassName))
-  === Documents ===
+  === {{translation key="phenotips.UIXField.additionalDocuments"/}} ===
   #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'mode' : $xcontext.action})
 #end
 {{/velocity}}</content>

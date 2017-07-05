@@ -56,7 +56,7 @@ public class FormSectionTest
     public void setUp() throws ComponentLookupException, NoSuchFieldException, IllegalArgumentException,
         IllegalAccessException
     {
-        List<String> categories = new LinkedList<String>();
+        List<String> categories = new LinkedList<>();
         this.testFormSection = new FormSection(this.title, this.propertyName, categories);
         this.testFormField = mock(FormField.class);
         this.testFormGroup = mock(FormGroup.class);
@@ -74,6 +74,8 @@ public class FormSectionTest
             when(cm.getInstance(TranslationManager.class)).thenReturn(tm);
             when(tm.translate("Phenotips.FormSection.suggestTermPlaceholder")).thenReturn(
                 "enter free text and choose among suggested vocabulary terms");
+            when(tm.translate("phenotips.patients.phenotypes.other")).thenReturn(
+                "Other");
         } finally {
             field.setAccessible(isAccessible);
         }

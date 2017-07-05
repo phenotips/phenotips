@@ -42,7 +42,7 @@ define([
                 this.mainDiv.insert(promptImportFile).insert(uploadFileSelector).insert(uploadButton);
             } else {
                 this.mainDiv.insert(new Element('div', {'class': 'box infomessage import-warning-nofileupload'})
-                            .update("Your browser does not support file upload.<br>Please copy-paste import data in the box above."));
+                            .update("Your browser does not support file upload.<br/>Please copy-paste import data in the box above."));
             }
 
             var _addTypeOption = function (checked, labelText, value) {

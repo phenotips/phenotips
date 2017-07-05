@@ -42,7 +42,7 @@ define([
         },
         
         /**
-         * Always returns False - needed for compatibility with personHowerBox which uses this
+         * Always returns False - needed for compatibility with personHoverBox which uses this
          *
          * @method isProband
          */

@@ -27,6 +27,7 @@
       <column name="XWE_ID" />
       <column name="XWE_NAME" index="XWENC_NAME" />
     </key>
-    <property name="value" type="materialized_clob" column="XWE_VALUE" length="1000000000" not-null="false" />
+    <!-- Must be accessed as a field, otherwise when storing it Hibernate calls getValue, which returns the decrypted value -->
+    <property name="value" type="materialized_clob" column="XWE_VALUE" length="1000000000" not-null="false" access="field"/>
   </joined-subclass>
 </hibernate-mapping>

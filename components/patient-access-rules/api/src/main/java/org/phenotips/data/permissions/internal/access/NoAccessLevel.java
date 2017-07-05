@@ -20,7 +20,6 @@ package org.phenotips.data.permissions.internal.access;
 import org.phenotips.data.permissions.internal.AbstractAccessLevel;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.security.authorization.Right;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -42,11 +41,5 @@ public class NoAccessLevel extends AbstractAccessLevel
     public String getName()
     {
         return "none";
-    }
-
-    @Override
-    public Right getGrantedRight()
-    {
-        return Right.ILLEGAL;
     }
 }

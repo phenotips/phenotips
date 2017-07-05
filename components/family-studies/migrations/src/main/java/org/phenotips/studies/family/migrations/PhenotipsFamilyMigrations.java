@@ -17,7 +17,6 @@
  */
 package org.phenotips.studies.family.migrations;
 
-import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.Owner;
@@ -30,9 +29,13 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
+import org.xwiki.rendering.syntax.Syntax;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -44,6 +47,7 @@ import org.hibernate.QueryException;
 import org.hibernate.Session;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -74,9 +78,17 @@ public class PhenotipsFamilyMigrations
 
     private static final String FULL_RIGHT = "view,edit,delete";
 
-    /** Family reference class reference. */
-    public EntityReference familyReferenceClassReference = new EntityReference("FamilyReferenceClass",
-        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+    private static final String JSON_TOP_LEVEL = "GG";
+
+    private static final String JSON_NODE_PROPERTIES = "prop";
+
+    private static final String JSON_NODE_PEDIGREE_ID = "id";
+
+    private static final String JSON_EXTERNALID = "externalID";
+
+    private static final String JSON_PHENOTIPSID = "phenotipsId";
+
+    private static final String JSON_COMMENTS = "comments";
 
     private EntityReference rightsClassReference = new EntityReference("XWikiRights", EntityType.DOCUMENT,
         new EntityReference("XWiki", EntityType.SPACE));
@@ -96,6 +108,10 @@ public class PhenotipsFamilyMigrations
     @Named("compactwiki")
     private EntityReferenceSerializer<String> serializer;
 
+    /** Logging helper object. */
+    @Inject
+    private Logger logger;
+
     /**
      * Creates a new family document for given patient with pedigree data.
      *
@@ -104,38 +120,41 @@ public class PhenotipsFamilyMigrations
      * @param pedigreeImage pedigree SVG image text
      * @param xcontext xwiki context
      * @param hsession hibernate session
-     * @return new family xwiki document
-     * @throws XWikiException error when creating a family document, or QueryException or other Exception
-     * @throws QueryException error when querying for a the largest family identifier id
-     * @throws Exception error when other errors occur
+     * @return new family xwiki document or null in case of any errors
      */
     public XWikiDocument createFamilyDocument(XWikiDocument patientXDoc, JSONObject pedigreeData, String pedigreeImage,
-        XWikiContext xcontext, Session hsession) throws QueryException, XWikiException, Exception
+        XWikiContext xcontext, Session hsession)
     {
-        this.context = xcontext;
-        this.session = hsession;
-        long nextId = getLastUsedId() + 1;
-        String nextStringId = String.format("%s%07d", FAMILY_PREFIX, nextId);
+        try {
+            this.context = xcontext;
+            this.session = hsession;
+            long nextId = getLastUsedId() + 1;
+            String nextStringId = String.format("%s%07d", FAMILY_PREFIX, nextId);
 
-        EntityReference newFamilyRef = new EntityReference(nextStringId, EntityType.DOCUMENT, Family.DATA_SPACE);
-        XWikiDocument newFamilyXDocument = this.context.getWiki().getDocument(newFamilyRef, this.context);
-        if (!newFamilyXDocument.isNew()) {
-            throw new IllegalArgumentException("The new family id was already taken.");
+            EntityReference newFamilyRef = new EntityReference(nextStringId, EntityType.DOCUMENT, Family.DATA_SPACE);
+            XWikiDocument newFamilyXDocument = this.context.getWiki().getDocument(newFamilyRef, this.context);
+            if (!newFamilyXDocument.isNew()) {
+                throw new IllegalArgumentException("The new family id was already taken.");
+            }
+
+            this.setOwner(newFamilyXDocument, patientXDoc);
+            this.setFamilyObject(newFamilyXDocument, patientXDoc, nextId);
+            this.setPedigreeObject(newFamilyXDocument, pedigreeData, pedigreeImage);
+            this.setPermissionsObject(newFamilyXDocument, patientXDoc);
+            this.setVisibilityObject(newFamilyXDocument, patientXDoc);
+            this.setCollaborators(newFamilyXDocument, patientXDoc);
+
+            newFamilyXDocument.setAuthorReference(patientXDoc.getAuthorReference());
+            newFamilyXDocument.setCreatorReference(patientXDoc.getCreatorReference());
+            newFamilyXDocument.setContentAuthorReference(patientXDoc.getContentAuthorReference());
+            newFamilyXDocument.setParentReference(this.familyParentReference);
+            newFamilyXDocument.setSyntax(Syntax.XWIKI_2_1);
+
+            return newFamilyXDocument;
+        } catch (Exception ex) {
+            this.logger.error("Error creating new family document: {} [{}]", ex.getMessage(), ex);
+            return null;
         }
-
-        this.setOwner(newFamilyXDocument, patientXDoc);
-        this.setFamilyObject(newFamilyXDocument, patientXDoc, nextId);
-        this.setPedigreeObject(newFamilyXDocument, pedigreeData, pedigreeImage);
-        this.setPermissionsObject(newFamilyXDocument, patientXDoc);
-        this.setVisibilityObject(newFamilyXDocument, patientXDoc);
-        this.setCollaborators(newFamilyXDocument, patientXDoc);
-
-        newFamilyXDocument.setAuthorReference(patientXDoc.getAuthorReference());
-        newFamilyXDocument.setCreatorReference(patientXDoc.getCreatorReference());
-        newFamilyXDocument.setContentAuthorReference(patientXDoc.getContentAuthorReference());
-        newFamilyXDocument.setParentReference(this.familyParentReference);
-
-        return newFamilyXDocument;
     }
 
     /**
@@ -144,47 +163,139 @@ public class PhenotipsFamilyMigrations
      * @param patientDoc patient document
      * @param documentReference family document reference
      * @param xcontext context
-     * @throws XWikiException error when creating the new object
+     * @return true if operation was successful, false otherwise (e.g. when family reference creation failed)
      */
-    public void setFamilyReference(XWikiDocument patientDoc, String documentReference, XWikiContext xcontext)
-        throws XWikiException
+    public boolean setFamilyReference(XWikiDocument patientDoc, String documentReference, XWikiContext xcontext)
     {
-        this.context = xcontext;
-        BaseObject pointer = patientDoc.getXObject(this.familyReferenceClassReference);
-        if (pointer == null) {
-            pointer = patientDoc.newXObject(this.familyReferenceClassReference, this.context);
+        try {
+            this.context = xcontext;
+            BaseObject pointer = patientDoc.getXObject(Family.REFERENCE_CLASS_REFERENCE, true, this.context);
+            pointer.setStringValue("reference", documentReference);
+            return true;
+        } catch (Exception ex) {
+            return false;
         }
-        pointer.setStringValue("reference", documentReference);
     }
 
     /**
      * Adds to the pedigree JSON: "phenotipsId": patient ID in XWiki; "probandNodeID": 0; "JSON_version": "1.0".
      *
-     * @param data pedigree data
+     * @param pedigree pedigree JSON, supposedly in 1.2.x format
      * @param patientId patient Id
      * @return processed pedigree JSON object
      */
-    public JSONObject processPedigree(JSONObject data, String patientId)
+    public JSONObject processPedigree(JSONObject pedigree, String patientId)
     {
-        // Adding patient id under the patient prop
-        JSONArray gg = (JSONArray) data.get("GG");
-        for (Object nodeObj : gg) {
-            JSONObject node = (JSONObject) nodeObj;
+        JSONArray gg = pedigree.getJSONArray(JSON_TOP_LEVEL);
+        for (int pedigreeId = 0; pedigreeId < gg.length(); pedigreeId++) {
+            JSONObject node = gg.optJSONObject(pedigreeId);
+            if (node == null) {
+                continue;
+            }
 
-            int id = (int) node.get("id");
+            int id = node.optInt(JSON_NODE_PEDIGREE_ID, -1);
             if (id != 0) {
                 continue;
             }
 
-            JSONObject properties = (JSONObject) node.get("prop");
-            properties.accumulate("phenotipsId", patientId);
+            JSONObject properties = node.optJSONObject(JSON_NODE_PROPERTIES);
+            if (properties == null) {
+                properties = new JSONObject();
+            }
+            properties.put(JSON_PHENOTIPSID, patientId);
+            node.put(JSON_NODE_PROPERTIES, properties);
+            gg.put(pedigreeId, node);
+            pedigree.put(JSON_TOP_LEVEL, gg);
             break;
         }
 
-        data.accumulate("probandNodeID", 0);
-        data.accumulate("JSON_version", "1.0");
-        return data;
+        pedigree.put("probandNodeID", 0);
+        pedigree.put("JSON_version", "1.0");
+        return pedigree;
     }
+
+    /**
+     * Asigns nodes to PhenoTips records and adds comments to nodes.
+     *
+     *  - Finds all nodes with the given external IDs and - if not already linked to a PT record - links them to
+     *    the given PT record
+     *  - For each node linked to a PT record (including nodes linked in step1 above) appends the comment
+     *    provided
+     *
+     * @param pedigree pedigree as JSON. The pedigree will be modified in place
+     * @param externalIdToPhenotipsId a map of externalIDs which, if found in pedigree, should be linked
+     *        to the corresponding phenotips records
+     * @param commentsByPhenotipsId a map of phenotips ids to comments that shouldbe added for those nodes.
+     *        The list may include nodes linked based on the `externalIdToPhenotipsId` list
+     * @return a set of phenotips IDs that were newly linked based on externalID
+     */
+    public Set<String> updatePedigree(JSONObject pedigree, Map<String, String> externalIdToPhenotipsId,
+            Map<String, String> commentsByPhenotipsId)
+    {
+        Set<String> linkedIds = new HashSet<>();
+
+        JSONArray gg = pedigree.getJSONArray(JSON_TOP_LEVEL);
+        for (int pedigreeId = 0; pedigreeId < gg.length(); pedigreeId++) {
+            JSONObject node = gg.optJSONObject(pedigreeId);
+            if (node == null) {
+                continue;
+            }
+
+            JSONObject properties = node.optJSONObject(JSON_NODE_PROPERTIES);
+            if (properties == null) {
+                continue;
+            }
+
+            String externalId = properties.optString(JSON_EXTERNALID);
+            String linkPatientId = properties.optString(JSON_PHENOTIPSID, null);
+
+            if (externalId == null && linkPatientId == null) {
+                continue;
+            }
+
+            if (linkPatientId == null && externalIdToPhenotipsId.containsKey(externalId)) {
+                linkPatientId = externalIdToPhenotipsId.get(externalId);
+                properties.put(JSON_PHENOTIPSID, linkPatientId);
+                linkedIds.add(linkPatientId);
+            }
+
+            if (commentsByPhenotipsId.containsKey(linkPatientId)) {
+                // update comments
+                String comment = properties.optString(JSON_COMMENTS, null);
+                String commentAddition = commentsByPhenotipsId.get(linkPatientId);
+                if (comment == null) {
+                    comment = commentAddition;
+                } else {
+                    comment += "\n" + commentAddition;
+                }
+                properties.put(JSON_COMMENTS, comment);
+            }
+
+            node.put(JSON_NODE_PROPERTIES, properties);
+            gg.put(pedigreeId, node);
+            pedigree.put(JSON_TOP_LEVEL, gg);
+        }
+        return linkedIds;
+    }
+
+    /**
+     * Returns the owner of the patient.
+     *
+     * @param patientDoc patient XDocument
+     * @return owner as string
+     */
+    public String getOwner(XWikiDocument patientDoc)
+    {
+        String owner = getPropertyValue(patientDoc, Owner.CLASS_REFERENCE, Owner.PROPERTY_NAME, "");
+        if (StringUtils.isNotBlank(owner)) {
+            return owner;
+        }
+        if (patientDoc.getCreatorReference() != null) {
+            return this.serializer.serialize(patientDoc.getCreatorReference());
+        }
+        return owner;
+    }
+
 
     /**
      * Set owner object property.
@@ -292,18 +403,6 @@ public class PhenotipsFamilyMigrations
             value = obj.getStringValue(propertyName);
         }
         return StringUtils.defaultString(value, defaultValue);
-    }
-
-    private String getOwner(XWikiDocument patientDoc)
-    {
-        String owner = getPropertyValue(patientDoc, Owner.CLASS_REFERENCE, Owner.PROPERTY_NAME, "");
-        if (StringUtils.isNotBlank(owner)) {
-            return owner;
-        }
-        if (patientDoc.getCreatorReference() != null) {
-            return this.serializer.serialize(patientDoc.getCreatorReference());
-        }
-        return owner;
     }
 
     /**
