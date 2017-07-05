@@ -30,6 +30,37 @@
   <name>PhenoTips - Generic Entities APIs</name>
   <version>1.3-milestone-5-niaid</version>
 
+  <repositories>
+    <repository>
+      <id>gene42-phenotips-public</id>
+      <name>Gene42 PhenoTips Public Repository Group</name>
+      <url>https://nexus.gene42.com/repository/gene42-public-group/</url>
+      <releases>
+        <enabled>true</enabled>
+        <checksumPolicy>fail</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <!-- Remember to set up a server entry for 'nexus.gene42.com' in your maven settings.xml -->
+  <distributionManagement>
+    <repository>
+      <id>nexus.gene42.com</id>
+      <name>Maven2 Remote Repository for Releases</name>
+      <url>https://nexus.gene42.com/repository/gene42-public-releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>nexus.gene42.com</id>
+      <name>Maven2 Development Repository for Snapshots</name>
+      <url>https://nexus.gene42.com/repository/gene42-public-snapshots/</url>
+    </snapshotRepository>
+    <site />
+  </distributionManagement>
+
   <modules>
     <module>api</module>
     <module>ui</module>
