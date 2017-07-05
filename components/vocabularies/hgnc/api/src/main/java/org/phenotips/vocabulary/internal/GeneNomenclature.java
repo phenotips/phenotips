@@ -66,13 +66,11 @@ import org.joda.time.format.ISODateTimeFormat;
 @Singleton
 public class GeneNomenclature extends AbstractCSVSolrVocabulary
 {
+    private static final String SEPARATOR = ":";
+
     private static final String ID_FIELD_NAME = "id";
 
     private static final String SYMBOL_FIELD_NAME = "symbol";
-
-    private static final String PREV_SYMBOL_FIELD_NAME = "prev_symbol";
-
-    private static final String ALIAS_SYMBOL_FIELD_NAME = "alias_symbol";
 
     private static final String ALTERNATIVE_ID_FIELD_NAME = "alt_id";
 
@@ -186,43 +184,23 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         if (StringUtils.isBlank(symbol)) {
             return null;
         }
-
-        String escapedSymbol = ClientUtils
-            .escapeQueryChars(StringUtils.contains(symbol, ":") ? StringUtils.substringAfter(symbol, ":") : symbol);
-
-        VocabularyTerm result = getTermById(escapedSymbol);
-        if (result != null) {
-            return result;
-        }
-        result = getTermBySymbolOrAlias(escapedSymbol);
-        if (result != null) {
-            return result;
-        }
-        result = getTermByAlternativeId(escapedSymbol);
-        return result;
-    }
-
-    private VocabularyTerm getTermById(String id)
-    {
-        return requestTerm(ID_FIELD_NAME + ":HGNC\\:" + id, null);
-    }
-
-    private VocabularyTerm getTermBySymbolOrAlias(String id)
-    {
-        return requestTerm(String.format("%2$s:%1$s %3$s:%1$s %4$s:%1$s", id, SYMBOL_FIELD_NAME, PREV_SYMBOL_FIELD_NAME,
-            ALIAS_SYMBOL_FIELD_NAME), null);
+        final String id = StringUtils.contains(symbol, SEPARATOR)
+            ? StringUtils.substringAfter(symbol, SEPARATOR)
+            : symbol;
+        return requestTerm(ClientUtils.escapeQueryChars(id));
     }
 
     /**
-     * Access an individual term from the vocabulary, identified by its alternative ids: either Ensembl Gene ID or
-     * Entrez Gene ID.
+     * Access an individual term from the vocabulary, identified by its gene symbol, alternative ID, or HGNC ID.
      *
-     * @param id the term identifier that is one of property names: {@code ensembl_gene_id} or {@code entrez_id}
+     * @param id the term identifier that is one of the property names: {@code symbol}, {@code alt_id}, {@code id}
      * @return the requested term, or {@code null} if the term doesn't exist in this vocabulary
      */
-    private VocabularyTerm getTermByAlternativeId(String id)
+    private VocabularyTerm requestTerm(final String id)
     {
-        return requestTerm(ALTERNATIVE_ID_FIELD_NAME + ':' + id, null);
+        final String queryStr = String.format("%2$s:%1$s %3$s:%1$s %4$s:HGNC\\:%1$s", id, SYMBOL_FIELD_NAME,
+            ALTERNATIVE_ID_FIELD_NAME, ID_FIELD_NAME);
+        return requestTerm(queryStr, null);
     }
 
     private SolrQuery produceDynamicSolrParams(Map<String, String> staticOptions, String originalQuery, Integer rows,

@@ -212,7 +212,7 @@
     <field name="orphanet" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
 
     <!-- Secondary search on other identifiers associated with a term -->
-    <field name="alt_id" type="symbol" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+    <field name="alt_id" type="string" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
     <field name="alt_idStub" type="symbol_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
 
     <!-- Secondary search on other names/labels associated with a term -->

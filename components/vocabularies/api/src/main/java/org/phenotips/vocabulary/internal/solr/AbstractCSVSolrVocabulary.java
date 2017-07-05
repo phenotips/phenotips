@@ -51,8 +51,6 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
 {
     protected static final String VERSION_FIELD_NAME = "version";
 
-    protected static final String SYMBOL_EXACT = "symbolExact^100";
-
     /**
      * The number of documents to be added and committed to Solr at a time.
      *
@@ -174,7 +172,7 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
             response = this.externalServicesAccess.getSolrConnection(getCoreName()).query(query);
             termList = response.getResults();
 
-            if (!termList.isEmpty()) {
+            if (termList != null && !termList.isEmpty()) {
                 term = new SolrVocabularyTerm(termList.get(0), this);
                 return term;
             }
