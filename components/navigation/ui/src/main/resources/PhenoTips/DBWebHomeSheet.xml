@@ -457,8 +457,30 @@ ul.filters li {
 ul.filters .accepted-suggestions {
   margin: 0 !important;
 }
-ul.filters .xHint {
-  xdisplay: none;
++ul.filters ul {
+  clear: both;
+}
+ul.filters .accepted-suggestions li {
+  padding: 0 0 0;
+}
+ul.filters .accepted-suggestions li:last-child {
+  padding: 0 0 1em;
+}
+ul.filters .accepted-suggestions + .clear-tool {
+  margin-top: -1em;
+  margin-bottom: 1em;
+}
+ul.filters .accepted-suggestions label {
+  display: inline-block;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+ul.filters .accepted-suggestions .xHelpButton {
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .xwiki-livetable-topfilters-container {
