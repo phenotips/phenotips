@@ -41,30 +41,20 @@
 
 {{velocity output="false"}}
 #set ($targetClassName = 'PhenoTips.PatientClass')
-#set ($extra = " $!{request.filterWhere} ")
+#set ($queryFragments = {})
+#generateentitypermissions($queryFragments)
 #set ($params = [])
-#if ("$!request.space" != '')
-  #set ($extra = "${extra} and doc.space = ?")
-  #set ($discard = $params.add($request.space))
-#end
-#if ("$!request.parent" != '')
-  #set ($extra = "${extra} and doc.parent = ?")
-  #set ($discard = $params.add($request.parent))
-#end
-#if ("$!request.orphaned" == '1')
-  #set ($extra = "${extra} and doc.parent='' and doc.name&lt;&gt;'WebHome'")
-#end
 {{/velocity}}
 
 {{velocity wiki=true}}{{{
 #if ($request.count)
-#listresultwithfilterCount($targetClassName "$!{request.filterFrom}" "${extra}" $params)
+#listresultwithfilterCount($targetClassName "$!{queryFragments.from}" "$!{queryFragments.where}" $params)
 #elseif ($request.list)
   $response.setContentType('application/json')
-  #listresultwithfilter($targetClassName "$!{request.filterFrom}" "${extra}" $params)
+  #listresultwithfilter($targetClassName "$!{queryFragments.from}" "$!{queryFragments.where}" $params)
 #else
   #set($patientIds = [])
-  #listresultwithfilter_buildList($targetClassName "$!{request.filterFrom}" "${extra}" $params $patientIds)
+  #listresultwithfilter_buildList($targetClassName "$!{queryFragments.from}" "$!{queryFragments.where}" $params $patientIds)
 #end
 }}}{{/velocity}}</content>
 </xwikidoc>
