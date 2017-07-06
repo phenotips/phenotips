@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-entities</artifactId>
-    <version>1.3-milestone-5-niaid</version>
+    <version>1.3.1-niaid</version>
   </parent>
   <artifactId>phenotips-entities-ui</artifactId>
   <name>PhenoTips - Entities - Documents</name>
@@ -44,4 +44,14 @@
       <scope>runtime</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
+        <version>${xwiki.version}</version>
+      </extension>
+    </extensions>
+  </build>
 </project>

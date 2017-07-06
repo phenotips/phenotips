@@ -64,6 +64,10 @@ public interface PrimaryEntity
      */
     DocumentReference getDocument();
 
+    /**
+     * Gets the XWikiDocument of associated with this entity.
+     * @return a XWikiDocument
+     */
     XWikiDocument getXWikiDocument();
 
     /**

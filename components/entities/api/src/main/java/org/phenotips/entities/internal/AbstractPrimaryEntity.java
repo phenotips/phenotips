@@ -84,6 +84,7 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
         return getDocumentReference();
     }
 
+    @Override
     public XWikiDocument getXWikiDocument()
     {
         return this.document;
