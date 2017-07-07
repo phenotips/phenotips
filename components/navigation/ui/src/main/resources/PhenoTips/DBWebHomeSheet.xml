@@ -484,6 +484,9 @@ ul.filters .accepted-suggestions .xHelpButton {
 ul.filters ul label input[type="radio"] {
   margin-left: .5em;
 }
+ul.filters ul label {
+  display: inline-block;
+}
 
 .xwiki-livetable-topfilters-container {
   border: 0 none !important;
