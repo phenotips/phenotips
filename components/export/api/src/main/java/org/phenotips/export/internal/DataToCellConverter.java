@@ -284,21 +284,22 @@ public class DataToCellConverter
 
     public void variantsSetup(Set<String> enabledFields) throws Exception
     {
-        String sectionName = "variants";
-        if (!enabledFields.remove(sectionName)) {
+        String sectionName = "genes";
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
+        if (present == null || present.isEmpty()) {
             return;
         }
         List<String> columns =
             Arrays.asList("gene", "cdna", "protein", "transcript", "dbsnp", "zygosity", "effect", "interpretation",
                 "inheritance", "evidence", "segregation", "sanger", "chromosome", "start_position",
                 "end_position", "reference_genome");
-        this.enabledHeaderIdsBySection.put(sectionName, new LinkedHashSet<>(columns));
+        this.enabledHeaderIdsBySection.put(sectionName + "_variants", new LinkedHashSet<>(columns));
     }
 
     public DataSection variantsHeader() throws Exception
     {
-        String sectionName = "variants";
-        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
+        String sectionName = "genes";
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName + "_variants");
         if (present == null || present.isEmpty()) {
             return null;
         }
@@ -322,8 +323,8 @@ public class DataToCellConverter
 
     public DataSection variantsBody(Patient patient) throws Exception
     {
-        String sectionName = "variants";
-        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
+        String sectionName = "genes";
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName + "_variants");
         if (present == null || present.isEmpty()) {
             return null;
         }
@@ -762,7 +763,7 @@ public class DataToCellConverter
         List<String> fields = new ArrayList<>(Arrays.asList("gestation", "prenatal_development",
             "assistedReproduction_fertilityMeds", "assistedReproduction_iui", "ivf", "icsi",
             "assistedReproduction_surrogacy", "assistedReproduction_donoregg", "assistedReproduction_donorsperm",
-            "apgar"));
+            "apgar1"));
         fields.retainAll(enabledFields);
         Set<String> fieldSet = new HashSet<>(fields);
         this.enabledHeaderIdsBySection.put(sectionName, fieldSet);
@@ -777,12 +778,12 @@ public class DataToCellConverter
         List<String> apgarFields = new ArrayList<>(Arrays.asList("apgar1", "apgar5"));
         assitedReproductionFields.retainAll(fieldSet);
         int assistedReproductionOffset = assitedReproductionFields.size();
-        int apgarOffset = fields.contains("apgar") ? 2 : 0;
+        int apgarOffset = fields.contains("apgar1") ? 2 : 0;
         int bottomY = (apgarOffset > 0 || assistedReproductionOffset > 0) ? 2 : 1;
 
         int hX = 0;
         for (String fieldId : fields) {
-            if (fieldId.equals("apgar")) {
+            if (fieldId.equals("apgar1")) {
                 for (String apgarId : apgarFields) {
                     DataCell headerCell = new DataCell(this.translationManager
                         .translate("phenotips.export.excel.label.prenatalPerinatalHistory." + apgarId),
@@ -862,7 +863,7 @@ public class DataToCellConverter
             x++;
         }
 
-        if (present.contains("apgar")) {
+        if (present.contains("apgar1")) {
             List<String> apgarFields = Arrays.asList("apgar1", "apgar5");
             for (String aField : apgarFields) {
                 Integer apgar = apgarScores.get(aField);

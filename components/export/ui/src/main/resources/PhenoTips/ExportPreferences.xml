@@ -40,11 +40,11 @@
   <content>{{include reference="PhenoTips.DatabaseFilters" /}}
 
 {{velocity output="false"}}
-#macro (__export__displayOrganizedFieldList)
+#macro (__export__displayOrganizedFieldList $xclassName $targetFieldName $reportValues $ignored $valueList $simple)
 #set ($remoteEnabledFields = $request.getParameterValues('enabledFields'))## fields enabled on the remote server
 #set($ignored = {
     'fields' : ['negative_phenotype', 'negative_prenatal_phenotype', 'apgar5'],
-    'types'  : ['PhenoTips.PedigreeClass', 'PhenoTips.MeasurementsClass', 'PhenoTips.GeneVariantClass']
+    'types'  : ['PhenoTips.PedigreeClass', 'PhenoTips.MeasurementsClass']
 })
 #set($customExporters = {
     'PhenoTips.GeneClass' : {'name' : 'genes', 'label': "$services.localization.render('phenotips.exportPreferences.field.genes')"},
@@ -58,6 +58,20 @@
 #set($valueList = ['external_id', 'gender', 'phenotype', 'negative_phenotype', 'clinical_diagnosis', 'omim_id'])
 {{html clean="false" wiki="false"}}
 ## Extensions making up the main content, the actual information about the patient
+#set($sectionContent = '')
+#if(!${request.push})
+  &lt;div class="checkbox_tree_container"&gt;
+    &lt;h5&gt;&lt;label for=""&gt;&lt;input type="checkbox" name="" id="" value="" /&gt;&lt;span class="section-name-header select-all"&gt;${services.localization.render('phenotips.export.excel.label.documentInfo')}&lt;/span&gt;&lt;/label&gt;&lt;/h5&gt;
+    &lt;ul class="field-list "&gt;
+    #foreach($reportVal in $reportValues.keySet())
+      #set ($reportContent = "&lt;li class='checkbox_tree_container'&gt;&lt;label for=""${targetFieldName}_${reportVal}""&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${reportVal}"" value=""${reportVal}"" checked=""checked""/&gt;${reportValues.get($reportVal)}&lt;/label&gt;&lt;/li&gt;")
+      #set ($sectionContent = $sectionContent.concat($reportContent))
+    #end
+    $sectionContent
+    &lt;/ul&gt;
+  &lt;/div&gt;
+#end
+
 #set ($recordConfiguration = $services.recordConfiguration.getConfiguration('patient'))
 #foreach ($section in $recordConfiguration.enabledSections)
  #set ($sectionContent = '')
@@ -71,7 +85,7 @@
             (!($remoteEnabledFields.size() &gt; 0) || $remoteEnabledFields.contains("${eCMeta.name}")) &amp;&amp;
             $xwiki.getDocument($eClass).getxWikiClass().properties.size() &gt; 0
             )
-         #set ($itemContent = "&lt;li class='checkbox_tree_container'&gt;&lt;label for=""${targetFieldName}_${eCMeta.name}""&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${eCMeta.name}"" value=""$eCMeta.name""#if ($valueList.contains($eCMeta.name)) checked=""checked""#end/&gt;${eCMeta.label}&lt;/label&gt;&lt;/li&gt;")
+         #set ($itemContent = "&lt;li class='checkbox_tree_container'&gt;&lt;label for=""${targetFieldName}_${eCMeta.name}""&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${eCMeta.name}"" value=""$eCMeta.name""#if ($valueList.contains($eCMeta.name) || !$request.push) checked=""checked""#end/&gt;${eCMeta.label}&lt;/label&gt;&lt;/li&gt;")
          #set ($sectionContent = $sectionContent.concat($itemContent))
        #end
      #end
@@ -85,8 +99,12 @@
                !$ignored.fields.contains($eField) &amp;&amp;
                (!($remoteEnabledFields.size() &gt; 0) || $remoteEnabledFields.contains($eField))
             )
-            #set ($itemContent = "&lt;li class='checkbox_tree_container'&gt;&lt;label for=""${targetFieldName}_${f.name}""&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${f.name}"" value=""$f.name""#if ($valueList.contains($f.name)) checked=""checked""#end/&gt;#if($customLabels.get($f.name))${customLabels.get($f.name)}#{else}${f.translatedPrettyName}#end&lt;/label&gt;&lt;/li&gt;")
+            #set ($itemContent = "&lt;li class='checkbox_tree_container'&gt;&lt;label for=""${targetFieldName}_${f.name}""&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${f.name}"" value=""$f.name""#if ($valueList.contains($f.name) || !$request.push) checked=""checked""#end/&gt;#if($customLabels.get($f.name))${customLabels.get($f.name)}#{else}${f.translatedPrettyName}#end&lt;/label&gt;&lt;/li&gt;")
             #set ($sectionContent = $sectionContent.concat($itemContent))
+            #if ($metaFields.contains(${f.name}) &amp;&amp; !${simple})
+              #set($metaContent = "&lt;li class='checkbox_tree_container'&gt;&lt;label for=""${targetFieldName}_${f.name}_meta""&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${f.name}_meta"" value=""${f.name}_meta"" #if($valueList.contains($f.name.concat('_meta')) || $valueListisEmpty || !$request.push) checked=""checked""#end/&gt;${services.localization.render('phenotips.exportPreferences.phenotype.qualifiers')}&lt;/label&gt;&lt;/li&gt;")
+              #set ($sectionContent = $sectionContent.concat($metaContent))
+            #end
           #end
        #end
      #end
@@ -96,50 +114,13 @@
 
  &lt;div class="checkbox_tree_container"&gt;
  &lt;h5&gt;&lt;label for=""&gt;&lt;input type="checkbox" name="" id="" value="" /&gt;&lt;span class="section-name-header field-no-user-select"&gt;$section.name&lt;/span&gt;&lt;/label&gt;&lt;/h5&gt;
- &lt;ul class="field-list#if ($foreach.index &gt; 0) v-collapsed#end"&gt;
+ &lt;ul class="field-list#if ($foreach.index &gt; 0 || !$request.push) v-collapsed#end"&gt;
  $sectionContent
  &lt;/ul&gt;
  &lt;/div&gt;
  #end
 #end
 &lt;input type="hidden" name="${targetFieldName}" value="" /&gt;{{/html}}
-#end
-{{/velocity}}
-
-{{velocity output=false}}
-## if $simple is true the meta fields and the code fields are not rendered
-#macro(__export__displayFieldList $xclassName $targetFieldName $customValues $ignored $valueList $simple)
-  {{html clean="false"}}
-    #set($valueListisEmpty = ($valueList.size() == 0))
-    #set($xclass = $xwiki.getDocument($xclassName).getxWikiClass())
-    &lt;ul class="field-list"&gt;
-      #foreach($customVal in $customValues.keySet())
-        &lt;li&gt;
-          &lt;label for="${targetFieldName}_${customVal}"&gt;
-            &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${customVal}" value="$customVal"#if ($valueList.contains($customVal) || $valueListisEmpty) checked="checked"#end/&gt;
-            ${customValues.get($customVal)}
-          &lt;/label&gt;
-        &lt;/li&gt;
-      #end
-      #foreach ($field in $xclass.properties)
-        #if (($activeFields.size() == 0 || $activeFields.contains(${field.name})) &amp;&amp; !$ignored.fields.contains(${field.name}) &amp;&amp; !$ignored.types.contains(${field.type}))
-        &lt;li&gt;
-          &lt;label for="${targetFieldName}_${field.name}"&gt;
-          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}" value="${field.name}" #if($valueList.contains(${field.name}) || $valueListisEmpty) checked="checked" #end /&gt;
-          ${field.translatedPrettyName}
-        &lt;/li&gt;
-        #if ($metaFields.contains(${field.name}) &amp;&amp; !${simple})
-        &lt;li&gt;
-          &lt;label for="${targetFieldName}_${field.name}_meta"&gt;
-          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_meta" value="${field.name}_meta" #if($valueList.contains("${field.name}_meta") || $valueListisEmpty) checked="checked" #end /&gt;
-          $services.localization.render('phenotips.exportPreferences.phenotype.qualifiers')
-        &lt;/li&gt;
-        #end
-        #end
-      #end
-    &lt;/ul&gt;
-    &lt;input type="hidden" name="${targetFieldName}" value="" /&gt;
-  {{/html}}
 #end
 {{/velocity}}
 
@@ -169,17 +150,12 @@
     #set ($simple = false)
     #set ($discard = $ignored.fields.add('reports_history'))
   #end
-  #set($customValues = {
+  #set($reportValues = {
        'doc.name' : "$services.localization.render('phenotips.exportPreferences.field.docName')",
        'referrer' : "$services.localization.render('phenotips.exportPreferences.field.referrer')",
        'creationDate' : "$services.localization.render('phenotips.exportPreferences.field.creationDate')",
        'author' : "$services.localization.render('phenotips.exportPreferences.field.author')",
-       'date' : "$services.localization.render('phenotips.exportPreferences.field.date')",
-       'allergies' : "$services.localization.render('PhenoTips.AllergiesDataClass_allergies')",
-       'genes' : "$services.localization.render('phenotips.exportPreferences.field.genes')",
-       'genetic_notes' : "$services.localization.render('phenotips.exportPreferences.field.geneticNotes')",
-       'variants' : "$services.localization.render('phenotips.exportPreferences.field.variants')",
-       'apgar' : "$services.localization.render('phenotips.exportPreferences.prenatalPerinatalHistory.apgarScores')"
+       'date' : "$services.localization.render('phenotips.exportPreferences.field.date')"
   })
   #set($metaFields = ['phenotype'])
   #set($selectedValues = [])
@@ -207,22 +183,22 @@
     (% class="push-fields section columns"%)(((
     === (% class="step" %)2(%%) $services.localization.render('phenotips.exportPreferences.selectFields') ===
     {{html clean="false"}}$selectionTools{{/html}}##
-    #__export__displayOrganizedFieldList()
+    #__export__displayOrganizedFieldList( "PhenoTips.PatientClass" 'columns' $customValues $ignored $selectedValues $simple)
     #set($exportTitle = "$services.localization.render('phenotips.exportPreferences.push.submit', [$request.remoteserver])")
     #set($exportButtonID = "push-multiple-patients")
   #else
     (% class="push-fields section columns singlepatient"%)(((
     === $services.localization.render('phenotips.exportPreferences.selectFields') ===
     {{html clean="false"}}$selectionTools{{/html}}##
-    #__export__displayOrganizedFieldList()
+    #__export__displayOrganizedFieldList( "PhenoTips.PatientClass" 'columns' $customValues $ignored $selectedValues $simple)
     #set($exportTitle = "$services.localization.render('phenotips.exportPreferences.push.submit', [$request.remoteserver])")
     #set($exportButtonID = "push-patient")
   #end
 #else
-  (% class="section columns"%)(((
+  (% class="push-fields section columns"%)(((
   === (% class="step" %)2(%%) $services.localization.render('phenotips.exportPreferences.selectFields') ===
   {{html clean="false"}}$selectionTools{{/html}}##
-  #__export__displayFieldList( "PhenoTips.PatientClass" 'columns' $customValues $ignored $selectedValues $simple)
+  #__export__displayOrganizedFieldList( "PhenoTips.PatientClass" 'columns' $reportValues $ignored $selectedValues $simple)
   #set($exportTitle = "$services.localization.render('phenotips.exportPreferences.export')")
   #set($exportButtonID = "export-multiple-patients")
 #end
