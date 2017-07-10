@@ -621,8 +621,8 @@
       #set($discard = $whereParams.add("${colname}"))
       #foreach ($value in $filterValueList)
         ## Owners are always stored as full references, and the query may come as a partial reference
-        #if ($colname == 'owner' &amp;&amp; !$filterValue.startsWith("$!{xcontext.database}:"))
-          #set($discard = $whereParams.add("$!{xcontext.database}:${value}"))
+        #if ($colname == 'owner')
+          #set($discard = $whereParams.add($services.model.resolveDocument($value)))
         #else
           #set($discard = $whereParams.add($value))
         #end
