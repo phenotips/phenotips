@@ -45,7 +45,7 @@ import org.json.JSONObject;
 public class DefaultComputedMeasurementResourceImpl extends AbstractMeasurementRestResource implements
     ComputedMeasurementResource
 {
-    /** BMI and US:LS short names. */
+    /** BMI and US/LS short names. */
     private static final String BMI = "bmi";
     private static final String USLS = "usls";
 
@@ -100,11 +100,11 @@ public class DefaultComputedMeasurementResourceImpl extends AbstractMeasurementR
                 value = ((BMIMeasurementHandler) this.handlers.get(BMI))
                 .computeBMI(Double.parseDouble(dependencies[0]), Double.parseDouble(dependencies[1]));
             } else if (USLS.equals(measurement)) {
-                // US:LS is the measurement to be computed. Pass deps 0 and 1 as the respective upperSeg and lowerSeg
+                // US/LS is the measurement to be computed. Pass deps 0 and 1 as the respective upperSeg and lowerSeg
                 value = ((USLSMeasurementHandler) this.handlers.get(USLS))
                 .computeUSLS(Double.parseDouble(dependencies[0]), Double.parseDouble(dependencies[1]));
             } else {
-                // The measurement param passed to this method does not match any known computed measuremnt types
+                // The measurement param passed to this method does not match any known computed measurement types
                 throw new IllegalArgumentException();
             }
 
