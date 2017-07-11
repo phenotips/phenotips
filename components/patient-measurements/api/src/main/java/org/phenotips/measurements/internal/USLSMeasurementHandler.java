@@ -26,7 +26,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * US:LS (Upper-body-Segment : Lower-body-Segment) measurements, as a unitless ratio.
+ * US/LS (Upper-body-Segment : Lower-body-Segment) measurements, as a unitless ratio.
  *
  * @version $Id$
  * @since 1.4
@@ -61,12 +61,12 @@ public class USLSMeasurementHandler extends AbstractMeasurementHandler
     }
 
     /**
-     * Compute the US:LS (Upper segment : Lower segment ratio) for the given upper-segment and lower-segment lengths.
+     * Compute the US:LS ratio (Upper segment : Lower segment) for the given upper-segment and lower-segment lengths.
      * The formula is {@code upper-segment / lower-segment}.
      *
      * @param upperSegInCentimeters the measured upper-segment length, in centimeters
      * @param lowerSegInCentimeters the measured lower-segment length, in centimeters
-     * @return the US:LS value
+     * @return the US/LS value
      */
     public double computeUSLS(double upperSegInCentimeters, double lowerSegInCentimeters)
     {
@@ -77,8 +77,8 @@ public class USLSMeasurementHandler extends AbstractMeasurementHandler
     }
 
     /*
-     * Since the US:LS varies highly depending on race, percentile and standard deviation calculations are not
-     * currently supported for this measurement.
+     * Since the US/LS ratio varies highly depending on race, percentile and standard deviation calculations
+     * are not currently supported for this measurement.
      *
      * TODO: If race/ethnicity is ever implemented to affect measurement statistics,
      * add methods for centile and stdev calculations here.
