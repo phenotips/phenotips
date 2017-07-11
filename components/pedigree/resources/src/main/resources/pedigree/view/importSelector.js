@@ -1,5 +1,5 @@
 /**
- * The UI Element for importing pedigrees from text representationin various formats
+ * The UI Element for importing pedigrees from text representation in various formats
  *
  * @class ImportSelector
  */
@@ -154,7 +154,7 @@ define([
         },
 
         /*
-         * Disables unapplicable options on input type selection
+         * Disables inapplicable options on input type selection
          */
         disableEnableOptions: function() {
             var importType = $$('input:checked[type=radio][name="select-type"]')[0].value;
