@@ -697,7 +697,7 @@ document.observe('xwiki:dom:loaded', function()
         }.bind(selectionSummary);
 
         selectionSummary._find = function(value, type) {
-             return this.down('.summary-group .summary-item .' + type + ' input[value="' + value + '"]');
+             return this.down('.summary-group .summary-item' + (type ? (' .' + type) : '') + ' input[value="' + value + '"]');
         }.bind(selectionSummary);
 
         selectionSummary._silentRemove = function(value, type, sectionId) {
@@ -834,7 +834,7 @@ document.observe('xwiki:dom:loaded', function()
              if (forceUpdate) {
                 this._silentRemove(inputElt.value, type);
              }
-             var exists = this._find(inputElt.value, type);
+             var exists = this._find(inputElt.value, !inputElt.up('.accepted-suggestions, .dropdown') &amp;&amp; type);
              if (!exists) {
                var group = this._getGroup(sectionId);
                if (!group) {return;}
