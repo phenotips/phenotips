@@ -80,11 +80,7 @@
    #if ($eClasses)
      #foreach ($eClass in $eClasses)
        #set ($eCMeta = $customExporters.get($eClass))
-       #if (!$ignored.types.contains($eClass) &amp;&amp;
-            "$!{eCMeta}" != '' &amp;&amp;
-            (!($remoteEnabledFields.size() &gt; 0) || $remoteEnabledFields.contains("${eCMeta.name}")) &amp;&amp;
-            $xwiki.getDocument($eClass).getxWikiClass().properties.size() &gt; 0
-            )
+       #if (!$ignored.types.contains($eClass) &amp;&amp; "$!{eCMeta}" != '' &amp;&amp; (!($remoteEnabledFields.size() &gt; 0) || $remoteEnabledFields.contains("${eCMeta.name}")) &amp;&amp; $xwiki.getDocument($eClass).getxWikiClass().properties.size() &gt; 0)
          #set ($itemContent = "&lt;li class='checkbox_tree_container'&gt;&lt;label for=""${targetFieldName}_${eCMeta.name}""&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${eCMeta.name}"" value=""$eCMeta.name""#if ($valueList.contains($eCMeta.name) || !$request.push) checked=""checked""#end/&gt;${eCMeta.label}&lt;/label&gt;&lt;/li&gt;")
          #set ($sectionContent = $sectionContent.concat($itemContent))
        #end
@@ -95,10 +91,7 @@
      #if ($eFields)
        #foreach ($eField in $eFields)
           #set ($f = $eClass.get($eField))
-          #if ("$!f" != '' &amp;&amp;
-               !$ignored.fields.contains($eField) &amp;&amp;
-               (!($remoteEnabledFields.size() &gt; 0) || $remoteEnabledFields.contains($eField))
-            )
+          #if ("$!f" != '' &amp;&amp; !$ignored.fields.contains($eField) &amp;&amp; (!($remoteEnabledFields.size() &gt; 0) || $remoteEnabledFields.contains($eField)))
             #set ($itemContent = "&lt;li class='checkbox_tree_container'&gt;&lt;label for=""${targetFieldName}_${f.name}""&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${f.name}"" value=""$f.name""#if ($valueList.contains($f.name) || !$request.push) checked=""checked""#end/&gt;#if($customLabels.get($f.name))${customLabels.get($f.name)}#{else}${f.translatedPrettyName}#end&lt;/label&gt;&lt;/li&gt;")
             #set ($sectionContent = $sectionContent.concat($itemContent))
             #if ($metaFields.contains(${f.name}) &amp;&amp; !${simple})
