@@ -298,13 +298,11 @@
 #macro (__phenotypeMeta_displayAll)
   #set($dataClassName = 'PhenoTips.PhenotypeMetaClass')
   #set ($objects = $doc.getObjects($dataClassName))
-  #if ($objects.size() &gt; 0)
-    (% class="hidden" %)(((
+  (% class="hidden" id="phenotype-meta-tmp-container" %)(((
     #foreach ($pmObj in $objects)
       #__phenotypeMeta_displayEntry($pmObj)
     #end
-    )))
-  #end
+  )))
 #end
 
 ## =====================================================================
