@@ -38,10 +38,4 @@ public class UpperSegMeasurementHandler extends AbstractMeasurementHandler
     {
         return "upperSeg";
     }
-
-    @Override
-    public String getUnit()
-    {
-        return "cm";
-    }
 }
