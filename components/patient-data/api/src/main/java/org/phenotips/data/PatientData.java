@@ -21,6 +21,8 @@ import org.xwiki.stability.Unstable;
 
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Spliterator;
+import java.util.Spliterators;
 
 /**
  * Non-essential pieces of custom patient data that can be part of the patient record. The data can be structured in
@@ -125,4 +127,9 @@ public interface PatientData<T> extends Iterable<T>
      * @since 1.0M13
      */
     Iterator<Entry<String, T>> dictionaryIterator();
+
+    @Override
+    default Spliterator<T> spliterator() {
+        return Spliterators.spliterator(iterator(), size(), Spliterator.SIZED);
+    }
 }
