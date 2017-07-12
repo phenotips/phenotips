@@ -705,7 +705,14 @@ document.observe('xwiki:dom:loaded', function()
              if (exists) {
                var group = exists.up('.summary-group');
                if (sectionId &amp;&amp; this._getGroup(sectionId) != group) {return;}
-               exists.up('.summary-item').remove();
+               var summaryItem = exists.up('.summary-item');
+               var summaryItemDetails = summaryItem.down('.phenotype-details dl');
+               if (summaryItemDetails &amp;&amp; $('phenotype-meta-tmp-container')) {
+                 // Recreate the phenotype details in the temporary container for future use in the same session
+                 $('phenotype-meta-tmp-container').insert(summaryItemDetails);
+                 summaryItemDetails.insert({after: new Element('input', {type: "hidden", name: "delete-action", value: summaryItem.down('.tool.clear').__url})});
+               }
+               summaryItem.remove();
                if (!group) {return;}
                group._updateGroupVisibility();
              }
@@ -849,7 +856,7 @@ document.observe('xwiki:dom:loaded', function()
                  tools.insert(infoTool);
                }
                var deleteTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
-                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.delete'))")
+                 new Element('button', {'class' : 'tool button secondary delete', 'type' : 'button'}).update("$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.delete'))")
                );
 
                tools.insert(deleteTool);
@@ -864,13 +871,13 @@ document.observe('xwiki:dom:loaded', function()
                var detailsUrl = $('phenotype-meta-add-action') &amp;&amp; $('phenotype-meta-add-action').value;
              if (detailsUrl) {
                var detailsTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
-                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.addDetails'))")
+                 new Element('button', {'class' : 'tool button secondary add', 'type' : 'button'}).update("$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.addDetails'))")
                );
                var clearTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
-                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.clearDetails'))")
+                 new Element('button', {'class' : 'tool button secondary clear', 'type' : 'button'}).update("$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.clearDetails'))")
                );
                var editTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
-                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.editDetails'))")
+                 new Element('button', {'class' : 'tool button secondary edit', 'type' : 'button'}).update("$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.editDetails'))")
                );
                var editClearTools = new Element('span').insert(editTool).insert(clearTool);
                tools.insert(detailsTool).insert(editClearTools);
