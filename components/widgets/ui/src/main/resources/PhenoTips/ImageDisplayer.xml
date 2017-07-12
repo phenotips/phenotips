@@ -509,10 +509,10 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
                    }),
                   'bottom': image &amp;&amp; new Element ('div', {'class' : 'attachment-preview'}).update(image) ||
                                  viewlink &amp;&amp; new Element('a', {
-                                       'class' : 'view',
-                                       'href': viewlink.href,
-                                       'title' : viewlink.title,
-                                       'target' : '_blank'}).update(viewlink.innerHTML) || ''
+                                        'class' : 'view',
+                                        'href': viewlink.href,
+                                        'title' : viewlink.title,
+                                        'target' : '_blank'}).update(viewlink.innerHTML) || ''
         });
         newList.insert({bottom: lItem});
       });
