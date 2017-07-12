@@ -38,10 +38,4 @@ public class LowerSegMeasurementHandler extends AbstractMeasurementHandler
     {
         return "lowerSeg";
     }
-
-    @Override
-    public String getUnit()
-    {
-        return "cm";
-    }
 }
