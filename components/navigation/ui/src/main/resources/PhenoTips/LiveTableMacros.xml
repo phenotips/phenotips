@@ -622,7 +622,7 @@
       #foreach ($value in $filterValueList)
         ## Owners are always stored as full references, and the query may come as a partial reference
         #if ($colname == 'owner')
-          #set($discard = $whereParams.add($services.model.resolveDocument($value)))
+          #set($discard = $whereParams.add($services.model.serialize($services.model.resolveDocument($value), 'default')))
         #else
           #set($discard = $whereParams.add($value))
         #end
