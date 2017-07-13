@@ -196,7 +196,7 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
      */
     private VocabularyTerm requestTerm(final String id)
     {
-        final String queryStr = String.format("%2$s:%1$s %3$s:%1$s %4$s:HGNC\\:%1$s", id, SYMBOL_FIELD_NAME,
+        final String queryStr = String.format("%2$s:%1$s^50 %3$s:%1$s %4$s:HGNC\\:%1$s", id, SYMBOL_FIELD_NAME,
             ALTERNATIVE_ID_FIELD_NAME, ID_FIELD_NAME);
         return requestTerm(queryStr, null);
     }

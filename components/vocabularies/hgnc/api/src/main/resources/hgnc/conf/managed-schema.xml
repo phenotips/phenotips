@@ -37,12 +37,8 @@
 
     <!-- A text field for exact matching of identifiers/symbols -->
     <fieldType name="symbol" class="solr.TextField" positionIncrementGap="100">
-      <analyzer type="index">
+      <analyzer>
         <tokenizer class="solr.KeywordTokenizerFactory"/>
-        <filter class="solr.LowerCaseFilterFactory"/>
-      </analyzer>
-      <analyzer type="query">
-        <tokenizer class="solr.ClassicTokenizerFactory"/>
         <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
     </fieldType>
@@ -159,7 +155,7 @@
     <field name="status" type="string" indexed="true" stored="false" omitNorms="true"/>
 
     <!-- Primary searching on gene symbol -->
-    <field name="symbol" type="string" indexed="true" stored="true" omitNorms="true"/>
+    <field name="symbol" type="symbol" indexed="true" stored="true" omitNorms="true"/>
     <field name="symbolStub" type="symbol_prefix" indexed="true" stored="false" omitNorms="true"/>
 
     <!-- The primary name of the gene -->
@@ -212,7 +208,7 @@
     <field name="orphanet" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
 
     <!-- Secondary search on other identifiers associated with a term -->
-    <field name="alt_id" type="string" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+    <field name="alt_id" type="symbol" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
     <field name="alt_idStub" type="symbol_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
 
     <!-- Secondary search on other names/labels associated with a term -->
