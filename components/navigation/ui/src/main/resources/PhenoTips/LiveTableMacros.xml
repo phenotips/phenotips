@@ -645,35 +645,6 @@
  #end
 #end
 
-#**
- * Adds information about each live table row to the JSON returned by a live table data call.
- * NOTE: This macro uses Velocity variables defined by gridresultwithfilter_buildQuery.
- *
- * @param $map stores the JSON in memory so that it can be adjusted before serialization
- *#
-#macro(gridresult_buildRowsJSON $map)
-  #set($offset = $mathtool.toInteger($request.get('offset')))
-  ## Offset starts from 0 in velocity and 1 in javascript
-  #set($offset = $offset - 1)
-  #if (!$offset || $offset &lt; 0)
-    #set($offset = 0)
-  #end
-  #set($limit = $mathtool.toInteger($request.get('limit')))
-  #if (!$limit)
-    #set ($limit = 15)
-  #end
-  #set($query = $services.query.hql($sql).addFilter('hidden').addFilter('unique').setLimit($limit).setOffset($offset).bindValues($sqlParams))
-  #set($items = $query.execute())
-  #set($discard = $map.put('totalrows', $query.count()))
-  #set($discard = $map.put('returnedrows', $mathtool.min($items.size(), $limit)))
-  #set($discard = $map.put('offset', $mathtool.add($offset, 1)))
-  #set($rows = [])
-  #foreach($item in $items)
-    #gridresult_buildRowJSON($item $rows)
-  #end
-  #set($discard = $map.put('rows', $rows))
-#end
-
 #** ******************************************************************************************** *#
 
 #**
