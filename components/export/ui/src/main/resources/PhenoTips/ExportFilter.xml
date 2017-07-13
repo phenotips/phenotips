@@ -37,231 +37,24 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{velocity wiki="true"}}{{{
-#macro (findPhenotypeMetadata)
-  #set ($meta = $NULL)
-  #foreach ($metaObj in $patientDoc.getObjects('PhenoTips.PhenotypeMetaClass'))
-    #set ($nameProperty = $metaObj.get('target_property_name'))
-    #set ($valueProperty = $metaObj.get('target_property_value'))
-    #if ($nameProperty == $field &amp;&amp; $valueProperty == $code)
-      #set ($meta = $metaObj)
-      #break($foreach)
-    #end
-  #end
-#end
-##
-##
+  <content>{{include reference="PhenoTips.LiveTableMacros" /}}
+
+{{velocity output="false"}}
 #set ($targetClassName = 'PhenoTips.PatientClass')
-#set ($ownerClassName = 'PhenoTips.OwnerClass')
-#set ($targetClass = $xwiki.getClass($targetClassName))
-#set ($activeFields = $services.recordConfiguration.activeConfiguration.enabledFieldNames)
-#set ($dateFormat = $services.jodatime.getDateTimeFormatterForPattern('MM/dd/yyyy'))
-#set ($query = ', BaseObject obj, LongProperty iid where doc.space = ? and obj.name = doc.fullName and obj.className = ? and iid.id.id = obj.id and iid.id.name = ''identifier'' and iid.value &gt;= 0')
-#set ($parameters = ['data', $targetClassName])
-#set ($isFirstReferrer = true)
-#foreach ($referrer in $request.getParameterValues('doc.creator'))
-  #if ($referrer != '')
-    #if ($isFirstReferrer)
-      #set ($query = $query.concat(' and ('))
-      #set ($isFirstReferrer = false)
-    #else
-      #set ($query = $query.concat(' or '))
-    #end
-    #if ($referrer.contains(':'))
-      #set ($query = $query.concat('doc.creator = ? or '))
-      #set ($discard = $parameters.add($stringtool.substringAfter($referrer, ':')))
-    #end
-    #set ($query = $query.concat('doc.creator = ?'))
-    #set ($discard = $parameters.add($referrer))
-  #end
-#end
-#if (!$isFirstReferrer)
-  #set ($query = $query.concat(')'))
-#end
-#set ($isFirstOwner = true)
-#foreach ($owner in $request.getParameterValues('owner'))
-  #if ($owner != '')
-    #if ($isFirstOwner)
-      #set ($query = $query.concat(' and ('))
-      #set ($isFirstOwner = false)
-    #else
-      #set ($query = $query.concat(' or '))
-    #end
-    #set ($query = $query.concat('owner.value = ?'))
-    #set ($discard = $parameters.add($services.model.resolveDocument($owner).toString()))
-  #end
-#end
-#if (!$isFirstOwner)
-  #set ($query = $query.concat(')'))
-  #set ($query = ", BaseObject ownerobj, StringProperty owner" + $query + " and ownerobj.className = '$ownerClassName' and owner.name = 'owner' and owner.id.id=ownerobj.id and ownerobj.name = doc.fullName")
-#end
-#set ($isFirstAuthor = true)
-#foreach ($author in $request.getParameterValues('doc.author'))
-  #if ($author != '')
-    #if ($isFirstAuthor)
-      #set ($query = $query.concat(' and ('))
-      #set ($isFirstAuthor = false)
-    #else
-      #set ($query = $query.concat(' or '))
-    #end
-    #if ($author.contains(':'))
-      #set ($query = $query.concat('doc.author = ? or '))
-      #set ($discard = $parameters.add($stringtool.substringAfter($author, ':')))
-    #end
-    #set ($query = $query.concat('doc.author = ?'))
-    #set ($discard = $parameters.add($author))
-  #end
-#end
-#if (!$isFirstAuthor)
-  #set ($query = $query.concat(')'))
-#end
-#set ($isFirstPhenotype = true)
-#set ($joinOperator = "$!{request.get('phenotype/join_mode').toUpperCase()}")
-#if ($joinOperator != 'AND' &amp;&amp; $joinOperator != 'OR')
-  #set ($joinOperator = 'AND')
-#end
-#foreach ($phenotype in $request.getParameterValues('phenotype'))
-  #if ($phenotype != '')
-    #if ($isFirstPhenotype)
-      #set ($isFirstPhenotype = false)
-      #if ("$!request.phenotype_subterms" == 'no')
-        #set ($query = ", DBStringListProperty phenotype ${query} and phenotype.id.id = obj.id and phenotype.id.name = 'phenotype' and (? in elements(phenotype.list)")
-      #else
-        #set ($query = ", DBStringListProperty phenotype ${query} and phenotype.id.id = obj.id and phenotype.id.name = 'extended_phenotype' and (? in elements(phenotype.list)")
-      #end
-    #else
-      #set ($query = $query.concat(" ${joinOperator} ? in elements(phenotype.list)"))
-    #end
-    #set ($discard = $parameters.add($phenotype))
-  #end
-#end
-#if (!$isFirstPhenotype)
-  #set ($query = $query.concat(')'))
-#end
-#set ($isFirstDisease = true)
-#set ($joinOperator = "$!{request.get('omim_id/join_mode').toUpperCase()}")
-#if ($joinOperator != 'AND' &amp;&amp; $joinOperator != 'OR')
-  #set ($joinOperator = 'AND')
-#end
-#foreach ($disease in $request.getParameterValues('omim_id'))
-  #if ($disease != '')
-    #if ($isFirstDisease)
-      #set ($query = ", DBStringListProperty disease ${query} and disease.id.id = obj.id and disease.id.name = 'omim_id' and (? in elements(disease.list)")
-      #set ($isFirstDisease = false)
-    #else
-      #set ($query = $query.concat(" ${joinOperator} ? in elements(disease.list)"))
-    #end
-    #set ($discard = $parameters.add($disease))
-  #end
-#end
-#if (!$isFirstDisease)
-  #set ($query = $query.concat(')'))
-#end
-#if ("$!request.get('doc.creationDate/after')" != '')
-  #set ($date = $dateFormat.parseDateTime($request.get('doc.creationDate/after')))
-  #set ($query = $query.concat(' and doc.creationDate &gt; ?'))
-  #set ($discard = $parameters.add($date.toDate()))
-#end
-#if ("$!request.get('doc.creationDate/before')" != '')
-  #set ($date = $dateFormat.parseDateTime($request.get('doc.creationDate/before')))
-  #set ($query = $query.concat(' and doc.creationDate &lt; ?'))
-  #set ($discard = $parameters.add($date.toDate()))
-#end
-#if ("$!request.get('doc.date/after')" != '')
-  #set ($date = $dateFormat.parseDateTime($request.get('doc.date/after')))
-  #set ($query = $query.concat(' and doc.date &gt; ?'))
-  #set ($discard = $parameters.add($date.toDate()))
-#end
-#if ("$!request.get('doc.date/before')" != '')
-  #set ($date = $dateFormat.parseDateTime($request.get('doc.date/before')))
-  #set ($query = $query.concat(' and doc.date &lt; ?'))
-  #set ($discard = $parameters.add($date.toDate()))
-#end
-#set ($hasBDate = false)
-#if ("$!request.get('date_of_birth/after')" != '')
-  #set ($date = $dateFormat.parseDateTime($request.get('date_of_birth/after')))
-  #set ($query = ", DateProperty birthDate $query and birthDate.id.id = obj.id and birthDate.id.name = 'date_of_birth' and birthDate.value &gt; ?")
-  #set ($discard = $parameters.add($date.toDate()))
-  #set ($hasBDate = true)
-#end
-#if ("$!request.get('date_of_birth/before')" != '')
-  #set ($date = $dateFormat.parseDateTime($request.get('date_of_birth/before')))
-  #if ($hasBDate)
-    #set ($query = "$query and birthDate.value &lt; ?")
-  #else
-    #set ($query = ", DateProperty birthDate $query and birthDate.id.id = obj.id and birthDate.id.name = 'date_of_birth' and birthDate.value &lt; ?")
-  #end
-  #set ($discard = $parameters.add($date.toDate()))
-#end
-#if ("$!request.get('external_id')" != '')
-  #set ($query = ", StringProperty externalId $query and externalId.id.id = obj.id and externalId.id.name = 'external_id' and upper(externalId.value) like upper(?)")
-  #set ($discard = $parameters.add("$request.get('external_id')%"))
-#end
-#set ($visibilities = $request.getParameterValues('visibility'))
-#if ("$!visibilities" != '')
-  #set ($query = ", StringProperty visibilityProperty, BaseObject visibilityObj $query and visibilityObj.name = doc.fullName and visibilityObj.className = 'PhenoTips.VisibilityClass' and visibilityProperty.id.id = visibilityObj.id and visibilityProperty.name = 'visibility' and (")
-  #foreach ($visibility in $request.getParameterValues('visibility'))
-    #if ($foreach.index == 0)
-      #set ($query = "${query}visibilityProperty.value = ?")
-    #else
-      #set ($query = "${query} or visibilityProperty.value = ?")
-    #end
-    #set ($discard = $parameters.add($visibility))
-  #end
-  #set ($query = "${query})")
+#set ($queryFragments = {})
+#generateentitypermissions($queryFragments)
+#set ($params = [])
+{{/velocity}}
+
+{{velocity wiki=true}}{{{
+#if ($request.count)
+#listresultwithfilterCount($targetClassName "$!{queryFragments.from}" "$!{queryFragments.where}" $params)
+#elseif ($request.list)
+  $response.setContentType('application/json')
+  #listresultwithfilter($targetClassName "$!{queryFragments.from}" "$!{queryFragments.where}" $params)
 #else
-  #set ($query = '')
+  #set($patientIds = [])
+  #listresultwithfilter_buildList($targetClassName "$!{queryFragments.from}" "$!{queryFragments.where}" $params $patientIds)
 #end
-
-## Rights management
-#if ($isGuest)
-  #set ($query = ", BaseObject accessObj, StringProperty accessProp $query and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and accessObj.className = 'PhenoTips.OwnerClass' and (accessProp.value = '' or accessProp.value is null)")
-#elseif (!$hasAdmin)
-  #set ($groups = [])
-  #set ($toProcess = $collectionstool.queue)
-  #if ($xcontext.userReference)
-    #set ($discard = $groups.add($xcontext.userReference))
-    #set ($discard = $toProcess.add($xcontext.userReference.toString()))
-  #end
-  #foreach ($iteration in [0..1000])
-    #if ($toProcess.empty)
-      #break
-    #end
-    #set ($item = $toProcess.poll())
-    #foreach ($group in $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($item)))
-      #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
-      #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Administrators'))
-        #set ($group = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)))
-        #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
-      #end
-      #if ($groupObj &amp;&amp; !$groups.contains($group.documentReference.toString()))
-        #set ($discard = $toProcess.add($group.documentReference.toString()))
-        #set ($discard = $groups.add($escapetool.sql($group.documentReference.toString())))
-      #end
-    #end
-  #end
-  #set ($groups = "('${stringtool.join($groups, ""','"")}')")
-  #set ($query = ", BaseObject accessObj, StringProperty accessProp $query and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and ((accessObj.className = 'PhenoTips.OwnerClass' and accessProp.value in ${groups}) or (accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ${groups}) or (accessObj.className = 'PhenoTips.VisibilityClass' and accessProp.value in ('public', 'open')))")
-#end
-
-#if ($query != '')
-  #set ($patientIds = $services.query.hql($query).bindValues($parameters))
-  #set ($discard = $patientIds.addFilter('unique'))
-  #if ($request.count)
-    #set ($discard = $patientIds.addFilter('count'))
-    $patientIds.execute()[0]
-    #break
-  #end
-  #set ($patientIds = $patientIds.execute())
-  #if ($request.list)
-    $response.setContentType('application/json')
-    $jsontool.serialize($patientIds)
-    #break
-  #end
-#elseif ($request.count)
-  0
-  #break
-#end
-}}}
-{{/velocity}}</content>
+}}}{{/velocity}}</content>
 </xwikidoc>
