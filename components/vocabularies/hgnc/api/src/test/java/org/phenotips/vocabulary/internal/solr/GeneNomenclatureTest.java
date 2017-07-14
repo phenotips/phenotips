@@ -70,7 +70,7 @@ public class GeneNomenclatureTest
 
     private static final String TERM_PREFIX = "HGNC";
 
-    private static final String QUERY_STRING = "symbol:term1 alt_id:term1 id:HGNC\\:term1";
+    private static final String QUERY_STRING = "symbol:term1^50 alt_id:term1 id:HGNC\\:term1";
 
     private static final String TERM_ID = "term1";
 
