@@ -1,18 +1,19 @@
-#template('colorThemeInit.vm') 
-.extradata-list th.gene-t-header-gene {
-  width: 15%;
-}
-.extradata-list th.gene-t-header-status {
-  width: 20%
-}
-.extradata-list th.gene-t-header-evidence {
-  width: 25%;
-}
-.extradata-list td.counter {
-  width: 3em;
-}
-.extradata-list td.gene {
+#template('colorThemeInit.vm')
+
+.gene-table td.gene, .gene-table td.row-count, .gene-table td.variant {
+  width: 1%;
+  white-space: nowrap;
   padding-bottom: 1em;
+}
+.gene-table td.gene.Status, .gene-table td.gene.Strategy {
+  min-width: 200px;
+}
+.editbody td.gene.Strategy {
+  min-width: 235px;
+}
+.gene-table td.gene.Comments, .gene-table td.variant.moreinfo {
+  width: auto;
+  white-space: normal;
 }
 .variant-row-count.variant, .extradata-list td.gene, .variant.variant-default-input {
   text-align: left;
@@ -21,13 +22,12 @@
   display: inline;
   padding-right: 5px;
 }
-.xHelpButton.gene-info{
+.xHelpButton.gene-info {
   padding-top: 5px;
-  margin-right: -16px;
   padding-left: 10px;
 }
-.suggested.suggest-gene.gene-name{
-  width : 85%;
+.suggested.suggest-gene.gene-name {
+  width : 210px;
 }
 .gene-table td, .gene-table th {
   vertical-align: top;
@@ -56,12 +56,16 @@
 .gene-table td.variant, .gene-table th.variant {
   font-size: 87%;
   background: #def;
+  position: relative;
 }
 .gene-table, .gene-table tr, .gene-table th {
   position: relative;
 }
 .gene-table .variant-moreinfo-table td {
   vertical-align: baseline;
+}
+.zygosity select {
+   margin-right: 20px;
 }
 .moreinfo-view {
   display: inline-block;
@@ -130,7 +134,7 @@ td.variant-moreinfo strong::after {
   padding-top: 5px;
 }
 .variant.variant-default-input.cdna input[type="text"] {
-  width: 100px;
+  width: 170px;
 }
 .gene-table select {
   width: 210px;
@@ -146,6 +150,14 @@ td.Evidence.gene select {
 }
 .moreinfo-table-label-width {
   width: 120px;
+}
+a.button.delete-variant {
+  position: absolute;
+  right: 9px;
+}
+a.button.variant-edit {
+  position: absolute;
+  right: 0;
 }
 a.delete-variant.secondary:hover {
   color: red;

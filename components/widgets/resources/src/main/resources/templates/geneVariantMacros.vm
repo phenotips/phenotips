@@ -19,7 +19,7 @@
 #end
 ##
 #macro (__variant__deleteTool $object)
-{{html clean="false"}}<span class="buttonwrapper" style="position : relative; float: right;"><a class="action delete-variant button secondary" style="margin-top : 0" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;classid=${object.number}&amp;form_token=$!{services.csrf.getToken()}")" title="$services.localization.render('phenotips.tableMacros.delete')">✖</a></span>{{/html}}##
+{{html clean="false"}}<span class="buttonwrapper"><a class="action delete-variant button secondary" style="margin-top : 0" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;classid=${object.number}&amp;form_token=$!{services.csrf.getToken()}")" title="$services.localization.render('phenotips.tableMacros.delete')">✖</a></span>{{/html}}##
 #end
 ##
 ##
