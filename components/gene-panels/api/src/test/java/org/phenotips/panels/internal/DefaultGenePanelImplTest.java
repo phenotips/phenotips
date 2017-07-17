@@ -96,6 +96,10 @@ public class DefaultGenePanelImplTest
 
     private static final String ID_LABEL = "id";
 
+    private static final String NAME_LABEL = "name";
+
+    private static final String NAME_TRANSLATED = "name_translated";
+
     @Mock
     private VocabularyManager vocabularyManager;
 
@@ -519,12 +523,15 @@ public class DefaultGenePanelImplTest
         when(geneTerm2.get(ENSEMBL_ID)).thenReturn(GENE_ID_LIST2);
         when(geneTerm3.get(ENSEMBL_ID)).thenReturn(null);
 
-        when(this.presentTerm1.toJSON()).thenReturn(new JSONObject().put(ID_LABEL, HPO_TERM1));
-        when(this.presentTerm2.toJSON()).thenReturn(new JSONObject().put(ID_LABEL, HPO_TERM2));
-        when(absentTerm.toJSON()).thenReturn(new JSONObject().put(ID_LABEL, HPO_TERM3));
-
+        when(this.presentTerm1.getId()).thenReturn(HPO_TERM1);
+        when(this.presentTerm1.getTranslatedName()).thenReturn(HPO_TERM1);
         when(this.presentTerm1.getName()).thenReturn(HPO_TERM1);
+        when(this.presentTerm2.getId()).thenReturn(HPO_TERM2);
+        when(this.presentTerm2.getTranslatedName()).thenReturn(HPO_TERM2);
         when(this.presentTerm2.getName()).thenReturn(HPO_TERM2);
+
+        when(absentTerm.getId()).thenReturn(HPO_TERM3);
+        when(absentTerm.getTranslatedName()).thenReturn(HPO_TERM3);
         when(absentTerm.getName()).thenReturn(HPO_TERM3);
     }
 
@@ -537,8 +544,14 @@ public class DefaultGenePanelImplTest
             new JSONObject()
                 .put(TERMS_LABEL,
                     new JSONArray()
-                        .put(new JSONObject().put(ID_LABEL, HPO_TERM1))
-                        .put(new JSONObject().put(ID_LABEL, HPO_TERM2)))
+                        .put(new JSONObject()
+                            .put(ID_LABEL, HPO_TERM1)
+                            .put(NAME_LABEL, HPO_TERM1)
+                            .put(NAME_TRANSLATED, HPO_TERM1))
+                        .put(new JSONObject()
+                            .put(ID_LABEL, HPO_TERM2)
+                            .put(NAME_LABEL, HPO_TERM2)
+                            .put(NAME_TRANSLATED, HPO_TERM2)))
                 .put(GENE_SYMBOL_LABEL, GENE2)
                 .put(GENE_ID_LABEL, GENE_ID2)
                 .put(COUNT_LABEL, 2);
@@ -547,7 +560,10 @@ public class DefaultGenePanelImplTest
             new JSONObject()
                 .put(TERMS_LABEL,
                     new JSONArray()
-                        .put(new JSONObject().put(ID_LABEL, HPO_TERM1)))
+                        .put(new JSONObject()
+                            .put(ID_LABEL, HPO_TERM1)
+                            .put(NAME_LABEL, HPO_TERM1)
+                            .put(NAME_TRANSLATED, HPO_TERM1)))
                 .put(GENE_SYMBOL_LABEL, GENE1)
                 .put(GENE_ID_LABEL, GENE_ID1)
                 .put(COUNT_LABEL, 1);
@@ -556,7 +572,10 @@ public class DefaultGenePanelImplTest
             new JSONObject()
                 .put(TERMS_LABEL,
                     new JSONArray()
-                        .put(new JSONObject().put(ID_LABEL, HPO_TERM2)))
+                        .put(new JSONObject()
+                            .put(ID_LABEL, HPO_TERM2)
+                            .put(NAME_LABEL, HPO_TERM2)
+                            .put(NAME_TRANSLATED, HPO_TERM2)))
                 .put(GENE_SYMBOL_LABEL, GENE3)
                 .put(GENE_ID_LABEL, GENE3)
                 .put(COUNT_LABEL, 1);

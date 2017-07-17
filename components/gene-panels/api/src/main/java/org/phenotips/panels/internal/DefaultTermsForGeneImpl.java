@@ -39,6 +39,8 @@ import org.json.JSONObject;
  */
 public class DefaultTermsForGeneImpl implements TermsForGene
 {
+    private static final String ID = "id";
+
     private static final String COUNT = "count";
 
     private static final String TERMS = "terms";
@@ -46,6 +48,10 @@ public class DefaultTermsForGeneImpl implements TermsForGene
     private static final String GENE_SYMBOL = "gene_symbol";
 
     private static final String GENE_ID = "gene_id";
+
+    private static final String NAME = "name";
+
+    private static final String NAME_TRANSLATED = "name_translated";
 
     private final String geneId;
 
@@ -122,7 +128,11 @@ public class DefaultTermsForGeneImpl implements TermsForGene
     {
         final JSONArray json = new JSONArray();
         for (final VocabularyTerm term : getTerms()) {
-            json.put(term.toJSON());
+            final JSONObject termSummary = new JSONObject();
+            termSummary.put(ID, term.getId());
+            termSummary.putOpt(NAME, term.getName());
+            termSummary.putOpt(NAME_TRANSLATED, term.getTranslatedName());
+            json.put(termSummary);
         }
         return json;
     }
