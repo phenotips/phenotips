@@ -85,7 +85,7 @@ define([
                     var fileElem = document.getElementById("pedigreeInputFile");
                     fileElem.click();
                 })
-                var promptImportFile = new Element('div', {'class': 'import-section', }).update("Paste data in the box below, or ");
+                var promptImportFile = new Element('div', {'class': 'import-file-section', }).update("Paste data in the box below or ");
                 this.mainDiv.insert(promptImportFile).insert(uploadFileSelector).insert(uploadButton);
             } else {
                 this.mainDiv.insert(new Element('div', {'class': 'box infomessage import-warning-nofileupload'})
