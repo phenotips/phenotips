@@ -868,9 +868,10 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   white-space: nowrap;
   width: auto;
 }
-#create-patient-record:hover {
+#create-patient-record:hover, label[for="create-patient-record"]:hover {
   text-decoration: underline;
 }
+
 #phenotips-globalTools .search .icon-search, #phenotips-globalTools .search .fa-search {
   color: $theme.menuLinkColor;
   display: inline-block;
