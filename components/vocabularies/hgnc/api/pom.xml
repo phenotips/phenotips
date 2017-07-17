@@ -30,7 +30,7 @@
 
   <properties>
     <!-- More tests should be added when the Solr core becomes a component -->
-    <coverage.instructionRatio>0.39</coverage.instructionRatio>
+    <coverage.instructionRatio>0.34</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -70,6 +70,13 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-tool-test-component</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
