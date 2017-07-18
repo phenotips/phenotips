@@ -187,13 +187,13 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>patient-data-ui</artifactId>
+      <artifactId>patient-access-rules-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>patient-access-rules-ui</artifactId>
+      <artifactId>patient-data-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
     </dependency>

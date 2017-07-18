@@ -525,7 +525,7 @@
 $xwiki.jsx.use('PhenoTips.FamilyContentTopMenu')##
 (% id="family-directory-actions" class="content-actions directory-actions" %)(((
 (% id="fd-more-actions-menu" class="menu menu-horizontal" %)(((
-* [[{{icon name="plus-circle"/}}{{translation key="phenotips.homepage.myFamily.createFamily"/}}&gt;&gt;Families.Create]]
+* [[{{icon name="plus-circle"/}}{{translation key="phenotips.families.directory.create"/}}&gt;&gt;Families.Create]]
 )))
 )))
 #end## CAN CREATE
