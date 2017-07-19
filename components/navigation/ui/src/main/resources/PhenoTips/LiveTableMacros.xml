@@ -651,7 +651,10 @@
  * Macro to generate entity permissions query fragments
  *#
 #macro(generateentitypermissions $queryFragments)
-  #if ($isGuest)
+  #if ($xwiki.getDocument('PhenoTips.OwnerClass').isNew())
+    #set ($filterFrom = ", LongProperty iid")
+    #set ($filterWhere = "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0")
+  #elseif ($isGuest)
     #set ($filterFrom = ", BaseObject accessObj, StringProperty accessProp, LongProperty iid")
     #set ($filterWhere = "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and accessObj.className = 'PhenoTips.OwnerClass' and (accessProp.value = '' or accessProp.value is null)")
   #elseif (!$hasAdmin)
