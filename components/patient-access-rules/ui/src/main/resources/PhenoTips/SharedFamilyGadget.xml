@@ -205,7 +205,8 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
       <name>org.phenotips.homepage.dashboard.sharedFamilies</name>
     </property>
     <property>
-      <parameters>priority=80
+      <parameters>title={{translation key="phenotips.homepage.sharedFamilies.title"/}} [[{{translation key="phenotips.homepage.sharedFamilies.browse"/}}&gt;&gt;Families.WebHome||class="extra"]]
+priority=80
 column=1
 enabled=1</parameters>
     </property>

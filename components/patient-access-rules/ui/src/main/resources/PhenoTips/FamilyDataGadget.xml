@@ -186,7 +186,8 @@
       <name>org.phenotips.homepage.dashboard.ownedFamilies</name>
     </property>
     <property>
-      <parameters>priority=70
+      <parameters>title={{translation key="phenotips.homepage.ownedFamilies.title"/}}#if($xwiki.hasAccessLevel('edit','Families.$reserved')) [[{{icon name="plus-circle"/}}{{translation key="phenotips.homepage.ownedFamilies.create"/}}&gt;&gt;Families.Create||class="extra"]]#end
+priority=70
 column=1
 enabled=true</parameters>
     </property>

@@ -171,7 +171,8 @@
       <name>org.phenotips.homepage.dashboard.families</name>
     </property>
     <property>
-      <parameters>priority=70
+      <parameters>title={{translation key="phenotips.homepage.families.title"/}} [[{{translation key="phenotips.homepage.families.browse"/}}&gt;&gt;Families.WebHome||class="extra"]]
+priority=70
 column=1
 enabled=true</parameters>
     </property>

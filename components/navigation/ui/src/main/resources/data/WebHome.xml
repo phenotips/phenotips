@@ -49,10 +49,8 @@ $xwiki.ssfx.use('uicomponents/container/columns.css', {'forceSkinAction' : true,
       #set ($extensionParameters = $e.getParameters())
       #if ($extensionParameters.get('column') == "$column" &amp;&amp; $extensionParameters.get('enabled') != 'false')
         #set ($extentionContent = $services.rendering.render($e.execute(), 'xhtml/1.0').trim())
-        #set ($gadgetDocRef = $e.getDocumentReference())
-        #set ($gadgetDoc = $xwiki.getDocument($gadgetDocRef))
         (% class="gadget" %)(((
-          (% class="gadget-title" %)((($gadgetDoc.getPlainTitle())))
+          (% class="gadget-title" %)((($extensionParameters.get('title'))))
           (% class="gadget-content" %)((({{html wiki="false" clean="false"}}$extentionContent{{/html}})))
         )))
 
