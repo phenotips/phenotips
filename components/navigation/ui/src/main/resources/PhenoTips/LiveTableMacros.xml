@@ -447,7 +447,7 @@
     ##
     ## Document authors, exact match if the filter value contains a wiki or a space name, substring matches otherwise
     #elseif($colname == 'doc.creator' || $colname == 'doc.author')
-      #foreach ($filterValue in $request.getParameterValues($colname))
+      #foreach ($filterValue in $filterValueList)
         #if ($foreach.index == 0)
           #set ($whereSql = "${whereSql} and (")
         #else
