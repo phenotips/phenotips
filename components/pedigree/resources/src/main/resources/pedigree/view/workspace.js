@@ -137,6 +137,12 @@ define([
 
             editor.getView().setAnonymizeStatus(anonymizeSettings);
 
+            // move white background up if it is not the first child element of <svg>, otherwise it will hide labels
+            var backgroundEl = $('white-bbox-background');
+            if (backgroundEl && backgroundEl.parentNode && backgroundEl.previousElementSibling) {
+                backgroundEl.parentNode.insertBefore(backgroundEl, backgroundEl.parentNode.firstChild);
+            }
+
             var _bbox = image.down().getBBox();
             var bbox = {};
             // Due to a bug (?) in firefox bounding box as reported by the browser may be a few pixels

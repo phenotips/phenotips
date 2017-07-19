@@ -1055,12 +1055,6 @@ define([
                 }
             }
 
-            // move white background up if it is not the first child element of <svg>, otherwise it will hide labels
-            var backgroundEl = $('white-bbox-background');
-            if (backgroundEl && backgroundEl.parentNode && backgroundEl.previousElementSibling) {
-                backgroundEl.parentNode.insertBefore(backgroundEl, backgroundEl.parentNode.firstChild);
-            }
-
             // a hack for node links which should be clickable without hoverbox obscuring them and making them move
             if (this._linkLabel) {
                 this._linkArea && this._linkArea.remove();
