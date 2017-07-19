@@ -843,37 +843,42 @@ define([
         updateCancerAgeOfOnsetLabels: function() {
             var cancerLabels = this.getCancerAgeOfOnsetLabels();
             if (!Helpers.isObjectEmpty(cancerLabels)) {
-                for (var cancerName in cancerLabels) {
-                    cancerLabels[cancerName].remove();
+                for (var cancerId in cancerLabels) {
+                    cancerLabels[cancerId].remove();
                 }
             }
             var cancerData = this.getNode().getCancers();
             if (!Helpers.isObjectEmpty(cancerData)
                 && editor.getPreferencesManager().getConfigurationOption("displayCancerLabels")) {
-                for (var cancerName in cancerData) {
-                    if (cancerData.hasOwnProperty(cancerName) && cancerData[cancerName].affected) {
+                for (var cancerId in cancerData) {
+                    if (cancerData.hasOwnProperty(cancerId) && cancerData[cancerId].affected) {
+                        var cancerName = cancerData[cancerId].label || cancerId;
                         var text = cancerName.toString() + " ca.";
-                        if (cancerData[cancerName].hasOwnProperty("ageAtDiagnosis") && (cancerData[cancerName].ageAtDiagnosis.length > 0)) {
-                            var age = cancerData[cancerName].ageAtDiagnosis;
-                            if (isNaN(parseInt(age))){
-                                if (age == "before_1") {
-                                    text += " dx <1";
-                                } else if (age == "before_10") {
-                                    text += " dx <10";
-                                } else {
-                                    text += (age.indexOf('before_') > -1) ? " dx " + (parseInt(age.substring(7))-10) + "\'s": " dx >100";
+                        if (cancerData[cancerId].hasOwnProperty("qualifiers") && cancerData[cancerId].qualifiers.length > 0) {
+                            var dx = "";
+                            cancerData[cancerId].qualifiers.forEach(function(qualifier) {
+                                if (qualifier.hasOwnProperty("ageAtDiagnosis") && qualifier.ageAtDiagnosis.length > 0) {
+                                    var age = qualifier.ageAtDiagnosis;
+                                    if (isNaN(parseInt(age))) {
+                                        if (age === "before_1") {
+                                            dx += ", <1";
+                                        } else if (age === "before_10") {
+                                            dx += ", <10";
+                                        } else {
+                                            dx += (age.indexOf('before_') > -1) ? ", " + (parseInt(age.substring(7))-10) + "\'s": ", >100";
+                                        }
+                                    } else {
+                                        dx += ", " + age;
+                                    }
                                 }
-                            } else {
-                                text += " dx " + cancerData[cancerName].ageAtDiagnosis;
-                            }
-                        } else {
-                            text += " dx ?";
+                            });
+                            text += dx.length > 0 ? " dx" + dx.substring(1) : " dx ?";
                         }
-                        this.getCancerAgeOfOnsetLabels()[cancerName] && this.getCancerAgeOfOnsetLabels()[cancerName].remove();
-                        this._cancerAgeOfOnsetLabels[cancerName] = editor.getPaper().text(this.getX(), this.getY(), text).attr(PedigreeEditorParameters.attributes.cancerAgeOfOnsetLabels);
-                        this._cancerAgeOfOnsetLabels[cancerName].node.setAttribute("class", "field-no-user-select");
-                        this._cancerAgeOfOnsetLabels[cancerName].alignTop = true;
-                        this._cancerAgeOfOnsetLabels[cancerName].addGap   = true;
+                        this.getCancerAgeOfOnsetLabels()[cancerId] && this.getCancerAgeOfOnsetLabels()[cancerId].remove();
+                        this._cancerAgeOfOnsetLabels[cancerId] = editor.getPaper().text(this.getX(), this.getY(), text).attr(PedigreeEditorParameters.attributes.cancerAgeOfOnsetLabels);
+                        this._cancerAgeOfOnsetLabels[cancerId].node.setAttribute("class", "field-no-user-select");
+                        this._cancerAgeOfOnsetLabels[cancerId].alignTop = true;
+                        this._cancerAgeOfOnsetLabels[cancerId].addGap   = true;
                     }
                 }
 
