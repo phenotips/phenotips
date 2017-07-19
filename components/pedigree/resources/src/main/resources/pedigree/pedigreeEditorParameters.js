@@ -51,6 +51,7 @@ define([], function(){
         touchOrbRadius: 8,
         personHoverBoxWidth: 180,  // 160 for old handles
         personHoverBoxHeight: 180, // 160 for old handles
+        personGroupHoverBoxHeight: 110,
         personHoverBoxAWExtensionHeight: 63,
         newHandles: true,          // false for old handles
         personHandleLength: 75,    // 60    for old handles, 75 for new

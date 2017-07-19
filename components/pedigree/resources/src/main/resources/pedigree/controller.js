@@ -496,7 +496,7 @@ define([
                 editor.getUndoRedoManager().addState( event, undoEvent );
             }
 
-            editor.getNodeMenu().update();  // for example, user selected a wrong gender in the nodeMenu, which
+            ((node.getType() == 'PersonGroup') ? editor.getNodeGroupMenu() : editor.getNodeMenu()).update();  // for example, user selected a wrong gender in the nodeMenu, which
                                             // gets reverted back - need to select the correct one in the nodeMenu as well
                                             //
                                             // note: need to do this after addState(), since addState() may trigger some

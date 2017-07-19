@@ -10,6 +10,7 @@
  * @param {Number} centerX The X coordinate for the center of the hoverbox
  * @param {Number} centerY The Y coordinate for the center of the hoverbox
  * @param {Raphael.st} nodeShapes All shapes associated with the person node
+ * @param {Number} baseHeight The base height of the hoverbox
  */
 define([
         "pedigree/pedigreeEditorParameters",
@@ -22,11 +23,11 @@ define([
     ){
     var PersonHoverbox = Class.create(AbstractHoverbox, {
 
-        initialize: function($super, personNode, centerX, centerY, nodeShapes) {
+        initialize: function($super, personNode, centerX, centerY, nodeShapes, baseHeight) {
             var width  = PedigreeEditorParameters.attributes.personHoverBoxWidth;
             // at this point pedigree node is not yet initialized, so we don't know A&W status and can't compute
             // final hoverbox size
-            var height = PedigreeEditorParameters.attributes.personHoverBoxHeight;
+            var height = baseHeight || PedigreeEditorParameters.attributes.personHoverBoxHeight;
             $super(personNode, -width/2, -height/2, width, height, centerX, centerY, nodeShapes);
         },
 
@@ -39,7 +40,7 @@ define([
 
         _computeHoverBoxHeight: function()
         {
-            return PedigreeEditorParameters.attributes.personHoverBoxHeight + this.getBottomExtensionHeight();
+            return this._baseHeight + this.getBottomExtensionHeight();
         },
 
         /**
@@ -209,7 +210,7 @@ define([
                             { "label": "Alive & Well", "lifeStatus": "alive",  "aw": true },
                             { "label": "Deceased",     "lifeStatus": "deceased" } ];
 
-            var yPos = this.getY() + PedigreeEditorParameters.attributes.personHoverBoxHeight + 5;
+            var yPos = this.getY() + this._baseHeight + 5;
             var itemHeight = PedigreeEditorParameters.attributes.awLabel["font-size"] + 3;
             var computeItemPosition = function(itemIndex) {
                 return yPos + itemHeight * itemIndex;
@@ -244,11 +245,7 @@ define([
                     var event = { "nodeID": this.getNode().getID(), "properties": properties };
 
                     if (buttons[i].lifeStatus == 'deceased') {
-                        this._isDeceasedToggled = true;
-                        var x = tick.getBBox().x;
-                        var y = tick.getBBox().y2;
-                        var position = editor.getWorkspace().canvasToDiv(x, y);
-                        editor.getDeceasedMenu().show(node, position.x, position.y + 10);
+                        this._generateDeceasedMenu(node, tick);
                     }
                     document.fire("pedigree:node:setproperty", event);
                 }.bind(this, index));
@@ -273,6 +270,14 @@ define([
             this.disable();
             this.getFrontElements().push(aliveAndWell);
             this.enable();
+        },
+
+        _generateDeceasedMenu: function(node, tick) {
+            this._isDeceasedToggled = true;
+            var x = tick.getBBox().x;
+            var y = tick.getBBox().y2;
+            var position = editor.getWorkspace().canvasToDiv(x, y);
+            editor.getDeceasedMenu().show(node, position.x, position.y + 10);
         },
 
         /**
