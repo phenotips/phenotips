@@ -290,7 +290,7 @@
         },
         onSuccess : function() {
           _this.$body._x_notification.replace(new XWiki.widgets.Notification(_this._builder.successfulImportMsg, "done"));
-          window.location.reload();
+          window.location.reload(true);
         },
         onFailure : function(response) {
           var failureMsg = _this._generateFailureReason(response.status);
