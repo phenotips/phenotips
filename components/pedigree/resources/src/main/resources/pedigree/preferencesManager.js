@@ -12,7 +12,7 @@ define(["pedigree/model/helpers"], function(Helpers){
             new Ajax.Request(preferencesJsonURL, {
                 method: "GET",
                 onSuccess: this.onPreferencesAvailable.bind(this),
-                onComplete: callWhenReady ? callWhenReady : {}
+                onComplete: callWhenReady
             });
         },
 

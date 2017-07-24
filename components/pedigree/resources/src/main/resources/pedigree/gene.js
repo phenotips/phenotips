@@ -53,7 +53,7 @@ define([
             new Ajax.Request(queryURL, {
                 method: "GET",
                 onSuccess: this.onDataReady.bind(this),
-                onComplete: callWhenReady ? callWhenReady : {}
+                onComplete: callWhenReady
             });
         },
 
