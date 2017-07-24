@@ -57,10 +57,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 
-import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasValue;
@@ -325,12 +322,10 @@ public class DefaultPatientResourceImplTest
     }
 
     @Test
-    public void deletePatientCatchesXWikiException() throws XWikiException
+    public void deletePatientCatchesException() throws WebApplicationException
     {
-        XWiki wiki = mock(XWiki.class);
-        doReturn(wiki).when(this.context).getWiki();
         doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
-        doThrow(XWikiException.class).when(wiki).deleteDocument(any(XWikiDocument.class), eq(this.context));
+        doThrow(Exception.class).when(this.repository).delete(this.patient);
 
         WebApplicationException ex = null;
         try {
@@ -340,23 +335,19 @@ public class DefaultPatientResourceImplTest
         }
 
         Assert.assertNotNull("deletePatient did not throw a WebApplicationException as expected "
-            + "when catching an XWikiException", ex);
+            + "when catching an Exception", ex);
         Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), ex.getResponse().getStatus());
         verify(this.logger).warn(eq("Failed to delete patient record [{}]: {}"), eq(this.id), anyString());
     }
 
     @Test
-    public void deletePatientNormalBehaviour() throws XWikiException
+    public void deletePatientNormalBehaviour() throws WebApplicationException
     {
-        XWiki wiki = mock(XWiki.class);
-        XWikiDocument patientXWikiDoc = mock(XWikiDocument.class);
-        doReturn(wiki).when(this.context).getWiki();
-        doReturn(patientXWikiDoc).when(this.patient).getXDocument();
         doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
 
         Response response = this.patientResource.deletePatient(this.id);
 
-        verify(wiki).deleteDocument(patientXWikiDoc, this.context);
+        verify(this.repository).delete(this.patient);
         Assert.assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 }
