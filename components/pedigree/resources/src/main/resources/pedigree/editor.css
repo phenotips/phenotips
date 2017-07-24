@@ -48,6 +48,16 @@
   color: $theme.notificationSuccessColor !important;
   border-color: $theme.notificationSuccessColor !important;
 }
+
+input[type="checkbox"] {
+  outline: 0 none !important;
+  box-shadow: none !important;
+  -moz-transform: scale(.85) !important;
+}
+input[type="radio"] {
+  -moz-transform: scale(.85) !important;
+}
+
 /* =========================================
  * MENU
  */
@@ -252,7 +262,7 @@
   font-family: Arial,Verdana,sans-serif;
 }
 .legend-box-controls-open {
-  background: #FFF;
+  background: #F4F4F4;
   height: 20px;
   border-bottom: 1px solid;
   border-color: #ccc;
@@ -262,10 +272,16 @@
   height: 25px;
   cursor: pointer;
 }
-.legend-box-button {
+.legend-box-button-right {
   float: right;
   margin-top: 3px;
   margin-right: 3px;
+  cursor: pointer;
+}
+.legend-box-button-left {
+  float: left;
+  margin-top: 3px;
+  margin-left: 8px;
   cursor: pointer;
 }
 .legend-box-button:hover {
@@ -274,7 +290,8 @@
 .legend-hide-show-checkbox {
   cursor: pointer;
   float: right;
-  margin-bottom: -1px;
+  margin-bottom: 2px;
+  margin-top: 2px;
 }
 .legend-box .legend-title {
   font-size: 1.1em;
@@ -283,6 +300,10 @@
 }
 .abnormality {
   cursor: pointer;
+  padding-left: 1px;
+}
+li.abnormality:hover {
+  background-color: #FFF9EE;
 }
 .legend-box .abnormality-list {
   list-style-type: none;

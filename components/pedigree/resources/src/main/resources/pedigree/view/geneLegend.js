@@ -58,8 +58,8 @@
             }.bind(this));
         },
 
-        _getPrefix: function(id) {
-            return this.prefix + "gene";
+        _getPrefix: function(humanReadablePlural) {
+            return this.prefix + (humanReadablePlural ? " " : "") + "gene" + (humanReadablePlural ? "s" : "");
         },
 
         /**

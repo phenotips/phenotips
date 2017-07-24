@@ -21,8 +21,8 @@ define([
             this._termCache = {};
         },
 
-        _getPrefix: function(id) {
-            return "phenotype";
+        _getPrefix: function(humanReadablePlural) {
+            return "phenotype" + (humanReadablePlural ? "s" : "");
         },
 
         /**

@@ -31,8 +31,8 @@ define([
 
             this._previousHighightedNode = null;
 
-            this._disabled_icon = "fa-circle"; //"fa-plus-circle";
-            this._enabled_icon = "fa-check-circle"; //"fa-minus-circle";
+            this._disabled_icon = "fa-circle-o"; //"fa-plus-circle";
+            this._enabled_icon = "fa-circle"; //"fa-minus-circle";
 
             var legendContainer = $('legend-container');
             if (legendContainer == undefined) {
@@ -55,8 +55,8 @@ define([
                   this._legendBoxControls.addClassName("legend-hidden");
                   var minimizedLegendTitle = new Element('div', {'class': 'legend-minimized-title field-no-user-select'}).update("Legend").hide();
                   minimizedLegendTitle.hide();
-                  var minimizeButton = new Element('span', {'class': 'fa fa-angle-double-up legend-box-button legend-action-minimize', 'title': "minimize"});
-                  var maximizeButton = new Element('span', {'class': 'fa fa-angle-double-left legend-box-button legend-action-maximize legend-maximize-button', 'title': "maximize", id: 'legend-maximize-button'});
+                  var minimizeButton = new Element('span', {'class': 'fa fa-angle-double-up legend-box-button-right legend-action-minimize', 'title': "minimize"});
+                  var maximizeButton = new Element('span', {'class': 'fa fa-angle-double-left legend-box-button-left legend-action-maximize legend-maximize-button', 'title': "expand", id: 'legend-maximize-button'});
                   maximizeButton.addClassName("legend-hidden");
                   this._legendBoxControls.update(minimizedLegendTitle).insert(minimizeButton).insert(maximizeButton);
                   var restoreLegend = function() {
@@ -109,7 +109,7 @@ define([
                           maximizeButton.removeClassName("legend-action-shrink");
                           maximizeButton.removeClassName("fa-angle-double-right");
                           maximizeButton.addClassName("fa-angle-double-left");
-                          maximizeButton.title = "maximize";
+                          maximizeButton.title = "expand";
                           legendContainer.style.maxWidth = PedigreeEditorParameters.attributes.legendMaxWidthPixels + "px";
                       }
                   });
@@ -141,6 +141,7 @@ define([
                         bubble.disableColor(true);
                     }
                 });
+                _this._updateCheckboxTitle();
             });
 
             var legendTitle= new Element('h2', {'class' : 'legend-title field-no-user-select'}).update(title).insert(this._hideShowCheckbox);
@@ -148,26 +149,6 @@ define([
 
             this._list = new Element('ul', {'class' : this._getPrefix() +'-list abnormality-list'});
             this._legendBox.insert(this._list);
-
-            Element.observe(this._legendBox, 'mouseover', function() {
-                // show "check"/"no-check" symbols inside the bubbles
-                $$('.abnormality-legend-icon').forEach( function(bubble) {
-                    bubble.removeClassName("fa-circle");
-                    if (bubble.hasClassName("icon-enabled-true")) {
-                        bubble.addClassName(_this._enabled_icon);
-                    } else {
-                        bubble.addClassName(_this._disabled_icon);
-                    }
-                });
-            });
-            Element.observe(this._legendBox, 'mouseout', function() {
-                // hide "check"/"no-check" symbols inside the bubbles
-                $$('.abnormality-legend-icon').forEach( function(bubble) {
-                    bubble.removeClassName(_this._enabled_icon);
-                    bubble.removeClassName(_this._disabled_icon);
-                    bubble.addClassName("fa-circle");
-                });
-            });
 
             this._dropOnGroupNodes = dropOnGroupNodes;
 
@@ -184,9 +165,11 @@ define([
          *
          * @method _getPrefix
          * @param {String|Number} id ID of the object
-         * @return {String} some identifier which should be a valid HTML id value (e.g. no spaces)
+         * @param {humanReadablePlural} (optional) when true, the prefix is the human readable string instead of the HTML-valid id value
+         * @return {String} some identifier which should be a valid HTML id value (e.g. no spaces), unless
+         *                  `humanReadablePlural` is true, in which case it should be a plural form of the legend's object name
          */
-        _getPrefix: function(id) {
+        _getPrefix: function(humanReadablePlural) {
             // To be overwritten in derived classes
             throw "prefix not defined";
         },
@@ -433,6 +416,15 @@ define([
                 this._hideShowCheckbox.checked = false;
                 this._hideShowCheckbox.indeterminate = false;
             }
+            this._updateCheckboxTitle();
+        },
+
+        _updateCheckboxTitle: function() {
+            if (this._hideShowCheckbox.checked) {
+                this._hideShowCheckbox.title = "Disable colouring of all " + this._getPrefix(true);
+            } else {
+                this._hideShowCheckbox.title = "Enable colouring of all " + this._getPrefix(true);
+            }
         },
 
         /**
@@ -490,7 +482,8 @@ define([
                 'title': "Click to enable or disable node colouring; drag to mark other individuals as affected"})
                 .update(new Element('span', {'class' : 'abnormality-' + this._getPrefix() + '-name'}).update(name.escapeHTML()));
             item.insert(new Element('input', {'type' : 'hidden', 'value' : id}));
-            var bubble = new Element('span', {'class' : 'abnormality-legend-icon fa fa-circle icon-enabled-' + this._objectProperties[id].enabled.toString()});
+            var iconClass = this._objectProperties[id].enabled ? this._enabled_icon : this._disabled_icon;
+            var bubble = new Element('span', {'class' : 'abnormality-legend-icon fa ' + iconClass + ' icon-enabled-' + this._objectProperties[id].enabled.toString()});
             bubble.style.color = this._objectProperties[id].enabled ? color : PedigreeEditorParameters.attributes.legendIconDisabledColor;
             var _this = this;
             bubble.disableColor = function(skipMasterCheckboxUpdate) {
@@ -553,12 +546,11 @@ define([
             item.insert(" ").insert(countLabelContainer);
             var me = this;
             Element.observe(item, 'mouseover', function() {
-                var highlightColor = Helpers.averageTwoHexColors(color, "#EEEEEE", 180, 235);
-                item.down('.abnormality-' + me._getPrefix() + '-name').setStyle({'background': highlightColor, 'cursor' : 'pointer'});
+                item.down('.abnormality-' + me._getPrefix() + '-name').setStyle({'cursor' : 'pointer'});
                 me._highlightAllByItemID(id, true);
             });
             Element.observe(item, 'mouseout', function() {
-                item.down('.abnormality-' + me._getPrefix() + '-name').setStyle({'background':'', 'cursor' : 'default'});
+                item.down('.abnormality-' + me._getPrefix() + '-name').setStyle({'cursor' : 'default'});
                 me._highlightAllByItemID(id, false);
             });
             new Draggable(item, {
@@ -619,12 +611,6 @@ define([
             //console.log("Position x: " + pos.x + " position y: " + pos.y);
             if (node) {
                 this._onDropObject(node, id);
-                // hide +/- symbols, which are not hidden automatically
-                $$('.abnormality-legend-icon').forEach( function(bubble) {
-                    bubble.removeClassName(_this._enabled_icon);
-                    bubble.removeClassName(_this._disabled_icon);
-                    bubble.addClassName("fa-circle");
-                });
             }
         },
 

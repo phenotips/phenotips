@@ -21,8 +21,8 @@ define([
             this._disorderCache = {};
         },
 
-        _getPrefix: function(id) {
-            return "disorder";
+        _getPrefix: function(humanReadablePlural) {
+            return "disorder" + (humanReadablePlural ? "s" : "");
         },
 
         /**
