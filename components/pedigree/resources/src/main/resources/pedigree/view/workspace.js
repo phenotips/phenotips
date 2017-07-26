@@ -341,19 +341,6 @@ define([
 
             menuItems.each(_createSubmenu.bind(menu));
             secondaryMenuItems.each(_createSubmenu.bind(secondaryMenu));
-
-            Element.observe(menu, 'mouseover', function() {
-                for (var nodeID in editor.getView().getNodeMap()) {
-                    if (editor.getView().getNodeMap().hasOwnProperty(nodeID)) {
-                        if (editor.getGraph().isPerson(nodeID) && !editor.getGraph().isPlaceholder(nodeID)) {
-                            var node = editor.getView().getNode(nodeID);
-                            if (node) {
-                                node.getGraphics().getHoverBox().animateHideHoverZone();
-                            }
-                        }
-                    }
-                }
-            });
         },
 
         /**
@@ -506,8 +493,8 @@ define([
          */
         canvasToDiv: function(canvasX,canvasY) {
             return {
-                x: this.zoomCoefficient * (canvasX - this.viewBoxX),
-                y: this.zoomCoefficient * (canvasY - this.viewBoxY)
+                x: Math.round(this.zoomCoefficient * (canvasX - this.viewBoxX)),
+                y: Math.round(this.zoomCoefficient * (canvasY - this.viewBoxY))
             }
         },
 
@@ -522,8 +509,8 @@ define([
          */
         divToCanvas: function(divX,divY) {
             return {
-                x: divX/this.zoomCoefficient + this.viewBoxX,
-                y: divY/this.zoomCoefficient + this.viewBoxY
+                x: Math.round(divX/this.zoomCoefficient + this.viewBoxX),
+                y: Math.round(divY/this.zoomCoefficient + this.viewBoxY)
             }
         },
 
