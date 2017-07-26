@@ -38,6 +38,18 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class UIXRecordSection implements RecordSection
 {
+    private static final String TITLE_LABEL = "title";
+
+    private static final String ORDER_LABEL = "order";
+
+    private static final String FALSE_LABEL = "false";
+
+    private static final String TRUE_LABEL = "true";
+
+    private static final String ENABLED_LABEL = "enabled";
+
+    private static final String EXPANDED_BY_DEFAULT_LABEL = "expanded_by_default";
+
     /** @see #getExtension() */
     protected final UIExtension extension;
 
@@ -46,6 +58,12 @@ public class UIXRecordSection implements RecordSection
 
     /** Sorts fields by their declared order. */
     protected final UIExtensionFilter orderFilter;
+
+    protected boolean enabled = true;
+
+    protected boolean expanded;
+
+    protected List<RecordElement> elements;
 
     /**
      * Simple constructor, taking the UI {@code extension}, the {@code uixManager UI extension manager}, and the
@@ -64,6 +82,8 @@ public class UIXRecordSection implements RecordSection
         this.extension = extension;
         this.uixManager = uixManager;
         this.orderFilter = orderFilter;
+        this.enabled = !StringUtils.equals(FALSE_LABEL, extension.getParameters().get(ENABLED_LABEL));
+        this.expanded = StringUtils.equals(TRUE_LABEL, this.extension.getParameters().get(EXPANDED_BY_DEFAULT_LABEL));
     }
 
     @Override
@@ -75,7 +95,7 @@ public class UIXRecordSection implements RecordSection
     @Override
     public String getName()
     {
-        String result = this.extension.getParameters().get("title");
+        String result = this.extension.getParameters().get(TITLE_LABEL);
         if (StringUtils.isBlank(result)) {
             result = StringUtils.capitalize(StringUtils.replaceChars(
                 StringUtils.substringAfterLast(this.extension.getId(), "."), "_-", "  "));
@@ -86,25 +106,39 @@ public class UIXRecordSection implements RecordSection
     @Override
     public boolean isEnabled()
     {
-        return isEnabled(this.extension);
+        return this.enabled;
     }
 
     @Override
     public boolean isExpandedByDefault()
     {
-        return StringUtils.equals("true", this.extension.getParameters().get("expanded_by_default"));
+        return this.expanded;
     }
 
     @Override
     public List<RecordElement> getAllElements()
     {
+        if (this.elements == null) {
+            this.elements = collectElements();
+        }
+
+        return Collections.unmodifiableList(this.elements);
+    }
+
+    /**
+     * Returns a list of {@link RecordElement} from a list of {@link UIExtension section elements}.
+     *
+     * @return a list of {@link RecordElement} objects
+     */
+    private List<RecordElement> collectElements()
+    {
         List<RecordElement> result = new LinkedList<>();
         List<UIExtension> fields = this.uixManager.get(this.extension.getId());
-        fields = this.orderFilter.filter(fields, "order");
+        fields = this.orderFilter.filter(fields, ORDER_LABEL);
         for (UIExtension field : fields) {
             result.add(new UIXRecordElement(field, this));
         }
-        return Collections.unmodifiableList(result);
+        return result;
     }
 
     @Override
@@ -127,18 +161,5 @@ public class UIXRecordSection implements RecordSection
         result.append(StringUtils.join(getEnabledElements(), ", "));
         result.append(']');
         return result.toString();
-    }
-
-    /**
-     * Check if an extension is enabled. Extensions are disabled by adding a {@code enabled=false} parameter. By default
-     * extensions are enabled, so this method returns {@code false } only if it is explicitly disabled.
-     *
-     * @param extension the extension to check
-     * @return {@code false} if this extension has a parameter named {@code enabled} with the value {@code false},
-     *         {@code true} otherwise
-     */
-    private boolean isEnabled(UIExtension extension)
-    {
-        return !StringUtils.equals("false", extension.getParameters().get("enabled"));
     }
 }

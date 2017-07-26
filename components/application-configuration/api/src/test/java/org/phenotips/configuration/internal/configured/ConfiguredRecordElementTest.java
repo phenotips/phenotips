@@ -76,6 +76,7 @@ public class ConfiguredRecordElementTest
 
         when(cc.getFieldsOverride()).thenReturn(null);
         params.put("enabled", "false");
+        s = new ConfiguredRecordElement(cc, extension, mock(RecordSection.class));
         Assert.assertFalse(s.isEnabled());
     }
 

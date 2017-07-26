@@ -36,11 +36,32 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class UIXRecordElement implements RecordElement
 {
+    private static final String CONTAINS_PII_LABEL = "contains_PII";
+
+    private static final String TRUE_LABEL = "true";
+
+    private static final String FALSE_LABEL = "false";
+
+    private static final String ENABLED_LABEL = "enabled";
+
+    private static final String TITLE_LABEL = "title";
+
+    private static final String FIELDS_LABEL = "fields";
+
     /** @see #getExtension() */
     private final UIExtension extension;
 
     /** @see #getContainingSection() */
     private final RecordSection section;
+
+    /** @see #getFields() */
+    private final List<String> fields;
+
+    /** @see #getName(). */
+    private final String name;
+
+    /** @see #isEnabled(). */
+    private boolean enabled;
 
     /**
      * Simple constructor, taking a UI {@code extension} and the parent record {@code section} as parameters.
@@ -56,6 +77,9 @@ public class UIXRecordElement implements RecordElement
         }
         this.extension = extension;
         this.section = section;
+        this.enabled = !StringUtils.equals(FALSE_LABEL, this.extension.getParameters().get(ENABLED_LABEL));
+        this.fields = constructFields();
+        this.name = constructName();
     }
 
     @Override
@@ -67,37 +91,25 @@ public class UIXRecordElement implements RecordElement
     @Override
     public String getName()
     {
-        String result = this.extension.getParameters().get("title");
-        if (StringUtils.isBlank(result)) {
-            result = StringUtils.capitalize(StringUtils.replaceChars(
-                StringUtils.substringAfterLast(this.extension.getId(), "."), "_-", "  "));
-        }
-        return result;
+        return this.name;
     }
 
     @Override
     public boolean isEnabled()
     {
-        return !StringUtils.equals("false", this.extension.getParameters().get("enabled"));
+        return this.enabled;
     }
 
     @Override
     public boolean containsPrivateIdentifiableInformation()
     {
-        return StringUtils.equals("true", this.extension.getParameters().get("contains_PII"));
+        return StringUtils.equals(TRUE_LABEL, this.extension.getParameters().get(CONTAINS_PII_LABEL));
     }
 
     @Override
     public List<String> getDisplayedFields()
     {
-        List<String> result = new LinkedList<String>();
-        String usedFields = this.extension.getParameters().get("fields");
-        if (usedFields != null) {
-            for (String usedField : StringUtils.split(usedFields, ",")) {
-                result.add(StringUtils.trim(usedField));
-            }
-        }
-        return Collections.unmodifiableList(result);
+        return this.fields;
     }
 
     @Override
@@ -110,5 +122,38 @@ public class UIXRecordElement implements RecordElement
     public String toString()
     {
         return getName();
+    }
+
+    /**
+     * Constructs an unmodifiable list of field names for the element.
+     *
+     * @return an unmodifiable list of field names
+     */
+    private List<String> constructFields()
+    {
+        final String fieldsStr = this.extension.getParameters().get(FIELDS_LABEL);
+        final List<String> elementFields = new LinkedList<>();
+        if (StringUtils.isNotBlank(fieldsStr)) {
+            final String[] fieldNames = StringUtils.split(fieldsStr, ",");
+            for (final String fieldName : fieldNames) {
+                elementFields.add(StringUtils.trim(fieldName));
+            }
+        }
+        return Collections.unmodifiableList(elementFields);
+    }
+
+    /**
+     * Returns the name of the section as string.
+     *
+     * @return the name of the section as string
+     */
+    private String constructName()
+    {
+        String result = this.extension.getParameters().get(TITLE_LABEL);
+        if (StringUtils.isBlank(result)) {
+            result = StringUtils.capitalize(StringUtils.replaceChars(
+                StringUtils.substringAfterLast(this.extension.getId(), "."), "_-", "  "));
+        }
+        return result;
     }
 }
