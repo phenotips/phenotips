@@ -33,5 +33,6 @@
     <module>resources</module>
     <module>ui</module>
     <module>api</module>
+    <module>rest</module>
   </modules>
 </project>
