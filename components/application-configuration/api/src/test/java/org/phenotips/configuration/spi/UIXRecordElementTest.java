@@ -20,19 +20,21 @@ package org.phenotips.configuration.spi;
 import org.phenotips.configuration.RecordElement;
 import org.phenotips.configuration.RecordSection;
 
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.uiextension.UIExtension;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -45,13 +47,27 @@ public class UIXRecordElementTest
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
+    @Mock
+    private RecordSection recordSection;
+
+    @Mock
+    private UIExtension uiExtension;
+
+    private Map<String, String> parameters = new HashMap<>();
+
+    @Before
+    public void setup() throws ComponentLookupException
+    {
+        MockitoAnnotations.initMocks(this);
+        when(this.uiExtension.getParameters()).thenReturn(this.parameters);
+    }
+
     /** Basic tests for {@link RecordElement#getExtension()}. */
     @Test
     public void getExtension()
     {
-        UIExtension extension = mock(UIExtension.class);
-        RecordElement s = new UIXRecordElement(extension, mock(RecordSection.class));
-        Assert.assertSame(extension, s.getExtension());
+        RecordElement s = new UIXRecordElement(this.uiExtension, this.recordSection);
+        Assert.assertSame(this.uiExtension, s.getExtension());
     }
 
     /** Basic test to affirm that passing in a null extension will result in an exception. */
@@ -59,7 +75,7 @@ public class UIXRecordElementTest
     public void nullExtensionThrowsException()
     {
         this.thrown.expect(IllegalArgumentException.class);
-        new UIXRecordElement(null, mock(RecordSection.class));
+        new UIXRecordElement(null, this.recordSection);
     }
 
     /** Basic test to affirm that passing in a null record section will result in an exception. */
@@ -67,18 +83,15 @@ public class UIXRecordElementTest
     public void nullSectionThrowsException()
     {
         this.thrown.expect(IllegalArgumentException.class);
-        new UIXRecordElement(mock(UIExtension.class), null);
+        new UIXRecordElement(this.uiExtension, null);
     }
 
     /** {@link RecordElement#getName()} returns the title set in the properties. */
     @Test
     public void getName()
     {
-        UIExtension extension = mock(UIExtension.class);
-        Map<String, String> params = new HashMap<>();
-        params.put("title", "Age of onset");
-        when(extension.getParameters()).thenReturn(params);
-        RecordElement s = new UIXRecordElement(extension, null);
+        this.parameters.put("title", "Age of onset");
+        RecordElement s = new UIXRecordElement(this.uiExtension, this.recordSection);
         Assert.assertEquals("Age of onset", s.getName());
     }
 
@@ -86,30 +99,44 @@ public class UIXRecordElementTest
     @Test
     public void getNameWithMissingTitle()
     {
-        UIExtension extension = mock(UIExtension.class);
-        when(extension.getParameters()).thenReturn(Collections.<String, String>emptyMap());
-        when(extension.getId()).thenReturn("org.phenotips.patientSheet.field.exam_date");
-        RecordElement s = new UIXRecordElement(extension, null);
+        when(this.uiExtension.getId()).thenReturn("org.phenotips.patientSheet.field.exam_date");
+
+        RecordElement s = new UIXRecordElement(this.uiExtension, this.recordSection);
         Assert.assertEquals("Exam date", s.getName());
+    }
+
+    /** {@link RecordElement#isEnabled()} returns true when there's no setting in the properties. */
+    @Test
+    public void isEnabledReturnsTrueForNullSetting()
+    {
+        RecordElement s = new UIXRecordElement(this.uiExtension, this.recordSection);
+        Assert.assertTrue(s.isEnabled());
+    }
+
+    /** {@link RecordElement#isEnabled()} returns true when there's no value set in the properties. */
+    @Test
+    public void isEnabledReturnsTrueForEmptySetting()
+    {
+        this.parameters.put("enabled", "");
+        RecordElement s = new UIXRecordElement(this.uiExtension, this.recordSection);
+        Assert.assertTrue(s.isEnabled());
+    }
+
+    /** {@link RecordElement#isEnabled()} returns true when set to "true" in the properties. */
+    @Test
+    public void isEnabledReturnsTrueForTrueSetting()
+    {
+        this.parameters.put("enabled", "true");
+        RecordElement s = new UIXRecordElement(this.uiExtension, this.recordSection);
+        Assert.assertTrue(s.isEnabled());
     }
 
     /** {@link RecordElement#isEnabled()} returns false only when explicitly disabled in the properties. */
     @Test
-    public void isEnabled()
+    public void isEnabledReturnsFalseForFalseSetting()
     {
-        UIExtension extension = mock(UIExtension.class);
-        Map<String, String> params = new HashMap<>();
-        when(extension.getParameters()).thenReturn(params);
-        RecordElement s = new UIXRecordElement(extension, null);
-        Assert.assertTrue(s.isEnabled());
-
-        params.put("enabled", "");
-        Assert.assertTrue(s.isEnabled());
-
-        params.put("enabled", "true");
-        Assert.assertTrue(s.isEnabled());
-
-        params.put("enabled", "false");
+        this.parameters.put("enabled", "false");
+        RecordElement s = new UIXRecordElement(this.uiExtension, this.recordSection);
         Assert.assertFalse(s.isEnabled());
     }
 
@@ -117,12 +144,11 @@ public class UIXRecordElementTest
     @Test
     public void getDisplayedFields()
     {
-        UIExtension extension = mock(UIExtension.class);
-        Map<String, String> params = new HashMap<>();
-        params.put("fields", ",first_name ,, last_name,");
-        when(extension.getParameters()).thenReturn(params);
-        RecordElement s = new UIXRecordElement(extension, null);
-        List<String> result = s.getDisplayedFields();
+        this.parameters.put("fields", ",first_name ,, last_name,");
+        final UIXRecordElement element = new UIXRecordElement(this.uiExtension, this.recordSection);
+
+        final List<String> result = element.getDisplayedFields();
+
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("first_name", result.get(0));
         Assert.assertEquals("last_name", result.get(1));
@@ -132,9 +158,7 @@ public class UIXRecordElementTest
     @Test
     public void getDisplayedFieldsWithMissingProperty()
     {
-        UIExtension extension = mock(UIExtension.class);
-        when(extension.getParameters()).thenReturn(Collections.<String, String>emptyMap());
-        RecordElement s = new UIXRecordElement(extension, null);
+        RecordElement s = new UIXRecordElement(this.uiExtension, this.recordSection);
         List<String> result = s.getDisplayedFields();
         Assert.assertTrue(result.isEmpty());
     }
@@ -143,21 +167,16 @@ public class UIXRecordElementTest
     @Test
     public void getContainingSection()
     {
-        UIExtension extension = mock(UIExtension.class);
-        RecordSection section = mock(RecordSection.class);
-        RecordElement s = new UIXRecordElement(extension, section);
-        Assert.assertSame(section, s.getContainingSection());
+        RecordElement s = new UIXRecordElement(this.uiExtension, this.recordSection);
+        Assert.assertSame(this.recordSection, s.getContainingSection());
     }
 
     /** {@link RecordElement#toString()} returns the title set in the properties. */
     @Test
     public void toStringTest()
     {
-        UIExtension extension = mock(UIExtension.class);
-        Map<String, String> params = new HashMap<>();
-        params.put("title", "Age of onset");
-        when(extension.getParameters()).thenReturn(params);
-        RecordElement s = new UIXRecordElement(extension, null);
+        this.parameters.put("title", "Age of onset");
+        RecordElement s = new UIXRecordElement(this.uiExtension, this.recordSection);
         Assert.assertEquals("Age of onset", s.toString());
     }
 }
