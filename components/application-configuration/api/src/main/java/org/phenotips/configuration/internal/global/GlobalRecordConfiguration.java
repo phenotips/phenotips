@@ -21,6 +21,7 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.configuration.RecordConfiguration;
 import org.phenotips.configuration.RecordElement;
 import org.phenotips.configuration.RecordSection;
+import org.phenotips.configuration.spi.UIXRecordSection;
 import org.phenotips.data.Patient;
 
 import org.xwiki.component.manager.ComponentLookupException;
@@ -97,7 +98,7 @@ public class GlobalRecordConfiguration implements RecordConfiguration
         List<UIExtension> sections = this.uixManager.get("org.phenotips.patientSheet.content");
         sections = this.orderFilter.filter(sections, SORT_PARAMETER_NAME);
         for (UIExtension sectionExtension : sections) {
-            RecordSection section = new DefaultRecordSection(sectionExtension, this.uixManager, this.orderFilter);
+            RecordSection section = new UIXRecordSection(sectionExtension, this.uixManager, this.orderFilter);
             result.add(section);
         }
         return Collections.unmodifiableList(result);

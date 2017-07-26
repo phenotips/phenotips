@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.configuration.internal.global;
+package org.phenotips.configuration.spi;
 
 import org.phenotips.configuration.RecordElement;
 import org.phenotips.configuration.RecordSection;
@@ -31,12 +31,12 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Default (global) implementation for {@link RecordSection}.
+ * An implementation for {@link RecordSection} which reads the configuration from an {@code UIExtension} xobject.
  *
  * @version $Id$
- * @since 1.0M9
+ * @since 1.4
  */
-public class DefaultRecordSection implements RecordSection
+public class UIXRecordSection implements RecordSection
 {
     /** @see #getExtension() */
     protected final UIExtension extension;
@@ -54,7 +54,7 @@ public class DefaultRecordSection implements RecordSection
      * @param uixManager the UIExtension manager
      * @param orderFilter UIExtension filter for ordering sections and elements
      */
-    public DefaultRecordSection(UIExtension extension, UIExtensionManager uixManager, UIExtensionFilter orderFilter)
+    public UIXRecordSection(UIExtension extension, UIExtensionManager uixManager, UIExtensionFilter orderFilter)
     {
         this.extension = extension;
         this.uixManager = uixManager;
@@ -97,7 +97,7 @@ public class DefaultRecordSection implements RecordSection
         List<UIExtension> fields = this.uixManager.get(this.extension.getId());
         fields = this.orderFilter.filter(fields, "order");
         for (UIExtension field : fields) {
-            result.add(new DefaultRecordElement(field, this));
+            result.add(new UIXRecordElement(field, this));
         }
         return Collections.unmodifiableList(result);
     }

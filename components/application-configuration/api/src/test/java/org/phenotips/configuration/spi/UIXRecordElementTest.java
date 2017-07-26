@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.configuration.internal.global;
+package org.phenotips.configuration.spi;
 
 import org.phenotips.configuration.RecordElement;
 import org.phenotips.configuration.RecordSection;
@@ -34,21 +34,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the default {@link RecordElement} implementation, {@link DefaultRecordElement}.
+ * Tests for the default {@link RecordElement} implementation, {@link UIXRecordElement}.
  *
  * @version $Id$
  */
-public class DefaultRecordElementTest
+public class UIXRecordElementTest
 {
     /** Basic tests for {@link RecordElement#getExtension()}. */
     @Test
     public void getExtension()
     {
         UIExtension extension = mock(UIExtension.class);
-        RecordElement s = new DefaultRecordElement(extension, null);
+        RecordElement s = new UIXRecordElement(extension, null);
         Assert.assertSame(extension, s.getExtension());
 
-        s = new DefaultRecordElement(null, null);
+        s = new UIXRecordElement(null, null);
         Assert.assertNull(s.getExtension());
     }
 
@@ -60,7 +60,7 @@ public class DefaultRecordElementTest
         Map<String, String> params = new HashMap<>();
         params.put("title", "Age of onset");
         when(extension.getParameters()).thenReturn(params);
-        RecordElement s = new DefaultRecordElement(extension, null);
+        RecordElement s = new UIXRecordElement(extension, null);
         Assert.assertEquals("Age of onset", s.getName());
     }
 
@@ -71,7 +71,7 @@ public class DefaultRecordElementTest
         UIExtension extension = mock(UIExtension.class);
         when(extension.getParameters()).thenReturn(Collections.<String, String>emptyMap());
         when(extension.getId()).thenReturn("org.phenotips.patientSheet.field.exam_date");
-        RecordElement s = new DefaultRecordElement(extension, null);
+        RecordElement s = new UIXRecordElement(extension, null);
         Assert.assertEquals("Exam date", s.getName());
     }
 
@@ -82,7 +82,7 @@ public class DefaultRecordElementTest
         UIExtension extension = mock(UIExtension.class);
         Map<String, String> params = new HashMap<>();
         when(extension.getParameters()).thenReturn(params);
-        RecordElement s = new DefaultRecordElement(extension, null);
+        RecordElement s = new UIXRecordElement(extension, null);
         Assert.assertTrue(s.isEnabled());
 
         params.put("enabled", "");
@@ -103,7 +103,7 @@ public class DefaultRecordElementTest
         Map<String, String> params = new HashMap<>();
         params.put("fields", ",first_name ,, last_name,");
         when(extension.getParameters()).thenReturn(params);
-        RecordElement s = new DefaultRecordElement(extension, null);
+        RecordElement s = new UIXRecordElement(extension, null);
         List<String> result = s.getDisplayedFields();
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("first_name", result.get(0));
@@ -116,7 +116,7 @@ public class DefaultRecordElementTest
     {
         UIExtension extension = mock(UIExtension.class);
         when(extension.getParameters()).thenReturn(Collections.<String, String>emptyMap());
-        RecordElement s = new DefaultRecordElement(extension, null);
+        RecordElement s = new UIXRecordElement(extension, null);
         List<String> result = s.getDisplayedFields();
         Assert.assertTrue(result.isEmpty());
     }
@@ -127,7 +127,7 @@ public class DefaultRecordElementTest
     {
         UIExtension extension = mock(UIExtension.class);
         RecordSection section = mock(RecordSection.class);
-        RecordElement s = new DefaultRecordElement(extension, section);
+        RecordElement s = new UIXRecordElement(extension, section);
         Assert.assertSame(section, s.getContainingSection());
     }
 
@@ -139,7 +139,7 @@ public class DefaultRecordElementTest
         Map<String, String> params = new HashMap<>();
         params.put("title", "Age of onset");
         when(extension.getParameters()).thenReturn(params);
-        RecordElement s = new DefaultRecordElement(extension, null);
+        RecordElement s = new UIXRecordElement(extension, null);
         Assert.assertEquals("Age of onset", s.toString());
     }
 }

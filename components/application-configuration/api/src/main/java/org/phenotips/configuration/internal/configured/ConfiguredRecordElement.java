@@ -19,7 +19,7 @@ package org.phenotips.configuration.internal.configured;
 
 import org.phenotips.configuration.RecordElement;
 import org.phenotips.configuration.RecordSection;
-import org.phenotips.configuration.internal.global.DefaultRecordElement;
+import org.phenotips.configuration.spi.UIXRecordElement;
 
 import org.xwiki.uiextension.UIExtension;
 
@@ -31,7 +31,7 @@ import java.util.List;
  * @version $Id$
  * @since 1.0M9
  */
-public class ConfiguredRecordElement extends DefaultRecordElement implements RecordElement
+public class ConfiguredRecordElement extends UIXRecordElement implements RecordElement
 {
     /** The custom configuration affecting this element. */
     private final CustomConfiguration configuration;

@@ -19,7 +19,6 @@ package org.phenotips.configuration.internal.configured;
 
 import org.phenotips.configuration.RecordElement;
 import org.phenotips.configuration.RecordSection;
-import org.phenotips.configuration.internal.global.DefaultRecordSection;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.uiextension.UIExtension;

@@ -19,7 +19,7 @@ package org.phenotips.configuration.internal.configured;
 
 import org.phenotips.configuration.RecordElement;
 import org.phenotips.configuration.RecordSection;
-import org.phenotips.configuration.internal.global.DefaultRecordSection;
+import org.phenotips.configuration.spi.UIXRecordSection;
 
 import org.xwiki.uiextension.UIExtension;
 import org.xwiki.uiextension.UIExtensionFilter;
@@ -36,7 +36,7 @@ import java.util.List;
  * @version $Id$
  * @since 1.0M9
  */
-public class ConfiguredRecordSection extends DefaultRecordSection implements RecordSection
+public class ConfiguredRecordSection extends UIXRecordSection implements RecordSection
 {
     /** The custom configuration affecting this section. */
     private final CustomConfiguration configuration;

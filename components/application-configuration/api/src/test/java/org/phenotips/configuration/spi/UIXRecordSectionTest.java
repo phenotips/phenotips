@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.configuration.internal.global;
+package org.phenotips.configuration.spi;
 
 import org.phenotips.configuration.RecordElement;
 import org.phenotips.configuration.RecordSection;
@@ -39,11 +39,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the default {@link RecordSection} implementation, {@link DefaultRecordSection}.
+ * Tests for the default {@link RecordSection} implementation, {@link UIXRecordSection}.
  *
  * @version $Id$
  */
-public class DefaultRecordSectionTest
+public class UIXRecordSectionTest
 {
     private static final String ORDER = "order";
 
@@ -52,10 +52,10 @@ public class DefaultRecordSectionTest
     public void getExtension()
     {
         UIExtension extension = mock(UIExtension.class);
-        RecordSection s = new DefaultRecordSection(extension, null, null);
+        RecordSection s = new UIXRecordSection(extension, null, null);
         Assert.assertSame(extension, s.getExtension());
 
-        s = new DefaultRecordSection(null, null, null);
+        s = new UIXRecordSection(null, null, null);
         Assert.assertNull(s.getExtension());
     }
 
@@ -67,7 +67,7 @@ public class DefaultRecordSectionTest
         Map<String, String> params = new HashMap<>();
         params.put("title", "Patient Information");
         when(extension.getParameters()).thenReturn(params);
-        RecordSection s = new DefaultRecordSection(extension, null, null);
+        RecordSection s = new UIXRecordSection(extension, null, null);
         Assert.assertEquals("Patient Information", s.getName());
     }
 
@@ -78,7 +78,7 @@ public class DefaultRecordSectionTest
         UIExtension extension = mock(UIExtension.class);
         when(extension.getParameters()).thenReturn(Collections.<String, String>emptyMap());
         when(extension.getId()).thenReturn("org.phenotips.patientSheet.section.patient-info");
-        RecordSection s = new DefaultRecordSection(extension, null, null);
+        RecordSection s = new UIXRecordSection(extension, null, null);
         Assert.assertEquals("Patient info", s.getName());
     }
 
@@ -89,7 +89,7 @@ public class DefaultRecordSectionTest
         UIExtension extension = mock(UIExtension.class);
         Map<String, String> params = new HashMap<>();
         when(extension.getParameters()).thenReturn(params);
-        RecordSection s = new DefaultRecordSection(extension, null, null);
+        RecordSection s = new UIXRecordSection(extension, null, null);
         Assert.assertTrue(s.isEnabled());
 
         params.put("enabled", "");
@@ -111,7 +111,7 @@ public class DefaultRecordSectionTest
         UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
         UIExtensionFilter realFilter = new SortByParameterFilter();
         when(ex.getId()).thenReturn("org.phenotips.patientSheet.section.patient-info");
-        RecordSection s = new DefaultRecordSection(ex, m, filter);
+        RecordSection s = new UIXRecordSection(ex, m, filter);
 
         Map<String, String> params;
         List<UIExtension> fields = new LinkedList<>();
@@ -173,7 +173,7 @@ public class DefaultRecordSectionTest
         UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
         UIExtensionFilter realFilter = new SortByParameterFilter();
         when(ex.getId()).thenReturn("org.phenotips.patientSheet.section.patient-info");
-        RecordSection s = new DefaultRecordSection(ex, m, filter);
+        RecordSection s = new UIXRecordSection(ex, m, filter);
 
         Map<String, String> params;
         List<UIExtension> fields = new LinkedList<>();
@@ -238,7 +238,7 @@ public class DefaultRecordSectionTest
         params.put("title", "Patient information");
         when(ex.getParameters()).thenReturn(params);
         when(ex.getId()).thenReturn("org.phenotips.patientSheet.section.patient-info");
-        RecordSection s = new DefaultRecordSection(ex, m, filter);
+        RecordSection s = new UIXRecordSection(ex, m, filter);
 
         List<UIExtension> fields = new LinkedList<>();
 

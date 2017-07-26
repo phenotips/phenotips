@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.configuration.internal.global;
+package org.phenotips.configuration.spi;
 
 import org.phenotips.configuration.RecordElement;
 import org.phenotips.configuration.RecordSection;
@@ -29,12 +29,12 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Default (global) implementation for {@link RecordElement}.
+ * An implementation for {@link RecordElement} which reads the configuration from an {@code UIExtension} xobject.
  *
  * @version $Id$
- * @since 1.0M9
+ * @since 1.4
  */
-public class DefaultRecordElement implements RecordElement
+public class UIXRecordElement implements RecordElement
 {
     /** @see #getExtension() */
     private final UIExtension extension;
@@ -48,7 +48,7 @@ public class DefaultRecordElement implements RecordElement
      * @param extension the extension defining this element
      * @param section the parent {@link RecordSection section} containing this element
      */
-    public DefaultRecordElement(UIExtension extension, RecordSection section)
+    public UIXRecordElement(UIExtension extension, RecordSection section)
     {
         this.extension = extension;
         this.section = section;
