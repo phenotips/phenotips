@@ -140,6 +140,37 @@ public class UIXRecordElementTest
         Assert.assertFalse(s.isEnabled());
     }
 
+    @Test
+    public void containsPIIReturnsFalseForNullSetting()
+    {
+        RecordElement s = new UIXRecordElement(this.uiExtension, this.recordSection);
+        Assert.assertFalse(s.containsPrivateIdentifiableInformation());
+    }
+
+    @Test
+    public void containsPIIReturnsFalseForEmptySetting()
+    {
+        this.parameters.put("contains_PII", "");
+        RecordElement s = new UIXRecordElement(this.uiExtension, this.recordSection);
+        Assert.assertFalse(s.containsPrivateIdentifiableInformation());
+    }
+
+    @Test
+    public void containsPIIReturnsTrueForTrueSetting()
+    {
+        this.parameters.put("contains_PII", "true");
+        RecordElement s = new UIXRecordElement(this.uiExtension, this.recordSection);
+        Assert.assertTrue(s.containsPrivateIdentifiableInformation());
+    }
+
+    @Test
+    public void containsPIIReturnsFalseForFalseSetting()
+    {
+        this.parameters.put("contains_PII", "false");
+        RecordElement s = new UIXRecordElement(this.uiExtension, this.recordSection);
+        Assert.assertFalse(s.containsPrivateIdentifiableInformation());
+    }
+
     /** {@link RecordElement#getDisplayedFields()} returns the fields listed in the extension "fields" property. */
     @Test
     public void getDisplayedFields()

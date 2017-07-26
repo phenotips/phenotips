@@ -157,6 +157,37 @@ public class UIXRecordSectionTest
         Assert.assertFalse(s.isEnabled());
     }
 
+    @Test
+    public void isExpandedReturnsFalseForNullSetting()
+    {
+        RecordSection s = new UIXRecordSection(this.uiExtension, this.uixManager, this.orderFilter);
+        Assert.assertFalse(s.isExpandedByDefault());
+    }
+
+    @Test
+    public void isExpandedReturnsFalseForEmptySetting()
+    {
+        this.parameters.put("expanded_by_default", "");
+        RecordSection s = new UIXRecordSection(this.uiExtension, this.uixManager, this.orderFilter);
+        Assert.assertFalse(s.isExpandedByDefault());
+    }
+
+    @Test
+    public void isExpandedReturnsTrueForTrueSetting()
+    {
+        this.parameters.put("expanded_by_default", "true");
+        RecordSection s = new UIXRecordSection(this.uiExtension, this.uixManager, this.orderFilter);
+        Assert.assertTrue(s.isExpandedByDefault());
+    }
+
+    @Test
+    public void isExpandedReturnsFalseForFalseSetting()
+    {
+        this.parameters.put("expanded_by_default", "false");
+        RecordSection s = new UIXRecordSection(this.uiExtension, this.uixManager, this.orderFilter);
+        Assert.assertFalse(s.isExpandedByDefault());
+    }
+
     /** {@link RecordSection#getEnabledElements()} returns only enabled fields. */
     @Test
     public void getEnabledElements() throws ComponentLookupException
