@@ -50,11 +50,13 @@ public class ConfiguredRecordSectionTest
     public void isEnabled()
     {
         CustomConfiguration cc = mock(CustomConfiguration.class);
+        UIExtensionManager m = mock(UIExtensionManager.class);
         UIExtension extension = mock(UIExtension.class);
+        UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
         Map<String, String> params = new HashMap<>();
         when(extension.getId()).thenReturn("patient-info");
         when(extension.getParameters()).thenReturn(params);
-        RecordSection s = new ConfiguredRecordSection(cc, extension, null, null);
+        RecordSection s = new ConfiguredRecordSection(cc, extension, m, filter);
 
         when(cc.getSectionsOverride()).thenReturn(Collections.singletonList("clinical-symptoms"));
         params.put("enabled", "true");

@@ -18,6 +18,7 @@
 package org.phenotips.configuration.internal.configured;
 
 import org.phenotips.configuration.RecordElement;
+import org.phenotips.configuration.RecordSection;
 
 import org.xwiki.uiextension.UIExtension;
 
@@ -47,7 +48,7 @@ public class ConfiguredRecordElementTest
         Map<String, String> params = new HashMap<>();
         when(extension.getId()).thenReturn("age");
         when(extension.getParameters()).thenReturn(params);
-        RecordElement s = new ConfiguredRecordElement(cc, extension, null);
+        RecordElement s = new ConfiguredRecordElement(cc, extension, mock(RecordSection.class));
 
         when(cc.getFieldsOverride()).thenReturn(Collections.singletonList("name"));
         params.put("enabled", "true");
@@ -67,7 +68,7 @@ public class ConfiguredRecordElementTest
         Map<String, String> params = new HashMap<>();
         when(extension.getId()).thenReturn("age");
         when(extension.getParameters()).thenReturn(params);
-        RecordElement s = new ConfiguredRecordElement(cc, extension, null);
+        RecordElement s = new ConfiguredRecordElement(cc, extension, mock(RecordSection.class));
 
         when(cc.getFieldsOverride()).thenReturn(Collections.<String>emptyList());
         params.put("enabled", "true");
@@ -86,7 +87,7 @@ public class ConfiguredRecordElementTest
         Map<String, String> params = new HashMap<>();
         params.put("title", "Age of onset");
         when(extension.getParameters()).thenReturn(params);
-        RecordElement s = new ConfiguredRecordElement(null, extension, null);
+        RecordElement s = new ConfiguredRecordElement(null, extension, mock(RecordSection.class));
         Assert.assertEquals("Age of onset", s.toString());
     }
 }

@@ -48,14 +48,19 @@ public class UIXRecordSection implements RecordSection
     protected final UIExtensionFilter orderFilter;
 
     /**
-     * Simple constructor passing all the needed components.
+     * Simple constructor, taking the UI {@code extension}, the {@code uixManager UI extension manager}, and the
+     * {@code orderFilter UI extension filter} as parameters.
      *
-     * @param extension the extension defining this element
-     * @param uixManager the UIExtension manager
-     * @param orderFilter UIExtension filter for ordering sections and elements
+     * @param extension the {@link UIExtension} object defining this element
+     * @param uixManager the {@link UIExtensionManager} object
+     * @param orderFilter the {@link UIExtensionFilter} object for ordering sections and elements
+     * @throws IllegalArgumentException if {@code extension} or {@code uixManager} or {@code orderFilter} are null
      */
     public UIXRecordSection(UIExtension extension, UIExtensionManager uixManager, UIExtensionFilter orderFilter)
     {
+        if (extension == null || uixManager == null || orderFilter == null) {
+            throw new IllegalArgumentException("DefaultRecordSection constructor parameters must not be null");
+        }
         this.extension = extension;
         this.uixManager = uixManager;
         this.orderFilter = orderFilter;

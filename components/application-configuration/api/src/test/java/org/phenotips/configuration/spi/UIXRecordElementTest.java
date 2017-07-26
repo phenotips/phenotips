@@ -28,7 +28,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,16 +42,32 @@ import static org.mockito.Mockito.when;
  */
 public class UIXRecordElementTest
 {
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
     /** Basic tests for {@link RecordElement#getExtension()}. */
     @Test
     public void getExtension()
     {
         UIExtension extension = mock(UIExtension.class);
-        RecordElement s = new UIXRecordElement(extension, null);
+        RecordElement s = new UIXRecordElement(extension, mock(RecordSection.class));
         Assert.assertSame(extension, s.getExtension());
+    }
 
-        s = new UIXRecordElement(null, null);
-        Assert.assertNull(s.getExtension());
+    /** Basic test to affirm that passing in a null extension will result in an exception. */
+    @Test
+    public void nullExtensionThrowsException()
+    {
+        this.thrown.expect(IllegalArgumentException.class);
+        new UIXRecordElement(null, mock(RecordSection.class));
+    }
+
+    /** Basic test to affirm that passing in a null record section will result in an exception. */
+    @Test
+    public void nullSectionThrowsException()
+    {
+        this.thrown.expect(IllegalArgumentException.class);
+        new UIXRecordElement(mock(UIExtension.class), null);
     }
 
     /** {@link RecordElement#getName()} returns the title set in the properties. */

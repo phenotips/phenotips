@@ -43,13 +43,17 @@ public class UIXRecordElement implements RecordElement
     private final RecordSection section;
 
     /**
-     * Simple constructor passing all the needed components.
+     * Simple constructor, taking a UI {@code extension} and the parent record {@code section} as parameters.
      *
-     * @param extension the extension defining this element
+     * @param extension the {@link UIExtension UI extension} object defining this record element
      * @param section the parent {@link RecordSection section} containing this element
+     * @throws IllegalArgumentException if {@code extension} or {@code section} are null
      */
     public UIXRecordElement(UIExtension extension, RecordSection section)
     {
+        if (extension == null || section == null) {
+            throw new IllegalArgumentException("DefaultRecordElement constructor parameters must not be null");
+        }
         this.extension = extension;
         this.section = section;
     }

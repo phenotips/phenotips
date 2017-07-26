@@ -26,14 +26,18 @@ import org.xwiki.uiextension.UIExtensionFilter;
 import org.xwiki.uiextension.UIExtensionManager;
 import org.xwiki.uiextension.internal.filter.SortByParameterFilter;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,27 +51,65 @@ public class UIXRecordSectionTest
 {
     private static final String ORDER = "order";
 
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
+    @Mock
+    private UIExtension uiExtension;
+
+    @Mock
+    private UIExtensionManager uixManager;
+
+    @Mock
+    private UIExtensionFilter orderFilter;
+
+    private Map<String, String> parameters = new HashMap<>();
+
+    @Before
+    public void setup() throws ComponentLookupException
+    {
+        MockitoAnnotations.initMocks(this);
+        when(this.uiExtension.getParameters()).thenReturn(this.parameters);
+    }
+
     /** Basic tests for {@link RecordSection#getExtension()}. */
     @Test
     public void getExtension()
     {
-        UIExtension extension = mock(UIExtension.class);
-        RecordSection s = new UIXRecordSection(extension, null, null);
-        Assert.assertSame(extension, s.getExtension());
+        RecordSection s = new UIXRecordSection(this.uiExtension, this.uixManager, this.orderFilter);
+        Assert.assertSame(this.uiExtension, s.getExtension());
+    }
 
-        s = new UIXRecordSection(null, null, null);
-        Assert.assertNull(s.getExtension());
+    /** Basic test to affirm that passing in a null extension will result in an exception. */
+    @Test
+    public void throwExceptionIfExtensionNull()
+    {
+        this.thrown.expect(IllegalArgumentException.class);
+        new UIXRecordSection(null, this.uixManager, this.orderFilter);
+    }
+
+    /** Basic test to affirm that passing in a null UIExtensionManager will result in an exception. */
+    @Test
+    public void throwExceptionIfUIXManagerNull()
+    {
+        this.thrown.expect(IllegalArgumentException.class);
+        new UIXRecordSection(this.uiExtension, null, this.orderFilter);
+    }
+
+    /** Basic test to affirm that passing in a null UIExtensionFilter will result in an exception. */
+    @Test
+    public void throwExceptionIfOrderFilterNull()
+    {
+        this.thrown.expect(IllegalArgumentException.class);
+        new UIXRecordSection(this.uiExtension, this.uixManager, null);
     }
 
     /** {@link RecordSection#getName()} returns the title set in the properties. */
     @Test
     public void getName()
     {
-        UIExtension extension = mock(UIExtension.class);
-        Map<String, String> params = new HashMap<>();
-        params.put("title", "Patient Information");
-        when(extension.getParameters()).thenReturn(params);
-        RecordSection s = new UIXRecordSection(extension, null, null);
+        this.parameters.put("title", "Patient Information");
+        RecordSection s = new UIXRecordSection(this.uiExtension, this.uixManager, this.orderFilter);
         Assert.assertEquals("Patient Information", s.getName());
     }
 
@@ -75,30 +117,43 @@ public class UIXRecordSectionTest
     @Test
     public void getNameWithMissingTitle()
     {
-        UIExtension extension = mock(UIExtension.class);
-        when(extension.getParameters()).thenReturn(Collections.<String, String>emptyMap());
-        when(extension.getId()).thenReturn("org.phenotips.patientSheet.section.patient-info");
-        RecordSection s = new UIXRecordSection(extension, null, null);
+        when(this.uiExtension.getId()).thenReturn("org.phenotips.patientSheet.section.patient-info");
+        RecordSection s = new UIXRecordSection(this.uiExtension, this.uixManager, this.orderFilter);
         Assert.assertEquals("Patient info", s.getName());
+    }
+
+    /** {@link RecordSection#isEnabled()} returns true when there's no setting in the properties. */
+    @Test
+    public void isEnabledReturnsTrueForNullSetting()
+    {
+        RecordSection s = new UIXRecordSection(this.uiExtension, this.uixManager, this.orderFilter);
+        Assert.assertTrue(s.isEnabled());
+    }
+
+    /** {@link RecordSection#isEnabled()} returns true when there's no value set in the properties. */
+    @Test
+    public void isEnabledReturnsTrueForEmptySetting()
+    {
+        this.parameters.put("enabled", "");
+        RecordSection s = new UIXRecordSection(this.uiExtension, this.uixManager, this.orderFilter);
+        Assert.assertTrue(s.isEnabled());
+    }
+
+    /** {@link RecordSection#isEnabled()} returns true when set to "true" in the properties. */
+    @Test
+    public void isEnabledReturnsTrueForTrueSetting()
+    {
+        this.parameters.put("enabled", "true");
+        RecordSection s = new UIXRecordSection(this.uiExtension, this.uixManager, this.orderFilter);
+        Assert.assertTrue(s.isEnabled());
     }
 
     /** {@link RecordSection#isEnabled()} returns false only when explicitly disabled in the properties. */
     @Test
-    public void isEnabled()
+    public void isEnabledReturnsFalseForFalseSetting()
     {
-        UIExtension extension = mock(UIExtension.class);
-        Map<String, String> params = new HashMap<>();
-        when(extension.getParameters()).thenReturn(params);
-        RecordSection s = new UIXRecordSection(extension, null, null);
-        Assert.assertTrue(s.isEnabled());
-
-        params.put("enabled", "");
-        Assert.assertTrue(s.isEnabled());
-
-        params.put("enabled", "true");
-        Assert.assertTrue(s.isEnabled());
-
-        params.put("enabled", "false");
+        this.parameters.put("enabled", "false");
+        RecordSection s = new UIXRecordSection(this.uiExtension, this.uixManager, this.orderFilter);
         Assert.assertFalse(s.isEnabled());
     }
 
