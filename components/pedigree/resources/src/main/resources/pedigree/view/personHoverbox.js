@@ -23,11 +23,10 @@ define([
     ){
     var PersonHoverbox = Class.create(AbstractHoverbox, {
 
-        initialize: function($super, personNode, centerX, centerY, nodeShapes, baseHeight) {
+        initialize: function($super, personNode, centerX, centerY, nodeShapes) {
             var width  = PedigreeEditorParameters.attributes.personHoverBoxWidth;
-            // at this point pedigree node is not yet initialized, so we don't know A&W status and can't compute
-            // final hoverbox size
-            var height = baseHeight || PedigreeEditorParameters.attributes.personHoverBoxHeight;
+            // note: at this point pedigree node is not yet initialized, so hoverbox size can not depend on node properties
+            var height = PedigreeEditorParameters.attributes.personHoverBoxHeight;
             $super(personNode, -width/2, -height/2, width, height, centerX, centerY, nodeShapes);
         },
 

@@ -19,8 +19,7 @@ define([
     ){
     var PersonGroupHoverbox = Class.create(PersonHoverbox, {
         initialize: function($super, personNode, centerX, centerY, nodeShapes) {
-            var height = PedigreeEditorParameters.attributes.personGroupHoverBoxHeight;
-            $super(personNode, centerX, centerY, nodeShapes, height);
+            $super(personNode, centerX, centerY, nodeShapes);
         },
 
         /**
