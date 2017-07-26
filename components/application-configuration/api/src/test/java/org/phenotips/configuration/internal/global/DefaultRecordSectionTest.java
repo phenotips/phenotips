@@ -45,6 +45,8 @@ import static org.mockito.Mockito.when;
  */
 public class DefaultRecordSectionTest
 {
+    private static final String ORDER = "order";
+
     /** Basic tests for {@link RecordSection#getExtension()}. */
     @Test
     public void getExtension()
@@ -117,7 +119,7 @@ public class DefaultRecordSectionTest
         ex = mock(UIExtension.class);
         params = new HashMap<>();
         params.put("enabled", "");
-        params.put("order", "2");
+        params.put(ORDER, "2");
         when(ex.getParameters()).thenReturn(params);
         when(ex.getId()).thenReturn("1");
         fields.add(ex);
@@ -125,7 +127,7 @@ public class DefaultRecordSectionTest
         ex = mock(UIExtension.class);
         params = new HashMap<>();
         params.put("enabled", "true");
-        params.put("order", "1");
+        params.put(ORDER, "1");
         when(ex.getParameters()).thenReturn(params);
         when(ex.getId()).thenReturn("0");
         fields.add(ex);
@@ -133,7 +135,7 @@ public class DefaultRecordSectionTest
         ex = mock(UIExtension.class);
         params = new HashMap<>();
         params.put("enabled", "false");
-        params.put("order", "3");
+        params.put(ORDER, "3");
         when(ex.getParameters()).thenReturn(params);
         when(ex.getId()).thenReturn("invalid");
         fields.add(ex);
@@ -146,14 +148,14 @@ public class DefaultRecordSectionTest
 
         ex = mock(UIExtension.class);
         params = new HashMap<>();
-        params.put("order", "4");
+        params.put(ORDER, "4");
         when(ex.getParameters()).thenReturn(params);
         when(ex.getId()).thenReturn("2");
         fields.add(ex);
 
         when(m.get("org.phenotips.patientSheet.section.patient-info")).thenReturn(fields);
-        List<UIExtension> sorted = realFilter.filter(fields, "order");
-        when(filter.filter(fields, "order")).thenReturn(sorted);
+        List<UIExtension> sorted = realFilter.filter(fields, ORDER);
+        when(filter.filter(fields, ORDER)).thenReturn(sorted);
 
         List<RecordElement> result = s.getEnabledElements();
         Assert.assertEquals(4, result.size());
@@ -179,7 +181,7 @@ public class DefaultRecordSectionTest
         ex = mock(UIExtension.class);
         params = new HashMap<>();
         params.put("enabled", "");
-        params.put("order", "2");
+        params.put(ORDER, "2");
         when(ex.getParameters()).thenReturn(params);
         when(ex.getId()).thenReturn("1");
         fields.add(ex);
@@ -187,7 +189,7 @@ public class DefaultRecordSectionTest
         ex = mock(UIExtension.class);
         params = new HashMap<>();
         params.put("enabled", "true");
-        params.put("order", "1");
+        params.put(ORDER, "1");
         when(ex.getParameters()).thenReturn(params);
         when(ex.getId()).thenReturn("0");
         fields.add(ex);
@@ -195,7 +197,7 @@ public class DefaultRecordSectionTest
         ex = mock(UIExtension.class);
         params = new HashMap<>();
         params.put("enabled", "false");
-        params.put("order", "3");
+        params.put(ORDER, "3");
         when(ex.getParameters()).thenReturn(params);
         when(ex.getId()).thenReturn("2");
         fields.add(ex);
@@ -208,14 +210,14 @@ public class DefaultRecordSectionTest
 
         ex = mock(UIExtension.class);
         params = new HashMap<>();
-        params.put("order", "4");
+        params.put(ORDER, "4");
         when(ex.getParameters()).thenReturn(params);
         when(ex.getId()).thenReturn("3");
         fields.add(ex);
 
         when(m.get("org.phenotips.patientSheet.section.patient-info")).thenReturn(fields);
-        List<UIExtension> sorted = realFilter.filter(fields, "order");
-        when(filter.filter(fields, "order")).thenReturn(sorted);
+        List<UIExtension> sorted = realFilter.filter(fields, ORDER);
+        when(filter.filter(fields, ORDER)).thenReturn(sorted);
 
         List<RecordElement> result = s.getAllElements();
         Assert.assertEquals(5, result.size());
@@ -244,7 +246,7 @@ public class DefaultRecordSectionTest
         params = new HashMap<>();
         params.put("title", "Name");
         params.put("enabled", "");
-        params.put("order", "2");
+        params.put(ORDER, "2");
         when(ex.getParameters()).thenReturn(params);
         fields.add(ex);
 
@@ -252,7 +254,7 @@ public class DefaultRecordSectionTest
         params = new HashMap<>();
         params.put("title", "Identifier");
         params.put("enabled", "true");
-        params.put("order", "1");
+        params.put(ORDER, "1");
         when(ex.getParameters()).thenReturn(params);
         fields.add(ex);
 
@@ -260,7 +262,7 @@ public class DefaultRecordSectionTest
         params = new HashMap<>();
         params.put("title", "Age");
         params.put("enabled", "false");
-        params.put("order", "3");
+        params.put(ORDER, "3");
         when(ex.getParameters()).thenReturn(params);
         fields.add(ex);
 
@@ -273,13 +275,13 @@ public class DefaultRecordSectionTest
         ex = mock(UIExtension.class);
         params = new HashMap<>();
         params.put("title", "Onset");
-        params.put("order", "4");
+        params.put(ORDER, "4");
         when(ex.getParameters()).thenReturn(params);
         fields.add(ex);
 
         when(m.get("org.phenotips.patientSheet.section.patient-info")).thenReturn(fields);
-        List<UIExtension> sorted = realFilter.filter(fields, "order");
-        when(filter.filter(fields, "order")).thenReturn(sorted);
+        List<UIExtension> sorted = realFilter.filter(fields, ORDER);
+        when(filter.filter(fields, ORDER)).thenReturn(sorted);
 
         Assert.assertEquals("Patient information [Identifier, Name, Onset, Indication for referral]", s.toString());
     }
