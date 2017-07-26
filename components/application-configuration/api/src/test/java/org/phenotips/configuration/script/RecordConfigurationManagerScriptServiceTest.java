@@ -39,7 +39,7 @@ public class RecordConfigurationManagerScriptServiceTest
 {
     @Rule
     public final MockitoComponentMockingRule<RecordConfigurationManagerScriptService> mocker =
-        new MockitoComponentMockingRule<RecordConfigurationManagerScriptService>(
+        new MockitoComponentMockingRule<>(
             RecordConfigurationManagerScriptService.class);
 
     /** Basic test for {@link RecordConfigurationManagerScriptService#getActiveConfiguration()}. */

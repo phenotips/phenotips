@@ -57,7 +57,7 @@ public class DefaultRecordElementTest
     public void getName()
     {
         UIExtension extension = mock(UIExtension.class);
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("title", "Age of onset");
         when(extension.getParameters()).thenReturn(params);
         RecordElement s = new DefaultRecordElement(extension, null);
@@ -80,7 +80,7 @@ public class DefaultRecordElementTest
     public void isEnabled()
     {
         UIExtension extension = mock(UIExtension.class);
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         when(extension.getParameters()).thenReturn(params);
         RecordElement s = new DefaultRecordElement(extension, null);
         Assert.assertTrue(s.isEnabled());
@@ -100,7 +100,7 @@ public class DefaultRecordElementTest
     public void getDisplayedFields()
     {
         UIExtension extension = mock(UIExtension.class);
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("fields", ",first_name ,, last_name,");
         when(extension.getParameters()).thenReturn(params);
         RecordElement s = new DefaultRecordElement(extension, null);
@@ -136,7 +136,7 @@ public class DefaultRecordElementTest
     public void toStringTest()
     {
         UIExtension extension = mock(UIExtension.class);
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("title", "Age of onset");
         when(extension.getParameters()).thenReturn(params);
         RecordElement s = new DefaultRecordElement(extension, null);

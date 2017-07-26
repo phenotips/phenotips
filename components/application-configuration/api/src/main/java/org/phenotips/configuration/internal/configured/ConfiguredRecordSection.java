@@ -69,7 +69,7 @@ public class ConfiguredRecordSection extends DefaultRecordSection implements Rec
     @Override
     public List<RecordElement> getAllElements()
     {
-        List<RecordElement> result = new ArrayList<RecordElement>();
+        List<RecordElement> result = new ArrayList<>();
         List<RecordElement> allElements = super.getAllElements();
         final List<String> overrides = this.configuration.getFieldsOverride();
         for (RecordElement element : allElements) {

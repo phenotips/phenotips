@@ -85,11 +85,11 @@ public class ConfiguredRecordConfigurationTest
         RecordConfiguration c = new ConfiguredRecordConfiguration(cc, this.xcp, m, filter);
 
         Map<String, String> params;
-        List<UIExtension> sections = new LinkedList<UIExtension>();
+        List<UIExtension> sections = new LinkedList<>();
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("patient-info");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Patient information");
         params.put("enabled", "true");
         params.put("order", "1");
@@ -98,7 +98,7 @@ public class ConfiguredRecordConfigurationTest
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("family-info");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Family history and pedigree");
         params.put("enabled", "false");
         params.put("order", "2");
@@ -107,7 +107,7 @@ public class ConfiguredRecordConfigurationTest
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("prenatal-info");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Prenatal history");
         params.put("enabled", "");
         params.put("order", "4");
@@ -116,7 +116,7 @@ public class ConfiguredRecordConfigurationTest
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("phenotype-info");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Clinical observations");
         params.put("order", "3");
         when(ex.getParameters()).thenReturn(params);
@@ -126,7 +126,7 @@ public class ConfiguredRecordConfigurationTest
         List<UIExtension> sorted = realFilter.filter(sections, "order");
         when(filter.filter(sections, "order")).thenReturn(sorted);
 
-        List<String> configuredSections = new LinkedList<String>();
+        List<String> configuredSections = new LinkedList<>();
         configuredSections.add("patient-info");
         configuredSections.add("diagnosis-info");
         configuredSections.add("phenotype-info");
@@ -152,11 +152,11 @@ public class ConfiguredRecordConfigurationTest
         RecordConfiguration c = new ConfiguredRecordConfiguration(cc, this.xcp, m, filter);
 
         Map<String, String> params;
-        List<UIExtension> sections = new LinkedList<UIExtension>();
+        List<UIExtension> sections = new LinkedList<>();
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("patient-info");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Patient information");
         params.put("enabled", "true");
         params.put("order", "1");
@@ -165,7 +165,7 @@ public class ConfiguredRecordConfigurationTest
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("family-info");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Family history and pedigree");
         params.put("enabled", "false");
         params.put("order", "2");
@@ -174,7 +174,7 @@ public class ConfiguredRecordConfigurationTest
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("prenatal-info");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Prenatal history");
         params.put("enabled", "");
         params.put("order", "4");
@@ -183,7 +183,7 @@ public class ConfiguredRecordConfigurationTest
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("phenotype-info");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Clinical observations");
         params.put("order", "3");
         when(ex.getParameters()).thenReturn(params);
@@ -213,11 +213,11 @@ public class ConfiguredRecordConfigurationTest
         RecordConfiguration c = new ConfiguredRecordConfiguration(cc, this.xcp, m, filter);
 
         Map<String, String> params;
-        List<UIExtension> sections = new LinkedList<UIExtension>();
+        List<UIExtension> sections = new LinkedList<>();
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("patient-info");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Patient information");
         params.put("enabled", "true");
         params.put("order", "1");
@@ -226,7 +226,7 @@ public class ConfiguredRecordConfigurationTest
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("family-info");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Family history and pedigree");
         params.put("enabled", "false");
         params.put("order", "2");
@@ -235,7 +235,7 @@ public class ConfiguredRecordConfigurationTest
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("prenatal-info");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Prenatal history");
         params.put("enabled", "");
         params.put("order", "4");
@@ -244,7 +244,7 @@ public class ConfiguredRecordConfigurationTest
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("phenotype-info");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Clinical observations");
         params.put("order", "3");
         when(ex.getParameters()).thenReturn(params);
@@ -254,7 +254,7 @@ public class ConfiguredRecordConfigurationTest
         List<UIExtension> sorted = realFilter.filter(sections, "order");
         when(filter.filter(sections, "order")).thenReturn(sorted);
 
-        List<String> configuredSections = new LinkedList<String>();
+        List<String> configuredSections = new LinkedList<>();
         configuredSections.add("patient-info");
         configuredSections.add("diagnosis-info");
         configuredSections.add("phenotype-info");
@@ -281,11 +281,11 @@ public class ConfiguredRecordConfigurationTest
         RecordConfiguration c = new ConfiguredRecordConfiguration(cc, this.xcp, m, filter);
 
         Map<String, String> params;
-        List<UIExtension> sections = new LinkedList<UIExtension>();
+        List<UIExtension> sections = new LinkedList<>();
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("patient-info");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Patient information");
         params.put("enabled", "true");
         params.put("order", "1");
@@ -294,7 +294,7 @@ public class ConfiguredRecordConfigurationTest
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("family-info");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Family history and pedigree");
         params.put("enabled", "false");
         params.put("order", "2");
@@ -303,7 +303,7 @@ public class ConfiguredRecordConfigurationTest
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("prenatal-info");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Prenatal history");
         params.put("enabled", "");
         params.put("order", "4");
@@ -312,7 +312,7 @@ public class ConfiguredRecordConfigurationTest
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("phenotype-info");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Clinical observations");
         params.put("order", "3");
         when(ex.getParameters()).thenReturn(params);
@@ -322,18 +322,18 @@ public class ConfiguredRecordConfigurationTest
         List<UIExtension> sorted = realFilter.filter(sections, "order");
         when(filter.filter(sections, "order")).thenReturn(sorted);
 
-        List<String> configuredSections = new LinkedList<String>();
+        List<String> configuredSections = new LinkedList<>();
         configuredSections.add("patient-info");
         configuredSections.add("diagnosis-info");
         configuredSections.add("phenotype-info");
         configuredSections.add("family-info");
         when(cc.getSectionsOverride()).thenReturn(configuredSections);
 
-        List<UIExtension> fields = new LinkedList<UIExtension>();
+        List<UIExtension> fields = new LinkedList<>();
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("name");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("fields", ",first_name ,, last_name,");
         params.put("enabled", "");
         params.put("order", "2");
@@ -341,7 +341,7 @@ public class ConfiguredRecordConfigurationTest
         fields.add(ex);
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         when(ex.getId()).thenReturn("external_id");
         params.put("fields", "external_id");
         params.put("enabled", "true");
@@ -351,7 +351,7 @@ public class ConfiguredRecordConfigurationTest
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("date_of_birth");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("fields", "date_of_birth,");
         params.put("enabled", "false");
         params.put("order", "3");
@@ -360,7 +360,7 @@ public class ConfiguredRecordConfigurationTest
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("gender");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("fields", "gender");
         when(ex.getParameters()).thenReturn(params);
         fields.add(ex);
@@ -369,11 +369,11 @@ public class ConfiguredRecordConfigurationTest
         sorted = realFilter.filter(fields, "order");
         when(filter.filter(fields, "order")).thenReturn(sorted);
 
-        fields = new LinkedList<UIExtension>();
+        fields = new LinkedList<>();
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("ethnicity");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("fields", "maternal_ethnicity,paternal_ethnicity");
         params.put("enabled", "true");
         when(ex.getParameters()).thenReturn(params);
@@ -383,11 +383,11 @@ public class ConfiguredRecordConfigurationTest
         sorted = realFilter.filter(fields, "order");
         when(filter.filter(fields, "order")).thenReturn(sorted);
 
-        fields = new LinkedList<UIExtension>();
+        fields = new LinkedList<>();
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("gestation");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("fields", "gestation");
         params.put("enabled", "true");
         when(ex.getParameters()).thenReturn(params);
@@ -397,11 +397,11 @@ public class ConfiguredRecordConfigurationTest
         sorted = realFilter.filter(fields, "order");
         when(filter.filter(fields, "order")).thenReturn(sorted);
 
-        fields = new LinkedList<UIExtension>();
+        fields = new LinkedList<>();
 
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("phenotype");
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("fields", "unaffected,phenotype,negative_phenotype");
         params.put("enabled", "true");
         when(ex.getParameters()).thenReturn(params);
@@ -411,14 +411,14 @@ public class ConfiguredRecordConfigurationTest
         sorted = realFilter.filter(fields, "order");
         when(filter.filter(fields, "order")).thenReturn(sorted);
 
-        List<String> configuredFields = new LinkedList<String>();
+        List<String> configuredFields = new LinkedList<>();
         configuredFields.add("date_of_birth");
         configuredFields.add("ethnicity");
         configuredFields.add("external_id");
         configuredFields.add("phenotype");
         when(cc.getFieldsOverride()).thenReturn(configuredFields);
 
-        List<String> expectedFields = new LinkedList<String>();
+        List<String> expectedFields = new LinkedList<>();
         expectedFields.add("date_of_birth");
         expectedFields.add("external_id");
         expectedFields.add("unaffected");

@@ -69,7 +69,7 @@ public class ConfiguredRecordConfiguration extends GlobalRecordConfiguration imp
     @Override
     public List<RecordSection> getAllSections()
     {
-        List<RecordSection> result = new ArrayList<RecordSection>();
+        List<RecordSection> result = new ArrayList<>();
         List<RecordSection> allSections = super.getAllSections();
         final List<String> overrides = this.configuration.getSectionsOverride();
         for (RecordSection section : allSections) {

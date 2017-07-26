@@ -44,7 +44,7 @@ public class ConfiguredRecordElementTest
     {
         CustomConfiguration cc = mock(CustomConfiguration.class);
         UIExtension extension = mock(UIExtension.class);
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         when(extension.getId()).thenReturn("age");
         when(extension.getParameters()).thenReturn(params);
         RecordElement s = new ConfiguredRecordElement(cc, extension, null);
@@ -64,7 +64,7 @@ public class ConfiguredRecordElementTest
     {
         CustomConfiguration cc = mock(CustomConfiguration.class);
         UIExtension extension = mock(UIExtension.class);
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         when(extension.getId()).thenReturn("age");
         when(extension.getParameters()).thenReturn(params);
         RecordElement s = new ConfiguredRecordElement(cc, extension, null);
@@ -83,7 +83,7 @@ public class ConfiguredRecordElementTest
     public void toStringTest()
     {
         UIExtension extension = mock(UIExtension.class);
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("title", "Age of onset");
         when(extension.getParameters()).thenReturn(params);
         RecordElement s = new ConfiguredRecordElement(null, extension, null);

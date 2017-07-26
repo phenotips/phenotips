@@ -58,7 +58,7 @@ public class DefaultRecordConfigurationManagerTest
 {
     @Rule
     public final MockitoComponentMockingRule<RecordConfigurationManager> mocker =
-        new MockitoComponentMockingRule<RecordConfigurationManager>(DefaultRecordConfigurationManager.class);
+        new MockitoComponentMockingRule<>(DefaultRecordConfigurationManager.class);
 
     @Mock
     private XWikiContext context;

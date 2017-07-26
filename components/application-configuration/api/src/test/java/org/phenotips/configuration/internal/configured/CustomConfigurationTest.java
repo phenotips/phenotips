@@ -59,7 +59,7 @@ public class CustomConfigurationTest
     public void getFieldsOverride() throws ComponentLookupException, XWikiException
     {
         BaseObject o = mock(BaseObject.class);
-        List<String> fields = new LinkedList<String>();
+        List<String> fields = new LinkedList<>();
         fields.add("external_id");
         fields.add("gender");
         fields.add("name");

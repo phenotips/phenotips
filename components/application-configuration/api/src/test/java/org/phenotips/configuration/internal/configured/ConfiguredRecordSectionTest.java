@@ -52,7 +52,7 @@ public class ConfiguredRecordSectionTest
     {
         CustomConfiguration cc = mock(CustomConfiguration.class);
         UIExtension extension = mock(UIExtension.class);
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         when(extension.getId()).thenReturn("patient-info");
         when(extension.getParameters()).thenReturn(params);
         RecordSection s = new ConfiguredRecordSection(cc, extension, null, null);
@@ -81,10 +81,10 @@ public class ConfiguredRecordSectionTest
         RecordSection s = new ConfiguredRecordSection(cc, ex, m, filter);
 
         Map<String, String> params;
-        List<UIExtension> fields = new LinkedList<UIExtension>();
+        List<UIExtension> fields = new LinkedList<>();
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("enabled", "");
         params.put("title", "Name");
         params.put("order", "2");
@@ -93,7 +93,7 @@ public class ConfiguredRecordSectionTest
         fields.add(ex);
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("enabled", "true");
         params.put("title", "Identifier");
         params.put("order", "1");
@@ -102,7 +102,7 @@ public class ConfiguredRecordSectionTest
         fields.add(ex);
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("enabled", "false");
         params.put("title", "Global age of onset");
         params.put("order", "3");
@@ -111,14 +111,14 @@ public class ConfiguredRecordSectionTest
         fields.add(ex);
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Sex");
         when(ex.getParameters()).thenReturn(params);
         when(ex.getId()).thenReturn("gender");
         fields.add(ex);
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("order", "4");
         params.put("title", "Date of birth");
         when(ex.getParameters()).thenReturn(params);
@@ -129,7 +129,7 @@ public class ConfiguredRecordSectionTest
         List<UIExtension> sorted = realFilter.filter(fields, "order");
         when(filter.filter(fields, "order")).thenReturn(sorted);
 
-        List<String> configuredFields = new LinkedList<String>();
+        List<String> configuredFields = new LinkedList<>();
         configuredFields.add("identifier");
         configuredFields.add("date_of_birth");
         configuredFields.add("gender");
@@ -161,10 +161,10 @@ public class ConfiguredRecordSectionTest
         RecordSection s = new ConfiguredRecordSection(cc, ex, m, filter);
 
         Map<String, String> params;
-        List<UIExtension> fields = new LinkedList<UIExtension>();
+        List<UIExtension> fields = new LinkedList<>();
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("enabled", "");
         params.put("title", "Name");
         params.put("order", "2");
@@ -173,7 +173,7 @@ public class ConfiguredRecordSectionTest
         fields.add(ex);
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("enabled", "true");
         params.put("title", "Identifier");
         params.put("order", "1");
@@ -182,7 +182,7 @@ public class ConfiguredRecordSectionTest
         fields.add(ex);
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("enabled", "false");
         params.put("title", "Global age of onset");
         params.put("order", "3");
@@ -191,14 +191,14 @@ public class ConfiguredRecordSectionTest
         fields.add(ex);
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Sex");
         when(ex.getParameters()).thenReturn(params);
         when(ex.getId()).thenReturn("gender");
         fields.add(ex);
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("order", "4");
         params.put("title", "Date of birth");
         when(ex.getParameters()).thenReturn(params);
@@ -209,7 +209,7 @@ public class ConfiguredRecordSectionTest
         List<UIExtension> sorted = realFilter.filter(fields, "order");
         when(filter.filter(fields, "order")).thenReturn(sorted);
 
-        List<String> configuredFields = new LinkedList<String>();
+        List<String> configuredFields = new LinkedList<>();
         configuredFields.add("identifier");
         configuredFields.add("date_of_birth");
         configuredFields.add("gender");
@@ -242,10 +242,10 @@ public class ConfiguredRecordSectionTest
         RecordSection s = new ConfiguredRecordSection(cc, ex, m, filter);
 
         Map<String, String> params;
-        List<UIExtension> fields = new LinkedList<UIExtension>();
+        List<UIExtension> fields = new LinkedList<>();
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("enabled", "");
         params.put("title", "Name");
         params.put("order", "2");
@@ -254,7 +254,7 @@ public class ConfiguredRecordSectionTest
         fields.add(ex);
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("enabled", "true");
         params.put("title", "Identifier");
         params.put("order", "1");
@@ -263,7 +263,7 @@ public class ConfiguredRecordSectionTest
         fields.add(ex);
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("enabled", "false");
         params.put("title", "Global age of onset");
         params.put("order", "3");
@@ -272,14 +272,14 @@ public class ConfiguredRecordSectionTest
         fields.add(ex);
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Sex");
         when(ex.getParameters()).thenReturn(params);
         when(ex.getId()).thenReturn("gender");
         fields.add(ex);
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("order", "4");
         params.put("title", "Date of birth");
         when(ex.getParameters()).thenReturn(params);
@@ -317,10 +317,10 @@ public class ConfiguredRecordSectionTest
         RecordSection s = new ConfiguredRecordSection(cc, ex, m, filter);
 
         Map<String, String> params;
-        List<UIExtension> fields = new LinkedList<UIExtension>();
+        List<UIExtension> fields = new LinkedList<>();
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("enabled", "");
         params.put("title", "Name");
         params.put("order", "2");
@@ -329,7 +329,7 @@ public class ConfiguredRecordSectionTest
         fields.add(ex);
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("enabled", "true");
         params.put("title", "Identifier");
         params.put("order", "1");
@@ -338,7 +338,7 @@ public class ConfiguredRecordSectionTest
         fields.add(ex);
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("enabled", "false");
         params.put("title", "Global age of onset");
         params.put("order", "3");
@@ -347,14 +347,14 @@ public class ConfiguredRecordSectionTest
         fields.add(ex);
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("title", "Sex");
         when(ex.getParameters()).thenReturn(params);
         when(ex.getId()).thenReturn("gender");
         fields.add(ex);
 
         ex = mock(UIExtension.class);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.put("order", "4");
         params.put("title", "Date of birth");
         when(ex.getParameters()).thenReturn(params);

@@ -93,7 +93,7 @@ public class GlobalRecordConfiguration implements RecordConfiguration
     @Override
     public List<RecordSection> getAllSections()
     {
-        List<RecordSection> result = new LinkedList<RecordSection>();
+        List<RecordSection> result = new LinkedList<>();
         List<UIExtension> sections = this.uixManager.get("org.phenotips.patientSheet.content");
         sections = this.orderFilter.filter(sections, SORT_PARAMETER_NAME);
         for (UIExtension sectionExtension : sections) {
@@ -106,7 +106,7 @@ public class GlobalRecordConfiguration implements RecordConfiguration
     @Override
     public List<RecordSection> getEnabledSections()
     {
-        List<RecordSection> result = new LinkedList<RecordSection>();
+        List<RecordSection> result = new LinkedList<>();
         for (RecordSection section : getAllSections()) {
             if (section.isEnabled()) {
                 result.add(section);
@@ -118,7 +118,7 @@ public class GlobalRecordConfiguration implements RecordConfiguration
     @Override
     public List<String> getEnabledFieldNames()
     {
-        List<String> result = new LinkedList<String>();
+        List<String> result = new LinkedList<>();
         for (RecordSection section : getEnabledSections()) {
             for (RecordElement element : section.getEnabledElements()) {
                 result.addAll(element.getDisplayedFields());
@@ -130,7 +130,7 @@ public class GlobalRecordConfiguration implements RecordConfiguration
     @Override
     public List<String> getEnabledNonIdentifiableFieldNames()
     {
-        List<String> result = new LinkedList<String>();
+        List<String> result = new LinkedList<>();
         for (RecordSection section : getEnabledSections()) {
             for (RecordElement element : section.getEnabledElements()) {
                 if (!element.containsPrivateIdentifiableInformation()) {

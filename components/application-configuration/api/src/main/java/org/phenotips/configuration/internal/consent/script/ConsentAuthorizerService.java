@@ -52,6 +52,7 @@ public class ConsentAuthorizerService implements ScriptService
 
     /**
      * Finds a patient by `patientId`, and calls {@link ConsentAuthorizer#filterForm(List, Patient)}.
+     *
      * @param elements of a patient form to be filtered
      * @param patientId of a patient whose data will be displayed through the `elements`
      * @return same as {@link ConsentAuthorizer#filterForm(List, Patient)}
@@ -64,6 +65,7 @@ public class ConsentAuthorizerService implements ScriptService
 
     /**
      * Forwards the call to {@link ConsentAuthorizer}.
+     *
      * @return same as {@link ConsentAuthorizer#consentsGloballyEnabled()}
      */
     public boolean consentsGloballyEnabled()
