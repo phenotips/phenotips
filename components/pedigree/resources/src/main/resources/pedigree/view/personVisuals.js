@@ -56,8 +56,12 @@ define([
             if (editor.isReadOnlyMode()) {
                 return new ReadOnlyHoverbox(this.getNode(), x, y, this.getGenderGraphics());
             } else {
-                return new PersonHoverbox(this.getNode(), x, y, this.getGenderGraphics());
+                return new PersonHoverbox(this.getNode(), x, y, this.getGenderGraphics(), this.getNodeMenu());
             }
+        },
+
+        getNodeMenu: function() {
+            return editor.getNodeMenu();
         },
 
         /**

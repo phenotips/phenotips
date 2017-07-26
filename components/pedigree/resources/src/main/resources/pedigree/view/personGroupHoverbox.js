@@ -18,8 +18,8 @@ define([
         PersonHoverbox
     ){
     var PersonGroupHoverbox = Class.create(PersonHoverbox, {
-        initialize: function($super, personNode, centerX, centerY, nodeShapes) {
-            $super(personNode, centerX, centerY, nodeShapes);
+        initialize: function($super, personNode, centerX, centerY, nodeShapes, nodeMenu) {
+            $super(personNode, centerX, centerY, nodeShapes, nodeMenu);
         },
 
         /**
@@ -65,7 +65,7 @@ define([
                 var x = optBBox.x2;
                 var y = optBBox.y;
                 var position = editor.getWorkspace().canvasToDiv(x+5, y);
-                editor.getNodeGroupMenu().show(this.getNode(), position.x, position.y);
+                this._nodeMenu.show(this.getNode(), position.x, position.y);
             }
         }
     });

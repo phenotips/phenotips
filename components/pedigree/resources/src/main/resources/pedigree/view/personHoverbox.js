@@ -23,11 +23,12 @@ define([
     ){
     var PersonHoverbox = Class.create(AbstractHoverbox, {
 
-        initialize: function($super, personNode, centerX, centerY, nodeShapes) {
+        initialize: function($super, personNode, centerX, centerY, nodeShapes, nodeMenu) {
             var width  = PedigreeEditorParameters.attributes.personHoverBoxWidth;
             // note: at this point pedigree node is not yet initialized, so hoverbox size can not depend on node properties
             var height = PedigreeEditorParameters.attributes.personHoverBoxHeight;
             $super(personNode, -width/2, -height/2, width, height, centerX, centerY, nodeShapes);
+            this._nodeMenu = nodeMenu;
         },
 
         _updateHoverBoxHeight: function()
@@ -327,7 +328,7 @@ define([
                     var x = optBBox.x2;
                     var y = optBBox.y;
                     var position = editor.getWorkspace().canvasToDiv(x+5, y);
-                    editor.getNodeMenu().show(_this.getNode(), position.x, position.y);
+                    _this._nodeMenu.show(_this.getNode(), position.x, position.y);
                 }
             }
 

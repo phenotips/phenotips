@@ -38,7 +38,7 @@ define([
             if (editor.isReadOnlyMode()) {
                 this._hoverBox = new ReadOnlyHoverbox(partnership, x, y, this.getShapes());
             } else {
-                this._hoverBox = new PartnershipHoverbox(partnership, x, y, this.getShapes());
+                this._hoverBox = new PartnershipHoverbox(partnership, x, y, this.getShapes(), this.getNodeMenu());
             }
             this.updateIDLabel();
 
@@ -48,6 +48,10 @@ define([
             this.updatePartnerConnections();
             this.updateChildhubConnection();
             //console.log("partnership visuals end");
+        },
+
+        getNodeMenu: function() {
+            return editor.getPartnershipMenu();
         },
 
         updateIDLabel: function() {
