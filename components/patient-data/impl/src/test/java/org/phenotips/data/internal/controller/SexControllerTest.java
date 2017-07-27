@@ -21,6 +21,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
+
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
@@ -69,7 +70,7 @@ public class SexControllerTest
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<String>>(SexController.class);
+        new MockitoComponentMockingRule<>(SexController.class);
 
     @Mock
     private ExecutionContext executionContext;

@@ -37,8 +37,8 @@ import org.mockito.MockitoAnnotations;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for the {@link SecurePatientRepository} component.
@@ -135,7 +135,8 @@ public class SecurePatientIteratorTest
         when(this.access.hasAccess(this.currentUser, Right.VIEW, this.p2Reference)).thenReturn(true);
         when(this.access.hasAccess(this.currentUser, Right.VIEW, this.p3Reference)).thenReturn(true);
 
-        SecurePatientIterator iterator = spy(new SecurePatientIterator(input.iterator(), this.access, this.currentUser));
+        SecurePatientIterator iterator =
+            spy(new SecurePatientIterator(input.iterator(), this.access, this.currentUser));
 
         // mock SecurePatient creation
         SecurePatient sp1 = mock(SecurePatient.class);

@@ -101,10 +101,9 @@ public class SecurePatientIterator implements Iterator<Patient>
     /**
      * Returns a SecurePatient wrapper around a given patient.
      *
-     * TODO: see comments for {@link SecurePatientRepository.createSecurePatient(Patient patient)}
-     *
      * @param patient a patient object
      * @return a SecurePatient wrapper around the given patient
+     * @todo: see comments for {@link SecurePatientRepository#createSecurePatient(Patient patient)}
      */
     protected SecurePatient createSecurePatient(Patient patient)
     {

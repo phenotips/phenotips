@@ -22,6 +22,7 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -76,7 +77,7 @@ public class ParentalAgeControllerTest
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Integer>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<Integer>>(ParentalAgeController.class);
+        new MockitoComponentMockingRule<>(ParentalAgeController.class);
 
     @Mock
     private Logger logger;

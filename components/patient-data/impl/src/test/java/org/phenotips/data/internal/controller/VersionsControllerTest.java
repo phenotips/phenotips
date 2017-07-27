@@ -23,6 +23,7 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
@@ -78,7 +79,7 @@ public class VersionsControllerTest
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<String>>(VersionsController.class);
+        new MockitoComponentMockingRule<>(VersionsController.class);
 
     @Mock
     private Patient patient;

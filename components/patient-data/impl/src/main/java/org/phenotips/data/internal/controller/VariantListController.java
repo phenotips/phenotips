@@ -260,7 +260,6 @@ public class VariantListController extends AbstractComplexController<Map<String,
                 return null;
             }
             return fields.getTextValue();
-
         } else if (INTERNAL_START_POSITION_KEY.equals(property) || INTERNAL_END_POSITION_KEY.equals(property)) {
             int value = variantObject.getIntValue(property, -1);
             if (value == -1) {
@@ -370,7 +369,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
                     || variantSymbols.contains(variantJson.getString(INTERNAL_VARIANT_KEY))
                     // storing variant without gene name is pointless as it can not be displayed
                     || StringUtils.isBlank(variantJson.optString(JSON_GENE_KEY))
-                    && StringUtils.isBlank(variantJson.optString(JSON_OLD_GENE_KEY))) {
+                        && StringUtils.isBlank(variantJson.optString(JSON_OLD_GENE_KEY))) {
                     continue;
                 }
 
@@ -486,7 +485,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
     private Vocabulary getHGNCVocabulary()
     {
         try {
-            return vocabularyManager.getVocabulary("HGNC");
+            return this.vocabularyManager.getVocabulary("HGNC");
         } catch (Exception ex) {
             // this should not happen except when mocking, but does not hurt to catch in any case
             this.logger.error("Error loading component [{}]", ex.getMessage(), ex);

@@ -62,7 +62,7 @@ public class SecurePatientRepositoryTest
 {
     @Rule
     public final MockitoComponentMockingRule<PatientRepository> mocker =
-        new MockitoComponentMockingRule<PatientRepository>(SecurePatientRepository.class);
+        new MockitoComponentMockingRule<>(SecurePatientRepository.class);
 
     @Mock
     private Patient patient;
@@ -105,7 +105,7 @@ public class SecurePatientRepositoryTest
             .thenReturn(this.patientReference.getParent());
 
         // mock SecurePatient creation
-        this.componentUnderTest = spy((SecurePatientRepository)this.mocker.getComponentUnderTest());
+        this.componentUnderTest = spy((SecurePatientRepository) this.mocker.getComponentUnderTest());
         doReturn(this.securePatient).when(this.componentUnderTest).createSecurePatient(this.patient);
     }
 
@@ -188,7 +188,7 @@ public class SecurePatientRepositoryTest
         rawInput.add(p2);
 
         when(this.internalRepo.getAll()).thenReturn(rawInput.iterator());
-        SecurePatientIterator result = spy((SecurePatientIterator)this.mocker.getComponentUnderTest().getAll());
+        SecurePatientIterator result = spy((SecurePatientIterator) this.mocker.getComponentUnderTest().getAll());
 
         // mock SecurePatient creation
         SecurePatient sp2 = mock(SecurePatient.class);

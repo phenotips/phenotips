@@ -21,6 +21,7 @@ import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -102,7 +103,7 @@ public class VariantListControllerTest
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Map<String, String>>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<Map<String, String>>>(VariantListController.class);
+        new MockitoComponentMockingRule<>(VariantListController.class);
 
     @Mock
     private Patient patient;

@@ -55,7 +55,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -75,7 +74,7 @@ public class ClinicalDiagnosisControllerTest
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Disorder>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<Disorder>>(ClinicalDiagnosisController.class);
+        new MockitoComponentMockingRule<>(ClinicalDiagnosisController.class);
 
     @Mock
     private XWikiContext xcontext;

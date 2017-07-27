@@ -21,6 +21,7 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -59,7 +60,7 @@ public class APGARControllerTest
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Integer>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<Integer>>(APGARController.class);
+        new MockitoComponentMockingRule<>(APGARController.class);
 
     @Mock
     private Patient patient;
