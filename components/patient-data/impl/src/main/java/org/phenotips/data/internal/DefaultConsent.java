@@ -65,7 +65,7 @@ public class DefaultConsent implements Consent
      * @param label consent label/title (required)
      * @param description consent detailed description (optional, may be null)
      * @param required when true, no interaction with a document is allowed until this consent is granted
-     * @param formFields form fields which are only availablke when this consent is granted
+     * @param formFields form fields which are only available when this consent is granted
      */
     public DefaultConsent(String id, String label, String description, boolean required, List<String> formFields)
     {
