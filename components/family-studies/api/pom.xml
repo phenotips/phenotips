@@ -30,7 +30,7 @@
 
   <properties>
     <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
-    <coverage.instructionRatio>0.04</coverage.instructionRatio>
+    <coverage.instructionRatio>0.05</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -62,6 +62,11 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-bridge</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-uiextension-api</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
@@ -152,6 +157,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>application-configuration-api</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>annotations</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
