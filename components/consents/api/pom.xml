@@ -29,7 +29,7 @@
   <name>PhenoTips - Consents - Java APIs</name>
 
   <properties>
-    <coverage.instructionRatio>0.78</coverage.instructionRatio>
+    <coverage.instructionRatio>0.80</coverage.instructionRatio>
   </properties>
 
   <dependencies>

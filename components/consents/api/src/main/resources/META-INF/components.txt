@@ -1,3 +1,4 @@
+org.phenotips.consents.internal.ConsentsRecordConfigurationModule
 org.phenotips.consents.internal.DefaultConsentAuthorizer
 org.phenotips.consents.script.ConsentAuthorizerService
 org.phenotips.consents.script.ConsentManagerScriptService
