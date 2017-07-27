@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data.internal;
+package org.phenotips.consents.internal;
 
 import org.phenotips.Constants;
-import org.phenotips.data.Consent;
-import org.phenotips.data.ConsentManager;
-import org.phenotips.data.ConsentStatus;
+import org.phenotips.consents.Consent;
+import org.phenotips.consents.ConsentManager;
+import org.phenotips.consents.ConsentStatus;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.translation.TranslationManager;

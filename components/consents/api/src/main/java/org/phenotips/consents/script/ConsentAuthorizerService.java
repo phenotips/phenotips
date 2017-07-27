@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.configuration.internal.consent.script;
+package org.phenotips.consents.script;
 
 import org.phenotips.configuration.RecordElement;
-import org.phenotips.configuration.internal.consent.ConsentAuthorizer;
+import org.phenotips.consents.internal.ConsentAuthorizer;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 
@@ -33,7 +33,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * The service exposing {@link org.phenotips.configuration.internal.consent.DefaultConsentAuthorizer}.
+ * The service exposing {@link org.phenotips.consents.internal.DefaultConsentAuthorizer}.
  *
  * @version $Id$
  * @since 1.3M1

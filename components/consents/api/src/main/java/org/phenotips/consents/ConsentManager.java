@@ -15,7 +15,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data;
+package org.phenotips.consents;
+
+import org.phenotips.data.Patient;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;

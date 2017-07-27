@@ -22,11 +22,16 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>patient-data-sharing</artifactId>
+    <artifactId>phenotips-consents</artifactId>
     <version>1.4-SNAPSHOT</version>
   </parent>
-  <artifactId>patient-data-sharing-receiver-api</artifactId>
-  <name>PhenoTips - Patient data sharing - Receiver Java APIs</name>
+  <artifactId>phenotips-consents-api</artifactId>
+  <name>PhenoTips - Consents - Java APIs</name>
+
+  <properties>
+    <coverage.instructionRatio>0.78</coverage.instructionRatio>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -35,22 +40,25 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-context</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-script</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-configuration-api</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-uiextension-api</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-model</artifactId>
+      <artifactId>xwiki-platform-oldcore</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
@@ -60,17 +68,12 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-security-api</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-query-manager</artifactId>
+      <artifactId>xwiki-platform-model</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>xwiki-platform-users-api</artifactId>
+      <artifactId>xwiki-translation-manager</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -80,27 +83,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>patient-data-default-impl</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>users-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>patient-access-rules-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>patient-data-sharing-share-protocol</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>patient-data-sharing-secure-storage</artifactId>
+      <artifactId>phenotips-constants</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -109,35 +92,28 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>phenotips-authorization</artifactId>
-      <version>${project.version}</version>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>annotations</artifactId>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>phenotips-consents-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
-    <!-- REMOVE? -->
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-oldcore</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <!-- Test dependencies
+    <!-- Test dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-tool-test-component</artifactId>
       <version>${xwiki.version}</version>
       <scope>test</scope>
-    </dependency>-->
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

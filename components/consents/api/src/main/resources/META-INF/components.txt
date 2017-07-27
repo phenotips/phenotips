@@ -1,0 +1,4 @@
+org.phenotips.consents.internal.DefaultConsentAuthorizer
+org.phenotips.consents.script.ConsentAuthorizerService
+org.phenotips.consents.script.ConsentManagerScriptService
+org.phenotips.consents.internal.PhenoTipsPatientConsentManager

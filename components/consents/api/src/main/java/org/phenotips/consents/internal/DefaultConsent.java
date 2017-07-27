@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data.internal;
+package org.phenotips.consents.internal;
 
-import org.phenotips.data.Consent;
-import org.phenotips.data.ConsentStatus;
+import org.phenotips.consents.Consent;
+import org.phenotips.consents.ConsentStatus;
 
 import java.util.Collections;
 import java.util.LinkedList;

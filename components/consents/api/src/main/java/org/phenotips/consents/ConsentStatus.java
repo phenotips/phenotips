@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data;
+package org.phenotips.consents;
 
 /**
  * Used to indicate the status of a consent, which is not limited to 'granted'/'not granted'.

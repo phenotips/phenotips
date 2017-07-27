@@ -16,9 +16,9 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 
-package org.phenotips.data.script;
+package org.phenotips.consents.script;
 
-import org.phenotips.data.ConsentManager;
+import org.phenotips.consents.ConsentManager;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;

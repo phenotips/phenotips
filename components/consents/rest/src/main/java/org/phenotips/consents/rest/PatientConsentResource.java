@@ -15,8 +15,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data.rest;
+package org.phenotips.consents.rest;
 
+import org.phenotips.data.rest.PatientResource;
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
 import org.phenotips.rest.RequiredAccess;

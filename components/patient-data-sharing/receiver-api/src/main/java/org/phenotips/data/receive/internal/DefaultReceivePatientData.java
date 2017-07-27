@@ -19,8 +19,8 @@ package org.phenotips.data.receive.internal;
 
 import org.phenotips.Constants;
 import org.phenotips.configuration.RecordConfigurationManager;
-import org.phenotips.configuration.internal.consent.ConsentAuthorizer;
-import org.phenotips.data.ConsentManager;
+import org.phenotips.consents.internal.ConsentAuthorizer;
+import org.phenotips.consents.ConsentManager;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.internal.PhenoTipsPatient;

@@ -15,13 +15,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data.rest.internal;
+package org.phenotips.consents.rest.internal;
 
-import org.phenotips.data.Consent;
-import org.phenotips.data.ConsentManager;
+import org.phenotips.consents.Consent;
+import org.phenotips.consents.ConsentManager;
+import org.phenotips.consents.rest.PatientConsentResource;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
-import org.phenotips.data.rest.PatientConsentResource;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rest.XWikiResource;
@@ -50,7 +50,7 @@ import org.slf4j.Logger;
  * @since 1.3M1
  */
 @Component
-@Named("org.phenotips.data.rest.internal.DefaultPatientConsentResourceImpl")
+@Named("org.phenotips.consents.rest.internal.DefaultPatientConsentResourceImpl")
 @Singleton
 public class DefaultPatientConsentResourceImpl extends XWikiResource implements PatientConsentResource
 {
