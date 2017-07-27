@@ -7,6 +7,7 @@ org.phenotips.data.events.internal.PatientDeletingEventSource
 org.phenotips.data.internal.PatientEntityManager
 org.phenotips.data.internal.PhenoTipsPatientRepository
 org.phenotips.data.internal.SecurePatientRepository
+org.phenotips.data.internal.GlobalPatientRecordConfigurationModule
 org.phenotips.data.internal.controller.VersionsController
 org.phenotips.data.internal.controller.IdentifiersController
 org.phenotips.data.internal.controller.DatesController
