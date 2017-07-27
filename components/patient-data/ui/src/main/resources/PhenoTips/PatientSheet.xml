@@ -115,7 +115,7 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
 #end
 ##
 ## Extensions making up the main content, the actual information about the patient
-#set ($recordConfiguration = $services.recordConfiguration.getActiveConfiguration())
+#set ($recordConfiguration = $services.recordConfiguration.getConfiguration("patient"))
 #set ($consentAuthorizer = $services.consentauthorizer)
 #set ($elementCount = 0)
 #foreach ($section in $recordConfiguration.enabledSections)

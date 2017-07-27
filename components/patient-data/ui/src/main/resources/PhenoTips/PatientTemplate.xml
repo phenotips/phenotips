@@ -298,7 +298,7 @@
       </diagnosis_notes>
       <exam_date>
         <customDisplay>{{velocity}}{{html clean=false}}
-#set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
+#set ($format = $services.recordConfiguration.getConfiguration("patient").dateOfBirthFormat)
 #set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
 #if ($xcontext.action == 'edit')
   #set ($date = $services.jodatime.mutableDateTime)

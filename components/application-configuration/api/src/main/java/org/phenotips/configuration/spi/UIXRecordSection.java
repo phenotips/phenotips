@@ -110,9 +110,21 @@ public class UIXRecordSection implements RecordSection
     }
 
     @Override
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+    }
+
+    @Override
     public boolean isExpandedByDefault()
     {
         return this.expanded;
+    }
+
+    @Override
+    public void setExpandedByDefault(boolean expanded)
+    {
+        this.expanded = expanded;
     }
 
     @Override
@@ -151,6 +163,12 @@ public class UIXRecordSection implements RecordSection
             }
         }
         return Collections.unmodifiableList(result);
+    }
+
+    @Override
+    public void setElements(List<RecordElement> elements)
+    {
+        this.elements = elements;
     }
 
     @Override

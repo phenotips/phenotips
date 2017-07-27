@@ -124,7 +124,7 @@ $xwiki.jsx.use($displayDocName)##
       <customDisplay>(% class="affected-fields-list" %)(((
 {{velocity}}
 ## Extensions making up the main content, the actual information about the patient
-#set ($recordConfiguration = $services.recordConfiguration.getActiveConfiguration())
+#set ($recordConfiguration = $services.recordConfiguration.getConfiguration("patient"))
 #foreach ($section in $recordConfiguration.enabledSections)
  #set ($sectionContent = '')
  #foreach ($element in $section.enabledElements)

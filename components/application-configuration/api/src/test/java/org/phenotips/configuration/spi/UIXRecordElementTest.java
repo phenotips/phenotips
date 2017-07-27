@@ -42,6 +42,7 @@ import static org.mockito.Mockito.when;
  *
  * @version $Id$
  */
+@SuppressWarnings("deprecation")
 public class UIXRecordElementTest
 {
     @Rule
@@ -140,6 +141,26 @@ public class UIXRecordElementTest
         Assert.assertFalse(s.isEnabled());
     }
 
+    @Test
+    public void setEnabledOverridesDefaultSetting()
+    {
+        Map<String, String> params = new HashMap<>();
+        when(this.uiExtension.getParameters()).thenReturn(params);
+
+        params.put("enabled", "false");
+        RecordElement s = new UIXRecordElement(this.uiExtension, this.recordSection);
+        Assert.assertFalse(s.isEnabled());
+        s.setEnabled(true);
+        Assert.assertTrue(s.isEnabled());
+
+        params.put("enabled", "true");
+        s = new UIXRecordElement(this.uiExtension, this.recordSection);
+        Assert.assertTrue(s.isEnabled());
+        s.setEnabled(false);
+        Assert.assertFalse(s.isEnabled());
+    }
+
+    /** {@link RecordElement#isEnabled()} returns true when there's no setting in the properties. */
     @Test
     public void containsPIIReturnsFalseForNullSetting()
     {

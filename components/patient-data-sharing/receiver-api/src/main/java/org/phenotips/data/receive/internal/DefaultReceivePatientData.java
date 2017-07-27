@@ -78,6 +78,8 @@ import com.xpn.xwiki.web.XWikiRequest;
 @Singleton
 public class DefaultReceivePatientData implements ReceivePatientData
 {
+    private static final String PATIENT_LABEL = "patient";
+
     private final static int DEFAULT_USER_TOKEN_LIFETIME = 7;
 
     private final static boolean DEFAULT_USER_TOKENS_ENABLED = true;
@@ -639,7 +641,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             }
 
             List<String> acceptedFields =
-                this.configurationManager.getActiveConfiguration().getEnabledFieldNames();
+                this.configurationManager.getConfiguration(PATIENT_LABEL).getEnabledFieldNames();
 
             JSONObject response = generateSuccessfulResponse();
             response.put(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_USERGROUPS, groupList);

@@ -53,7 +53,7 @@
 ## -----------------------------------
 #if ($input != '')
   #set ($query = 'from doc.object(PhenoTips.PatientClass) as patient where doc.name &lt;&gt; ''PatientTemplate'' and lower(doc.name) like :input ESCAPE ''!'' or lower(patient.external_id) like :input ESCAPE ''!''')
-  #if ($services.recordConfiguration.activeConfiguration.enabledFieldNames.contains('first_name'))
+  #if ($services.recordConfiguration.getConfiguration("patient").enabledFieldNames.contains('first_name'))
     #set ($query = $query.concat(' or lower(patient.first_name) like :input ESCAPE ''!'' or lower(patient.last_name) like :input ESCAPE ''!'''))
   #end
   #set ($query = $services.query.xwql($query))
@@ -81,7 +81,7 @@
       #set ($phenotipsId = $itemdoc.name)
       #set ($url = $itemdoc.getURL())
       #set ($externalId  = "$!patientObj.getProperty('external_id').value")
-      #if ($services.recordConfiguration.activeConfiguration.enabledFieldNames.contains('first_name'))
+      #if ($services.recordConfiguration.getConfiguration("patient").enabledFieldNames.contains('first_name'))
         #set ($firstName   = "$!patientObj.getProperty('first_name').value")
         #set ($lastName    = "$!patientObj.getProperty('last_name').value")
         #set ($name = "$firstName $lastName")

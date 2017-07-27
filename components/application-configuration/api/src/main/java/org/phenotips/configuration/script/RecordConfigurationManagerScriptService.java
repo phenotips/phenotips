@@ -29,7 +29,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Provides access to {@code RecordConfiguration patient record configurations}.
+ * Provides access to {@code RecordConfiguration record configurations}.
  *
  * @version $Id$
  * @since 1.0M9
@@ -45,12 +45,27 @@ public class RecordConfigurationManagerScriptService implements ScriptService
     private RecordConfigurationManager configuration;
 
     /**
-     * Retrieves the {@code RecordConfiguration patient record configuration} active for the current user.
+     * Retrieves the {@link RecordConfiguration record configuration} for patient records active for the current user.
      *
      * @return a valid configuration, either the global one or one configured, for example in one of the user's groups
+     * @deprecated since 1.4, use {@link #getConfiguration(String)} instead
      */
+    @Deprecated
     public RecordConfiguration getActiveConfiguration()
     {
         return this.configuration.getActiveConfiguration();
+    }
+
+    /**
+     * Retrieves the {@link RecordConfiguration} active for the current user on a specific record type.
+     *
+     * @param recordType an identifier for the type of record whose configuration is requested, such as {@code patient}
+     *            or {@code family}
+     * @return a valid configuration, may be empty if no sections can be displayed
+     * @since 1.4
+     */
+    public RecordConfiguration getConfiguration(String recordType)
+    {
+        return this.configuration.getConfiguration(recordType);
     }
 }

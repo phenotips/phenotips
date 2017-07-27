@@ -124,6 +124,12 @@ public class UIXRecordElement implements RecordElement
         return getName();
     }
 
+    @Override
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+    }
+
     /**
      * Constructs an unmodifiable list of field names for the element.
      *

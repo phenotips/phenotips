@@ -200,7 +200,7 @@
 #end
 
 #macro (__displayPropertyAsDate)
-#set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
+#set ($format = $services.recordConfiguration.getConfiguration("patient").dateOfBirthFormat)
 #set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
 #if ($xcontext.action == 'edit')
   #if ($value)

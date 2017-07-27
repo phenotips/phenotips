@@ -26,6 +26,7 @@ import org.xwiki.uiextension.UIExtensionFilter;
 import org.xwiki.uiextension.UIExtensionManager;
 import org.xwiki.uiextension.internal.filter.SortByParameterFilter;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import static org.mockito.Mockito.mock;
@@ -158,6 +160,23 @@ public class UIXRecordSectionTest
     }
 
     @Test
+    public void setEnabledOverridesDefaultSetting()
+    {
+        this.parameters.put("enabled", "false");
+        RecordSection s = new UIXRecordSection(this.uiExtension, this.uixManager, this.orderFilter);
+        Assert.assertFalse(s.isEnabled());
+        s.setEnabled(true);
+        Assert.assertTrue(s.isEnabled());
+
+        this.parameters.put("enabled", "true");
+        s = new UIXRecordSection(this.uiExtension, this.uixManager, this.orderFilter);
+        Assert.assertTrue(s.isEnabled());
+        s.setEnabled(false);
+        Assert.assertFalse(s.isEnabled());
+    }
+
+    /** {@link RecordSection#isEnabled()} returns true when there's no setting in the properties. */
+    @Test
     public void isExpandedReturnsFalseForNullSetting()
     {
         RecordSection s = new UIXRecordSection(this.uiExtension, this.uixManager, this.orderFilter);
@@ -185,6 +204,22 @@ public class UIXRecordSectionTest
     {
         this.parameters.put("expanded_by_default", "false");
         RecordSection s = new UIXRecordSection(this.uiExtension, this.uixManager, this.orderFilter);
+        Assert.assertFalse(s.isExpandedByDefault());
+    }
+
+    @Test
+    public void setExpandedOverridesDefaultSetting()
+    {
+        this.parameters.put("expanded_by_default", "false");
+        RecordSection s = new UIXRecordSection(this.uiExtension, this.uixManager, this.orderFilter);
+        Assert.assertFalse(s.isExpandedByDefault());
+        s.setExpandedByDefault(true);
+        Assert.assertTrue(s.isExpandedByDefault());
+
+        this.parameters.put("expanded_by_default", "true");
+        s = new UIXRecordSection(this.uiExtension, this.uixManager, this.orderFilter);
+        Assert.assertTrue(s.isExpandedByDefault());
+        s.setExpandedByDefault(false);
         Assert.assertFalse(s.isExpandedByDefault());
     }
 
@@ -310,6 +345,39 @@ public class UIXRecordSectionTest
         for (int i = 0; i < 5; ++i) {
             Assert.assertEquals(String.valueOf(i), result.get(i).getExtension().getId());
         }
+    }
+
+    @Test
+    public void setElementsOverridesDefaults() throws ComponentLookupException
+    {
+        UIExtensionManager m = mock(UIExtensionManager.class);
+        UIExtension ex = mock(UIExtension.class);
+        UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
+        UIExtensionFilter realFilter = new SortByParameterFilter();
+        when(ex.getId()).thenReturn("org.phenotips.patientSheet.section.patient-info");
+        RecordSection s = new UIXRecordSection(ex, m, filter);
+
+        Map<String, String> params;
+        List<UIExtension> fields = new LinkedList<>();
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<>();
+        params.put("enabled", "");
+        params.put(ORDER, "2");
+        when(ex.getParameters()).thenReturn(params);
+        when(ex.getId()).thenReturn("1");
+        fields.add(ex);
+
+        when(m.get("org.phenotips.patientSheet.section.patient-info")).thenReturn(fields);
+        List<UIExtension> sorted = realFilter.filter(fields, ORDER);
+        when(filter.filter(fields, ORDER)).thenReturn(sorted);
+
+        Assert.assertEquals(1, s.getAllElements().size());
+        s.setElements(Collections.emptyList());
+        Assert.assertEquals(0, s.getAllElements().size());
+        RecordElement e = Mockito.mock(RecordElement.class);
+        s.setElements(Collections.singletonList(e));
+        Assert.assertSame(e, s.getAllElements().get(0));
     }
 
     /** {@link RecordSection#toString()} shows the section name and the list of enabled elements. */

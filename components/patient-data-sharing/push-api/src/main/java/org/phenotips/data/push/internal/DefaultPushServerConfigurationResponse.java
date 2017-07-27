@@ -33,6 +33,8 @@ import org.json.JSONObject;
 public class DefaultPushServerConfigurationResponse extends DefaultPushServerResponse implements
     PushServerConfigurationResponse
 {
+    private static final String PATIENT_LABEL = "patient";
+
     DefaultPushServerConfigurationResponse(JSONObject serverResponse)
     {
         super(serverResponse);
@@ -90,7 +92,7 @@ public class DefaultPushServerConfigurationResponse extends DefaultPushServerRes
             RecordConfigurationManager configurationManager =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(RecordConfigurationManager.class);
 
-            RecordConfiguration patientConfig = configurationManager.getActiveConfiguration();
+            RecordConfiguration patientConfig = configurationManager.getConfiguration(PATIENT_LABEL);
 
             Set<String> commonFields = new TreeSet<>(patientConfig.getEnabledFieldNames());
 
