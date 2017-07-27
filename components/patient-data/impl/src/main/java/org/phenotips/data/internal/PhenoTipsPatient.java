@@ -87,7 +87,7 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
 
         BaseObject data = doc.getXObject(CLASS_REFERENCE);
         if (data == null) {
-            return;
+            throw new IllegalArgumentException("Not a patient: " + doc.getDocumentReference());
         }
 
         loadSerializers();
