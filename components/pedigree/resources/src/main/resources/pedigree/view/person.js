@@ -1116,6 +1116,7 @@ define([
             this.setHPO([]);
             this.setCandidateGenes([]);
             this.setCausalGenes([]);
+            this.setCarrierGenes([]);
             this.setCancers([]);
             $super();
         },
