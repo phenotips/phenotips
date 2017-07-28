@@ -30,7 +30,7 @@ define([
               if (!editor.isReadOnlyMode()) {
                   this._legendInfo = new Element('div', {'class' : 'legend-box legend-info', id: 'legend-info'}).insert(
                      new Element('div', {'class' : 'infomessage'}).insert(
-                       "You can drag and drop all items from the list(s) below onto individuals in the pedigree to mark them as affected.")
+                       "Drag and drop items from the list(s) below onto individuals to mark them as affected.")
                   );
                   this.closeButton = new Element('span', {'class' : 'close-button'}).update('x');
                   this.closeButton.observe('click', this.hideDragHint.bindAsEventListener(this));
