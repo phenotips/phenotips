@@ -476,6 +476,7 @@
       this._initCollaboratorsManager();
       this._initManagerActions();
       this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.heading'))".replace("__patientID__", this.patientId), 'verticalPosition': 'top', 'removeOnClose': false});
+      document.fire('phenotips:permissions-manager:loaded', {'permissionsManager' : this});
     },
 
     _generateSection : function(id, title, intro) {
@@ -785,6 +786,7 @@
             }
           },
           onSuccess : function(response) {
+            var updated = false;
             var data = response.responseJSON;
             if (updatePatientSummary) {
               _this._getUserAccessLevelAndUpdatePatientForm(data);
@@ -792,14 +794,18 @@
             if (keepOpen) {
               if (data.owner &amp;&amp; data.owner.name) {
                 _this._updateOwnershipManager(data.owner);
+                updated = true;
               }
               if (data.visibility &amp;&amp; data.visibility.level) {
                 _this._updateVisibility(data.visibility.level);
+                updated = true;
               }
               if (data.collaborators &amp;&amp; data.collaborators.collaborators) {
                 _this._updateCollaborators(data.collaborators.collaborators);
+                updated = true;
               }
             }
+            updated &amp;&amp; _this._container.fire('phenotips:permissions-manager:updated', {'permissionsManager' : _this, 'data' : data});
           },
           onFailure : function(response) {
             // if user just made a change in permission and there might be a situation 
@@ -941,6 +947,10 @@
 
     /* Expected format for the collaborator object c : {id : 'string', type : 'string', name : 'string', level : 'string' } */
     _addCollaborator : function (c, highlight) {
+      this._collaboratorsList .insert(this._generateCollaborator(c, highlight));
+     },
+
+    _generateCollaborator : function (c, highlight) {
       var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
       row.insert(new Element('td').insert(new Element('span', {'class' : 'fa fa-' + c.type}).update(' ')));
       row.insert(new Element('td')
@@ -951,11 +961,8 @@
       row.insert(rights.wrap('td'));
       var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times', title : "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyRemoveCollaborator'))"});
       row.insert(deleteTool.wrap('td'));
-      deleteTool.observe('click', function(event) {
-        this.collaboratorRemoved = true;
-        event.findElement('tr').remove();
-      }.bind(this));
-      this._collaboratorsList .insert(row);
+      deleteTool.observe('click', this._removeCollaboratorRow.bindAsEventListener(this));
+      return row;
     },
 
     _generateCollaborationOptions : function (name, value) {
@@ -972,6 +979,16 @@
         }
       }
       return result;
+    },
+
+    _removeCollaboratorRow : function (e) {
+      (e.findElement &amp;&amp; event.findElement('tr') || e).remove();
+      this.collaboratorRemoved = true;
+    },
+
+    _removeCollaborator : function (id) {
+      var collab = this._collaboratorsList.down('tr input[name="collaborator"][value="' + id + '"]');
+      collab &amp;&amp; this._removeCollaboratorRow(collab.up('tr'))
     }
   });
   return PhenoTips;
