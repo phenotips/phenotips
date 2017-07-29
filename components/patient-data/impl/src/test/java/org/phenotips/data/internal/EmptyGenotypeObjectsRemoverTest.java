@@ -50,10 +50,9 @@ import static org.mockito.Mockito.verify;
 
 public class EmptyGenotypeObjectsRemoverTest
 {
-
     @Rule
     public MockitoComponentMockingRule<EventListener> mocker =
-        new MockitoComponentMockingRule<EventListener>(EmptyGenotypeObjectsRemover.class);
+        new MockitoComponentMockingRule<>(EmptyGenotypeObjectsRemover.class);
 
     @Mock
     private XWikiContext context;
