@@ -147,7 +147,7 @@
     <jackson.codehaus.version>1.9.13</jackson.codehaus.version>
     <jackson.fasterxml.version>2.8.6</jackson.fasterxml.version>
     <restlet.version>2.0.15</restlet.version>
-    <buildtools.version>1.6</buildtools.version>
+    <buildtools.version>1.7</buildtools.version>
     <testframework.version>1.1</testframework.version>
     <solr.version>6.5.1</solr.version>
     <jaxb2-fluent-api.version>3.0</jaxb2-fluent-api.version>
@@ -668,7 +668,7 @@
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
               <artifactId>checkstyle</artifactId>
-              <version>6.19</version>
+              <version>7.2</version>
             </dependency>
             <dependency>
               <groupId>org.phenotips</groupId>
@@ -683,9 +683,21 @@
           </configuration>
           <executions>
             <execution>
+              <id>source-checkstyle</id>
               <goals>
                 <goal>check</goal>
               </goals>
+            </execution>
+            <execution>
+              <id>test-checkstyle</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <configuration>
+                <configLocation>test-checkstyle.xml</configLocation>
+                <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                <sourceDirectory>src/test/java/</sourceDirectory>
+              </configuration>
             </execution>
           </executions>
         </plugin>
