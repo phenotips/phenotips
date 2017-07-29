@@ -47,6 +47,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-constants</artifactId>
       <version>${project.version}</version>
+      <!-- The right scope is "compile", but since only a string constant is referenced,
+           and the constant value is copied in the class, the jar file doesn't seem to need this dependency,
+           causing the dependency analisys to fail. -->
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>

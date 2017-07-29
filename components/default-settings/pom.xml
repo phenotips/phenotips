@@ -40,6 +40,7 @@
       <artifactId>xwiki-enterprise-ui-admin-user</artifactId>
       <version>${xwiki.version}</version>
       <type>xar</type>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 </project>
