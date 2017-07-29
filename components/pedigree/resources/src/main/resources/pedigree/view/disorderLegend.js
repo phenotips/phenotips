@@ -16,7 +16,7 @@ define([
     var DisorderLegend = Class.create( Legend, {
 
         initialize: function($super) {
-            $super('Disorders', "disorders", true, true /* allow drop on group nodes */);
+            $super('Final Diagnosis', "disorders", true, true /* allow drop on group nodes */);
 
             this._disorderCache = {};
         },
