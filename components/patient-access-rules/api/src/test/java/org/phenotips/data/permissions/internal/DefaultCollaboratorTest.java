@@ -27,6 +27,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import net.jcip.annotations.NotThreadSafe;
+
 import static org.mockito.Mockito.mock;
 
 /**
@@ -34,6 +36,7 @@ import static org.mockito.Mockito.mock;
  *
  * @version $Id$
  */
+@NotThreadSafe
 public class DefaultCollaboratorTest
 {
     /** The user used as a collaborator. */

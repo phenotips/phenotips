@@ -54,6 +54,8 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseProperty;
 
+import net.jcip.annotations.NotThreadSafe;
+
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
@@ -69,6 +71,7 @@ import static org.mockito.Mockito.verify;
  * tested using a mock implementation of {@link AbstractComplexController} that provides simple definitions of the
  * abstract methods getName, getProperties, and getJsonPropertyName
  */
+@NotThreadSafe
 public class AbstractComplexControllerTest
 {
     private static final String DATA_NAME = AbstractComplexControllerTestImplementation.DATA_NAME;

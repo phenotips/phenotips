@@ -29,23 +29,26 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
+import net.jcip.annotations.NotThreadSafe;
+
 /**
  * Tests for the {@link ComponentManagerRegistry} component.
  *
  * @version $Id$
  */
+@NotThreadSafe
 public class ComponentManagerRegistryTest
 {
     @Rule
     public final MockitoComponentMockingRule<ComponentManagerRegistry> mocker =
-        new MockitoComponentMockingRule<ComponentManagerRegistry>(ComponentManagerRegistry.class);
+        new MockitoComponentMockingRule<>(ComponentManagerRegistry.class);
 
-    @SuppressWarnings("static-access")
     @Test
     public void testGetContextComponentManager() throws ComponentLookupException
     {
         ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
-        Assert.assertSame(cm, this.mocker.getComponentUnderTest().getContextComponentManager());
+        this.mocker.getComponentUnderTest();
+        Assert.assertSame(cm, ComponentManagerRegistry.getContextComponentManager());
     }
 
     @Test

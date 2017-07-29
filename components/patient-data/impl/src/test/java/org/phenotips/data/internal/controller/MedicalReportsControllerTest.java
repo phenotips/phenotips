@@ -66,6 +66,8 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.web.Utils;
 
+import net.jcip.annotations.NotThreadSafe;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -76,6 +78,7 @@ import static org.mockito.Mockito.when;
  * Test for the {@link MedicalReportsController} component, implementation of the
  * {@link org.phenotips.data.PatientDataController} interface.
  */
+@NotThreadSafe
 public class MedicalReportsControllerTest
 {
     @ClassRule

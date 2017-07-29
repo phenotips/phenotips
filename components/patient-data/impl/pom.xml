@@ -186,20 +186,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <!-- Tests use the Utils.getComponentManager singleton which can't be mocked in multiple threads -->
-          <parallel>classes</parallel>
-          <threadCount>1</threadCount>
-          <reuseForks>false</reuseForks>
-          <forkCount>1</forkCount>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

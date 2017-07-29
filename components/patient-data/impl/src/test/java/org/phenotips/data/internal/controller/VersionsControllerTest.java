@@ -57,6 +57,8 @@ import org.mockito.MockitoAnnotations;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
+import net.jcip.annotations.NotThreadSafe;
+
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -68,6 +70,7 @@ import static org.mockito.Mockito.when;
  * Test for the {@link VersionsController} Component, only the overridden methods from {@link AbstractSimpleController}
  * are tested here.
  */
+@NotThreadSafe
 public class VersionsControllerTest
 {
     private static final EntityReference ONTOLOGY_VERSION_CLASS_REFERENCE =

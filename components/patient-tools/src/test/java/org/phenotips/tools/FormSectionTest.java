@@ -35,9 +35,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import net.jcip.annotations.NotThreadSafe;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@NotThreadSafe
 public class FormSectionTest
 {
     private FormSection testFormSection;

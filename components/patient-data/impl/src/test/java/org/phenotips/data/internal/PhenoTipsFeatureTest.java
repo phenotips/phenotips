@@ -53,9 +53,12 @@ import com.xpn.xwiki.objects.ListProperty;
 import com.xpn.xwiki.objects.StringProperty;
 import com.xpn.xwiki.web.Utils;
 
+import net.jcip.annotations.NotThreadSafe;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@NotThreadSafe
 public class PhenoTipsFeatureTest
 {
     private static final String HP0000100 = "HP:0000100";

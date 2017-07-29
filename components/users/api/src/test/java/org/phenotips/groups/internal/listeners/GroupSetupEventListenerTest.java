@@ -59,11 +59,14 @@ import com.xpn.xwiki.internal.model.reference.CurrentReferenceEntityReferenceRes
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.web.Utils;
 
+import net.jcip.annotations.NotThreadSafe;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@NotThreadSafe
 @ComponentList({ LocalStringEntityReferenceSerializer.class, RelativeStringEntityReferenceResolver.class,
     CurrentReferenceDocumentReferenceResolver.class, CurrentReferenceEntityReferenceResolver.class,
     CurrentEntityReferenceValueProvider.class, DefaultModelContext.class, DefaultExecution.class,
@@ -78,7 +81,7 @@ public class GroupSetupEventListenerTest
         new EntityReference("XWiki", EntityType.SPACE));
 
     @Rule
-    public final MockitoComponentMockingRule<EventListener> mocker = new MockitoComponentMockingRule<EventListener>(
+    public final MockitoComponentMockingRule<EventListener> mocker = new MockitoComponentMockingRule<>(
         GroupSetupEventListener.class);
 
     @Test

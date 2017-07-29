@@ -44,6 +44,8 @@ import org.mockito.MockitoAnnotations;
 import com.xpn.xwiki.objects.BaseObjectReference;
 import com.xpn.xwiki.web.Utils;
 
+import net.jcip.annotations.NotThreadSafe;
+
 import static org.mockito.Mockito.when;
 
 /**
@@ -51,11 +53,12 @@ import static org.mockito.Mockito.when;
  *
  * @version $Id$
  */
+@NotThreadSafe
 public class DefaultPermissionsConfigurationTest
 {
     @Rule
     public final MockitoComponentMockingRule<PermissionsConfiguration> mocker =
-        new MockitoComponentMockingRule<PermissionsConfiguration>(DefaultPermissionsConfiguration.class);
+        new MockitoComponentMockingRule<>(DefaultPermissionsConfiguration.class);
 
     @Mock
     private DocumentReference visibilityClassReference;

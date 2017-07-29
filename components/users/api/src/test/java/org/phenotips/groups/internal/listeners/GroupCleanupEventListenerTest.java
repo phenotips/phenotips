@@ -45,14 +45,17 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.web.Utils;
 
+import net.jcip.annotations.NotThreadSafe;
+
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@NotThreadSafe
 public class GroupCleanupEventListenerTest
 {
     @Rule
-    public final MockitoComponentMockingRule<EventListener> mocker = new MockitoComponentMockingRule<EventListener>(
+    public final MockitoComponentMockingRule<EventListener> mocker = new MockitoComponentMockingRule<>(
         GroupCleanupEventListener.class);
 
     @Test

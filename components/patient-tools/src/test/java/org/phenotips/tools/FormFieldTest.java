@@ -45,9 +45,12 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSInput;
 
+import net.jcip.annotations.NotThreadSafe;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@NotThreadSafe
 public class FormFieldTest
 {
     private DOMImplementationLS domls;
