@@ -84,10 +84,10 @@ public class R50290PhenoTips477DataMigration extends AbstractHibernateDataMigrat
         LATE("HP:0003584", Integer.MAX_VALUE);
 
         /** The identifier of the associated HPO term. */
-        public String term;
+        private String term;
 
         /** The upper age limit of this onset. */
-        public int upperAgeLimit;
+        private int upperAgeLimit;
 
         /**
          * Simple constructor.

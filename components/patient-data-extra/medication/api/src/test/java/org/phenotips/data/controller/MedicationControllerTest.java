@@ -25,6 +25,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.internal.controller.MedicationController;
+
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -71,7 +72,7 @@ public class MedicationControllerTest
 {
     @Rule
     public final MockitoComponentMockingRule<PatientDataController<Medication>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<Medication>>(MedicationController.class);
+        new MockitoComponentMockingRule<>(MedicationController.class);
 
     @Mock
     private Patient patient;
@@ -237,32 +238,32 @@ public class MedicationControllerTest
     public void saveUpdatesXObjects() throws Exception
     {
         setupSampleData();
-        BaseObject obj1 = mock(BaseObject.class);
-        BaseObject obj2 = mock(BaseObject.class);
+        BaseObject object1 = mock(BaseObject.class);
+        BaseObject object2 = mock(BaseObject.class);
         when(this.doc.newXObject(eq(Medication.CLASS_REFERENCE), any(XWikiContext.class)))
-            .thenReturn(obj1, obj2);
+            .thenReturn(object1, object2);
 
         this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.doc, times(1)).removeXObjects(Medication.CLASS_REFERENCE);
 
-        verify(obj1).setStringValue(Medication.NAME, "n");
-        verify(obj1).setStringValue(Medication.GENERIC_NAME, "gn");
-        verify(obj1).setStringValue(Medication.DOSE, "d");
-        verify(obj1).setStringValue(Medication.FREQUENCY, "f");
-        verify(obj1).setIntValue(MedicationController.DURATION_MONTHS, 4);
-        verify(obj1).setIntValue(MedicationController.DURATION_YEARS, 2);
-        verify(obj1).setStringValue(Medication.EFFECT, "none");
-        verify(obj1).setLargeStringValue(Medication.NOTES, "note");
+        verify(object1).setStringValue(Medication.NAME, "n");
+        verify(object1).setStringValue(Medication.GENERIC_NAME, "gn");
+        verify(object1).setStringValue(Medication.DOSE, "d");
+        verify(object1).setStringValue(Medication.FREQUENCY, "f");
+        verify(object1).setIntValue(MedicationController.DURATION_MONTHS, 4);
+        verify(object1).setIntValue(MedicationController.DURATION_YEARS, 2);
+        verify(object1).setStringValue(Medication.EFFECT, "none");
+        verify(object1).setLargeStringValue(Medication.NOTES, "note");
 
-        verify(obj2).setStringValue(Medication.NAME, "n2");
-        verify(obj2).setStringValue(Medication.GENERIC_NAME, null);
-        verify(obj2).setStringValue(Medication.DOSE, "");
-        verify(obj2).setStringValue(Medication.FREQUENCY, null);
-        verify(obj2, never()).setIntValue(eq(MedicationController.DURATION_MONTHS), any(Integer.class));
-        verify(obj2, never()).setIntValue(eq(MedicationController.DURATION_YEARS), any(Integer.class));
-        verify(obj2, never()).setStringValue(Medication.EFFECT, null);
-        verify(obj2).setLargeStringValue(Medication.NOTES, "note2");
+        verify(object2).setStringValue(Medication.NAME, "n2");
+        verify(object2).setStringValue(Medication.GENERIC_NAME, null);
+        verify(object2).setStringValue(Medication.DOSE, "");
+        verify(object2).setStringValue(Medication.FREQUENCY, null);
+        verify(object2, never()).setIntValue(eq(MedicationController.DURATION_MONTHS), any(Integer.class));
+        verify(object2, never()).setIntValue(eq(MedicationController.DURATION_YEARS), any(Integer.class));
+        verify(object2, never()).setStringValue(Medication.EFFECT, null);
+        verify(object2).setLargeStringValue(Medication.NOTES, "note2");
     }
 
     @Test

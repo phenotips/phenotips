@@ -107,6 +107,7 @@ public class PatientSpecificityScriptServiceTest
         patient.updateFromJSON(null);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void getScoreWithFeaturesCreatesStubPatient() throws ComponentLookupException
     {
@@ -131,6 +132,8 @@ public class PatientSpecificityScriptServiceTest
                     Assert.assertNull(feature.getType());
                     Assert.assertNull(feature.getValue());
                     Assert.assertNull(feature.getMetadata());
+                    Assert.assertNull(feature.getPropertyName());
+                    Assert.assertNull(feature.getCategories());
                     Assert.assertNull(feature.toJSON());
                     break;
                 case "HP:2":
@@ -148,6 +151,9 @@ public class PatientSpecificityScriptServiceTest
         Assert.assertNull(patient.getId());
         Assert.assertNull(patient.getExternalId());
         Assert.assertNull(patient.getName());
+        Assert.assertNull(patient.getSecureDocument());
+        Assert.assertNull(patient.getDocument());
+        Assert.assertNull(patient.getXDocument());
         Assert.assertNull(patient.getDescription());
         Assert.assertNull(patient.getDocumentReference());
         Assert.assertNull(patient.getReporter());

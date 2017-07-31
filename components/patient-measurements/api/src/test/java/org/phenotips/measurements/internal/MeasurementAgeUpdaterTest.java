@@ -51,16 +51,21 @@ import static org.mockito.Mockito.when;
  */
 public class MeasurementAgeUpdaterTest
 {
+    private static final String DATE_PROPERTY_NAME = "date";
+
+    private static final String AGE_PROPERTY_NAME = "age";
+
+    private static final String DATE_OF_BIRTH_PROPERTY_NAME = "date_of_birth";
 
     @Rule
     public MockitoComponentMockingRule<EventListener> mocker =
-        new MockitoComponentMockingRule<EventListener>(MeasurementAgeUpdater.class);
+        new MockitoComponentMockingRule<>(MeasurementAgeUpdater.class);
 
     @Mock
     private Object data;
 
     @Mock
-    public XWikiDocument source;
+    private XWikiDocument source;
 
     @Mock
     private Event event;
@@ -70,12 +75,6 @@ public class MeasurementAgeUpdaterTest
 
     @Mock
     private BaseObject measurement;
-
-    private static final String DATE_PROPERTY_NAME = "date";
-
-    private static final String AGE_PROPERTY_NAME = "age";
-
-    private static final String DATE_OF_BIRTH_PROPERTY_NAME = "date_of_birth";
 
     private List<BaseObject> objects;
 

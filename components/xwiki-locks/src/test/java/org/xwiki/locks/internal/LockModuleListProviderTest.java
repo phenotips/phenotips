@@ -43,14 +43,13 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for the {@link LockModuleListProvider} component
+ * Test for the {@link LockModuleListProvider} component.
  */
 public class LockModuleListProviderTest
 {
-
     @Rule
     public MockitoComponentMockingRule<Provider<List<LockModule>>> mocker =
-        new MockitoComponentMockingRule<Provider<List<LockModule>>>(LockModuleListProvider.class);
+        new MockitoComponentMockingRule<>(LockModuleListProvider.class);
 
     @Mock
     private LockModule lowPriorityModule;

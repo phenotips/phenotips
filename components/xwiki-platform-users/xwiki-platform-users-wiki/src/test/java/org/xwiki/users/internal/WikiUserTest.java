@@ -32,12 +32,13 @@ import java.net.URISyntaxException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -50,21 +51,21 @@ public class WikiUserTest
 {
     private static final DocumentReference DEFAULT_USER_PROFILE = new DocumentReference("xwiki", "XWiki", "Admin");
 
+    @Mock
     private EntityReferenceSerializer<String> serializer;
 
+    @Mock
     private DocumentAccessBridge bridgeMock;
 
+    @Mock
     private EntityReferenceResolver<EntityReference> resolver;
 
-    User user;
+    private User user;
 
-    @SuppressWarnings("unchecked")
     @Before
     public void setUp() throws Exception
     {
-        this.serializer = mock(EntityReferenceSerializer.class);
-        this.resolver = mock(EntityReferenceResolver.class);
-        this.bridgeMock = mock(DocumentAccessBridge.class);
+        MockitoAnnotations.initMocks(this);
         when(this.bridgeMock.getProperty(same(WikiUserTest.DEFAULT_USER_PROFILE),
             any(DocumentReference.class), same("first_name"))).thenReturn("Administrator");
         when(this.bridgeMock.getProperty(same(WikiUserTest.DEFAULT_USER_PROFILE),

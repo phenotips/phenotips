@@ -57,11 +57,11 @@ public class DefaultDiagnosisServiceTest
 {
     @Rule
     public final MockitoComponentMockingRule<DiagnosisService> mocker =
-        new MockitoComponentMockingRule<DiagnosisService>(DefaultDiagnosisService.class);
+        new MockitoComponentMockingRule<>(DefaultDiagnosisService.class);
 
     @Rule
     public final MockitoComponentMockingRule<Utils> workingUtils =
-        new MockitoComponentMockingRule<Utils>(BoqaUtils.class);
+        new MockitoComponentMockingRule<>(BoqaUtils.class);
 
     @Test
     public void returnsCorrectDiagnosis() throws ComponentLookupException, IOException, InterruptedException
@@ -137,7 +137,8 @@ public class DefaultDiagnosisServiceTest
         List<String> nonstandardPhenotypeSet = new LinkedList<>();
         nonstandardPhenotypeSet.add("Non-standard term");
         for (List<String> phenotypeSet : phenotypes) {
-            List<VocabularyTerm> diagnoses = diagnosisService.getDiagnosis(phenotypeSet, nonstandardPhenotypeSet, limit);
+            List<VocabularyTerm> diagnoses =
+                diagnosisService.getDiagnosis(phenotypeSet, nonstandardPhenotypeSet, limit);
             List<String> diagnosisIds = new LinkedList<>();
             for (VocabularyTerm diagnosis : diagnoses) {
                 diagnosisIds.add(diagnosis.getId());

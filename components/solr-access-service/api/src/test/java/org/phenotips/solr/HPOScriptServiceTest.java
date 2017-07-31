@@ -56,16 +56,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the {@link HPOScriptService} component
+ * Tests for the {@link HPOScriptService} component.
+ *
+ * @version $Id$
  */
 public class HPOScriptServiceTest
 {
 
     @Rule
     public MockitoComponentMockingRule<ScriptService> mocker =
-        new MockitoComponentMockingRule<ScriptService>(HPOScriptService.class);
+        new MockitoComponentMockingRule<>(HPOScriptService.class);
 
-    public HPOScriptService service;
+    private HPOScriptService service;
 
     @Mock
     private SolrClient server;
@@ -129,7 +131,7 @@ public class HPOScriptServiceTest
     }
 
     @Test
-    public void SolrServerExceptionIsCaughtWhenQueryFails() throws IOException, SolrServerException
+    public void solrServerExceptionIsCaughtWhenQueryFails() throws IOException, SolrServerException
     {
         Mockito.doReturn(null).when(this.cache).get(anyString());
         Mockito.doThrow(SolrServerException.class).when(this.server).query(any(SolrParams.class));
@@ -137,7 +139,7 @@ public class HPOScriptServiceTest
     }
 
     @Test
-    public void IOExceptionIsCaughtWhenQueryFails() throws IOException, SolrServerException
+    public void ioExceptionIsCaughtWhenQueryFails() throws IOException, SolrServerException
     {
         Mockito.doReturn(null).when(this.cache).get(anyString());
         Mockito.doThrow(IOException.class).when(this.server).query(any(SolrParams.class));
@@ -162,10 +164,9 @@ public class HPOScriptServiceTest
 
         private String field;
 
-        public IsMatchingIDQuery(String id, String field)
+        IsMatchingIDQuery(String id, String field)
         {
-            id = id.replace(":", "\\:");
-            this.id = id;
+            this.id = id.replace(":", "\\:");
             this.field = field;
         }
 

@@ -79,7 +79,7 @@ public class DefaultGenePanelFactoryImplTest
 
     @Rule
     public MockitoComponentMockingRule<GenePanelFactory> mocker =
-        new MockitoComponentMockingRule<GenePanelFactory>(DefaultGenePanelFactoryImpl.class);
+        new MockitoComponentMockingRule<>(DefaultGenePanelFactoryImpl.class);
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -100,8 +100,8 @@ public class DefaultGenePanelFactoryImplTest
         MockitoAnnotations.initMocks(this);
         this.genePanelFactory = this.mocker.getComponentUnderTest();
         this.vocabularyManager = this.mocker.getInstance(VocabularyManager.class);
-        when(vocabularyManager.getVocabulary(HPO_LABEL)).thenReturn(this.hpo);
-        when(vocabularyManager.getVocabulary(HGNC_LABEL)).thenReturn(this.hgnc);
+        when(this.vocabularyManager.getVocabulary(HPO_LABEL)).thenReturn(this.hpo);
+        when(this.vocabularyManager.getVocabulary(HGNC_LABEL)).thenReturn(this.hgnc);
     }
 
     // ------------------------Test build(Collection<? extends Feature> features)-----------------------//

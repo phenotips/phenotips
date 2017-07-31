@@ -41,10 +41,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import static junit.framework.TestCase.assertTrue;
 
 /**
  * Unit tests for {@link DefaultGenePanelImpl}.
@@ -146,7 +147,7 @@ public class DefaultGenePanelImplTest
             Collections.<VocabularyTerm>emptyList(), this.vocabularyManager);
     }
 
-    //---------------------------------Gene panel from patient---------------------------------//
+    // ---------------------------------Gene panel from patient---------------------------------//
 
     @Test
     public void panelIsEmptyIfInputIsEmpty()
@@ -157,9 +158,9 @@ public class DefaultGenePanelImplTest
         assertTrue(panel.getAbsentTerms().isEmpty());
         assertTrue(panel.getTermsForGeneList().isEmpty());
 
-        final JSONObject expectedJSON = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
+        final JSONObject expected = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
             .put(GENES_LABEL, new JSONArray());
-        assertTrue(expectedJSON.similar(panel.toJSON()));
+        assertTrue(expected.similar(panel.toJSON()));
     }
 
     @Test
@@ -196,7 +197,6 @@ public class DefaultGenePanelImplTest
         // test expected json for "gene2" TermsForGene object.
         assertTrue(this.termsForGeneJSON1.similar(termsForGeneList.get(0).toJSON()));
 
-
         // The second term should be "gene1", since it appears only one time, and comes ahead of "gene3" w.r.t. natural
         // order of its first associated phenotype.
         assertEquals(GENE1, termsForGeneList.get(1).getGeneSymbol());
@@ -212,7 +212,6 @@ public class DefaultGenePanelImplTest
 
         // test expected json for "gene1" TermsForGene object.
         assertTrue(this.termsForGeneJSON2.similar(termsForGeneList.get(1).toJSON()));
-
 
         // The third term should be "gene3", since it appears only one time, and comes after of "gene1" w.r.t. natural
         // order of its first associated phenotype.
@@ -237,14 +236,13 @@ public class DefaultGenePanelImplTest
         assertTrue(this.expectedJSON.similar(this.patientGenePanel.toJSON()));
     }
 
-
     @Test
     public void panelSizeIsCorrectForPanelConstructedFromPatientFeatureData()
     {
         assertEquals(3, this.patientGenePanel.size());
     }
 
-    //----------------------------------Gene panel from terms----------------------------------//
+    // ----------------------------------Gene panel from terms----------------------------------//
 
     @Test
     public void panelIsEmptyIfTermsAreEmpty()
@@ -256,9 +254,9 @@ public class DefaultGenePanelImplTest
         assertTrue(panel.getAbsentTerms().isEmpty());
         assertTrue(panel.getTermsForGeneList().isEmpty());
 
-        final JSONObject expectedJSON = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
+        final JSONObject expected = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
             .put(GENES_LABEL, new JSONArray());
-        assertTrue(expectedJSON.similar(panel.toJSON()));
+        assertTrue(expected.similar(panel.toJSON()));
     }
 
     @Test
@@ -271,9 +269,9 @@ public class DefaultGenePanelImplTest
         assertEquals(new HashSet<>(this.absentTerms), panel.getAbsentTerms());
         assertTrue(panel.getTermsForGeneList().isEmpty());
 
-        final JSONObject expectedJSON = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
+        final JSONObject expected = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
             .put(GENES_LABEL, new JSONArray());
-        assertTrue(expectedJSON.similar(panel.toJSON()));
+        assertTrue(expected.similar(panel.toJSON()));
     }
 
     @Test
@@ -310,7 +308,6 @@ public class DefaultGenePanelImplTest
         // test expected json for "gene2" TermsForGene object.
         assertTrue(this.termsForGeneJSON1.similar(termsForGeneList.get(0).toJSON()));
 
-
         // The second term should be "gene1", since it appears only one time, and comes ahead of "gene3" w.r.t. natural
         // order of its first associated phenotype.
         assertEquals(GENE1, termsForGeneList.get(1).getGeneSymbol());
@@ -326,7 +323,6 @@ public class DefaultGenePanelImplTest
 
         // test expected json for "gene1" TermsForGene object.
         assertTrue(this.termsForGeneJSON2.similar(termsForGeneList.get(1).toJSON()));
-
 
         // The third term should be "gene3", since it appears only one time, and comes after of "gene1" w.r.t. natural
         // order of its first associated phenotype.
@@ -350,7 +346,6 @@ public class DefaultGenePanelImplTest
     {
         assertTrue(this.expectedJSON.similar(this.patientGenePanel.toJSON()));
     }
-
 
     @Test
     public void panelSizeIsCorrectWhenOnlyPresentTermsProvided()
@@ -393,7 +388,6 @@ public class DefaultGenePanelImplTest
         // test expected json for "gene2" TermsForGene object.
         assertTrue(this.termsForGeneJSON1.similar(termsForGeneList.get(0).toJSON()));
 
-
         // The second term should be "gene1", since it appears only one time, and comes ahead of "gene3" w.r.t. natural
         // order.
         assertEquals(GENE1, termsForGeneList.get(1).getGeneSymbol());
@@ -409,7 +403,6 @@ public class DefaultGenePanelImplTest
 
         // test expected json for "gene1" TermsForGene object.
         assertTrue(this.termsForGeneJSON2.similar(termsForGeneList.get(1).toJSON()));
-
 
         // The third term should be "gene3", since it appears only one time, and comes after of "gene1" w.r.t. natural
         // order.
@@ -434,14 +427,13 @@ public class DefaultGenePanelImplTest
         assertTrue(this.expectedJSON.similar(this.patientGenePanel.toJSON()));
     }
 
-
     @Test
     public void panelSizeIsCorrectWhenBothPresentAndAbsentTermsProvided()
     {
         assertEquals(3, this.termsGenePanel.size());
     }
 
-    //--------------------------------Gene panel from features---------------------------------//
+    // --------------------------------Gene panel from features---------------------------------//
 
     @Test
     public void panelIsEmptyIfFeatureSetIsEmpty()
@@ -452,15 +444,15 @@ public class DefaultGenePanelImplTest
         assertTrue(panel.getAbsentTerms().isEmpty());
         assertTrue(panel.getTermsForGeneList().isEmpty());
 
-        final JSONObject expectedJSON = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
+        final JSONObject expected = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
             .put(GENES_LABEL, new JSONArray());
-        assertTrue(expectedJSON.similar(panel.toJSON()));
+        assertTrue(expected.similar(panel.toJSON()));
     }
 
-    //--------------------------------------Helper methods-------------------------------------//
+    // --------------------------------------Helper methods-------------------------------------//
 
     /**
-     * Helper method for mocking all outside components for GenePanel
+     * Helper method for mocking all outside components for GenePanel.
      */
     @SuppressWarnings("unchecked")
     private void makeGenePanelMocks()
@@ -498,7 +490,7 @@ public class DefaultGenePanelImplTest
         ((List<String>) associatedGenes2).add(GENE2);
         ((List<String>) associatedGenes2).add(GENE3);
 
-        Mockito.<Set<? extends Feature>> when(this.patient.getFeatures()).thenReturn(features);
+        Mockito.<Set<? extends Feature>>when(this.patient.getFeatures()).thenReturn(features);
 
         when(presentFeature1.isPresent()).thenReturn(Boolean.TRUE);
         when(presentFeature2.isPresent()).thenReturn(Boolean.TRUE);

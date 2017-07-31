@@ -46,7 +46,9 @@ class TermsForGeneBuilder
     /**
      * Creates a new builder.
      */
-    TermsForGeneBuilder() { }
+    TermsForGeneBuilder()
+    {
+    }
 
     /**
      * Updates the {@link TermsForGene terms for gene} object stored under {@code geneSymbol} key, with the provided
@@ -55,18 +57,18 @@ class TermsForGeneBuilder
      * @param geneSymbol the gene symbol, which will be used as the key
      * @param term the {@link VocabularyTerm vocabulary term} with which to update the stored {@link TermsForGene}
      * @throws NullPointerException if key {@code geneSymbol} has not yet been added to the {@link TermsForGeneBuilder},
-     *         or if {@code term} or {@code geneSymbol} are null
+     *             or if {@code term} or {@code geneSymbol} are null
      */
     void update(@Nonnull final String geneSymbol, @Nonnull final VocabularyTerm term)
     {
         Validate.notNull(geneSymbol, "The gene symbol must not be null");
         Validate.notNull(term, "The vocabulary term must not be null.");
-        termsForGeneMap.get(geneSymbol).addTerm(term);
+        this.termsForGeneMap.get(geneSymbol).addTerm(term);
     }
 
     /**
-     * Adds a new {@link TermsForGene} entry for {@code geneSymbol}. If {@code geneSymbol} entry already exists
-     * in the builder, it will be overwritten.
+     * Adds a new {@link TermsForGene} entry for {@code geneSymbol}. If {@code geneSymbol} entry already exists in the
+     * builder, it will be overwritten.
      *
      * @param geneSymbol the gene symbol that will be used as the key, must not be null
      * @param geneId the preferred gene ID, must not be null
@@ -81,7 +83,7 @@ class TermsForGeneBuilder
 
         final DefaultTermsForGeneImpl termsForGene = new DefaultTermsForGeneImpl(geneSymbol, geneId);
         termsForGene.addTerm(term);
-        termsForGeneMap.put(geneSymbol, termsForGene);
+        this.termsForGeneMap.put(geneSymbol, termsForGene);
     }
 
     /**
@@ -92,7 +94,7 @@ class TermsForGeneBuilder
      */
     boolean contains(final String geneSymbol)
     {
-        return termsForGeneMap.containsKey(geneSymbol);
+        return this.termsForGeneMap.containsKey(geneSymbol);
     }
 
     /**
@@ -107,14 +109,14 @@ class TermsForGeneBuilder
     }
 
     /**
-     * Given a {@code termsForGeneMap map} of gene symbol to {@link TermsForGene} objects, returns a
-     * sorted list of {@link TermsForGene terms for gene}, in descending order of relevance.
+     * Given a {@code termsForGeneMap map} of gene symbol to {@link TermsForGene} objects, returns a sorted list of
+     * {@link TermsForGene terms for gene}, in descending order of relevance.
      *
      * @return a list of {@link TermsForGene} objects, sorted in descending order or relevance
      */
     private List<TermsForGene> getSortedTermsForGeneList()
     {
-        final List<TermsForGene> termsForGeneEntries = new ArrayList<TermsForGene>(termsForGeneMap.values());
+        final List<TermsForGene> termsForGeneEntries = new ArrayList<>(this.termsForGeneMap.values());
         Collections.sort(termsForGeneEntries, new Comparator<TermsForGene>()
         {
             @Override
@@ -148,13 +150,13 @@ class TermsForGeneBuilder
     }
 
     /**
-     * Compares two {@link Iterator <VocabularyTerm>} alphabetically.
+     * Compares two {@code Iterator<VocabularyTerm>} alphabetically.
      *
-     * @param first the {@link Iterator<VocabularyTerm>} that {@code second} is being compared to
-     * @param second the {@link Iterator<VocabularyTerm>} that is being compared
+     * @param first the {@code Iterator<VocabularyTerm>} that {@code second} is being compared to
+     * @param second the {@code Iterator<VocabularyTerm>} that is being compared
      * @return {@code 0} if {@code first} and {@code second} are equivalent, a value less than {@code 0} if
-     *         {@code first} should be ahead of {@code second}, a value greater than {@code 0} if {@code second}
-     *         should be ahead of {@code first}
+     *         {@code first} should be ahead of {@code second}, a value greater than {@code 0} if {@code second} should
+     *         be ahead of {@code first}
      */
     private int compareByTermList(@Nonnull final Iterator<VocabularyTerm> first,
         @Nonnull final Iterator<VocabularyTerm> second)
