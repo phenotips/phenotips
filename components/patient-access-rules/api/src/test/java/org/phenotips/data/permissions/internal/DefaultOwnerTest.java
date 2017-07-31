@@ -23,10 +23,11 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-
-import static org.mockito.Mockito.mock;
+import org.mockito.MockitoAnnotations;
 
 /**
  * Tests for the default {@link Owner} implementation, {@link DefaultOwner}.
@@ -38,14 +39,21 @@ public class DefaultOwnerTest
     /** The user used as an owner for all tests. */
     private static final DocumentReference OWNER = new DocumentReference("xwiki", "XWiki", "hmccoy");
 
-    private static final PatientAccessHelper helper = mock(PatientAccessHelper.class);
+    @Mock
+    private PatientAccessHelper helper;
+
+    @Before
+    public void setUp()
+    {
+        MockitoAnnotations.initMocks(this);
+    }
 
     /** Basic tests for {@link Owner#getType()}. */
     @Test
     public void getType() throws ComponentLookupException
     {
-        Owner o = new DefaultOwner(OWNER, helper);
-        Mockito.when(helper.getType(OWNER)).thenReturn("user", "group", "unknown", null);
+        Owner o = new DefaultOwner(OWNER, this.helper);
+        Mockito.when(this.helper.getType(OWNER)).thenReturn("user", "group", "unknown", null);
         Assert.assertEquals("user", o.getType());
         Assert.assertEquals("group", o.getType());
         Assert.assertEquals("unknown", o.getType());
@@ -56,8 +64,8 @@ public class DefaultOwnerTest
     @Test
     public void isUser() throws ComponentLookupException
     {
-        Owner o = new DefaultOwner(OWNER, helper);
-        Mockito.when(helper.getType(OWNER)).thenReturn("unknown", "user", "group", null);
+        Owner o = new DefaultOwner(OWNER, this.helper);
+        Mockito.when(this.helper.getType(OWNER)).thenReturn("unknown", "user", "group", null);
         Assert.assertFalse(o.isUser());
         Assert.assertTrue(o.isUser());
         Assert.assertFalse(o.isUser());
@@ -68,8 +76,8 @@ public class DefaultOwnerTest
     @Test
     public void isGroup() throws ComponentLookupException
     {
-        Owner o = new DefaultOwner(OWNER, helper);
-        Mockito.when(helper.getType(OWNER)).thenReturn("unknown", "user", "group", null);
+        Owner o = new DefaultOwner(OWNER, this.helper);
+        Mockito.when(this.helper.getType(OWNER)).thenReturn("unknown", "user", "group", null);
         Assert.assertFalse(o.isGroup());
         Assert.assertFalse(o.isGroup());
         Assert.assertTrue(o.isGroup());
@@ -80,7 +88,7 @@ public class DefaultOwnerTest
     @Test
     public void getUser() throws ComponentLookupException
     {
-        Owner o = new DefaultOwner(OWNER, helper);
+        Owner o = new DefaultOwner(OWNER, this.helper);
         Assert.assertSame(OWNER, o.getUser());
     }
 
@@ -88,7 +96,7 @@ public class DefaultOwnerTest
     @Test
     public void getUserWithNull() throws ComponentLookupException
     {
-        Owner o = new DefaultOwner(null, helper);
+        Owner o = new DefaultOwner(null, this.helper);
         Assert.assertNull(o.getUser());
     }
 
@@ -96,7 +104,7 @@ public class DefaultOwnerTest
     @Test
     public void getUsername() throws ComponentLookupException
     {
-        Owner o = new DefaultOwner(OWNER, helper);
+        Owner o = new DefaultOwner(OWNER, this.helper);
         Assert.assertEquals(OWNER.getName(), o.getUsername());
     }
 
@@ -104,7 +112,7 @@ public class DefaultOwnerTest
     @Test
     public void getUsernameWithNull() throws ComponentLookupException
     {
-        Owner o = new DefaultOwner(null, helper);
+        Owner o = new DefaultOwner(null, this.helper);
         Assert.assertNull(o.getUsername());
     }
 
@@ -112,16 +120,16 @@ public class DefaultOwnerTest
     @Test
     public void equalsTest() throws ComponentLookupException
     {
-        Owner o = new DefaultOwner(OWNER, helper);
+        Owner o = new DefaultOwner(OWNER, this.helper);
         // Equals itself
         Assert.assertTrue(o.equals(o));
         // Doesn't equal null
         Assert.assertFalse(o.equals(null));
         // Equals an identical owner
-        Owner other = new DefaultOwner(OWNER, helper);
+        Owner other = new DefaultOwner(OWNER, this.helper);
         Assert.assertTrue(o.equals(other));
         // Doesn't equal an owner with different user
-        other = new DefaultOwner(new DocumentReference("xwiki", "XWiki", "padams"), helper);
+        other = new DefaultOwner(new DocumentReference("xwiki", "XWiki", "padams"), this.helper);
         Assert.assertFalse(o.equals(other));
         // Doesn't equal different types of objects
         Assert.assertFalse(o.equals("other"));
@@ -131,18 +139,18 @@ public class DefaultOwnerTest
     @Test
     public void hashCodeTest() throws ComponentLookupException
     {
-        Owner o = new DefaultOwner(OWNER, helper);
-        Owner other = new DefaultOwner(OWNER, helper);
+        Owner o = new DefaultOwner(OWNER, this.helper);
+        Owner other = new DefaultOwner(OWNER, this.helper);
         // Same hashcode for a different owner with the same user
         Assert.assertEquals(o.hashCode(), other.hashCode());
         // Different hashcodes for different users
-        other = new DefaultOwner(new DocumentReference("xwiki", "XWiki", "padams"), helper);
+        other = new DefaultOwner(new DocumentReference("xwiki", "XWiki", "padams"), this.helper);
         Assert.assertNotEquals(o.hashCode(), other.hashCode());
         // Different hashcodes for user and guest
-        other = new DefaultOwner(null, helper);
+        other = new DefaultOwner(null, this.helper);
         Assert.assertNotEquals(o.hashCode(), other.hashCode());
         // Same hashcode for two guests
-        o = new DefaultOwner(null, helper);
+        o = new DefaultOwner(null, this.helper);
         Assert.assertEquals(o.hashCode(), other.hashCode());
     }
 
@@ -150,7 +158,7 @@ public class DefaultOwnerTest
     @Test
     public void toStringTest() throws ComponentLookupException
     {
-        Owner o = new DefaultOwner(OWNER, helper);
+        Owner o = new DefaultOwner(OWNER, this.helper);
         Assert.assertEquals("[xwiki:XWiki.hmccoy]", o.toString());
     }
 
@@ -158,7 +166,7 @@ public class DefaultOwnerTest
     @Test
     public void toStringUsesNobodyForGuests() throws ComponentLookupException
     {
-        Owner o = new DefaultOwner(null, helper);
+        Owner o = new DefaultOwner(null, this.helper);
         Assert.assertEquals("[nobody]", o.toString());
     }
 }
