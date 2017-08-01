@@ -31,8 +31,10 @@ define([
 
             this._previousHighightedNode = null;
 
-            this._disabled_icon = "fa-circle-o"; //"fa-plus-circle";
-            this._enabled_icon = "fa-circle"; //"fa-minus-circle";
+            this._DISABLED_ICON         = "fa-circle-o";
+            this._DISABLED_ONHOVER_ICON = "fa-check-circle-o";
+            this._ENABLED_ICON          = "fa-circle";
+            this._ENABLED_ONHOVER_ICON  = "fa-times-circle";
 
             var legendContainer = $('legend-container');
             if (legendContainer == undefined) {
@@ -482,15 +484,16 @@ define([
                 'title': "Click to enable or disable node colouring; drag to mark other individuals as affected"})
                 .update(new Element('span', {'class' : 'abnormality-' + this._getPrefix() + '-name'}).update(name.escapeHTML()));
             item.insert(new Element('input', {'type' : 'hidden', 'value' : id}));
-            var iconClass = this._objectProperties[id].enabled ? this._enabled_icon : this._disabled_icon;
+            var iconClass = this._objectProperties[id].enabled ? this._ENABLED_ICON : this._DISABLED_ICON;
             var bubble = new Element('span', {'class' : 'abnormality-legend-icon fa ' + iconClass + ' icon-enabled-' + this._objectProperties[id].enabled.toString()});
             bubble.style.color = this._objectProperties[id].enabled ? color : PedigreeEditorParameters.attributes.legendIconDisabledColor;
             var _this = this;
             bubble.disableColor = function(skipMasterCheckboxUpdate) {
                 _this._objectProperties[id].enabled = false;
                 _this._preferredProperties[id].enabled = false;
-                bubble.removeClassName(_this._enabled_icon);
-                bubble.addClassName(_this._disabled_icon);
+                bubble.removeClassName(_this._ENABLED_ICON);
+                bubble.removeClassName(_this._ENABLED_ONHOVER_ICON);
+                bubble.addClassName(_this._DISABLED_ICON);
                 bubble.removeClassName("icon-enabled-true");
                 bubble.addClassName("icon-enabled-false");
                 bubble.style.color = PedigreeEditorParameters.attributes.legendIconDisabledColor;
@@ -502,8 +505,9 @@ define([
             bubble.enableColor = function(skipMasterCheckboxUpdate) {
                 _this._objectProperties[id].enabled = true;
                 _this._preferredProperties[id].enabled = true;
-                bubble.removeClassName(_this._disabled_icon);
-                bubble.addClassName(_this._enabled_icon);
+                bubble.removeClassName(_this._DISABLED_ICON);
+                bubble.removeClassName(_this._DISABLED_ONHOVER_ICON);
+                bubble.addClassName(_this._ENABLED_ICON);
                 bubble.removeClassName("icon-enabled-false");
                 bubble.addClassName("icon-enabled-true");
                 bubble.style.color = color;
@@ -511,6 +515,24 @@ define([
                     editor.getNode(_this._affectedNodes[id][i]).getGraphics().updateDisorderShapes();
                 }
                 !skipMasterCheckboxUpdate && _this._updateShowHideButtons();
+            }
+            bubble.hideOnHoverIcons = function() {
+                if (_this._objectProperties[id].enabled) {
+                    bubble.removeClassName(_this._ENABLED_ONHOVER_ICON);
+                    bubble.addClassName(_this._ENABLED_ICON);
+                } else {
+                    bubble.removeClassName(_this._DISABLED_ONHOVER_ICON);
+                    bubble.addClassName(_this._DISABLED_ICON);
+                }
+            }
+            bubble.showOnHoverIcons = function() {
+                if (_this._objectProperties[id].enabled) {
+                    bubble.removeClassName(_this._ENABLED_ICON);
+                    bubble.addClassName(_this._ENABLED_ONHOVER_ICON);
+                } else {
+                    bubble.removeClassName(_this._DISABLED_ICON);
+                    bubble.addClassName(_this._DISABLED_ONHOVER_ICON);
+                }
             }
             // Need to distonguish click from drag in legend
             // (based on http://stackoverflow.com/questions/6042202/how-to-distinguish-mouse-click-and-drag)
@@ -538,20 +560,24 @@ define([
                     } else {
                         bubble.enableColor();
                     }
+                    bubble.showOnHoverIcons();
+                } else {
+                    bubble.hideOnHoverIcons();
                 }
             });
             item.insert({'top' : bubble});
             var countLabel = new Element('span', {'class' : 'abnormality-cases'});
             var countLabelContainer = new Element('span', {'class' : 'abnormality-cases-container'}).insert("(").insert(countLabel).insert(")");
             item.insert(" ").insert(countLabelContainer);
-            var me = this;
             Element.observe(item, 'mouseover', function() {
-                item.down('.abnormality-' + me._getPrefix() + '-name').setStyle({'cursor' : 'pointer'});
-                me._highlightAllByItemID(id, true);
+                item.down('.abnormality-' + _this._getPrefix() + '-name').setStyle({'cursor' : 'pointer'});
+                _this._highlightAllByItemID(id, true);
+                bubble.showOnHoverIcons();
             });
             Element.observe(item, 'mouseout', function() {
-                item.down('.abnormality-' + me._getPrefix() + '-name').setStyle({'cursor' : 'default'});
-                me._highlightAllByItemID(id, false);
+                item.down('.abnormality-' + _this._getPrefix() + '-name').setStyle({'cursor' : 'default'});
+                _this._highlightAllByItemID(id, false);
+                bubble.hideOnHoverIcons();
             });
             new Draggable(item, {
                 revert: true,
