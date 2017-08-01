@@ -688,12 +688,11 @@ define([
          * @return {Array of Strings}
          */
         getAllNodeColors: function() {
-            var result = editor.getDisorderLegend().getAllEnabledColorsForNode(this.getID());
-            Array.prototype.push.apply(result, editor.getCandidateGeneLegend().getAllEnabledColorsForNode(this.getID()));
-            Array.prototype.push.apply(result, editor.getCausalGeneLegend().getAllEnabledColorsForNode(this.getID()));
-            Array.prototype.push.apply(result, editor.getCarrierGeneLegend().getAllEnabledColorsForNode(this.getID()));
-            Array.prototype.push.apply(result, editor.getHPOLegend().getAllEnabledColorsForNode(this.getID()));
-            Array.prototype.push.apply(result, editor.getCancerLegend().getAllEnabledColorsForNode(this.getID()));
+            var result = [];
+            var allLegends = editor.getAllLegends();
+            for (var i = 0; i < allLegends.length; i++) {
+                Array.prototype.push.apply(result, allLegends[i].getAllEnabledColorsForNode(this.getID()));
+            }
             return result;
         },
 
