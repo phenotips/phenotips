@@ -54,10 +54,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
-
 /**
  * Default implementation for {@link PatientByExternalIdResource} using XWiki's support for REST resources.
  *
@@ -175,11 +171,9 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
             this.logger.debug("Delete access denied to user [{}] on patient record [{}]", currentUser, patient.getId());
             return Response.status(Status.FORBIDDEN).build();
         }
-        XWikiContext context = this.getXWikiContext();
-        XWiki xwiki = context.getWiki();
         try {
-            xwiki.deleteDocument(patient.getXDocument(), context);
-        } catch (XWikiException ex) {
+            this.repository.delete(patient);
+        } catch (Exception ex) {
             this.logger.warn("Failed to delete patient record with external id [{}]: {}", eid, ex.getMessage());
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }

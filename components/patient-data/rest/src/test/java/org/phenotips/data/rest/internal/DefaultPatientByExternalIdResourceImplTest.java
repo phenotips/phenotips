@@ -68,8 +68,6 @@ import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -377,11 +375,9 @@ public class DefaultPatientByExternalIdResourceImplTest
     }
 
     @Test
-    public void deletePatientCatchesXWikiException() throws XWikiException
+    public void deletePatientCatchesException() throws WebApplicationException
     {
-        XWiki wiki = mock(XWiki.class);
-        doReturn(wiki).when(this.context).getWiki();
-        doThrow(XWikiException.class).when(wiki).deleteDocument(any(XWikiDocument.class), eq(this.context));
+        doThrow(Exception.class).when(this.repository).delete(this.patient);
         when(this.repository.getByName(this.eid)).thenReturn(this.patient);
         when(this.access.hasAccess(Right.DELETE, null, null)).thenReturn(true);
 
@@ -392,8 +388,8 @@ public class DefaultPatientByExternalIdResourceImplTest
             ex = temp;
         }
 
-        assertNotNull("deletePatient did not throw a WebApplicationException as expect "
-            + "when catching an XWikiException", ex);
+        assertNotNull("deletePatient did not throw a WebApplicationException as expected "
+            + "when catching an Exception", ex);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), ex.getResponse().getStatus());
         verify(this.logger).warn(eq("Failed to delete patient record with external id [{}]: {}"), eq(this.eid),
             anyString());
@@ -402,11 +398,9 @@ public class DefaultPatientByExternalIdResourceImplTest
     @Test
     public void deletePatientReturnsNoContentResponse()
     {
-        XWiki wiki = mock(XWiki.class);
-        doReturn(wiki).when(this.context).getWiki();
-
         Response response = this.component.deletePatient(this.eid);
 
+        verify(this.repository).delete(this.patient);
         verify(this.logger).debug("Deleting patient record with external ID [{}] via REST", this.eid);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
