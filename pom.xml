@@ -157,6 +157,7 @@
     <!-- Clirr doesn't work well on Java 8 unfortunately... -->
     <clirr.skip>true</clirr.skip>
     <license.skip>false</license.skip>
+    <dependencyCheck.skip>false</dependencyCheck.skip>
     <coverage.instructionRatio>1.00</coverage.instructionRatio>
 
     <!-- Functional test environment -->
@@ -511,6 +512,24 @@
               <resourceBundles>
                 <resourceBundle>org.phenotips:phenotips-license-resources:${buildtools.version}</resourceBundle>
               </resourceBundles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Check that declared dependencies match what's actually used -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>check-dependencies</id>
+            <goals>
+              <goal>analyze-only</goal>
+            </goals>
+            <configuration>
+              <failOnWarning>true</failOnWarning>
+              <ignoreNonCompile>true</ignoreNonCompile>
+              <skip>${dependencyCheck.skip}</skip>
             </configuration>
           </execution>
         </executions>
@@ -1071,6 +1090,7 @@
         <skipTests>true</skipTests>
         <license.skip>true</license.skip>
         <xar.verify.skip>true</xar.verify.skip>
+        <dependencyCheck.skip>true</dependencyCheck.skip>
       </properties>
     </profile>
 

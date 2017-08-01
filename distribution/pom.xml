@@ -30,9 +30,10 @@
   <name>PhenoTips - Distribution packages</name>
 
   <properties>
-    <!-- Distribution packages have no Java code, speedup by skipping Clirr and Checkstyle checks -->
+    <!-- Distribution packages have no Java code, speedup by skipping java checks -->
     <checkstyle.skip>true</checkstyle.skip>
     <clirr.skip>true</clirr.skip>
+    <dependencyCheck.skip>true</dependencyCheck.skip>
   </properties>
 
   <modules>

@@ -50,7 +50,7 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-model</artifactId>
+      <artifactId>xwiki-platform-container-api</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
@@ -107,6 +107,10 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>annotations</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

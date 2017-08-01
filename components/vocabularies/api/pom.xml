@@ -149,6 +149,10 @@
       <artifactId>commons-collections4</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.jena</groupId>
       <artifactId>jena-core</artifactId>
       <version>2.13.0</version>
@@ -181,6 +185,10 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>annotations</artifactId>
     </dependency>
     <!-- Test dependencies -->
     <dependency>
