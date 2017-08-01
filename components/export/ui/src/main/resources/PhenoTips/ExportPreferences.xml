@@ -49,7 +49,9 @@
 #set($customExporters = {
     'PhenoTips.GeneClass' : {'name' : 'genes', 'label': "$services.localization.render('phenotips.exportPreferences.field.genes')"},
     'PhenoTips.InvestigationClass' : {'name' : 'genes', 'label': "$services.localization.render('phenotips.exportPreferences.field.genes')"},
-    'PhenoTips.AllergiesDataClass' : {'name': 'allergies', 'label' : "$services.localization.render('PhenoTips.AllergiesDataClass_allergies')"}
+    'PhenoTips.AllergiesDataClass' : {'name': 'allergies', 'label' : "$services.localization.render('PhenoTips.AllergiesDataClass_allergies')"},
+    'PhenoTips.ExternalFileClass' : {'name': 'additionalDocuments', 'label' : "$services.localization.render('phenotips.exportPreferences.field.additionalDocuments')"},
+    'PhenoTips.ExternalImageClass' : {'name': 'additionalImages', 'label' : "$services.localization.render('phenotips.exportPreferences.field.additionalImages')"}
 })
 #set ($customLabels = {
     'apgar1' : "$services.localization.render('phenotips.exportPreferences.prenatalPerinatalHistory.apgarScores')"
