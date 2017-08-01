@@ -688,23 +688,12 @@ define([
          * @return {Array of Strings}
          */
         getAllNodeColors: function() {
-            var result = [];
-            for (var i = 0; i < this.getDisorders().length; i++) {
-                result.push(editor.getDisorderLegend().getObjectColor(this.getDisorders()[i]));
-            }
-            for (var i = 0; i < this.getGenes().length; i++) {
-                var geneColor = editor.getGeneColor(this.getGenes()[i].id, this.getID());
-                if (geneColor) {
-                    result.push(geneColor);
-                }
-            }
-            for (var cancer in this.getCancers()) {
-                if (this.getCancers().hasOwnProperty(cancer)) {
-                    if (this.getCancers()[cancer].hasOwnProperty("affected") && this.getCancers()[cancer].affected) {
-                        result.push(editor.getCancerLegend().getObjectColor(cancer));
-                    }
-                }
-            }
+            var result = editor.getDisorderLegend().getAllEnabledColorsForNode(this.getID());
+            Array.prototype.push.apply(result, editor.getCandidateGeneLegend().getAllEnabledColorsForNode(this.getID()));
+            Array.prototype.push.apply(result, editor.getCausalGeneLegend().getAllEnabledColorsForNode(this.getID()));
+            Array.prototype.push.apply(result, editor.getCarrierGeneLegend().getAllEnabledColorsForNode(this.getID()));
+            Array.prototype.push.apply(result, editor.getHPOLegend().getAllEnabledColorsForNode(this.getID()));
+            Array.prototype.push.apply(result, editor.getCancerLegend().getAllEnabledColorsForNode(this.getID()));
             return result;
         },
 
@@ -849,6 +838,7 @@ define([
             for(var i = 0; i < hpos.length; i++) {
                 this.addHPO( hpos[i] );
             }
+            this.getGraphics().updateDisorderShapes();
         },
 
         /**

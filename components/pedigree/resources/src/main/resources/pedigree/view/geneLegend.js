@@ -58,8 +58,8 @@
             }.bind(this));
         },
 
-        _getPrefix: function(id) {
-            return this.prefix + "gene";
+        _getPrefix: function(humanReadablePlural) {
+            return this.prefix + (humanReadablePlural ? " " : "") + "gene" + (humanReadablePlural ? "s" : "");
         },
 
         /**
@@ -115,7 +115,7 @@
          */
         updateGeneData: function(oldId, newId, symbol) {
             // update symbol
-            var name = this._legendBox.down('li#' + this._getPrefix() + '-' + this._hashID(oldId) + ' .disorder-name');
+            var name = this._legendBox.down('li#' + this._getPrefix() + '-' + this._hashID(oldId) + ' .abnormallity-gene-name');
             name && name.update(symbol);
 
             if (oldId != newId) {

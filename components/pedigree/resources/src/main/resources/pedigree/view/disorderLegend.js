@@ -21,8 +21,8 @@ define([
             this._disorderCache = {};
         },
 
-        _getPrefix: function(id) {
-            return "disorder";
+        _getPrefix: function(humanReadablePlural) {
+            return "disorder" + (humanReadablePlural ? "s" : "");
         },
 
         /**
@@ -74,10 +74,10 @@ define([
          * @private
          */
         _updateDisorderName: function(disorderID) {
-            //console.log("updating disorder display for " + disorderID + ", name = " + this.getDisorder(disorderID).getName());
-            var nameElement = this._legendBox.down('li#' + this._getPrefix() + '-' + disorderID + ' .disorder-name');
+            var nameElement = this._legendBox.down('li#' + this._getPrefix() + '-' + disorderID + ' .abnormality-disorder-name');
             var name = this.getDisorder(disorderID).getName();
             nameElement.update(name);
+            this._updateMinMaxButtons();
             document.fire('disorder:name', {'id' : disorderID, 'name': name});
         },
 
@@ -135,14 +135,16 @@ define([
                 return this._objectColors[disorderID];
             }
 
-            var usedColors = Object.values(this._objectColors),
-                // [red/yellow]           prefColors = ["#FEE090", '#f8ebb7', '#eac080', '#bf6632', '#9a4500', '#a47841', '#c95555', '#ae6c57'];
-                // [original yellow/blue] prefColors = ["#FEE090", '#E0F8F8', '#8ebbd6', '#4575B4', '#fca860', '#9a4500', '#81a270'];
-                // [green]                prefColors = ['#81a270', '#c4e8c4', '#56a270', '#b3b16f', '#4a775a', '#65caa3'];
-            //#E0F8F8
-            prefColors = ['#D1E9E9', '#92c0db', '#4575B4', '#949ab8', "#FEE090", '#bf6632', '#fca860', '#9a4500', '#d12943', '#00a2bf'];
+            var usedColors = Object.values(this._objectColors);
+
+            // other color schemas:
+            //   [red/yellow]           -> ["#FEE090", '#f8ebb7', '#eac080', '#bf6632', '#9a4500', '#a47841', '#c95555', '#ae6c57'];
+            //   [original yellow/blue] -> ["#FEE090", '#E0F8F8', '#8ebbd6', '#4575B4', '#fca860', '#9a4500', '#81a270'];
+            //   [green]                -> ['#81a270', '#c4e8c4', '#56a270', '#b3b16f', '#4a775a', '#65caa3'];
+            //   #E0F8F8
+            var prefColors = ['#D1E9E9', '#92c0db', '#4575B4', '#949ab8', "#FEE090", '#bf6632', '#fca860', '#9a4500', '#d12943', '#00a2bf'];
             if (disorderID == "affected") {
-                prefColors = ["#FEE090", "#dbad71"];
+                prefColors = ["#FEE090", "#dbad71", "#3F3F3F"];
             }
             if (this.getPreferedColor(disorderID) !== null) {
                 prefColors.unshift(this.getPreferedColor(disorderID));

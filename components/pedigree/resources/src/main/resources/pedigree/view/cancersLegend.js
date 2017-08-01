@@ -54,8 +54,8 @@ define([
             $super('Cancers', 'cancers', true);
         },
 
-        _getPrefix: function(id) {
-            return "cancers";
+        _getPrefix: function(humanReadablePlural) {
+            return "cancer" + (humanReadablePlural ? "s" : "");
         },
 
         _getAllSupportedCancers: function() {

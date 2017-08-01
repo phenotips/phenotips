@@ -127,7 +127,13 @@ define([], function(){
         minPrintPreviewPaneHeight: 250,
         hoverboxHighlightColor: "green",
         mainGlowColor: "green",
-        secondaryGlowColor: "#556B2F"
+        secondaryGlowColor: "#556B2F",
+        legendIconDisabledColor: "#BBB",
+        dragThresholdPixels: 2,
+        legendMaxWidthPixels: 260,
+        legendMinWidthPixels: 245,
+        legendMinimizedWidthPixels: 150,
+        legendStyle: "multiSector"
     };
 
     return PedigreeEditorParameters;

@@ -2,6 +2,7 @@ define(["pedigree/model/helpers"], function(Helpers){
     var PreferencesManager = Class.create( {
         initialize: function( templatePreferences ) {
             this.preferences = templatePreferences;
+            this._cookiePrefix = "pedigree_preference_";
         },
 
         load: function(callWhenReady) {
@@ -11,7 +12,7 @@ define(["pedigree/model/helpers"], function(Helpers){
             new Ajax.Request(preferencesJsonURL, {
                 method: "GET",
                 onSuccess: this.onPreferencesAvailable.bind(this),
-                onComplete: callWhenReady ? callWhenReady : {}
+                onComplete: callWhenReady
             });
         },
 
@@ -23,6 +24,10 @@ define(["pedigree/model/helpers"], function(Helpers){
             } else {
                 console.log("Failed to loaded properties, no JSON");
             }
+
+            // read user preferences from cookies
+            // TODO: read from user profile instead of using cookies?
+            this.preferences.user = Helpers.getAllCookies(this._cookiePrefix);
         },
 
         /**
@@ -48,7 +53,8 @@ define(["pedigree/model/helpers"], function(Helpers){
         setConfigurationOption: function(domain, optionName, value) {
             if (domain == "user") {
                 this.preferences.user[optionName] = value;
-                // TODO: save to user profile
+                Helpers.setCookie(this._cookiePrefix + optionName, value); // no expire date
+                // TODO: save to user profile instead of using cookies?
             } else if (domain == "pedigree") {
                 this.preferences.pedigree[optionName] = value;
                 // no save: will be saved when the rest of pedigree is saved

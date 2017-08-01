@@ -47,7 +47,7 @@ define([
                 method: "GET",
                 onSuccess: this.onDataReady.bind(this),
                 //onComplete: complete.bind(this)
-                onComplete: callWhenReady ? callWhenReady : {}
+                onComplete: callWhenReady
             });
         },
 
