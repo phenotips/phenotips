@@ -21,14 +21,12 @@ import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.data.internal.controller.MedicalReportsController.Attachment;
+import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.environment.Environment;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.io.IOException;
@@ -65,7 +63,6 @@ import com.xpn.xwiki.doc.XWikiAttachment;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.web.Utils;
-
 import net.jcip.annotations.NotThreadSafe;
 
 import static org.mockito.Matchers.any;
@@ -89,16 +86,6 @@ public class MedicalReportsControllerTest
     private static final String CONTROLLER_NAME = "medicalReports";
 
     private static final String FIELD_NAME = "reports_history";
-
-    private static final String JSON_FIELD_FILENAME = "filename";
-
-    private static final String JSON_FIELD_FILESIZE = "filesize";
-
-    private static final String JSON_FIELD_AUTHOR = "author";
-
-    private static final String JSON_FIELD_DATE = "date";
-
-    private static final String JSON_FIELD_CONTENT = "content";
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Attachment>> mocker =
@@ -125,8 +112,10 @@ public class MedicalReportsControllerTest
     @Mock
     private XWikiAttachment attachment2;
 
+    @Mock
     private Attachment a1;
 
+    @Mock
     private Attachment a2;
 
     private Date date1;
@@ -136,6 +125,24 @@ public class MedicalReportsControllerTest
     private DocumentReference author1 = new DocumentReference("main", "Users", "padams");
 
     private DocumentReference author2 = new DocumentReference("genetics", "Users", "hmccoy");
+
+    private AttachmentAdapterFactory adapter;
+
+    private JSONObject json1 = new JSONObject("{"
+        + "\"filename\":\"a1.pdf\","
+        + "\"filesize\":4,"
+        + "\"author\":\"Users.padams\","
+        + "\"date\":\"2017-01-01T12:00:00.000Z\","
+        + "\"content\":\"YWJjZA==\""
+        + "}");
+
+    private JSONObject json2 = new JSONObject("{"
+        + "\"filename\":\"a2.pdf\","
+        + "\"filesize\":3,"
+        + "\"author\":\"genetics:Users.hmccoy\","
+        + "\"date\":\"2016-08-01T14:00:00.000Z\","
+        + "\"content\":\"eHl6\""
+        + "}");
 
     @BeforeClass
     public static void globalSetUp() throws ComponentLookupException
@@ -152,6 +159,7 @@ public class MedicalReportsControllerTest
     public void setUp() throws Exception
     {
         MockitoAnnotations.initMocks(this);
+        this.adapter = this.mocker.getInstance(AttachmentAdapterFactory.class);
 
         DocumentReference patientDocRef = new DocumentReference("wiki", "patient", "00000001");
         when(this.patient.getDocumentReference()).thenReturn(patientDocRef);
@@ -169,7 +177,14 @@ public class MedicalReportsControllerTest
         when(this.attachment1.getContentInputStream(this.context))
             .thenReturn(IOUtils.toInputStream("abcd", StandardCharsets.UTF_8));
         when(this.doc.getAttachment("a1.pdf")).thenReturn(this.attachment1);
-        this.a1 = new Attachment(this.attachment1);
+        when(this.adapter.fromXWikiAttachment(this.attachment1)).thenReturn(this.a1);
+        when(this.adapter.fromJSON(this.json1)).thenReturn(this.a1);
+        when(this.a1.toJSON()).thenReturn(this.json1);
+        when(this.a1.getFilename()).thenReturn("a1.pdf");
+        when(this.a1.getFilesize()).thenReturn(4L);
+        when(this.a1.getAuthorReference()).thenReturn(this.author1);
+        when(this.a1.getDate()).thenReturn(this.date1);
+        when(this.a1.getContent()).thenReturn(IOUtils.toInputStream("abcd", StandardCharsets.UTF_8));
 
         c = new GregorianCalendar(2016, 7, 1, 14, 0, 0);
         c.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -181,21 +196,18 @@ public class MedicalReportsControllerTest
         when(this.attachment2.getContentInputStream(this.context))
             .thenReturn(IOUtils.toInputStream("xyz", StandardCharsets.UTF_8));
         when(this.doc.getAttachment("a2.pdf")).thenReturn(this.attachment2);
-        this.a2 = new Attachment(this.attachment2);
+        when(this.adapter.fromXWikiAttachment(this.attachment2)).thenReturn(this.a2);
+        when(this.adapter.fromJSON(this.json2)).thenReturn(this.a2);
+        when(this.a2.toJSON()).thenReturn(this.json2);
+        when(this.a2.getFilename()).thenReturn("a2.pdf");
+        when(this.a2.getFilesize()).thenReturn(3L);
+        when(this.a2.getAuthorReference()).thenReturn(this.author2);
+        when(this.a2.getDate()).thenReturn(this.date2);
+        when(this.a2.getContent()).thenReturn(IOUtils.toInputStream("xyz", StandardCharsets.UTF_8));
 
         Provider<XWikiContext> contextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         when(contextProvider.get()).thenReturn(this.context);
         when(this.context.getWiki()).thenReturn(this.xwiki);
-
-        EntityReferenceSerializer<String> userSerializer =
-            this.mocker.getInstance(EntityReferenceSerializer.TYPE_STRING, "compactwiki");
-        when(userSerializer.serialize(this.author1)).thenReturn("Users.padams");
-        when(userSerializer.serialize(this.author2)).thenReturn("genetics:Users.hmccoy");
-
-        DocumentReferenceResolver<String> userResolver =
-            this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "user/current");
-        when(userResolver.resolve("Users.padams")).thenReturn(this.author1);
-        when(userResolver.resolve("genetics:Users.hmccoy")).thenReturn(this.author2);
 
         when(this.context.getUserReference()).thenReturn(this.author1);
         when(this.xwiki.exists(this.author1, this.context)).thenReturn(true);
@@ -239,7 +251,7 @@ public class MedicalReportsControllerTest
     @Test
     public void loadSkipsNonExistingAttachments() throws ComponentLookupException
     {
-        when(this.data.getListValue("reports_history"))
+        when(this.data.getListValue(FIELD_NAME))
             .thenReturn(Arrays.asList("a0.pdf", "a1.pdf", "a2.pdf", "a3.pdf"));
 
         PatientData<Attachment> result = this.mocker.getComponentUnderTest().load(this.patient);
@@ -253,7 +265,7 @@ public class MedicalReportsControllerTest
     @Test
     public void loadSkipsAttachmentsNotSelected() throws ComponentLookupException
     {
-        when(this.data.getListValue("reports_history"))
+        when(this.data.getListValue(FIELD_NAME))
             .thenReturn(Arrays.asList("a2.pdf", "a3.pdf"));
 
         PatientData<Attachment> result = this.mocker.getComponentUnderTest().load(this.patient);
@@ -264,22 +276,9 @@ public class MedicalReportsControllerTest
     }
 
     @Test
-    public void loadAcceptsGuestAuthor() throws ComponentLookupException
-    {
-        when(this.data.getListValue("reports_history")).thenReturn(Arrays.asList("a1.pdf"));
-        when(this.attachment1.getAuthorReference()).thenReturn(null);
-
-        PatientData<Attachment> result = this.mocker.getComponentUnderTest().load(this.patient);
-
-        Assert.assertNotNull(result);
-        Assert.assertEquals(1, result.size());
-        Assert.assertNull(result.get(0).getAuthorReference());
-    }
-
-    @Test
     public void loadAcceptsInvalidAuthor() throws ComponentLookupException
     {
-        when(this.data.getListValue("reports_history")).thenReturn(Arrays.asList("a1.pdf"));
+        when(this.data.getListValue(FIELD_NAME)).thenReturn(Arrays.asList("a1.pdf"));
         when(this.xwiki.exists(this.author1, this.context)).thenReturn(false);
 
         PatientData<Attachment> result = this.mocker.getComponentUnderTest().load(this.patient);
@@ -435,19 +434,8 @@ public class MedicalReportsControllerTest
         Assert.assertTrue(json.has(DATA_NAME));
         JSONArray result = json.getJSONArray(DATA_NAME);
         Assert.assertEquals(2, result.length());
-        JSONObject json1 = result.getJSONObject(0);
-        Assert.assertEquals("a1.pdf", json1.get(JSON_FIELD_FILENAME));
-        Assert.assertEquals(4L, json1.get(JSON_FIELD_FILESIZE));
-        Assert.assertEquals("Users.padams", json1.get(JSON_FIELD_AUTHOR));
-        Assert.assertEquals("2017-01-01T12:00:00.000Z", json1.get(JSON_FIELD_DATE));
-        Assert.assertEquals("YWJjZA==", json1.get(JSON_FIELD_CONTENT));
-
-        JSONObject json2 = result.getJSONObject(1);
-        Assert.assertEquals("a2.pdf", json2.get(JSON_FIELD_FILENAME));
-        Assert.assertEquals(3L, json2.get(JSON_FIELD_FILESIZE));
-        Assert.assertEquals("genetics:Users.hmccoy", json2.get(JSON_FIELD_AUTHOR));
-        Assert.assertEquals("2016-08-01T14:00:00.000Z", json2.get(JSON_FIELD_DATE));
-        Assert.assertEquals("eHl6", json2.get(JSON_FIELD_CONTENT));
+        Assert.assertSame(this.json1, result.getJSONObject(0));
+        Assert.assertSame(this.json2, result.getJSONObject(1));
     }
 
     @Test
@@ -462,19 +450,8 @@ public class MedicalReportsControllerTest
         Assert.assertTrue(json.has(DATA_NAME));
         JSONArray result = json.getJSONArray(DATA_NAME);
         Assert.assertEquals(2, result.length());
-        JSONObject json1 = result.getJSONObject(0);
-        Assert.assertEquals("a1.pdf", json1.get(JSON_FIELD_FILENAME));
-        Assert.assertEquals(4L, json1.get(JSON_FIELD_FILESIZE));
-        Assert.assertEquals("Users.padams", json1.get(JSON_FIELD_AUTHOR));
-        Assert.assertEquals("2017-01-01T12:00:00.000Z", json1.get(JSON_FIELD_DATE));
-        Assert.assertEquals("YWJjZA==", json1.get(JSON_FIELD_CONTENT));
-
-        JSONObject json2 = result.getJSONObject(1);
-        Assert.assertEquals("a2.pdf", json2.get(JSON_FIELD_FILENAME));
-        Assert.assertEquals(3L, json2.get(JSON_FIELD_FILESIZE));
-        Assert.assertEquals("genetics:Users.hmccoy", json2.get(JSON_FIELD_AUTHOR));
-        Assert.assertEquals("2016-08-01T14:00:00.000Z", json2.get(JSON_FIELD_DATE));
-        Assert.assertEquals("eHl6", json2.get(JSON_FIELD_CONTENT));
+        Assert.assertSame(this.json1, result.getJSONObject(0));
+        Assert.assertSame(this.json2, result.getJSONObject(1));
     }
 
     @Test
@@ -489,40 +466,32 @@ public class MedicalReportsControllerTest
         Assert.assertTrue(json.has(DATA_NAME));
         JSONArray result = json.getJSONArray(DATA_NAME);
         Assert.assertEquals(2, result.length());
-        JSONObject json1 = result.getJSONObject(0);
-        Assert.assertEquals("a1.pdf", json1.get(JSON_FIELD_FILENAME));
-        Assert.assertEquals(4L, json1.get(JSON_FIELD_FILESIZE));
-        Assert.assertEquals("Users.padams", json1.get(JSON_FIELD_AUTHOR));
-        Assert.assertEquals("2017-01-01T12:00:00.000Z", json1.get(JSON_FIELD_DATE));
-        Assert.assertEquals("YWJjZA==", json1.get(JSON_FIELD_CONTENT));
-
-        JSONObject json2 = result.getJSONObject(1);
-        Assert.assertEquals("a2.pdf", json2.get(JSON_FIELD_FILENAME));
-        Assert.assertEquals(3L, json2.get(JSON_FIELD_FILESIZE));
-        Assert.assertEquals("genetics:Users.hmccoy", json2.get(JSON_FIELD_AUTHOR));
-        Assert.assertEquals("2016-08-01T14:00:00.000Z", json2.get(JSON_FIELD_DATE));
-        Assert.assertEquals("eHl6", json2.get(JSON_FIELD_CONTENT));
+        Assert.assertSame(this.json1, result.getJSONObject(0));
+        Assert.assertSame(this.json2, result.getJSONObject(1));
     }
 
     @Test
-    public void writeJSONWritesNoAuthorForGuestAuthor() throws ComponentLookupException
+    public void writeJSONWithWrongDataDoesNothing() throws ComponentLookupException
     {
         when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Arrays.asList(this.a1)));
-        when(this.attachment1.getAuthorReference()).thenReturn(null);
+            .thenReturn(new SimpleValuePatientData<>(CONTROLLER_NAME, this.a1));
 
         JSONObject json = new JSONObject();
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, Collections.singletonList(FIELD_NAME));
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
-        Assert.assertTrue(json.has(DATA_NAME));
-        JSONArray result = json.getJSONArray(DATA_NAME);
-        Assert.assertEquals(1, result.length());
-        JSONObject json1 = result.getJSONObject(0);
-        Assert.assertEquals("a1.pdf", json1.get(JSON_FIELD_FILENAME));
-        Assert.assertEquals(4L, json1.get(JSON_FIELD_FILESIZE));
-        Assert.assertFalse(json1.has(JSON_FIELD_AUTHOR));
-        Assert.assertEquals("2017-01-01T12:00:00.000Z", json1.get(JSON_FIELD_DATE));
-        Assert.assertEquals("YWJjZA==", json1.get(JSON_FIELD_CONTENT));
+        Assert.assertFalse(json.has(DATA_NAME));
+    }
+
+    @Test
+    public void writeJSONWithEmptyDataDoesNothing() throws ComponentLookupException
+    {
+        when(this.patient.getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
+
+        JSONObject json = new JSONObject();
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
+
+        Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test
@@ -547,43 +516,16 @@ public class MedicalReportsControllerTest
     @Test
     public void readJSONReturnsReports() throws ComponentLookupException
     {
-        JSONObject json = new JSONObject("{\"medical_reports\":["
-            + "{"
-            + "\"filename\":\"a1.pdf\","
-            + "\"filesize\":4,"
-            + "\"author\":\"Users.padams\","
-            + "\"date\":\"2017-01-01T12:00:00.000Z\","
-            + "\"content\":\"YWJjZA==\""
-            + "},{"
-            + "\"filename\":\"a2.pdf\","
-            + "\"filesize\":3,"
-            + "\"author\":\"genetics:Users.hmccoy\","
-            + "\"date\":\"2016-08-01T14:00:00.000Z\","
-            + "\"content\":\"eHl6\""
-            + "}]}");
+        JSONArray a = new JSONArray();
+        a.put(this.json1);
+        a.put(this.json2);
+        JSONObject json = new JSONObject();
+        json.put(DATA_NAME, a);
 
         PatientData<Attachment> result = this.mocker.getComponentUnderTest().readJSON(json);
         Assert.assertEquals(2, result.size());
         Assert.assertEquals(this.a1, result.get(0));
         Assert.assertEquals(this.a2, result.get(1));
-    }
-
-    @Test
-    public void readJSONAcceptsGuestAuthor() throws ComponentLookupException
-    {
-        JSONObject json = new JSONObject("{\"medical_reports\":["
-            + "{"
-            + "\"filename\":\"a1.pdf\","
-            + "\"filesize\":4,"
-            + "\"date\":\"2017-01-01T12:00:00.000Z\","
-            + "\"content\":\"YWJjZA==\""
-            + "}]}");
-
-        PatientData<Attachment> result = this.mocker.getComponentUnderTest().readJSON(json);
-        Assert.assertEquals(1, result.size());
-        Assert.assertNull(result.get(0).getAuthorReference());
-        when(this.attachment1.getAuthorReference()).thenReturn(null);
-        Assert.assertEquals(this.a1, result.get(0));
     }
 
     @Test
@@ -604,48 +546,5 @@ public class MedicalReportsControllerTest
     public void checkGetName() throws ComponentLookupException
     {
         Assert.assertEquals(CONTROLLER_NAME, this.mocker.getComponentUnderTest().getName());
-    }
-
-    @Test
-    public void checkEqualsAndHashCode() throws ComponentLookupException
-    {
-        JSONObject json = new JSONObject("{"
-            + "\"filename\":\"a1.pdf\","
-            + "\"filesize\":4,"
-            + "\"author\":\"Users.padams\","
-            + "\"date\":\"2017-01-01T12:00:00.000Z\","
-            + "\"content\":\"YWJjZA==\""
-            + "}");
-        // Simply initialize the component so that the dependencies are injected
-        this.mocker.getComponentUnderTest();
-        Attachment parsed = new Attachment(json);
-        Assert.assertEquals(this.a1, parsed);
-        Assert.assertFalse(this.a1.equals(this.a2));
-        Assert.assertFalse(this.a1.equals(null));
-        Assert.assertFalse(this.a1.equals(json));
-    }
-
-    @Test
-    public void checkHashCode() throws ComponentLookupException
-    {
-        JSONObject json = new JSONObject("{"
-            + "\"filename\":\"a1.pdf\","
-            + "\"filesize\":4,"
-            + "\"author\":\"Users.padams\","
-            + "\"date\":\"2017-01-01T12:00:00.000Z\","
-            + "\"content\":\"YWJjZA==\""
-            + "}");
-        // Simply initialize the component so that the dependencies are injected
-        this.mocker.getComponentUnderTest();
-        Attachment parsed = new Attachment(json);
-        int hashCode1 = this.a1.hashCode();
-        int hashCode2 = this.a2.hashCode();
-        Assert.assertNotEquals(hashCode1, hashCode2);
-        Assert.assertEquals(hashCode1, parsed.hashCode());
-
-        // Check that the content is taken into account
-        json.put("content", "eHl6");
-        parsed = new Attachment(json);
-        Assert.assertNotEquals(hashCode1, parsed.hashCode());
     }
 }

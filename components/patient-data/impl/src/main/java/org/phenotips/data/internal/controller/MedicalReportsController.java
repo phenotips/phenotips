@@ -24,17 +24,10 @@ import org.phenotips.data.PatientDataController;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.stability.Unstable;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -42,18 +35,11 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiAttachment;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
@@ -64,32 +50,24 @@ import com.xpn.xwiki.objects.BaseObject;
  * @version $Id$
  * @since 1.4
  */
-@Unstable("New controller in 1.4M1, parameter type will likely change")
+@Unstable("New controller in 1.4M1")
 @Component(roles = { PatientDataController.class })
 @Named("medicalReports")
 @Singleton
-public class MedicalReportsController implements PatientDataController<MedicalReportsController.Attachment>
+public class MedicalReportsController implements PatientDataController<Attachment>
 {
     private static final String DATA_NAME = "medical_reports";
 
     private static final String FIELD_NAME = "reports_history";
 
     @Inject
-    private static Provider<XWikiContext> contextProvider;
+    private Provider<XWikiContext> contextProvider;
 
     @Inject
-    @Named("user/current")
-    private static DocumentReferenceResolver<String> userResolver;
+    private AttachmentAdapterFactory adapter;
 
     @Inject
-    @Named("compactwiki")
-    private static EntityReferenceSerializer<String> userSerializer;
-
-    /**
-     * Logging helper object.
-     */
-    @Inject
-    private static Logger logger;
+    private Logger logger;
 
     @Override
     public PatientData<Attachment> load(Patient patient)
@@ -109,13 +87,13 @@ public class MedicalReportsController implements PatientDataController<MedicalRe
             for (String report : reports) {
                 XWikiAttachment xattachment = doc.getAttachment(report);
                 if (xattachment != null) {
-                    result.add(new Attachment(xattachment));
+                    result.add(this.adapter.fromXWikiAttachment(xattachment));
                 }
             }
 
             return new IndexedPatientData<>(getName(), result);
         } catch (Exception e) {
-            MedicalReportsController.logger.error(ERROR_MESSAGE_LOAD_FAILED, e.getMessage());
+            this.logger.error(ERROR_MESSAGE_LOAD_FAILED, e.getMessage());
         }
         return null;
     }
@@ -129,7 +107,7 @@ public class MedicalReportsController implements PatientDataController<MedicalRe
         }
         try {
             XWikiDocument doc = patient.getXDocument();
-            BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE, true, contextProvider.get());
+            BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE, true, this.contextProvider.get());
 
             List<String> result = new ArrayList<>(reports.size());
 
@@ -141,8 +119,9 @@ public class MedicalReportsController implements PatientDataController<MedicalRe
                 }
                 xattachment.setContent(report.getContent());
                 DocumentReference author = report.getAuthorReference();
-                if (author != null && !contextProvider.get().getWiki().exists(author, contextProvider.get())) {
-                    author = contextProvider.get().getUserReference();
+                if (author != null
+                    && !this.contextProvider.get().getWiki().exists(author, this.contextProvider.get())) {
+                    author = this.contextProvider.get().getUserReference();
                 }
                 xattachment.setAuthorReference(author);
                 xattachment.setDate(report.getDate());
@@ -151,7 +130,7 @@ public class MedicalReportsController implements PatientDataController<MedicalRe
             }
             data.setDBStringListValue(FIELD_NAME, result);
         } catch (Exception ex) {
-            MedicalReportsController.logger.error("Failed to save attachment: {}", ex.getMessage(), ex);
+            this.logger.error("Failed to save attachment: {}", ex.getMessage(), ex);
         }
     }
 
@@ -169,19 +148,19 @@ public class MedicalReportsController implements PatientDataController<MedicalRe
             return;
         }
 
-        PatientData<Attachment> reportsData = patient.getData(getName());
-        JSONArray reportsJsonArray = new JSONArray();
-        if (reportsData == null || !reportsData.isIndexed() || reportsData.size() == 0) {
+        PatientData<Attachment> reports = patient.getData(getName());
+        JSONArray result = new JSONArray();
+        if (reports == null || !reports.isIndexed() || reports.size() == 0) {
             if (selectedFieldNames != null) {
-                json.put(DATA_NAME, reportsJsonArray);
+                json.put(DATA_NAME, result);
             }
             return;
         }
 
-        for (Attachment report : reportsData) {
-            reportsJsonArray.put(report.toJSON());
+        for (Attachment report : reports) {
+            result.put(report.toJSON());
         }
-        json.put(DATA_NAME, reportsJsonArray);
+        json.put(DATA_NAME, result);
     }
 
     @Override
@@ -192,9 +171,9 @@ public class MedicalReportsController implements PatientDataController<MedicalRe
         }
         List<Attachment> result = new ArrayList<>();
 
-        JSONArray reportsArray = json.getJSONArray(DATA_NAME);
-        for (Object report : reportsArray) {
-            result.add(new Attachment((JSONObject) report));
+        JSONArray reports = json.getJSONArray(DATA_NAME);
+        for (Object report : reports) {
+            result.add(this.adapter.fromJSON((JSONObject) report));
         }
 
         return new IndexedPatientData<>(getName(), result);
@@ -204,178 +183,5 @@ public class MedicalReportsController implements PatientDataController<MedicalRe
     public String getName()
     {
         return "medicalReports";
-    }
-
-    /**
-     * Represents an XWiki document attachment.
-     */
-    public static final class Attachment
-    {
-        private static final String JSON_FIELD_FILENAME = "filename";
-
-        private static final String JSON_FIELD_FILESIZE = "filesize";
-
-        private static final String JSON_FIELD_AUTHOR = "author";
-
-        private static final String JSON_FIELD_DATE = "date";
-
-        private static final String JSON_FIELD_CONTENT = "content";
-
-        private static final DateTimeFormatter ISO_DATE_FORMAT = ISODateTimeFormat.dateTime().withZoneUTC();
-
-        private final XWikiAttachment attachment;
-
-        Attachment(XWikiAttachment toWrap)
-        {
-            this.attachment = toWrap;
-        }
-
-        Attachment(JSONObject json)
-        {
-            this.attachment = new XWikiAttachment();
-            readJSON(json);
-        }
-
-        /**
-         * The attachment's file name.
-         *
-         * @return a simple filename
-         */
-        public String getFilename()
-        {
-            return this.attachment.getFilename();
-        }
-
-        /**
-         * Returns the user that uploaded the attachment.
-         *
-         * @return a document reference, may be {@code null} if the author was unauthenticated
-         */
-        public DocumentReference getAuthorReference()
-        {
-            return this.attachment.getAuthorReference();
-        }
-
-        /**
-         * Returns the size of the attachment, in bytes.
-         *
-         * @return a positive number
-         */
-        public long getFilesize()
-        {
-            return this.attachment.getFilesize();
-        }
-
-        /**
-         * Returns the date when the attachment was uploaded.
-         *
-         * @return a valid date
-         */
-        public Date getDate()
-        {
-            return this.attachment.getDate();
-        }
-
-        /**
-         * Returns the content of this attachment.
-         *
-         * @return an input stream for reading the attachment content
-         */
-        public InputStream getContent()
-        {
-            try {
-                return this.attachment.getContentInputStream(MedicalReportsController.contextProvider.get());
-            } catch (XWikiException e) {
-                return null;
-            }
-        }
-
-        /**
-         * Serialize this attachment as JSON. The JSON will look like:
-         *
-         * <pre>
-         * {@code
-         * {
-         *   "filename": "file.ext",
-         *   "filesize": 123,
-         *   "author": "XWiki.Admin",
-         *   "date": "2017-07-01T12:00:00.000Z",
-         *   "content": "SGVsbG8gd29ybGQK" // base 64 encoded file content
-         * }
-         * }
-         * </pre>
-         *
-         * @return a JSON object in the format described above
-         */
-        public JSONObject toJSON()
-        {
-            JSONObject result = new JSONObject();
-            result.put(JSON_FIELD_FILENAME, this.getFilename());
-            result.put(JSON_FIELD_FILESIZE, this.getFilesize());
-            result.put(JSON_FIELD_AUTHOR, userSerializer.serialize(this.getAuthorReference()));
-            result.put(JSON_FIELD_DATE, ISO_DATE_FORMAT.print(this.getDate().getTime()));
-            try {
-                result.put(JSON_FIELD_CONTENT,
-                    Base64.getEncoder().encodeToString(IOUtils.toByteArray(this.getContent())));
-            } catch (IOException ex) {
-                logger.warn("Failed to access attachment content: {}", ex.getMessage());
-            }
-            return result;
-        }
-
-        private void readJSON(JSONObject json)
-        {
-            this.attachment.setFilename(json.getString(JSON_FIELD_FILENAME));
-            this.attachment.setFilesize(json.getInt(JSON_FIELD_FILESIZE));
-            if (json.has(JSON_FIELD_AUTHOR)) {
-                this.attachment.setAuthorReference(userResolver.resolve(json.getString(JSON_FIELD_AUTHOR)));
-            } else {
-                this.attachment.setAuthorReference(null);
-            }
-            this.attachment.setDate(ISO_DATE_FORMAT.parseDateTime(json.getString(JSON_FIELD_DATE)).toDate());
-            try {
-                this.attachment
-                    .setContent(
-                        new ByteArrayInputStream(Base64.getDecoder().decode(json.getString(JSON_FIELD_CONTENT))));
-            } catch (JSONException | IOException ex) {
-                logger.warn("Failed to set attachment content: {}", ex.getMessage());
-            }
-        }
-
-        @Override
-        public boolean equals(Object other)
-        {
-            if (!(other instanceof Attachment)) {
-                return false;
-            }
-            Attachment o = (Attachment) other;
-            try {
-                return new EqualsBuilder()
-                    .append(this.getFilename(), o.getFilename())
-                    .append(this.getFilesize(), o.getFilesize())
-                    .append(this.getAuthorReference(), o.getAuthorReference())
-                    .append(this.getDate(), o.getDate())
-                    .appendSuper(IOUtils.contentEquals(this.getContent(), o.getContent()))
-                    .isEquals();
-            } catch (IOException e) {
-                return false;
-            }
-        }
-
-        @Override
-        public int hashCode()
-        {
-            HashCodeBuilder h = new HashCodeBuilder()
-                .append(this.getFilename())
-                .append(this.getFilesize())
-                .append(this.getAuthorReference())
-                .append(this.getDate());
-            try {
-                h.append(IOUtils.toByteArray(this.getContent()));
-            } catch (IOException e) {
-                // The content isn't mandatory for the hash, and this exception shouldn't happen
-            }
-            return h.toHashCode();
-        }
     }
 }
