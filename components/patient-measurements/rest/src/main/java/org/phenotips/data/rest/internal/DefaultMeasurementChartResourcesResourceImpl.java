@@ -81,6 +81,7 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
         JSONArray measurementSets = reqObj.optJSONArray("measurementSets");
         List<ChartResource> charts = new LinkedList<>();
 
+
         List<MeasurementHandler> handlers = new ArrayList<>(this.handlers.values());
         Collections.sort(handlers, this.measurementHandlersSorter.getMeasurementHandlerComparator());
 

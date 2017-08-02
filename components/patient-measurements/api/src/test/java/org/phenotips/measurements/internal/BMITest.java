@@ -107,14 +107,14 @@ public class BMITest
     @Test
     public void testGetBMI() throws ComponentLookupException
     {
-        Assert.assertEquals(100.0, getComponent().computeBMI(100, 100), 1.0E-2);
-        Assert.assertEquals(31.25, getComponent().computeBMI(80, 160), 1.0E-2);
-        Assert.assertEquals(0.0, getComponent().computeBMI(0, 0), 1.0E-2);
-        Assert.assertEquals(0.0, getComponent().computeBMI(80, 0), 1.0E-2);
-        Assert.assertEquals(0.0, getComponent().computeBMI(0, 120), 1.0E-2);
-        Assert.assertEquals(0.0, getComponent().computeBMI(-80, -160), 1.0E-2);
-        Assert.assertEquals(Double.POSITIVE_INFINITY, getComponent().computeBMI(Double.MAX_VALUE, 1), 1.0E-2);
-        Assert.assertEquals(0.0, getComponent().computeBMI(1, Double.MAX_VALUE), 1.0E-2);
+        Assert.assertEquals(100.0, getComponent().compute(100, 100), 1.0E-2);
+        Assert.assertEquals(31.25, getComponent().compute(80, 160), 1.0E-2);
+        Assert.assertEquals(0.0, getComponent().compute(0, 0), 1.0E-2);
+        Assert.assertEquals(0.0, getComponent().compute(80, 0), 1.0E-2);
+        Assert.assertEquals(0.0, getComponent().compute(0, 120), 1.0E-2);
+        Assert.assertEquals(0.0, getComponent().compute(-80, -160), 1.0E-2);
+        Assert.assertEquals(Double.POSITIVE_INFINITY, getComponent().compute(Double.MAX_VALUE, 1), 1.0E-2);
+        Assert.assertEquals(0.0, getComponent().compute(1, Double.MAX_VALUE), 1.0E-2);
     }
 
     @Test

@@ -112,16 +112,6 @@ public interface MeasurementHandler
     boolean isComputed();
 
     /**
-     * Get a list of computation dependencies for this measurement. This is relevant only for {@link #isComputed()
-     * computed measurements}.
-     *
-     * @return the {@link #getName() names} of the computation dependencies for this measurement, or an empty collection
-     *         if this isn't computed
-     * @since 1.3M4
-     */
-    Collection<String> getComputationDependencies();
-
-    /**
      * Get associated terms for this measurement with the given standard deviation value.
      *
      * @param standardDeviation the measurement's standard deviation value or {@code null} for all associated terms

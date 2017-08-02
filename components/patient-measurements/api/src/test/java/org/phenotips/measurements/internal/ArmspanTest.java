@@ -63,13 +63,6 @@ public class ArmspanTest
     }
 
     @Test
-    public void hasNoComputationalDependencies() throws ComponentLookupException
-    {
-        Assert.assertEquals(0, this.mocker.getComponentUnderTest().getComputationDependencies().size());
-        Assert.assertTrue(this.mocker.getComponentUnderTest().getComputationDependencies().isEmpty());
-    }
-
-    @Test
     public void hasNoChartConfiguration() throws ComponentLookupException
     {
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().getChartsConfigurations().size());
