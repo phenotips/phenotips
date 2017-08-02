@@ -17,6 +17,8 @@
  */
 package org.phenotips.measurements.internal;
 
+import org.phenotips.measurements.ComputedMeasurementHandler;
+
 import org.xwiki.component.annotation.Component;
 
 import java.util.Arrays;
@@ -24,6 +26,7 @@ import java.util.Collection;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * US/LS (Upper-body-Segment : Lower-body-Segment) measurements, as a unitless ratio.
@@ -34,7 +37,7 @@ import javax.inject.Singleton;
 @Component
 @Named("usls")
 @Singleton
-public class USLSMeasurementHandler extends AbstractMeasurementHandler
+public class USLSMeasurementHandler extends AbstractMeasurementHandler implements ComputedMeasurementHandler
 {
     @Override
     public String getName()
@@ -49,15 +52,28 @@ public class USLSMeasurementHandler extends AbstractMeasurementHandler
     }
 
     @Override
-    public boolean isComputed()
-    {
-        return true;
-    }
-
-    @Override
     public Collection<String> getComputationDependencies()
     {
         return Arrays.asList("upperSeg", "lowerSeg");
+    }
+
+    @Override
+    public double handleComputation(MultivaluedMap<String, String> params) throws IllegalArgumentException
+    {
+        String upperSeg = params.getFirst("upperSeg");
+        String lowerSeg = params.getFirst("lowerSeg");
+        if (upperSeg == null || lowerSeg == null) {
+            throw new IllegalArgumentException("Computation arguments were not all provided");
+        }
+
+        try {
+            double upperSegInCentimeters = Double.parseDouble(upperSeg);
+            double lowerSegInCentimeters = Double.parseDouble(lowerSeg);
+
+            return compute(upperSegInCentimeters, lowerSegInCentimeters);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Cannot parse computation arguments.");
+        }
     }
 
     /**
@@ -68,7 +84,8 @@ public class USLSMeasurementHandler extends AbstractMeasurementHandler
      * @param lowerSegInCentimeters the measured lower-segment length, in centimeters
      * @return the US/LS value
      */
-    public double computeUSLS(double upperSegInCentimeters, double lowerSegInCentimeters)
+    @Override
+    public double compute(double upperSegInCentimeters, double lowerSegInCentimeters)
     {
         if (upperSegInCentimeters <= 0 || lowerSegInCentimeters <= 0) {
             return 0;

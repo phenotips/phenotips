@@ -78,6 +78,10 @@
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-constants</artifactId>
       <version>${project.version}</version>

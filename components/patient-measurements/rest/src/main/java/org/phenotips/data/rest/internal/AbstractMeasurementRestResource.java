@@ -17,10 +17,13 @@
  */
 package org.phenotips.data.rest.internal;
 
+import org.phenotips.measurements.ComputedMeasurementHandler;
 import org.phenotips.measurements.MeasurementHandler;
 
+import org.xwiki.component.phase.Initializable;
 import org.xwiki.rest.XWikiResource;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -35,11 +38,30 @@ import org.json.JSONObject;
  * @version $Id$
  * @since 1.3M4
  */
-public abstract class AbstractMeasurementRestResource extends XWikiResource
+public abstract class AbstractMeasurementRestResource extends XWikiResource implements Initializable
 {
     /** Injected map of measurement handlers. */
     @Inject
     protected Map<String, MeasurementHandler> handlers;
+
+    /**  Map of computed measurement handlers, such as the handlers for BMI and US:LS. */
+    protected Map<String, ComputedMeasurementHandler> computationHandlers = new HashMap<>();
+
+    /**
+     * Initialize the map of computationHandlers upon creation of the variable.
+     * {@inheritDoc}
+     *
+     * @see org.xwiki.rest.XWikiResource#initialize()
+     */
+    @Override
+    public void initialize()
+    {
+        for (String handlerName : this.handlers.keySet()) {
+            if (this.handlers.get(handlerName) instanceof ComputedMeasurementHandler) {
+                this.computationHandlers.put(handlerName, (ComputedMeasurementHandler) this.handlers.get(handlerName));
+            }
+        }
+    }
 
     /**
      * Generate a server response in case of error.

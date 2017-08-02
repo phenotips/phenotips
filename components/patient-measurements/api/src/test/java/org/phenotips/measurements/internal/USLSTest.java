@@ -75,14 +75,14 @@ public class USLSTest
     @Test
     public void testComputeUSLS() throws ComponentLookupException
     {
-        Assert.assertEquals(1.0, getComponent().computeUSLS(60, 60), 1.0E-2);
-        Assert.assertEquals(0.75, getComponent().computeUSLS(48, 64), 1.0E-2);
-        Assert.assertEquals(1.125, getComponent().computeUSLS(72, 64), 1.0E-2);
-        Assert.assertEquals(0.0, getComponent().computeUSLS(80, 0), 1.0E-2);
-        Assert.assertEquals(0.0, getComponent().computeUSLS(0, 120), 1.0E-2);
-        Assert.assertEquals(0.0, getComponent().computeUSLS(-80, -160), 1.0E-2);
-        Assert.assertEquals(Double.MAX_VALUE, getComponent().computeUSLS(Double.MAX_VALUE, 1), 1.0E-2);
-        Assert.assertEquals(0.0, getComponent().computeUSLS(1, Double.MAX_VALUE), 1.0E-2);
+        Assert.assertEquals(1.0, getComponent().compute(60, 60), 1.0E-2);
+        Assert.assertEquals(0.75, getComponent().compute(48, 64), 1.0E-2);
+        Assert.assertEquals(1.125, getComponent().compute(72, 64), 1.0E-2);
+        Assert.assertEquals(0.0, getComponent().compute(80, 0), 1.0E-2);
+        Assert.assertEquals(0.0, getComponent().compute(0, 120), 1.0E-2);
+        Assert.assertEquals(0.0, getComponent().compute(-80, -160), 1.0E-2);
+        Assert.assertEquals(Double.MAX_VALUE, getComponent().compute(Double.MAX_VALUE, 1), 1.0E-2);
+        Assert.assertEquals(0.0, getComponent().compute(1, Double.MAX_VALUE), 1.0E-2);
     }
 
     @Test
