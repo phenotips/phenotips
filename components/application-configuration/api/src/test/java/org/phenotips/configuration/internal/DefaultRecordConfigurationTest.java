@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 /**
  * Tests for {@link DefaultRecordConfiguration}.
  *
- * @version $Id $
+ * @version $Id$
  */
 public class DefaultRecordConfigurationTest
 {

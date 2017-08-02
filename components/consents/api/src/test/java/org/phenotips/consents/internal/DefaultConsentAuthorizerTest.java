@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 /**
  * Tests for {@link DefaultConsentAuthorizer}.
  *
- * @version $Id $
+ * @version $Id$
  */
 public class DefaultConsentAuthorizerTest
 {
