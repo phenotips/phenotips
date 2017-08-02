@@ -33,6 +33,8 @@
     <xwikiCfgSuperadminPassword>pass</xwikiCfgSuperadminPassword>
     <!-- There are no sources to cover -->
     <coverage.instructionRatio>0</coverage.instructionRatio>
+    <!-- Many false-positives are caused by how the functional-tests lifecycle handles the generated classes -->
+    <dependencyCheck.skip>true</dependencyCheck.skip>
     <jacoco.skip>true</jacoco.skip>
     <xwikiCfgPlugins>\
   com.xpn.xwiki.plugin.skinx.JsSkinExtensionPlugin,\
