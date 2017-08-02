@@ -239,10 +239,10 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
     {
         try {
             return getEntityConstructor().newInstance(document);
-        } catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException | InvocationTargetException ex) {
             this.logger.info("Tried to load invalid entity of type [{}] from document [{}]",
                 document.getDocumentReference(), getEntityXClassReference());
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException ex) {
+        } catch (InstantiationException | IllegalAccessException ex) {
             this.logger.error("Failed to instantiate primary entity of type [{}] from document [{}]: {}",
                 getEntityXClassReference(), document, ex.getMessage());
         }
