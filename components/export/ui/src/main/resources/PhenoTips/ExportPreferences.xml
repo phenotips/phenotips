@@ -131,6 +131,8 @@
   #if (${request.export_id} != 'phenotips_json_export')
     #set($metaFields = ['phenotype'])
     #set ($discard = $ignored.fields.add('reports_history'))
+    #set ($discard = $ignored.types.add('PhenoTips.ExternalFileClass'))
+    #set ($discard = $ignored.types.add('PhenoTips.ExternalImageClass'))
   #end
   #set($customFields = {
        'doc.name' : "$services.localization.render('phenotips.exportPreferences.field.docName')",
