@@ -47,47 +47,47 @@ public class LowerSegTest
     @Test
     public void nameIsLowerSeg() throws ComponentLookupException
     {
-        Assert.assertSame("lowerSeg", this.mocker.getComponentUnderTest().getName());
+        Assert.assertSame("lowerSeg", getComponent().getName());
     }
 
     @Test
     public void unitIsCM() throws ComponentLookupException
     {
-        Assert.assertSame("cm", this.mocker.getComponentUnderTest().getUnit());
+        Assert.assertSame("cm", getComponent().getUnit());
     }
 
     @Test
     public void isComputed() throws ComponentLookupException
     {
-        Assert.assertFalse(this.mocker.getComponentUnderTest().isComputed());
+        Assert.assertFalse(getComponent().isComputed());
     }
 
     @Test
     public void hasNoComputationalDependencies() throws ComponentLookupException
     {
-        Assert.assertEquals(0, this.mocker.getComponentUnderTest().getComputationDependencies().size());
-        Assert.assertTrue(this.mocker.getComponentUnderTest().getComputationDependencies().isEmpty());
+        Assert.assertEquals(0, getComponent().getComputationDependencies().size());
+        Assert.assertTrue(getComponent().getComputationDependencies().isEmpty());
     }
 
     @Test
     public void isNotDoubleSided() throws ComponentLookupException
     {
-        Assert.assertFalse(this.mocker.getComponentUnderTest().isDoubleSided());
+        Assert.assertFalse(getComponent().isDoubleSided());
     }
 
     @Test
     public void hasNoChartConfiguration() throws ComponentLookupException
     {
-        Assert.assertEquals(0, this.mocker.getComponentUnderTest().getChartsConfigurations().size());
+        Assert.assertEquals(0, getComponent().getChartsConfigurations().size());
     }
 
     @Test
     public void hasNoAssociatedTerms() throws ComponentLookupException
     {
-        Assert.assertTrue(this.mocker.getComponentUnderTest().getAssociatedTerms(3.0).isEmpty());
-        Assert.assertTrue(this.mocker.getComponentUnderTest().getAssociatedTerms(2.0).isEmpty());
-        Assert.assertTrue(this.mocker.getComponentUnderTest().getAssociatedTerms(-2.0).isEmpty());
-        Assert.assertTrue(this.mocker.getComponentUnderTest().getAssociatedTerms(-3.0).isEmpty());
-        Assert.assertTrue(this.mocker.getComponentUnderTest().getAssociatedTerms(null).isEmpty());
+        Assert.assertTrue(getComponent().getAssociatedTerms(3.0).isEmpty());
+        Assert.assertTrue(getComponent().getAssociatedTerms(2.0).isEmpty());
+        Assert.assertTrue(getComponent().getAssociatedTerms(-2.0).isEmpty());
+        Assert.assertTrue(getComponent().getAssociatedTerms(-3.0).isEmpty());
+        Assert.assertTrue(getComponent().getAssociatedTerms(null).isEmpty());
     }
 }

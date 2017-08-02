@@ -501,6 +501,7 @@
               <differenceType>7012</differenceType>
               <method>org.phenotips.configuration.RecordConfiguration getConfiguration(java.lang.String)</method>
               <justification>New API methods needed for making the configuration more extensible.</justification>
+            </difference>
             <difference>
               <className>org/phenotips/measurements/MeasurementHandler</className>
               <differenceType>7012</differenceType>
