@@ -30,7 +30,7 @@
 
   <properties>
     <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
-    <coverage.instructionRatio>0.59</coverage.instructionRatio>
+    <coverage.instructionRatio>0.58</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -74,6 +74,11 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-bridge</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-uiextension-api</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>

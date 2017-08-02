@@ -19,17 +19,17 @@ package org.phenotips.configuration.internal;
 
 import org.phenotips.configuration.RecordConfiguration;
 import org.phenotips.configuration.RecordConfigurationManager;
-import org.phenotips.configuration.internal.configured.ConfiguredRecordConfiguration;
-import org.phenotips.configuration.internal.global.GlobalRecordConfiguration;
+import org.phenotips.configuration.spi.RecordConfigurationModule;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.model.reference.EntityReference;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.inject.Provider;
 
@@ -37,197 +37,134 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
-
-import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the default {@link RecordConfigurationManager} implementation, {@link GlobalRecordConfiguration}.
+ * Tests for the default {@link RecordConfigurationManager} implementation, {@link DefaultRecordConfigurationManager}.
  *
  * @version $Id$
  */
 public class DefaultRecordConfigurationManagerTest
 {
+    private static final String PATIENT_LABEL = "patient";
+
     @Rule
     public final MockitoComponentMockingRule<RecordConfigurationManager> mocker =
-        new MockitoComponentMockingRule<>(DefaultRecordConfigurationManager.class);
+        new MockitoComponentMockingRule<>(
+            DefaultRecordConfigurationManager.class);
 
     @Mock
-    private XWikiContext context;
+    private RecordConfiguration config;
 
     @Mock
-    private XWiki xwiki;
+    private RecordConfigurationModule moduleOne;
+
+    @Mock
+    private RecordConfigurationModule moduleTwo;
+
+    @Mock
+    private RecordConfigurationModule moduleThree;
+
+    @Mock
+    private Provider<List<RecordConfigurationModule>> modules;
+
+    private List<RecordConfigurationModule> moduleList;
 
     @Before
-    public void setup() throws ComponentLookupException
+    public void setup() throws Exception
     {
         MockitoAnnotations.initMocks(this);
-        Provider<XWikiContext> xcontextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
-        when(xcontextProvider.get()).thenReturn(this.context);
-        when(this.context.getWiki()).thenReturn(this.xwiki);
+        Type listType = new DefaultParameterizedType(null, List.class,
+            RecordConfigurationModule.class);
+        Type providerType = new DefaultParameterizedType(null, Provider.class, listType);
+        this.mocker.registerComponent(providerType, this.modules);
+        when(this.moduleOne.supportsRecordType(PATIENT_LABEL)).thenReturn(true);
+        when(this.moduleTwo.supportsRecordType(PATIENT_LABEL)).thenReturn(true);
+        when(this.moduleThree.supportsRecordType(PATIENT_LABEL)).thenReturn(true);
     }
 
-    /**
-     * {@link RecordConfigurationManager#getActiveConfiguration()} returns a custom configuration when there's an
-     * explicit binding in the current document.
-     */
     @Test
-    public void getActiveConfigurationWithBoundConfiguration() throws ComponentLookupException, XWikiException
+    public void emptyConfigurationCreatedByDefault() throws ComponentLookupException
     {
-        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
-        DocumentReference currentDocument = new DocumentReference("xwiki", "data", "P0000001");
-        DocumentReference bindingClass = new DocumentReference("xwiki", "PhenoTips", "StudyBindingClass");
-        DocumentReference gr = new DocumentReference("xwiki", "Groups", "Dentists");
-        when(dab.getCurrentDocumentReference()).thenReturn(currentDocument);
-        DocumentReferenceResolver<EntityReference> resolver =
-            this.mocker.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current");
-        when(resolver.resolve(DefaultRecordConfigurationManager.STUDY_BINDING_CLASS_REFERENCE))
-            .thenReturn(bindingClass);
-        when(dab.getProperty(currentDocument, bindingClass, "studyReference")).thenReturn("Groups.Dentists");
-        DocumentReferenceResolver<String> referenceParser =
-            this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
-        when(referenceParser.resolve("Groups.Dentists")).thenReturn(gr);
-        XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.xwiki.getDocument(gr, this.context)).thenReturn(doc);
-        BaseObject o = mock(BaseObject.class);
-        when(doc.getXObject(RecordConfiguration.CUSTOM_PREFERENCES_CLASS)).thenReturn(o);
-        when(o.getListValue("sections")).thenReturn(Collections.singletonList("patient_info"));
-
-        RecordConfiguration result = this.mocker.getComponentUnderTest().getActiveConfiguration();
-        Assert.assertTrue(result instanceof ConfiguredRecordConfiguration);
+        doReturn(new LinkedList<>()).when(this.modules).get();
+        RecordConfiguration result = this.mocker.getComponentUnderTest().getConfiguration(PATIENT_LABEL);
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.getAllSections().isEmpty());
     }
 
-    /**
-     * {@link RecordConfigurationManager#getActiveConfiguration()} returns the global configuration when there's an
-     * explicit binding in the current document, but reading the custom configuration fails.
-     */
     @Test
-    public void getActiveConfigurationWithBoundConfigurationAndExceptions() throws ComponentLookupException,
-        XWikiException
+    public void moduleOutputIsUsed() throws Exception
     {
-        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
-        DocumentReference currentDocument = new DocumentReference("xwiki", "data", "P0000001");
-        DocumentReference bindingClass = new DocumentReference("xwiki", "PhenoTips", "StudyBindingClass");
-        DocumentReference gr = new DocumentReference("xwiki", "Groups", "Dentists");
-        when(dab.getCurrentDocumentReference()).thenReturn(currentDocument);
-        DocumentReferenceResolver<EntityReference> resolver =
-            this.mocker.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current");
-        when(resolver.resolve(DefaultRecordConfigurationManager.STUDY_BINDING_CLASS_REFERENCE))
-            .thenReturn(bindingClass);
-        when(dab.getProperty(currentDocument, bindingClass, "studyReference")).thenReturn("Groups.Dentists");
-        DocumentReferenceResolver<String> referenceParser =
-            this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
-        when(referenceParser.resolve("Groups.Dentists")).thenReturn(gr);
-        when(this.xwiki.getDocument(gr, this.context)).thenThrow(new XWikiException());
+        this.moduleList = Collections.singletonList(this.moduleOne);
+        doReturn(this.moduleList).when(this.modules).get();
 
-        RecordConfiguration result = this.mocker.getComponentUnderTest().getActiveConfiguration();
-        Assert.assertTrue(result instanceof GlobalRecordConfiguration);
+        when(this.moduleOne.process(any(RecordConfiguration.class))).thenReturn(null);
+        Assert.assertNull(this.mocker.getComponentUnderTest().getConfiguration(PATIENT_LABEL));
+
+        when(this.moduleOne.process(any(RecordConfiguration.class))).thenReturn(this.config);
+        Assert.assertSame(this.config, this.mocker.getComponentUnderTest().getConfiguration(PATIENT_LABEL));
     }
 
-    /**
-     * {@link RecordConfigurationManager#getActiveConfiguration()} returns the global configuration when there's an
-     * explicit binding in the current document, but the document doesn't exist.
-     */
     @Test
-    public void getActiveConfigurationWithDeletedBoundConfiguration() throws ComponentLookupException,
-        XWikiException
+    public void modulesAreCascaded() throws Exception
     {
-        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
-        DocumentReference currentDocument = new DocumentReference("xwiki", "data", "P0000001");
-        DocumentReference bindingClass = new DocumentReference("xwiki", "PhenoTips", "StudyBindingClass");
-        DocumentReference sr = new DocumentReference("xwiki", "Studies", "Missing");
-        when(dab.getCurrentDocumentReference()).thenReturn(currentDocument);
-        DocumentReferenceResolver<EntityReference> resolver =
-            this.mocker.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current");
-        when(resolver.resolve(DefaultRecordConfigurationManager.STUDY_BINDING_CLASS_REFERENCE))
-            .thenReturn(bindingClass);
-        when(dab.getProperty(currentDocument, bindingClass, "studyReference")).thenReturn("Studies.Missing");
-        DocumentReferenceResolver<String> referenceParser =
-            this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
-        when(referenceParser.resolve("Studies.Missing")).thenReturn(sr);
-        XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.xwiki.getDocument(sr, this.context)).thenReturn(doc);
-        when(doc.isNew()).thenReturn(true);
+        this.moduleList = Arrays.asList(this.moduleOne, this.moduleTwo, this.moduleThree);
+        doReturn(this.moduleList).when(this.modules).get();
+        RecordConfiguration tempConfig = Mockito.mock(RecordConfiguration.class);
+        when(this.moduleOne.process(any(RecordConfiguration.class))).thenReturn(null);
+        when(this.moduleTwo.process(null)).thenReturn(tempConfig);
+        when(this.moduleThree.process(tempConfig)).thenReturn(this.config);
 
-        RecordConfiguration result = this.mocker.getComponentUnderTest().getActiveConfiguration();
-        Assert.assertTrue(result instanceof GlobalRecordConfiguration);
+        Assert.assertSame(this.config, this.mocker.getComponentUnderTest().getConfiguration(PATIENT_LABEL));
+        InOrder order = Mockito.inOrder(this.moduleOne, this.moduleTwo, this.moduleThree);
+        order.verify(this.moduleOne).process(any(RecordConfiguration.class));
+        order.verify(this.moduleTwo).process(null);
+        order.verify(this.moduleThree).process(tempConfig);
     }
 
-    /**
-     * {@link RecordConfigurationManager#getActiveConfiguration()} returns the global configuration when there's an
-     * explicit binding in the current document, but requesting the document returns null.
-     */
     @Test
-    public void getActiveConfigurationWithInaccessibleBoundConfiguration() throws ComponentLookupException,
-        XWikiException
+    public void allModulesAreInvoked() throws Exception
     {
-        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
-        DocumentReference currentDocument = new DocumentReference("xwiki", "data", "P0000001");
-        DocumentReference bindingClass = new DocumentReference("xwiki", "PhenoTips", "StudyBindingClass");
-        DocumentReference sr = new DocumentReference("xwiki", "Studies", "Inaccessible");
-        when(dab.getCurrentDocumentReference()).thenReturn(currentDocument);
-        DocumentReferenceResolver<EntityReference> resolver =
-            this.mocker.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current");
-        when(resolver.resolve(DefaultRecordConfigurationManager.STUDY_BINDING_CLASS_REFERENCE))
-            .thenReturn(bindingClass);
-        when(dab.getProperty(currentDocument, bindingClass, "studyReference")).thenReturn("Studies.Inaccessible");
-        DocumentReferenceResolver<String> referenceParser =
-            this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
-        when(referenceParser.resolve("Studies.Inaccessible")).thenReturn(sr);
-        when(this.xwiki.getDocument(sr, this.context)).thenReturn(null);
+        this.moduleList = Arrays.asList(this.moduleOne, this.moduleTwo);
+        doReturn(this.moduleList).when(this.modules).get();
 
-        RecordConfiguration result = this.mocker.getComponentUnderTest().getActiveConfiguration();
-        Assert.assertTrue(result instanceof GlobalRecordConfiguration);
+        when(this.moduleOne.process(any(RecordConfiguration.class))).thenReturn(this.config);
+        when(this.moduleTwo.process(this.config)).thenReturn(null);
+
+        Assert.assertNull(this.mocker.getComponentUnderTest().getConfiguration(PATIENT_LABEL));
+
+        when(this.moduleOne.process(any(RecordConfiguration.class))).thenReturn(null);
+        when(this.moduleTwo.process(null)).thenReturn(this.config);
+
+        Assert.assertSame(this.config, this.mocker.getComponentUnderTest().getConfiguration(PATIENT_LABEL));
     }
 
-    /**
-     * {@link RecordConfigurationManager#getActiveConfiguration()} returns the global configuration when the user
-     * doesn't belong to any groups.
-     */
     @Test
-    public void getDefaultActiveConfiguration() throws ComponentLookupException
+    public void exceptionsInModulesAreIgnored() throws Exception
     {
-        RecordConfiguration result = this.mocker.getComponentUnderTest().getActiveConfiguration();
-        Assert.assertTrue(result instanceof GlobalRecordConfiguration);
+        this.moduleList = Arrays.asList(this.moduleOne, this.moduleTwo);
+        doReturn(this.moduleList).when(this.modules).get();
+
+        when(this.moduleOne.process(any(RecordConfiguration.class))).thenThrow(new NullPointerException());
+        when(this.moduleTwo.process(any(RecordConfiguration.class))).thenReturn(this.config);
+        Assert.assertSame(this.config, this.mocker.getComponentUnderTest().getConfiguration(PATIENT_LABEL));
     }
 
-    /**
-     * {@link RecordConfigurationManager#getActiveConfiguration()} returns a global configuration when reading the group
-     * configuration fails when accessing the group.
-     */
+    @SuppressWarnings("deprecation")
     @Test
-    public void getActiveConfigurationWithExceptions() throws ComponentLookupException, XWikiException
+    public void getActiveConfigurationReturnsPatientRecordConfiguration() throws Exception
     {
-        XWikiDocument doc = mock(XWikiDocument.class);
-        BaseObject o = mock(BaseObject.class);
-        when(doc.getXObject(RecordConfiguration.CUSTOM_PREFERENCES_CLASS)).thenReturn(o);
-        when(o.getListValue("sections")).thenReturn(Collections.singletonList("patient_info"));
+        this.moduleList = Collections.singletonList(this.moduleOne);
+        doReturn(this.moduleList).when(this.modules).get();
 
-        RecordConfiguration result = this.mocker.getComponentUnderTest().getActiveConfiguration();
-        Assert.assertTrue(result instanceof GlobalRecordConfiguration);
-    }
-
-    /**
-     * {@link RecordConfigurationManager#getActiveConfiguration()} returns a global configuration when reading the group
-     * configuration fails when building the group configuration.
-     */
-    @Test
-    public void getActiveConfigurationWithExceptionsOnSecondTry() throws ComponentLookupException, XWikiException
-    {
-        XWikiDocument doc = mock(XWikiDocument.class);
-        BaseObject o = mock(BaseObject.class);
-        when(doc.getXObject(RecordConfiguration.CUSTOM_PREFERENCES_CLASS)).thenReturn(o);
-        when(o.getListValue("sections")).thenReturn(Collections.singletonList("patient_info"));
-
-        RecordConfiguration result = this.mocker.getComponentUnderTest().getActiveConfiguration();
-        Assert.assertTrue(result instanceof GlobalRecordConfiguration);
+        when(this.moduleOne.process(any(RecordConfiguration.class))).thenReturn(this.config);
+        Assert.assertSame(this.config, this.mocker.getComponentUnderTest().getActiveConfiguration());
     }
 }

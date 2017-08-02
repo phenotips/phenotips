@@ -40,7 +40,7 @@
   <content>{{include reference="PhenoTips.ExportFilter" /}}
 
 {{velocity wiki="true"}}{{{
-#set ($activeFields = $services.recordConfiguration.activeConfiguration.enabledFieldNames)
+#set ($activeFields = $services.recordConfiguration.getConfiguration('patient').enabledFieldNames)
 #set ($codeProperties = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'clinical_diagnosis', 'omim_id'])
 #set ($enabledFields = $request.getParameterValues('columns'))
 #set ($displayedFields = [])

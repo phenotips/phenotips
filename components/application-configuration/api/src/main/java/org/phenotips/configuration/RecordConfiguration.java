@@ -27,7 +27,7 @@ import org.xwiki.stability.Unstable;
 import java.util.List;
 
 /**
- * Exposes the current configuration related to the patient record.
+ * Exposes the configuration for displaying records.
  *
  * @version $Id$
  * @since 1.0M9
@@ -39,26 +39,41 @@ public interface RecordConfiguration
     EntityReference GLOBAL_PREFERENCES_CLASS =
         new EntityReference("DBConfigurationClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
-    /** The XClass used for storing group- and user-specific configurations. */
+    /**
+     * The XClass used for storing group- and user-specific configurations.
+     *
+     * @deprecated since 1.4, this is specific to studies and has been moved in a different module
+     */
+    @Deprecated
     EntityReference CUSTOM_PREFERENCES_CLASS =
         new EntityReference("StudyClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /**
-     * The list of sections enabled in the patient record.
+     * The list of sections enabled for this record type.
      *
      * @return an unmodifiable ordered list of sections, empty if none are enabled or the configuration is missing
      */
     List<RecordSection> getEnabledSections();
 
     /**
-     * The list of available sections, enabled or disabled, that can be displayed in the patient record.
+     * The list of available sections, enabled or disabled, that can be displayed in this type of record.
      *
      * @return an unmodifiable ordered list of sections, or an empty list if none are defined
      */
     List<RecordSection> getAllSections();
 
     /**
-     * The list of fields displayed in the patient record.
+     * Update the list of available section. All changes are done in-memory for this object only, the configuration will
+     * remain unchanged.
+     *
+     * @param sections a list of sections, may be empty
+     * @see #getAllSections()
+     * @since 1.4
+     */
+    void setSections(List<RecordSection> sections);
+
+    /**
+     * The list of fields enabled for this record type.
      *
      * @return an unmodifiable ordered list of field names, empty if none are enabled or the configuration is missing
      */
@@ -70,12 +85,13 @@ public interface RecordConfiguration
      *
      * @return an unmodifiable ordered list of field names, empty if no non-identifiable fields are enabled or the
      *         configuration is missing
+     * @deprecated since 1.4, this functionality has moved in the Consents module
      */
+    @Deprecated
     List<String> getEnabledNonIdentifiableFieldNames();
 
     /**
-     * The list of possible fields defined in the application. This doesn't include metadata stored in separate
-     * entities, such as measurements, relatives, additional files, etc.
+     * The list of available fields, enabled or disabled, that can be displayed in this type of record.
      *
      * @return an unmodifiable ordered list of field names, empty if none are available or the configuration is missing
      */
@@ -94,6 +110,17 @@ public interface RecordConfiguration
     DocumentReference getPhenotypeMapping();
 
     /**
+     * Update the preferred phenotype mapping. All changes are done in-memory for this object only, the configuration
+     * will remain unchanged.
+     *
+     * @param mapping a reference to a document containing a phenotype mapping definition
+     * @see #getPhenotypeMapping()
+     * @since 1.4
+     */
+    @Unstable
+    void setPhenotypeMapping(DocumentReference mapping);
+
+    /**
      * The date format compliant with the ISO 8601 standard, in the {@link java.text.SimpleDateFormat Java date format}.
      *
      * @return the configured date format
@@ -101,9 +128,22 @@ public interface RecordConfiguration
     String getISODateFormat();
 
     /**
-     * The format of the date of birth, in the standard {@link java.text.SimpleDateFormat Java date format}.
+     * The format to use for entering and displaying the date of birth and other dates. For privacy reasons, certain
+     * PhenoTips instances may only record the year and month, or even just the year, so formats like {@code yyyy},
+     * {@code MM/yyyy}, or {@code MMMM yyyy} are supported. This also allows switching between different formats such as
+     * {@code yyyy-MM-dd}, {@code dd/MM/yyyy}, or {@code MM/dd/yyyy}.
      *
-     * @return the configured date format
+     * @return the configured date format, in the {@link java.text.SimpleDateFormat Java date format}
      */
     String getDateOfBirthFormat();
+
+    /**
+     * Update the format of the date of birth. All changes are done in-memory for this object only, the configuration
+     * will remain unchanged.
+     *
+     * @param format the new date format, in the {@link java.text.SimpleDateFormat Java date format}
+     * @see #getDateOfBirthFormat()
+     * @since 1.4
+     */
+    void setDateOfBirthFormat(String format);
 }

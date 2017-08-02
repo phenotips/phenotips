@@ -46,7 +46,7 @@
   #end
 #end
 #macro(__getDisabledFields)
-  #set ($recordConfiguration = $services.recordConfiguration.getActiveConfiguration())
+  #set ($recordConfiguration = $services.recordConfiguration.getConfiguration("patient"))
   #set ($disabledFieldNames = [])
   #set ($discard = $disabledFieldNames.addAll($recordConfiguration.allFieldNames))
   #set ($discard = $disabledFieldNames.removeAll($recordConfiguration.enabledFieldNames))

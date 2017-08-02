@@ -46,23 +46,34 @@ public interface RecordElement
     String getName();
 
     /**
-     * Whether this element is going to be displayed in the patient record or not.
+     * Whether this element is going to be displayed in the record or not.
      *
      * @return {@code true} if this element must be displayed, {@code false} otherwise
      */
     boolean isEnabled();
 
     /**
-     * Whether this element contains any private indentifiable information (PII) about the patient or not.
+     * Sets whether this element is going to be displayed in the record or not. All changes are done in-memory for this
+     * object only, the configuration will remain unchanged.
+     *
+     * @param enabled {@code true} if this element should be displayed, {@code false} otherwise
+     * @since 1.4
+     */
+    void setEnabled(boolean enabled);
+
+    /**
+     * Whether this element contains any private identifiable information (PII) or not.
      *
      * @return {@code true} if this element contains PII, {@code false} otherwise
+     * @deprecated since 1.4, this functionality has moved in the Consents module
      */
+    @Deprecated
     boolean containsPrivateIdentifiableInformation();
 
     /**
-     * The list of fields displayed in the patient record by this element.
+     * The list of fields displayed in the record by this element.
      *
-     * @return an unmodifiable ordered list of field names, empty if this element doesn't display patient fields
+     * @return an unmodifiable ordered list of field names, empty if this element doesn't display any modifiable fields
      */
     List<String> getDisplayedFields();
 

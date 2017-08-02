@@ -111,7 +111,7 @@
       <content>{{include reference="PhenoTips.FormMacros" /}}
 
 {{velocity}}
-#if (!$services.recordConfiguration.getActiveConfiguration().getEnabledFieldNames().contains('reports_history'))
+#if (!$services.recordConfiguration.getConfiguration("patient").getEnabledFieldNames().contains('reports_history'))
   #break
 #end
 #foreach ($patient in $family.members)

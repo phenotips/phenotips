@@ -490,6 +490,18 @@
               <to>org.phenotips.data.permissions.PatientAccess getPatientAccess(java.lang.String)</to>
               <justification>after SecurePatient update this service now needs to get its own non-read-only copy of a patient</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/configuration/Record*</className>
+              <differenceType>7012</differenceType>
+              <method>void set*(*)</method>
+              <justification>New API methods needed for making the configuration more extensible.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/configuration/RecordConfigurationManager</className>
+              <differenceType>7012</differenceType>
+              <method>org.phenotips.configuration.RecordConfiguration getConfiguration(java.lang.String)</method>
+              <justification>New API methods needed for making the configuration more extensible.</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

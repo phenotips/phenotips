@@ -62,6 +62,8 @@ import com.xpn.xwiki.XWikiContext;
 @Singleton
 public class PhenotipsFamilyExport
 {
+    private static final String PATIENT_LABEL = "patient";
+
     private static final String LAST_NAME = "last_name";
 
     private static final String FIRST_NAME = "first_name";
@@ -227,7 +229,7 @@ public class PhenotipsFamilyExport
         querySb.append("  where lower(doc.name) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
         querySb.append(" or lower(patient.external_id) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
 
-        boolean usePatientName = this.configuration.getActiveConfiguration().getEnabledFieldNames()
+        boolean usePatientName = this.configuration.getConfiguration(PATIENT_LABEL).getEnabledFieldNames()
             .contains(FIRST_NAME);
         if (usePatientName) {
             querySb.append(" or lower(patient.first_name) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);

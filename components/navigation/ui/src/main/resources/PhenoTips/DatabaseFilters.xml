@@ -38,7 +38,7 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity output=false}}
-#set ($activeFields = $services.recordConfiguration.activeConfiguration.enabledFieldNames)
+#set ($activeFields = $services.recordConfiguration.getConfiguration("patient").enabledFieldNames)
 #set ($dateFormat = "MM/dd/yyyy")
 ##
 ##

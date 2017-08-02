@@ -115,14 +115,12 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
 #end
 ##
 ## Extensions making up the main content, the actual information about the patient
-#set ($recordConfiguration = $services.recordConfiguration.getActiveConfiguration())
-#set ($consentAuthorizer = $services.consentauthorizer)
+#set ($recordConfiguration = $services.recordConfiguration.getConfiguration("patient"))
 #set ($elementCount = 0)
 #foreach ($section in $recordConfiguration.enabledSections)
   #set ($sectionContent = '')
-  #set ($consented = $consentAuthorizer.filterEnabled($section.enabledElements, $doc.getName()))
-  #set ($elementCount = $elementCount + $consented.size())
-  #foreach ($element in $consented)
+  #set ($elementCount = $elementCount + $section.enabledElements.size())
+  #foreach ($element in $section.enabledElements)
     #set ($extension_required = ($element.extension.getParameters().get('required') == 'true'))
     #set ($itemContent = $services.rendering.render($element.extension.execute(), 'xhtml/1.0').trim())
     #set ($sectionContent = $sectionContent.concat($itemContent))

@@ -44,11 +44,21 @@ public class RecordConfigurationManagerScriptServiceTest
 
     /** Basic test for {@link RecordConfigurationManagerScriptService#getActiveConfiguration()}. */
     @Test
-    public void getActiveConfiguration() throws ComponentLookupException
+    @SuppressWarnings("deprecation")
+    public void getActiveConfigurationForwardsCalls() throws ComponentLookupException
     {
         RecordConfiguration c = mock(RecordConfiguration.class);
         RecordConfigurationManager config = this.mocker.getInstance(RecordConfigurationManager.class);
         when(config.getActiveConfiguration()).thenReturn(c);
         Assert.assertSame(c, this.mocker.getComponentUnderTest().getActiveConfiguration());
+    }
+
+    @Test
+    public void getConfigurationForwardsCalls() throws ComponentLookupException
+    {
+        RecordConfiguration c = mock(RecordConfiguration.class);
+        RecordConfigurationManager config = this.mocker.getInstance(RecordConfigurationManager.class);
+        when(config.getConfiguration("patient")).thenReturn(c);
+        Assert.assertSame(c, this.mocker.getComponentUnderTest().getConfiguration("patient"));
     }
 }
