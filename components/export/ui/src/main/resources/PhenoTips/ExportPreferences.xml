@@ -58,7 +58,7 @@
 #set($valueList = ['external_id', 'gender', 'phenotype', 'negative_phenotype', 'clinical_diagnosis', 'omim_id'])
 {{html clean="false" wiki="false"}}
 ## Extensions making up the main content, the actual information about the patient
-#set ($recordConfiguration = $services.recordConfiguration.getActiveConfiguration())
+#set ($recordConfiguration = $services.recordConfiguration.getConfiguration('patient'))
 #foreach ($section in $recordConfiguration.enabledSections)
  #set ($sectionContent = '')
  #foreach ($element in $section.enabledElements)

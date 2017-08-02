@@ -325,7 +325,7 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
     {
         DocumentReference mapping = getCurrentUserConfiguration();
         if (mapping == null) {
-            mapping = this.configurationManager.getActiveConfiguration().getPhenotypeMapping();
+            mapping = this.configurationManager.getConfiguration("patient").getPhenotypeMapping();
         }
         return mapping;
     }

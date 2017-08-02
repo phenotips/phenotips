@@ -107,6 +107,6 @@
 {{/velocity}}
 
 {{velocity}}
-{{html wiki="false" clean="false"}}#__displayFieldListForActiveConfig($services.recordConfiguration.getActiveConfiguration() "$prefix$name" $value){{/html}}
+{{html wiki="false" clean="false"}}#__displayFieldListForActiveConfig($services.recordConfiguration.getConfiguration('patient') "$prefix$name" $value){{/html}}
 {{/velocity}}</content>
 </xwikidoc>
