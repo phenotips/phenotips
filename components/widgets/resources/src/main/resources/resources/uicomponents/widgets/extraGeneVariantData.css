@@ -5,7 +5,7 @@
   white-space: nowrap;
   padding-bottom: 1em;
 }
-.viewbody .gene-table td.gene {
+.viewbody .gene-table td.gene.custom-entry {
   white-space: normal;
 }
 .gene-table td.gene.Status, .gene-table td.gene.Strategy {

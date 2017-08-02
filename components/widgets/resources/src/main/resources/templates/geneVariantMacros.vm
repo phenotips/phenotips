@@ -158,7 +158,7 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 #set($variantObjects = $doc.getObjects($variantClass.name, "gene", $geneObj.getProperty('gene').value))
 |(% class="row-count" %)$geneNumber##
 #foreach($prop in $geneObj.xWikiClass.properties)##
-|(% class="$prop.translatedPrettyName gene #if ($prop.name == 'gene')mandatory#end gene-$geneObjNumber"##
+|(% class="$prop.translatedPrettyName gene #if ($prop.name == 'gene')mandatory#if($options.mode != 'edit' && !$services.vocabularies.hgnc.getTerm($geneObj.getValue($prop.name))) custom-entry#end#end gene-$geneObjNumber"##
 #if ($foreach.index == 0 || $foreach.index == 3) colspan="2" #end %)#if ("$!prop.getValue('contenttype')" == 'PureText' && $xcontext.action != 'edit')${services.rendering.escape($doc.display($prop.name, $options.mode, $geneObj).replaceFirst('^(\{\{html clean="false" wiki="false"}})?', '').replaceFirst('(\{\{/html}})?$', ''), 'xwiki/2.1')}#else$doc.display($prop.name, $options.mode, $geneObj)#end##
 #end
 #if ($options.mode == 'edit')
