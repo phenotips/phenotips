@@ -42,6 +42,10 @@
 {{velocity output="false"}}
 #macro (__export__displayOrganizedFieldList $xclassName $targetFieldName $reportValues $ignored $valueList $simple)
 #set ($remoteEnabledFields = $request.getParameterValues('enabledFields'))## fields enabled on the remote server
+#if (!$remoteEnabledFields)
+  ## This is a quick workaround, in the absence of this parameter in the request, which is the case for Excel and JSON exports, a warning will be printed in the logs several times
+  #set ($remoteEnabledFields = [])
+#end
 #set($ignored = {
     'fields' : ['negative_phenotype', 'negative_prenatal_phenotype', 'apgar5'],
     'types'  : ['PhenoTips.PedigreeClass', 'PhenoTips.MeasurementsClass']
