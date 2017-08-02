@@ -56,8 +56,12 @@ define([
             if (editor.isReadOnlyMode()) {
                 return new ReadOnlyHoverbox(this.getNode(), x, y, this.getGenderGraphics());
             } else {
-                return new PersonHoverbox(this.getNode(), x, y, this.getGenderGraphics());
+                return new PersonHoverbox(this.getNode(), x, y, this.getGenderGraphics(), this.getNodeMenu());
             }
+        },
+
+        getNodeMenu: function() {
+            return editor.getNodeMenu();
         },
 
         /**
@@ -644,6 +648,7 @@ define([
                 var mult = 1.2;
                 if (gender != 'F') {mult = 1.4;}
                 if (this.getNode().isProband) {mult *= 1.1;}
+                if (this.getNode().getType() == "PersonGroup") {mult *= 1.05;}
                 var x = this.getX() + this._shapeRadius*mult - 10; // adjusting position not to collide with evaluation status
                 var y = this.getY() + this._shapeRadius*mult;
                 if (this.getNode().getAdopted() != "") { // to avoid intersection with adopted status brackets

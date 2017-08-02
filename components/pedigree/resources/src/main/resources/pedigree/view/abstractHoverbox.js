@@ -671,15 +671,20 @@ define([
             if (editor.getView().getCurrentDraggable() !== null) return; // do not hide when dragging
 
             if (event) {
-                // only hide if mouse is outside the hoverbox, not when mouse traverses various elements within hoverbox
+                // hoverbox has a lot of internal elements, which trigger the event. To avoid reacting to those,
+                // the pointer position is computed i nterms of raw {x,y} coordinates, and hoverbox is hidden only if mouse
+                // is outside the hoverbox
                 var hoverarea = this.getFrontElements().getBBox();
                 var div = editor.getWorkspace().viewportToDiv(x,y);
                 var click = editor.getWorkspace().divToCanvas(div.x,div.y);
-                //console.log("HIDE CHECK: AreaX: " + hoverarea.x + " to " + hoverarea.x2 + ",  eventX: " + click.x);
-                //console.log("HIDE CHECK: AreaY: " + hoverarea.y + " to " + hoverarea.y2 + ",  eventY: " + click.y);
-                if (click.x >= hoverarea.x && click.x <= hoverarea.x2 &&
-                    click.y >= hoverarea.y && click.y <= hoverarea.y2) {
-                    return;
+
+                // only activate "do not hide" check if mouse is still on top of SVG, and not on top of main menu or other windows
+                var svgarea = document.getElementById("work-area").getBoundingClientRect();
+                if (y > svgarea.top && x > svgarea.left && y < svgarea.bottom && x < svgarea.right) {
+                    if (click.x > hoverarea.x && click.x < hoverarea.x2 &&
+                        click.y > hoverarea.y && click.y < hoverarea.y2) {
+                        return;
+                    }
                 }
             }
 

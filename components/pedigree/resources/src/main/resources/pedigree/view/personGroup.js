@@ -141,6 +141,7 @@ define([
                 adopted:      {value : this.getAdopted(), inactive: cantChangeAdopted},
                 comments:     {value : this.getComments(), inactive: false},
                 state:        {value : this.getLifeStatus()},
+                aliveandwell: {value : this.getAliveAndWell()},
                 numInGroup:   {value : this.getNumPersons()},
                 evaluatedGrp: {value : this.getEvaluated() }
             };

@@ -18,10 +18,9 @@ define([
         PersonHoverbox
     ){
     var PersonGroupHoverbox = Class.create(PersonHoverbox, {
-        initialize: function($super, personNode, centerX, centerY, nodeShapes) {
-            var radius = PedigreeEditorParameters.attributes.radius * 2;
-            $super(personNode, centerX, centerY, nodeShapes);
-           },
+        initialize: function($super, personNode, centerX, centerY, nodeShapes, nodeMenu) {
+            $super(personNode, centerX, centerY, nodeShapes, nodeMenu);
+        },
 
         /**
         * Creates the handles used in this hoverbox - overriden to generate no handles 
@@ -38,18 +37,8 @@ define([
             // else: no handles
         },
 
-        /**
-         * Creates the buttons used in this hoverbox
-         *
-         * @method generateButtons
-         */
-        generateButtons: function($super) {
-            if (this._currentButtons !== null) return;
-            this._currentButtons = [];
-
-            // note: no call to super as we don't want default person buttons
-            this.generateMenuBtn();
-            this.generateDeleteBtn();
+        _generateDeceasedMenu: function() {
+            // we do not generate deceased menu for alive and well in group hoverbox
         },
 
         /**
@@ -76,7 +65,7 @@ define([
                 var x = optBBox.x2;
                 var y = optBBox.y;
                 var position = editor.getWorkspace().canvasToDiv(x+5, y);
-                editor.getNodeGroupMenu().show(this.getNode(), position.x, position.y);
+                this._nodeMenu.show(this.getNode(), position.x, position.y);
             }
         }
     });

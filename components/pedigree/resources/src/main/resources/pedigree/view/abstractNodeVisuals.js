@@ -33,6 +33,13 @@ define(["pedigree/model/helpers"], function(Helpers) {
         },
 
         /**
+         * Returns the NodeMenu object appropriate for this node (e.g. NodeMenu or GroupNodeMenu), which should have a show() method
+         */
+        getNodeMenu: function() {
+            return null;
+        },
+
+        /**
          * Returns the current X coordinate of this node on the canvas, taking into consideration transformation data.
          *
          * @method getX

@@ -20,10 +20,11 @@ define([
     ){
     var PartnershipHoverbox = Class.create(AbstractHoverbox, {
 
-        initialize: function($super, partnership, junctionX, junctionY, nodeShapes) {
-            var radius = PedigreeEditorParameters.attributes.radius;        
+        initialize: function($super, partnership, junctionX, junctionY, nodeShapes, nodeMenu) {
+            var radius = PedigreeEditorParameters.attributes.radius;
             $super(partnership, -radius*0.65, -radius*0.8, radius*1.3, radius*2.3, junctionX, junctionY, nodeShapes);
             this._isMenuToggled = false;
+            this._nodeMenu = nodeMenu;
         },
 
         /**
@@ -34,20 +35,20 @@ define([
          */
         generateHandles: function($super) {
             if (this._currentHandles !== null) return;
-            $super();        
+            $super();
 
             if (this.getNode().getChildlessStatus() == 'infertile') return;
-            
+
             var x = this.getNodeX();
-            var y = this.getNodeY();     
+            var y = this.getNodeY();
             var strokeWidth = editor.getWorkspace().getSizeNormalizedToDefaultZoom(PedigreeEditorParameters.attributes.handleStrokeWidth);
 
-            editor.getPaper().setStart();        
-            //static part (going right below the node)            
+            editor.getPaper().setStart();
+            //static part (going right below the node)
             var path = [["M", x, y],["L", x, y+PedigreeEditorParameters.attributes.partnershipHandleBreakY]];
             editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(this.getNode().getGraphics().getJunctionShape());            
             this.generateHandle('child', x, y+PedigreeEditorParameters.attributes.partnershipHandleBreakY, x, y+PedigreeEditorParameters.attributes.partnershipHandleLength);
-                    
+
             this._currentHandles.push( editor.getPaper().setFinish() );
         },
 
@@ -60,9 +61,9 @@ define([
             if (this._currentButtons !== null) return;
             $super();
             this.generateDeleteBtn();
-            this.generateMenuBtn();        
+            this.generateMenuBtn();
         },
-        
+
         /**
          * Creates a node-shaped show-menu button
          *
@@ -73,7 +74,7 @@ define([
             var me = this;
             var action = function() {
                 me.toggleMenu(!me.isMenuToggled());
-            };        
+            };
             var junctionShapedButton = this.getNode().getGraphics().getJunctionShape().clone();
             junctionShapedButton.attr(PedigreeEditorParameters.attributes.nodeShapeMenuOffPartner);
             junctionShapedButton.click(action);
@@ -110,7 +111,7 @@ define([
                 var x = optBBox.x2;
                 var y = optBBox.y;
                 var position = editor.getWorkspace().canvasToDiv(x+5, y);
-                editor.getPartnershipMenu().show(this.getNode(), position.x, position.y);
+                this._nodeMenu.show(this.getNode(), position.x, position.y);
             }
         },
         

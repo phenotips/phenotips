@@ -496,11 +496,12 @@ define([
                 editor.getUndoRedoManager().addState( event, undoEvent );
             }
 
-            editor.getNodeMenu().update();  // for example, user selected a wrong gender in the nodeMenu, which
-                                            // gets reverted back - need to select the correct one in the nodeMenu as well
-                                            //
-                                            // note: need to do this after addState(), since addState() may trigger some
-                                            //       extensions which modify valiues visible in node menu
+            node.getGraphics().getNodeMenu().update();  // changes to one parameter as selected in node menu may result in more changes to other
+                                                        // parameters (e.g. life status change to "alive" clears date of death), or the change may be rejected by
+                                                        // input validation - so need to update node menu to show the parameters as they are after the input is processed
+                                                        //
+                                                        // note: need to do this after addState(), since addState() may trigger some
+                                                        //       extensions which also modify values visible in node menu
         },
 
         handleModification: function(event)

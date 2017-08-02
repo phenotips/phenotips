@@ -403,6 +403,13 @@ define([
                 'function' : 'setEvaluated'
             },
             {
+                'name' : 'aliveandwell',
+                'label' : 'Alive & Well',
+                'type' : 'checkbox',
+                'tab': 'Personal',
+                'function' : 'setAliveAndWell'
+            },
+            {
                 'name' : 'adopted',
                 'label' : 'Adopted status',
                 'type' : 'radio',
