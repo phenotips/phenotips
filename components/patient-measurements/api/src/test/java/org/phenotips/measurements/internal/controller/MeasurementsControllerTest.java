@@ -66,10 +66,32 @@ import static org.mockito.Mockito.when;
 
 /**
  * Test for the {@link MeasurementsController} Component, only the overridden methods from {@link PatientDataController}
- * are tested here
+ * are tested here.
  */
 public class MeasurementsControllerTest
 {
+    private static final String MEASUREMENTS_STRING = "measurements";
+
+    private static final String CONTROLLER_NAME = MEASUREMENTS_STRING;
+
+    private static final String MEASUREMENT_ENABLING_FIELD_NAME = MEASUREMENTS_STRING;
+
+    private static final DocumentReference MEASUREMENTS_CLASS = new DocumentReference("xwiki", "PhenoTips",
+        "MeasurementsClass");
+
+    private static final String DATE_KEY = "date";
+
+    private static final String AGE_KEY = "age";
+
+    private static final String TYPE_KEY = "type";
+
+    private static final String SIDE_KEY = "side";
+
+    private static final String VALUE_KEY = "value";
+
+    private static final String UNIT_KEY = "unit";
+
+
     @Rule
     public MockitoComponentMockingRule<PatientDataController<MeasurementEntry>> mocker =
         new MockitoComponentMockingRule<PatientDataController<MeasurementEntry>>(MeasurementsController.class);
@@ -105,26 +127,6 @@ public class MeasurementsControllerTest
 
     private List<BaseObject> measurementXWikiObjects;
 
-    private static final String MEASUREMENTS_STRING = "measurements";
-
-    private static final String CONTROLLER_NAME = MEASUREMENTS_STRING;
-
-    private static final String MEASUREMENT_ENABLING_FIELD_NAME = MEASUREMENTS_STRING;
-
-    private static final DocumentReference MEASUREMENTS_CLASS = new DocumentReference("xwiki", "PhenoTips",
-        "MeasurementsClass");
-
-    private static final String DATE_KEY = "date";
-
-    private static final String AGE_KEY = "age";
-
-    private static final String TYPE_KEY = "type";
-
-    private static final String SIDE_KEY = "side";
-
-    private static final String VALUE_KEY = "value";
-
-    private static final String UNIT_KEY = "unit";
 
     @Before
     public void setUp() throws Exception
@@ -483,7 +485,7 @@ public class MeasurementsControllerTest
     }
 
     @Test
-    public void DuplicateDateTest() throws ComponentLookupException
+    public void duplicateDateTest() throws ComponentLookupException
     {
         JSONArray data = new JSONArray();
         JSONObject item = new JSONObject();
@@ -511,7 +513,7 @@ public class MeasurementsControllerTest
     }
 
     @Test
-    public void DuplicateTest() throws ComponentLookupException
+    public void duplicateTest() throws ComponentLookupException
     {
         JSONArray data = new JSONArray();
         JSONObject item = new JSONObject();

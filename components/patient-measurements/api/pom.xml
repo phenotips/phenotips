@@ -34,16 +34,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-component-api</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-script</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
@@ -54,7 +44,22 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-component-api</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-script</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-observation-api</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-context</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
@@ -65,6 +70,11 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-model</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-query-manager</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
@@ -89,6 +99,10 @@
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
     </dependency>
     <!-- Test dependencies -->
     <dependency>

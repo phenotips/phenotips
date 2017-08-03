@@ -82,7 +82,7 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
         List<ChartResource> charts = new LinkedList<>();
 
         List<MeasurementHandler> handlers = new ArrayList<>(this.handlers.values());
-        Collections.sort(handlers, measurementHandlersSorter.getMeasurementHandlerComparator());
+        Collections.sort(handlers, this.measurementHandlersSorter.getMeasurementHandlerComparator());
 
         for (MeasurementHandler handler : handlers) {
             for (MeasurementsChartConfiguration config : handler.getChartsConfigurations()) {
