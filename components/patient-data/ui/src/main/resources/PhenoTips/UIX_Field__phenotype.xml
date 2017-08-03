@@ -803,7 +803,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
 enabled=true
 required=
 order=1
-fields=unaffected,phenotype,negative_phenotype</parameters>
+fields=unaffected,phenotype</parameters>
     </property>
     <property>
       <scope>wiki</scope>
