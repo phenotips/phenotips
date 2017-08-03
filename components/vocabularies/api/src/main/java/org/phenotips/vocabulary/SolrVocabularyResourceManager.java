@@ -51,18 +51,23 @@ public interface SolrVocabularyResourceManager
     SolrClient getSolrConnection(String vocabularyId);
 
     /**
-     * Copy the Solr configuration file in a separate temp directory. Register core from temporary place for reindexing.
+     * Copy the Solr configuration file in a separate temporary directory, then register this temporary core with the
+     * Solr server. This core can be accessed with {@link #getReplacementSolrConnection(String)} during reindexing, and
+     * then it can either be discarded with {@link #discardReplacementCore(String)}, or take the place of the
+     * {@link #getSolrConnection(String) official vocabulary index} with {@link #replaceCore(String)}.
      *
      * @param vocabularyId the identifier of the target vocabulary
-     * @throws org.xwiki.component.phase.InitializationException if the process fails
+     * @throws InitializationException if the process fails
+     * @since 1.4
      */
     void createReplacementCore(String vocabularyId) throws InitializationException;
 
     /**
-     * Copy new index file from temporary directory to origin location.
+     * Copy new index data from the temporary core to the main index location.
      *
      * @param vocabularyId the identifier of the target vocabulary
-     * @throws org.xwiki.component.phase.InitializationException if the process fails
+     * @throws InitializationException if the process fails
+     * @since 1.4
      */
     void replaceCore(String vocabularyId) throws InitializationException;
 
@@ -71,13 +76,16 @@ public interface SolrVocabularyResourceManager
      *
      * @param vocabularyId the identifier of the target vocabulary
      * @return a Solr client for communication with the target temporary core
+     * @since 1.4
      */
     SolrClient getReplacementSolrConnection(String vocabularyId);
 
     /**
-     * Delete the temporary directory handling vocabulary terms reindexing.
+     * Delete the temporary core, if one was already created by {@link #createReplacementCore(String)}. If no temporary
+     * core was created, nothing happens.
      *
      * @param vocabularyId the identifier of the target vocabulary
+     * @since 1.4
      */
     void discardReplacementCore(String vocabularyId);
 }

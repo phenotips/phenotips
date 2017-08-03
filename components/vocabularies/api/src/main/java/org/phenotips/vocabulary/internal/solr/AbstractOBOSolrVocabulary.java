@@ -120,10 +120,11 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
                 this.externalServicesAccess.replaceCore(getCoreName());
                 this.externalServicesAccess.getTermCache(getCoreName()).removeAll();
             }
-            this.externalServicesAccess.discardReplacementCore(getCoreName());
             return retval;
         } catch (InitializationException ex) {
             this.logger.warn("Failed to reindex. {}", ex.getMessage());
+        } finally {
+            this.externalServicesAccess.discardReplacementCore(getCoreName());
         }
         return retval;
     }

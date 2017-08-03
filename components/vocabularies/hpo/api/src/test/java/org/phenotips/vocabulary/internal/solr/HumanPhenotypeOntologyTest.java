@@ -60,7 +60,7 @@ public class HumanPhenotypeOntologyTest
 {
     @Rule
     public final MockitoComponentMockingRule<Vocabulary> mocker =
-        new MockitoComponentMockingRule<Vocabulary>(HumanPhenotypeOntology.class);
+        new MockitoComponentMockingRule<>(HumanPhenotypeOntology.class);
 
     private int ontologyServiceResult;
 
