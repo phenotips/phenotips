@@ -19,10 +19,7 @@ package org.phenotips.vocabulary.internal.solr;
 
 import org.phenotips.obo2solr.SolrUpdateGenerator;
 import org.phenotips.obo2solr.TermData;
-import org.phenotips.vocabulary.VocabularyExtension;
 import org.phenotips.vocabulary.VocabularyTerm;
-
-import org.xwiki.component.phase.InitializationException;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -96,39 +93,6 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
         return generator.transform(realOntologyUrl, fieldSelection);
     }
 
-    @Override
-    public int reindex(String sourceUrl)
-    {
-        int retval = 1;
-        try {
-            this.externalServicesAccess.createReplacementCore(getCoreName());
-            try {
-                for (VocabularyExtension ext : this.extensions.get()) {
-                    if (ext.isVocabularySupported(this)) {
-                        ext.indexingStarted(this);
-                    }
-                }
-                retval = this.index(sourceUrl);
-            } finally {
-                for (VocabularyExtension ext : this.extensions.get()) {
-                    if (ext.isVocabularySupported(this)) {
-                        ext.indexingEnded(this);
-                    }
-                }
-            }
-            if (retval == 0) {
-                this.externalServicesAccess.replaceCore(getCoreName());
-                this.externalServicesAccess.getTermCache(getCoreName()).removeAll();
-            }
-            return retval;
-        } catch (InitializationException ex) {
-            this.logger.warn("Failed to reindex. {}", ex.getMessage());
-        } finally {
-            this.externalServicesAccess.discardReplacementCore(getCoreName());
-        }
-        return retval;
-    }
-
     /**
      * Add a vocabulary to the index.
      *
@@ -136,6 +100,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
      * @return {@code 0} if the indexing succeeded, {@code 1} if writing to the Solr server failed, {@code 2} if the
      *         specified URL is invalid
      */
+    @Override
     protected int index(String sourceUrl)
     {
         Map<String, TermData> data = load(sourceUrl);
@@ -177,13 +142,6 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
             this.logger.warn("Failed to add terms to the Solr. Ran out of memory. {}", ex.getMessage());
         }
         return 1;
-    }
-
-    protected void commitTerms(Collection<SolrInputDocument> batch)
-        throws SolrServerException, IOException, OutOfMemoryError
-    {
-        this.externalServicesAccess.getReplacementSolrConnection(getCoreName()).add(batch);
-        this.externalServicesAccess.getReplacementSolrConnection(getCoreName()).commit();
     }
 
     /**

@@ -23,7 +23,9 @@ import org.phenotips.vocabulary.VocabularyExtension;
 import org.phenotips.vocabulary.VocabularyInputTerm;
 import org.phenotips.vocabulary.VocabularyTerm;
 
+import org.xwiki.component.phase.InitializationException;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -37,10 +39,12 @@ import javax.inject.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 
 /**
@@ -84,6 +88,8 @@ public abstract class AbstractSolrVocabulary implements Vocabulary
      * @return the simple core name
      */
     protected abstract String getCoreName();
+
+    protected abstract int index(String sourceUrl);
 
     @Override
     public VocabularyTerm getTerm(String id)
@@ -172,7 +178,34 @@ public abstract class AbstractSolrVocabulary implements Vocabulary
     @Override
     public int reindex(String sourceUrl)
     {
-        throw new UnsupportedOperationException();
+        int retval = 1;
+        try {
+            this.externalServicesAccess.createReplacementCore(getCoreName());
+            try {
+                for (VocabularyExtension ext : this.extensions.get()) {
+                    if (ext.isVocabularySupported(this)) {
+                        ext.indexingStarted(this);
+                    }
+                }
+                retval = this.index(sourceUrl);
+            } finally {
+                for (VocabularyExtension ext : this.extensions.get()) {
+                    if (ext.isVocabularySupported(this)) {
+                        ext.indexingEnded(this);
+                    }
+                }
+            }
+            if (retval == 0) {
+                this.externalServicesAccess.replaceCore(getCoreName());
+                this.externalServicesAccess.getTermCache(getCoreName()).removeAll();
+            }
+            return retval;
+        } catch (InitializationException ex) {
+            this.logger.warn("Failed to reindex. {}", ex.getMessage());
+        } finally {
+            this.externalServicesAccess.discardReplacementCore(getCoreName());
+        }
+        return retval;
     }
 
     @Override
@@ -316,5 +349,15 @@ public abstract class AbstractSolrVocabulary implements Vocabulary
                 extension.extendTerm(term, this);
             }
         }
+    }
+
+    /**
+     * Commits the batch of newly-processed documents.
+     */
+    protected void commitTerms(Collection<SolrInputDocument> batch)
+        throws SolrServerException, IOException, OutOfMemoryError
+    {
+        this.externalServicesAccess.getReplacementSolrConnection(getCoreName()).add(batch);
+        this.externalServicesAccess.getReplacementSolrConnection(getCoreName()).commit();
     }
 }

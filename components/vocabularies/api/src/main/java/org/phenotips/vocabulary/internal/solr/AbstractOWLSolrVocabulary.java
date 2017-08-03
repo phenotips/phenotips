@@ -17,11 +17,11 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
-import org.phenotips.vocabulary.VocabularyExtension;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -113,28 +113,6 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
         return 1;
     }
 
-    @Override
-    public int reindex(@Nullable final String sourceUrl)
-    {
-        int retval;
-        try {
-            for (final VocabularyExtension ext : this.extensions.get()) {
-                if (ext.isVocabularySupported(this)) {
-                    ext.indexingStarted(this);
-                }
-            }
-            this.clear();
-            retval = this.index(sourceUrl);
-        } finally {
-            for (VocabularyExtension ext : this.extensions.get()) {
-                if (ext.isVocabularySupported(this)) {
-                    ext.indexingEnded(this);
-                }
-            }
-        }
-        return retval;
-    }
-
     /**
      * Given a {@code sourceUrl source URL} for the vocabulary, return {@code 0} iff the vocabulary is indexed
      * successfully, {@code 1} otherwise.
@@ -142,6 +120,7 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
      * @param sourceUrl the source URL for the vocabulary, as string
      * @return {@code 0} iff the vocabulary is indexed successfully, {@code 1} otherwise
      */
+    @Override
     protected int index(@Nullable final String sourceUrl)
     {
         final String url = StringUtils.isNotBlank(sourceUrl) ? sourceUrl : getDefaultSourceLocation();
@@ -153,14 +132,28 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
         // Reusing doc for speed (see http://wiki.apache.org/lucene-java/ImproveIndexingSpeed).
         final SolrInputDocument doc = new SolrInputDocument();
         try {
+            Collection<SolrInputDocument> termBatch = new HashSet<>();
             // Set the ontology model version.
             setVersion(doc, ontModel);
             // Create and add solr documents for each of the roots.
             for (final OntClass root : roots) {
                 // Don't want to add Solr documents for general root categories, so start adding children.
-                addChildDocs(doc, root);
+                // Get all the subclasses of ontClass, and add a Solr document for each of them.
+                final ExtendedIterator<OntClass> subClasses = root.listSubClasses();
+                int batchCounter = 0;
+                while (subClasses.hasNext()) {
+                    if (batchCounter == getSolrDocsPerBatch()) {
+                        commitTerms(termBatch);
+                        termBatch = new HashSet<>();
+                        batchCounter = 0;
+                    }
+                    final OntClass subClass = subClasses.next();
+                    addDoc(doc, subClass, root, termBatch);
+                    batchCounter++;
+                }
+                subClasses.close();
             }
-            commitDocs();
+            commitTerms(termBatch);
             return 0;
         } catch (SolrServerException ex) {
             this.logger.warn("Failed to index ontology: {}", ex.getMessage());
@@ -178,48 +171,16 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
      * @param doc the reusable Solr input document
      * @param ontClass the ontology class that should be parsed
      * @param root the top root category for ontClass
+     * @param termBatch the batch of newly-processed documents to commit later
      */
     private void addDoc(@Nonnull final SolrInputDocument doc, @Nonnull final OntClass ontClass,
-        @Nonnull final OntClass root) throws IOException, SolrServerException
+        @Nonnull final OntClass root, Collection<SolrInputDocument> termBatch)
     {
         parseSolrDocumentFromOntClass(doc, ontClass, root);
         parseSolrDocumentFromOntParentClasses(doc, ontClass);
         extendTerm(new SolrVocabularyInputTerm(doc, this));
-        this.externalServicesAccess.getSolrConnection(getCoreName()).add(doc);
+        termBatch.add(new SolrInputDocument(doc));
         doc.clear();
-    }
-
-    /**
-     * Adds any of the sub-documents of the specified ontology class.
-     *
-     * @param doc the reusable Solr input document
-     * @param ontClass the ontology class that should be parsed
-     */
-    private void addChildDocs(@Nonnull final SolrInputDocument doc, @Nonnull final OntClass ontClass)
-        throws IOException, SolrServerException
-    {
-        // Get all the subclasses of ontClass, and add a Solr document for each of them.
-        final ExtendedIterator<OntClass> subClasses = ontClass.listSubClasses();
-        int counter = 0;
-        while (subClasses.hasNext()) {
-            if (counter == getSolrDocsPerBatch()) {
-                commitDocs();
-                counter = 0;
-            }
-            final OntClass subClass = subClasses.next();
-            addDoc(doc, subClass, ontClass);
-            counter++;
-        }
-        subClasses.close();
-    }
-
-    /**
-     * Commits the batch of newly-processed documents.
-     */
-    private void commitDocs() throws IOException, SolrServerException
-    {
-        this.externalServicesAccess.getSolrConnection(getCoreName()).commit();
-        this.externalServicesAccess.getTermCache(getCoreName()).removeAll();
     }
 
     @Override
