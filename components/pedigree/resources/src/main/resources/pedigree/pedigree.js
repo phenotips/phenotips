@@ -621,6 +621,16 @@ define([
         },
 
         /**
+         * Returns a list of all available legends
+         */
+        getAllLegends: function() {
+            return [ this.getCancerLegend(),
+                     this.getHPOLegend(),
+                     this.getDisorderLegend(),
+                     this.getCarrierGeneLegend(), this.getRejectedGeneLegend(), this.getCandidateGeneLegend(), this.getCausalGeneLegend() ];
+        },
+
+        /**
          * @method getPaper
          * @return {Workspace.paper} Raphael paper element
          */

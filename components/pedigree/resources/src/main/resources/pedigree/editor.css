@@ -303,7 +303,10 @@ input[type="radio"] {
   padding-left: 1px;
 }
 li.abnormality:hover {
-  background-color: #FFF9EE;
+  background-color: #FBF5EA;
+}
+.abnormality.highlighted {
+  background-color: #FBF5EA;
 }
 .legend-box .abnormality-list {
   list-style-type: none;

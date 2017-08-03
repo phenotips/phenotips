@@ -347,11 +347,18 @@ define([
          */
         animateHideHoverZone: function($super, event, x, y) {
             this._hidden = true;
+
+            var allLegends = editor.getAllLegends();
+            for (var i = 0; i < allLegends.length; i++) {
+                allLegends[i].unhighlightAllObjects();
+            }
+
             if(!this.isMenuToggled() && !this.isDeceasedToggled()){
                 var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
                 //console.log("Node: " + this.getNode().getID() + ", parentPartnershipNode: " + parentPartnershipNode);
-                if (parentPartnershipNode && editor.getNode(parentPartnershipNode))
+                if (parentPartnershipNode && editor.getNode(parentPartnershipNode)) {
                     editor.getNode(parentPartnershipNode).getGraphics().unmarkPregnancy();
+                }
                 $super(event, x, y);
             }
         },
@@ -363,10 +370,17 @@ define([
          */
         animateDrawHoverZone: function($super, event, x, y) {
             this._hidden = false;
+
+            var allLegends = editor.getAllLegends();
+            for (var i = 0; i < allLegends.length; i++) {
+                allLegends[i].highlightObjectsForNode(this.getNode().getID());
+            }
+
             if (!this.isMenuToggled()) {
                 var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
-                if (parentPartnershipNode && editor.getNode(parentPartnershipNode))
+                if (parentPartnershipNode && editor.getNode(parentPartnershipNode)) {
                     editor.getNode(parentPartnershipNode).getGraphics().markPregnancy();
+                }
                 $super(event, x, y);
             }
         },

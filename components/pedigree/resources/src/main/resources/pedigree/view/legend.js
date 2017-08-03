@@ -35,6 +35,7 @@ define([
             this._DISABLED_ONHOVER_ICON = "fa-check-circle-o";
             this._ENABLED_ICON          = "fa-circle";
             this._ENABLED_ONHOVER_ICON  = "fa-times-circle";
+            this._HIGHLIGHTED_CSSCLASS  = "highlighted";
 
             var legendContainer = $('legend-container');
             if (legendContainer == undefined) {
@@ -351,6 +352,28 @@ define([
             this._updateCaseNumbersForObject(id);
             this._updateMinMaxButtons();
             this._updateShowHideButtons();
+        },
+
+        highlightObjectsForNode: function(nodeId) {
+            for (var id in this._objectColors) {
+                if (this._objectColors.hasOwnProperty(id)) {
+                    var htmlElement = this._getListElementForObjectWithID(id);
+                    if (Helpers.arrayContains(this._affectedNodes[id], nodeId)) {
+                        htmlElement.addClassName(this._HIGHLIGHTED_CSSCLASS);
+                    } else {
+                        htmlElement.removeClassName(this._HIGHLIGHTED_CSSCLASS);
+                    }
+                }
+            }
+        },
+
+        unhighlightAllObjects: function() {
+            for (var id in this._objectColors) {
+                if (this._objectColors.hasOwnProperty(id)) {
+                    var htmlElement = this._getListElementForObjectWithID(id);
+                    htmlElement.removeClassName(this._HIGHLIGHTED_CSSCLASS);
+                }
+            }
         },
 
         /**
