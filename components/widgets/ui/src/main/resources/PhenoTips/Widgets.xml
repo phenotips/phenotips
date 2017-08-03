@@ -4394,7 +4394,10 @@ document.observe("xwiki:dom:updated", init);
                   );
           json.def_translated &amp;&amp; c.insert(elt('p').update(json.def_translated.replace(/\s*\n\s*/, ' ')));
 
-          var labels = {'alternative_term' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.synonym')", 'parents' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.typeOf')"};
+          var labels = {'alternative_term' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.synonym')",
+            'parents' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.typeOf'),
+            'included_name': "$services.localization.render('phenotips.widgets.helpButtons.phenotype.included')",
+            'symptoms' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.symptoms')"};
           var advancedInfo = elt('dl');
           for (var l in labels) {
             if (json[l]) {
