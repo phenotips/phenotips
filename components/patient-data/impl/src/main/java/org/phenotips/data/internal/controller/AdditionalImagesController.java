@@ -17,13 +17,16 @@
  */
 package org.phenotips.data.internal.controller;
 
+import org.phenotips.Constants;
 import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
 import java.util.ArrayList;
@@ -35,6 +38,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -45,20 +49,28 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
- * Provides access to attached medical reports.
+ * Provides access to attached additional images.
  *
  * @version $Id$
  * @since 1.4
  */
 @Unstable("New controller in 1.4M1")
 @Component(roles = { PatientDataController.class })
-@Named("medicalReports")
+@Named("additionalImages")
 @Singleton
-public class MedicalReportsController implements PatientDataController<Attachment>
+public class AdditionalImagesController implements PatientDataController<Attachment>
 {
-    private static final String DATA_NAME = "medical_reports";
+    /** The XClass used for storing additional images. */
+    public static final EntityReference CLASS_REFERENCE = new EntityReference("ExternalImageClass", EntityType.DOCUMENT,
+        Constants.CODE_SPACE_REFERENCE);
 
-    private static final String FIELD_NAME = "reports_history";
+    private static final String DATA_NAME = "additional_images";
+
+    private static final String FILE_FIELD_NAME = "file";
+
+    private static final String COMMENTS_FIELD_NAME = "comments";
+
+    private static final String PRINT_FIELD_NAME = "print";
 
     @Inject
     private Provider<XWikiContext> contextProvider;
@@ -74,20 +86,24 @@ public class MedicalReportsController implements PatientDataController<Attachmen
     {
         try {
             XWikiDocument doc = patient.getXDocument();
-            BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
-            if (data == null) {
-                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+            List<BaseObject> data = doc.getXObjects(CLASS_REFERENCE);
+            if (CollectionUtils.isEmpty(data)) {
+                return null;
             }
 
-            // Getting the documents which are reports instead of just getting all attachments
-            @SuppressWarnings("unchecked")
-            List<String> reports = data.getListValue(FIELD_NAME);
-            List<Attachment> result = new ArrayList<>(reports.size());
+            List<Attachment> result = new ArrayList<>(data.size());
 
-            for (String report : reports) {
-                XWikiAttachment xattachment = doc.getAttachment(report);
+            for (BaseObject xobject : data) {
+                if (xobject == null) {
+                    continue;
+                }
+                String filename = xobject.getStringValue(FILE_FIELD_NAME);
+                XWikiAttachment xattachment = doc.getAttachment(filename);
                 if (xattachment != null) {
-                    result.add(this.adapter.fromXWikiAttachment(xattachment));
+                    Attachment attachment = this.adapter.fromXWikiAttachment(xattachment);
+                    attachment.addAttribute(COMMENTS_FIELD_NAME, xobject.getLargeStringValue(COMMENTS_FIELD_NAME));
+                    attachment.addAttribute(PRINT_FIELD_NAME, xobject.getIntValue(PRINT_FIELD_NAME) == 1);
+                    result.add(attachment);
                 }
             }
 
@@ -101,34 +117,36 @@ public class MedicalReportsController implements PatientDataController<Attachmen
     @Override
     public void save(Patient patient)
     {
-        PatientData<Attachment> reports = patient.getData(getName());
-        if (reports == null) {
+        PatientData<Attachment> images = patient.getData(getName());
+        if (images == null) {
             return;
         }
         try {
             XWikiDocument doc = patient.getXDocument();
-            BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE, true, this.contextProvider.get());
+            doc.removeXObjects(CLASS_REFERENCE);
 
-            List<String> result = new ArrayList<>(reports.size());
-
-            for (Attachment report : reports) {
-                XWikiAttachment xattachment = doc.getAttachment(report.getFilename());
+            for (Attachment image : images) {
+                BaseObject xobject = doc.newXObject(CLASS_REFERENCE, this.contextProvider.get());
+                XWikiAttachment xattachment = doc.getAttachment(image.getFilename());
                 if (xattachment == null) {
-                    xattachment = new XWikiAttachment(doc, report.getFilename());
+                    xattachment = new XWikiAttachment(doc, image.getFilename());
                     doc.addAttachment(xattachment);
                 }
-                xattachment.setContent(report.getContent());
-                DocumentReference author = report.getAuthorReference();
+                xattachment.setContent(image.getContent());
+                DocumentReference author = image.getAuthorReference();
                 if (author != null
                     && !this.contextProvider.get().getWiki().exists(author, this.contextProvider.get())) {
                     author = this.contextProvider.get().getUserReference();
                 }
                 xattachment.setAuthorReference(author);
-                xattachment.setDate(report.getDate());
-                xattachment.setFilesize((int) report.getFilesize());
-                result.add(report.getFilename());
+                xattachment.setDate(image.getDate());
+                xattachment.setFilesize((int) image.getFilesize());
+                xobject.setStringValue(FILE_FIELD_NAME, image.getFilename());
+                xobject.setLargeStringValue(COMMENTS_FIELD_NAME, (String) image.getAttribute(COMMENTS_FIELD_NAME));
+                if (image.getAttribute(PRINT_FIELD_NAME) != null) {
+                    xobject.setIntValue(PRINT_FIELD_NAME, ((Boolean) image.getAttribute(PRINT_FIELD_NAME)) ? 1 : 0);
+                }
             }
-            data.setDBStringListValue(FIELD_NAME, result);
         } catch (Exception ex) {
             this.logger.error("Failed to save attachment: {}", ex.getMessage(), ex);
         }
@@ -143,22 +161,21 @@ public class MedicalReportsController implements PatientDataController<Attachmen
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null
-            && !(selectedFieldNames.contains(getName()) || selectedFieldNames.contains(FIELD_NAME))) {
+        if (selectedFieldNames != null && !(selectedFieldNames.contains(getName()))) {
             return;
         }
 
-        PatientData<Attachment> reports = patient.getData(getName());
+        PatientData<Attachment> images = patient.getData(getName());
         JSONArray result = new JSONArray();
-        if (reports == null || !reports.isIndexed() || reports.size() == 0) {
+        if (images == null || !images.isIndexed() || images.size() == 0) {
             if (selectedFieldNames != null) {
                 json.put(DATA_NAME, result);
             }
             return;
         }
 
-        for (Attachment report : reports) {
-            result.put(report.toJSON());
+        for (Attachment image : images) {
+            result.put(image.toJSON());
         }
         json.put(DATA_NAME, result);
     }
@@ -171,9 +188,9 @@ public class MedicalReportsController implements PatientDataController<Attachmen
         }
         List<Attachment> result = new ArrayList<>();
 
-        JSONArray reports = json.getJSONArray(DATA_NAME);
-        for (Object report : reports) {
-            result.add(this.adapter.fromJSON((JSONObject) report));
+        JSONArray images = json.getJSONArray(DATA_NAME);
+        for (Object image : images) {
+            result.add(this.adapter.fromJSON((JSONObject) image));
         }
 
         return new IndexedPatientData<>(getName(), result);
@@ -182,6 +199,6 @@ public class MedicalReportsController implements PatientDataController<Attachmen
     @Override
     public String getName()
     {
-        return "medicalReports";
+        return "additionalImages";
     }
 }

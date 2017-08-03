@@ -68,28 +68,31 @@ import net.jcip.annotations.NotThreadSafe;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for the {@link MedicalReportsController} component, implementation of the
+ * Test for the {@link AdditionalDocumentsController} component, implementation of the
  * {@link org.phenotips.data.PatientDataController} interface.
  */
 @NotThreadSafe
-public class MedicalReportsControllerTest
+public class AdditionalDocumentsControllerTest
 {
     @ClassRule
     public static TemporaryFolder tf = new TemporaryFolder();
 
-    private static final String DATA_NAME = "medical_reports";
+    private static final String CONTROLLER_NAME = "additionalDocuments";
 
-    private static final String CONTROLLER_NAME = "medicalReports";
+    private static final String DATA_NAME = "additional_documents";
 
-    private static final String FIELD_NAME = "reports_history";
+    private static final String FILE_FIELD_NAME = "file";
+
+    private static final String COMMENTS_FIELD_NAME = "comments";
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Attachment>> mocker =
-        new MockitoComponentMockingRule<>(MedicalReportsController.class);
+        new MockitoComponentMockingRule<>(AdditionalDocumentsController.class);
 
     @Mock
     private XWikiContext context;
@@ -104,19 +107,22 @@ public class MedicalReportsControllerTest
     private XWikiDocument doc;
 
     @Mock
-    private BaseObject data;
+    private BaseObject file1;
 
     @Mock
-    private XWikiAttachment attachment1;
+    private BaseObject file2;
 
     @Mock
-    private XWikiAttachment attachment2;
+    private XWikiAttachment xattachment1;
 
     @Mock
-    private Attachment a1;
+    private XWikiAttachment xattachment2;
 
     @Mock
-    private Attachment a2;
+    private Attachment attachment1;
+
+    @Mock
+    private Attachment attachment2;
 
     private Date date1;
 
@@ -133,7 +139,8 @@ public class MedicalReportsControllerTest
         + "\"filesize\":4,"
         + "\"author\":\"Users.padams\","
         + "\"date\":\"2017-01-01T12:00:00.000Z\","
-        + "\"content\":\"YWJjZA==\""
+        + "\"content\":\"YWJjZA==\","
+        + "\"comments\":\"Comment 1\""
         + "}");
 
     private JSONObject json2 = new JSONObject("{"
@@ -164,46 +171,52 @@ public class MedicalReportsControllerTest
         DocumentReference patientDocRef = new DocumentReference("wiki", "patient", "00000001");
         when(this.patient.getDocumentReference()).thenReturn(patientDocRef);
         when(this.patient.getXDocument()).thenReturn(this.doc);
-        when(this.doc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(this.data);
-        when(this.doc.getXObject(Patient.CLASS_REFERENCE, true, this.context)).thenReturn(this.data);
+        when(this.doc.getXObjects(AdditionalDocumentsController.CLASS_REFERENCE))
+            .thenReturn(Arrays.asList(this.file1, this.file2));
+        when(this.doc.newXObject(AdditionalDocumentsController.CLASS_REFERENCE, this.context)).thenReturn(this.file1,
+            this.file2);
+        when(this.file1.getStringValue(FILE_FIELD_NAME)).thenReturn("a1.pdf");
+        when(this.file1.getLargeStringValue(COMMENTS_FIELD_NAME)).thenReturn("Comment 1");
+        when(this.file2.getStringValue(FILE_FIELD_NAME)).thenReturn("a2.pdf");
 
         Calendar c = new GregorianCalendar(2017, 0, 1, 12, 0, 0);
         c.setTimeZone(TimeZone.getTimeZone("UTC"));
         this.date1 = c.getTime();
+        when(this.xattachment1.getFilename()).thenReturn("a1.pdf");
+        when(this.xattachment1.getFilesize()).thenReturn(4);
+        when(this.xattachment1.getAuthorReference()).thenReturn(this.author1);
+        when(this.xattachment1.getDate()).thenReturn(this.date1);
+        when(this.xattachment1.getContentInputStream(this.context))
+            .thenReturn(IOUtils.toInputStream("abcd", StandardCharsets.UTF_8));
+        when(this.doc.getAttachment("a1.pdf")).thenReturn(this.xattachment1);
+        when(this.adapter.fromXWikiAttachment(this.xattachment1)).thenReturn(this.attachment1);
+        when(this.adapter.fromJSON(this.json1)).thenReturn(this.attachment1);
+        when(this.attachment1.toJSON()).thenReturn(this.json1);
         when(this.attachment1.getFilename()).thenReturn("a1.pdf");
-        when(this.attachment1.getFilesize()).thenReturn(4);
+        when(this.attachment1.getFilesize()).thenReturn(4L);
         when(this.attachment1.getAuthorReference()).thenReturn(this.author1);
         when(this.attachment1.getDate()).thenReturn(this.date1);
-        when(this.attachment1.getContentInputStream(this.context))
-            .thenReturn(IOUtils.toInputStream("abcd", StandardCharsets.UTF_8));
-        when(this.doc.getAttachment("a1.pdf")).thenReturn(this.attachment1);
-        when(this.adapter.fromXWikiAttachment(this.attachment1)).thenReturn(this.a1);
-        when(this.adapter.fromJSON(this.json1)).thenReturn(this.a1);
-        when(this.a1.toJSON()).thenReturn(this.json1);
-        when(this.a1.getFilename()).thenReturn("a1.pdf");
-        when(this.a1.getFilesize()).thenReturn(4L);
-        when(this.a1.getAuthorReference()).thenReturn(this.author1);
-        when(this.a1.getDate()).thenReturn(this.date1);
-        when(this.a1.getContent()).thenReturn(IOUtils.toInputStream("abcd", StandardCharsets.UTF_8));
+        when(this.attachment1.getContent()).thenReturn(IOUtils.toInputStream("abcd", StandardCharsets.UTF_8));
+        when(this.attachment1.getAttribute(COMMENTS_FIELD_NAME)).thenReturn("Comment 1");
 
         c = new GregorianCalendar(2016, 7, 1, 14, 0, 0);
         c.setTimeZone(TimeZone.getTimeZone("UTC"));
         this.date2 = c.getTime();
+        when(this.xattachment2.getFilename()).thenReturn("a2.pdf");
+        when(this.xattachment2.getFilesize()).thenReturn(3);
+        when(this.xattachment2.getAuthorReference()).thenReturn(this.author2);
+        when(this.xattachment2.getDate()).thenReturn(this.date2);
+        when(this.xattachment2.getContentInputStream(this.context))
+            .thenReturn(IOUtils.toInputStream("xyz", StandardCharsets.UTF_8));
+        when(this.doc.getAttachment("a2.pdf")).thenReturn(this.xattachment2);
+        when(this.adapter.fromXWikiAttachment(this.xattachment2)).thenReturn(this.attachment2);
+        when(this.adapter.fromJSON(this.json2)).thenReturn(this.attachment2);
+        when(this.attachment2.toJSON()).thenReturn(this.json2);
         when(this.attachment2.getFilename()).thenReturn("a2.pdf");
-        when(this.attachment2.getFilesize()).thenReturn(3);
+        when(this.attachment2.getFilesize()).thenReturn(3L);
         when(this.attachment2.getAuthorReference()).thenReturn(this.author2);
         when(this.attachment2.getDate()).thenReturn(this.date2);
-        when(this.attachment2.getContentInputStream(this.context))
-            .thenReturn(IOUtils.toInputStream("xyz", StandardCharsets.UTF_8));
-        when(this.doc.getAttachment("a2.pdf")).thenReturn(this.attachment2);
-        when(this.adapter.fromXWikiAttachment(this.attachment2)).thenReturn(this.a2);
-        when(this.adapter.fromJSON(this.json2)).thenReturn(this.a2);
-        when(this.a2.toJSON()).thenReturn(this.json2);
-        when(this.a2.getFilename()).thenReturn("a2.pdf");
-        when(this.a2.getFilesize()).thenReturn(3L);
-        when(this.a2.getAuthorReference()).thenReturn(this.author2);
-        when(this.a2.getDate()).thenReturn(this.date2);
-        when(this.a2.getContent()).thenReturn(IOUtils.toInputStream("xyz", StandardCharsets.UTF_8));
+        when(this.attachment2.getContent()).thenReturn(IOUtils.toInputStream("xyz", StandardCharsets.UTF_8));
 
         Provider<XWikiContext> contextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         when(contextProvider.get()).thenReturn(this.context);
@@ -212,6 +225,9 @@ public class MedicalReportsControllerTest
         when(this.context.getUserReference()).thenReturn(this.author1);
         when(this.xwiki.exists(this.author1, this.context)).thenReturn(true);
         when(this.xwiki.exists(this.author2, this.context)).thenReturn(true);
+
+        when(this.patient.getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Arrays.asList(this.attachment1, this.attachment2)));
     }
 
     @Test
@@ -226,9 +242,9 @@ public class MedicalReportsControllerTest
     }
 
     @Test
-    public void loadCatchesExceptionWhenPatientDoesNotHavePatientClass() throws ComponentLookupException
+    public void loadRetursnNullWhenPatientDoesNotHaveFileObjects() throws ComponentLookupException
     {
-        when(this.doc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(null);
+        when(this.doc.getXObjects(AdditionalDocumentsController.CLASS_REFERENCE)).thenReturn(null);
 
         PatientData<Attachment> result = this.mocker.getComponentUnderTest().load(this.patient);
 
@@ -238,59 +254,56 @@ public class MedicalReportsControllerTest
     @Test
     public void loadReturnsAttachments() throws ComponentLookupException
     {
-        when(this.data.getListValue(FIELD_NAME)).thenReturn(Arrays.asList("a1.pdf", "a2.pdf"));
-
         PatientData<Attachment> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertNotNull(result);
         Assert.assertEquals(2, result.size());
-        Assert.assertEquals(this.a1, result.get(0));
-        Assert.assertEquals(this.a2, result.get(1));
+        Assert.assertEquals(this.attachment1, result.get(0));
+        Assert.assertEquals(this.attachment2, result.get(1));
     }
 
     @Test
     public void loadSkipsNonExistingAttachments() throws ComponentLookupException
     {
-        when(this.data.getListValue(FIELD_NAME))
-            .thenReturn(Arrays.asList("a0.pdf", "a1.pdf", "a2.pdf", "a3.pdf"));
+        when(this.file2.getStringValue(FILE_FIELD_NAME)).thenReturn("a3.pdf");
+
+        PatientData<Attachment> result = this.mocker.getComponentUnderTest().load(this.patient);
+
+        Assert.assertNotNull(result);
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(this.attachment1, result.get(0));
+    }
+
+    @Test
+    public void loadSkipsNullObjects() throws ComponentLookupException
+    {
+        when(this.doc.getXObjects(AdditionalDocumentsController.CLASS_REFERENCE))
+            .thenReturn(Arrays.asList(this.file1, null, this.file2, null));
 
         PatientData<Attachment> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertNotNull(result);
         Assert.assertEquals(2, result.size());
-        Assert.assertEquals(this.a1, result.get(0));
-        Assert.assertEquals(this.a2, result.get(1));
+        Assert.assertEquals(this.attachment1, result.get(0));
+        Assert.assertEquals(this.attachment2, result.get(1));
     }
 
     @Test
     public void loadSkipsAttachmentsNotSelected() throws ComponentLookupException
     {
-        when(this.data.getListValue(FIELD_NAME))
-            .thenReturn(Arrays.asList("a2.pdf", "a3.pdf"));
+        when(this.doc.getXObjects(AdditionalDocumentsController.CLASS_REFERENCE)).thenReturn(Arrays.asList(this.file2));
 
         PatientData<Attachment> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
-        Assert.assertEquals(this.a2, result.get(0));
-    }
-
-    @Test
-    public void loadAcceptsInvalidAuthor() throws ComponentLookupException
-    {
-        when(this.data.getListValue(FIELD_NAME)).thenReturn(Arrays.asList("a1.pdf"));
-        when(this.xwiki.exists(this.author1, this.context)).thenReturn(false);
-
-        PatientData<Attachment> result = this.mocker.getComponentUnderTest().load(this.patient);
-
-        Assert.assertNotNull(result);
-        Assert.assertEquals(1, result.size());
-        Assert.assertEquals(this.author1, result.get(0).getAuthorReference());
+        Assert.assertEquals(this.attachment2, result.get(0));
     }
 
     @Test
     public void saveDoesNothingWhenNoDataPresent() throws ComponentLookupException
     {
+        when(this.patient.getData(CONTROLLER_NAME)).thenReturn(null);
         this.mocker.getComponentUnderTest().save(this.patient);
         Mockito.verifyZeroInteractions(this.doc);
     }
@@ -299,52 +312,55 @@ public class MedicalReportsControllerTest
     public void saveClearsRecordsFieldWhenEmptyDataPresent() throws ComponentLookupException
     {
         when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new IndexedPatientData<>(DATA_NAME, Collections.emptyList()));
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
         this.mocker.getComponentUnderTest().save(this.patient);
-        verify(this.data).setDBStringListValue(FIELD_NAME, Collections.emptyList());
+        verify(this.doc).removeXObjects(AdditionalDocumentsController.CLASS_REFERENCE);
     }
 
     @Test
     public void saveDoesNotRemoveAttachments() throws ComponentLookupException
     {
         when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new IndexedPatientData<>(DATA_NAME, Collections.emptyList()));
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
         this.mocker.getComponentUnderTest().save(this.patient);
         verify(this.doc, Mockito.never()).removeAttachment(any(XWikiAttachment.class));
     }
 
     @Test
-    public void saveUpdatesAttachmentsAndMedicalRecordsField() throws ComponentLookupException, IOException
+    public void saveUpdatesAttachmentsAndMedicalRecordsField()
+        throws ComponentLookupException, IOException, XWikiException
     {
-        when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new IndexedPatientData<>(DATA_NAME, Arrays.asList(this.a1, this.a2)));
         this.mocker.getComponentUnderTest().save(this.patient);
 
-        verify(this.data).setDBStringListValue(FIELD_NAME, Arrays.asList("a1.pdf", "a2.pdf"));
+        verify(this.doc).removeXObjects(AdditionalDocumentsController.CLASS_REFERENCE);
+        verify(this.doc, times(2)).newXObject(AdditionalDocumentsController.CLASS_REFERENCE, this.context);
 
-        verify(this.attachment1).setFilesize(4);
-        verify(this.attachment1).setDate(this.date1);
-        verify(this.attachment1).setAuthorReference(this.author1);
-        verify(this.attachment1).setContent(this.a1.getContent());
+        verify(this.xattachment1).setFilesize(4);
+        verify(this.xattachment1).setDate(this.date1);
+        verify(this.xattachment1).setAuthorReference(this.author1);
+        verify(this.xattachment1).setContent(this.attachment1.getContent());
+        verify(this.file1).setStringValue(FILE_FIELD_NAME, "a1.pdf");
+        verify(this.file1).setLargeStringValue(COMMENTS_FIELD_NAME, "Comment 1");
 
-        verify(this.attachment2).setFilesize(3);
-        verify(this.attachment2).setDate(this.date2);
-        verify(this.attachment2).setAuthorReference(this.author2);
-        verify(this.attachment2).setContent(this.a2.getContent());
+        verify(this.xattachment2).setFilesize(3);
+        verify(this.xattachment2).setDate(this.date2);
+        verify(this.xattachment2).setAuthorReference(this.author2);
+        verify(this.xattachment2).setContent(this.attachment2.getContent());
+        verify(this.file2).setStringValue(FILE_FIELD_NAME, "a2.pdf");
+        verify(this.file2).setLargeStringValue(Matchers.eq(COMMENTS_FIELD_NAME), Matchers.isNull(String.class));
     }
 
     @Test
     public void saveAddsNewAttachmentsWhenNeeded() throws ComponentLookupException, IOException, XWikiException
     {
-        when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new IndexedPatientData<>(DATA_NAME, Arrays.asList(this.a1, this.a2)));
         when(this.doc.getAttachment("a1.pdf")).thenReturn(null);
         CapturingMatcher<XWikiAttachment> newAttachmentCapturer = new CapturingMatcher<>();
         Mockito.doNothing().when(this.doc).addAttachment(Matchers.argThat(newAttachmentCapturer));
 
         this.mocker.getComponentUnderTest().save(this.patient);
 
-        verify(this.data).setDBStringListValue(FIELD_NAME, Arrays.asList("a1.pdf", "a2.pdf"));
+        verify(this.doc).removeXObjects(AdditionalDocumentsController.CLASS_REFERENCE);
+        verify(this.doc, times(2)).newXObject(AdditionalDocumentsController.CLASS_REFERENCE, this.context);
 
         XWikiAttachment newAttachment = newAttachmentCapturer.getLastValue();
         Assert.assertEquals("a1.pdf", newAttachment.getFilename());
@@ -354,46 +370,55 @@ public class MedicalReportsControllerTest
         Assert.assertArrayEquals("abcd".getBytes(StandardCharsets.ISO_8859_1),
             IOUtils.toByteArray(newAttachment.getContentInputStream(this.context)));
 
-        verify(this.attachment2).setFilesize(3);
-        verify(this.attachment2).setDate(this.date2);
-        verify(this.attachment2).setAuthorReference(this.author2);
-        verify(this.attachment2).setContent(this.a2.getContent());
+        verify(this.xattachment2).setFilesize(3);
+        verify(this.xattachment2).setDate(this.date2);
+        verify(this.xattachment2).setAuthorReference(this.author2);
+        verify(this.xattachment2).setContent(this.attachment2.getContent());
     }
 
     @Test
-    public void saveUsesCurrentUserWhenSpecifiedUserDoesNotExist() throws ComponentLookupException, IOException
+    public void saveCatchesExceptions() throws Exception
     {
-        when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new IndexedPatientData<>(DATA_NAME, Arrays.asList(this.a1, this.a2)));
+        when(this.doc.newXObject(AdditionalDocumentsController.CLASS_REFERENCE, this.context))
+            .thenThrow(new XWikiException());
+
+        this.mocker.getComponentUnderTest().save(this.patient);
+    }
+
+    @Test
+    public void saveUsesCurrentUserWhenSpecifiedUserDoesNotExist()
+        throws ComponentLookupException, IOException, XWikiException
+    {
         when(this.xwiki.exists(this.author2, this.context)).thenReturn(false);
 
         this.mocker.getComponentUnderTest().save(this.patient);
 
-        verify(this.data).setDBStringListValue(FIELD_NAME, Arrays.asList("a1.pdf", "a2.pdf"));
+        verify(this.doc).removeXObjects(AdditionalDocumentsController.CLASS_REFERENCE);
+        verify(this.doc, times(2)).newXObject(AdditionalDocumentsController.CLASS_REFERENCE, this.context);
 
-        verify(this.attachment1).setAuthorReference(this.author1);
-        verify(this.attachment2).setAuthorReference(this.author1);
+        verify(this.xattachment1).setAuthorReference(this.author1);
+        verify(this.xattachment2).setAuthorReference(this.author1);
     }
 
     @Test
-    public void saveAcceptsGuestAuthor() throws ComponentLookupException, IOException
+    public void saveAcceptsGuestAuthor() throws ComponentLookupException, IOException, XWikiException
     {
-        when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new IndexedPatientData<>(DATA_NAME, Arrays.asList(this.a1)));
-        when(this.a1.getAuthorReference()).thenReturn(null);
+        when(this.attachment1.getAuthorReference()).thenReturn(null);
 
         this.mocker.getComponentUnderTest().save(this.patient);
 
-        verify(this.data).setDBStringListValue(FIELD_NAME, Arrays.asList("a1.pdf"));
+        verify(this.doc).removeXObjects(AdditionalDocumentsController.CLASS_REFERENCE);
+        verify(this.doc, times(2)).newXObject(AdditionalDocumentsController.CLASS_REFERENCE, this.context);
 
-        verify(this.attachment1).setAuthorReference(null);
+        verify(this.xattachment1).setAuthorReference(null);
     }
 
     @Test
     public void writeJSONDoesNothingWhenGetDataReturnsNull() throws ComponentLookupException
     {
-        JSONObject json = new JSONObject();
+        when(this.patient.getData(CONTROLLER_NAME)).thenReturn(null);
 
+        JSONObject json = new JSONObject();
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
         Assert.assertFalse(json.has(DATA_NAME));
@@ -402,9 +427,6 @@ public class MedicalReportsControllerTest
     @Test
     public void writeJSONWithOtherSelectedFieldsDoesNothing() throws ComponentLookupException
     {
-        when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Arrays.asList(this.a1, this.a2)));
-
         JSONObject json = new JSONObject();
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, Collections.singletonList("others"));
 
@@ -414,20 +436,18 @@ public class MedicalReportsControllerTest
     @Test
     public void writeJSONWithSelectedFieldsStoresEmptyArrayWhenGetDataReturnsNull() throws ComponentLookupException
     {
-        JSONObject json = new JSONObject();
+        when(this.patient.getData(CONTROLLER_NAME)).thenReturn(null);
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, Collections.singletonList(FIELD_NAME));
+        JSONObject json = new JSONObject();
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, Collections.singletonList(CONTROLLER_NAME));
 
         Assert.assertTrue(json.has(DATA_NAME));
         Assert.assertEquals(0, json.getJSONArray(DATA_NAME).length());
     }
 
     @Test
-    public void writeJSONAddsReports() throws ComponentLookupException
+    public void writeJSONAddsFiles() throws ComponentLookupException
     {
-        when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Arrays.asList(this.a1, this.a2)));
-
         JSONObject json = new JSONObject();
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
@@ -439,27 +459,8 @@ public class MedicalReportsControllerTest
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsAddsReports() throws ComponentLookupException
+    public void writeJSONWithSelectedFieldsAddsFiles() throws ComponentLookupException
     {
-        when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Arrays.asList(this.a1, this.a2)));
-
-        JSONObject json = new JSONObject();
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, Collections.singletonList(FIELD_NAME));
-
-        Assert.assertTrue(json.has(DATA_NAME));
-        JSONArray result = json.getJSONArray(DATA_NAME);
-        Assert.assertEquals(2, result.length());
-        Assert.assertSame(this.json1, result.getJSONObject(0));
-        Assert.assertSame(this.json2, result.getJSONObject(1));
-    }
-
-    @Test
-    public void writeJSONWithControllerNameAsSelectedFieldsAddsReports() throws ComponentLookupException
-    {
-        when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Arrays.asList(this.a1, this.a2)));
-
         JSONObject json = new JSONObject();
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, Collections.singletonList(CONTROLLER_NAME));
 
@@ -474,7 +475,7 @@ public class MedicalReportsControllerTest
     public void writeJSONWithWrongDataDoesNothing() throws ComponentLookupException
     {
         when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new SimpleValuePatientData<>(CONTROLLER_NAME, this.a1));
+            .thenReturn(new SimpleValuePatientData<>(CONTROLLER_NAME, this.attachment1));
 
         JSONObject json = new JSONObject();
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
@@ -501,7 +502,7 @@ public class MedicalReportsControllerTest
     }
 
     @Test
-    public void readJSONWithEmptyReportsReturnsEmptyData() throws ComponentLookupException
+    public void readJSONWithEmptyFilesReturnsEmptyData() throws ComponentLookupException
     {
         JSONObject input = new JSONObject();
         input.put(DATA_NAME, new JSONArray());
@@ -514,7 +515,7 @@ public class MedicalReportsControllerTest
     }
 
     @Test
-    public void readJSONReturnsReports() throws ComponentLookupException
+    public void readJSONReturnsFiles() throws ComponentLookupException
     {
         JSONArray a = new JSONArray();
         a.put(this.json1);
@@ -524,8 +525,8 @@ public class MedicalReportsControllerTest
 
         PatientData<Attachment> result = this.mocker.getComponentUnderTest().readJSON(json);
         Assert.assertEquals(2, result.size());
-        Assert.assertEquals(this.a1, result.get(0));
-        Assert.assertEquals(this.a2, result.get(1));
+        Assert.assertEquals(this.attachment1, result.get(0));
+        Assert.assertEquals(this.attachment2, result.get(1));
     }
 
     @Test
