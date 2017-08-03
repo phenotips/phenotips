@@ -70,8 +70,8 @@ public final class MeasurementUtils
      * Get the number of months corresponding to a period string.
      *
      * @param age the ISO-8601 period string, without leading 'P'
-     * @throws IllegalArgumentException if the age cannot be parsed
      * @return number of months
+     * @throws IllegalArgumentException if the age cannot be parsed
      */
     public static Double convertAgeStrToNumMonths(String age) throws IllegalArgumentException
     {

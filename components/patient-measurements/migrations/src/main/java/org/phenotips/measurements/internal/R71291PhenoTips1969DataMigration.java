@@ -258,12 +258,12 @@ public class R71291PhenoTips1969DataMigration extends AbstractHibernateDataMigra
 
         public String getName()
         {
-            return name;
+            return this.name;
         }
 
         public String getSide()
         {
-            return side;
+            return this.side;
         }
     }
 
