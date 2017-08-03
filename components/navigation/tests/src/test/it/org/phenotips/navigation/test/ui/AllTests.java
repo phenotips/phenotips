@@ -17,8 +17,9 @@
  */
 package org.phenotips.navigation.test.ui;
 
-import org.junit.runner.RunWith;
 import org.xwiki.test.ui.PageObjectSuite;
+
+import org.junit.runner.RunWith;
 
 /**
  * Runs all functional tests found in the classpath. This allows to start/stop PhenoTips only once.
