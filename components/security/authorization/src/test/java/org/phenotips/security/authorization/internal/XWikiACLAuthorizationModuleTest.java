@@ -44,7 +44,7 @@ public class XWikiACLAuthorizationModuleTest
 {
     @Rule
     public final MockitoComponentMockingRule<AuthorizationModule> mocker =
-        new MockitoComponentMockingRule<AuthorizationModule>(XWikiACLAuthorizationModule.class);
+        new MockitoComponentMockingRule<>(XWikiACLAuthorizationModule.class);
 
     @Mock
     private User user;

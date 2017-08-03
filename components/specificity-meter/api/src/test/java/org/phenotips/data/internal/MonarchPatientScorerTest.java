@@ -67,6 +67,10 @@ import static org.mockito.Mockito.when;
 
 public class MonarchPatientScorerTest
 {
+    @Rule
+    public final MockitoComponentMockingRule<PatientScorer> mocker =
+        new MockitoComponentMockingRule<>(MonarchPatientScorer.class);
+
     private ConfigurationSource configuration;
 
     @Mock
@@ -85,10 +89,6 @@ public class MonarchPatientScorerTest
     private Cache<PatientSpecificity> cache;
 
     private Set<Feature> features = new LinkedHashSet<>();
-
-    @Rule
-    public final MockitoComponentMockingRule<PatientScorer> mocker =
-        new MockitoComponentMockingRule<PatientScorer>(MonarchPatientScorer.class);
 
     @Before
     public void setup() throws CacheException, ComponentLookupException

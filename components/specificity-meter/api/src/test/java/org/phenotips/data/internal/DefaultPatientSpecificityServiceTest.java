@@ -38,6 +38,10 @@ import static org.mockito.Mockito.when;
 
 public class DefaultPatientSpecificityServiceTest
 {
+    @Rule
+    public final MockitoComponentMockingRule<PatientSpecificityService> mocker =
+        new MockitoComponentMockingRule<>(DefaultPatientSpecificityService.class);
+
     @Mock
     private Patient patient;
 
@@ -47,10 +51,6 @@ public class DefaultPatientSpecificityServiceTest
     private PatientScorer monarchScorer;
 
     private PatientScorer omimScorer;
-
-    @Rule
-    public final MockitoComponentMockingRule<PatientSpecificityService> mocker =
-        new MockitoComponentMockingRule<PatientSpecificityService>(DefaultPatientSpecificityService.class);
 
     @Before
     public void setup() throws CacheException, ComponentLookupException

@@ -178,18 +178,18 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
     private static final String INTERNAL_PARTNER = "partner";
 
     private static final Map<String, String> INVERSE_RELATIONSHIP =
-            Collections.unmodifiableMap(MapUtils.putAll(new HashMap<String, String>(), new String[][] {
-                { FAMSTUDIES_PARENT, FAMSTUDIES_CHILD },
-                { FAMSTUDIES_CHILD, FAMSTUDIES_PARENT },
-                { FAMSTUDIES_SIBLING, FAMSTUDIES_SIBLING },
-                { FAMSTUDIES_TWIN, FAMSTUDIES_TWIN },
-                { FAMSTUDIES_COUSIN, FAMSTUDIES_COUSIN },
-                { FAMSTUDIES_AUNTUNCLE, FAMSTUDIES_NIECENEPHEW },
-                { FAMSTUDIES_NIECENEPHEW, FAMSTUDIES_AUNTUNCLE },
-                { FAMSTUDIES_GRANDPARENT, FAMSTUDIES_GRANDCHILD },
-                { FAMSTUDIES_GRANDCHILD, FAMSTUDIES_GRANDPARENT },
-                { INTERNAL_PARTNER, INTERNAL_PARTNER }
-            }));
+        Collections.unmodifiableMap(MapUtils.putAll(new HashMap<String, String>(), new String[][] {
+            { FAMSTUDIES_PARENT, FAMSTUDIES_CHILD },
+            { FAMSTUDIES_CHILD, FAMSTUDIES_PARENT },
+            { FAMSTUDIES_SIBLING, FAMSTUDIES_SIBLING },
+            { FAMSTUDIES_TWIN, FAMSTUDIES_TWIN },
+            { FAMSTUDIES_COUSIN, FAMSTUDIES_COUSIN },
+            { FAMSTUDIES_AUNTUNCLE, FAMSTUDIES_NIECENEPHEW },
+            { FAMSTUDIES_NIECENEPHEW, FAMSTUDIES_AUNTUNCLE },
+            { FAMSTUDIES_GRANDPARENT, FAMSTUDIES_GRANDCHILD },
+            { FAMSTUDIES_GRANDCHILD, FAMSTUDIES_GRANDPARENT },
+            { INTERNAL_PARTNER, INTERNAL_PARTNER }
+        }));
 
     private static final Map<String, String> RELATIVE_ID_TO_NAME =
         Collections.unmodifiableMap(MapUtils.putAll(new HashMap<String, String>(), new String[][] {
@@ -205,7 +205,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         }));
 
     private static final Set<String> AUTO_LINKING_SUPPORTED_RELATIVE_TYPES = new HashSet<>(
-            Arrays.asList(FAMSTUDIES_PARENT, FAMSTUDIES_CHILD, FAMSTUDIES_SIBLING, FAMSTUDIES_TWIN));
+        Arrays.asList(FAMSTUDIES_PARENT, FAMSTUDIES_CHILD, FAMSTUDIES_SIBLING, FAMSTUDIES_TWIN));
 
     // derived relationships:
     //                      relation of A to B
@@ -218,11 +218,12 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
     //    | TWIN    | PARENT      | NIECE/NEPH | SIBLING    | TWIN
     //          (cell value == derived/expected relation of A to C)
     private static final String[][] DERIVED_RELATIONS_TABLE = new String[][] {
-            { FAMSTUDIES_GRANDPARENT, FAMSTUDIES_SIBLING,     FAMSTUDIES_AUNTUNCLE, FAMSTUDIES_AUNTUNCLE },
-            { INTERNAL_PARTNER,       FAMSTUDIES_GRANDCHILD,  FAMSTUDIES_CHILD,     FAMSTUDIES_CHILD },
-            { FAMSTUDIES_PARENT,      FAMSTUDIES_NIECENEPHEW, FAMSTUDIES_SIBLING,   FAMSTUDIES_SIBLING },
-            { FAMSTUDIES_PARENT,      FAMSTUDIES_NIECENEPHEW, FAMSTUDIES_SIBLING,   FAMSTUDIES_TWIN }
-        };
+        { FAMSTUDIES_GRANDPARENT, FAMSTUDIES_SIBLING, FAMSTUDIES_AUNTUNCLE, FAMSTUDIES_AUNTUNCLE },
+        { INTERNAL_PARTNER, FAMSTUDIES_GRANDCHILD, FAMSTUDIES_CHILD, FAMSTUDIES_CHILD },
+        { FAMSTUDIES_PARENT, FAMSTUDIES_NIECENEPHEW, FAMSTUDIES_SIBLING, FAMSTUDIES_SIBLING },
+        { FAMSTUDIES_PARENT, FAMSTUDIES_NIECENEPHEW, FAMSTUDIES_SIBLING, FAMSTUDIES_TWIN }
+    };
+
     // index into both dimensions of the 2D array above
     private static final Map<String, Integer> DERIVED_RELATIONS_INDEX =
         Collections.unmodifiableMap(MapUtils.putAll(new HashMap<String, Integer>(), new Object[][] {
@@ -294,7 +295,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         {
             try {
                 this.phenotipsId = patientDoc.getDocumentReference().getName();
-                this.owner = familyMigrations.getOwner(patientDoc);
+                this.owner = R71498PhenoTips2155DataMigration.this.familyMigrations.getOwner(patientDoc);
                 this.creationDate = patientDoc.getCreationDate();
 
                 BaseObject data = patientDoc.getXObject(Patient.CLASS_REFERENCE);
@@ -304,8 +305,8 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 }
             } catch (Exception ex) {
                 this.phenotipsId = "ERROR";
-                logger.error("Failed to get data from patient [{}] document: {}", patientDoc.getDocumentReference(),
-                    ex.getMessage());
+                R71498PhenoTips2155DataMigration.this.logger.error("Failed to get data from patient [{}] document: {}",
+                    patientDoc.getDocumentReference(), ex.getMessage());
             }
         }
 
@@ -322,7 +323,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                     return famReference;
                 }
             } catch (Exception ex) {
-                logger.info("Failed to retrieve the family of patient [{}]: {}",
+                R71498PhenoTips2155DataMigration.this.logger.info("Failed to retrieve the family of patient [{}]: {}",
                     patientXDocument.getDocumentReference(), ex.getMessage(), ex);
             }
             return null;
@@ -336,7 +337,8 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             Map<String, String> result = new HashMap<>();
 
             try {
-                List<BaseObject> relativeXObjects = patientXDocument.getXObjects(relativeClassReference);
+                List<BaseObject> relativeXObjects =
+                    patientXDocument.getXObjects(R71498PhenoTips2155DataMigration.this.relativeClassReference);
                 if (relativeXObjects == null || relativeXObjects.isEmpty()) {
                     return result;
                 }
@@ -353,13 +355,15 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                         continue;
                     }
                     if (relativeOf.equals(this.getExternalId())) {
-                        logger.info("ignoring self-reference for patient {}", this.getPhenotipsId());
+                        R71498PhenoTips2155DataMigration.this.logger.info("ignoring self-reference for patient {}",
+                            this.getPhenotipsId());
                         continue;
                     }
                     result.put(relativeOf, relativeType);
                 }
             } catch (Exception ex) {
-                logger.info("Failed to get the relatives of patient [{}]: {}", patientXDocument.getDocumentReference(),
+                R71498PhenoTips2155DataMigration.this.logger.info("Failed to get the relatives of patient [{}]: {}",
+                    patientXDocument.getDocumentReference(),
                     ex.getMessage());
             }
             return result;
@@ -495,13 +499,13 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 this.patientData.put(patientId, data);
 
                 if (StringUtils.isNotBlank(data.getExternalId())) {
-                    externalToPTIds.put(data.getExternalId(), patientId);
+                    this.externalToPTIds.put(data.getExternalId(), patientId);
                 }
 
             }
 
             // 2) fill in the referred-by part (to simplify further processing) and
-            //    remove self-references since those can screw up other parts of the code (and those are possible)
+            // remove self-references since those can screw up other parts of the code (and those are possible)
             for (Map.Entry<String, MigrationPatient> entry : this.patientData.entrySet()) {
                 String patientId = entry.getKey();
                 MigrationPatient data = entry.getValue();
@@ -550,10 +554,12 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
          * an external ID themself, so neither PhenoTips id alone nor external Id alone can be used to identify
          * any patient that can be encountered.
          */
-        private class PatientReference
+        private final class PatientReference
         {
-            public final String phenotipsID;
-            public final String externalID;
+            private final String phenotipsID;
+
+            private final String externalID;
+
             private final int hashCode;
 
             PatientReference(String phenotipsID, String externalID)
@@ -561,7 +567,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 this.phenotipsID = phenotipsID;
                 this.externalID = StringUtils.isNotBlank(externalID) ? externalID : null;
                 this.hashCode = ((phenotipsID == null ? "" : phenotipsID)
-                        + "__" + (externalID == null ? "" : externalID)).hashCode();
+                    + "__" + (externalID == null ? "" : externalID)).hashCode();
             }
 
             // creates a "fake" patient, e.g. a required (by pedigree) but missing parent
@@ -583,7 +589,8 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             @Override
             public String toString()
             {
-                return phenotipsID == null ? (externalID == null ? "<virtual>" : externalID) : phenotipsID;
+                return this.phenotipsID == null ? (this.externalID == null ? "<virtual>" : this.externalID)
+                    : this.phenotipsID;
             }
 
             @Override
@@ -595,7 +602,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             @Override
             public boolean equals(Object obj)
             {
-                return (obj == null) ? false : (hashCode == ((PatientReference) obj).hashCode);
+                return (obj == null) ? false : (this.hashCode == ((PatientReference) obj).hashCode);
             }
         }
 
@@ -641,12 +648,19 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         public class Pedigree
         {
             private PatientReference root;
+
             private PatientReference partner;
+
             private Set<PatientReference> rootParents = new HashSet<>();
+
             private Set<PatientReference> rootSiblings = new HashSet<>();
+
             private Set<PatientReference> partnerParents = new HashSet<>();
+
             private Set<PatientReference> children = new HashSet<>();
+
             private Map<PatientReference, Integer> patientToNodeId = new HashMap<>();
+
             private Map<PatientReference, PatientReference> partners = new HashMap<>();
 
             // can be any of the above
@@ -654,7 +668,8 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
             Pedigree(PatientReference rootPatient, PatientReference proband)
             {
-                logger.debug("Pedigree with root patient {}, proband {}", rootPatient, proband);
+                R71498PhenoTips2155DataMigration.this.logger.debug("Pedigree with root patient {}, proband {}",
+                    rootPatient, proband);
 
                 this.root = rootPatient;
                 this.addPatientNode(this.root);
@@ -663,8 +678,8 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
                 // find if there is a partner. If more than one found keep as null
                 // note: need to know partner from the start, as otherwise partner parents will be
-                //       rejected as unrelated if processed before the partner
-                Set<PatientReference> rootPartners = getAllRelativesOfType(root, INTERNAL_PARTNER);
+                // rejected as unrelated if processed before the partner
+                Set<PatientReference> rootPartners = getAllRelativesOfType(this.root, INTERNAL_PARTNER);
                 if (rootPartners.size() == 1) {
                     this.setPartner(rootPartners.iterator().next());
                 }
@@ -704,36 +719,36 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             // know if a "grandparent" relationship between this and that is OK to have)
             public boolean addPatient(PatientReference patient)
             {
-                String rootToPatient = getRelation(root, patient);
-                if (rootToPatient == null && partner != null) {
+                String rootToPatient = getRelation(this.root, patient);
+                if (rootToPatient == null && this.partner != null) {
                     // if it fits the scheme, this patient can only be a parent of the partner
-                    String partnerToPatient = getRelation(partner, patient);
-                    if (FAMSTUDIES_CHILD.equals(partnerToPatient) && partnerParents.size() < 2) {
-                        if (partnerParents.size() == 1) {
+                    String partnerToPatient = getRelation(this.partner, patient);
+                    if (FAMSTUDIES_CHILD.equals(partnerToPatient) && this.partnerParents.size() < 2) {
+                        if (this.partnerParents.size() == 1) {
                             // this is the partner of the only other partner parent
-                            this.addPartners(partnerParents.iterator().next(), patient);
+                            this.addPartners(this.partnerParents.iterator().next(), patient);
                         }
-                        partnerParents.add(patient);
+                        this.partnerParents.add(patient);
                         this.addPatientNode(patient);
                         return true;
                     }
                 } else if (FAMSTUDIES_CHILD.equals(rootToPatient)) {
-                    if (rootParents.size() < 2) {
+                    if (this.rootParents.size() < 2) {
                         this.addRootParent(patient);
                         return true;
                     }
                 } else if (FAMSTUDIES_PARENT.equals(rootToPatient)) {
-                    children.add(patient);
+                    this.children.add(patient);
                     this.addPatientNode(patient);
                     return true;
                 } else if (FAMSTUDIES_SIBLING.equals(rootToPatient) || FAMSTUDIES_TWIN.equals(rootToPatient)) {
-                    rootSiblings.add(patient);
+                    this.rootSiblings.add(patient);
                     this.addPatientNode(patient);
                     return true;
-                } else if (INTERNAL_PARTNER.equals(rootToPatient) && patient.equals(partner)) {
+                } else if (INTERNAL_PARTNER.equals(rootToPatient) && patient.equals(this.partner)) {
                     return true;
                 }
-                logger.debug("Can't add patient {} to pedigree", patient);
+                R71498PhenoTips2155DataMigration.this.logger.debug("Can't add patient {} to pedigree", patient);
                 return false;
             }
 
@@ -747,12 +762,12 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 // All CHILD/TWIN/PARENT/CHILD should be taken care of either via conflict detection
                 // or via inability to add to pedigree due to a "no match for the structure"
 
-                //  root/partner:
-                //  - GRANDPARENT/GRANDCHILD: none
-                //  - UNCLE/COUSIN/NIECE: only nodes not in pedigree
-                if (!this.checkNoRelationsOfType(Arrays.asList(root, partner),
-                        Arrays.asList(FAMSTUDIES_GRANDPARENT, FAMSTUDIES_GRANDCHILD))
-                    || !this.checkRelationsOnlyTo(Arrays.asList(root, partner),
+                // root/partner:
+                // - GRANDPARENT/GRANDCHILD: none
+                // - UNCLE/COUSIN/NIECE: only nodes not in pedigree
+                if (!this.checkNoRelationsOfType(Arrays.asList(this.root, this.partner),
+                    Arrays.asList(FAMSTUDIES_GRANDPARENT, FAMSTUDIES_GRANDCHILD))
+                    || !this.checkRelationsOnlyTo(Arrays.asList(this.root, this.partner),
                         Arrays.asList(FAMSTUDIES_NIECENEPHEW, FAMSTUDIES_AUNTUNCLE, FAMSTUDIES_COUSIN), null, true)) {
                     return false;
                 }
@@ -761,11 +776,12 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 // - GRANDPARENT/GRANDCHILD: none
                 // - COUSIN/NIECE: only nodes not in pedigree
                 // - UNCLE: only to root's children or nodes not in pedigree
-                if (!this.checkNoRelationsOfType(rootSiblings,
-                        Arrays.asList(FAMSTUDIES_GRANDPARENT, FAMSTUDIES_GRANDCHILD))
-                    || !this.checkRelationsOnlyTo(Arrays.asList(root, partner),
+                if (!this.checkNoRelationsOfType(this.rootSiblings,
+                    Arrays.asList(FAMSTUDIES_GRANDPARENT, FAMSTUDIES_GRANDCHILD))
+                    || !this.checkRelationsOnlyTo(Arrays.asList(this.root, this.partner),
                         Arrays.asList(FAMSTUDIES_NIECENEPHEW, FAMSTUDIES_COUSIN), null, true)
-                    || !this.checkRelationsOnlyTo(rootSiblings, Arrays.asList(FAMSTUDIES_AUNTUNCLE), children, true)) {
+                    || !this.checkRelationsOnlyTo(this.rootSiblings, Arrays.asList(FAMSTUDIES_AUNTUNCLE), this.children,
+                        true)) {
                     return false;
                 }
 
@@ -773,11 +789,12 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 //  - GRANDPARENT: only to children or nodes not in pedigree
                 //  - UNCLE/COUSIN/NIECE/GRANDCHILD: only nodes not in pedigree
                 Set<PatientReference> allGrandParents = new HashSet<>();
-                allGrandParents.addAll(rootParents);
-                allGrandParents.addAll(partnerParents);
-                if (!this.checkRelationsOnlyTo(allGrandParents, Arrays.asList(FAMSTUDIES_GRANDPARENT), children, true)
+                allGrandParents.addAll(this.rootParents);
+                allGrandParents.addAll(this.partnerParents);
+                if (!this.checkRelationsOnlyTo(allGrandParents, Arrays.asList(FAMSTUDIES_GRANDPARENT), this.children,
+                    true)
                     || !this.checkRelationsOnlyTo(allGrandParents, Arrays.asList(FAMSTUDIES_NIECENEPHEW,
-                            FAMSTUDIES_AUNTUNCLE, FAMSTUDIES_COUSIN, FAMSTUDIES_GRANDCHILD), null, true)) {
+                        FAMSTUDIES_AUNTUNCLE, FAMSTUDIES_COUSIN, FAMSTUDIES_GRANDCHILD), null, true)) {
                     return false;
                 }
 
@@ -788,12 +805,13 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 //  - COUSIN: only nodes not in pedigree
                 //  - GRANDPARENT/UNCLE: none
                 boolean allGrandparentsKnown = (allGrandParents.size() == 4);
-                if (!this.checkRelationsOnlyTo(children,
-                        Arrays.asList(FAMSTUDIES_GRANDCHILD), allGrandParents, !allGrandparentsKnown)
-                    || !this.checkRelationsOnlyTo(children, Arrays.asList(FAMSTUDIES_NIECENEPHEW), rootSiblings, true)
-                    || !this.checkNoRelationsOfType(children, Arrays.asList(
+                if (!this.checkRelationsOnlyTo(this.children,
+                    Arrays.asList(FAMSTUDIES_GRANDCHILD), allGrandParents, !allGrandparentsKnown)
+                    || !this.checkRelationsOnlyTo(this.children, Arrays.asList(FAMSTUDIES_NIECENEPHEW),
+                        this.rootSiblings, true)
+                    || !this.checkNoRelationsOfType(this.children, Arrays.asList(
                         FAMSTUDIES_GRANDPARENT, FAMSTUDIES_AUNTUNCLE))
-                    || !this.checkRelationsOnlyTo(children, Arrays.asList(FAMSTUDIES_COUSIN), null, true)) {
+                    || !this.checkRelationsOnlyTo(this.children, Arrays.asList(FAMSTUDIES_COUSIN), null, true)) {
                     return false;
                 }
 
@@ -801,7 +819,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             }
 
             private boolean checkNoRelationsOfType(Collection<PatientReference> patients,
-                    Collection<String> forbiddenRelationshipTypes)
+                Collection<String> forbiddenRelationshipTypes)
             {
                 for (PatientReference p : patients) {
                     if (p == null) {
@@ -819,8 +837,8 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             // checks that all relations of types listed in `relationTypes` only refer patients in the
             // `allowedTargets` or nodes not in the pedigree, if `allowNodesNotInPedigree == true`
             private boolean checkRelationsOnlyTo(Collection<PatientReference> patients,
-                    Collection<String> relationTypes, Collection<PatientReference> allowedTargets,
-                    boolean allowNodesNotInPedigree)
+                Collection<String> relationTypes, Collection<PatientReference> allowedTargets,
+                boolean allowNodesNotInPedigree)
             {
                 for (PatientReference p : patients) {
                     if (p == null) {
@@ -840,7 +858,8 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 return true;
             }
 
-            public String getProbandPatientId() {
+            public String getProbandPatientId()
+            {
                 return this.proband.phenotipsID;
             }
 
@@ -849,7 +868,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             public Set<String> getAllPTPatients()
             {
                 Set<String> result = new HashSet<>();
-                for (PatientReference member: this.patientToNodeId.keySet()) {
+                for (PatientReference member : this.patientToNodeId.keySet()) {
                     if (member.phenotipsID != null) {
                         result.add(member.phenotipsID);
                     }
@@ -873,7 +892,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
                 JSONArray allNodes = new JSONArray();
 
-                this.addNode(allNodes, root, this.rootParents);
+                this.addNode(allNodes, this.root, this.rootParents);
                 for (PatientReference parent : this.rootParents) {
                     this.addNode(allNodes, parent, null);
                 }
@@ -882,15 +901,15 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                     this.addNode(allNodes, sibling, this.rootParents);
                 }
 
-                if (partner != null) {
-                    this.addNode(allNodes, partner, this.partnerParents);
+                if (this.partner != null) {
+                    this.addNode(allNodes, this.partner, this.partnerParents);
                     for (PatientReference parent : this.partnerParents) {
                         this.addNode(allNodes, parent, null);
                     }
                 }
 
-                Set<PatientReference> baseFamily = new HashSet<>(partner != null
-                        ? Arrays.asList(root, partner) : Arrays.asList(root));
+                Set<PatientReference> baseFamily = new HashSet<>(this.partner != null
+                    ? Arrays.asList(this.root, this.partner) : Arrays.asList(this.root));
                 for (PatientReference child : this.children) {
                     this.addNode(allNodes, child, baseFamily);
                 }
@@ -898,7 +917,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             }
 
             private void addNode(JSONArray allNodes,
-                    PatientReference patient, Collection<PatientReference> parents)
+                PatientReference patient, Collection<PatientReference> parents)
             {
                 if (patient != null) {
                     JSONObject patientJSON = this.createNodeJSON(patient);
@@ -919,7 +938,8 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                         result.put(JSON_COMMENTS, "unknown");
                     }
                 } else {
-                    result = patientData.get(patient.phenotipsID).getPatientSimpleJSON();
+                    result = R71498PhenoTips2155DataMigration.this.patientData.get(patient.phenotipsID)
+                        .getPatientSimpleJSON();
 
                     String comment = "";
                     // add all nodes this patient refers to and which are not in pedigree as comments
@@ -928,7 +948,8 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                         if (!this.patientToNodeId.keySet().contains(relative)) {
                             // check if patient refers to the relative, or the other way around
                             // here we only care about outgoing references
-                            if (patientData.get(patient.phenotipsID).getRefersTo().containsKey(relative.externalID)) {
+                            if (R71498PhenoTips2155DataMigration.this.patientData.get(patient.phenotipsID).getRefersTo()
+                                .containsKey(relative.externalID)) {
                                 comment += generateOneCommentLine(relative.externalID, relation.getValue());
                             }
                         }
@@ -957,7 +978,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                     // current SimpleJSON requires to specify father/mother, not parent1/parent2
                     for (PatientReference parent : parents) {
                         String gender = (parent.phenotipsID == null) ? SEX_UNKNOWN
-                                : patientData.get(parent.phenotipsID).getGender();
+                            : R71498PhenoTips2155DataMigration.this.patientData.get(parent.phenotipsID).getGender();
                         if (SEX_FEMALE.equals(gender)) {
                             if (mother != null) {
                                 father = mother;
@@ -996,7 +1017,8 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 PatientReference patientPartner = this.partners.get(patient);
                 if (patientPartner != null) {
                     if (patientPartner.phenotipsID != null) {
-                        return patientData.get(patientPartner.phenotipsID).getSuggestedPartnerGender();
+                        return R71498PhenoTips2155DataMigration.this.patientData.get(patientPartner.phenotipsID)
+                            .getSuggestedPartnerGender();
                     } else if (patientPartner.isVirtual()) {
                         // both parents are virtual - randomly assign male/female to them, since
                         // both will end up in this code branch
@@ -1047,9 +1069,11 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
         RelatedSet(String rootPatientId)
         {
-            logger.debug("=== New RelatedSet, rootPatient: {} =======================================", rootPatientId);
+            R71498PhenoTips2155DataMigration.this.logger
+                .debug("=== New RelatedSet, rootPatient: {} =======================================", rootPatientId);
 
-            String rootPatientExternalId = patientData.get(rootPatientId).getExternalId();
+            String rootPatientExternalId =
+                R71498PhenoTips2155DataMigration.this.patientData.get(rootPatientId).getExternalId();
             this.addPatient(rootPatientId, rootPatientExternalId);
 
             // compute relationships that can be derived but are not specified, e.g.
@@ -1090,7 +1114,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
         public boolean hasInconsistentRelationships()
         {
-            return inconsistenciesDetected;
+            return this.inconsistenciesDetected;
         }
 
         // This method tries to find if there is a patient in the family which can be the root patient for the
@@ -1128,7 +1152,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         {
             Set<PatientReference> result = new HashSet<>();
 
-            for (PatientReference patient : patients) {
+            for (PatientReference patient : this.patients) {
                 for (String relation : this.getPatientRelations(patient).values()) {
                     if (AUTO_LINKING_SUPPORTED_RELATIVE_TYPES.contains(relation)) {
                         result.add(patient);
@@ -1147,37 +1171,38 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         private void addPatient(String patientId, String externalId)
         {
             PatientReference patient = new PatientReference(patientId, externalId);
-            if (!patients.add(patient)) {
+            if (!this.patients.add(patient)) {
                 // already in the set, means already has been processed
                 return;
             }
 
-            logger.debug("Adding patient {}/{}", patientId, externalId);
+            R71498PhenoTips2155DataMigration.this.logger.debug("Adding patient {}/{}", patientId, externalId);
 
             if (patientId == null) {
                 // not a real patient
                 return;
             }
-            phenotipsPatients.put(patientId, patient);
+            this.phenotipsPatients.put(patientId, patient);
 
-            MigrationPatient data = patientData.get(patientId);
+            MigrationPatient data = R71498PhenoTips2155DataMigration.this.patientData.get(patientId);
 
-            owners.add(data.getOwner());
+            this.owners.add(data.getOwner());
 
             // check if this is the proband patient - assumed to be the patient with
             // the earliest PT record creation time
-            Date creationDate = patientData.get(patientId).getCreationDate();
+            Date creationDate = R71498PhenoTips2155DataMigration.this.patientData.get(patientId).getCreationDate();
             if (this.assumedProband == null
-                || creationDate.before(patientData.get(this.assumedProband.phenotipsID).getCreationDate())) {
+                || creationDate.before(R71498PhenoTips2155DataMigration.this.patientData
+                    .get(this.assumedProband.phenotipsID).getCreationDate())) {
                 this.assumedProband = patient;
             }
 
             String familyId = data.getFamilyId();
             if (StringUtils.isNotBlank(familyId)) {
-                Set<String> familyMembers = familyIds.get(familyId);
+                Set<String> familyMembers = this.familyIds.get(familyId);
                 if (familyMembers == null) {
                     familyMembers = new HashSet<>();
-                    familyIds.put(familyId, familyMembers);
+                    this.familyIds.put(familyId, familyMembers);
                 }
                 familyMembers.add(patientId);
             }
@@ -1187,7 +1212,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
             for (Map.Entry<String, String> relation : data.getRefersTo().entrySet()) {
                 String eid = relation.getKey();
-                String pid = externalToPTIds.get(eid);
+                String pid = R71498PhenoTips2155DataMigration.this.externalToPTIds.get(eid);
                 this.addPatient(pid, eid);
 
                 // fill the `allRelations` map
@@ -1197,14 +1222,15 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             }
 
             for (String pid : data.getReferredBy().keySet()) {
-                String eid = patientData.get(pid).getExternalId();
+                String eid = R71498PhenoTips2155DataMigration.this.patientData.get(pid).getExternalId();
                 this.addPatient(pid, eid);
             }
         }
 
         private void addRelation(PatientReference patient, PatientReference otherPatient, String relation)
         {
-            logger.debug("Adding relation {} ---[{}]---> {}", patient, relation, otherPatient);
+            R71498PhenoTips2155DataMigration.this.logger.debug("Adding relation {} ---[{}]---> {}", patient, relation,
+                otherPatient);
 
             Map<PatientReference, String> patientRelations = this.getPatientRelations(patient);
             String patientToOther = patientRelations.get(otherPatient);
@@ -1257,7 +1283,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             boolean updated;
             do {
                 updated = false;
-                for (PatientReference patientA : patients) {
+                for (PatientReference patientA : this.patients) {
                     Map<PatientReference, String> patientARelations = this.getPatientRelations(patientA);
                     for (Map.Entry<PatientReference, String> relationA : patientARelations.entrySet()) {
                         PatientReference patientB = relationA.getKey();
@@ -1276,22 +1302,23 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                         }
                     }
                     if (this.getNumberOfParents(patientA) > 2) {
-                        logger.debug("Complicated - getNumberOfParents([{}]) > 2", patientA);
+                        R71498PhenoTips2155DataMigration.this.logger.debug("Complicated - getNumberOfParents([{}]) > 2",
+                            patientA);
                         this.complicatedDetected = true;
                     }
                     if (this.getNumberOfPartners(patientA) > 1) {
-                        logger.debug("Complicated - getNumberOfPartners([{}]) > 1", patientA);
+                        R71498PhenoTips2155DataMigration.this.logger
+                            .debug("Complicated - getNumberOfPartners([{}]) > 1", patientA);
                         this.complicatedDetected = true;
                     }
                 }
                 if (indirectionLevel++ >= 5) {
                     // the chain of relations is likely too long to be reliably represented by
                     // an auto-generated pedigree
-                    logger.debug("Complicated - indirectionLevel >= 5");
+                    R71498PhenoTips2155DataMigration.this.logger.debug("Complicated - indirectionLevel >= 5");
                     this.complicatedDetected = true;
                 }
-            }
-            while (updated && !this.complicatedDetected);
+            } while (updated && !this.complicatedDetected);
         }
 
         // Find siblings which do not have any parents, and adds a virtual parent
@@ -1301,14 +1328,14 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
             boolean updated;
             do {
                 updated = false;
-                for (PatientReference patient : patients) {
+                for (PatientReference patient : this.patients) {
                     Set<PatientReference> siblings = this.getAllRelativesOfType(patient, FAMSTUDIES_SIBLING);
                     siblings.addAll(this.getAllRelativesOfType(patient, FAMSTUDIES_TWIN));
 
                     Set<PatientReference> parents = this.getAllRelativesOfType(patient, FAMSTUDIES_CHILD);
                     if (siblings.size() > 0 && parents.size() == 0) {
                         PatientReference virtualParent = new PatientReference("virtual parent " + patient.toString());
-                        patients.add(virtualParent);
+                        this.patients.add(virtualParent);
                         siblings.add(patient);
                         for (PatientReference sibling : siblings) {
                             addRelation(sibling, virtualParent, FAMSTUDIES_CHILD);
@@ -1320,8 +1347,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                         break;
                     }
                 }
-            }
-            while (updated);
+            } while (updated);
         }
 
         // tries to derive a relationship between patients A and C based on relations between A and
@@ -1330,7 +1356,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         //
         // return `true` if there were any changes in the relations table
         private boolean setOrVerifyRelation(PatientReference patientA, PatientReference patientC,
-                String aToBrelation, String bToCrelation)
+            String aToBrelation, String bToCrelation)
         {
             if (patientC.equals(patientA)) {
                 return false;
@@ -1347,8 +1373,9 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
             if (actualAtoC != null) {
                 if (!actualAtoC.equals(expectedAtoC)) {
-                    logger.debug("Complicated - [{}]-to-[{}] is [{}], not equal to expected [{}]",
-                            patientA, patientC, actualAtoC, expectedAtoC);
+                    R71498PhenoTips2155DataMigration.this.logger.debug(
+                        "Complicated - [{}]-to-[{}] is [{}], not equal to expected [{}]",
+                        patientA, patientC, actualAtoC, expectedAtoC);
                     this.complicatedDetected = true;
                 }
             } else {
@@ -1365,10 +1392,10 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
         private Map<PatientReference, String> getPatientRelations(PatientReference patient)
         {
-            Map<PatientReference, String> patientRelations = allRelations.get(patient);
+            Map<PatientReference, String> patientRelations = this.allRelations.get(patient);
             if (patientRelations == null) {
                 patientRelations = new HashMap<>();
-                allRelations.put(patient, patientRelations);
+                this.allRelations.put(patient, patientRelations);
             }
             return patientRelations;
         }
@@ -1399,7 +1426,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         public Map<String, String> getExternalToPhenotipsIdMapping()
         {
             Map<String, String> result = new HashMap<>();
-            for (PatientReference patient : phenotipsPatients.values()) {
+            for (PatientReference patient : this.phenotipsPatients.values()) {
                 if (StringUtils.isNotBlank(patient.externalID)) {
                     result.put(patient.externalID, patient.phenotipsID);
                 }
@@ -1425,7 +1452,8 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         // family studies relation this patient has
         private String generatePedigreeCommentForRelatives(String phenotipsID)
         {
-            Map<String, String> refersTo = patientData.get(phenotipsID).getRefersTo();
+            Map<String, String> refersTo =
+                R71498PhenoTips2155DataMigration.this.patientData.get(phenotipsID).getRefersTo();
             if (refersTo.size() == 0) {
                 return null;
             }
@@ -1441,15 +1469,15 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         private String generateOneCommentLine(String patientExternalId, String relationshipType)
         {
             String relativeNamePlusArticle = RELATIVE_ID_TO_NAME.containsKey(relationshipType)
-                    ? RELATIVE_ID_TO_NAME.get(relationshipType) : relationshipType;
+                ? RELATIVE_ID_TO_NAME.get(relationshipType) : relationshipType;
             return "\n- this patient is " + relativeNamePlusArticle + " of patient " + patientExternalId;
         }
     }
 
     /**
-     * The actual migration work: go patient by patient, try to figure out which patients are related
-     * (using family studies data), and try to create a pedigree for each set of related patients (when possible)
-     * or add comments detailing family studies data to existing pedigrees (when a pedigree is already present).
+     * The actual migration work: go patient by patient, try to figure out which patients are related (using family
+     * studies data), and try to create a pedigree for each set of related patients (when possible) or add comments
+     * detailing family studies data to existing pedigrees (when a pedigree is already present).
      */
     private void processData()
     {
@@ -1459,7 +1487,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
         // already mentioned in the comments for some pedigree, so we should not process them again
         Set<String> alreadyProcessedPatients = new HashSet<>();
 
-        for (Map.Entry<String, MigrationPatient> patientEntry : patientData.entrySet()) {
+        for (Map.Entry<String, MigrationPatient> patientEntry : this.patientData.entrySet()) {
 
             String patientID = patientEntry.getKey();
 
@@ -1502,13 +1530,13 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
                     if (relatedPatients.hasInconsistentRelationships()) {
                         this.logger.error("Inconsistent relationships - can not create a family based on"
-                                + " family studies data for related patients [{}]", relatedPatients.getPatientIDs());
+                            + " family studies data for related patients [{}]", relatedPatients.getPatientIDs());
                         continue;
                     }
 
                     if (relatedPatients.getAllOwners().size() > 1) {
                         this.logger.error("Can not create a family: some of the related patients [{}] are owned by"
-                                + " different users", relatedPatients.getPatientIDs());
+                            + " different users", relatedPatients.getPatientIDs());
                         continue;
                     }
 
@@ -1519,8 +1547,8 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                         // are not uniquely identifiable (e.g. 3 siblings have 3 different parents, which may be
                         // valid if they are half-siblings, but we don't know) or too complicated and not supported
                         this.logger.error("Can not create a family based on family studies data for related"
-                                + " patients [{}]: family is too complicated or not uniquely indentifiable",
-                                relatedPatients.getPatientIDs());
+                            + " patients [{}]: family is too complicated or not uniquely indentifiable",
+                            relatedPatients.getPatientIDs());
                         continue;
                     }
 
@@ -1530,7 +1558,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 }
             } catch (Exception ex) {
                 this.logger.error("Error processing old family studies for patient [{}]: {}",
-                        patientID, ex.getMessage(), ex);
+                    patientID, ex.getMessage(), ex);
             }
         }
     }
@@ -1567,18 +1595,19 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 Map<String, String> externalIdsToLink = relatedPatients.getExternalToPhenotipsIdMapping();
                 Map<String, String> commentsToAdd = relatedPatients.getFamilyStudiesDataAsPedigreeComments();
 
-                logger.debug("Pedigree: externalIDsToLink: [{}]", externalIdsToLink.keySet());
-                logger.debug("Pedigree: comments to add: [{}] -> [{}]", commentsToAdd.keySet(), commentsToAdd.values());
+                this.logger.debug("Pedigree: externalIDsToLink: [{}]", externalIdsToLink.keySet());
+                this.logger.debug("Pedigree: comments to add: [{}] -> [{}]", commentsToAdd.keySet(),
+                    commentsToAdd.values());
 
                 Set<String> newlyLinkedPatients = this.familyMigrations.updatePedigree(pedigree,
-                        externalIdsToLink, commentsToAdd);
+                    externalIdsToLink, commentsToAdd);
 
                 String summaryOfChanges = "(updated pedigree: ";
                 if (newlyLinkedPatients.size() > 0) {
                     // some patients were linked to the pedigree based on pedigree node externalIDs - need to
                     // link PhenoTips documents to the family now
                     this.setAllFamilyRefs(relatedPatients.getAllFamilyMembers(familyId),
-                            newlyLinkedPatients, familyXDocument);
+                        newlyLinkedPatients, familyXDocument);
                     summaryOfChanges += "linked patients to nodes based on their external IDs and ";
                 }
                 summaryOfChanges += "added family studies summary to node comments)";
@@ -1596,8 +1625,8 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
     }
 
     /**
-     * Creates a new family, adds the generated pedigree JSON to it and links all patients (patient documents)
-     * that made it into the pedigree.
+     * Creates a new family, adds the generated pedigree JSON to it and links all patients (patient documents) that made
+     * it into the pedigree.
      */
     private void createNewFamilyAndLinkRelatives(RelatedSet.Pedigree pedigreeData)
     {
@@ -1608,7 +1637,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
             // generate new family document and set links
             XWikiDocument familyXDocument = this.createNewFamily(
-                    pedigree, pedigreeData.getProbandPatientId(), patients);
+                pedigree, pedigreeData.getProbandPatientId(), patients);
 
             String documentUpdateDescription = this.getDescription()
                 + " (generated a pedigree using Family Studies data)";
@@ -1670,7 +1699,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
      * Set family references for all relatives.
      */
     private void setAllFamilyRefs(Set<String> existingMembers, Set<String> newFamilyMembers,
-            XWikiDocument familyXDocument)
+        XWikiDocument familyXDocument)
     {
         String familyID = familyXDocument.getDocumentReference().getName();
 
@@ -1679,7 +1708,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
 
             // has to be a list because of setStringListValue() interface
             List<String> membersRefsList = existingMembers == null
-                    ? new LinkedList<String>() : new LinkedList<String>(existingMembers);
+                ? new LinkedList<>() : new LinkedList<>(existingMembers);
 
             for (String memberId : newFamilyMembers) {
                 membersRefsList.add(memberId);

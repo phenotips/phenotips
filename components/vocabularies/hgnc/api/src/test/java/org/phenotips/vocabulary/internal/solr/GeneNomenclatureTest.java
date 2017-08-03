@@ -191,69 +191,61 @@ public class GeneNomenclatureTest
     @Test
     public void getTermReturnsNullWhenIdIsNull()
     {
-        final VocabularyTerm term = this.component.getTerm(null);
-        Assert.assertNull(term);
+        Assert.assertNull(this.component.getTerm(null));
     }
 
     @Test
     public void getTermReturnsNullWhenIdIsEmptyString()
     {
-        final VocabularyTerm term = this.component.getTerm(StringUtils.EMPTY);
-        Assert.assertNull(term);
+        Assert.assertNull(this.component.getTerm(StringUtils.EMPTY));
     }
 
     @Test
     public void getTermReturnsNullWhenIdIsEmptySpace()
     {
-        final VocabularyTerm term = this.component.getTerm(StringUtils.SPACE);
-        Assert.assertNull(term);
+        Assert.assertNull(this.component.getTerm(StringUtils.SPACE));
     }
 
     @Test
     public void getTermReturnsNullIfNothingFound()
     {
         when(this.response.getResults()).thenReturn(null);
-        final VocabularyTerm term = this.component.getTerm(TERM_ID);
-        Assert.assertNull(term);
+        Assert.assertNull(this.component.getTerm(TERM_ID));
     }
 
     @Test
     public void getTermRemovesHGNCPrefixFromProvidedIds()
     {
-        final VocabularyTerm term = this.componentSpy.getTerm(TERM_PREFIX + SEPARATOR + TERM_ID);
+        Assert.assertEquals(this.term, this.componentSpy.getTerm(TERM_PREFIX + SEPARATOR + TERM_ID));
         verify(this.componentSpy, times(1)).requestTerm(QUERY_STRING, null);
-        Assert.assertEquals(this.term, term);
     }
 
     @Test
     public void getTermDoesNotChangeIdWhenItHasNoPrefix()
     {
-        final VocabularyTerm term = this.componentSpy.getTerm(TERM_ID);
+        Assert.assertEquals(this.term, this.componentSpy.getTerm(TERM_ID));
         verify(this.componentSpy, times(1)).requestTerm(QUERY_STRING, null);
-        Assert.assertEquals(this.term, term);
     }
 
     @Test
     public void requestTermReturnsNullIfResultsAreNull()
     {
         when(this.response.getResults()).thenReturn(null);
-        final VocabularyTerm term = this.component.requestTerm(QUERY_STRING, null);
-        Assert.assertNull(term);
+        Assert.assertNull(this.component.requestTerm(QUERY_STRING, null));
     }
 
     @Test
     public void requestTermReturnsNullIfResultsAreEmpty()
     {
         when(this.termList.isEmpty()).thenReturn(true);
-        final VocabularyTerm term = this.component.requestTerm(QUERY_STRING, null);
-        Assert.assertNull(term);
+        Assert.assertNull(this.component.requestTerm(QUERY_STRING, null));
     }
 
     @Test
     public void requestTermBehavesAsExpected()
     {
-        final VocabularyTerm term = this.component.requestTerm(QUERY_STRING, null);
-        Assert.assertEquals(TERM_ID, term.getId());
-        Assert.assertEquals(TERM_NAME, term.getName());
+        final VocabularyTerm result = this.component.requestTerm(QUERY_STRING, null);
+        Assert.assertEquals(TERM_ID, result.getId());
+        Assert.assertEquals(TERM_NAME, result.getName());
     }
 }

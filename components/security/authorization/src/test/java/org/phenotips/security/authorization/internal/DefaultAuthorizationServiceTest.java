@@ -17,7 +17,6 @@
  */
 package org.phenotips.security.authorization.internal;
 
-import org.mockito.InOrder;
 import org.phenotips.security.authorization.AuthorizationModule;
 import org.phenotips.security.authorization.AuthorizationService;
 
@@ -33,20 +32,20 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.inject.Provider;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import javax.inject.Provider;
-
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
-
 
 /**
  * Tests for the default {@link AuthorizationService} component, {@link DefaultAuthorizationService}.
@@ -57,7 +56,7 @@ public class DefaultAuthorizationServiceTest
 {
     @Rule
     public final MockitoComponentMockingRule<AuthorizationService> mocker =
-        new MockitoComponentMockingRule<AuthorizationService>(DefaultAuthorizationService.class);
+        new MockitoComponentMockingRule<>(DefaultAuthorizationService.class);
 
     @Mock
     private User user;
@@ -176,7 +175,7 @@ public class DefaultAuthorizationServiceTest
         doReturn(this.moduleList).when(this.modules).get();
 
         when(this.moduleOne.hasAccess(this.user, this.access, this.document)).thenThrow(
-                new NullPointerException());
+            new NullPointerException());
         when(this.moduleTwo.hasAccess(this.user, this.access, this.document)).thenReturn(true);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
     }

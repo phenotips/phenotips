@@ -171,9 +171,7 @@ public class DefaultConsentAuthorizerTest
     @Test
     public void authorizeInteractionForPatientWhenPatientIsNull()
     {
-        final Patient patient = null;
-        final boolean authorizeInteraction = this.component.authorizeInteraction(patient);
-        Assert.assertFalse(authorizeInteraction);
+        Assert.assertFalse(this.component.authorizeInteraction((Patient) null));
     }
 
     @Test
@@ -265,11 +263,10 @@ public class DefaultConsentAuthorizerTest
         final Set<Consent> missingConsents = new HashSet<>();
         missingConsents.add(this.consentA);
 
-        final Patient patient = mock(Patient.class);
-        when(this.consentManager.getMissingConsentsForPatient(patient)).thenReturn(missingConsents);
+        when(this.consentManager.getMissingConsentsForPatient(this.patient)).thenReturn(missingConsents);
         when(this.consentA.isRequired()).thenReturn(true);
 
-        final boolean isElementConsented = this.component.isElementConsented(element, patient);
+        final boolean isElementConsented = this.component.isElementConsented(element, this.patient);
         Assert.assertFalse(isElementConsented);
     }
 
@@ -286,15 +283,14 @@ public class DefaultConsentAuthorizerTest
         missingConsents.add(this.consentA);
         missingConsents.add(this.consentB);
 
-        final Patient patient = mock(Patient.class);
-        when(this.consentManager.getMissingConsentsForPatient(patient)).thenReturn(missingConsents);
+        when(this.consentManager.getMissingConsentsForPatient(this.patient)).thenReturn(missingConsents);
         when(this.consentA.affectsAllFields()).thenReturn(true);
         when(this.consentB.affectsAllFields()).thenReturn(false);
 
         final List<String> nonConsentedFields = Arrays.asList(FIELD_A_LABEL, FIELD_B_LABEL);
         when(this.consentA.getFields()).thenReturn(nonConsentedFields);
 
-        final boolean isElementConsented = this.component.isElementConsented(element, patient);
+        final boolean isElementConsented = this.component.isElementConsented(element, this.patient);
         Assert.assertFalse(isElementConsented);
     }
 
@@ -311,8 +307,7 @@ public class DefaultConsentAuthorizerTest
         missingConsents.add(this.consentA);
         missingConsents.add(this.consentB);
 
-        final Patient patient = mock(Patient.class);
-        when(this.consentManager.getMissingConsentsForPatient(patient)).thenReturn(missingConsents);
+        when(this.consentManager.getMissingConsentsForPatient(this.patient)).thenReturn(missingConsents);
         when(this.consentA.affectsAllFields()).thenReturn(false);
         when(this.consentB.affectsAllFields()).thenReturn(false);
         when(this.consentA.affectsSomeFields()).thenReturn(false);
@@ -321,7 +316,7 @@ public class DefaultConsentAuthorizerTest
         final List<String> nonConsentedFields = Arrays.asList(FIELD_A_LABEL, FIELD_B_LABEL);
         when(this.consentA.getFields()).thenReturn(nonConsentedFields);
 
-        final boolean isElementConsented = this.component.isElementConsented(element, patient);
+        final boolean isElementConsented = this.component.isElementConsented(element, this.patient);
         Assert.assertTrue(isElementConsented);
     }
 
@@ -338,8 +333,7 @@ public class DefaultConsentAuthorizerTest
         missingConsents.add(this.consentA);
         missingConsents.add(this.consentB);
 
-        final Patient patient = mock(Patient.class);
-        when(this.consentManager.getMissingConsentsForPatient(patient)).thenReturn(missingConsents);
+        when(this.consentManager.getMissingConsentsForPatient(this.patient)).thenReturn(missingConsents);
         when(this.consentA.affectsAllFields()).thenReturn(false);
         when(this.consentB.affectsAllFields()).thenReturn(false);
         when(this.consentA.affectsSomeFields()).thenReturn(true);
@@ -348,7 +342,7 @@ public class DefaultConsentAuthorizerTest
         when(this.consentA.getFields()).thenReturn(Arrays.asList(FIELD_A_LABEL, FIELD_B_LABEL));
         when(this.consentB.getFields()).thenReturn(Collections.singletonList(FIELD_C_LABEL));
 
-        final boolean isElementConsented = this.component.isElementConsented(element, patient);
+        final boolean isElementConsented = this.component.isElementConsented(element, this.patient);
         Assert.assertTrue(isElementConsented);
     }
 
@@ -365,8 +359,7 @@ public class DefaultConsentAuthorizerTest
         missingConsents.add(this.consentA);
         missingConsents.add(this.consentB);
 
-        final Patient patient = mock(Patient.class);
-        when(this.consentManager.getMissingConsentsForPatient(patient)).thenReturn(missingConsents);
+        when(this.consentManager.getMissingConsentsForPatient(this.patient)).thenReturn(missingConsents);
         when(this.consentA.affectsAllFields()).thenReturn(false);
         when(this.consentB.affectsAllFields()).thenReturn(false);
         when(this.consentA.affectsSomeFields()).thenReturn(true);
@@ -375,7 +368,7 @@ public class DefaultConsentAuthorizerTest
         when(this.consentA.getFields()).thenReturn(Arrays.asList(FIELD_A_LABEL, FIELD_B_LABEL));
         when(this.consentB.getFields()).thenReturn(Collections.singletonList(FIELD_C_LABEL));
 
-        final boolean isElementConsented = this.component.isElementConsented(element, patient);
+        final boolean isElementConsented = this.component.isElementConsented(element, this.patient);
         Assert.assertFalse(isElementConsented);
     }
 }

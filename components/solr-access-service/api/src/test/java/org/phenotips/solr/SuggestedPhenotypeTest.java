@@ -17,74 +17,93 @@
  */
 package org.phenotips.solr;
 
+import java.util.UUID;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.UUID;
-
 /**
- *  Tests for the {@link SuggestedPhenotype} class
+ * Tests for the {@link SuggestedPhenotype} class.
+ *
+ * @version $Id$
  */
 public class SuggestedPhenotypeTest
 {
-
     private final String testID = "HP:0000118";
+
     private final String testName = "Test Name";
+
     private final double testScore = 1.0;
+
     private final String otherID = "!!!!!";
+
     private final String otherName = "!!!!!";
+
     private final double otherScore = -1.0;
+
     private SuggestedPhenotype testInstance;
 
     @Before
     public void setUp() throws Exception
     {
-        testInstance = new SuggestedPhenotype(testID, testName, testScore);
+        this.testInstance = new SuggestedPhenotype(this.testID, this.testName, this.testScore);
     }
 
     @Test
     public void testConstructionAndGetters()
     {
-        Assert.assertEquals(testID, testInstance.getId());
-        Assert.assertEquals(testName, testInstance.getName());
-        Assert.assertEquals(testScore, testInstance.getScore(), 0);
+        Assert.assertEquals(this.testID, this.testInstance.getId());
+        Assert.assertEquals(this.testName, this.testInstance.getName());
+        Assert.assertEquals(this.testScore, this.testInstance.getScore(), 0);
     }
 
     @Test
     public void testCompareTo()
     {
-        Assert.assertEquals(0, testInstance.compareTo(null));
-        Assert.assertEquals(0, testInstance.compareTo(new SuggestedPhenotype(testID, testName, testScore)));
-        Assert.assertEquals(0, testInstance.compareTo(new SuggestedPhenotype(testID, testName, testScore)));
-        Assert.assertEquals(0, testInstance.compareTo(new SuggestedPhenotype(otherID, otherName, testScore)));
-        Assert.assertEquals(-1, testInstance.compareTo(new SuggestedPhenotype(testID, testName, (testScore - 0.001))));
-        Assert.assertEquals(-1, testInstance.compareTo(new SuggestedPhenotype(testID, testName, -testScore)));
-        Assert.assertEquals(-1, testInstance.compareTo(new SuggestedPhenotype(testID, testName, -999999)));
-        Assert.assertEquals(1, testInstance.compareTo(new SuggestedPhenotype(testID, testName, 1.1)));
-        Assert.assertEquals(1, testInstance.compareTo(new SuggestedPhenotype(testID, testName, 999999)));
+        Assert.assertEquals(0, this.testInstance.compareTo(null));
+        Assert.assertEquals(0,
+            this.testInstance.compareTo(new SuggestedPhenotype(this.testID, this.testName, this.testScore)));
+        Assert.assertEquals(0,
+            this.testInstance.compareTo(new SuggestedPhenotype(this.testID, this.testName, this.testScore)));
+        Assert.assertEquals(0,
+            this.testInstance.compareTo(new SuggestedPhenotype(this.otherID, this.otherName, this.testScore)));
+        Assert.assertEquals(-1,
+            this.testInstance.compareTo(new SuggestedPhenotype(this.testID, this.testName, (this.testScore - 0.001))));
+        Assert.assertEquals(-1,
+            this.testInstance.compareTo(new SuggestedPhenotype(this.testID, this.testName, -this.testScore)));
+        Assert.assertEquals(-1,
+            this.testInstance.compareTo(new SuggestedPhenotype(this.testID, this.testName, -999999)));
+        Assert.assertEquals(1, this.testInstance.compareTo(new SuggestedPhenotype(this.testID, this.testName, 1.1)));
+        Assert.assertEquals(1, this.testInstance.compareTo(new SuggestedPhenotype(this.testID, this.testName, 999999)));
     }
 
     @Test
     public void testEquals()
     {
-        Assert.assertTrue(testInstance.equals(testInstance));
-        Assert.assertTrue(testInstance.equals(new SuggestedPhenotype(testID, testName, testScore)));
-        Assert.assertFalse(testInstance.equals(null));
-        Assert.assertFalse(testInstance.equals(new Object()));
-        SuggestedPhenotype instanceWithNullID = new SuggestedPhenotype(null, testName, testScore);
-        Assert.assertFalse(instanceWithNullID.equals(testInstance));
-        Assert.assertFalse(testInstance.equals(instanceWithNullID));
-        Assert.assertFalse(testInstance.equals(new SuggestedPhenotype(otherID, testName, testScore)));
-        Assert.assertFalse(testInstance.equals(new SuggestedPhenotype(testID, testName, otherScore)));
-        Assert.assertTrue(testInstance.equals(new SuggestedPhenotype(testID, otherName, testScore)));
+        Assert.assertTrue(this.testInstance.equals(this.testInstance));
+        Assert.assertTrue(this.testInstance.equals(new SuggestedPhenotype(this.testID, this.testName, this.testScore)));
+        Assert.assertFalse(this.testInstance.equals(null));
+        Assert.assertFalse(this.testInstance.equals(new Object()));
+        SuggestedPhenotype instanceWithNullID = new SuggestedPhenotype(null, this.testName, this.testScore);
+        Assert.assertFalse(instanceWithNullID.equals(this.testInstance));
+        Assert.assertFalse(this.testInstance.equals(instanceWithNullID));
+        Assert
+            .assertFalse(this.testInstance.equals(new SuggestedPhenotype(this.otherID, this.testName, this.testScore)));
+        Assert
+            .assertFalse(this.testInstance.equals(new SuggestedPhenotype(this.testID, this.testName, this.otherScore)));
+        Assert
+            .assertTrue(this.testInstance.equals(new SuggestedPhenotype(this.testID, this.otherName, this.testScore)));
     }
 
     @Test
-    public void checkHashCodeContractMet() {
-        Assert.assertEquals(testInstance.hashCode(), testInstance.hashCode());
-        Assert.assertEquals(testInstance.hashCode(), new SuggestedPhenotype(testID, testName, testScore).hashCode());
-        Assert.assertEquals(testInstance.hashCode(), new SuggestedPhenotype(testID, otherName, testScore).hashCode());
+    public void checkHashCodeContractMet()
+    {
+        Assert.assertEquals(this.testInstance.hashCode(), this.testInstance.hashCode());
+        Assert.assertEquals(this.testInstance.hashCode(),
+            new SuggestedPhenotype(this.testID, this.testName, this.testScore).hashCode());
+        Assert.assertEquals(this.testInstance.hashCode(),
+            new SuggestedPhenotype(this.testID, this.otherName, this.testScore).hashCode());
 
         double randomScore = Math.random();
         String randomID = UUID.randomUUID().toString();
@@ -92,11 +111,12 @@ public class SuggestedPhenotypeTest
         Assert.assertEquals(new SuggestedPhenotype(randomID, randomName, randomScore).hashCode(),
             new SuggestedPhenotype(randomID, randomName, randomScore).hashCode());
         Assert.assertEquals(new SuggestedPhenotype(randomID, randomName, randomScore).hashCode(),
-            new SuggestedPhenotype(randomID, otherID, randomScore).hashCode());
+            new SuggestedPhenotype(randomID, this.otherID, randomScore).hashCode());
     }
 
     @Test
-    public void testToString() {
+    public void testToString()
+    {
         Assert.assertEquals(this.testInstance.toString(), this.testID + '\t' + this.testName + '\t' + this.testScore);
     }
 }

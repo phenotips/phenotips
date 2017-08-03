@@ -52,17 +52,17 @@ import static org.mockito.Mockito.when;
  */
 public class ChEBIOntologyTest
 {
-    public int ontologyServiceResult;
-
-    public Cache<VocabularyTerm> cache;
-
-    public SolrClient server;
-
-    public Vocabulary ontologyService;
-
     @Rule
     public final MockitoComponentMockingRule<Vocabulary> mocker =
-        new MockitoComponentMockingRule<Vocabulary>(ChEBIOntology.class);
+        new MockitoComponentMockingRule<>(ChEBIOntology.class);
+
+    private int ontologyServiceResult;
+
+    private Cache<VocabularyTerm> cache;
+
+    private SolrClient server;
+
+    private Vocabulary ontologyService;
 
     @SuppressWarnings("unchecked")
     @Before

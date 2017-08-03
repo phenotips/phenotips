@@ -26,6 +26,7 @@ import org.xwiki.model.reference.EntityReference;
  * @version $Id$
  * @since 1.0M9
  */
+@SuppressWarnings("checkstyle:InterfaceIsType")
 public interface Constants
 {
     /** The name of the space where most of the PhenoTips code resides in. */

@@ -42,7 +42,7 @@ public class BaseAuthorizationModuleTest
 {
     @Rule
     public final MockitoComponentMockingRule<AuthorizationModule> mocker =
-        new MockitoComponentMockingRule<AuthorizationModule>(BaseAuthorizationModule.class);
+        new MockitoComponentMockingRule<>(BaseAuthorizationModule.class);
 
     @Mock
     private User user;

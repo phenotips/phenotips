@@ -45,14 +45,16 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for the {@link AuthorizationModuleListProvider} component
+ * Test for the {@link AuthorizationModuleListProvider} component.
+ *
+ * @version $Id$
  */
 public class AuthorizationModuleListProviderTest
 {
 
     @Rule
     public MockitoComponentMockingRule<Provider<List<AuthorizationModule>>> mocker =
-        new MockitoComponentMockingRule<Provider<List<AuthorizationModule>>>(AuthorizationModuleListProvider.class);
+        new MockitoComponentMockingRule<>(AuthorizationModuleListProvider.class);
 
     @Mock
     private AuthorizationModule lowPriorityModule;

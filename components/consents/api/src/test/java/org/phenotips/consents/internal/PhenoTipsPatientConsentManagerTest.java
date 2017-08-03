@@ -21,6 +21,7 @@ import org.phenotips.consents.Consent;
 import org.phenotips.consents.ConsentManager;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.util.DefaultParameterizedType;
@@ -60,7 +61,7 @@ public class PhenoTipsPatientConsentManagerTest
 {
     @Rule
     public final MockitoComponentMockingRule<ConsentManager> mocker =
-        new MockitoComponentMockingRule<ConsentManager>(PhenoTipsPatientConsentManager.class);
+        new MockitoComponentMockingRule<>(PhenoTipsPatientConsentManager.class);
 
     /** Sets up initialization of the component with the given {@code baseObjects}. */
     @SuppressWarnings({ "rawtypes", "unchecked" })

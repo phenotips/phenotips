@@ -27,8 +27,8 @@ import java.util.Set;
 import org.json.JSONObject;
 
 /**
- * A Gene Panel links {@link #getPresentTerms() a collection of observed symptoms} to {@link #getTermsForGeneList()
- * a list of genes} frequently associated with these symptoms, in descending order of relevance.
+ * A Gene Panel links {@link #getPresentTerms() a collection of observed symptoms} to {@link #getTermsForGeneList() a
+ * list of genes} frequently associated with these symptoms, in descending order of relevance.
  *
  * @version $Id$
  * @since 1.3
@@ -75,7 +75,7 @@ public interface GenePanel
      * @throws IndexOutOfBoundsException if (<tt>fromIndex &lt; 0 || toIndex &gt; {@link #size()} ||
      *         fromIndex &gt; toIndex</tt>)
      */
-    JSONObject toJSON(final int fromIndex, final int toIndex);
+    JSONObject toJSON(int fromIndex, int toIndex);
 
     /**
      * Returns the number of genes represented by the gene panel.

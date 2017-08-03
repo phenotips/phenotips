@@ -74,11 +74,13 @@ import static org.mockito.Mockito.when;
     CurrentMixedEntityReferenceValueProvider.class, DefaultEntityReferenceValueProvider.class })
 public class GroupSetupEventListenerTest
 {
-    private EntityReference groupsClassReference = new EntityReference("XWikiGroups", EntityType.DOCUMENT,
-        new EntityReference("XWiki", EntityType.SPACE));
+    private static final EntityReference GROUPS_CLASS_REFERENCE =
+        new EntityReference("XWikiGroups", EntityType.DOCUMENT,
+            new EntityReference("XWiki", EntityType.SPACE));
 
-    private EntityReference rightsClassReference = new EntityReference("XWikiRights", EntityType.DOCUMENT,
-        new EntityReference("XWiki", EntityType.SPACE));
+    private static final EntityReference RIGHTS_CLASS_REFERENCE =
+        new EntityReference("XWikiRights", EntityType.DOCUMENT,
+            new EntityReference("XWiki", EntityType.SPACE));
 
     @Rule
     public final MockitoComponentMockingRule<EventListener> mocker = new MockitoComponentMockingRule<>(
@@ -115,16 +117,20 @@ public class GroupSetupEventListenerTest
         when(doc.getDocumentReference()).thenReturn(docReference);
         BaseObject groupObject = new BaseObject();
         BaseObject rightsObject = new BaseObject();
-        when(doc.newXObject(eq(this.groupsClassReference), eq(context))).thenReturn(groupObject);
-        when(doc.newXObject(eq(this.rightsClassReference), eq(context))).thenReturn(rightsObject);
+        when(doc.newXObject(eq(GroupSetupEventListenerTest.GROUPS_CLASS_REFERENCE), eq(context)))
+            .thenReturn(groupObject);
+        when(doc.newXObject(eq(GroupSetupEventListenerTest.RIGHTS_CLASS_REFERENCE), eq(context)))
+            .thenReturn(rightsObject);
         when(doc.getXObject(Group.CLASS_REFERENCE)).thenReturn(mock(BaseObject.class));
 
         DocumentReference adminsDocReference = new DocumentReference("xwiki", "Groups", "Group1 Administrators");
         XWikiDocument adminsDoc = mock(XWikiDocument.class);
         BaseObject adminsGroupObject = new BaseObject();
         BaseObject adminsRightsObject = new BaseObject();
-        when(adminsDoc.newXObject(eq(this.groupsClassReference), eq(context))).thenReturn(adminsGroupObject);
-        when(adminsDoc.newXObject(eq(this.rightsClassReference), eq(context))).thenReturn(adminsRightsObject);
+        when(adminsDoc.newXObject(eq(GroupSetupEventListenerTest.GROUPS_CLASS_REFERENCE), eq(context)))
+            .thenReturn(adminsGroupObject);
+        when(adminsDoc.newXObject(eq(GroupSetupEventListenerTest.RIGHTS_CLASS_REFERENCE), eq(context)))
+            .thenReturn(adminsRightsObject);
         when(xwiki.getDocument(eq(adminsDocReference), eq(context))).thenReturn(adminsDoc);
 
         DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);

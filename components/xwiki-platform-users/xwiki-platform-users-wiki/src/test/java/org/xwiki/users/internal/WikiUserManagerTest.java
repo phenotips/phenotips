@@ -54,7 +54,7 @@ public class WikiUserManagerTest
 {
     @Rule
     public final MockitoComponentMockingRule<UserManager> mocker =
-        new MockitoComponentMockingRule<UserManager>(WikiUserManager.class);
+        new MockitoComponentMockingRule<>(WikiUserManager.class);
 
     private UserManager userManager;
 
@@ -87,17 +87,17 @@ public class WikiUserManagerTest
         when(WikiUserManagerTest.this.modelConfiguration.getDefaultReferenceValue(EntityType.WIKI)).thenReturn("xwiki");
         when(this.referenceResolver.resolve(any(EntityReference.class), any(EntityType.class),
             any(DocumentReference.class))).thenAnswer(
-            new Answer<EntityReference>()
-            {
-                @Override
-                public EntityReference answer(InvocationOnMock invocation) throws Throwable
+                new Answer<EntityReference>()
                 {
-                    EntityReference toResolve = (EntityReference) invocation.getArguments()[0];
-                    DocumentReference reference = (DocumentReference) invocation.getArguments()[2];
-                    return new DocumentReference(toResolve.getName(),
-                        new SpaceReference(toResolve.getParent().getName(), reference.getRoot()));
-                }
-            });
+                    @Override
+                    public EntityReference answer(InvocationOnMock invocation) throws Throwable
+                    {
+                        EntityReference toResolve = (EntityReference) invocation.getArguments()[0];
+                        DocumentReference reference = (DocumentReference) invocation.getArguments()[2];
+                        return new DocumentReference(toResolve.getName(),
+                            new SpaceReference(toResolve.getParent().getName(), reference.getRoot()));
+                    }
+                });
 
         this.userManager = this.mocker.getComponentUnderTest();
     }
@@ -178,8 +178,8 @@ public class WikiUserManagerTest
     {
         setupMocks("xwiki");
         User u = this.userManager.getUser("Admin", true);
-        when(this.serializer.serialize(Matchers.same(new DocumentReference("xwiki", "XWiki", "Admin")))).
-            thenReturn("xwiki:XWiki.Admin");
+        when(this.serializer.serialize(Matchers.same(new DocumentReference("xwiki", "XWiki", "Admin"))))
+            .thenReturn("xwiki:XWiki.Admin");
         Assert.assertEquals("xwiki:XWiki.Admin", u.getId());
         Assert.assertTrue(u.exists());
     }
@@ -246,8 +246,9 @@ public class WikiUserManagerTest
 
         when(this.referenceResolver.resolve(
             new EntityReference("XWikiUsers", EntityType.DOCUMENT, new EntityReference("XWiki",
-                EntityType.SPACE)), EntityType.DOCUMENT, targetUser))
-            .thenReturn(new DocumentReference(targetUserWiki, "XWiki", "XWikiUsers"));
+                EntityType.SPACE)),
+            EntityType.DOCUMENT, targetUser))
+                .thenReturn(new DocumentReference(targetUserWiki, "XWiki", "XWikiUsers"));
 
         when(this.serializer.serialize(targetUser, new Object[0])).thenReturn(targetUserWiki + ":" + targetSpace + "."
             + StringUtils.defaultIfEmpty(StringUtils.substringAfterLast(passedIdentifier, "."),
@@ -259,13 +260,13 @@ public class WikiUserManagerTest
         } else {
             when(this.nameResolver.resolve(passedIdentifier, EntityType.DOCUMENT,
                 new EntityReference("XWiki", EntityType.SPACE, new WikiReference("xwiki"))))
-                .thenReturn(new DocumentReference("xwiki", targetSpace, "Admin"));
+                    .thenReturn(new DocumentReference("xwiki", targetSpace, "Admin"));
             when(this.nameResolver.resolve(passedIdentifier, EntityType.DOCUMENT,
                 new EntityReference("XWiki", EntityType.SPACE, new WikiReference("users"))))
-                .thenReturn(new DocumentReference("users", targetSpace, "Admin"));
+                    .thenReturn(new DocumentReference("users", targetSpace, "Admin"));
             when(this.nameResolver.resolve(passedIdentifier, EntityType.DOCUMENT,
                 new EntityReference("XWiki", EntityType.SPACE, new WikiReference("local"))))
-                .thenReturn(new DocumentReference("local", targetSpace, "Admin"));
+                    .thenReturn(new DocumentReference("local", targetSpace, "Admin"));
         }
     }
 }

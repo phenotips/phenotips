@@ -52,6 +52,10 @@ import static org.mockito.Mockito.when;
 
 public class SpecificityControllerTest
 {
+    @Rule
+    public final MockitoComponentMockingRule<PatientDataController<Object>> mocker =
+        new MockitoComponentMockingRule<>(SpecificityController.class);
+
     @Mock
     private Patient patient;
 
@@ -65,10 +69,6 @@ public class SpecificityControllerTest
     private String dateStr;
 
     private DateFormat isoDateFormat;
-
-    @Rule
-    public final MockitoComponentMockingRule<PatientDataController<Object>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<Object>>(SpecificityController.class);
 
     @Before
     public void setup() throws CacheException, ComponentLookupException
@@ -175,7 +175,7 @@ public class SpecificityControllerTest
     public void writeJSONWithNonNamedSpecificityDoesNothing() throws ComponentLookupException
     {
         when(this.patient.getData("specificity")).thenReturn(
-            new IndexedPatientData<Object>("specificity", Collections.<Object>singletonList(0.25d)));
+            new IndexedPatientData<>("specificity", Collections.<Object>singletonList(0.25d)));
         JSONObject json = new JSONObject();
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
         Assert.assertEquals(0, json.length());

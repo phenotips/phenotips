@@ -44,7 +44,7 @@ public interface GenePanelFactory
      * @param features a collection of {@link Feature} objects, both observed to be present and observed to be absent
      * @return a new {@link GenePanel} object for the collection of features
      */
-    GenePanel build(@Nonnull final Collection<? extends Feature> features);
+    GenePanel build(@Nonnull Collection<? extends Feature> features);
 
     /**
      * Creates an object of {@link GenePanel} class, given a collection of present and absent {@link VocabularyTerm}
@@ -54,8 +54,8 @@ public interface GenePanelFactory
      * @param absentTerms absent {@link VocabularyTerm} objects
      * @return a new {@link GenePanel} object for the collection of present and absent {@link VocabularyTerm} objects
      */
-    GenePanel build(@Nonnull final Collection<VocabularyTerm> presentTerms,
-        @Nonnull final Collection<VocabularyTerm> absentTerms);
+    GenePanel build(@Nonnull Collection<VocabularyTerm> presentTerms,
+        @Nonnull Collection<VocabularyTerm> absentTerms);
 
     /**
      * Create an object of {@link GenePanel} class for a given {@link Patient} object.
@@ -63,5 +63,5 @@ public interface GenePanelFactory
      * @param patient the {@link Patient} of interest
      * @return a new {@link GenePanel} object for the patient
      */
-    GenePanel build(@Nonnull final Patient patient);
+    GenePanel build(@Nonnull Patient patient);
 }
