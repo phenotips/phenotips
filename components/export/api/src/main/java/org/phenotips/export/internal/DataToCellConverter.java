@@ -1349,7 +1349,7 @@ public class DataToCellConverter
         String field = "";
         for (String property : valueTranslates) {
             if (value.contains(property)) {
-                if (field.length() != 0){
+                if (field.length() != 0) {
                     field += "; ";
                 }
                 field += this.translationManager.translate(className + property);
