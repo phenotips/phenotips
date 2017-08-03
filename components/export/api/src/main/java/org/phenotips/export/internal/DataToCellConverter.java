@@ -625,7 +625,7 @@ public class DataToCellConverter
     {
         String sectionName = "familyHistory";
         List<String> fields = new ArrayList<>(Arrays.asList("global_mode_of_inheritance", "miscarriages",
-            "consanguinity", "family_history", "maternal_ethnicity", "paternal_ethnicity"));
+            "consanguinity", "family_history", "paternal_ethnicity", "maternal_ethnicity"));
         fields.retainAll(enabledFields);
         Set<String> fieldSet = new HashSet<>(fields);
         this.enabledHeaderIdsBySection.put(sectionName, fieldSet);
@@ -722,12 +722,12 @@ public class DataToCellConverter
             }
             x++;
         }
-        if (present.contains("maternal_ethnicity")) {
-            List<String> maternalEthnicity = ethnicities.get("maternal_ethnicity");
+        if (present.contains("paternal_ethnicity")) {
+            List<String> paternalEthnicity = ethnicities.get("paternal_ethnicity");
             int y = 0;
-            if (maternalEthnicity != null && !maternalEthnicity.isEmpty()) {
-                for (String mEthnicity : maternalEthnicity) {
-                    DataCell cell = new DataCell(mEthnicity, x, y);
+            if (paternalEthnicity != null && !paternalEthnicity.isEmpty()) {
+                for (String pEthnicity : paternalEthnicity) {
+                    DataCell cell = new DataCell(pEthnicity, x, y);
                     bodySection.addCell(cell);
                     y++;
                 }
@@ -737,12 +737,12 @@ public class DataToCellConverter
             }
             x++;
         }
-        if (present.contains("paternal_ethnicity")) {
-            List<String> paternalEthnicity = ethnicities.get("paternal_ethnicity");
+        if (present.contains("maternal_ethnicity")) {
+            List<String> maternalEthnicity = ethnicities.get("maternal_ethnicity");
             int y = 0;
-            if (paternalEthnicity != null && !paternalEthnicity.isEmpty()) {
-                for (String pEthnicity : paternalEthnicity) {
-                    DataCell cell = new DataCell(pEthnicity, x, y);
+            if (maternalEthnicity != null && !maternalEthnicity.isEmpty()) {
+                for (String mEthnicity : maternalEthnicity) {
+                    DataCell cell = new DataCell(mEthnicity, x, y);
                     bodySection.addCell(cell);
                     y++;
                 }
