@@ -44,6 +44,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.core.CoreContainer;
@@ -59,8 +60,12 @@ import org.apache.solr.core.SolrCore;
 @Singleton
 public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResourceManager
 {
+    private static final String SOLR = "solr/";
+
+    private static final String TEMP = "_temp";
+
     /** List of config Solr files. */
-    public static final List<String> CONFIG_FILES = Arrays.asList("/conf/schema.xml", "/conf/solrconfig.xml",
+    private static final List<String> CONFIG_FILES = Arrays.asList("/conf/schema.xml", "/conf/solrconfig.xml",
         "/conf/solrcore.properties", "/conf/protwords.txt", "/conf/stopwords.txt", "/conf/synonyms.txt",
         "/conf/managed-schema.xml", "/core.properties");
 
@@ -159,5 +164,72 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
             }
         }
         return this.cores.get(vocabularyId);
+    }
+
+    @Override
+    public void createReplacementCore(String vocabularyId) throws InitializationException
+    {
+        try {
+            String absPath = this.environment.getPermanentDirectory().getAbsolutePath();
+            File tempDirectory = new File(absPath, SOLR + vocabularyId + TEMP);
+
+            if (!tempDirectory.exists()) {
+                Files.createDirectories(tempDirectory.toPath());
+            }
+
+            CoreContainer container = this.coreContainer.getContainer();
+
+            File configOrigin = new File(absPath, SOLR + vocabularyId + "/conf");
+            File configTemp = new File(absPath, SOLR + vocabularyId + TEMP + "/conf");
+            FileUtils.copyDirectory(configOrigin, configTemp);
+
+            container.create(vocabularyId + TEMP, Collections.<String, String>emptyMap());
+
+            SolrClient core = new EmbeddedSolrServer(container, vocabularyId + TEMP);
+            this.cores.put(vocabularyId + TEMP, core);
+        } catch (IOException ex) {
+            throw new InitializationException("Invalid Solr resource: " + ex.getMessage(), ex);
+        }
+    }
+
+    @Override
+    public void replaceCore(String vocabularyId) throws InitializationException
+    {
+        String absPath = this.environment.getPermanentDirectory().getAbsolutePath();
+        File indexOrigin = new File(absPath, SOLR + vocabularyId + "/data/index");
+        File indexTemp = new File(absPath, SOLR + vocabularyId + TEMP + "/data/index");
+        try {
+            CoreContainer container = this.coreContainer.getContainer();
+            SolrCore solrCore = container.getCore(vocabularyId);
+            if (solrCore != null) {
+                solrCore.close();
+            }
+            container.unload(vocabularyId, true, false, false);
+            FileUtils.copyDirectory(indexTemp, indexOrigin);
+            initialize(vocabularyId);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public SolrClient getReplacementSolrConnection(String vocabularyId)
+    {
+        return this.getSolrConnection(vocabularyId + TEMP);
+    }
+
+    @Override
+    public void discardReplacementCore(String vocabularyId)
+    {
+        if (this.cores.containsKey(vocabularyId + TEMP)) {
+            CoreContainer container = this.coreContainer.getContainer();
+            SolrCore solrCore = container.getCore(vocabularyId + TEMP);
+            if (solrCore != null) {
+                solrCore.close();
+            }
+            container.unload(vocabularyId + TEMP, true, true, true);
+            this.cores.remove(vocabularyId + TEMP);
+            this.caches.remove(vocabularyId + TEMP);
+        }
     }
 }

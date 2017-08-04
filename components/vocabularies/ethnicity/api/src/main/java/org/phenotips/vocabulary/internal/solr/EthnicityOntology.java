@@ -174,4 +174,10 @@ public class EthnicityOntology extends AbstractSolrVocabulary
     {
         return ID_PATTERN.matcher(query).matches();
     }
+
+    @Override
+    protected int index(String sourceUrl)
+    {
+        throw new UnsupportedOperationException();
+    }
 }

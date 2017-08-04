@@ -19,6 +19,7 @@ package org.phenotips.vocabulary;
 
 import org.xwiki.cache.Cache;
 import org.xwiki.component.annotation.Role;
+import org.xwiki.component.phase.InitializationException;
 import org.xwiki.stability.Unstable;
 
 import org.apache.solr.client.solrj.SolrClient;
@@ -48,4 +49,43 @@ public interface SolrVocabularyResourceManager
      * @return a Solr client for communication with the target core
      */
     SolrClient getSolrConnection(String vocabularyId);
+
+    /**
+     * Copy the Solr configuration file in a separate temporary directory, then register this temporary core with the
+     * Solr server. This core can be accessed with {@link #getReplacementSolrConnection(String)} during reindexing, and
+     * then it can either be discarded with {@link #discardReplacementCore(String)}, or take the place of the
+     * {@link #getSolrConnection(String) official vocabulary index} with {@link #replaceCore(String)}.
+     *
+     * @param vocabularyId the identifier of the target vocabulary
+     * @throws InitializationException if the process fails
+     * @since 1.4
+     */
+    void createReplacementCore(String vocabularyId) throws InitializationException;
+
+    /**
+     * Copy new index data from the temporary core to the main index location.
+     *
+     * @param vocabularyId the identifier of the target vocabulary
+     * @throws InitializationException if the process fails
+     * @since 1.4
+     */
+    void replaceCore(String vocabularyId) throws InitializationException;
+
+    /**
+     * Get the temporary Solr core used for a vocabulary during reindexing.
+     *
+     * @param vocabularyId the identifier of the target vocabulary
+     * @return a Solr client for communication with the target temporary core
+     * @since 1.4
+     */
+    SolrClient getReplacementSolrConnection(String vocabularyId);
+
+    /**
+     * Delete the temporary core, if one was already created by {@link #createReplacementCore(String)}. If no temporary
+     * core was created, nothing happens.
+     *
+     * @param vocabularyId the identifier of the target vocabulary
+     * @since 1.4
+     */
+    void discardReplacementCore(String vocabularyId);
 }
