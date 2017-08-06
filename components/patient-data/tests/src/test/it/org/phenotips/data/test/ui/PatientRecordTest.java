@@ -38,10 +38,10 @@ import org.junit.Test;
  */
 public class PatientRecordTest extends AbstractTest
 {
-    PatientRecordEditPage patientEdit;
-
     @Rule
     public AuthenticationRule authenticationRule = new JDoeAuthenticationRule(getUtil(), getDriver(), true);
+
+    private PatientRecordEditPage patientEdit;
 
     @Before
     public void setUp()
@@ -73,7 +73,9 @@ public class PatientRecordTest extends AbstractTest
             .assertTrue(this.patientEdit
                 .checkMoreInfoIndicationForReferral()
                 .contains(
-                    "This content can be a short summary or include content from the patient record. DO NOT RECORD any Protected Health Information."));
+                    "This content can be a short summary or include content from the patient record."
+                        + " DO NOT RECORD any Protected Health Information."));
+
         this.patientEdit.clickBody();
 
         PatientRecordViewPage patientView = this.patientEdit.clickSaveAndView();
@@ -104,7 +106,8 @@ public class PatientRecordTest extends AbstractTest
             .assertTrue(this.patientEdit
                 .checkMoreInfoFamilyHealthConditions()
                 .contains(
-                    "List health conditions found in family (describe the relationship with proband). DO NOT RECORD any Protected Health Information."));
+                    "List health conditions found in family (describe the relationship with proband)."
+                        + " DO NOT RECORD any Protected Health Information."));
 
         PatientRecordViewPage patientView = this.patientEdit.clickSaveAndView();
         Assert.assertTrue(patientView.getFamilyHistorySummary("fieldRelativeDescription").contains("Child"));
@@ -146,7 +149,8 @@ public class PatientRecordTest extends AbstractTest
     }
 
     @Test
-    public void parentalAgeTest(){
+    public void parentalAgeTest()
+    {
         this.patientEdit.setMaternalAgeAtEDD("25");
         this.patientEdit.setPaternalAgeAtEDD("27");
 
