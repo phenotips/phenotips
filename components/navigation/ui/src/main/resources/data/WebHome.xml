@@ -377,7 +377,7 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
-        <values>weight|height|bmi|sitting|armspan|upperSeg|lowerSeg|usls|hc|philtrum|ear|ocd|icd|pfl|ipd|hand|palm|foot</values>
+        <values>weight|height|bmi|sitting|armspan|upperSeg|lowerSeg|usls|hc|philtrum|ear|ocd|icd|pfl|ipd|midFinger|hand|palm|foot</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </ordering>
     </class>
@@ -412,6 +412,7 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <value>pfl</value>
         <value>ear</value>
         <value>philtrum</value>
+        <value>midFinger</value>
         <value>palm</value>
         <value>hand</value>
         <value>foot</value>
@@ -437,6 +438,7 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <value>pfl</value>
         <value>ear</value>
         <value>philtrum</value>
+        <value>midFinger</value>
         <value>palm</value>
         <value>hand</value>
         <value>foot</value>

@@ -10,6 +10,7 @@ org.phenotips.measurements.internal.HeightMeasurementHandler
 org.phenotips.measurements.internal.InnerCanthalDistanceMeasurementHandler
 org.phenotips.measurements.internal.InterPupilaryDistanceMeasurementHandler
 org.phenotips.measurements.internal.LowerSegMeasurementHandler
+org.phenotips.measurements.internal.MiddleFingerMeasurementHandler
 org.phenotips.measurements.internal.OuterCanthalDistanceMeasurementHandler
 org.phenotips.measurements.internal.PalmLengthMeasurementHandler
 org.phenotips.measurements.internal.PalpebralFissureLengthMeasurementHandler
