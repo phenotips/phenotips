@@ -63,7 +63,7 @@ public class ObstetricHistoryController implements PatientDataController<Integer
 {
     /** The XClass used for storing parental information. */
     public static final EntityReference CLASS_REFERENCE =
-        new EntityReference("ParentalInformationClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+        new EntityReference("ObstetricHistoryClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     private static final String PREFIX = "pregnancy_history__";
 

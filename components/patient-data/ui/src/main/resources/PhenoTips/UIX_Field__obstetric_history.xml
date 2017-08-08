@@ -112,11 +112,11 @@
 
 {{velocity}}
 #set ($origObj = $obj)
-#set ($obj = $doc.getObject('PhenoTips.ParentalInformationClass', true))
+#set ($obj = $doc.getObject('PhenoTips.ObstetricHistoryClass', true))
 #set ($origObjClass = $doc.getActiveClass())
 #set ($discard = $doc.use($obj))
 #set ($origClass = $class)
-#set ($class = $xwiki.getClass('PhenoTips.ParentalInformationClass'))
+#set ($class = $xwiki.getClass('PhenoTips.ObstetricHistoryClass'))
 ##
 #__hasDataToDisplay('pregnancy_history__gravida', $hasGravidaValue)
 #__hasDataToDisplay('pregnancy_history__para', $hasParaValue)
@@ -148,8 +148,8 @@
 enabled=false
 required=
 order=3
-fields=pregnancy_history__gravida,pregnancy_history__para,pregnancy_history__term,pregnancy_history__preterm,pregnancy_history__sab,pregnancy_history__tab,pregnancy_history__births
-pt_class=PhenoTips.ParentalInformationClass</parameters>
+fields=obstetric-history
+pt_class=PhenoTips.ObstetricHistoryClass</parameters>
     </property>
     <property>
       <scope>wiki</scope>

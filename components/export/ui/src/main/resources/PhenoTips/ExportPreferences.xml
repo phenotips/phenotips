@@ -50,6 +50,7 @@
     'PhenoTips.GeneClass' : {'name' : 'genes', 'label': "$services.localization.render('phenotips.exportPreferences.field.genes')"},
     'PhenoTips.InvestigationClass' : {'name' : 'genes', 'label': "$services.localization.render('phenotips.exportPreferences.field.genes')"},
     'PhenoTips.AllergiesDataClass' : {'name': 'allergies', 'label' : "$services.localization.render('PhenoTips.AllergiesDataClass_allergies')"},
+    'PhenoTips.ObstetricHistoryClass' : {'name': 'obstetric-history', 'label': "$services.localization.render('phenotips.UIXField.obstetricHistory')"},
     'PhenoTips.ExternalFileClass' : {'name': 'additionalDocuments', 'label' : "$services.localization.render('phenotips.exportPreferences.field.additionalDocuments')"},
     'PhenoTips.ExternalImageClass' : {'name': 'additionalImages', 'label' : "$services.localization.render('phenotips.exportPreferences.field.additionalImages')"}
 })
