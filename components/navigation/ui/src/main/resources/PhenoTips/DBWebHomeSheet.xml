@@ -499,10 +499,6 @@ ul.filters ul label {
 .entity-directory &gt; .xwiki-livetable-container.hidden-filters {
     margin-left: 20px;
 }
-.entity-directory .hidden-filters .tipfilters {
-    xtransform: rotate(-90deg);
-    xmargin-top: 210px;
-}
 .entity-directory .tipfilters .collapsed .toggle-filters {
   width: 232px;
 }
