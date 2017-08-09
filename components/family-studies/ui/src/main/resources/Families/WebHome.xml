@@ -84,7 +84,7 @@ $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
   'defaultOrder'      : 'asc',
   'resultPage'        : 'PhenoTips.LiveTableResults'
 })
-(% id="families-directory" class="entity-directory" %)(((
+(% id="families-directory" class="entity-directory" %)(((##
   #livetable('families' $columns $columnsProperties $options)
 )))
 {{/velocity}}</content>

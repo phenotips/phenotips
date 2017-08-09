@@ -118,7 +118,7 @@ $xwiki.ssx.use('PhenoTips.PatientConsent')##
 #if ("$!config.getProperty('livetableRows').value" != '' &amp;&amp; $config.getProperty('livetableRows').value &gt; 0)
   #set ($options.rowCount = $config.getProperty('livetableRows').value)
 #end
-(% id="patients-directory" class="entity-directory" %)(((
+(% id="patients-directory" class="entity-directory" %)(((##
   #livetable('patients' $columns $columnsProperties $options)
 )))
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
