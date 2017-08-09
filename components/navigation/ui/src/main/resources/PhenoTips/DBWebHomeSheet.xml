@@ -384,59 +384,75 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
   text-decoration: none;
 }
 
-.tipfilters {
+/*
+ * Filters area, floating to the left side.
+ * The filters are 240px wide, with a 10px margin between the filters and the table of results.
+ * Implementation strategy in expanded mode:
+ * - table has 100% width with a 10px left margin
+ * - surrounding div has 240x left margin
+ * - filters have 240px width and -240px left margin, with an apparent width of 0px and sitting on top of the parent's margin
+ */
+.entity-directory &gt; .xwiki-livetable-container {
+  margin-left: 240px;
+}
+.entity-directory .tipfilters {
   float: left;
-  max-width: 250px;
-  margin-left: -250px;
+  width: 240px;
+  margin-left: -240px;
 }
-.hidden-filters .tipfilters {
-  max-width: 40px;
-  margin-left: -40px;
-  margin-top: 210px;
-  transform: rotate(-90deg);
+/* The first child is the .tipfilters itself, so it must be skipped */
+.entity-directory &gt; .xwiki-livetable-container &gt; *:nth-child(n+2) {
+  margin-left: 10px;
 }
-.tipfilters .collapsed {
-  width: 40px;
+
+/*
+ * In collapsed mode, only the filters title is shown, rotated to be displayed vertically.
+ * Implementation strategy in collapsed mode:
+ * - table has 100% width with a 10px left margin
+ * - surrounding div has a (1.8em * 0.8 font size) left margin, equal to the filter titlebar height
+ * - since the rotation doesn't affect the bounding box as it is used for layout, but only what's painted, filters have to be manually "sized" to the rotated display size
+ *   - rotate and translate so that the top right corner becomes the top left corner
+ *   - set the height to the old width, 240px
+ *   - set the width to the old height, (1.8em(titlebar height) * 0.8(titlebar font size))
+ */
+.entity-directory &gt; .xwiki-livetable-container.hidden-filters {
+  margin-left: 1.44em;
 }
-.entity-directory .xwiki-livetable-topfilters-tip {
-  margin-right: 10px;
+.entity-directory .hidden-filters .tipfilters {
+  height: 240px;
+  width: 1.44em;
+  margin-left: -1.44em;
+  -ms-transform: rotate(-90deg) translate(-240px, 0);
+  -ms-transform-origin: 0 0;
+  transform: rotate(-90deg) translate(-240px, 0);
+  transform-origin: 0 0;
 }
-.entity-directory .xwiki-livetable-topfilters-tip p {
+
+/* Collapse and expand markers */
+.toggle-filters .collapse-marker, .collapsed .toggle-filters .expand-marker {
+  display: inline-block;
+  float: right;
+  margin-top: 2px;
+}
+.toggle-filters .expand-marker, .collapsed .toggle-filters .collapse-marker {
+  display: none;
+}
+
+/* Override some other XWiki styles that conflict with the desired look of the filter */
+.entity-directory .tipfilters .buttonwrapper, .entity-directory .tipfilters p {
   margin: 0;
 }
-.xwiki-livetable-topfilters-container {
+.entity-directory .xwiki-livetable-topfilters-container {
   padding: 0;
-  margin-top: 5px;
-}
-.entity-directory &gt; .xwiki-livetable-container {
-  margin-left: 250px;
-}
-.entity-directory &gt; .xwiki-livetable-container.hidden-filters {
-  margin-left: 40px;
+  margin-top: 0;
 }
 .xwiki-livetable-topfilters-container .toggle-filters {
   border-radius: 0 !important;
-  width: 232px;
+  display: block !important;
+  height: 1.8em;
+  width: 240px;
   box-shadow: none !important;
-}
-
-.tipfilters .collapsed .toggle-filters {
-  width: 32px;
-}
-.tipfilters .collapse-marker {
-  float: right;
-  margin-top: 2px;
-}
-.tipfilters .expand-marker {
-  display: none;
-  margin-top: 2px;
-}
-.tipfilters .collapsed .label, .tipfilters .collapsed .collapse-marker {
-  display: none;
-}
-.tipfilters .collapsed .expand-marker {
-  display: inline-block;
-  float: right;
+  box-sizing: border-box;
 }
 
 /* Table actions */
@@ -488,23 +504,16 @@ ul.filters ul label {
   display: inline-block;
 }
 
+/* Hide the XWiki-default border surrounding the filters */
 .xwiki-livetable-topfilters-container {
   border: 0 none !important;
 }
+
+/* Hide the XWiki-default callout arrow protruding from the filters */
 .entity-directory .xwiki-livetable-topfilters-tip .tippointer {
   display: none;
 }
-
-/*---------------------------------------------------------------*/
-.entity-directory &gt; .xwiki-livetable-container.hidden-filters {
-    margin-left: 20px;
-}
-.entity-directory .tipfilters .collapsed .toggle-filters {
-  width: 232px;
-}
-.entity-directory .tipfilters .collapsed .label {
-  display: inline;
-}</code>
+</code>
     </property>
     <property>
       <contentType>CSS</contentType>
