@@ -50,14 +50,14 @@
 #end
 ##
 #macro (__filters_dateField $label $field_name $value)
-{{html clean="false"}}&lt;label&gt;$label &lt;span class="xHint"&gt;$services.localization.render('phenotips.databaseFilters.generalEmptyHint')&lt;/span&gt;&lt;input class="xwiki-date" type="text" alt="#if($value)#formatdateISO($value)#end" value="$!xwiki.formatDate($value, $definedFormat)" name="${field_name}" title="${dateFormat}" /&gt;&lt;/label&gt;{{/html}}
+{{html clean="false"}}&lt;label&gt;$label &lt;input class="xwiki-date" type="text" alt="#if($value)#formatdateISO($value)#end" value="$!xwiki.formatDate($value, $definedFormat)" name="${field_name}" title="${dateFormat}" /&gt;&lt;/label&gt;{{/html}}
 #end
 
 #macro(__filters_display $cssClass)
 (% class="filters $!cssClass" %)
-* $services.localization.render('phenotips.databaseFilters.externalID') {{html clean=false}}&lt;p class="xHint"&gt;$services.localization.render('phenotips.databaseFilters.generalEmptyHint')&lt;/p&gt;&lt;input type="text" name="external_id" value=""/&gt;{{/html}}
-* $services.localization.render('phenotips.databaseFilters.referrer') {{html clean=false}}&lt;p class="xHint"&gt;$services.localization.render('phenotips.databaseFilters.referrer.hint')&lt;/p&gt;&lt;input type="text" class="suggestUsers multipleSelection" name="doc.creator" value=""/&gt;{{/html}}
-* $services.localization.render('phenotips.databaseFilters.author') {{html clean=false}}&lt;p class="xHint"&gt;$services.localization.render('phenotips.databaseFilters.author.hint')&lt;/p&gt;&lt;input type="text" class="suggestUsers multipleSelection" name="doc.author" value=""/&gt;{{/html}}
+* $services.localization.render('phenotips.databaseFilters.externalID') {{html clean=false}}&lt;input type="text" name="external_id" value=""/&gt;{{/html}}
+* $services.localization.render('phenotips.databaseFilters.referrer') {{html clean=false}}&lt;input type="text" class="suggestUsers multipleSelection" name="doc.creator" value=""/&gt;{{/html}}
+* $services.localization.render('phenotips.databaseFilters.author') {{html clean=false}}&lt;input type="text" class="suggestUsers multipleSelection" name="doc.author" value=""/&gt;{{/html}}
 * $services.localization.render('phenotips.databaseFilters.creationDate') #__filters_dateRange("doc.creationDate")
 * $services.localization.render('phenotips.databaseFilters.modificationDate') #__filters_dateRange("doc.date")
 #end

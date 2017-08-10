@@ -257,9 +257,12 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
       <code>document.observe('xwiki:dom:loaded', function() {
   $$('.xwiki-livetable-topfilters-container .toggle-filters').invoke('observe', 'click', function(event) {
     event.stop();
-    $('patients-topfilters').toggleClassName('collapsed');
+    var filtersElt = event.findElement('.xwiki-livetable-container .xwiki-livetable-topfilters-tip');
+    if (filtersElt) {
+      filtersElt.toggleClassName('collapsed');
+      filtersElt.up('.xwiki-livetable-container').toggleClassName('hidden-filters');
+    }
   });
-  $('patients-topfilters') &amp;&amp; $('patients-topfilters').addClassName('collapsed');
 });</code>
     </property>
     <property>
@@ -374,21 +377,149 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
 #document-title h1 {
   border: 0 none;
 }
-#patients-topfilters .toggle-filters:before {
-  content: "▼ ";
-}
-#patients-topfilters.collapsed .toggle-filters:before {
-  content: "► ";
-}
-#patients-topfilters.collapsed .filters {
+.entity-directory .xwiki-livetable-topfilters-tip.collapsed .filters {
   display: none;
 }
 .xwiki-livetable a:not(:link) {
   text-decoration: none;
-}</code>
+}
+
+/*
+ * Filters area, floating to the left side.
+ * The filters are 240px wide, with a 10px margin between the filters and the table of results.
+ * Implementation strategy in expanded mode:
+ * - table has 100% width with a 10px left margin
+ * - surrounding div has 240x left margin
+ * - filters have 240px width and -240px left margin, with an apparent width of 0px and sitting on top of the parent's margin
+ */
+.entity-directory &gt; .xwiki-livetable-container {
+  margin-left: 240px;
+}
+.entity-directory .tipfilters {
+  float: left;
+  width: 240px;
+  margin-left: -240px;
+}
+/* The first child is the .tipfilters itself, so it must be skipped */
+.entity-directory &gt; .xwiki-livetable-container &gt; *:nth-child(n+2) {
+  margin-left: 10px;
+}
+
+/*
+ * In collapsed mode, only the filters title is shown, rotated to be displayed vertically.
+ * Implementation strategy in collapsed mode:
+ * - table has 100% width with a 10px left margin
+ * - surrounding div has a (1.8em * 0.8 font size) left margin, equal to the filter titlebar height
+ * - since the rotation doesn't affect the bounding box as it is used for layout, but only what's painted, filters have to be manually "sized" to the rotated display size
+ *   - rotate and translate so that the top right corner becomes the top left corner
+ *   - set the height to the old width, 240px
+ *   - set the width to the old height, (1.8em(titlebar height) * 0.8(titlebar font size))
+ */
+.entity-directory &gt; .xwiki-livetable-container.hidden-filters {
+  margin-left: 1.44em;
+}
+.entity-directory .hidden-filters .tipfilters {
+  height: 240px;
+  width: 1.44em;
+  margin-left: -1.44em;
+  -ms-transform: rotate(-90deg) translate(-240px, 0);
+  -ms-transform-origin: 0 0;
+  transform: rotate(-90deg) translate(-240px, 0);
+  transform-origin: 0 0;
+}
+
+/* Collapse and expand markers */
+.toggle-filters .collapse-marker, .collapsed .toggle-filters .expand-marker {
+  display: inline-block;
+  float: right;
+  margin-top: 2px;
+}
+.toggle-filters .expand-marker, .collapsed .toggle-filters .collapse-marker {
+  display: none;
+}
+
+/* Override some other XWiki styles that conflict with the desired look of the filter */
+.entity-directory .tipfilters .buttonwrapper, .entity-directory .tipfilters p {
+  margin: 0;
+}
+.entity-directory .xwiki-livetable-topfilters-container {
+  padding: 0;
+  margin-top: 0;
+}
+.xwiki-livetable-topfilters-container .toggle-filters {
+  border-radius: 0 !important;
+  display: block !important;
+  height: 1.8em;
+  width: 240px;
+  box-shadow: none !important;
+  box-sizing: border-box;
+}
+
+/* Table actions */
+tbody.xwiki-livetable-display-body td a.action {
+  display: inline-block;
+  width: 0;
+  overflow: hidden;
+}
+
+/* General filters style */
+ul.filters {
+  margin: 10px;
+  list-style-type: none;
+}
+ul.filters li {
+  padding: 0 0 10px 0;
+}
+ul.filters .accepted-suggestions {
+  margin: 0 !important;
+}
+ul.filters ul {
+  clear: both;
+}
+ul.filters .accepted-suggestions li {
+  padding: 0 0 0;
+}
+ul.filters .accepted-suggestions + .clear-tool {
+  margin-bottom: 1em;
+}
+ul.filters .accepted-suggestions + .clear-tool.invisible {
+  display: none;
+}
+ul.filters .accepted-suggestions label {
+  display: inline-block;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+ul.filters .accepted-suggestions .xHelpButton {
+  display: inline-block;
+  vertical-align: middle;
+}
+ul.filters ul label input[type="radio"] {
+  margin-left: .5em;
+}
+ul.filters ul label {
+  display: inline-block;
+}
+
+/* Hide the XWiki-default border surrounding the filters */
+.xwiki-livetable-topfilters-container {
+  border: 0 none !important;
+}
+
+/* Hide the XWiki-default callout arrow protruding from the filters */
+.entity-directory .xwiki-livetable-topfilters-tip .tippointer {
+  display: none;
+}
+</code>
     </property>
     <property>
-      <name>Minor layout fix</name>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name>Layout customizations for filters</name>
     </property>
     <property>
       <parse>0</parse>
