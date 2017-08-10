@@ -20,6 +20,7 @@ package org.phenotips.panels.rest;
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
 
+import org.xwiki.rest.resources.RootResource;
 import org.xwiki.stability.Unstable;
 
 import java.util.List;
@@ -32,8 +33,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
-
 /**
  * A resource for integrating a gene panel display with a LiveTable.
  *
@@ -43,7 +42,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
 @Unstable("New API introduced in 1.4")
 @Path("/suggested-gene-panels/livetable")
 @Relation("https://phenotips.org/rel/genePanels")
-@ParentResource(RootResourceClass.class)
+@ParentResource(RootResource.class)
 public interface GenePanelsLiveTableResource
 {
     /**
@@ -56,7 +55,6 @@ public interface GenePanelsLiveTableResource
      * @param offset the offset for the results, numbering starts from 1
      * @param limit the number of results to display, must be an integer
      * @param reqNo the request number, must be an integer
-     *
      * @return associated genes and counts data if successful, an error code otherwise
      */
     @GET
