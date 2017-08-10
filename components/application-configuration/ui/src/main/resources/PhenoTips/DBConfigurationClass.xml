@@ -93,11 +93,17 @@ $!value
 {{velocity output=false}}
 $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
 #set ($docFields = ['doc.name', 'doc.creator', 'doc.author', 'doc.creationDate', 'doc.date'])
+#if (!$xwiki.getDocument('PhenoTips.OwnerClass').isNew())
+  #set ($discard = $docFields.add('owner/PhenoTips.OwnerClass'))
+#end
+#if (!$xwiki.getDocument('PhenoTips.VisibilityClass').isNew())
+  #set ($discard = $docFields.add('visibility/PhenoTips.VisibilityClass'))
+#end
 #macro(__xclass__displayLivetableColOption $option $value)
   &lt;li&gt;
     &lt;label&gt;
     &lt;input type="checkbox" name="${prefix}${name}" id="${prefix}${name}_${option}" value="$option"#if ($value.contains($option)) checked="checked"#end/&gt;
-    $services.localization.render("patient.livetable.${option}")
+    $services.localization.render("patient.livetable.${option.replaceAll('\/.*', '')}")
     &lt;/label&gt;
   &lt;/li&gt;
 #end

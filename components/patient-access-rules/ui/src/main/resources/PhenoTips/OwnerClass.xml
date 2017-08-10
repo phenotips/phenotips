@@ -48,7 +48,7 @@
     <nameField/>
     <validationScript/>
     <owner>
-      <customDisplay/>
+      <customDisplay>{{velocity}}#if($value){{html}}$xwiki.getUserName($value){{/html}}#end{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>owner</name>
       <number>1</number>
