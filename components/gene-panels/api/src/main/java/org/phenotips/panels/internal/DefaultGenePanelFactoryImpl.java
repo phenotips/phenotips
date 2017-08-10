@@ -80,8 +80,8 @@ public class DefaultGenePanelFactoryImpl implements GenePanelFactory
     {
         Validate.notNull(patient);
         final PatientDataAdapter dataAdapter = excludeRejectedGenes
-            ? new PatientDataAdapter.AdapterBuilder(patient, vocabularyManager).withRejectedGenes().build()
-            : new PatientDataAdapter.AdapterBuilder(patient, vocabularyManager).build();
+            ? new PatientDataAdapter.AdapterBuilder(patient, this.vocabularyManager).withRejectedGenes().build()
+            : new PatientDataAdapter.AdapterBuilder(patient, this.vocabularyManager).build();
         return new DefaultGenePanelImpl(dataAdapter.getPresentTerms(), dataAdapter.getAbsentTerms(),
             dataAdapter.getRejectedGenes(), this.vocabularyManager);
     }

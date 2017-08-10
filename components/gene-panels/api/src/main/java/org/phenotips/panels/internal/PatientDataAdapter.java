@@ -96,10 +96,10 @@ final class PatientDataAdapter
     }
 
     /**
-     * A builder for the {@link PatientDataAdapter}. The {@link AdapterBuilder} retrieves data from {@link Patient},
-     * in a format that can be consumed by the {@link org.phenotips.panels.GenePanel} class. Present and absent term
-     * data is retrieved by default on {@link #build()}. Other data, however, is only retrieved when prompted, by
-     * calling appropriate methods (e.g. {@link #withRejectedGenes()}) prior to calling {@link #build()}.
+     * A builder for the {@link PatientDataAdapter}. The {@link AdapterBuilder} retrieves data from {@link Patient}, in
+     * a format that can be consumed by the {@link org.phenotips.panels.GenePanel} class. Present and absent term data
+     * is retrieved by default on {@link #build()}. Other data, however, is only retrieved when prompted, by calling
+     * appropriate methods (e.g. {@link #withRejectedGenes()}) prior to calling {@link #build()}.
      */
     static class AdapterBuilder
     {
@@ -161,7 +161,7 @@ final class PatientDataAdapter
          */
         AdapterBuilder withRejectedGenes()
         {
-            final PatientData<Map<String, String>> genes = patient.getData(GENES);
+            final PatientData<Map<String, String>> genes = this.patient.getData(GENES);
             this.rejectedGenes = extractRejectedGenes(genes);
             return this;
         }
@@ -182,8 +182,8 @@ final class PatientDataAdapter
          */
         private void setTerms()
         {
-            final Set<? extends Feature> features = patient.getFeatures();
-            final PatientData<List<VocabularyTerm>> qualifiers = patient.getData(GLOBAL_QUALIFIERS);
+            final Set<? extends Feature> features = this.patient.getFeatures();
+            final PatientData<List<VocabularyTerm>> qualifiers = this.patient.getData(GLOBAL_QUALIFIERS);
             final Map<String, Set<VocabularyTerm>> terms = extractTerms(features, qualifiers);
             this.presentTerms = terms.get(PRESENT_TERMS);
             this.absentTerms = terms.get(ABSENT_TERMS);
@@ -201,7 +201,7 @@ final class PatientDataAdapter
                 return Collections.emptySet();
             }
             final Set<VocabularyTerm> rejected = new HashSet<>();
-            final Vocabulary hgnc = vocabularyManager.getVocabulary(HGNC);
+            final Vocabulary hgnc = this.vocabularyManager.getVocabulary(HGNC);
             for (final Map<String, String> gene : genes) {
                 if (REJECTED.equals(gene.get(STATUS))) {
                     final String geneID = gene.get(GENE);
@@ -241,7 +241,7 @@ final class PatientDataAdapter
          * Adds {@code qualifiers global qualifiers} to a set of present {@code retrievedPresentTerms terms}.
          *
          * @param qualifiers a {@link PatientData} object that contains lists of global {@link VocabularyTerm}
-         * qualifiers
+         *            qualifiers
          * @param retrievedPresentTerms a set of present {@link VocabularyTerm} objects
          */
         private void addTermsFromQualifiers(@Nonnull final PatientData<List<VocabularyTerm>> qualifiers,
@@ -266,7 +266,7 @@ final class PatientDataAdapter
             @Nonnull final Set<VocabularyTerm> retrievedAbsentTerms)
         {
             for (final Feature feature : features) {
-                final VocabularyTerm term = vocabularyManager.resolveTerm(feature.getValue());
+                final VocabularyTerm term = this.vocabularyManager.resolveTerm(feature.getValue());
                 if (term != null) {
                     if (feature.isPresent()) {
                         retrievedPresentTerms.add(term);

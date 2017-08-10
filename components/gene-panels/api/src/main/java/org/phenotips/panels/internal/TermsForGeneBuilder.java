@@ -53,15 +53,18 @@ class TermsForGeneBuilder
     /**
      * Default constructor that creates a new builder.
      */
-    TermsForGeneBuilder() {
+    TermsForGeneBuilder()
+    {
         this(Collections.<VocabularyTerm>emptySet());
     }
 
     /**
      * Creates a new builder, with a collection of {@code excludedGenes genes} that should not be added.
+     *
      * @since 1.4
      */
-    TermsForGeneBuilder(@Nullable final Collection<VocabularyTerm> excludedGenes) {
+    TermsForGeneBuilder(@Nullable final Collection<VocabularyTerm> excludedGenes)
+    {
         this.exclusions = new HashSet<>();
         if (CollectionUtils.isNotEmpty(excludedGenes)) {
             addAllExclusions(excludedGenes);
@@ -132,7 +135,7 @@ class TermsForGeneBuilder
             || (!this.exclusions.contains(geneSymbol) && !this.exclusions.contains(geneId))) {
             final DefaultTermsForGeneImpl termsForGene = new DefaultTermsForGeneImpl(geneSymbol, geneId);
             termsForGene.addTerm(term);
-            termsForGeneMap.put(geneSymbol, termsForGene);
+            this.termsForGeneMap.put(geneSymbol, termsForGene);
         }
     }
 

@@ -79,34 +79,19 @@ public class PanelDataTest
     @Test
     public void getPresentTermsReturnsAllEnteredPresentTerms()
     {
-        final Set<String> presentTerms = new HashSet<>();
-        presentTerms.add(P_TERM_1);
-        presentTerms.add(P_TERM_2);
-        presentTerms.add(P_TERM_3);
-        presentTerms.add(P_TERM_4);
-
-        Assert.assertEquals(presentTerms, this.panelData.getPresentTerms());
+        Assert.assertEquals(this.presentTerms, this.panelData.getPresentTerms());
     }
 
     @Test
     public void getAbsentTermsReturnsAllEnteredAbsentTerms()
     {
-        final Set<String> absentTerms = new HashSet<>();
-        absentTerms.add(A_TERM_5);
-        absentTerms.add(A_TERM_6);
-
-        Assert.assertEquals(absentTerms, this.panelData.getAbsentTerms());
+        Assert.assertEquals(this.absentTerms, this.panelData.getAbsentTerms());
     }
 
     @Test
     public void getRejectedGenesReturnsAllEnteredRejectedGenes()
     {
-        final Set<String> rejectedGenes = new HashSet<>();
-        rejectedGenes.add(G_TERM_1);
-        rejectedGenes.add(G_TERM_2);
-        rejectedGenes.add(G_TERM_3);
-
-        Assert.assertEquals(rejectedGenes, this.panelData.getRejectedGenes());
+        Assert.assertEquals(this.rejectedGenes, this.panelData.getRejectedGenes());
     }
 
     @Test

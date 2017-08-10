@@ -66,7 +66,7 @@ public class DefaultGenePanelLoaderTest
 
     @Rule
     public MockitoComponentMockingRule<GenePanelLoader> mocker =
-        new MockitoComponentMockingRule<GenePanelLoader>(DefaultGenePanelLoader.class);
+        new MockitoComponentMockingRule<>(DefaultGenePanelLoader.class);
 
     @Mock
     private GenePanel genePanel1;
@@ -108,9 +108,9 @@ public class DefaultGenePanelLoaderTest
 
         final VocabularyManager vocabularyManager = this.mocker.getInstance(VocabularyManager.class);
 
-        when(vocabularyManager.resolveTerm(TERM_1)).thenReturn(term1);
-        when(vocabularyManager.resolveTerm(TERM_2)).thenReturn(term2);
-        when(vocabularyManager.resolveTerm(TERM_3)).thenReturn(term3);
+        when(vocabularyManager.resolveTerm(TERM_1)).thenReturn(this.term1);
+        when(vocabularyManager.resolveTerm(TERM_2)).thenReturn(this.term2);
+        when(vocabularyManager.resolveTerm(TERM_3)).thenReturn(this.term3);
 
         when(this.genePanelFactory.build(anyCollectionOf(VocabularyTerm.class), anyCollectionOf(VocabularyTerm.class),
             anyCollectionOf(VocabularyTerm.class))).thenReturn(this.genePanel1);
@@ -159,7 +159,7 @@ public class DefaultGenePanelLoaderTest
         final PanelData data1 = new PanelData(this.presentSet3, Collections.<String>emptySet(), this.geneSet);
         final GenePanel firstPanel = this.genePanelLoader.get(data1);
         assertEquals(1, this.genePanelLoader.size());
-        assertEquals(genePanel1, firstPanel);
+        assertEquals(this.genePanel1, firstPanel);
 
         final PanelData data2 = new PanelData(this.presentSet3, Collections.<String>emptySet(), this.geneSet);
         final GenePanel secondPanel = this.genePanelLoader.get(data2);
@@ -167,7 +167,7 @@ public class DefaultGenePanelLoaderTest
         verify(this.genePanelFactory, times(1)).build(anyCollectionOf(VocabularyTerm.class),
             anyCollectionOf(VocabularyTerm.class), anyCollectionOf(VocabularyTerm.class));
         assertEquals(1, this.genePanelLoader.size());
-        assertEquals(genePanel1, secondPanel);
+        assertEquals(this.genePanel1, secondPanel);
     }
 
     @Test

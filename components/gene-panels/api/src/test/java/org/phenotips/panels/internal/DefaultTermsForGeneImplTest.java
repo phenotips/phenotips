@@ -76,16 +76,16 @@ public class DefaultTermsForGeneImplTest
     public void setUp()
     {
         MockitoAnnotations.initMocks(this);
-        defaultTermsForGene = new DefaultTermsForGeneImpl(GENE_SYMBOL, GENE_ID);
-        when(term1.getName()).thenReturn(TERM_1_NAME);
-        when(term1.getId()).thenReturn(TERM_1_ID);
-        when(term2.getName()).thenReturn(null);
-        when(term2.getId()).thenReturn(TERM_2_ID);
+        this.defaultTermsForGene = new DefaultTermsForGeneImpl(GENE_SYMBOL, GENE_ID);
+        when(this.term1.getName()).thenReturn(TERM_1_NAME);
+        when(this.term1.getId()).thenReturn(TERM_1_ID);
+        when(this.term2.getName()).thenReturn(null);
+        when(this.term2.getId()).thenReturn(TERM_2_ID);
 
-        term1Json = new JSONObject().put(ID_LABEL, TERM_1_ID).put(NAME_LABEL, TERM_1_NAME);
-        term2Json = new JSONObject().put(ID_LABEL, TERM_2_ID);
-        when(term1.toJSON()).thenReturn(term1Json);
-        when(term2.toJSON()).thenReturn(term2Json);
+        this.term1Json = new JSONObject().put(ID_LABEL, TERM_1_ID).put(NAME_LABEL, TERM_1_NAME);
+        this.term2Json = new JSONObject().put(ID_LABEL, TERM_2_ID);
+        when(this.term1.toJSON()).thenReturn(this.term1Json);
+        when(this.term2.toJSON()).thenReturn(this.term2Json);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -103,58 +103,58 @@ public class DefaultTermsForGeneImplTest
     @Test
     public void addTermSeveralTermsAreAddedAsExpected()
     {
-        Assert.assertTrue(defaultTermsForGene.getTerms().isEmpty());
-        defaultTermsForGene.addTerm(term1);
-        defaultTermsForGene.addTerm(term2);
-        final Collection<VocabularyTerm> terms = defaultTermsForGene.getTerms();
+        Assert.assertTrue(this.defaultTermsForGene.getTerms().isEmpty());
+        this.defaultTermsForGene.addTerm(this.term1);
+        this.defaultTermsForGene.addTerm(this.term2);
+        final Collection<VocabularyTerm> terms = this.defaultTermsForGene.getTerms();
         Assert.assertEquals(2, terms.size());
-        Assert.assertTrue(terms.contains(term2));
-        Assert.assertTrue(terms.contains(term2));
+        Assert.assertTrue(terms.contains(this.term2));
+        Assert.assertTrue(terms.contains(this.term2));
     }
 
     @Test
     public void getCountReturnsZeroWhenNoTermsProvided()
     {
-        Assert.assertEquals(0, defaultTermsForGene.getCount());
+        Assert.assertEquals(0, this.defaultTermsForGene.getCount());
     }
 
     @Test
     public void getCountCountsNumberOfTermsCorrectly()
     {
-        defaultTermsForGene.addTerm(term2);
-        Assert.assertEquals(1, defaultTermsForGene.getCount());
-        defaultTermsForGene.addTerm(term1);
-        Assert.assertEquals(2, defaultTermsForGene.getCount());
+        this.defaultTermsForGene.addTerm(this.term2);
+        Assert.assertEquals(1, this.defaultTermsForGene.getCount());
+        this.defaultTermsForGene.addTerm(this.term1);
+        Assert.assertEquals(2, this.defaultTermsForGene.getCount());
     }
 
     @Test
     public void getGeneIdGetsExpectedId()
     {
-        Assert.assertEquals(GENE_ID, defaultTermsForGene.getGeneId());
+        Assert.assertEquals(GENE_ID, this.defaultTermsForGene.getGeneId());
     }
 
     @Test
     public void getGeneSymbolGetsExpectedSymbol()
     {
-        Assert.assertEquals(GENE_SYMBOL, defaultTermsForGene.getGeneSymbol());
+        Assert.assertEquals(GENE_SYMBOL, this.defaultTermsForGene.getGeneSymbol());
     }
 
     @Test
     public void getTermsReturnsEmptyCollectionWhenNoTermsProvided()
     {
-        Assert.assertTrue(defaultTermsForGene.getTerms().isEmpty());
+        Assert.assertTrue(this.defaultTermsForGene.getTerms().isEmpty());
     }
 
     @Test
     public void getTermsReturnsAllProvidedTermsInCorrectOrder()
     {
-        defaultTermsForGene.addTerm(term1);
-        defaultTermsForGene.addTerm(term2);
-        final Collection<VocabularyTerm> terms = defaultTermsForGene.getTerms();
+        this.defaultTermsForGene.addTerm(this.term1);
+        this.defaultTermsForGene.addTerm(this.term2);
+        final Collection<VocabularyTerm> terms = this.defaultTermsForGene.getTerms();
         Assert.assertEquals(2, terms.size());
         final Iterator<VocabularyTerm> iterator = terms.iterator();
-        Assert.assertEquals(term2, iterator.next());
-        Assert.assertEquals(term1, iterator.next());
+        Assert.assertEquals(this.term2, iterator.next());
+        Assert.assertEquals(this.term1, iterator.next());
     }
 
     @Test
@@ -166,24 +166,24 @@ public class DefaultTermsForGeneImplTest
             .put(GENE_ID_LABEL, GENE_ID)
             .put(GENE_SYMBOL_LABEL, GENE_SYMBOL);
 
-        Assert.assertTrue(emptyJson.similar(defaultTermsForGene.toJSON()));
+        Assert.assertTrue(emptyJson.similar(this.defaultTermsForGene.toJSON()));
     }
 
     @Test
     public void toJSONWithTermsBehavesAsExpected()
     {
-        defaultTermsForGene.addTerm(term1);
-        defaultTermsForGene.addTerm(term2);
+        this.defaultTermsForGene.addTerm(this.term1);
+        this.defaultTermsForGene.addTerm(this.term2);
 
         final JSONArray termsJson = new JSONArray()
-            .put(term2Json)
-            .put(term1Json);
+            .put(this.term2Json)
+            .put(this.term1Json);
         final JSONObject json = new JSONObject()
             .put(COUNT, 2)
             .put(TERMS, termsJson)
             .put(GENE_ID_LABEL, GENE_ID)
             .put(GENE_SYMBOL_LABEL, GENE_SYMBOL);
 
-        Assert.assertTrue(json.similar(defaultTermsForGene.toJSON()));
+        Assert.assertTrue(json.similar(this.defaultTermsForGene.toJSON()));
     }
 }
