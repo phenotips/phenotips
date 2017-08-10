@@ -96,7 +96,6 @@ $xwiki.ssx.use('PhenoTips.PatientConsent')##
 #set ($discard = $columnsProperties.get('doc.name').put('link', 'view'))
 #set ($discard = $columnsProperties.identifier.put('link', 'view'))
 #set ($discard = $columnsProperties.external_id.put('link', 'view'))
-#set ($discard = $columnsProperties.owner.put('link', 'view'))
 ##  toggle-filters
 #set ($topFilters = $doc.getRenderedContent("(% class='xform' %)((({{html clean='false' wiki='true'}}&lt;span class='buttonwrapper'&gt;&lt;a class='button toggle-filters' href='#'&gt;{{icon name='filter' /}}&lt;span class='label'&gt;$services.localization.render('phenotips.allData.filterButton')&lt;/span&gt;{{icon name='angle-double-left' cssClass='collapse-marker' /}}{{icon name='angle-double-down' cssClass='expand-marker' /}}&lt;/a&gt;&lt;/span&gt;{{/html}}{{velocity}}#__filters_display('xform'){{/velocity}})))", "xwiki/2.1"))
 #set ($discard = $columns.add('_actions'))
