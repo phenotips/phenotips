@@ -96,6 +96,9 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
 #if (!$xwiki.getDocument('PhenoTips.OwnerClass').isNew())
   #set ($discard = $docFields.add('owner/PhenoTips.OwnerClass'))
 #end
+#if (!$xwiki.getDocument('PhenoTips.CollaboratorClass').isNew())
+  #set ($discard = $docFields.add('collaborator/PhenoTips.CollaboratorClass'))
+#end
 #if (!$xwiki.getDocument('PhenoTips.VisibilityClass').isNew())
   #set ($discard = $docFields.add('visibility/PhenoTips.VisibilityClass'))
 #end
