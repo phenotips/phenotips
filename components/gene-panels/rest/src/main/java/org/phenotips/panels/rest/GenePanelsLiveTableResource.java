@@ -20,7 +20,6 @@ package org.phenotips.panels.rest;
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
 
-import org.xwiki.rest.resources.RootResource;
 import org.xwiki.stability.Unstable;
 
 import java.util.List;
@@ -42,7 +41,7 @@ import javax.ws.rs.core.Response;
 @Unstable("New API introduced in 1.4")
 @Path("/suggested-gene-panels/livetable")
 @Relation("https://phenotips.org/rel/genePanels")
-@ParentResource(RootResource.class)
+@ParentResource(GenePanelsResource.class)
 public interface GenePanelsLiveTableResource
 {
     /**
