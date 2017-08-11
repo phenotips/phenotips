@@ -546,7 +546,7 @@
       this._initCollaboratorsManager();
       this._initManagerActions();
       this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': "$services.localization.render('phenotips.patientAccessRightsManagement.heading')".replace("__patientID__", this.patientId), 'verticalPosition': 'top', 'removeOnClose': false});
-      //document.fire('xwiki:dom:updated', {'elements' : [this._container]});
+      document.fire('phenotips:permissions-manager:loaded', {'permissionsManager' : this});
     },
     _generateSection : function(id, title, intro) {
       return new Element('fieldset', {'id': id, 'class' : 'section'})
@@ -793,6 +793,7 @@
            _this._updateOwnershipManager(_this._element.down(".owner").innerHTML);   // get current owner from document HTML
            _this._updateVisibility(data.visibility);
            _this._updateCollaborators(data.collaborators);
+           _this._container.fire('phenotips:permissions-manager:updated', {'permissionsManager' : _this, 'data' : data});
         },
         onComplete : function() {
           _this._editorLauncher._disabled = false;
@@ -824,6 +825,10 @@
 
     /* Expected format for the collaborator object c : {id : 'string', 'type' : 'string', name : 'string', 'accessLevel' : 'string' } */
     _addCollaborator : function (c, highlight) {
+      this._collaboratorsList .insert(this._generateCollaborator(c, highlight));
+    },
+
+    _generateCollaborator : function (c, highlight) {
       var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
       row.insert(new Element('td').insert(new Element('span', {'class' : 'fa fa-' + c.type}).update(' ')));
       row.insert(new Element('td')
@@ -834,10 +839,8 @@
       row.insert(rights.wrap('td'));
       var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times', title : "$services.localization.render('phenotips.patientAccessRightsManagement.modifyRemoveCollaborator')"});
       row.insert(deleteTool.wrap('td'));
-      deleteTool.observe('click', function(event) {
-        event.findElement('tr').remove();
-      });
-      this._collaboratorsList .insert(row);
+      deleteTool.observe('click', this._removeCollaboratorRow.bindAsEventListener(this));
+      return row;
     },
 
     _generateCollaborationOptions : function (name, value) {
@@ -854,6 +857,15 @@
         }
       }
       return result;
+    },
+
+    _removeCollaboratorRow : function (e) {
+      (e.findElement &amp;&amp; event.findElement('tr') || e).remove();
+    },
+
+    _removeCollaborator : function (id) {
+      var collab = this._collaboratorsList.down('tr input[name="collaborator"][value="' + id + '"]');
+      collab &amp;&amp; this._removeCollaboratorRow(collab.up('tr'))
     }
   });
   return PhenoTips;
