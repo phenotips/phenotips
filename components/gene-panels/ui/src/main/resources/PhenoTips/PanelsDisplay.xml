@@ -122,7 +122,6 @@
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
 
   widgets.PanelsDisplay = Class.create({
-    'url' : '',
     'param' : {},
     'baseUrl' : '',
     'resultsToShow' : 10,
@@ -138,15 +137,9 @@
      * @param resultsToShow the number of results to show; uses the default value if null
      */
     paginate : function(parameters, resultsToShow) {
-      this.param = parameters;
-      this.geneCache = parameters[this.rejectedGenesLabel] || [];
-      this.param = parameters;
-
-      if (this.checkBox.visible() &amp;&amp; this.excludeRejected) {
-        this.param[this.rejectedGenesLabel] = this.geneCache;
-      } else {
-        delete this.param[this.rejectedGenesLabel]
-      }
+      this.geneCache = parameters.rejected_gene || [];
+      this.param[this.presentParamLabel] = parameters.symptom || [];
+      this.param[this.absentParamLabel] = parameters.not_symptom || [];
 
       this.resultsToShow = resultsToShow || this.resultsToShow;
       this.updateLiveTable();
@@ -159,31 +152,18 @@
      *        "not_symptom" the symptoms that were found to be absent.
      */
     updateLiveTable : function() {
-      var newUrl = this.buildNewUrl();
-      if (newUrl != this.url) {
-        this.url = newUrl;
-        this.service.target.__hiddenParent &amp;&amp; this.service.target.__hiddenParent.removeClassName('hidden');
-        if (this.table) {
-          this.table.updateBaseUrl(this.url);
-        } else {
-          var options = {'limit' : this.resultsToShow};
-          this.table = new PhenoTips.widgets.GenePanelsLiveTable(this.url, 'panels-livetable', this.buildRow.bind(this), options);
-        }
+      if (this.checkBox.visible() &amp;&amp; this.excludeRejected) {
+        this.param[this.rejectedGenesLabel] = this.geneCache;
+      } else {
+        this.param[this.rejectedGenesLabel] &amp;&amp; (delete this.param[this.rejectedGenesLabel]);
       }
-    },
-
-    buildNewUrl : function() {
-      var newUrl = this.baseUrl;
-      if (this.param) {
-        var presentParams = (this.param[this.presentParamLabel] &amp;&amp; (this.presentParamLabel + '='
-          + this.param[this.presentParamLabel].join('&amp;' + this.presentParamLabel + '='))) || '';
-        var absentParams = (this.param[this.absentParamLabel] &amp;&amp; (this.absentParamLabel + '='
-          + this.param[this.absentParamLabel].join('&amp;' + this.absentParamLabel + '='))) || '';
-        var rejectedGenesParam = (this.param[this.rejectedGenesLabel] &amp;&amp; (this.rejectedGenesLabel + '='
-          + this.param[this.rejectedGenesLabel].join('&amp;' + this.rejectedGenesLabel + '='))) || '';
-        newUrl += '?' + presentParams + absentParams + rejectedGenesParam;
+      this.service.target.__hiddenParent &amp;&amp; this.service.target.__hiddenParent.removeClassName('hidden');
+      if (this.table) {
+        this.table.updatePostParam(this.param);
+      } else {
+        var options = {'limit' : this.resultsToShow};
+        this.table = new PhenoTips.widgets.GenePanelsLiveTable(this.baseUrl, this.param, 'panels-livetable', this.buildRow.bind(this), options);
       }
-      return newUrl;
     },
 
     /**
@@ -286,29 +266,112 @@
       this.checkBox &amp;&amp; this.checkBox.observe('change', function(event) {
         _this.excludeRejected = _this.checkBox.checked;
 
-        if (_this.checkBox.visible() &amp;&amp; _this.excludeRejected) {
-          _this.param[_this.rejectedGenesLabel] = _this.geneCache;
-        } else {
-          delete _this.param[_this.rejectedGenesLabel];
-        }
-
-        _this.requestPageData(1, _this.resultsToShow);
+        _this.updateLiveTable.bind(_this)();
       });
     },
+
     extendLiveTable : function() {
       if (XWiki.widgets &amp;&amp; XWiki.widgets.LiveTable) {
         var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
         widgets.GenePanelsLiveTable = Class.create(XWiki.widgets.LiveTable, {
-          initialize: function($super, url, domNodeName, handler, options) {
+          initialize: function($super, url, postParam, domNodeName, handler, options) {
+            this.postParam = postParam;
             $super(url, domNodeName, handler, options);
           }
         });
         widgets.GenePanelsLiveTable.addMethods({
-          updateBaseUrl : function(newBaseUrl) {
+          updatePostParam : function(param) {
             this.clearCache();
-            this.getUrl = newBaseUrl;
+            this.postParam = param;
             this.showRows(1, this.limit, null);
           },
+
+          getRows: function($super, reqOffset, reqLimit, displayOffset, displayLimit, delay)
+          {
+            var self = this;
+
+            if (this.nextRequestTimeoutId) {
+              // If a request was queued previously, cancel it
+              window.clearTimeout(this.nextRequestTimeoutId);
+              delete this.nextRequestTimeoutId;
+            }
+
+            var doRequest = function(){
+
+              var url =  self.getUrl + '?offset='+reqOffset+'&amp;limit='+reqLimit+'&amp;reqNo='+ (++self.sendReqNo);
+
+              // Let code know the table is about to load new entries.
+              // 1. Named event (for code interested by that table only)
+              document.fire("xwiki:livetable:" + this.domNodeName + ":loadingEntries");
+              // 2. Generic event (for code potentially interested in any livetable)
+              document.fire("xwiki:livetable:loadingEntries", {
+                "tableId" : this.domNodeName
+              });
+
+              var ajx = new Ajax.Request(url,
+              {
+                method: 'POST',
+                parameters: self.postParam,
+                contentType: 'application/x-www-form-urlencoded',
+                onComplete: function( transport ) {
+                  // Let code know loading is finished
+                  // 1. Named event (for code interested by that table only)
+                  document.fire("xwiki:livetable:" + self.domNodeName + ":loadingComplete", {
+                    "status" : transport.status
+                  });
+                  // 2. Generic event (for code potentially interested in any livetable)
+                  document.fire("xwiki:livetable:loadingComplete", {
+                    "status" : transport.status,
+                    "tableId" : self.domNodeName
+                  });
+
+                  self.loadingStatus.addClassName("hidden");
+                },
+                onSuccess: function( transport ) {
+                  var res = eval( '(' + transport.responseText + ')');
+
+                  if (res.reqNo &lt; self.sendReqNo) {
+                    return;
+                  }
+
+                  self.recvReqNo = res.reqNo;
+
+                  if (self.tagCloud &amp;&amp; res.matchingtags) {
+                    self.tagCloud.updateTagCloud(res.tags, res.matchingtags);
+                  }
+
+                  // Let code know new entries arrived
+                  // 1. Named event (for code interested by that table only)
+                  document.fire("xwiki:livetable:" + this.domNodeName + ":receivedEntries", {
+                    "data" : res
+                  });
+                  // 2. Generic event (for code potentially interested in any livetable)
+                  document.fire("xwiki:livetable:receivedEntries", {
+                    "data" : res,
+                    "tableId" : self.domNodeName
+                  });
+
+                  self.updateFetchedRows(res);
+                  self.displayRows(displayOffset, displayLimit);
+                }
+              });
+
+            }
+
+            // Make sure to set show the loading as soon as possible (instead of waiting the delay for the actual ajax request)
+            // so that it really reflect the status of the livetable
+            self.loadingStatus.removeClassName("hidden");
+
+            if (typeof delay != 'undefined' &amp;&amp; delay &gt; 0) {
+              // fire the request after a withdrawal period in which it can be cancelled
+              this.nextRequestTimeoutId = Function.delay.call(doRequest, delay);
+            }
+            else {
+              // no withdrawal period
+              doRequest();
+            }
+          },
+
           // Compensates for LiveTable bug where the offset is set to be larger than the total number of entries.
           showRows : function($super, offset, limit, delay) {
             var newLimit = limit;
@@ -451,14 +514,9 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>#template('colorThemeInit.vm')
+      <code>#template("colorThemeInit.vm")
 #genePanelsExport {
   font-size: .65em;
-}
-
-.gene-panels-search-box h3 .xTooltip {
-  font-size: .8em;
-  text-transform: none;
 }
 
 #panels-livetable {
@@ -467,21 +525,6 @@
 
 #panels-livetable .xwiki-livetable-display-container td {
   text-align: left;
-}
-
-<<<<<<< HEAD
-#genePanelsPagination {
-  font-size: .85em;
-  float: right;
-}
-
-#genePanelsPaginationWrapper {
-  display: block;
-  margin-top: 1em;
-}
-
-#genePanelsDownloadWrapper {
-  float: left;
 }
 
 #genePanelsExcludeGenesWrapper {
@@ -497,11 +540,11 @@
   display: inline;
   padding-left: .3em;
   font-weight: bold;
-=======
+}
+
 #panels-livetable tbody.xwiki-livetable-display-body tr:hover,
 #panels-livetable tbody.xwiki-livetable-display-body tr.rowHover {
   background-color: $theme.backgroundSecondaryColor;
->>>>>>> aa0dff053... PT-3107: Added UI support for displaying gene panels via LiveTable.
 }
 
 #panels-livetable input.button,

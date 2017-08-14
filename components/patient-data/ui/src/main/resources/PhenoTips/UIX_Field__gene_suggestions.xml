@@ -127,16 +127,19 @@ $xwiki.ssx.use('PhenoTips.PanelsDisplay')##
 $xwiki.jsfx.use('js/xwiki/table/livetable.js', true)##
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', true)##
   (% class="instant-search gene-panels-search-box" %)(((
-    === $services.localization.render('phenotips.UIXField.geneSuggestions.geneSearch.matchingGenes')  {{html wiki=false clean=false}}&lt;span class="buttonwrapper"&gt;&lt;a href="#" title="$services.localization.render('phenotips.UIXField.geneSuggestions.download.hint')" id="genePanelsExport" class="button gene-panels-button csv-export-button"&gt;&lt;span class="fa fa-fw fa-download"&gt;&lt;/span&gt; $services.localization.render('phenotips.UIXField.geneSuggestions.download')&lt;/a&gt;&lt;/span&gt;{{/html}}{{icon name="question-circle" title="$services.localization.render('phenotips.UIXField.geneSuggestions.download.hint')" cssClass="xHelpButton"/}} ===
+    === $services.localization.render('phenotips.UIXField.geneSuggestions.geneSearch.matchingGenes') {{html wiki=false clean=false}}&lt;span id="genePanelsExcludeGenesWrapper" class="exclude-rejected-genes"&gt;&lt;input type="checkbox" id="excludeRejectedGenesCheckBox" /&gt;&lt;label for="excludeRejectedGenesCheckBox" id="excludeRejectedGenesCheckBox"&gt;$services.localization.render('phenotips.UIXField.geneSuggestions.excludeNegativeGenes.label')&lt;/label&gt;&lt;/span&gt;{{/html}}===
 
     (% class="gene-search-box-content"%)(((
       (% class="hint"%)$services.localization.render('phenotips.UIXField.geneSuggestions.geneSearch.Hint')(%%)##
-      {{html wiki=false clean=false}}&lt;input type="hidden" id="panelsSearchTermsInput" value="" /&gt;&lt;input type="hidden" id="panelsSearchTermIDsInput" value="" /&gt;{{/html}}##
+      {{html wiki=false clean=false}}&lt;input type="hidden" id="panelsSearchTermsInput" value="" /&gt;&lt;input type="hidden" id="panelsSearchTermIDsInput" value="" /&gt;&lt;input type="hidden" id="panelsRejectedGeneIDsInput" value="" /&gt;{{/html}}##
       {{html wiki=false clean=false}}&lt;input type="hidden" id="panels-phenotypes-summary" value="$escapetool.xml($jsontool.serialize($phenotypesSummary))" /&gt;{{/html}}##
       {{html wiki=false clean=false}}&lt;input type="hidden" id="panels-genes-summary" value="$escapetool.xml($jsontool.serialize($genesSummary))" /&gt;{{/html}}##
       (% id="panelsSearchTerms" %)((()))
       (% class="background-search gene-search hidden" %)(((
         (% id="gene-search-results" class="background-suggestions" %)(((
+          (% id="genePanelsPaginationWrapper" class="pagination-navigation %)##
+            {{html wiki=false clean=false}}&lt;span id="genePanelsDownloadWrapper"&gt;&lt;span class="buttonwrapper"&gt;&lt;a href="#" title="$services.localization.render('phenotips.UIXField.geneSuggestions.download.hint')" id="genePanelsExport" class="button gene-panels-button csv-export-button"&gt;&lt;span class="fa fa-fw fa-download"&gt;&lt;/span&gt; $services.localization.render('phenotips.UIXField.geneSuggestions.download')&lt;/a&gt;&lt;/span&gt;{{/html}}{{icon name="question-circle" title="$services.localization.render('phenotips.UIXField.geneSuggestions.download.hint')" cssClass="xHelpButton"/}}{{html wiki=false clean=false}}&lt;/span&gt;{{/html}}##
+          (%%)
           {{html wiki=false clean=false}}
             &lt;table id="panels-livetable" class="xwiki-livetable"&gt;
               &lt;tr&gt;

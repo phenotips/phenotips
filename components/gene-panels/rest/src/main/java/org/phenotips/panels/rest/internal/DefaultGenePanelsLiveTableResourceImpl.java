@@ -21,18 +21,17 @@ import org.phenotips.panels.GenePanel;
 import org.phenotips.panels.rest.GenePanelsLiveTableResource;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.container.Container;
+import org.xwiki.container.Request;
 import org.xwiki.rest.XWikiResource;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -40,6 +39,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
@@ -58,29 +58,35 @@ public class DefaultGenePanelsLiveTableResourceImpl extends XWikiResource implem
 
     private static final String OFFSET_LABEL = "offset";
 
+    private static final String LIMIT_LABEL = "limit";
+
     @Inject
     private Logger logger;
 
     @Inject
     private GenePanelLoader genePanelLoader;
 
+    @Inject
+    private Container container;
+
     @Override
-    public Response getGeneCountsFromPhenotypes(
-        @Nullable final List<String> presentTerms,
-        @Nullable final List<String> absentTerms,
-        @Nullable final List<String> rejectedGenes,
-        final int offset,
-        final int limit,
-        final int reqNo)
+    public Response getGeneCountsFromPhenotypes()
     {
-        final Set<String> present = makeTermList(presentTerms);
-        final Set<String> absent = makeTermList(absentTerms);
-        final Set<String> rejected = makeTermList(rejectedGenes);
-        // presentTerms and absentTerms will be lists with one null value if "empty", hence performing the check here.
+        final Request request = this.container.getRequest();
+        final Set<String> present = extractTerms("present-term", request);
+        final Set<String> absent = extractTerms("absent-term", request);
+        final Set<String> rejected = extractTerms("rejected-gene", request);
+
+        // present and absent will be sets with one null value if "empty", hence performing the check here.
         if (CollectionUtils.isEmpty(present) && CollectionUtils.isEmpty(absent)) {
             this.logger.error("No content provided.");
             return Response.status(Response.Status.NO_CONTENT).build();
         }
+
+        final int offset = NumberUtils.toInt((String) request.getProperty(OFFSET_LABEL), 1);
+        final int limit = NumberUtils.toInt((String) request.getProperty(LIMIT_LABEL), -1);
+        final int reqNo = NumberUtils.toInt((String) request.getProperty(REQ_NO), 0);
+
         try {
             final JSONObject panelJSON = getPanelData(present, absent, rejected, offset, limit);
             panelJSON.put(REQ_NO, reqNo);
@@ -146,18 +152,19 @@ public class DefaultGenePanelsLiveTableResourceImpl extends XWikiResource implem
     }
 
     /**
-     * Makes an unmodifiable set of terms specified in {@code terms}, with any null values filtered out.
+     * Extracts terms for a {@code propertyLabel property} from the {@code request}.
      *
-     * @param terms a nullable list of terms, that may contain null values
-     * @return an unmodifiable set of terms that does not contain any null values
+     * @param propertyLabel the label of the property that is being extracted from {@code request}
+     * @param request the {@link Request} object
+     * @return an unmodifiable set of terms
      */
-    private Set<String> makeTermList(@Nullable final List<String> terms)
+    private Set<String> extractTerms(final String propertyLabel, final Request request)
     {
-        final Set<String> nullFiltered = Optional.ofNullable(terms)
-            .orElseGet(Collections::emptyList)
-            .stream()
-            .filter(Objects::nonNull)
-            .collect(Collectors.toSet());
-        return Collections.unmodifiableSet(nullFiltered);
+        final Set<String> terms =
+            request.getProperties(propertyLabel).stream()
+                .filter(Objects::nonNull)
+                .map(t -> (String) t)
+                .collect(Collectors.toSet());
+        return Collections.unmodifiableSet(terms);
     }
 }

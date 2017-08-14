@@ -22,13 +22,10 @@ import org.phenotips.rest.Relation;
 
 import org.xwiki.stability.Unstable;
 
-import java.util.List;
-
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -48,21 +45,25 @@ public interface GenePanelsLiveTableResource
      * Retrieves a JSON representation of genes associated with provided terms and counts for each gene. The following
      * request parameters are used:
      *
-     * @param presentTerms a list of term IDs that are observed to be present (e.g. HP:0001154)
-     * @param absentTerms a list of term IDs that are observed to be absent
-     * @param rejectedGenes a list of gene IDs that were rejected and should be excluded from gene suggestion results
-     * @param offset the offset for the results, numbering starts from 1
-     * @param limit the number of results to display, must be an integer
-     * @param reqNo the request number, must be an integer
+     * <dl>
+     * <dt>present-term</dt>
+     * <dd>a list of term IDs that are observed to be present (e.g. HP:0001154)</dd>
+     * <dt>absent-term</dt>
+     * <dd>a list of term IDs that are observed to be absent</dd>
+     * <dt>rejected-gene</dt>
+     * <dd>a list of gene IDs that were rejected and should be excluded from gene suggestion results</dd>
+     * <dt>offset</dt>
+     * <dd>the offset for the results, numbering starts from 1</dd>
+     * <dt>limit</dt>
+     * <dd>the number of results to display, must be an integer</dd>
+     * <dt>reqNo</dt>
+     * <dd>the request number, must be an integer</dd>
+     * </dl>
+     *
      * @return associated genes and counts data if successful, an error code otherwise
      */
-    @GET
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    Response getGeneCountsFromPhenotypes(
-        @QueryParam("present-term") List<String> presentTerms,
-        @QueryParam("absent-term") List<String> absentTerms,
-        @QueryParam("rejected-gene") List<String> rejectedGenes,
-        @QueryParam("offset") @DefaultValue("1") int offset,
-        @QueryParam("limit") @DefaultValue("-1") int limit,
-        @QueryParam("reqNo") @DefaultValue("0") int reqNo);
+    Response getGeneCountsFromPhenotypes();
 }

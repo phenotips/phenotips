@@ -29,7 +29,7 @@
   <name>PhenoTips - Gene Panels - REST services</name>
 
   <properties>
-    <coverage.instructionRatio>0.95</coverage.instructionRatio>
+    <coverage.instructionRatio>0.96</coverage.instructionRatio>
   </properties>
 
   <dependencies>

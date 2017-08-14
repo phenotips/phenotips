@@ -21,6 +21,8 @@ import org.phenotips.panels.GenePanel;
 import org.phenotips.panels.rest.GenePanelsLiveTableResource;
 
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.container.Container;
+import org.xwiki.container.Request;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -80,9 +82,19 @@ public class DefaultGenePanelsLiveTableResourceImplTest
 
     private static final String GENE_DATA_PLACEHOLDER = "geneData";
 
-    private static final int LIMIT = 10;
+    private static final String OFFSET = "1";
 
-    private static final int REQ_NO = 5;
+    private static final String LIMIT = "10";
+
+    private static final String REQ_NO = "5";
+
+    private static final String RESULTS_LIMIT_LABEL = "limit";
+
+    private static final String PRESENT_TERMS_LABEL = "present-term";
+
+    private static final String ABSENT_TERMS_LABEL = "absent-term";
+
+    private static final String REJECTED_GENES_LABEL = "rejected-gene";
 
     @Rule
     public MockitoComponentMockingRule<GenePanelsLiveTableResource> mocker =
@@ -90,6 +102,9 @@ public class DefaultGenePanelsLiveTableResourceImplTest
 
     @Mock
     private GenePanel panel;
+
+    @Mock
+    private Request request;
 
     private Logger logger;
 
@@ -114,18 +129,23 @@ public class DefaultGenePanelsLiveTableResourceImplTest
         this.panelLoader = this.mocker.getInstance(GenePanelLoader.class);
         this.logger = this.mocker.getMockedLogger();
 
+        Container container = this.mocker.getInstance(Container.class);
+        when(container.getRequest()).thenReturn(this.request);
+
         when(this.panelLoader.get(any(PanelData.class))).thenReturn(this.panel);
+        when(this.request.getProperty(OFFSET_LABEL)).thenReturn(OFFSET);
+        when(this.request.getProperty(RESULTS_LIMIT_LABEL)).thenReturn(LIMIT);
+        when(this.request.getProperty(REQ_NO_LABEL)).thenReturn(REQ_NO);
         when(this.panel.size()).thenReturn(5);
     }
 
     @Test
     public void getGeneCountsFromPhenotypesPresentAndAbsentTermsEmptyResultsInNoContentResponse()
     {
-        final List<String> rawPresentTerms = Collections.singletonList(null);
-        final List<String> rawAbsentTerms = Collections.emptyList();
-        final List<String> rejectedGenes = Collections.emptyList();
-        final Response response = this.component.getGeneCountsFromPhenotypes(rawPresentTerms, rawAbsentTerms,
-            rejectedGenes, 1, LIMIT, REQ_NO);
+        when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Collections.singletonList(null));
+        when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.emptyList());
+        when(this.request.getProperties(REJECTED_GENES_LABEL)).thenReturn(Collections.emptyList());
+        final Response response = this.component.getGeneCountsFromPhenotypes();
         verify(this.logger).error("No content provided.");
         Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
@@ -133,13 +153,12 @@ public class DefaultGenePanelsLiveTableResourceImplTest
     @Test
     public void getGeneCountsFromPhenotypesOffsetOutOfBoundsResultsInBadRequestResponse()
     {
-        final List<String> rawPresentTerms = Arrays.asList(null, HP1, HP2, HP4, HP5, HP6);
-        final List<String> rawAbsentTerms = Collections.singletonList(HP3);
-        final List<String> rejectedGenes = Collections.emptyList();
-        final int offset = 20;
-        final Response response = this.component.getGeneCountsFromPhenotypes(rawPresentTerms, rawAbsentTerms,
-            rejectedGenes, offset, LIMIT, REQ_NO);
-        verify(this.logger).error("The requested [{}: {}] is out of bounds.", "offset", offset);
+        when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Arrays.asList(null, HP1, HP2, HP4, HP5, HP6));
+        when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.singletonList(HP3));
+        when(this.request.getProperties(REJECTED_GENES_LABEL)).thenReturn(Collections.emptyList());
+        when(this.request.getProperty(OFFSET_LABEL)).thenReturn("20");
+        final Response response = this.component.getGeneCountsFromPhenotypes();
+        verify(this.logger).error("The requested [{}: {}] is out of bounds.", "offset", 20);
         Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
@@ -148,13 +167,14 @@ public class DefaultGenePanelsLiveTableResourceImplTest
     {
         when(this.panelLoader.get(any(PanelData.class))).thenThrow(new ExecutionException(new Throwable()));
 
-        final List<String> rawPresentTerms = Collections.emptyList();
-        final List<String> rawAbsentTerms = Arrays.asList(HP1, HP2, HP3);
-        final List<String> rejectedGenes = Collections.emptyList();
-        final Set<String> absentTermsSet = new HashSet<>();
-        absentTermsSet.addAll(rawAbsentTerms);
-        final Response response = this.component.getGeneCountsFromPhenotypes(rawPresentTerms, rawAbsentTerms,
-            rejectedGenes, 1, LIMIT, REQ_NO);
+        final List<Object> absentTermList = Arrays.asList(HP1, HP2, HP3);
+        when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Collections.emptyList());
+        when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(absentTermList);
+        when(this.request.getProperties(REJECTED_GENES_LABEL)).thenReturn(Collections.emptyList());
+
+        final Set<Object> absentTermsSet = new HashSet<>();
+        absentTermsSet.addAll(absentTermList);
+        final Response response = this.component.getGeneCountsFromPhenotypes();
         verify(this.logger).warn("No content associated with [present-term: {}, absent-term: {}].",
             Collections.emptySet(), absentTermsSet);
         Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
@@ -163,19 +183,22 @@ public class DefaultGenePanelsLiveTableResourceImplTest
     @Test
     public void getGeneCountsFromPhenotypesPanelSmallerThanRequestedNumberOfTermsReturnsCorrectResponse()
     {
-        final List<String> rawPresentTerms = Arrays.asList(HP1, HP3, HP4, HP5, HP6);
-        final List<String> rawAbsentTerms = Collections.singletonList(HP2);
-        final List<String> rejectedGenes = Collections.emptyList();
+        final List<Object> presentTermList = Arrays.asList(HP1, HP3, HP4, HP5, HP6);
+        final List<Object> absentTermList = Collections.singletonList(HP2);
+
+        when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(presentTermList);
+        when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(absentTermList);
+        when(this.request.getProperties(REJECTED_GENES_LABEL)).thenReturn(Collections.emptyList());
+        when(this.request.getProperty(OFFSET_LABEL)).thenReturn("3");
 
         final JSONObject testObj = new JSONObject().put(GENE_LABEL, GENE_DATA_PLACEHOLDER);
         when(this.panel.toJSON(2, 5)).thenReturn(testObj);
 
-        final Response response = this.component.getGeneCountsFromPhenotypes(rawPresentTerms, rawAbsentTerms,
-            rejectedGenes, 3, LIMIT, REQ_NO);
+        final Response response = this.component.getGeneCountsFromPhenotypes();
         verify(this.panel, times(1)).toJSON(2, 5);
 
         Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        Assert.assertTrue(new JSONObject().put(GENE_LABEL, GENE_DATA_PLACEHOLDER).put(REQ_NO_LABEL, REQ_NO)
+        Assert.assertTrue(new JSONObject().put(GENE_LABEL, GENE_DATA_PLACEHOLDER).put(REQ_NO_LABEL, 5)
             .put(OFFSET_LABEL, 3).similar(response.getEntity()));
     }
 
@@ -183,11 +206,16 @@ public class DefaultGenePanelsLiveTableResourceImplTest
     public void getGeneCountsFromPhenotypesUnexpectedExceptionResultsInInternalErrorResponse() throws ExecutionException
     {
         when(this.panelLoader.get(any(PanelData.class))).thenThrow(new IllegalStateException());
-        final List<String> rawPresentTerms = Arrays.asList(HP1, HP3, HP4, HP5, HP6);
-        final List<String> rawAbsentTerms = Collections.singletonList(HP2);
-        final List<String> rejectedGenes = Collections.emptyList();
-        final Response response = this.component.getGeneCountsFromPhenotypes(rawPresentTerms, rawAbsentTerms,
-            rejectedGenes, 3, LIMIT, REQ_NO);
+
+        final List<Object> presentTermList = Arrays.asList(HP1, HP3, HP4, HP5, HP6);
+        final List<Object> absentTermList = Collections.singletonList(HP2);
+
+        when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(presentTermList);
+        when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(absentTermList);
+        when(this.request.getProperties(REJECTED_GENES_LABEL)).thenReturn(Collections.emptyList());
+        when(this.request.getProperty(OFFSET_LABEL)).thenReturn("3");
+
+        final Response response = this.component.getGeneCountsFromPhenotypes();
         verify(this.logger).error("Unexpected exception while generating gene panel JSON: {}", (String) null);
         Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
     }
