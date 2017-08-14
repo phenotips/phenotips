@@ -278,8 +278,8 @@
 {{html clean=false}}
 &lt;form id="welcome_${targetDocName}" method="post" action="${targetDoc.getURL('save')}" class="xform half"&gt;
 &lt;fieldset&gt;&lt;dl id="default-visibility-selection"&gt;
-&lt;dt&gt;&lt;label for="${fullPrefix}private"&gt;$services.localization.render("phenotips.patientAccessRightsManagement.defaultVisibilityOption")&lt;/label&gt;
-&lt;span class="xHint"&gt;$services.localization.render("phenotips.patientAccessRightsManagement.defaultVisibilityHint")&lt;/span&gt;&lt;/dt&gt;
+&lt;dt&gt;&lt;label for="${fullPrefix}private"&gt;$escapetool.xml($services.localization.render('phenotips.patientAccessRightsManagement.defaultVisibilityOption'))&lt;/label&gt;
+&lt;span class="xHint"&gt;$escapetool.xml($services.localization.render('phenotips.patientAccessRightsManagement.defaultVisibilityHint'))&lt;/span&gt;&lt;/dt&gt;
 #foreach ($visibility in $services.permissions.listAllVisibilityOptions())
   &lt;dd&gt;
     &lt;label for="${fullPrefix}${visibility.name}"&gt;
@@ -293,7 +293,7 @@
 &lt;input type="hidden" name="objectPolicy" value="updateOrCreate"/&gt;
 &lt;/fieldset&gt;
 &lt;div class="bottombuttons"&gt;&lt;p class="admin-buttons"&gt;
-&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="action_saveandcontinue" value="$services.localization.render('phenotips.patientAccessRightsManagement.defaultVisibilitySave')" /&gt;&lt;/span&gt;
+&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="action_saveandcontinue" value="$escapetool.xml($services.localization.render('phenotips.patientAccessRightsManagement.defaultVisibilitySave'))" /&gt;&lt;/span&gt;
 &lt;/p&gt;&lt;/div&gt;
 &lt;/form&gt;
 {{/html}}</codeToExecute>
@@ -415,7 +415,7 @@
       
       this.visibilityValue = "";
       this.patientId = patientId;
-      this._OWNER_INFO_TEMPLATE = "$services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipInfo')";
+      this._OWNER_INFO_TEMPLATE = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipInfo'))";
  
       // keep track whether delete collaborators happened to know if the we need to reset collaborators
       this.collaboratorRemoved = false;
@@ -462,9 +462,9 @@
 
     _initManagerUI : function() {
       this._container = new Element('form', {'id' : 'access-levels-manager', 'class' : 'xform'});
-      this._container.insert(this._generateSection('manage-ownership', "$services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipHeader')", "$services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipBody')"))
-                     .insert(this._generateSection('manage-visibility', "$services.localization.render('phenotips.patientAccessRightsManagement.modifyVisibilityHeader')", "$services.localization.render('phenotips.patientAccessRightsManagement.modifyVisibilityBody')"))
-                     .insert(this._generateSection('manage-collaborators', "$services.localization.render('phenotips.patientAccessRightsManagement.modifyCollaboratorsHeader')", "$services.localization.render('phenotips.patientAccessRightsManagement.modifyCollaboratorsBody')"))
+      this._container.insert(this._generateSection('manage-ownership', "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipHeader'))", "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipBody'))"))
+                     .insert(this._generateSection('manage-visibility', "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyVisibilityHeader'))", "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyVisibilityBody'))"))
+                     .insert(this._generateSection('manage-collaborators', "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyCollaboratorsHeader'))", "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyCollaboratorsBody'))"))
                      .insert(new Element('div', {id : 'manager-messages'}));
       this._ownershipManager = this._container.down('#manage-ownership .section-contents');
       this._visibilityManager = this._container.down('#manage-visibility .section-contents');
@@ -475,7 +475,7 @@
       this._initVisibilityManager();
       this._initCollaboratorsManager();
       this._initManagerActions();
-      this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': "$services.localization.render('phenotips.patientAccessRightsManagement.heading')".replace("__patientID__", this.patientId), 'verticalPosition': 'top', 'removeOnClose': false});
+      this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.heading'))".replace("__patientID__", this.patientId), 'verticalPosition': 'top', 'removeOnClose': false});
     },
 
     _generateSection : function(id, title, intro) {
@@ -491,14 +491,14 @@
       // insert user or group icon
       var iconEl = new Element('span', {'class' : (owner.type) ? "fa fa-" + owner.type : "fa fa-user"}).update(' ');
       if (!owner.id) {
-        this._ownerInfo.update(this._OWNER_INFO_TEMPLATE.replace("__owner__", "$services.localization.render('phenotips.patientAccessRightsManagement.noOwner')"));
+        this._ownerInfo.update(this._OWNER_INFO_TEMPLATE.replace("__owner__", "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.noOwner'))"));
       } else if (owner.id == currentUserName) {
-        this._ownerInfo.update(this._OWNER_INFO_TEMPLATE.replace("__owner__", "$services.localization.render('phenotips.patientAccessRightsManagement.selfOwner')"));
+        this._ownerInfo.update(this._OWNER_INFO_TEMPLATE.replace("__owner__", "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.selfOwner'))"));
       } else {
         this._ownerInfo.update(this._OWNER_INFO_TEMPLATE.replace("__owner__", iconEl.outerHTML + ' ' + owner.name));
       }
       if (this._canTransferOwnership) {
-        this._ownerInfo.insert(" "+"$services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipOptions')");
+        this._ownerInfo.insert(" $escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipOptions'))");
         this._checkKeepOwnershipOption();
       }
     },
@@ -545,14 +545,14 @@
                         .insert(controlledElement &amp;&amp; controlledElement.wrap('td', {'class' : 'controlled-element'}) || '');
            return optionWrapper;
         }
-        this._defaultOwnerOption = _getTransferOption("check", "$services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipKeepOwnership')", "");
+        this._defaultOwnerOption = _getTransferOption("check", "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipKeepOwnership'))", "");
         transfer.insert(this._defaultOwnerOption);
         //this._checkKeepOwnershipOption();
         if (newOwnerGroupSelect) {
-          transfer.insert(_getTransferOption("group", "$services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipTransferGroup')", newOwnerGroupSelect));
+          transfer.insert(_getTransferOption("group", "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipTransferGroup'))", newOwnerGroupSelect));
         }
         if (newOwnerInput) {
-          transfer.insert(_getTransferOption("user", "$services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipTransferUser')", newOwnerInput));
+          transfer.insert(_getTransferOption("user", "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipTransferUser'))", newOwnerInput));
         }
         transfer.select('.controlled-element input, .controlled-element select').each(function (item) {
           item.disable();
@@ -621,8 +621,8 @@
     _initManagerActions : function() {
       var _this = this;
       this._buttons = new Element('div', {'class' : 'buttons'});
-      this._buttons.insert(new Element('input', {type: 'button', name : 'submit',  'value': "$services.localization.render('phenotips.patientAccessRightsManagement.modifySubmitButton')", 'class' : 'button'}).wrap('span', {'class' : 'buttonwrapper'}));
-      this._buttons.insert(new Element('input', {type: 'button', name : 'close',   'value': "$services.localization.render('phenotips.patientAccessRightsManagement.modifyCancelButton')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
+      this._buttons.insert(new Element('input', {type: 'button', name : 'submit',  'value': "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifySubmitButton'))", 'class' : 'button'}).wrap('span', {'class' : 'buttonwrapper'}));
+      this._buttons.insert(new Element('input', {type: 'button', name : 'close',   'value': "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyCancelButton'))", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
       this._container.insert(this._buttons);
       this._submitButton = this._buttons.down('input[name="submit"]');
 
@@ -694,14 +694,14 @@
           onCreate : function() {
             _this._submitButton._disabled = true;
             _this._buttons.addClassName('loading');
-            _this._messages.update(new Element('div', {'class' : 'xHint'}).update("$services.localization.render('phenotips.patientAccessRightsManagement.modifyRequestSent')"));
+            _this._messages.update(new Element('div', {'class' : 'xHint'}).update("$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyRequestSent'))"));
           },
           onFailure : function(response) {
             var failureReason = response.responseText || response.statusText;
             if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-              failureReason = "$services.localization.render('phenotips.patientAccessRightsManagement.modifyNoServerResponse')";
+              failureReason = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyNoServerResponse'))";
             }
-            _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.patientAccessRightsManagement.modifyUpdateFailure') " + failureReason));
+            _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyUpdateFailure')) " + failureReason));
           },
           on0 : function(response) {
             response.request.options.onFailure(response);
@@ -734,7 +734,7 @@
           onCreate : function() {
             _this._submitButton._disabled = true;
             _this._buttons.addClassName('loading');
-            _this._messages.update(new Element('div', {'class' : 'xHint'}).update("$services.localization.render('phenotips.patientAccessRightsManagement.modifyRequestSent')"));
+            _this._messages.update(new Element('div', {'class' : 'xHint'}).update("$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyRequestSent'))"));
           },
           onSuccess : function(response) {
             _this.collaboratorRemoved = false;
@@ -742,9 +742,9 @@
           onFailure : function(response) {
             var failureReason = response.responseText || response.statusText;
             if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-              failureReason = "$services.localization.render('phenotips.patientAccessRightsManagement.modifyNoServerResponse')";
+              failureReason = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyNoServerResponse'))";
             }
-            _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.patientAccessRightsManagement.modifyUpdateFailure') " + failureReason));
+            _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyUpdateFailure')) " + failureReason));
           },
           on1223 : function(response) {
             response.request.options.onSuccess(response);
@@ -809,9 +809,9 @@
             } else {
               var failureReason = response.responseText || response.statusText;
               if (response.statusText == ''  || response.status == 12031) {
-                failureReason = "$services.localization.render('phenotips.patientAccessRightsManagement.modifyNoServerResponse')";
+                failureReason = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyNoServerResponse'))";
               }
-              _this._messages.insert(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.patientAccessRightsManagement.modifyUpdateFailure') " + failureReason));
+              _this._messages.insert(new Element('div', {'class' : 'errormessage'}).update("$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyUpdateFailure')) " + failureReason));
             }
           },
           onComplete : function(response) {
@@ -873,9 +873,9 @@
       var ownerNameContainer = this._element.down('.access-rights-info');
       var ownerNameEl = new Element('span', {'class' : 'owner'});
       if (!data.owner || !data.owner.id || !data.owner.name) {
-        ownerNameEl.innerText = "$services.localization.render('phenotips.patientAccessRightsManagement.noOwner')";
+        ownerNameEl.innerText = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.noOwner'))";
       } else if (data.owner.id == currentUserName) {
-        ownerNameEl.innerText = "$services.localization.render('phenotips.patientAccessRightsManagement.selfOwner')";
+        ownerNameEl.innerText = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.selfOwner'))";
       } else {
         var ownerNameEl = new Element('a', {'class' : 'owner'});
         var iconEl = new Element('span', {'class' : (data.owner.type) ? "fa fa-" + data.owner.type : "fa fa-user"}).update(' ');
@@ -923,16 +923,16 @@
         var beginHtml = '&lt;span class="access-rights-info"&gt;&lt;span class="fa fa-group"&gt;&lt;/span&gt;&lt;span class="collaborators"&gt;';
         var endHtml = '&lt;/span&gt;';
         if (collaboratorsCount == 0) {
-          collaboratorText = "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.noCollaborators', ['" + beginHtml + "', '" + endHtml + "'])";
+          collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.noCollaborators', ['__beginHtml__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__endHtml__", endHtml);
         } else {
           var collaborator = data.collaborators.collaborators[0];
           if (collaboratorsCount == 1) {
-            collaboratorText = "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.oneCollaborator', ['" + beginHtml + "', '" + collaborator.name + "', '" + endHtml + "'])";
+            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.oneCollaborator', ['__beginHtml__', '__collaborator.name__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", collaborator.name).replace("__endHtml__", endHtml);
           } else if (collaboratorsCount == 2) {
-            collaboratorText = "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.oneOtherCollaborator', ['" + beginHtml + "', '" + collaborator.name + "', '" + endHtml + "'])";
+            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.oneOtherCollaborator', ['__beginHtml__', '__collaborator.name__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", collaborator.name).replace("__endHtml__", endHtml);
           } else {
             var count = collaboratorsCount - 1;
-            collaboratorText = "$services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.xOtherCollaborators', ['" + beginHtml + "', '" + collaborator.name + "', '" + count + "', '" + endHtml + "'])";
+            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.xOtherCollaborators', ['__beginHtml__', '__collaborator.name__', '__count__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", collaborator.name).replace("__count__", count).replace("__endHtml__", endHtml);
           }
         }
         collaboratorsEl.innerHTML = collaboratorText;
@@ -949,7 +949,7 @@
       );
       var rights = this._generateCollaborationOptions('accessLevel', c.level)
       row.insert(rights.wrap('td'));
-      var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times', title : "$services.localization.render('phenotips.patientAccessRightsManagement.modifyRemoveCollaborator')"});
+      var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times', title : "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyRemoveCollaborator'))"});
       row.insert(deleteTool.wrap('td'));
       deleteTool.observe('click', function(event) {
         this.collaboratorRemoved = true;
@@ -1321,7 +1321,7 @@ $xwiki.ssx.use($serviceDocName)
   #else
     #set ($ownerElement = "{{html wiki='true' clean='false'}}&lt;span class='owner'&gt;{{icon name='user'/}}$ownerName&lt;/span&gt;{{/html}}")
   #end
-  (% id="access-rights-summary" %)((({{html wiki='true' clean='false'}}&lt;input type="hidden" name="currentUser" value="$xcontext.userReference"/&gt;{{/html}}##
+  (% id="access-rights-summary" %)((({{html wiki='true' clean='false'}}&lt;input type="hidden" name="currentUser" value="$!escapetool.xml($xcontext.userReference)"/&gt;{{/html}}##
     $services.localization.render("phenotips.patientAccessRightsManagement.caseOwnerandVisibility",["(% class='access-rights-info' %)$ownerElement(%%)","(% class='access-rights-info visibility' title='$!{visibility.description}' %){{icon name='$visibility'/}}${visibility.label}(%%)"])##
     #if ($canManage) ##
       {{html wiki='true' clean='false'}}&lt;span id="collaborator-access-rights-info" title="$collaboratorTooltipStr"&gt;$collaboratorString&lt;/span&gt;{{/html}}##
