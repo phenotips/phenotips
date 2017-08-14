@@ -760,7 +760,7 @@ public class DataToCellConverter
     public DataSection prenatalPerinatalHistoryHeader(Set<String> enabledFields) throws Exception
     {
         String sectionName = "prenatalPerinatalHistory";
-        List<String> fields = new ArrayList<>(Arrays.asList("gestation", "prenatal_development",
+        List<String> fields = new ArrayList<>(Arrays.asList("gestation", "prenatal_development", "parentalAge",
             "assistedReproduction_fertilityMeds", "assistedReproduction_iui", "ivf", "icsi",
             "assistedReproduction_surrogacy", "assistedReproduction_donoregg", "assistedReproduction_donorsperm", "obstetric-history",
             "apgar1"));
@@ -775,17 +775,28 @@ public class DataToCellConverter
         List<String> assitedReproductionFields = new ArrayList<>(Arrays.asList("assistedReproduction_fertilityMeds",
             "assistedReproduction_iui", "ivf", "icsi", "assistedReproduction_surrogacy",
             "assistedReproduction_donoregg", "assistedReproduction_donorsperm"));
+        List<String> parentalFields = new ArrayList<>(Arrays.asList("maternalAge", "paternalAge"));
         List<String> obstetricFields = new ArrayList<>(Arrays.asList("gravida", "para", "term", "preterm", "sab", "tab", "births"));
         List<String> apgarFields = new ArrayList<>(Arrays.asList("apgar1", "apgar5"));
         assitedReproductionFields.retainAll(fieldSet);
         int assistedReproductionOffset = assitedReproductionFields.size();
+        int parentalOffset = fields.contains("parentalAge") ? 2 : 0;
         int apgarOffset = fields.contains("apgar1") ? 2 : 0;
         int obstetricOffset = fields.contains("obstetric-history") ? 7 : 0;
-        int bottomY = (apgarOffset > 0 || obstetricOffset > 0 ||assistedReproductionOffset > 0) ? 2 : 1;
-
+        int bottomY = (apgarOffset > 0 || obstetricOffset > 0 || parentalOffset > 0 || assistedReproductionOffset > 0) ? 2 : 1;
         int hX = 0;
+
         for (String fieldId : fields) {
-            if (fieldId.equals("apgar1")) {
+            if (fieldId.equals("parentalAge")) {
+                for (String parentalId : parentalFields) {
+                    DataCell headerCell = new DataCell(this.translationManager
+                        .translate("phenotips.export.excel.label.prenatalPerinatalHistory." + parentalId),
+                        hX, bottomY, StyleOption.HEADER);
+                    headerSection.addCell(headerCell);
+                    hX++;
+                }
+            }
+            else if (fieldId.equals("apgar1")) {
                 for (String apgarId : apgarFields) {
                     DataCell headerCell = new DataCell(this.translationManager
                         .translate("phenotips.export.excel.label.prenatalPerinatalHistory." + apgarId),
@@ -797,8 +808,8 @@ public class DataToCellConverter
             else if (fieldId.equals("obstetric-history")) {
                 for (String oFields : obstetricFields) {
                     DataCell headerCell = new DataCell(this.translationManager
-                            .translate("phenotips.export.excel.label.prenatalPerinatalHistory." + oFields),
-                            hX, bottomY, StyleOption.HEADER);
+                        .translate("phenotips.export.excel.label.prenatalPerinatalHistory." + oFields),
+                        hX, bottomY, StyleOption.HEADER);
                     headerSection.addCell(headerCell);
                     hX++;
                 }
@@ -811,6 +822,18 @@ public class DataToCellConverter
                 hX++;
             }
         }
+        if (parentalOffset > 0) {
+            DataCell headerCell = new DataCell(
+                    this.translationManager.translate("phenotips.export.excel.label.prenatalPerinatalHistory.parentalAge"),
+                    hX - obstetricOffset - apgarOffset - assistedReproductionOffset - parentalOffset, 1, StyleOption.HEADER);
+            headerSection.addCell(headerCell);
+        }
+        if (assistedReproductionOffset > 0) {
+            DataCell headerCell = new DataCell(this.translationManager
+                    .translate("phenotips.export.excel.label.prenatalPerinatalHistory.assistedReproduction"),
+                    hX - apgarOffset - assistedReproductionOffset - obstetricOffset, 1, StyleOption.HEADER);
+            headerSection.addCell(headerCell);
+        }
         if (obstetricOffset > 0) {
             DataCell headerCell = new DataCell(
                     this.translationManager.translate("phenotips.export.excel.label.prenatalPerinatalHistory.obstetricHistory"),
@@ -819,16 +842,11 @@ public class DataToCellConverter
         }
         if (apgarOffset > 0) {
             DataCell headerCell = new DataCell(
-                this.translationManager.translate("phenotips.export.excel.label.prenatalPerinatalHistory.apgarScore"),
-                hX - apgarOffset, 1, StyleOption.HEADER);
+                    this.translationManager.translate("phenotips.export.excel.label.prenatalPerinatalHistory.apgarScore"),
+                    hX - apgarOffset, 1, StyleOption.HEADER);
             headerSection.addCell(headerCell);
         }
-        if (assistedReproductionOffset > 0) {
-            DataCell headerCell = new DataCell(this.translationManager
-                .translate("phenotips.export.excel.label.prenatalPerinatalHistory.assistedReproduction"),
-                hX - apgarOffset - assistedReproductionOffset - obstetricOffset, 1, StyleOption.HEADER);
-            headerSection.addCell(headerCell);
-        }
+
         DataCell headerCell =
             new DataCell(this.translationManager.translate("phenotips.export.excel.label.prenatalPerinatalHistory"),
                 0, 0, StyleOption.LARGE_HEADER);
@@ -849,6 +867,7 @@ public class DataToCellConverter
         DataSection bodySection = new DataSection();
         PatientData<Integer> history = patient.getData("prenatalPerinatalHistory");
         PatientData<Integer> apgarScores = patient.getData("apgar");
+        PatientData<Integer> parentalAge = patient.getData("parentalAge");
         PatientData<Integer> obstetricHistory = patient.getData("obstetric-history");
         int x = 0;
 
@@ -866,6 +885,17 @@ public class DataToCellConverter
                 bodySection.addCell(cell);
             }
             x++;
+        }
+
+        if (present.contains("parentalAge")) {
+            List<String> parentalFields = Arrays.asList("maternal_age", "paternal_age");
+            for (String pField : parentalFields) {
+                Integer age = parentalAge != null ? parentalAge.get(pField) : null;
+                String cellValue = age != null ? age.toString() : "";
+                DataCell cell = new DataCell(cellValue, x, 0);
+                bodySection.addCell(cell);
+                x++;
+            }
         }
 
         List<String> fields =

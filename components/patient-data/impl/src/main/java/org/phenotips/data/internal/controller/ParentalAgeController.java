@@ -67,7 +67,7 @@ public class ParentalAgeController implements PatientDataController<Integer>
 
     private static final String PATERNAL_AGE = "paternal_age";
 
-    private static final String ENABLING_FIELD_NAME = "prenatal_phenotype";
+    private static final String ENABLING_FIELD_NAME = "parentalAge";
 
     /** Logging helper object. */
     @Inject
