@@ -251,13 +251,15 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
       </use>
     </class>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>(function() {
   var init = function(event) {
     var getCookieKey = function (tableId) {
-      return "$!{xcontext.userReference.hashCode()}" + '_' + tableId + '_filters_state';
+      var userHash = $$('#' + tableId + ' .toggleFilters input[name="user-hash"]')[0];
+      userHash = userHash &amp;&amp; userHash.value;
+      return userHash + '_' + tableId + '_filters_state';
     };
     var toggleFilters = function (filtersElt, forceHide) {
       if (filtersElt) {
@@ -288,7 +290,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
       <name>Hide Filters button behavior</name>
     </property>
     <property>
-      <parse>1</parse>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
