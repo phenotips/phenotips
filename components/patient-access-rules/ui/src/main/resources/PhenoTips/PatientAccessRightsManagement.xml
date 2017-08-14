@@ -982,7 +982,7 @@
     },
 
     _removeCollaboratorRow : function (e) {
-      (e.findElement &amp;&amp; event.findElement('tr') || e).remove();
+      (e.findElement &amp;&amp; e.findElement('tr') || e).remove();
       this.collaboratorRemoved = true;
     },
 
