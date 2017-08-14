@@ -679,11 +679,17 @@ define([
                 var click = editor.getWorkspace().divToCanvas(div.x,div.y);
 
                 // only activate "do not hide" check if mouse is still on top of SVG, and not on top of main menu or other windows
+                //
+                // note: some browsers incorrectly report the svgarea's .bottom and .right positions,
+                //       so need to use some adjustment there; the value "3" is derived empirically
                 var svgarea = document.getElementById("work-area").getBoundingClientRect();
-                if (y > svgarea.top && x > svgarea.left && y < svgarea.bottom && x < svgarea.right) {
-                    if (click.x > hoverarea.x && click.x < hoverarea.x2 &&
-                        click.y > hoverarea.y && click.y < hoverarea.y2) {
-                        return;
+                if (y > svgarea.top && x > svgarea.left && y < svgarea.bottom - 3 && x < svgarea.right - 3) {
+                    if (click.x > Math.ceil(hoverarea.x) && click.x < Math.floor(hoverarea.x2) &&
+                        click.y > Math.ceil(hoverarea.y) && click.y < Math.floor(hoverarea.y2)) {
+                        // zoom control behaves in a special way in terms of hoverboxes, so need to treat is specially
+                        if ("relatedTarget" in event && !event.relatedTarget.hasClassName("view-controls-zoom") && !event.relatedTarget.hasClassName("zoom-button")) {
+                            return;
+                        }
                     }
                 }
             }
