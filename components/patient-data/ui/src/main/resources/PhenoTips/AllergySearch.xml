@@ -53,13 +53,18 @@
   ##Display
   ##-------
 
-    $response.setContentType("text/xml")
-    &lt;?xml version="1.0" encoding="UTF-8"?&gt;
-    &lt;results type="3"&gt;
-    #foreach($result in $finalResults)
-      &lt;rs id="$foreach.count" info=""&gt;$escapetool.xml($result)&lt;/rs&gt;
-    #end
-    &lt;/results&gt;
+    $response.setContentType("application/json")
+        {
+      "returnedrows": $finalResults.size(),
+      "rows": [
+      #foreach($result in $finalResults)
+        #if ($foreach.count &gt; 1)
+          ,
+        #end
+        { "index": "$foreach.count", "name": "$escapetool.json($result)" }
+      #end
+      ]
+    }
 #end
 {{/velocity}}
 </content>

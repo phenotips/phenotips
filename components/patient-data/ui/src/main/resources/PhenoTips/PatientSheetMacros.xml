@@ -256,7 +256,6 @@
 (% class="xwiki-free-multiselect"%)
 #foreach ($v in $value)
 1. #_fms__displayValue($v ${foreach.count})
-
 #end
 #if ((!$value || $value.size() == 0) &amp;&amp; ($xcontext.action == 'edit' || $xcontext.action == 'inline'))
 1. #_fms__displayValue('' 1)

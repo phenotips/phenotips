@@ -66,7 +66,7 @@
       <customDisplay>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity filter="indent"}}{{html wiki=true clean=false}}
-#set ($suggest_script = $xwiki.getURL('PhenoTips.AllergySearch', 'get', 'outputSyntax=plain'))
+#set ($suggest_script = $xwiki.getURL('PhenoTips.AllergySearch', 'get', 'outputSyntax=plain') + '&amp;')
 #__displayPropertyAsSelect($suggest_script)
 {{/html}}{{/velocity}}</customDisplay>
       <disabled>0</disabled>
