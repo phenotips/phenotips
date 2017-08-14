@@ -55,7 +55,7 @@ class TermsForGeneBuilder
      */
     TermsForGeneBuilder()
     {
-        this(Collections.<VocabularyTerm>emptySet());
+        this(Collections.emptySet());
     }
 
     /**
@@ -109,7 +109,7 @@ class TermsForGeneBuilder
      * @throws NullPointerException if key {@code geneSymbol} has not yet been added to the {@link TermsForGeneBuilder},
      *             or if {@code term} is null
      */
-    void update(@Nullable final String geneSymbol, @Nonnull final VocabularyTerm term)
+    void update(@Nonnull final String geneSymbol, @Nonnull final VocabularyTerm term)
     {
         Validate.notNull(term, "The vocabulary term must not be null.");
         this.termsForGeneMap.get(geneSymbol).addTerm(term);

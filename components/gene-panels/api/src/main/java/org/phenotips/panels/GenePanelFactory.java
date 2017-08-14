@@ -65,8 +65,8 @@ public interface GenePanelFactory
         @Nonnull Collection<VocabularyTerm> rejectedGenes);
 
     /**
-     * Create an object of {@link GenePanel} class for a given {@link Patient} object. Any genes marked as rejected
-     * in the {@code patient} will be included in the panel data.
+     * Create an object of {@link GenePanel} class for a given {@link Patient} object. Matching genes marked as rejected
+     * in the {@code patient} will not be excluded from the panel.
      *
      * @param patient the {@link Patient} of interest
      * @return a new {@link GenePanel} object for the patient
