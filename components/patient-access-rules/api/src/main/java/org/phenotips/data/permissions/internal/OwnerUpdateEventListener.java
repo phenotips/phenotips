@@ -66,6 +66,9 @@ public class OwnerUpdateEventListener extends AbstractEventListener
         XWikiDocument doc = (XWikiDocument) source;
         XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
         try {
+            if (doc.getXObject(Owner.CLASS_REFERENCE) != null) {
+                return;
+            }
             BaseObject ownerObject = doc.newXObject(Owner.CLASS_REFERENCE, context);
             if (doc.getCreatorReference() != null) {
                 ownerObject.setStringValue("owner", doc.getCreatorReference().toString());

@@ -36,6 +36,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Matchers;
+import org.mockito.Mockito;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -45,6 +46,7 @@ import com.xpn.xwiki.objects.BaseObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -56,7 +58,7 @@ public class OwnerUpdateEventListenerTest
 {
     @Rule
     public final MockitoComponentMockingRule<EventListener> mocker =
-    new MockitoComponentMockingRule<EventListener>(OwnerUpdateEventListener.class);
+        new MockitoComponentMockingRule<>(OwnerUpdateEventListener.class);
 
     private XWikiDocument doc = mock(XWikiDocument.class);
 
@@ -100,6 +102,20 @@ public class OwnerUpdateEventListenerTest
         this.mocker.getComponentUnderTest().onEvent(new PatientCreatingEvent(), this.doc, this.context);
         verify(this.doc).newXObject(Owner.CLASS_REFERENCE, this.context);
         verify(ownerObject).setStringValue("owner", "");
+    }
+
+    /**
+     * Sending an event with a new patient document adds a {@code PhenoTips.OwnerClass} object, with the document
+     * creator as the owner.
+     */
+    @Test
+    public void onEventWithExistingOwnerDoesNothing() throws Exception
+    {
+        BaseObject ownerObject = mock(BaseObject.class);
+        when(this.doc.getXObject(Owner.CLASS_REFERENCE)).thenReturn(ownerObject);
+        this.mocker.getComponentUnderTest().onEvent(new PatientCreatingEvent(), this.doc, null);
+        verify(this.doc, Mockito.never()).newXObject(Owner.CLASS_REFERENCE, this.context);
+        verifyZeroInteractions(ownerObject);
     }
 
     /**
