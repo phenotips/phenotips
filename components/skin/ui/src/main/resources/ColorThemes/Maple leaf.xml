@@ -922,7 +922,7 @@
 #phenotips-globalTools .rightmenu .menu-horizontal &gt; ul ul {
   background: #9b0000
 }
-#phenotips-globalTools .rightmenu .menu-horizontal &gt; ul ul a, 
+#phenotips-globalTools .rightmenu .menu-horizontal &gt; ul ul a,
 #phenotips-globalTools .rightmenu .menu-horizontal &gt; ul ul input {
   color: #fff;
 }

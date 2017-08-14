@@ -319,7 +319,7 @@
     #end
   #end
   #foreach ($f in $patient.features)
-    #if ("$!f.id" != '') 
+    #if ("$!f.id" != '')
       #set ($foreach.fterm = $services.vocabularies.resolveTerm($f.id))
       #if ($foreach.fterm)
         #set ($foreach.fname = $foreach.fterm.translatedName)

@@ -72,7 +72,7 @@ var XWiki = (function(XWiki) {
         if (!input.__Gene_validator) {
           input.__Gene_validator = new XWiki.widgets.DuplicateValidator(input, 'input.gene-name', "$services.localization.render('PhenoTips.GeneClass.geneAlreadyExist')");
         }
-      });    
+      });
       element.select('.variant.cdna input').each(function(input) {
         if (!input.__Variant_validator) {
           input.__Variant_validator = new XWiki.widgets.DuplicateValidator(input, '.variant.cdna input', "$services.localization.render('PhenoTips.GeneVariantClass.variantAlreadyExist')");
@@ -84,7 +84,7 @@ var XWiki = (function(XWiki) {
 
   (XWiki.domIsLoaded && init()) || document.observe("xwiki:dom:loaded", init);
   document.observe('xwiki:dom:updated', init);
- 
+
   // End XWiki augmentation.
   return XWiki;
 }(XWiki || {}));

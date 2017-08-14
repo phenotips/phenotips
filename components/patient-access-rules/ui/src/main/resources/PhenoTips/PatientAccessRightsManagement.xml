@@ -412,11 +412,11 @@
     initialize : function (patientId) {
       this.permissionsURL   = XWiki.contextPath + "/rest/patients/" + patientId + "/permissions";
       this.collaboratorsURL = this.permissionsURL + "/collaborators";
-      
+
       this.visibilityValue = "";
       this.patientId = patientId;
       this._OWNER_INFO_TEMPLATE = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipInfo'))";
- 
+
       // keep track whether delete collaborators happened to know if the we need to reset collaborators
       this.collaboratorRemoved = false;
       // ---------------------------------------------------------------------
@@ -802,7 +802,7 @@
             }
           },
           onFailure : function(response) {
-            // if user just made a change in permission and there might be a situation 
+            // if user just made a change in permission and there might be a situation
             // when user removes himself from collaborator and no longer has access to permissions info
             if (updatePatientSummary) {
               window.location.reload(true);

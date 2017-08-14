@@ -130,27 +130,27 @@ document.observe('xwiki:dom:loaded', function() {
       var statusNode = geneNode.next('td.Status');
       var geneIdNode = geneNode.down('input.gene-id');
       var geneInput = geneNode.down('input.gene-name');
-  
+
       // Attach a focus observer to the gene input.
       var focusHandler = geneInput.on('focus', function (event) {
         geneInput.oldvalue = geneIdNode.value;
       });
-  
+
       // Attach other observers to the new node after some input was entered.
       geneInput.observe('ms:suggest:selected', function (event) {
-        // The input comes back into focus again once a suggestion is selected. This will overwrite oldvalue with the 
+        // The input comes back into focus again once a suggestion is selected. This will overwrite oldvalue with the
         // new one if not stopped.
         focusHandler.stop();
         // Attach status change observer on new status node.
         statusNode.observe('change', function (event) {
           geneIdNode.value &amp;&amp; fireStatusChangedEvent(event, geneIdNode.value);
         });
-  
+
         // Attach node deletion observer on new gene node.
         geneNode.observe('DOMNodeRemoved', function (event) {
           fireGeneRemovedEvent(event);
         });
-  
+
         // The gene ID value is the same as the gene symbol input value until loss of focus.
         geneInput.observe('blur', function(event) {
           geneIdNode.value &amp;&amp; fireGeneInputChangedEvent(event, geneIdNode.value, statusNode);
@@ -158,7 +158,7 @@ document.observe('xwiki:dom:loaded', function() {
       });
     });
   });
-  
+
   // For each previously saved status, attach change observers on page load.
   $$('.gene-table td.Status').each(function (status) {
     status.observe('change', function (event) {
@@ -168,14 +168,14 @@ document.observe('xwiki:dom:loaded', function() {
       geneId &amp;&amp; fireStatusChangedEvent(event, geneId);
     });
   });
-  
+
   // For each previously saved gene, attach gene removed observers on page load.
   $$('.gene-table td.Gene').each(function (gene) {
     gene.observe('DOMNodeRemoved', function (event) {
       fireGeneRemovedEvent(event);
     });
   });
-  
+
   // For each previously saved gene-name input, attach focus and suggest selected observers.
   $$('input.gene-name').each(function (item) {
     var geneIdNode = item.next('input.gene-id');
@@ -190,14 +190,14 @@ document.observe('xwiki:dom:loaded', function() {
         return;
       }
       var statusNode = geneNode.next('td.Status');
-  
+
       // The gene ID value is the same as the gene symbol input value until loss of focus.
       item.observe('blur', function(event) {
         geneIdNode.value &amp;&amp; fireGeneInputChangedEvent(event, geneIdNode.value, statusNode);
       });
     });
   });
-  
+
   var fireGeneRemovedEvent = function (event) {
     if (event.target &amp;&amp; event.target.hasClassName('gene-id')) {
       Event.fire(document, 'gene:removed', {
@@ -205,7 +205,7 @@ document.observe('xwiki:dom:loaded', function() {
       });
     }
   };
-  
+
   var fireStatusChangedEvent = function (event, geneId) {
     var geneStatus = event.target &amp;&amp; event.target.value;
     Event.fire(document, 'gene:updated', {
@@ -213,7 +213,7 @@ document.observe('xwiki:dom:loaded', function() {
       status : geneStatus
     });
   };
-  
+
   var fireGeneInputChangedEvent = function (event, geneId, statusNode) {
     if (!event.target) {
       return;

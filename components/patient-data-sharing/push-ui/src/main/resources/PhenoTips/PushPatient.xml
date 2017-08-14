@@ -966,7 +966,7 @@
                                                 .replace("__patientID__", linkToNew)));
                     }
 
-                    // update UI to reflect that we have already pushed this patient: default option is now "update" 
+                    // update UI to reflect that we have already pushed this patient: default option is now "update"
                     _this._selectServer(_this._selectedServer, true);
                     _this._displayGroupPicker();
                 } else {

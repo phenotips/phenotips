@@ -206,7 +206,7 @@ var extendOnNewState = function(newStateParams) {
 
   console.log("  == [Version Extension] affected nodes: " + affectedNodes +
               ", cancerHistoryPotentiallyAffected: " + affectsCancerHistory);
-  
+
   var newMessage = (new Date().toISOString().substring(0,16).replace("T"," ")) + ": ";
   if (newStateParams.modificationEvent.hasOwnProperty("propertiesChanged")) {
     newMessage += Object.keys(propertiesChanged);

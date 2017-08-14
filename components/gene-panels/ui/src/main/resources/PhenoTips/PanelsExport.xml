@@ -161,7 +161,7 @@
     var fileName = generateFileName();
     generateSavePrompt(fileName, csvContent);
   }
-  
+
   var generateCsvRow = function(element) {
     var lineArray = [];
     lineArray.push(element.gene_symbol);
@@ -180,11 +180,11 @@
 
   var generateFileName = function() {
     var currentDate = new Date(new Date().getTime());
-    return "phenotips_" 
-      + currentDate.getFullYear() 
-      + "-" + currentDate.getMonth() 
-      + "-" + currentDate.getDate() 
-      + "_" + currentDate.getHours() 
+    return "phenotips_"
+      + currentDate.getFullYear()
+      + "-" + currentDate.getMonth()
+      + "-" + currentDate.getDate()
+      + "_" + currentDate.getHours()
       + "-" + currentDate.getMinutes() + ".tsv";
   };
 
