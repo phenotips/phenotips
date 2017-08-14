@@ -29,7 +29,7 @@
   <name>PhenoTips - Phenotype suggest service - Java code</name>
   <properties>
     <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
-    <coverage.instructionRatio>0.25</coverage.instructionRatio>
+    <coverage.instructionRatio>0.28</coverage.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
@@ -40,16 +40,6 @@
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-script</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-configuration-api</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-cache-api</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>

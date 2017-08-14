@@ -41,7 +41,7 @@
 #if ($xcontext.action == 'get')
   $response.setHeader("X-ReqNo", "$!request.reqNo")##
   #if ("$!request.symptom" != '')##
-    #set ($_service = $services.hpo)
+    #set ($_service = $services.phenotypeSuggest)
     #set ($limit = $mathtool.toInteger("$!{request.limit}"))
     #if (!$limit || $limit &lt; 0)
       #set ($limit = 6)

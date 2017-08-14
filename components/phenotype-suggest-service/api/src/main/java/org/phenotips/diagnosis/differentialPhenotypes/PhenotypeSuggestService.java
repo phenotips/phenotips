@@ -50,12 +50,12 @@ import org.apache.solr.common.util.SimpleOrderedMap;
 import org.slf4j.Logger;
 
 /**
- * Provides access to the Solr server, with the main purpose of providing access to the OMIM ontology.
+ * Suggests phenotypes to investigate, based on an existing list of already selected positive and negative phenotypes.
  *
  * @version $Id$
  */
 @Component
-@Named("hpo")
+@Named("phenotypeSuggest")
 @Singleton
 public class PhenotypeSuggestService implements ScriptService
 {
@@ -70,22 +70,6 @@ public class PhenotypeSuggestService implements ScriptService
     /** Logging helper object. */
     @Inject
     private Logger logger;
-
-    /**
-     * Compute a list of phenotypes to investigate, which maximize the probability of getting more accurate automatic
-     * diagnosis suggestions.
-     *
-     * @param phenotypes the list of already selected phenotypes
-     * @param limit the maximum number of phenotypes to return
-     * @return a list of phenotype suggestions
-     * @deprecated use {@link #getDifferentialPhenotypes(Collection, Collection, int)} which also has support for
-     *             negative phenotypes
-     */
-    @Deprecated
-    public List<SuggestedPhenotype> getDifferentialPhenotypes(Collection<String> phenotypes, int limit)
-    {
-        return getDifferentialPhenotypes(phenotypes, Collections.<String>emptyList(), limit);
-    }
 
     /**
      * Compute a list of phenotypes to investigate, which maximize the probability of getting more accurate automatic
