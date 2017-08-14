@@ -23,6 +23,7 @@ import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
@@ -183,7 +184,7 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
                 this.setProperty(patient.getXDocument(), classReference, "visibility", visibilityAsString);
                 XWikiContext context = getXWikiContext();
                 context.getWiki().saveDocument(patient.getXDocument(), "Set visibility: " + visibilityAsString,
-                        true, context);
+                    true, context);
             }
             return true;
         } catch (Exception e) {
@@ -201,8 +202,8 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
         try {
             EntityReference owner = getOwner(patient).getUser();
             Collection<Collaborator> collaborators = getCollaborators(patient);
-            Set<DocumentReference> processedEntities = new HashSet<DocumentReference>();
-            Queue<DocumentReference> entitiesToCheck = new LinkedList<DocumentReference>();
+            Set<DocumentReference> processedEntities = new HashSet<>();
+            Queue<DocumentReference> entitiesToCheck = new LinkedList<>();
             entitiesToCheck.add((DocumentReference) user);
             AccessLevel currentItemAccess = null;
             DocumentReference currentItem;
@@ -234,7 +235,7 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
             XWikiDocument patientDoc = patient.getXDocument();
             DocumentReference classReference =
                 this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocumentReference());
-            Map<EntityReference, Collaborator> collaborators = new TreeMap<EntityReference, Collaborator>();
+            Map<EntityReference, Collaborator> collaborators = new TreeMap<>();
             for (BaseObject o : patientDoc.getXObjects(classReference)) {
                 if (o == null) {
                     continue;
@@ -399,7 +400,6 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
         }
         return null;
     }
-
 
     private void setProperty(XWikiDocument doc, DocumentReference classReference, String propertyName,
         Object propertyValue) throws Exception
