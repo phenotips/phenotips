@@ -207,7 +207,7 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
     <property>
       <parameters>priority=80
 column=1
-enabled=1</parameters>
+enabled=false</parameters>
     </property>
     <property>
       <scope>wiki</scope>
