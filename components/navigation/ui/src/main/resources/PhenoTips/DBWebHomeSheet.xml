@@ -251,25 +251,44 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
       </use>
     </class>
     <property>
-      <cache>long</cache>
+      <cache>forbid</cache>
     </property>
     <property>
-      <code>document.observe('xwiki:dom:loaded', function() {
-  $$('.xwiki-livetable-topfilters-container .toggle-filters').invoke('observe', 'click', function(event) {
-    event.stop();
-    var filtersElt = event.findElement('.xwiki-livetable-container .xwiki-livetable-topfilters-tip');
-    if (filtersElt) {
-      filtersElt.toggleClassName('collapsed');
-      filtersElt.up('.xwiki-livetable-container').toggleClassName('hidden-filters');
-    }
-  });
-});</code>
+      <code>(function() {
+  var init = function(event) {
+    var getCookieKey = function (tableId) {
+      return "$!{xcontext.userReference.hashCode()}" + '_' + tableId + '_filters_state';
+    };
+    var toggleFilters = function (filtersElt, forceHide) {
+      if (filtersElt) {
+        filtersElt.toggleClassName('collapsed', forceHide);
+        filtersElt.up('.xwiki-livetable-container').toggleClassName('hidden-filters', forceHide);
+        var key = getCookieKey(filtersElt.up('.entity-directory').id);
+        if (filtersElt.hasClassName('collapsed')) {
+          XWiki.cookies.create(key, 'hidden', '')
+        } else {
+          XWiki.cookies.erase(key)
+       }
+      }
+    };
+    var filtersButtons = $$('.entity-directory .toggle-filters');
+    filtersButtons.each(function (filtersButton) {
+      var key = getCookieKey(filtersButton.up('.entity-directory').id);
+      toggleFilters(filtersButton.up('.xwiki-livetable-topfilters-tip'), (XWiki.cookies.read(key) == 'hidden'));
+      filtersButton.observe('click', function(event) {
+        event.stop();
+        toggleFilters(event.findElement('.xwiki-livetable-container .xwiki-livetable-topfilters-tip'));
+      });
+    });
+   };
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+}());</code>
     </property>
     <property>
       <name>Hide Filters button behavior</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
