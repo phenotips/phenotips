@@ -279,6 +279,8 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
                 o.setStringValue("collaborator", this.entitySerializer.serialize(collaborator.getUser()));
                 o.setStringValue("access", collaborator.getAccessLevel().getName());
             }
+            patientDoc.setAuthorReference(getCurrentUser());
+            patientDoc.setMetaDataDirty(true);
             context.getWiki().saveDocument(patientDoc, "Updated collaborators", true, context);
             return true;
         } catch (Exception e) {
@@ -313,6 +315,8 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
             o.setStringValue("access", collaborator.getAccessLevel().getName());
 
             if (saveDocument) {
+                patientDoc.setAuthorReference(getCurrentUser());
+                patientDoc.setMetaDataDirty(true);
                 context.getWiki().saveDocument(patientDoc, "Added collaborator: " + user, true, context);
             }
 
@@ -408,6 +412,8 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
         BaseObject obj = doc.getXObject(classReference, true, xcontext);
         if (obj != null) {
             obj.set(propertyName, propertyValue, xcontext);
+            doc.setAuthorReference(getCurrentUser());
+            doc.setMetaDataDirty(true);
         }
     }
 }
