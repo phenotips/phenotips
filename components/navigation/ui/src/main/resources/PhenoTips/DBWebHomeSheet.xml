@@ -265,10 +265,10 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
         filtersElt.up('.xwiki-livetable-container').toggleClassName('hidden-filters', forceHide);
         var key = getCookieKey(filtersElt.up('.entity-directory').id);
         if (filtersElt.hasClassName('collapsed')) {
-          XWiki.cookies.create(key, 'hidden', '')
+          XWiki.cookies.create(key, 'hidden', '');
         } else {
-          XWiki.cookies.erase(key)
-       }
+          XWiki.cookies.erase(key);
+        }
       }
     };
     var filtersButtons = $$('.entity-directory .toggle-filters');
