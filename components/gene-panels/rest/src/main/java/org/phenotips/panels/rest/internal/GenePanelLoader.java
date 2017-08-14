@@ -22,7 +22,6 @@ import org.phenotips.panels.GenePanel;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.Nonnull;
@@ -40,10 +39,12 @@ interface GenePanelLoader
     /**
      * Get the {@link GenePanel} object based on a {@code termList} of IDs.
      *
-     * @param termList a list of term IDs as strings, must not be null
+     * @param panelData an object containing a list of present and/or absent term IDs as strings, and well as rejected
+     *                  genes, if any; must not be null
      * @return a {@link GenePanel} object
+     * @since 1.4 (updated)
      */
-    GenePanel get(@Nonnull List<String> termList) throws ExecutionException;
+    GenePanel get(@Nonnull PanelData panelData) throws ExecutionException;
 
     /**
      * Discards all cached entries.

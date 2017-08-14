@@ -21,15 +21,20 @@ import org.phenotips.panels.TermsForGene;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
@@ -43,11 +48,56 @@ class TermsForGeneBuilder
 {
     private final Map<String, DefaultTermsForGeneImpl> termsForGeneMap = new HashMap<>();
 
+    private final Set<String> exclusions;
+
     /**
-     * Creates a new builder.
+     * Default constructor that creates a new builder.
      */
     TermsForGeneBuilder()
     {
+        this(Collections.emptySet());
+    }
+
+    /**
+     * Creates a new builder, with a collection of {@code excludedGenes genes} that should not be added.
+     *
+     * @since 1.4
+     */
+    TermsForGeneBuilder(@Nullable final Collection<VocabularyTerm> excludedGenes)
+    {
+        this.exclusions = new HashSet<>();
+        if (CollectionUtils.isNotEmpty(excludedGenes)) {
+            addAllExclusions(excludedGenes);
+        }
+    }
+
+    /**
+     * Adds all identifiers and aliases associated with each {@code excludedGenes} to a collection of exclusions.
+     *
+     * @param excludedGenes a collection of {@link VocabularyTerm genes} that should be excluded from the result
+     */
+    private void addAllExclusions(@Nonnull final Collection<VocabularyTerm> excludedGenes)
+    {
+        for (final VocabularyTerm gene : excludedGenes) {
+            final String symbol = (String) gene.get("symbol");
+            final Collection<String> aliases = (Collection<String>) gene.get("symbol_alias");
+            final Collection<String> ensembl = (Collection<String>) gene.get("ensembl_gene_id");
+            CollectionUtils.addIgnoreNull(this.exclusions, symbol);
+            addAllIgnoreNullAndEmpty(aliases);
+            addAllIgnoreNullAndEmpty(ensembl);
+        }
+    }
+
+    /**
+     * Adds all items from {@code ids} collection to {@link #exclusions} iff {@code ids} is not null nor empty.
+     *
+     * @param ids the collection from which items will be added
+     */
+    private void addAllIgnoreNullAndEmpty(@Nullable final Collection<String> ids)
+    {
+        if (CollectionUtils.isNotEmpty(ids)) {
+            this.exclusions.addAll(ids);
+        }
     }
 
     /**
@@ -57,11 +107,10 @@ class TermsForGeneBuilder
      * @param geneSymbol the gene symbol, which will be used as the key
      * @param term the {@link VocabularyTerm vocabulary term} with which to update the stored {@link TermsForGene}
      * @throws NullPointerException if key {@code geneSymbol} has not yet been added to the {@link TermsForGeneBuilder},
-     *             or if {@code term} or {@code geneSymbol} are null
+     *             or if {@code term} is null
      */
     void update(@Nonnull final String geneSymbol, @Nonnull final VocabularyTerm term)
     {
-        Validate.notNull(geneSymbol, "The gene symbol must not be null");
         Validate.notNull(term, "The vocabulary term must not be null.");
         this.termsForGeneMap.get(geneSymbol).addTerm(term);
     }
@@ -74,6 +123,7 @@ class TermsForGeneBuilder
      * @param geneId the preferred gene ID, must not be null
      * @param term the first {@link VocabularyTerm} that will be used to add the {@link TermsForGene} entry, not null
      * @throws NullPointerException if either of the {@code geneSymbol}, {@code geneId}, or {@code term} are null
+     * @since 1.4 (modified)
      */
     void add(@Nonnull final String geneSymbol, @Nonnull final String geneId, @Nonnull final VocabularyTerm term)
     {
@@ -81,9 +131,12 @@ class TermsForGeneBuilder
         Validate.notNull(geneId, "The gene ID must not be null.");
         Validate.notNull(term, "The vocabulary term must not be null");
 
-        final DefaultTermsForGeneImpl termsForGene = new DefaultTermsForGeneImpl(geneSymbol, geneId);
-        termsForGene.addTerm(term);
-        this.termsForGeneMap.put(geneSymbol, termsForGene);
+        if (CollectionUtils.isEmpty(this.exclusions)
+            || (!this.exclusions.contains(geneSymbol) && !this.exclusions.contains(geneId))) {
+            final DefaultTermsForGeneImpl termsForGene = new DefaultTermsForGeneImpl(geneSymbol, geneId);
+            termsForGene.addTerm(term);
+            this.termsForGeneMap.put(geneSymbol, termsForGene);
+        }
     }
 
     /**
@@ -92,7 +145,7 @@ class TermsForGeneBuilder
      * @param geneSymbol the gene symbol, that will be used as key
      * @return true iff {@link TermsForGeneBuilder} contains {@code geneSymbol}, false otherwise
      */
-    boolean contains(final String geneSymbol)
+    boolean contains(@Nullable final String geneSymbol)
     {
         return this.termsForGeneMap.containsKey(geneSymbol);
     }

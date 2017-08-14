@@ -17,7 +17,6 @@
  */
 package org.phenotips.panels.internal;
 
-import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
 import org.phenotips.panels.GenePanel;
 import org.phenotips.panels.GenePanelFactory;
@@ -49,7 +48,8 @@ public class DefaultGenePanelFactoryImpl implements GenePanelFactory
     private VocabularyManager vocabularyManager;
 
     @Override
-    public GenePanel build(@Nonnull final Collection<VocabularyTerm> presentTerms,
+    public GenePanel build(
+        @Nonnull final Collection<VocabularyTerm> presentTerms,
         @Nonnull final Collection<VocabularyTerm> absentTerms)
     {
         Validate.notNull(presentTerms);
@@ -58,16 +58,31 @@ public class DefaultGenePanelFactoryImpl implements GenePanelFactory
     }
 
     @Override
-    public GenePanel build(@Nonnull final Collection<? extends Feature> features)
+    public GenePanel build(
+        @Nonnull final Collection<VocabularyTerm> presentTerms,
+        @Nonnull final Collection<VocabularyTerm> absentTerms,
+        @Nonnull final Collection<VocabularyTerm> rejectedGenes)
     {
-        Validate.notNull(features);
-        return new DefaultGenePanelImpl(features, this.vocabularyManager);
+        Validate.notNull(presentTerms);
+        Validate.notNull(absentTerms);
+        Validate.notNull(rejectedGenes);
+        return new DefaultGenePanelImpl(presentTerms, absentTerms, rejectedGenes, this.vocabularyManager);
     }
 
     @Override
     public GenePanel build(@Nonnull final Patient patient)
     {
+        return build(patient, false);
+    }
+
+    @Override
+    public GenePanel build(@Nonnull final Patient patient, final boolean excludeRejectedGenes)
+    {
         Validate.notNull(patient);
-        return new DefaultGenePanelImpl(patient, this.vocabularyManager);
+        final PatientDataAdapter dataAdapter = excludeRejectedGenes
+            ? new PatientDataAdapter.AdapterBuilder(patient, this.vocabularyManager).withRejectedGenes().build()
+            : new PatientDataAdapter.AdapterBuilder(patient, this.vocabularyManager).build();
+        return new DefaultGenePanelImpl(dataAdapter.getPresentTerms(), dataAdapter.getAbsentTerms(),
+            dataAdapter.getRejectedGenes(), this.vocabularyManager);
     }
 }

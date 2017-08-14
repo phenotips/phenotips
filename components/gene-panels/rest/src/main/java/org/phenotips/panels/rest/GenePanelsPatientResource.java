@@ -24,10 +24,12 @@ import org.phenotips.rest.RequiredAccess;
 
 import org.xwiki.stability.Unstable;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -48,10 +50,14 @@ public interface GenePanelsPatientResource
      * {@code patientId internal ID}, as well as the count of the number of phenotypes each gene may be associated with.
      *
      * @param patientId the internal ID of the patient of interest
+     * @param excludeRejectedGenes iff true, rejected genes will be excluded from results
      * @return a JSON representation of genes and their counts data if successful, an error code otherwise
+     * @since 1.4 (modified)
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RequiredAccess("view")
-    Response getPatientGeneCounts(@PathParam("patient-id") String patientId);
+    Response getPatientGeneCounts(
+        @PathParam("patient-id") String patientId,
+        @QueryParam("exclude-rejected-genes") @DefaultValue("false") boolean excludeRejectedGenes);
 }

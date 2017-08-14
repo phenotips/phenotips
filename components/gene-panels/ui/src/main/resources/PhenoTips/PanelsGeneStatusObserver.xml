@@ -1,0 +1,244 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>PanelsGeneStatusObserver</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1493664796000</creationDate>
+  <parent>PhenoTips.PatientSheet</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1493665093000</date>
+  <contentUpdateDate>1493664796000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <object>
+    <name>PhenoTips.PanelsGeneStatusObserver</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>39a89276-af58-4396-b949-620a8f4d1d88</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>
+document.observe('xwiki:dom:loaded', function() {
+  $$('.gene-table').each(function (geneTable) {
+    // Need to know if a new gene row is inserted into the gene table.
+    geneTable.observe('DOMNodeInserted', function (event) {
+      var geneNode = event.target &amp;&amp; event.target.down('td.Gene');
+      if (!geneNode) {
+        return;
+      }
+      var statusNode = geneNode.next('td.Status');
+      var geneIdNode = geneNode.down('input.gene-id');
+      var geneInput = geneNode.down('input.gene-name');
+  
+      // Attach a focus observer to the gene input.
+      var focusHandler = geneInput.on('focus', function (event) {
+        geneInput.oldvalue = geneIdNode.value;
+      });
+  
+      // Attach other observers to the new node after some input was entered.
+      geneInput.observe('ms:suggest:selected', function (event) {
+        // The input comes back into focus again once a suggestion is selected. This will overwrite oldvalue with the 
+        // new one if not stopped.
+        focusHandler.stop();
+        // Attach status change observer on new status node.
+        statusNode.observe('change', function (event) {
+          geneIdNode.value &amp;&amp; fireStatusChangedEvent(event, geneIdNode.value);
+        });
+  
+        // Attach node deletion observer on new gene node.
+        geneNode.observe('DOMNodeRemoved', function (event) {
+          fireGeneRemovedEvent(event);
+        });
+  
+        // The gene ID value is the same as the gene symbol input value until loss of focus.
+        geneInput.observe('blur', function(event) {
+          geneIdNode.value &amp;&amp; fireGeneInputChangedEvent(event, geneIdNode.value, statusNode);
+        });
+      });
+    });
+  });
+  
+  // For each previously saved status, attach change observers on page load.
+  $$('.gene-table td.Status').each(function (status) {
+    status.observe('change', function (event) {
+      var geneNode = status.previous('td.Gene');
+      var geneIdObj = geneNode &amp;&amp; geneNode.down('input.gene-id');
+      var geneId = geneIdObj &amp;&amp; geneIdObj.value;
+      geneId &amp;&amp; fireStatusChangedEvent(event, geneId);
+    });
+  });
+  
+  // For each previously saved gene, attach gene removed observers on page load.
+  $$('.gene-table td.Gene').each(function (gene) {
+    gene.observe('DOMNodeRemoved', function (event) {
+      fireGeneRemovedEvent(event);
+    });
+  });
+  
+  // For each previously saved gene-name input, attach focus and suggest selected observers.
+  $$('input.gene-name').each(function (item) {
+    var geneIdNode = item.next('input.gene-id');
+    var focusHandler = item.on('focus', function (event) {
+      // Store the old value on focus.
+      item.oldvalue = geneIdNode.value;
+    });
+    item.observe('ms:suggest:selected', function (event) {
+      focusHandler.stop();
+      var geneNode = item.up();
+      if (!geneNode) {
+        return;
+      }
+      var statusNode = geneNode.next('td.Status');
+  
+      // The gene ID value is the same as the gene symbol input value until loss of focus.
+      item.observe('blur', function(event) {
+        geneIdNode.value &amp;&amp; fireGeneInputChangedEvent(event, geneIdNode.value, statusNode);
+      });
+    });
+  });
+  
+  var fireGeneRemovedEvent = function (event) {
+    if (event.target &amp;&amp; event.target.hasClassName('gene-id')) {
+      Event.fire(document, 'gene:removed', {
+        key : event.target.value
+      });
+    }
+  };
+  
+  var fireStatusChangedEvent = function (event, geneId) {
+    var geneStatus = event.target &amp;&amp; event.target.value;
+    Event.fire(document, 'gene:updated', {
+      key : geneId,
+      status : geneStatus
+    });
+  };
+  
+  var fireGeneInputChangedEvent = function (event, geneId, statusNode) {
+    if (!event.target) {
+      return;
+    }
+    var geneInput = event.target;
+    var geneStatusSelect = statusNode.down('select');
+
+    Event.fire(document, 'gene:replaced', {
+      delete_key : geneInput.oldvalue,
+      key : geneId,
+      status : geneStatusSelect &amp;&amp; geneStatusSelect.value
+    });
+
+    geneInput.oldvalue = geneId;
+  };
+});</code>
+    </property>
+    <property>
+      <name>Gene status change observer</name>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+</xwikidoc>

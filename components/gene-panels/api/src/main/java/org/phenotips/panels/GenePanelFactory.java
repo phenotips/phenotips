@@ -17,7 +17,6 @@
  */
 package org.phenotips.panels;
 
-import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
 import org.phenotips.vocabulary.VocabularyTerm;
 
@@ -39,14 +38,6 @@ import javax.annotation.Nonnull;
 public interface GenePanelFactory
 {
     /**
-     * Create an object of {@link GenePanel} class, given a collection of {@link Feature} objects.
-     *
-     * @param features a collection of {@link Feature} objects, both observed to be present and observed to be absent
-     * @return a new {@link GenePanel} object for the collection of features
-     */
-    GenePanel build(@Nonnull Collection<? extends Feature> features);
-
-    /**
      * Creates an object of {@link GenePanel} class, given a collection of present and absent {@link VocabularyTerm}
      * objects.
      *
@@ -54,14 +45,42 @@ public interface GenePanelFactory
      * @param absentTerms absent {@link VocabularyTerm} objects
      * @return a new {@link GenePanel} object for the collection of present and absent {@link VocabularyTerm} objects
      */
-    GenePanel build(@Nonnull Collection<VocabularyTerm> presentTerms,
+    GenePanel build(
+        @Nonnull Collection<VocabularyTerm> presentTerms,
         @Nonnull Collection<VocabularyTerm> absentTerms);
 
     /**
-     * Create an object of {@link GenePanel} class for a given {@link Patient} object.
+     * Creates an object of {@link GenePanel} class, given a collection of present and absent {@link VocabularyTerm}
+     * objects, and a collection of {@code rejectedGenes rejected genes}.
+     *
+     * @param presentTerms present {@link VocabularyTerm} objects
+     * @param absentTerms absent {@link VocabularyTerm} objects
+     * @param rejectedGenes a collection of {@link VocabularyTerm} genes that should be excluded from panel data
+     * @return a new {@link GenePanel} object for the collection of present and absent {@link VocabularyTerm} objects
+     * @since 1.4
+     */
+    GenePanel build(
+        @Nonnull Collection<VocabularyTerm> presentTerms,
+        @Nonnull Collection<VocabularyTerm> absentTerms,
+        @Nonnull Collection<VocabularyTerm> rejectedGenes);
+
+    /**
+     * Create an object of {@link GenePanel} class for a given {@link Patient} object. Matching genes marked as rejected
+     * in the {@code patient} will not be excluded from the panel.
      *
      * @param patient the {@link Patient} of interest
      * @return a new {@link GenePanel} object for the patient
      */
     GenePanel build(@Nonnull Patient patient);
+
+    /**
+     * Create an object of {@link GenePanel} class for a given {@link Patient} object. The {@link GenePanel} will not
+     * include genes that were marked as rejected in the patient iff {@code excludeRejectedGenes} is set to true.
+     *
+     * @param patient the {@link Patient} of interest
+     * @param excludeRejectedGenes true iff rejected genes for patient should be excluded from generated gene panel data
+     * @return a new {@link GenePanel} object for the patient
+     * @since 1.4
+     */
+    GenePanel build(@Nonnull Patient patient, boolean excludeRejectedGenes);
 }

@@ -25,9 +25,9 @@ import org.xwiki.container.Container;
 import org.xwiki.container.Request;
 import org.xwiki.rest.XWikiResource;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.Nonnull;
@@ -73,23 +73,13 @@ public class DefaultGenePanelsResourceImpl extends XWikiResource implements Gene
     @Override
     public Response getGeneCountsFromPhenotypes()
     {
-        Request request = this.container.getRequest();
-        List<String> presentTerms = new ArrayList<>();
-        for (Object t : request.getProperties("present-term")) {
-            if (t != null) {
-                presentTerms.add((String) t);
-            }
-        }
-        presentTerms = Collections.unmodifiableList(presentTerms);
-        List<String> absentTerms = new ArrayList<>();
-        for (Object t : request.getProperties("absent-term")) {
-            if (t != null) {
-                absentTerms.add((String) t);
-            }
-        }
-        absentTerms = Collections.unmodifiableList(absentTerms);
+        final Request request = this.container.getRequest();
+        final Set<String> presentTerms = extractTerms("present-term", request);
+        final Set<String> absentTerms = extractTerms("absent-term", request);
+        final Set<String> rejectedGenes = extractTerms("rejected-gene", request);
 
-        if (CollectionUtils.isEmpty(presentTerms) && CollectionUtils.isEmpty(absentTerms)) {
+        if (CollectionUtils.isEmpty(presentTerms) && CollectionUtils.isEmpty(absentTerms)
+            && CollectionUtils.isEmpty(rejectedGenes)) {
             this.logger.error("No content provided.");
             return Response.status(Response.Status.NO_CONTENT).build();
         }
@@ -99,13 +89,14 @@ public class DefaultGenePanelsResourceImpl extends XWikiResource implements Gene
         final int reqNo = NumberUtils.toInt((String) request.getProperty(REQ_NO), 0);
 
         try {
+            final PanelData loaderKey = new PanelData(presentTerms, absentTerms, rejectedGenes);
             // Try to generate the JSON for the requested subset of data.
-            final JSONObject panels = getPageData(this.genePanelLoader.get(presentTerms), startPage, numResults);
+            final JSONObject panels = getPageData(this.genePanelLoader.get(loaderKey), startPage, numResults);
             panels.put(REQ_NO, reqNo);
             return Response.ok(panels, MediaType.APPLICATION_JSON_TYPE).build();
         } catch (final ExecutionException e) {
-            this.logger.error("No content associated with [present-term: {}, absent-term: {}].", presentTerms,
-                absentTerms);
+            this.logger.warn("No content associated with [present-term: {}, absent-term: {}, rejected-gene: {}].",
+                presentTerms, absentTerms, rejectedGenes);
             return Response.status(Response.Status.NO_CONTENT).build();
         } catch (final IndexOutOfBoundsException e) {
             this.logger.error("The requested [{}: {}] is out of bounds.", START_PAGE_LABEL, startPage);
@@ -114,6 +105,24 @@ public class DefaultGenePanelsResourceImpl extends XWikiResource implements Gene
             this.logger.error("Unexpected exception while generating gene panel JSON: {}", e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Extracts terms for a {@code propertyLabel property} from the {@code request}.
+     *
+     * @param propertyLabel the label of the property that is being extracted from {@code request}
+     * @param request the {@link Request} object
+     * @return an unmodifiable set of terms
+     */
+    private Set<String> extractTerms(final String propertyLabel, final Request request)
+    {
+        final Set<String> terms = new HashSet<>();
+        for (Object t : request.getProperties(propertyLabel)) {
+            if (t != null) {
+                terms.add((String) t);
+            }
+        }
+        return Collections.unmodifiableSet(terms);
     }
 
     /**

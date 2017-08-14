@@ -65,10 +65,10 @@ public class DefaultTermsForGeneImpl implements TermsForGene
      * @param geneSymbol the gene symbol for the gene of interest
      * @param geneId the preferred ID for the gene
      */
-    public DefaultTermsForGeneImpl(@Nonnull final String geneSymbol, @Nonnull final String geneId)
+    DefaultTermsForGeneImpl(@Nonnull final String geneSymbol, @Nonnull final String geneId)
     {
-        Validate.notNull(geneSymbol);
-        Validate.notNull(geneId);
+        Validate.notBlank(geneSymbol);
+        Validate.notBlank(geneId);
         this.geneSymbol = geneSymbol;
         this.geneId = geneId;
     }

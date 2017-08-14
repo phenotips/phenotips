@@ -17,9 +17,6 @@
  */
 package org.phenotips.panels.internal;
 
-import org.phenotips.data.Feature;
-import org.phenotips.data.Patient;
-import org.phenotips.data.PatientData;
 import org.phenotips.panels.GenePanel;
 import org.phenotips.panels.TermsForGene;
 import org.phenotips.vocabulary.Vocabulary;
@@ -28,14 +25,11 @@ import org.phenotips.vocabulary.VocabularyTerm;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.JSONArray;
@@ -67,12 +61,6 @@ public class DefaultGenePanelImpl implements GenePanel
     /** HGNC vocabulary label. */
     private static final String HGNC_LABEL = "hgnc";
 
-    private static final String PRESENT_LABEL = "present";
-
-    private static final String ABSENT_LABEL = "absent";
-
-    private static final String GLOBAL_QUALIFIERS_LABEL = "global-qualifiers";
-
     /** The hgnc vocabulary. */
     private final Vocabulary hgnc;
 
@@ -93,146 +81,44 @@ public class DefaultGenePanelImpl implements GenePanel
      * @param absentTerms a collection of {@link VocabularyTerm feature identifiers} that are absent
      * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
      */
-    public DefaultGenePanelImpl(@Nonnull final Collection<VocabularyTerm> presentTerms,
+    DefaultGenePanelImpl(@Nonnull final Collection<VocabularyTerm> presentTerms,
         @Nonnull final Collection<VocabularyTerm> absentTerms, @Nonnull final VocabularyManager vocabularyManager)
+    {
+        this(presentTerms, absentTerms, Collections.<VocabularyTerm>emptySet(), vocabularyManager);
+    }
+
+    /**
+     * Simple constructor, passing in a collection of {@code presentTerms} and a collection of {@code absentTerms}, as
+     * {@link VocabularyTerm} objects, a collection of {@code rejectedGenes rejected genes}, and a
+     * {@link VocabularyManager}.
+     *
+     * @param presentTerms a collection of {@link VocabularyTerm feature identifiers} that are present
+     * @param absentTerms a collection of {@link VocabularyTerm feature identifiers} that are absent
+     * @param rejectedGenes a collection of genes that were tested to be negative
+     * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
+     */
+    DefaultGenePanelImpl(Collection<VocabularyTerm> presentTerms, Collection<VocabularyTerm> absentTerms,
+        Collection<VocabularyTerm> rejectedGenes, VocabularyManager vocabularyManager)
     {
         this.hgnc = vocabularyManager.getVocabulary(HGNC_LABEL);
 
         this.presentTerms = Collections.unmodifiableSet(new HashSet<>(presentTerms));
         this.absentTerms = Collections.unmodifiableSet(new HashSet<>(absentTerms));
-        this.termsForGeneList = buildTermsForGeneList();
-    }
-
-    /**
-     * Constructor passing a collection of {@link Feature} objects and a {@link VocabularyManager}.
-     *
-     * @param features a collection of {@link Feature} objects
-     * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
-     */
-    public DefaultGenePanelImpl(@Nonnull final Collection<? extends Feature> features,
-        @Nonnull final VocabularyManager vocabularyManager)
-    {
-        final Map<String, Set<VocabularyTerm>> termData = buildTermsFromFeatures(features, vocabularyManager);
-
-        this.hgnc = vocabularyManager.getVocabulary(HGNC_LABEL);
-
-        this.presentTerms = termData.get(PRESENT_LABEL);
-        this.absentTerms = termData.get(ABSENT_LABEL);
-        this.termsForGeneList = buildTermsForGeneList();
-    }
-
-    /**
-     * Constructor passing in a {@link Patient} object from which feature data will be extracted, and a
-     * {@link VocabularyManager}.
-     *
-     * @param patient a patient of interest
-     * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
-     */
-    public DefaultGenePanelImpl(@Nonnull final Patient patient, @Nonnull final VocabularyManager vocabularyManager)
-    {
-        final Set<? extends Feature> features = patient.getFeatures();
-        final PatientData<List<VocabularyTerm>> qualifiers = patient.getData(GLOBAL_QUALIFIERS_LABEL);
-        final Map<String, Set<VocabularyTerm>> termData = buildTermsFromFeaturesAndQualifiers(features, qualifiers,
-            vocabularyManager);
-
-        this.hgnc = vocabularyManager.getVocabulary(HGNC_LABEL);
-
-        this.presentTerms = termData.get(PRESENT_LABEL);
-        this.absentTerms = termData.get(ABSENT_LABEL);
-        this.termsForGeneList = buildTermsForGeneList();
-    }
-
-    /**
-     * Builds a map containing a set of present {@link VocabularyTerm} objects and a set of absent
-     * {@link VocabularyTerm} objects.
-     *
-     * @param features a collection of {@link Feature} objects
-     * @param qualifiers a {@link PatientData} object that contains lists of global {@link VocabularyTerm} qualifiers
-     * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
-     * @return a map containing sets of present and absent {@link VocabularyTerm} objects
-     */
-    private Map<String, Set<VocabularyTerm>> buildTermsFromFeaturesAndQualifiers(
-        @Nonnull final Collection<? extends Feature> features,
-        @Nullable final PatientData<List<VocabularyTerm>> qualifiers,
-        @Nonnull final VocabularyManager vocabularyManager)
-    {
-        final Set<VocabularyTerm> retrievedPresentTerms = new HashSet<>();
-        final Set<VocabularyTerm> retrievedAbsentTerms = new HashSet<>();
-        addPresentQualifiers(qualifiers, retrievedPresentTerms);
-        addFeatures(features, retrievedPresentTerms, retrievedAbsentTerms, vocabularyManager);
-        final Map<String, Set<VocabularyTerm>> terms = new HashMap<>();
-        terms.put(PRESENT_LABEL, Collections.unmodifiableSet(retrievedPresentTerms));
-        terms.put(ABSENT_LABEL, Collections.unmodifiableSet(retrievedAbsentTerms));
-        return Collections.unmodifiableMap(terms);
-    }
-
-    /**
-     * Adds {@code qualifiers global qualifiers} to a set of present {@code retrievedPresentTerms terms}.
-     *
-     * @param qualifiers a {@link PatientData} object that contains lists of global {@link VocabularyTerm} qualifiers
-     * @param retrievedPresentTerms a set of present {@link VocabularyTerm} objects
-     */
-    private void addPresentQualifiers(@Nullable final PatientData<List<VocabularyTerm>> qualifiers,
-        @Nonnull final Set<VocabularyTerm> retrievedPresentTerms)
-    {
-        if (qualifiers != null) {
-            for (List<VocabularyTerm> qualiferTerms : qualifiers) {
-                retrievedPresentTerms.addAll(qualiferTerms);
-            }
-        }
-    }
-
-    /**
-     * Adds {@code features} to sets of present {@code retrievedPresentTerms terms} and absent
-     * {@code retrievedAbsentTerms terms}.
-     *
-     * @param features a collection of {@link Feature} objects
-     * @param retrievedPresentTerms a set of present {@link VocabularyTerm} objects
-     * @param retrievedAbsentTerms a set of absent {@link VocabularyTerm} objects
-     * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
-     */
-    private void addFeatures(
-        @Nonnull final Collection<? extends Feature> features,
-        @Nonnull final Set<VocabularyTerm> retrievedPresentTerms,
-        @Nonnull final Set<VocabularyTerm> retrievedAbsentTerms,
-        @Nonnull final VocabularyManager vocabularyManager)
-    {
-        for (final Feature feature : features) {
-            final VocabularyTerm term = vocabularyManager.resolveTerm(feature.getValue());
-            if (term != null) {
-                if (feature.isPresent()) {
-                    retrievedPresentTerms.add(term);
-                } else {
-                    retrievedAbsentTerms.add(term);
-                }
-            }
-        }
-    }
-
-    /**
-     * Builds a map containing a set of present {@link VocabularyTerm} objects and a set of absent
-     * {@link VocabularyTerm} objects.
-     *
-     * @param features a collection of {@link Feature} objects
-     * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
-     * @return a map containing sets of present and absent {@link VocabularyTerm} objects
-     */
-    private Map<String, Set<VocabularyTerm>> buildTermsFromFeatures(
-        @Nonnull final Collection<? extends Feature> features, @Nonnull final VocabularyManager vocabularyManager)
-    {
-        return buildTermsFromFeaturesAndQualifiers(features, null, vocabularyManager);
+        this.termsForGeneList = buildTermsForGeneList(rejectedGenes);
     }
 
     /**
      * Builds a list of {@link TermsForGene} objects for a given set of {@link #getPresentTerms()}. The
-     * {@link #getAbsentTerms()} are ignored in this version of {@link GenePanel}.
+     * {@link #getAbsentTerms()} are ignored in this version of {@link GenePanel}. Genes specified as
+     * {@code absentGenes absent genes} are excluded from the returned list.
      *
+     * @param absentGenes genes that were tested negative
      * @return a list of {@link TermsForGene} objects, sorted in descending order or relevance
      */
-    private List<TermsForGene> buildTermsForGeneList()
+    private List<TermsForGene> buildTermsForGeneList(@Nonnull final Collection<VocabularyTerm> absentGenes)
     {
         // A builder to add and update the count data for all the genes.
-        final TermsForGeneBuilder termsForGeneBuilder = new TermsForGeneBuilder();
+        final TermsForGeneBuilder termsForGeneBuilder = new TermsForGeneBuilder(absentGenes);
 
         // Update the data for all HPO identifiers.
         for (final VocabularyTerm term : getPresentTerms()) {
@@ -246,7 +132,6 @@ public class DefaultGenePanelImpl implements GenePanel
     /**
      * For each gene in a list of {@code genes}, adds the gene as key and {@code term} as value to the provided
      * {@code termsForGeneBuilder}.
-     *
      * @param term the {@link VocabularyTerm HPO vocabulary term} associated with the provided list of {@code genes}
      * @param genes a list of gene symbols associated with {@code term}
      * @param termsForGeneBuilder a builder for creating and updating {@link TermsForGene} objects for each gene
