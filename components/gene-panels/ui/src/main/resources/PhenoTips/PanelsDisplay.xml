@@ -152,7 +152,7 @@
      *        "not_symptom" the symptoms that were found to be absent.
      */
     updateLiveTable : function() {
-      if (this.checkBox.visible() &amp;&amp; this.excludeRejected) {
+      if (this.excludeRejected) {
         this.param[this.rejectedGenesLabel] = this.geneCache;
       } else {
         this.param[this.rejectedGenesLabel] &amp;&amp; (delete this.param[this.rejectedGenesLabel]);
@@ -400,7 +400,8 @@
       this.baseUrl = service.script + "/livetable";
       this.saveButton = saveButton;
       this.checkBox = $('excludeRejectedGenesCheckBox');
-      this.checkBox &amp;&amp; (this.excludeRejected = this.checkBox.checked = true);
+      this.excludeRejected = true;
+      this.checkBox &amp;&amp; (this.checkBox.checked = true);
       this.createResultsContainers();
     }
   });
