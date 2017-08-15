@@ -72,7 +72,7 @@ public class DefaultGenePanelFactoryImpl implements GenePanelFactory
     @Override
     public GenePanel build(@Nonnull final Patient patient)
     {
-        return build(patient, false);
+        return build(patient, true);
     }
 
     @Override
