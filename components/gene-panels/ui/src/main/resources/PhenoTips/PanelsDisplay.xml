@@ -400,7 +400,7 @@
       this.baseUrl = service.script + "/livetable";
       this.saveButton = saveButton;
       this.checkBox = $('excludeRejectedGenesCheckBox');
-      this.checkBox &amp;&amp; (this.excludeRejected = this.checkBox.checked);
+      this.checkBox &amp;&amp; (this.excludeRejected = this.checkBox.checked = true);
       this.createResultsContainers();
     }
   });
