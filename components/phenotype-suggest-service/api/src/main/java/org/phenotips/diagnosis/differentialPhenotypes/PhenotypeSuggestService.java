@@ -86,7 +86,7 @@ public class PhenotypeSuggestService implements ScriptService
         QueryResponse response;
         List<SuggestedPhenotype> result = new LinkedList<>();
         try {
-            response = this.solrManager.getSolrConnection("hpo").query(prepareParams(phenotypes, nphenotypes));
+            response = this.solrManager.getSolrConnection("omim").query(prepareParams(phenotypes, nphenotypes));
         } catch (SolrServerException | IOException ex) {
             this.logger.warn("Failed to query OMIM index: {}", ex.getMessage());
             return result;
