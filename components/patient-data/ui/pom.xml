@@ -46,7 +46,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>solr-access-service-ui</artifactId>
+      <artifactId>phenotype-suggest-service-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
       <scope>runtime</scope>
