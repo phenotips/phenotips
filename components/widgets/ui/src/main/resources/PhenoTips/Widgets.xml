@@ -4288,14 +4288,15 @@ document.observe("xwiki:dom:updated", init);
           c.update(
                     elt('span', 'info').insert(elt('span', 'key').update((json.symbol || '') + json.id))
                                        .insert(' ')
-                                       .insert(elt('span', 'value').update(json.translated_name))
+                                       .insert(elt('span', 'value').update(json.name_translated))
                   );
 
           var labels = {'short_name' : '',
             'synonym': "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.synonym')",
-            'included_name': "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.included')",
-            'symptoms' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.symptoms')",
-            'not_symptoms' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.notSymptoms')"};
+            'included_name': "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.included')"};
+            // FIXME: These are disabled until the label can be retrieved as well
+            // 'actual_symptom' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.symptoms')",
+            // 'actual_not_symptom' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.notSymptoms')"};
           var advancedInfo = elt('dl');
           for (var l in labels) {
             if (json[l] &amp;&amp; json[l].length &gt; 0) {
