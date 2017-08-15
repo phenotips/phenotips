@@ -61,7 +61,7 @@
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </access>
     <collaborator>
-      <customDisplay/>
+      <customDisplay>{{velocity}}#if($value){{html}}$xwiki.getUserName($value){{/html}}#end{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>collaborator</name>
       <number>1</number>
