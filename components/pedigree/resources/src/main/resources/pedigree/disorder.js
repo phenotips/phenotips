@@ -41,7 +41,7 @@ define([
 
         load: function(callWhenReady) {
             var baseOMIMServiceURL = editor.getExternalEndpoint().getOMIMServiceURL();
-            var queryURL           = baseOMIMServiceURL + "&q=id:" + this._disorderID;
+            var queryURL           = baseOMIMServiceURL + "/" + this._disorderID;
             //console.log("queryURL: " + queryURL);
             new Ajax.Request(queryURL, {
                 method: "GET",
@@ -56,9 +56,9 @@ define([
             try {
                 var parsed = JSON.parse(response.responseText);
                 //console.log(Helpers.stringifyObject(parsed));
-                if (parsed.hasOwnProperty("rows") && parsed.rows.length > 0) {
-                    console.log("LOADED DISORDER: disorder id = " + this._disorderID + ", name = " + parsed.rows[0].name);
-                    this._name = parsed.rows[0].name;
+                if (parsed.hasOwnProperty("name")) {
+                    console.log("LOADED DISORDER: disorder id = " + this._disorderID + ", name = " + parsed.name);
+                    this._name = parsed.name;
                 } else {
                     console.log("LOADED DISORDER: id = " + this._disorderID + " -> NO DATA");
                 }

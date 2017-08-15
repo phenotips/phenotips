@@ -1,66 +1,41 @@
 document.observe('xwiki:dom:loading', function() {
   var suggestionsMapping = {
         "hpo" : {
-            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get") + "?",
-            varname: "q",
-            noresults: "$services.localization.render('phenotips.DBWebHomeSheet.noResults')",
-            json: true,
+            script: XWiki.contextPath + "/rest/vocabularies/hpo/suggest?",
+            noresults: "$escapetool.javascript($services.localization.render('phenotips.DBWebHomeSheet.noResults'))",
             resultsParameter : "rows",
-            resultId : "id",
             resultValue : "name",
             resultAltName: "synonym",
             resultCategory : "term_category",
             resultInfo : {},
             tooltip: 'phenotype-info',
-            enableHierarchy: true,
-            resultParent : "is_a",
-            fadeOnClear : false,
-            timeout : 30000
+            resultParent : "is_a"
         },
         "ordo" : {
-            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get", "vocabulary=ordo") + "&",
-            varname: "q",
-            noresults: "$services.localization.render('phenotips.DBWebHomeSheet.noResults')",
-            json: true,
+            script: XWiki.contextPath + "/rest/vocabularies/ordo/suggest?",
+            noresults: "$escapetool.javascript($services.localization.render('phenotips.DBWebHomeSheet.noResults'))",
             resultsParameter : "rows",
-            resultId : "id",
             resultValue : "name",
-            tooltip: 'ordo-disease-info',
-            enableHierarchy: false,
-            fadeOnClear : false,
-            timeout : 30000
+            tooltip: 'ordo-disease-info'
         },
         "omim" : {
-            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get", "vocabulary=omim") + "&",
-            varname: "q",
-            noresults: "$services.localization.render('phenotips.DBWebHomeSheet.noResults')",
-            json: true,
+            script: XWiki.contextPath + "/rest/vocabularies/omim/suggest?",
+            noresults: "$escapetool.javascript($services.localization.render('phenotips.DBWebHomeSheet.noResults'))",
             resultsParameter : "rows",
-            resultId : "id",
             resultValue : "name",
             resultInfo : {
                            "Locus"      : {"selector"  : "Locus"}
                          },
-            tooltip: 'omim-disease-info',
-            enableHierarchy: false,
-            fadeOnClear : false,
-            timeout : 30000
+            tooltip: 'omim-disease-info'
         },
         "genes" : {
-            script: new XWiki.Document('GeneNameService', 'PhenoTips').getURL('get', 'outputSyntax=plain') + "&",
-            varname: "q",
-            noresults: "No matching gene names",
-            json: true,
-            resultsParameter : "docs",
-            resultId : 'id',
+            script: XWiki.contextPath + "/rest/vocabularies/hgnc/suggest?",
+            noresults: "$escapetool.javascript($services.localization.render('phenotips.UIXField.genes.noMatches'))",
+            resultsParameter : "rows",
             resultValue : 'symbol',
             resultAltName : "alias_symbol",
-            enableHierarchy: false,
             tooltip : 'gene-info',
-            resultInfo : {},
-            fadeOnClear : false,
-            timeout : 30000,
-            parentContainer : null
+            resultInfo : {}
         }
   };
   // =================================================================================
@@ -68,22 +43,16 @@ document.observe('xwiki:dom:loading', function() {
   var pickerSpecialClassOptions = {
     'defaultPicker' : {},
     'generateShortList' : {
-                  'showKey' : true,
-                  'showTooltip' : false,
                   'showDeleteTool' : false,
                   'enableSort' : false,
-                  'showClearTool' : true,
                   'inputType': 'checkbox'
                 },
     'generateCheckboxes' : {
                   'showKey' : false,
-                  'showTooltip' : false,
                   'showDeleteTool' : false,
                   'enableSort' : false,
-                  'showClearTool' : true,
                   'inputType': 'checkbox',
                   'listInsertionElt' : '.label-other',
-                  'listInsertionPosition' : 'after',
                   'acceptFreeText' : true
                 }
   };
@@ -227,9 +196,9 @@ document.observe('xwiki:dom:loading', function() {
         titles.each(function(item, index) {
           var sectionList = item.next('ul');
           var showIcon = '<span class="fa fa-plus-square-o fa-lg"></span>';
-          var chapterShow = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update(showIcon+" "+"$services.localization.render('phenotips.patientSheet.expandSection')");
+          var chapterShow = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update(showIcon+" "+"$escapetool.javascript($services.localization.render('phenotips.patientSheet.expandSection'))");
           var hideIcon = '<span class="fa fa-minus-square-o fa-lg"></span>';
-          var chapterHide = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update(hideIcon+" "+"$services.localization.render('phenotips.patientSheet.collapseSection')");
+          var chapterHide = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update(hideIcon+" "+"$escapetool.javascript($services.localization.render('phenotips.patientSheet.collapseSection'))");
           var chapterShowWrapper = new Element('span', {'class' : 'buttonwrapper show'}).insert(chapterShow);
           var chapterHideWrapper = new Element('span', {'class' : 'buttonwrapper hide'}).insert(chapterHide);
           var chapterExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(chapterShowWrapper).insert(chapterHideWrapper);
@@ -396,7 +365,7 @@ document.observe('xwiki:dom:loading', function() {
     exportTools.each(function(exportTool) {
       exportTool.observe('click', function(event) {
         event.stop();
-        var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title':"$services.localization.render('phenotips.DBWebHomeSheet.exportPreferences.title')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
+        var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title':"$escapetool.javascript($services.localization.render('phenotips.DBWebHomeSheet.exportPreferences.title'))", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
         dialog.showDialog();
         // =================================================================================
         // Generate the dialog content

@@ -250,209 +250,78 @@ define([
                     item.__datePicker = new DatePicker(item, inputMode);
                 }
             });
-            // disease
-            this.form.select('input.suggest-omim').each(function(item) {
-                if (!item.hasClassName('initialized')) {
-                    // Create the Suggest.
-                    item._suggest = new PhenoTips.widgets.Suggest(item, {
-                        script: editor.getExternalEndpoint().getOMIMServiceURL() + "&",
-                        queryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
-                            'name' : {'wordBoost': 20, 'phraseBoost': 40},
-                            'nameSpell' : {'wordBoost': 50, 'phraseBoost': 100, 'stubBoost': 20},
-                            'keywords' : {'wordBoost': 2, 'phraseBoost': 6, 'stubBoost': 2},
-                            'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1},
-                            'textSpell' : {'wordBoost': 2, 'phraseBoost': 5, 'stubBoost': 2, 'stubTrigger': true}
-                            }, {
-                            '-nameSort': ['\\**', '\\+*', '\\^*']
-                            }),
-                        varname: "q",
+            var suggestOptions = {
+                    'omim' : {
+                        script: editor.getExternalEndpoint().getOMIMServiceURL() + "/suggest?",
                         noresults: "No matching terms",
-                        json: true,
                         resultsParameter : "rows",
-                        resultId : "id",
                         resultValue : "name",
                         resultInfo : {},
-                        enableHierarchy: false,
-                        fadeOnClear : false,
-                        timeout : 30000,
-                        tooltip: 'omim-disease-info',
-                        parentContainer : $('body')
-                    });
-                    if (item.hasClassName('multi') && typeof(PhenoTips.widgets.SuggestPicker) != "undefined") {
-                        item._suggestPicker = new PhenoTips.widgets.SuggestPicker(item, item._suggest, {
-                            'showKey' : false,
-                            'showTooltip' : false,
-                            'showDeleteTool' : true,
-                            'enableSort' : false,
-                            'showClearTool' : true,
-                            'inputType': 'hidden',
-                            'listInsertionElt' : 'input',
-                            'listInsertionPosition' : 'after',
-                            'acceptFreeText' : true
-                        });
-                    }
-                    item.addClassName('initialized');
-                    document.observe('ms:suggest:containerCreated', function(event) {
-                        if (event.memo && event.memo.suggest === item._suggest) {
-                            item._suggest.container.setStyle({'overflow': 'auto', 'maxHeight': document.viewport.getHeight() - item._suggest.container.cumulativeOffset().top + 'px'})
-                        }
-                    });
-                }
-            });
-            // ethnicities
-            this.form.select('input.suggest-ethnicity').each(function(item) {
-                if (!item.hasClassName('initialized')) {
-                    var ethnicityServiceURL = editor.getExternalEndpoint().getEthnicitySearchURL();
-                    //console.log("Ethnicity URL: " + ethnicityServiceURL);
-                    item._suggest = new PhenoTips.widgets.Suggest(item, {
-                        script: ethnicityServiceURL + "&json=true&",
-                        varname: "input",
+                        tooltip: 'omim-disease-info'
+                    },
+                    'ethnicity' : {
+                        script: editor.getExternalEndpoint().getEthnicitySearchURL() + "/suggest?",
                         noresults: "No matching terms",
                         resultsParameter : "rows",
-                        json: true,
-                        resultId : "id",
-                        resultValue : "ethnicity",
-                        resultInfo : {},
-                        enableHierarchy: false,
-                        fadeOnClear : false,
-                        timeout : 30000,
-                        parentContainer : $('body')
-                    });
-                    if (item.hasClassName('multi') && typeof(PhenoTips.widgets.SuggestPicker) != "undefined") {
-                        item._suggestPicker = new PhenoTips.widgets.SuggestPicker(item, item._suggest, {
-                            'showKey' : false,
-                            'showTooltip' : false,
-                            'showDeleteTool' : true,
-                            'enableSort' : false,
-                            'showClearTool' : true,
-                            'inputType': 'hidden',
-                            'listInsertionElt' : 'input',
-                            'listInsertionPosition' : 'after',
-                            'acceptFreeText' : true
-                        });
-                    }
-                    item.addClassName('initialized');
-                    document.observe('ms:suggest:containerCreated', function(event) {
-                        if (event.memo && event.memo.suggest === item._suggest) {
-                            item._suggest.container.setStyle({'overflow': 'auto', 'maxHeight': document.viewport.getHeight() - item._suggest.container.cumulativeOffset().top + 'px'})
-                        }
-                    });
-                }
-            });
-            // genes
-            this.form.select('input.suggest-genes').each(function(item) {
-                if (!item.hasClassName('initialized')) {
-                    var geneServiceURL = editor.getExternalEndpoint().getGeneNameServiceURL();
-                    //console.log("GeneService URL: " + geneServiceURL);
-                    item._suggest = new PhenoTips.widgets.Suggest(item, {
-                        script: geneServiceURL + "&json=true&",
-                        varname: "q",
+                        resultValue : "name",
+                        resultInfo : {}
+                    },
+                    'genes' : {
+                        script: editor.getExternalEndpoint().getHGNCServiceURL() + "/suggest?",
                         noresults: "No matching terms",
-                        resultsParameter : "docs",
-                        json: true,
-                        resultId : "id",
+                        resultsParameter : "rows",
                         resultValue : "symbol",
                         resultInfo : {},
-                        enableHierarchy: false,
-                        tooltip : 'gene-info',
-                        fadeOnClear : false,
-                        timeout : 30000,
-                        parentContainer : $('body')
-                    });
-                    if (item.hasClassName('multi') && typeof(PhenoTips.widgets.SuggestPicker) != "undefined") {
-                        item._suggestPicker = new PhenoTips.widgets.SuggestPicker(item, item._suggest, {
-                            'showKey' : false,
-                            'showTooltip' : false,
-                            'showDeleteTool' : true,
-                            'enableSort' : false,
-                            'showClearTool' : true,
-                            'inputType': 'hidden',
-                            'listInsertionElt' : 'input',
-                            'listInsertionPosition' : 'after',
-                            'acceptFreeText' : true
-                        });
-                    }
-                    item.addClassName('initialized');
-                    document.observe('ms:suggest:containerCreated', function(event) {
-                        if (event.memo && event.memo.suggest === item._suggest) {
-                            item._suggest.container.setStyle({'overflow': 'auto', 'maxHeight': document.viewport.getHeight() - item._suggest.container.cumulativeOffset().top + 'px'})
-                        }
-                    });
-                }
-            });
-            // HPO terms
-            this.form.select('input.suggest-hpo').each(function(item) {
-                if (!item.hasClassName('initialized')) {
-                    var solrServiceURL = HPOTerm.getServiceURL()
-                    //console.log("HPO\SOLR URL: " + solrServiceURL);
-                    item._suggest = new PhenoTips.widgets.Suggest(item, {
-                        script: solrServiceURL + "rows=100&",
-                        varname: "q",
+                        tooltip : 'gene-info'
+                    },
+                    'hpo' : {
+                        script: editor.getExternalEndpoint().getHPOServiceURL() + "/suggest?start=0&rows=100&",
                         noresults: "No matching terms",
-                        json: true,
                         resultsParameter : "rows",
-                        resultId : "id",
                         resultValue : "name",
                         resultAltName: "synonym",
                         resultCategory : "term_category",
                         resultInfo : {},
-                        enableHierarchy: false,
                         resultParent : "is_a",
-                        tooltip: 'phenotype-info',
-                        fadeOnClear : false,
-                        timeout : 30000,
-                        parentContainer : $('body')
-                    });
-                    if (item.hasClassName('multi') && typeof(PhenoTips.widgets.SuggestPicker) != "undefined") {
-                        item._suggestPicker = new PhenoTips.widgets.SuggestPicker(item, item._suggest, {
-                            'showKey' : false,
-                            'showTooltip' : false,
-                            'showDeleteTool' : true,
-                            'enableSort' : false,
-                            'showClearTool' : true,
-                            'inputType': 'hidden',
-                            'listInsertionElt' : 'input',
-                            'listInsertionPosition' : 'after',
-                            'acceptFreeText' : true
-                        });
-                    }
-                    item.addClassName('initialized');
-                    document.observe('ms:suggest:containerCreated', function(event) {
-                        if (event.memo && event.memo.suggest === item._suggest) {
-                            item._suggest.container.setStyle({'overflow': 'auto', 'maxHeight': document.viewport.getHeight() - item._suggest.container.cumulativeOffset().top + 'px'})
-                        }
-                    });
-                }
-            });
-            // patient selector
-            this.form.select('input.suggest-patients').each(function(item) {
-                if (!item.hasClassName('initialized')) {
-                    var patientSuggestURL = editor.getExternalEndpoint().getPatientSuggestServiceURL() +
-                       "&permission=edit&json=true&nb=12&markFamilyAssociation=true&";
-                    //console.log("PatientSuggest URL: " + patientSuggestURL);
-                    item._suggest = new PhenoTips.widgets.Suggest(item, {
-                        script: patientSuggestURL,
-                        varname: "input",
+                        tooltip: 'phenotype-info'
+                    },
+                    'patients' : {
+                        script: editor.getExternalEndpoint().getPatientSuggestServiceURL() +
+                        "&permission=edit&json=true&nb=12&markFamilyAssociation=true&",
                         noresults: "No matching patients",
-                        json: true,
                         width: 337,
                         resultsParameter: "matchedPatients",
-                        resultId: "id",
                         resultValue: "textSummary",
-                        resultInfo: {},
-                        enableHierarchy: false,
-                        fadeOnClear: false,
-                        timeout: 30000,
-                        parentContainer: $('body')
-                    });
-                    item.addClassName('initialized');
-                    document.observe('ms:suggest:containerCreated', function(event) {
-                        if (event.memo && event.memo.suggest === item._suggest) {
-                            item._suggest.container.setStyle({'overflow': 'auto', 'maxHeight': document.viewport.getHeight() - item._suggest.container.cumulativeOffset().top + 'px'})
+                        resultInfo: {}
+                    }
+            };
+            var suggetTypes = Object.keys(suggestOptions);
+            // -----------------------------------------------------------------
+            // Create and attach the suggests and suggest pickers
+            // -----------------------------------------------------------------
+            for (var i = 0; i < suggetTypes.length; i++) {
+                var options = suggestOptions[suggetTypes[i]];
+                this.form.select('input.suggest-' + suggetTypes[i]).each(function(item) {
+                    if (!item.hasClassName('initialized')) {
+                        // Create the Suggest.
+                        item._suggest = new PhenoTips.widgets.Suggest(item, options);
+                        if (item.hasClassName('multi') && typeof(PhenoTips.widgets.SuggestPicker) != "undefined") {
+                            item._suggestPicker = new PhenoTips.widgets.SuggestPicker(item, item._suggest, {
+                                'showKey' : false,
+                                'enableSort' : false,
+                                'listInsertionElt' : 'input',
+                                'acceptFreeText' : true
+                            });
                         }
-                    });
-                }
-            });
+                        item.addClassName('initialized');
+                        document.observe('ms:suggest:containerCreated', function(event) {
+                            if (event.memo && event.memo.suggest === item._suggest) {
+                                item._suggest.container.setStyle({'overflow': 'auto', 'maxHeight': document.viewport.getHeight() - item._suggest.container.cumulativeOffset().top + 'px'})
+                            }
+                        });
+                    }
+                });
+            }
         },
 
         _generateEmptyField : function (data) {

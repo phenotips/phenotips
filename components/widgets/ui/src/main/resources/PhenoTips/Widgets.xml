@@ -145,7 +145,7 @@
     matchVarname : "id",
     // The CSS classname of the suggest list
     className : "ajaxsuggest",
-    timeout : 2500,
+    timeout : 30000,
     delay : 500,
     offsety : 0,
     // Display a "no results" message, or simply hide the suggest box when no suggestions are available
@@ -183,7 +183,7 @@
     // Should results fragments be highlighted when matching typed input
     highlight: true,
     // Fade the suggestion container on clear
-    fadeOnClear: true,
+    fadeOnClear: false,
     // Show a 'hide suggestions' button
     enableHideButton: true,
     insertBeforeSuggestions: null,
@@ -203,7 +203,9 @@
     loaderNode: null,
     // A function returning true or false for each fetched suggestion. If defined, only suggestions for which 'true' is returned
     // are added to the list
-    filterFunc: null
+    filterFunc: null,
+    // The expected data format, XML or JSON by default
+    json: true
   },
   sInput : "",
   nInputChars : 0,
@@ -479,15 +481,6 @@
         continue;
       }
 
-      var param = {};
-
-      if (this.options.queryProcessor != null &amp;&amp; typeof(this.options.queryProcessor.generateParameters) == "function") {
-        param = this.options.queryProcessor.generateParameters(query);
-      }
-      if (this.options.queryProcessor != null &amp;&amp; typeof(this.options.queryProcessor.processQuery) == "function") {
-        query = this.options.queryProcessor.processQuery(query);
-      }
-
       var url = source.matchScript + source.matchVarname + "=" + encodeURIComponent(query);
       var method = source.method || "get";
       var headers = {};
@@ -498,7 +491,6 @@
       }
       var ajx = new Ajax.Request(url, {
         method: method,
-        parameter: param,
         requestHeaders: headers,
         onCreate : function () {
           this.fld.addClassName("loading");
@@ -680,13 +672,6 @@
 
       // create ajax request
       var query = this.fld.value.strip();
-      var parameters = {};
-      if (this.options.queryProcessor != null &amp;&amp; typeof(this.options.queryProcessor.generateParameters) == "function") {
-        parameters = this.options.queryProcessor.generateParameters(query);
-      }
-      if (this.options.queryProcessor != null &amp;&amp; typeof(this.options.queryProcessor.processQuery) == "function") {
-        query = this.options.queryProcessor.processQuery(query);
-      }
       var url = source.script + source.varname + "=" + encodeURIComponent(query);
       var method = source.method || "get";
       var headers = {};
@@ -698,7 +683,6 @@
 
       var ajx = new Ajax.Request(url, {
         method: method,
-        parameters: parameters,
         requestHeaders: headers,
         onCreate : function () {
           this.fld.addClassName("loading");
@@ -2310,7 +2294,7 @@ return PhenoTips;
       <use>onDemand</use>
     </property>
   </object>
-  <object>
+    <object>
     <name>PhenoTips.Widgets</name>
     <number>3</number>
     <className>XWiki.JavaScriptExtension</className>
@@ -2600,10 +2584,10 @@ return PhenoTips;
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   widgets.OntologyBrowser = Class.create({
   options : {
-    script : "${xwiki.getURL('PhenoTips.SolrService', 'get', 'sort=nameSort asc&amp;start=0&amp;rows=10000')}&amp;",
-    varname: "q",
-    method : "post",
+    script : XWiki.contextPath + "/rest/vocabularies/hpo/suggest?sort=nameSort asc&amp;maxResults=10000&amp;",
     json : true,
+    varname: "input",
+    method : "get",
     responseFormat : "application/json",
     resultsParameter : "rows",
     resultId : "id",
@@ -2616,12 +2600,6 @@ return PhenoTips;
       }
     },
     noresults: "No sub-terms",
-    targetQueryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
-                           'id' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}}
-                         }),
-    expandQueryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
-                           'is_a' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}}
-                         }),
     showParents : true,
     showRoot : true,
     enableSelection : true,
@@ -2654,21 +2632,12 @@ return PhenoTips;
 
   load : function(id) {
       this.setContent(this.loadingMessage);
-      var query = id;
-      var parameters = {};
-      if (this.options.targetQueryProcessor != null &amp;&amp; typeof(this.options.targetQueryProcessor.generateParameters) == "function") {
-        parameters = this.options.targetQueryProcessor.generateParameters(query);
-      }
-      if (this.options.targetQueryProcessor != null &amp;&amp; typeof(this.options.targetQueryProcessor.processQuery) == "function") {
-        query = this.options.targetQueryProcessor.processQuery(query);
-      }
-      var url = this.options.script + this.options.varname + "=" + encodeURIComponent(query);
+      var url = this.options.script + this.options.varname + "=" + encodeURIComponent(id);
       var headers = {};
       headers.Accept = this.options.responseFormat;
 
       var ajx = new Ajax.Request(url, {
         method: this.options.method,
-        parameters: parameters,
         requestHeaders: headers,
         onSuccess: function (response) {
           this.setContent(this.buildTree(this._getDataFromResponse(response)));
@@ -2721,11 +2690,8 @@ return PhenoTips;
   expand : function (element, doPopulate) {
       var query = element.__termId;
       var parameters = {};
-      if (this.options.expandQueryProcessor != null &amp;&amp; typeof(this.options.expandQueryProcessor.generateParameters) == "function") {
-        parameters = this.options.expandQueryProcessor.generateParameters(query);
-      }
-      if (this.options.expandQueryProcessor != null &amp;&amp; typeof(this.options.expandQueryProcessor.processQuery) == "function") {
-        query = this.options.expandQueryProcessor.processQuery(query);
+      if (query.match(/^HP:[0-9]+$/i)) {
+        parameters.customFilter ="is_a:" + query.toUpperCase().replace(/:/g, "\\:");
       }
       var url = this.options.script + this.options.varname + "=" + encodeURIComponent(query);
       var headers = {};
@@ -3570,12 +3536,15 @@ return PhenoTips;
       }
       // Suggest?
       var suggestInfoSource = element.previous('input[name="xwiki-free-multiselect-suggest-script"][type="hidden"]');
-      if (suggestInfoSource &amp;&amp; suggestInfoSource.value &amp;&amp; typeof(XWiki.widgets.Suggest) != "undefined") {
+      if (suggestInfoSource &amp;&amp; suggestInfoSource.value &amp;&amp; typeof(PhenoTips.widgets.Suggest) != "undefined") {
         this.suggestOptions = {
           script : suggestInfoSource.value,
           shownoresults : false,
           varname: "input",
-          timeout : 0
+          timeout : 0,
+          resultsParameter : "rows",
+          resultValue : "name",
+          resultInfo : {}
         }
       }
 
@@ -3604,7 +3573,7 @@ return PhenoTips;
       element.up('li').addClassName('xwiki-free-multiselect-line');
       this.attachDeleteTool(element);
       if (this.suggestOptions) {
-        new XWiki.widgets.Suggest(element, this.suggestOptions);
+        new PhenoTips.widgets.Suggest(element, this.suggestOptions);
       }
       this.enableAddInput(element);
     },
@@ -4303,7 +4272,7 @@ document.observe("xwiki:dom:updated", init);
       },
       'omim-disease-info' : {
         'hint' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.hint')",
-        'service'  : "$xwiki.getURL('PhenoTips.OmimInfoService', 'get')",
+        'vocabulary' : 'omim',
         'database' : {
           'name' : "$services.vocabularies.omim.name",
           'link' : "$services.vocabularies.omim.website",
@@ -4319,14 +4288,15 @@ document.observe("xwiki:dom:updated", init);
           c.update(
                     elt('span', 'info').insert(elt('span', 'key').update((json.symbol || '') + json.id))
                                        .insert(' ')
-                                       .insert(elt('span', 'value').update(json.translated_name))
+                                       .insert(elt('span', 'value').update(json.name_translated))
                   );
 
           var labels = {'short_name' : '',
             'synonym': "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.synonym')",
-            'included_name': "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.included')",
-            'symptoms' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.symptoms')",
-            'not_symptoms' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.notSymptoms')"};
+            'included_name': "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.included')"};
+            // FIXME: These are disabled until the label can be retrieved as well
+            // 'actual_symptom' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.symptoms')",
+            // 'actual_not_symptom' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.notSymptoms')"};
           var advancedInfo = elt('dl');
           for (var l in labels) {
             if (json[l] &amp;&amp; json[l].length &gt; 0) {
@@ -4583,7 +4553,7 @@ document.observe("xwiki:dom:updated", init);
 
     createHelpContentFromService : function() {
       var _this = this;
-      var url = _this._builder.service || (XWiki.contextPath + "/rest/vocabularies/" + _this._builder.vocabulary + "/" + _this._information);
+      var url = XWiki.contextPath + "/rest/vocabularies/" + _this._builder.vocabulary + "/" + _this._information;
       new Ajax.Request(url, {
         parameters: {'id' : _this._information},
         method : 'get',

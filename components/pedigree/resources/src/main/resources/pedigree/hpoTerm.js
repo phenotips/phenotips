@@ -40,8 +40,8 @@ define([
         },
 
         load: function(callWhenReady) {
-            var baseServiceURL = HPOTerm.getServiceURL();
-            var queryURL       = baseServiceURL + "&q=" + this._hpoID.replace(":","%3A");
+            var baseServiceURL = editor.getExternalEndpoint().getHPOServiceURL();
+            var queryURL       = baseServiceURL + "/" + this._hpoID.replace(":","%3A");
             //console.log("QueryURL: " + queryURL);
             new Ajax.Request(queryURL, {
                 method: "GET",
@@ -56,9 +56,9 @@ define([
             try {
                 var parsed = JSON.parse(response.responseText);
                 //console.log(Helpers.stringifyObject(parsed));
-                if (parsed.hasOwnProperty("rows") && parsed.rows.length > 0) {
-                    console.log("LOADED TERM INFO: id = " + this._hpoID + ", name = " + parsed.rows[0].name);
-                    this._name = parsed.rows[0].name;
+                if (parsed.hasOwnProperty("name")) {
+                    console.log("LOADED TERM INFO: id = " + this._hpoID + ", name = " + parsed.name);
+                    this._name = parsed.name;
                 } else {
                     console.log("LOADED TERM INFO: id = " + this._hpoID + " -> NO DATA");
                 }
@@ -74,8 +74,5 @@ define([
         return pattern.test(id);
     }
 
-    HPOTerm.getServiceURL = function() {
-        return editor.getExternalEndpoint().getSolrServiceURL() + "?";
-    }
     return HPOTerm;
 });

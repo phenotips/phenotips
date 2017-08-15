@@ -55,8 +55,6 @@ core.widgets.confirmationBox.button.cancel=Cancel
 phenotips.globalHeader.allData=Browse all patients
 phenotips.globalHeader.search.placeholder=Search…
 
-phenotips.OmimPredictService.linkToDisorder=Read about this disorder on OMIM
-phenotips.OmimPredictService.noMatches=No matches found
 phenotips.PatientPhenotyoeExportService.cantFindPatientError=Identifier not found.
 phenotips.SuggestPatientService.serviceInfo=This service allows to retrieve search results for the suggest UI component. Example: {0}
 phenotips.UIXDirectory.noNameError=Please enter an extension name

@@ -163,15 +163,9 @@
 
             this.searchInput._suggest = new PhenoTips.widgets.Suggest(this.searchInput, {
                 script: this.familySearchUrl + "&amp;json=true&amp;",
-                varname: "input",
-                noresults: "No matching terms",
+                noresults: "$escapetool.javascript($services.localization.render('phenotips.UIXField.family_membership.noMatchingFamilies'))",
                 resultsParameter: "matchedFamilies",
-                json: true,
-                resultId: "id",
                 resultValue: "textSummary",
-                enableHierarchy: false,
-                fadeOnClear: false,
-                timeout: 30000,
                 parentContainer: $$('.pedigree-family-chooser')[0]
             });
 

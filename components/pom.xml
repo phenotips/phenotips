@@ -44,7 +44,6 @@
     <module>gene-panels</module>
     <module>obo2solr</module>
     <module>entities</module>
-    <module>solr-access-service</module>
     <module>vocabularies</module>
     <module>patient-data</module>
     <module>patient-data-extra</module>
@@ -63,6 +62,7 @@
     <module>specificity-meter</module>
     <module>diagnosis-suggestion</module>
     <module>pedigree</module>
+    <module>phenotype-suggest-service</module>
     <module>record-locking</module>
     <module>xwiki-locks</module>
   </modules>

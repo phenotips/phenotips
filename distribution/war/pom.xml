@@ -572,11 +572,6 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>solr-access-service-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>gene-panels-api</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -828,6 +823,11 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>diagnosis-suggestion-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotype-suggest-service-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
