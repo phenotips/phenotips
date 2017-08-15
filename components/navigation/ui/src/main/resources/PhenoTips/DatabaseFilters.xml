@@ -54,7 +54,10 @@
 {{html clean="false"}}&lt;label&gt;$label &lt;input class="xwiki-date" type="text" alt="#if($value)#formatdateISO($value)#end" value="$!xwiki.formatDate($value, $definedFormat)" name="${field_name}" title="${dateFormat}" /&gt;&lt;/label&gt;{{/html}}
 #end
 
-#macro(__filters_display $cssClass)
+#macro(__filters_display $cssClass $showHideButton)
+#if ($showHideButton)
+{{html clean='false' wiki='true'}}&lt;span class='buttonwrapper'&gt;&lt;a class='button toggle-filters' href='#'&gt;{{icon name='filter' /}}&lt;span class='label'&gt;$services.localization.render('phenotips.allData.filterButton')&lt;/span&gt;&lt;input type="hidden" name="user-hash" value="$!{xcontext.userReference.hashCode()}"/&gt;{{icon name='angle-double-left' cssClass='collapse-marker' /}}{{icon name='angle-double-down' cssClass='expand-marker' /}}&lt;/a&gt;&lt;/span&gt;{{/html}}
+#end
 (% class="filters $!cssClass" %)
 #if ($activeFields.contains('external_id'))
 * $services.localization.render('phenotips.databaseFilters.externalID') {{html clean=false}}&lt;input type="text" name="external_id" value=""/&gt;{{/html}}

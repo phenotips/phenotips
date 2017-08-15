@@ -73,7 +73,7 @@ $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 #end
 #set ($discard = $columns.add('_actions'))
 ##  toggle-filters
-#set ($topFilters = $doc.getRenderedContent("(% class='xform' %)((({{html clean='false' wiki='true'}}&lt;span class='buttonwrapper'&gt;&lt;a class='button toggle-filters' href='#'&gt;{{icon name='filter' /}}&lt;span class='label'&gt;$services.localization.render('phenotips.allData.filterButton')&lt;/span&gt;{{icon name='angle-double-left' cssClass='collapse-marker' /}}{{icon name='angle-double-down' cssClass='expand-marker' /}}&lt;/a&gt;&lt;/span&gt;{{/html}}{{velocity}}#__filters_display('xform'){{/velocity}})))", "xwiki/2.1"))
+#set ($topFilters = $doc.getRenderedContent("(% class='xform' %)((({{velocity}}#__filters_display('xform', true){{/velocity}})))", "xwiki/2.1"))
 #set ($options = {
   'className'         : $familyClassName,
   'translationPrefix' : 'family.livetable.',
