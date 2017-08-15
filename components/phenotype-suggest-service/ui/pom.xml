@@ -22,38 +22,24 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>patient-data</artifactId>
+    <artifactId>phenotype-suggest-service</artifactId>
     <version>1.4-SNAPSHOT</version>
   </parent>
-  <artifactId>patient-data-ui</artifactId>
-  <name>PhenoTips - Patient data - Documents providing the patient class, sheet and display code</name>
+  <artifactId>phenotype-suggest-service-ui</artifactId>
+  <name>PhenoTips - Phenotype suggest service - Document providing phenotype suggestions</name>
   <packaging>xar</packaging>
 
   <properties>
     <!-- Don't run CLIRR here since there's no Java code. -->
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
     <!-- Name to display by the Extension Manager -->
-    <xwiki.extension.name>Core patient data and the patient record UI</xwiki.extension.name>
+    <xwiki.extension.name>Phenotype suggestion service</xwiki.extension.name>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>vocabulary-hpo-ui</artifactId>
-      <version>${project.version}</version>
-      <type>xar</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>phenotype-suggest-service-ui</artifactId>
-      <version>${project.version}</version>
-      <type>xar</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>jodatime-service</artifactId>
+      <artifactId>phenotype-suggest-service-api</artifactId>
       <version>${project.version}</version>
       <scope>runtime</scope>
     </dependency>
@@ -64,21 +50,9 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-rendering-macro-gallery</artifactId>
+      <groupId>org.xwiki.rendering</groupId>
+      <artifactId>xwiki-rendering-macro-html</artifactId>
       <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>patient-data-default-impl</artifactId>
-      <version>${project.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>patient-tools</artifactId>
-      <version>${project.version}</version>
       <scope>runtime</scope>
     </dependency>
   </dependencies>
