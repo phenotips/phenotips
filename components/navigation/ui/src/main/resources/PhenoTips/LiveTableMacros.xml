@@ -621,8 +621,8 @@
       #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and ${safe_tableAlias}.value in (${stringtool.repeat('?', ', ', $filterValueList.size())})")
       #set($discard = $whereParams.add("${colname}"))
       #foreach ($value in $filterValueList)
-        ## Owners are always stored as full references, and the query may come as a partial reference
-        #if ($colname == 'owner')
+        ## Some fields are always stored as full references, and the query may come as a partial reference
+        #if ($request.getParameter("${colname}/match") == 'fullReference')
           #set($discard = $whereParams.add($services.model.serialize($services.model.resolveDocument($value), 'default')))
         #else
           #set($discard = $whereParams.add($value))
@@ -631,7 +631,10 @@
     ## Simple string and a single filter value, configurable type of match: exact (case sensitive), case insensitive, or case insensitive substring
     #else
       #set($fromSql = "${fromSql}, StringProperty ${safe_tableAlias}")
-      #if ($request.getParameter("${colname}/match") == 'exact')
+      #if ($request.getParameter("${colname}/match") == 'fullReference')
+        #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and ${safe_tableAlias}.value = ?")
+        #set($discard = $whereParams.addAll(["${colname}", $services.model.serialize($services.model.resolveDocument($filterValueList[0]), 'default')]))
+      #elseif ($request.getParameter("${colname}/match") == 'exact')
         #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and ${safe_tableAlias}.value = ?")
         #set($discard = $whereParams.addAll(["${colname}", "${filterValueList[0]}"]))
       #elseif ($request.getParameter("${colname}/match") == 'ci')
