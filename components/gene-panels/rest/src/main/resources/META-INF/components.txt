@@ -1,3 +1,4 @@
 org.phenotips.panels.rest.internal.DefaultGenePanelsPatientResourceImpl
 org.phenotips.panels.rest.internal.DefaultGenePanelsResourceImpl
+org.phenotips.panels.rest.internal.DefaultGenePanelsLiveTableResourceImpl
 org.phenotips.panels.rest.internal.DefaultGenePanelLoader

@@ -143,10 +143,10 @@
   });
 
   var saveData = function(json) {
-    if (!json || !json.genes || !json.size) {return;}
+    if (!json || !json.rows || !json.returnedrows) {return;}
 
-    var genes = json.genes;
-    var size = json.size;
+    var genes = json.rows;
+    var size = json.returnedrows;
     if (!genes || !size) {return;}
     var headerElements = ["Gene symbol", "Gene ID", "Number of occurrences", "Features", "HPO IDs"];
     var csvContent = "data:text/csv;charset=utf-8, ";

@@ -20,7 +20,6 @@ package org.phenotips.panels.rest;
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
 
-import org.xwiki.rest.resources.RootResource;
 import org.xwiki.stability.Unstable;
 
 import javax.ws.rs.Consumes;
@@ -31,20 +30,21 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- * Root resource for working with gene panels.
+ * A resource for integrating a gene panel display with a LiveTable.
  *
  * @version $Id$
- * @since 1.3
+ * @since 1.4
  */
-@Unstable("New API introduced in 1.3")
-@Path("/suggested-gene-panels")
+@Unstable("New API introduced in 1.4")
+@Path("/suggested-gene-panels/livetable")
 @Relation("https://phenotips.org/rel/genePanels")
-@ParentResource(RootResource.class)
-public interface GenePanelsResource
+@ParentResource(GenePanelsResource.class)
+public interface GenePanelsLiveTableResource
 {
     /**
      * Retrieves a JSON representation of genes associated with provided terms and counts for each gene. The following
      * request parameters are used:
+     *
      * <dl>
      * <dt>present-term</dt>
      * <dd>a list of term IDs that are observed to be present (e.g. HP:0001154)</dd>
@@ -52,8 +52,8 @@ public interface GenePanelsResource
      * <dd>a list of term IDs that are observed to be absent</dd>
      * <dt>rejected-gene</dt>
      * <dd>a list of gene IDs that were rejected and should be excluded from gene suggestion results</dd>
-     * <dt>startPage</dt>
-     * <dd>the start page from which to display the results, numbering starts from 1</dd>
+     * <dt>offset</dt>
+     * <dd>the offset for the results, numbering starts from 1</dd>
      * <dt>limit</dt>
      * <dd>the number of results to display, must be an integer</dd>
      * <dt>reqNo</dt>
@@ -61,7 +61,6 @@ public interface GenePanelsResource
      * </dl>
      *
      * @return associated genes and counts data if successful, an error code otherwise
-     * @since 1.4 (modified)
      */
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)

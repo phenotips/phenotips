@@ -55,11 +55,11 @@ public class DefaultGenePanelsResourceImpl extends XWikiResource implements Gene
 {
     private static final String REQ_NO = "reqNo";
 
-    private static final String TOTAL_PAGES_LABEL = "totalPages";
+    private static final String TOTAL_PAGES_LABEL = "totalpages";
 
-    private static final String START_PAGE_LABEL = "startPage";
+    private static final String START_PAGE_LABEL = "startpage";
 
-    private static final String RESULTS_LABEL = "numResults";
+    private static final String RESULTS_LIMIT_LABEL = "limit";
 
     @Inject
     private Logger logger;
@@ -85,7 +85,7 @@ public class DefaultGenePanelsResourceImpl extends XWikiResource implements Gene
         }
 
         final int startPage = NumberUtils.toInt((String) request.getProperty(START_PAGE_LABEL), 1);
-        final int numResults = NumberUtils.toInt((String) request.getProperty(RESULTS_LABEL), -1);
+        final int numResults = NumberUtils.toInt((String) request.getProperty(RESULTS_LIMIT_LABEL), -1);
         final int reqNo = NumberUtils.toInt((String) request.getProperty(REQ_NO), 0);
 
         try {

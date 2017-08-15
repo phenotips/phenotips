@@ -29,7 +29,6 @@ import javax.annotation.Nonnull;
  * @version $Id$
  * @since 1.4
  */
-// TODO: Rename me!
 class PanelData
 {
     /** A set of present term identifiers. */

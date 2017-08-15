@@ -62,11 +62,11 @@ import static org.mockito.Mockito.when;
  */
 public class DefaultGenePanelsResourceImplTest
 {
-    private static final String START_PAGE_LABEL = "startPage";
+    private static final String START_PAGE_LABEL = "startpage";
 
-    private static final String TOTAL_PAGES_LABEL = "totalPages";
+    private static final String TOTAL_PAGES_LABEL = "totalpages";
 
-    private static final String RESULTS_LABEL = "numResults";
+    private static final String RESULTS_LIMIT_LABEL = "limit";
 
     private static final String PRESENT_TERMS_LABEL = "present-term";
 
@@ -84,7 +84,7 @@ public class DefaultGenePanelsResourceImplTest
 
     @Rule
     public MockitoComponentMockingRule<GenePanelsResource> mocker =
-        new MockitoComponentMockingRule<GenePanelsResource>(DefaultGenePanelsResourceImpl.class);
+        new MockitoComponentMockingRule(DefaultGenePanelsResourceImpl.class);
 
     @Mock
     private GenePanel genePanel;
@@ -120,7 +120,7 @@ public class DefaultGenePanelsResourceImplTest
         // Some defaults, can be overridden later
         when(this.genePanelLoader.get(any(PanelData.class))).thenReturn(this.genePanel);
         when(this.request.getProperty(START_PAGE_LABEL)).thenReturn("1");
-        when(this.request.getProperty(RESULTS_LABEL)).thenReturn("20");
+        when(this.request.getProperty(RESULTS_LIMIT_LABEL)).thenReturn("20");
         when(this.request.getProperty(REQ_NO)).thenReturn("1");
     }
 
@@ -138,7 +138,7 @@ public class DefaultGenePanelsResourceImplTest
     public void getGeneCountsFromPhenotypesAbsentTermsProvidedPresentTermsGenerateNoContent() throws ExecutionException
     {
         final List<Object> presentTerms = Collections.emptyList();
-        final List<Object> absentTerms = Collections.<Object>singletonList(TERM_1);
+        final List<Object> absentTerms = Collections.singletonList(TERM_1);
         when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(presentTerms);
         when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(absentTerms);
         when(this.genePanelLoader.get(any(PanelData.class)))
@@ -152,8 +152,8 @@ public class DefaultGenePanelsResourceImplTest
     @Test
     public void getGeneCountsFromPhenotypesStartPageNegativeResultsInBadRequest()
     {
-        when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_2));
-        when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_1));
+        when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Collections.singletonList(TERM_2));
+        when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.singletonList(TERM_1));
         when(this.request.getProperty(START_PAGE_LABEL)).thenReturn("-20");
         final Response response = this.component.getGeneCountsFromPhenotypes();
         verify(this.logger).error("The requested [{}: {}] is out of bounds.", START_PAGE_LABEL, -20);
@@ -164,8 +164,8 @@ public class DefaultGenePanelsResourceImplTest
     public void getGeneCountsFromPhenotypesStartPageOutOfBounds()
     {
         when(this.genePanel.size()).thenReturn(1);
-        when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_2));
-        when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_1));
+        when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Collections.singletonList(TERM_2));
+        when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.singletonList(TERM_1));
         when(this.request.getProperty(START_PAGE_LABEL)).thenReturn("2");
 
         final Response response = this.component.getGeneCountsFromPhenotypes();
@@ -179,9 +179,9 @@ public class DefaultGenePanelsResourceImplTest
         when(this.genePanel.size()).thenReturn(2);
         when(this.genePanel.toJSON()).thenReturn(new JSONObject());
 
-        when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Arrays.<Object>asList(TERM_1, TERM_2));
-        when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_3));
-        when(this.request.getProperty(RESULTS_LABEL)).thenReturn("-1");
+        when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Arrays.asList(TERM_1, TERM_2));
+        when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.singletonList(TERM_3));
+        when(this.request.getProperty(RESULTS_LIMIT_LABEL)).thenReturn("-1");
 
         final Response response = this.component.getGeneCountsFromPhenotypes();
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -194,9 +194,9 @@ public class DefaultGenePanelsResourceImplTest
         when(this.genePanel.size()).thenReturn(1);
         when(this.genePanel.toJSON()).thenReturn(new JSONObject());
 
-        when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_1));
-        when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_3));
-        when(this.request.getProperty(RESULTS_LABEL)).thenReturn("2");
+        when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Collections.singletonList(TERM_1));
+        when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.singletonList(TERM_3));
+        when(this.request.getProperty(RESULTS_LIMIT_LABEL)).thenReturn("2");
 
         final Response response = this.component.getGeneCountsFromPhenotypes();
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -210,9 +210,10 @@ public class DefaultGenePanelsResourceImplTest
         when(this.genePanel.size()).thenReturn(2);
         when(this.genePanel.toJSON(0, 1)).thenReturn(new JSONObject());
 
-        when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Arrays.<Object>asList(TERM_1, TERM_2));
-        when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_3));
-        when(this.request.getProperty(RESULTS_LABEL)).thenReturn("1");
+        when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Arrays.asList(TERM_1, TERM_2));
+        when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.singletonList(TERM_3));
+
+        when(this.request.getProperty(RESULTS_LIMIT_LABEL)).thenReturn("1");
 
         final Response response = this.component.getGeneCountsFromPhenotypes();
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -226,8 +227,8 @@ public class DefaultGenePanelsResourceImplTest
         when(this.genePanel.size()).thenReturn(1);
         when(this.genePanel.toJSON()).thenReturn(new JSONObject());
 
-        when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_1));
-        when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.<Object>singletonList(TERM_3));
+        when(this.request.getProperties(PRESENT_TERMS_LABEL)).thenReturn(Collections.singletonList(TERM_1));
+        when(this.request.getProperties(ABSENT_TERMS_LABEL)).thenReturn(Collections.singletonList(TERM_3));
         when(this.request.getProperty(REQ_NO)).thenReturn("0");
 
         final Response response = this.component.getGeneCountsFromPhenotypes();

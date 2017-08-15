@@ -69,9 +69,9 @@ public class DefaultGenePanelImplTest
 
     private static final String GENE_ID2 = "gene-id2";
 
-    private static final List<Object> GENE_ID_LIST1 = Collections.<Object>singletonList(GENE_ID1);
+    private static final List<Object> GENE_ID_LIST1 = Collections.singletonList(GENE_ID1);
 
-    private static final List<Object> GENE_ID_LIST2 = Collections.<Object>singletonList(GENE_ID2);
+    private static final List<Object> GENE_ID_LIST2 = Collections.singletonList(GENE_ID2);
 
     private static final String ASSOCIATED_GENES = "associated_genes";
 
@@ -79,11 +79,11 @@ public class DefaultGenePanelImplTest
 
     private static final String HGNC_LABEL = "hgnc";
 
-    private static final String SIZE_LABEL = "size";
+    private static final String SIZE_LABEL = "returnedrows";
 
-    private static final String TOTAL_SIZE_LABEL = "totalSize";
+    private static final String TOTAL_SIZE_LABEL = "totalrows";
 
-    private static final String GENES_LABEL = "genes";
+    private static final String GENE_ROWS_LABEL = "rows";
 
     private static final String TERMS_LABEL = "terms";
 
@@ -135,7 +135,7 @@ public class DefaultGenePanelImplTest
         this.termsGenePanel = new DefaultGenePanelImpl(Collections.unmodifiableList(this.presentTerms),
             Collections.unmodifiableList(this.absentTerms), this.vocabularyManager);
         this.presentTermsGenePanel = new DefaultGenePanelImpl(Collections.unmodifiableList(this.presentTerms),
-            Collections.<VocabularyTerm>emptyList(), this.vocabularyManager);
+            Collections.emptyList(), this.vocabularyManager);
     }
 
     //----------------------------------Gene panel from terms----------------------------------//
@@ -143,22 +143,22 @@ public class DefaultGenePanelImplTest
     @Test
     public void panelIsEmptyIfTermsAreEmpty()
     {
-        final GenePanel panel = new DefaultGenePanelImpl(Collections.<VocabularyTerm>emptyList(),
-            Collections.<VocabularyTerm>emptyList(), this.vocabularyManager);
+        final GenePanel panel = new DefaultGenePanelImpl(Collections.emptyList(), Collections.emptyList(),
+            this.vocabularyManager);
         assertEquals(0, panel.size());
         assertTrue(panel.getPresentTerms().isEmpty());
         assertTrue(panel.getAbsentTerms().isEmpty());
         assertTrue(panel.getTermsForGeneList().isEmpty());
 
         final JSONObject expected = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
-            .put(GENES_LABEL, new JSONArray());
+            .put(GENE_ROWS_LABEL, new JSONArray());
         assertTrue(expected.similar(panel.toJSON()));
     }
 
     @Test
     public void panelIsEmptyIfOnlyAbsentTermsProvided()
     {
-        final GenePanel panel = new DefaultGenePanelImpl(Collections.<VocabularyTerm>emptyList(),
+        final GenePanel panel = new DefaultGenePanelImpl(Collections.emptyList(),
             Collections.unmodifiableList(this.absentTerms), this.vocabularyManager);
         assertEquals(0, panel.size());
         assertTrue(panel.getPresentTerms().isEmpty());
@@ -166,7 +166,7 @@ public class DefaultGenePanelImplTest
         assertTrue(panel.getTermsForGeneList().isEmpty());
 
         final JSONObject expected = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
-            .put(GENES_LABEL, new JSONArray());
+            .put(GENE_ROWS_LABEL, new JSONArray());
         assertTrue(expected.similar(panel.toJSON()));
     }
 
@@ -324,17 +324,12 @@ public class DefaultGenePanelImplTest
     @SuppressWarnings("unchecked")
     private void makeGenePanelMocks()
     {
-        final Set<Feature> features = new HashSet<>();
         this.presentTerms = new ArrayList<>();
         this.absentTerms = new ArrayList<>();
 
         final Feature presentFeature1 = mock(Feature.class);
         final Feature presentFeature2 = mock(Feature.class);
         final Feature absentFeature = mock(Feature.class);
-
-        features.add(presentFeature1);
-        features.add(presentFeature2);
-        features.add(absentFeature);
 
         this.presentTerm1 = mock(VocabularyTerm.class);
         this.presentTerm2 = mock(VocabularyTerm.class);
