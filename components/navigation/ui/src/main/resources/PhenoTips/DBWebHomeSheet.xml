@@ -257,7 +257,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
       <code>(function() {
   var init = function(event) {
     var getCookieKey = function (tableId) {
-      var userHash = $$('#' + tableId + ' .toggleFilters input[name="user-hash"]')[0];
+      var userHash = $$('#' + tableId + ' .toggle-filters input[name="user-hash"]')[0];
       userHash = userHash &amp;&amp; userHash.value;
       return userHash + '_' + tableId + '_filters_state';
     };
