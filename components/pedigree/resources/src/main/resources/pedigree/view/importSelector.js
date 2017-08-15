@@ -1,5 +1,5 @@
 /**
- * The UI Element for importing pedigrees from text representationin various formats
+ * The UI Element for importing pedigrees from text representation in various formats
  *
  * @class ImportSelector
  */
@@ -16,34 +16,6 @@ define([
             var _this = this;
 
             this.mainDiv = new Element('div', {'class': 'import-selector'});
-
-            var promptImport = new Element('div', {'class': 'import-section'}).update("Import data:");
-            this.importValue = new Element("textarea", {"id": "import", "value": "", "class": "import-textarea"});
-            this.mainDiv.insert(promptImport).insert(this.importValue);
-
-            if (!!window.FileReader && !!window.FileList) {
-                // only show the upload link if browser supports FileReader/DOM File API
-                // Of the browsers suported by pedigree editor, IE9 and Safari 4 & 5 do not support file API
-                var uploadFileSelector = new Element('input', {"type" : "file", "id": 'pedigreeInputFile', "style": 'display:none'});
-                uploadFileSelector.observe('change', function(event) {
-                    _this.handleFileUpload(this.files);
-                    try {
-                        this.value = "";  // clear file selector
-                    } catch (err) {
-                        // some older browsers do not allow setting value of a file input element and may generate a security error
-                    }
-                })
-                var uploadButton = new Element('input', {type: 'button', 'value': ' Select file ', 'class' : 'button import-file-button'}).wrap('span', {'class' : 'buttonwrapper import-file-button-wrapper'});
-                uploadButton.observe('click', function(event) {
-                    var fileElem = document.getElementById("pedigreeInputFile");
-                    fileElem.click();
-                })
-                var promptImportFile = new Element('div', {'class': 'import-section', }).update("Import file:");
-                this.mainDiv.insert(promptImportFile).insert(uploadFileSelector).insert(uploadButton);
-            } else {
-                this.mainDiv.insert(new Element('div', {'class': 'box infomessage import-warning-nofileupload'})
-                            .update("Your browser does not support file upload.<br/>Please copy-paste import data in the box above."));
-            }
 
             var _addTypeOption = function (checked, labelText, value) {
                 var optionWrapper = new Element('tr');
@@ -95,6 +67,34 @@ define([
             var dataSection3 = new Element('div', {'class': 'import-block'});
             dataSection3.insert(promptConfig).insert(configListElement);
             this.mainDiv.insert(dataSection3);
+
+            if (!!window.FileReader && !!window.FileList) {
+                // only show the upload link if browser supports FileReader/DOM File API
+                // Of the browsers suported by pedigree editor, IE9 and Safari 4 & 5 do not support file API
+                var uploadFileSelector = new Element('input', {"type" : "file", "id": 'pedigreeInputFile', "style": 'display:none'});
+                uploadFileSelector.observe('change', function(event) {
+                    _this.handleFileUpload(this.files);
+                    try {
+                        this.value = "";  // clear file selector
+                    } catch (err) {
+                        // some older browsers do not allow setting value of a file input element and may generate a security error
+                    }
+                })
+                var uploadButton = new Element('input', {type: 'button', 'value': ' Select a local file ', 'class' : 'button import-file-button'}).wrap('span', {'class' : 'buttonwrapper import-file-button-wrapper'});
+                uploadButton.observe('click', function(event) {
+                    var fileElem = document.getElementById("pedigreeInputFile");
+                    fileElem.click();
+                })
+                var promptImportFile = new Element('div', {'class': 'import-file-section', }).update("Paste data in the box below or ");
+                this.mainDiv.insert(promptImportFile).insert(uploadFileSelector).insert(uploadButton);
+            } else {
+                this.mainDiv.insert(new Element('div', {'class': 'box infomessage import-warning-nofileupload'})
+                    .update("Your browser does not support file upload.<br/>Please copy-paste import data in the box above."));
+            }
+
+            var promptImport = new Element('div', {'class': 'import-section'});
+            this.importValue = new Element("textarea", {"id": "import", "value": "", "class": "import-textarea", "placeholder": "Enter pedigree data"});
+            this.mainDiv.insert(promptImport).insert(this.importValue);
 
             //TODO: [x] auto-combine multiple unaffected children when the number of children is greater than [5]
 
@@ -154,7 +154,7 @@ define([
         },
 
         /*
-         * Disables unapplicable options on input type selection
+         * Disables inapplicable options on input type selection
          */
         disableEnableOptions: function() {
             var importType = $$('input:checked[type=radio][name="select-type"]')[0].value;
