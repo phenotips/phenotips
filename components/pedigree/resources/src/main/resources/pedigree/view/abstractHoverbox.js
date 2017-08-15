@@ -670,7 +670,7 @@ define([
         animateHideHoverZone: function(event, x, y) {
             if (editor.getView().getCurrentDraggable() !== null) return; // do not hide when dragging
 
-            if (event) {
+            if (event && event.relatedTarget && event.relatedTarget.id != 'canvas') {
                 // hoverbox has a lot of internal elements, which trigger the event. To avoid reacting to those,
                 // the pointer position is computed i nterms of raw {x,y} coordinates, and hoverbox is hidden only if mouse
                 // is outside the hoverbox
@@ -683,11 +683,11 @@ define([
                 // note: some browsers incorrectly report the svgarea's .bottom and .right positions,
                 //       so need to use some adjustment there; the value "3" is derived empirically
                 var svgarea = document.getElementById("work-area").getBoundingClientRect();
-                if (y > svgarea.top && x > svgarea.left && y < svgarea.bottom - 3 && x < svgarea.right - 3) {
+                if (y > svgarea.top && x > svgarea.left && y < svgarea.bottom && x < svgarea.right) {
                     if (click.x > Math.ceil(hoverarea.x) && click.x < Math.floor(hoverarea.x2) &&
                         click.y > Math.ceil(hoverarea.y) && click.y < Math.floor(hoverarea.y2)) {
                         // zoom control behaves in a special way in terms of hoverboxes, so need to treat is specially
-                        if ("relatedTarget" in event && !event.relatedTarget.hasClassName("view-controls-zoom") && !event.relatedTarget.hasClassName("zoom-button")) {
+                        if (!event.relatedTarget.hasClassName || !event.relatedTarget.hasClassName("view-controls-zoom") && !event.relatedTarget.hasClassName("zoom-button")) {
                             return;
                         }
                     }
