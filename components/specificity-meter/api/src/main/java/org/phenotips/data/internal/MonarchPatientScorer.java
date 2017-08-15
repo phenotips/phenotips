@@ -54,6 +54,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -97,6 +98,7 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
                 .getProperty("phenotips.patientScoring.monarch.serviceURL", "https://monarchinitiative.org/score");
             CacheConfiguration config = new LRUCacheConfiguration("monarchSpecificityScore", 2048, 3600);
             this.cache = this.cacheManager.createNewCache(config);
+            this.client = HttpClients.createSystem();
         } catch (CacheException ex) {
             throw new InitializationException("Failed to create cache", ex);
         }
