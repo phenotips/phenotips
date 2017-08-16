@@ -1228,7 +1228,7 @@
     displayNode.insert(new Element('span', {'class':'suggestValue'}).update(data.value.escapeHTML()));
 
     if (this.options.tooltip &amp;&amp; !disableTooltip) {
-      var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton ' + this.options.tooltip, 'title' : data.id});
+      var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton ' + this.options.tooltip, 'title' : data.id, 'data-source' : this.fld.id});
       infoTool.observe('click', function(event) {event.stop()});
       displayNode.insert(' ').insert(infoTool);
     }
@@ -2859,7 +2859,7 @@ return PhenoTips;
         wrapper.down('.info').observe('click', this._browseEntry.bindAsEventListener(this));
       }
     }
-    entryTools.insert(new Element('span', {'class' : 'fa fa-info-circle phenotype-info xHelpButton', title : data.id}));
+    entryTools.insert(new Element('span', {'class' : 'fa fa-info-circle phenotype-info xHelpButton', title : data.id, 'data-source' :  this.suggest &amp;&amp; this.suggest.fld &amp;&amp; this.suggest.fld.id}));
 
     if (this.options.enableSelection) {
       element.__selectTool = new Element('input', {'type' : 'checkbox', name: 'term_selector', value: data.id, 'class' : 'select-tool'});
@@ -4233,7 +4233,7 @@ document.observe("xwiki:dom:updated", init);
             browseButton._id = json.id;
             browseButton.observe('click', function(event){
               event.stop();
-              var suggest = ($('quick-phenotype-search') || $$('input.suggestHpo')[0])._suggest;
+              var suggest = ((helpButton.icon.getAttribute('data-source') &amp;&amp; $(helpButton.icon.getAttribute('data-source'))) || $('quick-phenotype-search') || $$('input.suggestHpo')[0])._suggest;
               var params = {};
               if (typeof isPhenotypeSelected !== 'undefined') {
                 params = {
