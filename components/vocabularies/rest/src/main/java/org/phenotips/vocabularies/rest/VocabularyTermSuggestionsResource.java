@@ -54,7 +54,7 @@ public interface VocabularyTermSuggestionsResource
      * @param customFilter a custom filter query to further restrict which terms may be returned, in a format that
      *            depends on the actual engine that stores the vocabulary; some vocabularies may not support a filter
      *            query; may be empty
-     * @return A JSON object with a list of {@link VocabularyTerm} suggestions.
+     * @return A JSON object with a list of {@link org.phenotips.vocabularies.rest.VocabularyTerm} suggestions.
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
