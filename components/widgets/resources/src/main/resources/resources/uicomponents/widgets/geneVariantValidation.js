@@ -16,7 +16,7 @@ var XWiki = (function(XWiki) {
           this.input.__validation = new LiveValidation(this.input, {validMessage: '', wait : 500});
         }
         catch(err) {
-          //console.log(err);
+          //console && console.error(err);
         }
       }
       if (this.input.__validation)
