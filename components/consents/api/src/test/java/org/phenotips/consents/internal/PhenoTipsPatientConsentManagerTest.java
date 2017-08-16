@@ -28,9 +28,13 @@ import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.query.Query;
+import org.xwiki.query.QueryManager;
+import org.xwiki.query.internal.DefaultQuery;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,12 +60,15 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class PhenoTipsPatientConsentManagerTest
 {
     @Rule
     public final MockitoComponentMockingRule<ConsentManager> mocker =
         new MockitoComponentMockingRule<>(PhenoTipsPatientConsentManager.class);
+
+    private QueryManager qm;
 
     /** Sets up initialization of the component with the given {@code baseObjects}. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -131,6 +138,11 @@ public class PhenoTipsPatientConsentManagerTest
         doReturn(ConsentConfigurationMocks.TEST_AFFECTS3).when(mocks.consentConfig3)
             .getIntValue(ConsentConfigurationMocks.AFFECTS_FIELDS_KEY);
         doReturn(mocks.formFields3).when(mocks.consentConfig3).getListValue(ConsentConfigurationMocks.FIELDS_KEY);
+
+        Query query = mock(DefaultQuery.class);
+        this.qm = this.mocker.getInstance(QueryManager.class);
+        when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
+        when(query.execute()).thenReturn(new ArrayList<>());
 
         return mocks;
     }

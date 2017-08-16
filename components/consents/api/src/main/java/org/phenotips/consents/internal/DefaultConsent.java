@@ -48,6 +48,8 @@ public class DefaultConsent implements Consent
 
     private static final String JSON_KEY_FIELDS = "formFields";
 
+    private static final String JSON_KEY_DATAFIELDS = "dataFields";
+
     private final String id;
 
     private final String label;
@@ -55,6 +57,8 @@ public class DefaultConsent implements Consent
     private final String description;
 
     private final List<String> formFields;
+
+    private final List<String> dataFields;
 
     private boolean required;
 
@@ -65,14 +69,17 @@ public class DefaultConsent implements Consent
      * @param label consent label/title (required)
      * @param description consent detailed description (optional, may be null)
      * @param required when true, no interaction with a document is allowed until this consent is granted
+     * @param dataFields a list of values present in the UI Extensions
      * @param formFields form fields which are only available when this consent is granted
      */
-    public DefaultConsent(String id, String label, String description, boolean required, List<String> formFields)
+    public DefaultConsent(String id, String label, String description, boolean required, List<String> dataFields,
+        List<String> formFields)
     {
         this.id = id;
         this.label = label;
         this.description = processDescription(description);
         this.required = required;
+        this.dataFields = (dataFields == null) ? null : Collections.unmodifiableList(dataFields);
         this.formFields = (formFields == null) ? null : Collections.unmodifiableList(formFields);
         validate();
     }
@@ -89,6 +96,7 @@ public class DefaultConsent implements Consent
         this.description = processDescription(consentJSON.optString(JSON_KEY_DESCRIPTION));
         this.required = consentJSON.optBoolean(JSON_KEY_ISREQUIRED);
         setStatus(ConsentStatus.fromString(consentJSON.optString(JSON_KEY_ISREQUIRED)));
+        JSONArray dFields = consentJSON.optJSONArray(JSON_KEY_DATAFIELDS);
         JSONArray fields = consentJSON.optJSONArray(JSON_KEY_FIELDS);
         if (fields == null) {
             this.formFields = null;
@@ -96,6 +104,14 @@ public class DefaultConsent implements Consent
             this.formFields = new LinkedList<>();
             for (Object field : fields) {
                 this.formFields.add((String) field);
+            }
+        }
+        if (dFields == null) {
+            this.dataFields = null;
+        } else {
+            this.dataFields = new LinkedList<>();
+            for (Object field : dFields) {
+                this.dataFields.add((String) field);
             }
         }
         validate();
@@ -163,6 +179,12 @@ public class DefaultConsent implements Consent
     }
 
     @Override
+    public List<String> getDataFields()
+    {
+        return this.dataFields;
+    }
+
+    @Override
     public List<String> getFields()
     {
         return this.formFields;
@@ -189,6 +211,10 @@ public class DefaultConsent implements Consent
         json.put(JSON_KEY_DESCRIPTION, this.getDescription());
         json.put(JSON_KEY_ISREQUIRED, this.isRequired());
         json.put(JSON_KEY_STATUS, this.getStatus().toString());
+        if (this.dataFields != null) {
+            JSONArray dFields = new JSONArray(this.dataFields);
+            json.put(JSON_KEY_DATAFIELDS, dFields);
+        }
         if (this.formFields != null) {
             JSONArray fields = new JSONArray(this.formFields);
             json.put(JSON_KEY_FIELDS, fields);
@@ -205,8 +231,10 @@ public class DefaultConsent implements Consent
     @Override
     public Consent copy(ConsentStatus status)
     {
-        Consent copy = new DefaultConsent(
-            this.getId(), this.getLabel(), this.getDescription(), this.isRequired(), this.getFields());
+        Consent copy =
+            new DefaultConsent(
+                this.getId(), this.getLabel(), this.getDescription(), this.isRequired(), this.getDataFields(),
+                this.getFields());
         copy.setStatus(status);
         return copy;
     }

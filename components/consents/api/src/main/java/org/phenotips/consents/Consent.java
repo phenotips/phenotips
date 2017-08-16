@@ -85,6 +85,15 @@ public interface Consent
     boolean isRequired();
 
     /**
+     * The list of (UIX) fields only available if consent is granted. If a field is affected by more than one consent,
+     * all of the consents have to be granted in order to enable the field.
+     *
+     * @return A list of values present in the fields parameter of the UI extensions. If all fields are affected an
+     *         empty list is returned. If no fields are affected {@code null} is returned.
+     */
+    List<String> getDataFields();
+
+    /**
      * The list of (patient form) fields only available if consent is granted. If a field is affected by more than one
      * consent, all of the consents have to be granted in order to enable the field.
      *
