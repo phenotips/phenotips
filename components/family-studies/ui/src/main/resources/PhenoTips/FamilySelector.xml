@@ -125,7 +125,6 @@
   widgets.FamilySelector = Class.create({
 
         initialize: function() {
-            console &amp;&amp; console.log("init");
             this.selected = null;
 
             var _this = this;
@@ -265,7 +264,6 @@
         _onSuggestionSelected: function(event) {
             if (event.memo &amp;&amp; event.memo.suggest === this.searchInput._suggest) {
               this.selectedID = event.memo.id;
-              console &amp;&amp; console.log("Family selected, ID: " + this.selectedID);
               this.okButton.enable();
             }
         },
@@ -291,15 +289,11 @@
             } else if (this.selected == 'create') {
 
                 this.hide();
-                console &amp;&amp; console.log("creating new family");
-
                 this._createNewFamily();
 
             } else if (this.selected == 'assign' &amp;&amp; familyID != null &amp;&amp; familyID != '') {
 
                 this.hide();
-                console &amp;&amp; console.log("redirecting to family " + familyID);
-
                 var pedigreeEditorURL = this._getPedigreeEditorURL(familyID) + '&amp;new_patient_id=' + XWiki.currentDocument.page;
                 this._redirectToURL(pedigreeEditorURL);
           }
@@ -317,8 +311,6 @@
         },
 
         _createNewFamily: function() {
-
-            console &amp;&amp; console.log("Requesting family creations...");
 
             var familyPedigreeInterface = new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips');
             var familyPedigreeInterfaceURL = familyPedigreeInterface.getURL('get', 'rand='+ Math.random());
@@ -342,7 +334,6 @@
                 },
                 onComplete: function() {
                     if (!_created) {
-                        console &amp;&amp; console.log("Family was not created");
                         alert("Failed to create new family");
                     }
                 },
