@@ -1233,7 +1233,7 @@ document.observe('xwiki:dom:loaded', function()
             }
 
             // Info buttons behavior
-            item.up('.term-entry').insert(' ').insert(new Element('span', {'class' : 'fa fa-info-circle phenotype-info xHelpButton', title : item.value, 'data-source' : sugestedInput.name}));
+            item.up('.term-entry').insert(' ').insert(new Element('span', {'class' : 'fa fa-info-circle phenotype-info xHelpButton', title : item.value, 'data-source' : sugestedInput.id}));
 
             // ------------------------------------------------------------------------
             // Add  y/n selection
