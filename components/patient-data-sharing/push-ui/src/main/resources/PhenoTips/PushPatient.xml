@@ -142,9 +142,9 @@
       this._serviceURL = new XWiki.Document('PushPatientService', 'PhenoTips').getURL('get', 'outputSyntax=plain');
       this._patientId  = XWiki.currentDocument.page;
       //if (!this._pushManyPatients)
-      //    console.log("PUSH UI: Patient: " + this._patientId + ", serviceURL: " + this._serviceURL);
+      //    console &amp;&amp; console.log("PUSH UI: Patient: " + this._patientId + ", serviceURL: " + this._serviceURL);
       //else
-      //    console.log("PUSH UI: multipush, serviceURL: " + this._serviceURL);
+      //    console &amp;&amp; console.log("PUSH UI: multipush, serviceURL: " + this._serviceURL);
 
       // ---------------------------------------------------------------------
       // Initialize the UI
@@ -169,7 +169,7 @@
               event.findElement().blur();
 
               _this._selectedServer = serverID;
-              //console.log("Initializing push to " + serverID);
+              //console &amp;&amp; console.log("Initializing push to " + serverID);
 
               // If there are any unsaved changes, save before pushing
               PhenoTips.widgets.FormUtils.getFormState().saveIfFormDirty(_this._launchUI.bind(_this));
@@ -378,15 +378,15 @@
           _this._container.up('.msdialog-modal-container').style.zIndex = 3001;
         },
         onSuccess : function (response) {
-          console.log("PUSH: Got response for the getremotes request");
+          console &amp;&amp; console.log("PUSH: Got response for the getremotes request");
           var data = response.responseJSON;
 
           if (!data || data.length == 0) {
-            //console.log("PUSH: no remotes defined");
+            //console &amp;&amp; console.log("PUSH: no remotes defined");
             // if there are no configured servers, display warning message
             _this._serverLoadMessages.update(_this._generateNoPushServerConfiguredMessage());
           } else {
-            //console.log("PUSH: Found " + data.length + " remotes: " + stringifyObject(data));
+            //console &amp;&amp; console.log("PUSH: Found " + data.length + " remotes: " + stringifyObject(data));
             // otherwise show the list of servers to pick from
             _this._serverLoadMessages.hide();
             _this._populateServerList(data);
@@ -401,7 +401,7 @@
         onComplete : function() {
           _this.__launchUIAjaxInProgress = false;
           _this._container.removeClassName('loading-indicator-large');
-          console.log("PUSH: getting remotes - complete");
+          console &amp;&amp; console.log("PUSH: getting remotes - complete");
         }
       });
     },
@@ -414,17 +414,17 @@
         method: _this._container.method,
         parameters : {'do':'getuser', 'serverid': this._selectedServer },
         onCreate : function() {
-          console.log("PUSH: get username - start");
+          console &amp;&amp; console.log("PUSH: get username - start");
           _this._disableInputs();
         },
         onSuccess : function (response) {
-          //console.log("PUSH: Got user last used for the server (JSON: " + stringifyObject(response.responseJSON) + ")");
+          //console &amp;&amp; console.log("PUSH: Got user last used for the server (JSON: " + stringifyObject(response.responseJSON) + ")");
           if (response.responseJSON.remoteUserName) {
             _this._lastApprovedUser = response.responseJSON.remoteUserName;
           }
         },
         onFailure : function(response) {
-          console.log("PUSH: couldn't not get the user last used for this server");
+          console &amp;&amp; console.error("PUSH: couldn't not get the user last used for this server");
           // just ignore the failure and let user manualy enter username/password
         },
         on0 : function (response) {
@@ -432,7 +432,7 @@
         },
         onComplete : function() {
           _this._restoreInputs();
-          console.log("PUSH: getting username - complete");
+          console &amp;&amp; console.log("PUSH: getting username - complete");
           if (_this._lastApprovedUser) {
               _this._loginAndGetConfig(_this._lastApprovedUser, null);  // attempt a password-less login using stored token
           }
@@ -444,7 +444,7 @@
     },
 
     _loginAndGetConfig: function(username, password) {
-      console.log("loginAndGetConfig: probing " + username);
+      console &amp;&amp; console.log("loginAndGetConfig: probing " + username);
 
       var _this = this;
       // TODO: suport workflow when tokens are not enabled e.g. on the server side (have to remember username/password in JS)
@@ -459,20 +459,20 @@
         method: _this._container.method,
         parameters : params,
         onCreate : function() {
-          console.log("PUSH: get remote config - start");
+          console &amp;&amp; console.log("PUSH: get remote config - start");
           _this._disableInputs();
         },
         onSuccess : function (response) {
           if (response.hasOwnProperty("responseJSON") &amp;&amp; response.responseJSON) {
-            console.log("PUSH: Got response from server: " + stringifyObject(response.responseJSON));
+            console &amp;&amp; console.log("PUSH: Got response from server: " + stringifyObject(response.responseJSON));
             _this._lastLoginResponse = response.responseJSON;    // TODO: store per user+server locally, so that there is no need to AJAX again for the same user if selected again?
           } else {
-            console.log("PUSH: No response from local service");
+            console &amp;&amp; console.warn("PUSH: No response from local service");
             _this._lastLoginResponse =  {"status":"error", "nolocalresponse":true};
           }
         },
         onFailure : function(response) {
-          console.log("PUSH: unable to get a response from remote server");
+          console &amp;&amp; console.error("PUSH: unable to get a response from remote server");
           _this._lastLoginResponse = {"status":"error", "serverconnectproblem":true};  // simulate "unable to connect" response from script service
         },
         on0 : function (response) {
@@ -480,10 +480,10 @@
         },
         onComplete : function() {
           this._restoreInputs();
-          console.log("PUSH: get remote config - complete");
+          console &amp;&amp; console.log("PUSH: get remote config - complete");
 
           if (this._lastLoginResponse.status == "success") {
-            console.log("--&gt; login successful!");
+            console &amp;&amp; console.log("--&gt; login successful!");
             $('user-selection-intro').hide();
             $('user-selection-hint').hide();
             this._lastApprovedUser = username;
@@ -492,7 +492,7 @@
             this._populateConsentsList(this._lastLoginResponse.consents);
           }
           else {
-            console.log("--&gt; login failed!");
+            console &amp;&amp; console.warn("--&gt; login failed!");
             if (this._lastApprovedUser == username) {
               this._lastApprovedUser = undefined;   // this user is no longer approved
             }
@@ -510,10 +510,10 @@
         method: _this._container.method,
         parameters : params,
         onCreate : function() {
-          console.log("PUSH: logout user");
+          console &amp;&amp; console.log("PUSH: logout user");
           try{
           _this._disableInputs();
-          } catch (e) {console.log("ERROR: " + e); }
+          } catch (e) {console &amp;&amp; console.error("ERROR: " + e); }
         },
         onSuccess : function (response) {
           $('user-selection-intro').show();
@@ -530,7 +530,7 @@
         },
         onComplete : function() {
           this._restoreInputs();
-          console.log("PUSH: logout - complete");
+          console &amp;&amp; console.log("PUSH: logout - complete");
         }.bind(this)
       });
     },
@@ -560,7 +560,7 @@
         }
       }
 
-      console.log("updateUserList: " + selectedUserName + ", last approved: " + this._lastApprovedUser);
+      console &amp;&amp; console.log("updateUserList: " + selectedUserName + ", last approved: " + this._lastApprovedUser);
       var _this = this;
 
       var userList = new Element('table', {id : 'user-list'});
@@ -625,7 +625,7 @@
     // Display group picker and data preview - once server/user are known
     // ---------------------------------------------------------------------
     _populateGroupsAndData: function(groupList, fieldList, serverUpdatesEnabled) {
-      //console.log("Fields: " + stringifyObject(fieldList));
+      //console &amp;&amp; console.log("Fields: " + stringifyObject(fieldList));
       if (!serverUpdatesEnabled) {
           this._remoteServers[this._selectedServer]["noUpdates"] = true;
       }
@@ -651,7 +651,7 @@
       } else {
         $('group-selection').show();
       }
-      console.log("Groups: " + stringifyObject(groupList));
+      console &amp;&amp; console.log("Groups: " + stringifyObject(groupList));
 
       var groupListElement = new Element('table', {id : 'user-list'});
 
@@ -709,7 +709,7 @@
     // Generate server selection UI
     // ---------------------------------------------------------------------
     _populateServerList: function(pushServerList) {
-      //console.log("Server list input: " + stringifyObject(pushServerList));
+      //console &amp;&amp; console.log("Server list input: " + stringifyObject(pushServerList));
 
       this._remoteServers = {};
 
@@ -735,7 +735,7 @@
                                        "remoteURL": remoteURL};
       }
 
-      //console.log("Remote servers as cached: " + stringifyObject(this._remoteServers))
+      //console &amp;&amp; console.log("Remote servers as cached: " + stringifyObject(this._remoteServers))
 
       this._selectServer(this._selectedServer);
     },
@@ -929,7 +929,7 @@
         var patientState = { "consents" : _this._consentsModule.listGrantedConsentIDs() };
         params["patientState"] = stringifyObject(patientState);
 
-        console.log("PUSH request params: " + stringifyObject(params));
+        console &amp;&amp; console.log("PUSH request params: " + stringifyObject(params));
 
         new Ajax.Request(this._serviceURL, {
           method: _this._container.method,
@@ -939,7 +939,7 @@
           },
           onSuccess : function(response) {
             try {
-                console.log("Got response: " + stringifyObject(response.responseJSON));
+                console &amp;&amp; console.log("Got response: " + stringifyObject(response.responseJSON));
                 var res = response.responseJSON;
                 if (_this._pushManyPatients) {
                     callBack(res, patientID);
@@ -993,7 +993,7 @@
                 }
                 //_this._dialog.closeDialog();
               } catch (e) {
-                console.log("EXCEPTION: " + e);
+                console &amp;&amp; console.error("EXCEPTION: " + e);
                 _this._pushResultSection.update(_this._generateFailedToPushPatient("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.pushFailedException'))".replace("__e__", e), true));
               }
           },
@@ -1038,7 +1038,7 @@
         var _this = this;
 
         var doMultiPush = function(patients, columns) {
-            //console.log("Push with params: " + patients + " -&gt; " + columns + " -&gt; " + _this._selectedServer);
+            //console &amp;&amp; console.log("Push with params: " + patients + " -&gt; " + columns + " -&gt; " + _this._selectedServer);
             _this._checkBoxApprove.checked = false;
             var pushResult = new Element("div", {"class": "multi-push-results infomessage"});
             _this._pushResultSection.update(pushResult);

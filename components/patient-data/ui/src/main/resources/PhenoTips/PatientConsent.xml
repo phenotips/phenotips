@@ -174,7 +174,7 @@
       try {
         consents = JSON.parse($('#patient-consents-json').attr('value'));
       } catch(err) {
-        console &amp;&amp; console.log(err);
+        console &amp;&amp; console.error(err);
       }
 
       var consentsModule = PhenoTips.widgets.ConsentsModule.createNew();

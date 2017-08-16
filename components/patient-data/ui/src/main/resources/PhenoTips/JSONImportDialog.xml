@@ -213,7 +213,7 @@
       // Handles file upload
       for (var i = 0, numFiles = files.length; i &lt; numFiles; i++) {
         var nextFile = files[i];
-        console.log("loading file: " + nextFile.name + ", size: " + nextFile.size);
+        console &amp;&amp; console.log("loading file: " + nextFile.name + ", size: " + nextFile.size);
 
         var fr = new FileReader();
         var _this = this;
