@@ -177,6 +177,18 @@ public class DefaultVocabularyManager implements VocabularyManager, Initializabl
         return search(input, maxResults, category, categorizedVocabularies);
     }
 
+    @Override
+    public boolean hasVocabulary(final String vocabulary)
+    {
+        return this.vocabularies.containsKey(vocabulary);
+    }
+
+    @Override
+    public boolean hasCategory(final String category)
+    {
+        return this.vocabulariesByCategory.containsKey(category);
+    }
+
     /**
      * Performs a search for {@code input query string} using the provided set of {@code categorizedVocabularies}, and
      * returns the specified {@code maxResults number of results}, sorted by score (in descending order).

@@ -20,11 +20,12 @@ package org.phenotips.vocabularies.rest.internal;
 import org.phenotips.Constants;
 import org.phenotips.rest.Autolinker;
 import org.phenotips.security.authorization.AuthorizationService;
+import org.phenotips.vocabularies.rest.CategoryResource;
+import org.phenotips.vocabularies.rest.CategoryTermSuggestionsResource;
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
 import org.phenotips.vocabularies.rest.VocabulariesResource;
 import org.phenotips.vocabularies.rest.VocabularyResource;
 import org.phenotips.vocabularies.rest.VocabularyTermSuggestionsResource;
-import org.phenotips.vocabularies.rest.model.Category;
 import org.phenotips.vocabularies.rest.model.Vocabularies;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
@@ -37,8 +38,9 @@ import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -81,25 +83,53 @@ public class DefaultVocabulariesResource extends XWikiResource implements Vocabu
     {
         Vocabularies result = new Vocabularies();
         List<String> vocabularyIDs = this.vm.getAvailableVocabularies();
-        List<org.phenotips.vocabularies.rest.model.Vocabulary> availableVocabs = new ArrayList<>();
-
-        for (String vocabularyID : vocabularyIDs) {
-            Vocabulary vocab = this.vm.getVocabulary(vocabularyID);
-            org.phenotips.vocabularies.rest.model.Vocabulary rep =
-                this.objectFactory.createVocabularyRepresentation(vocab);
-            final List<Category> categories = this.objectFactory.createCategoriesList(vocab.getSupportedCategories(),
-                this.autolinker.get(), this.uriInfo, userIsAdmin());
-            rep.withCategories(categories)
-                .withLinks(this.autolinker.get().forSecondaryResource(VocabularyResource.class, this.uriInfo)
-                .withActionableResources(VocabularyTermSuggestionsResource.class)
-                .withExtraParameters("vocabulary-id", vocabularyID)
-                .withGrantedRight(userIsAdmin() ? Right.ADMIN : Right.VIEW)
-                .build());
-            availableVocabs.add(rep);
-        }
+        List<org.phenotips.vocabularies.rest.model.Vocabulary> availableVocabs =
+            vocabularyIDs.stream()
+                .map(vocabularyID -> this.vm.getVocabulary(vocabularyID))
+                .map(vocab -> this.objectFactory.createLinkedVocabularyRepresentation(vocab, getVocabularyLinks(),
+                    this::getCategoriesForVocabulary))
+                .collect(Collectors.toList());
         result.withVocabularies(availableVocabs);
         result.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo).build());
         return result;
+    }
+
+    /**
+     * Returns a list of {@link org.phenotips.vocabularies.rest.model.Category} for a specified vocabulary.
+     *
+     * @param vocab a {@link Vocabulary} of interest
+     * @return a list of {@link org.phenotips.vocabularies.rest.model.Category} associated with the {@code vocab}
+     */
+    private List<org.phenotips.vocabularies.rest.model.Category> getCategoriesForVocabulary(final Vocabulary vocab)
+    {
+        final Collection<String> categories = vocab.getSupportedCategories();
+        return this.objectFactory.createCategoriesRepresentation(categories, getCategoryLinks(), null);
+    }
+
+    /**
+     * Returns the autolinker with all resources common to all vocabularies set.
+     *
+     * @return an {@link Autolinker}
+     */
+    private Autolinker getVocabularyLinks()
+    {
+        return this.autolinker.get()
+            .forSecondaryResource(VocabularyResource.class, uriInfo)
+            .withActionableResources(VocabularyTermSuggestionsResource.class)
+            .withGrantedRight(userIsAdmin() ? Right.ADMIN : Right.VIEW);
+    }
+
+    /**
+     * Returns the autolinker with all resources common to all categories set.
+     *
+     * @return an {@link Autolinker}
+     */
+    private Autolinker getCategoryLinks()
+    {
+        return this.autolinker.get()
+            .forSecondaryResource(CategoryResource.class, this.uriInfo)
+            .withActionableResources(CategoryTermSuggestionsResource.class)
+            .withGrantedRight(userIsAdmin() ? Right.ADMIN : Right.VIEW);
     }
 
     private boolean userIsAdmin()

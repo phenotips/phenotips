@@ -19,7 +19,6 @@ package org.phenotips.vocabularies.rest;
 
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
-import org.phenotips.vocabularies.rest.model.VocabularyTerms;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import javax.ws.rs.DefaultValue;
@@ -29,6 +28,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * Resource for searching in a category for terms matching an input (vocabulary suggest).
@@ -42,19 +42,19 @@ import javax.ws.rs.core.MediaType;
 public interface CategoryTermSuggestionsResource
 {
     /**
-     * Provides term suggestions for the specified vocabulary category as a list of {@link VocabularyTerms}. Request can
-     * optionally specify the maximum number of results to return. If no suggestions are found, {@link VocabularyTerms}
+     * Provides term suggestions for the specified vocabulary category as a {@link Response}. Request can
+     * optionally specify the maximum number of results to return. If no suggestions are found, {@link Response}
      * will not contain any terms.
      *
      * @param category The name of the vocabulary category to be used for suggestions. If no matching category is found,
      *            an error is returned to the user
      * @param input The string which will be used to generate suggestions
      * @param maxResults The maximum number of results to be returned; default is 10
-     * @return A {@link VocabularyTerms} object representing a list of {@link VocabularyTerm term} suggestions.
+     * @return A {@link Response} object representing a list of {@link VocabularyTerm term} suggestions.
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    VocabularyTerms suggest(
+    Response suggest(
         @PathParam("category") String category,
         @QueryParam("input") String input,
         @QueryParam("maxResults") @DefaultValue("10") int maxResults);

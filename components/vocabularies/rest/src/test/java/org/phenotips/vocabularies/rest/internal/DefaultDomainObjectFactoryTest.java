@@ -18,10 +18,8 @@
 package org.phenotips.vocabularies.rest.internal;
 
 import org.phenotips.rest.Autolinker;
-import org.phenotips.rest.model.Link;
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
 import org.phenotips.vocabularies.rest.model.Category;
-import org.phenotips.vocabularies.rest.model.VocabularyTermSummary;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
@@ -49,6 +47,9 @@ import org.mockito.MockitoAnnotations;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -94,7 +95,7 @@ public class DefaultDomainObjectFactoryTest
 
     @Rule
     public MockitoComponentMockingRule<DomainObjectFactory> mocker =
-        new MockitoComponentMockingRule<DomainObjectFactory>(DefaultDomainObjectFactory.class);
+        new MockitoComponentMockingRule<>(DefaultDomainObjectFactory.class);
 
     private DomainObjectFactory component;
 
@@ -106,6 +107,21 @@ public class DefaultDomainObjectFactoryTest
 
     @Mock
     private Vocabulary vocabulary3;
+
+    @Mock
+    private org.phenotips.vocabularies.rest.model.Vocabulary vocabularyRep1;
+
+    @Mock
+    private org.phenotips.vocabularies.rest.model.Vocabulary vocabularyRep2;
+
+    @Mock
+    private org.phenotips.vocabularies.rest.model.Vocabulary vocabularyRep3;
+
+    @Mock
+    private org.phenotips.vocabularies.rest.model.Category categoryRep1;
+
+    @Mock
+    private org.phenotips.vocabularies.rest.model.Category categoryRep2;
 
     @Mock
     private VocabularyTerm term1;
@@ -165,7 +181,7 @@ public class DefaultDomainObjectFactoryTest
             .thenReturn(this.autolinker);
         when(this.autolinker.withExtraParameters(anyString(), anyString())).thenReturn(this.autolinker);
         when(this.autolinker.withGrantedRight(any(Right.class))).thenReturn(this.autolinker);
-        when(this.autolinker.build()).thenReturn(Collections.<Link>emptyList());
+        when(this.autolinker.build()).thenReturn(Collections.emptyList());
     }
 
     @Test(expected = NullPointerException.class)
@@ -203,51 +219,24 @@ public class DefaultDomainObjectFactoryTest
         Assert.assertEquals(VOCAB_3_SOURCE, vocabulary.getDefaultSourceLocation());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void createVocabularyTermRepresentationThrowsExceptionWhenTermIsNull()
-    {
-        this.component.createVocabularyTermRepresentation(null);
-        Assert.fail("Passing a null term should result in a null pointer exception.");
-    }
-
-    @Test
-    public void createVocabularyTermRepresentationWhenTermToJSONIsNull()
-    {
-        when(this.term1.toJSON()).thenReturn(null);
-        final VocabularyTermSummary termSummary = this.component.createVocabularyTermRepresentation(this.term1);
-        Assert.assertEquals(TERM_1_DESCRIPTION, termSummary.getDescription());
-        Assert.assertEquals(TERM_1_ID, termSummary.getId());
-        Assert.assertEquals(TERM_1_NAME, termSummary.getName());
-        Assert.assertNull(termSummary.getSymbol());
-    }
-
-    @Test
-    public void createVocabularyTermRepresentationWhenSymbolIsNotProvided() throws Exception
-    {
-        when(this.term1.toJSON()).thenReturn(new JSONObject());
-        final VocabularyTermSummary termSummary = this.component.createVocabularyTermRepresentation(this.term1);
-        Assert.assertEquals(TERM_1_DESCRIPTION, termSummary.getDescription());
-        Assert.assertEquals(TERM_1_ID, termSummary.getId());
-        Assert.assertEquals(TERM_1_NAME, termSummary.getName());
-        Assert.assertNull(termSummary.getSymbol());
-    }
-
-    @Test
-    public void createVocabularyTermRepresentationHasExpectedData() throws Exception
-    {
-        final VocabularyTermSummary termSummary = this.component.createVocabularyTermRepresentation(this.term1);
-        Assert.assertEquals(TERM_1_DESCRIPTION, termSummary.getDescription());
-        Assert.assertEquals(TERM_1_ID, termSummary.getId());
-        Assert.assertEquals(TERM_1_NAME, termSummary.getName());
-        Assert.assertEquals(TERM_1_SYMBOL, termSummary.getSymbol());
-    }
-
     @Test
     public void createCategoryRepresentationContainsExpectedData()
     {
         final Category category = this.component.createCategoryRepresentation(CATEGORY_1_NAME);
         Assert.assertEquals(CATEGORY_1_NAME, category.getCategory());
         Assert.assertNull(category.getVocabularies());
+        verify(this.autolinker, never()).build();
+    }
+
+    @Test
+    public void createLinkedCategoryRepresentationContainsExpectedData()
+    {
+        final Category category = this.component.createLinkedCategoryRepresentation(CATEGORY_1_NAME, this.autolinker,
+            this::vocabulariesSupplier);
+        Assert.assertEquals(CATEGORY_1_NAME, category.getCategory());
+        Assert.assertEquals(Arrays.asList(this.vocabularyRep1, this.vocabularyRep2, this.vocabularyRep3),
+            category.getVocabularies());
+        verify(this.autolinker, times(1)).build();
     }
 
     @Test
@@ -255,12 +244,51 @@ public class DefaultDomainObjectFactoryTest
     {
         final List<String> categoryNames = Arrays.asList(CATEGORY_1_NAME, CATEGORY_2_NAME);
         final List<Category> categories =
-            this.component.createCategoriesList(categoryNames, this.autolinker, this.uriInfo, true);
+            this.component.createCategoriesRepresentation(categoryNames, this.autolinker, null);
         Assert.assertEquals(2, categories.size());
         Assert.assertEquals(CATEGORY_1_NAME, categories.get(0).getCategory());
         Assert.assertNull(categories.get(0).getVocabularies());
         Assert.assertEquals(CATEGORY_2_NAME, categories.get(1).getCategory());
         Assert.assertNull(categories.get(1).getVocabularies());
+    }
+
+    @Test
+    public void createCategoriesListWithSupplierCreatesCorrectCategoryRepresentations()
+    {
+        final List<org.phenotips.vocabularies.rest.model.Vocabulary> vocabReps =
+            Arrays.asList(this.vocabularyRep1, this.vocabularyRep2, this.vocabularyRep3);
+        final List<String> categoryNames = Arrays.asList(CATEGORY_1_NAME, CATEGORY_2_NAME);
+        final List<Category> categories =
+            this.component.createCategoriesRepresentation(categoryNames, this.autolinker, this::vocabulariesSupplier);
+        Assert.assertEquals(2, categories.size());
+        Assert.assertEquals(CATEGORY_1_NAME, categories.get(0).getCategory());
+        Assert.assertEquals(vocabReps, categories.get(0).getVocabularies());
+        Assert.assertEquals(CATEGORY_2_NAME, categories.get(1).getCategory());
+        Assert.assertEquals(vocabReps, categories.get(1).getVocabularies());
+    }
+
+    @Test
+    public void createVocabularyRepresentationContainsExpectedData()
+    {
+        final org.phenotips.vocabularies.rest.model.Vocabulary vocabulary =
+            this.component.createVocabularyRepresentation(this.vocabulary1);
+        Assert.assertEquals(VOCAB_1_ID, vocabulary.getIdentifier());
+        Assert.assertNull(vocabulary.getCategories());
+        verify(this.autolinker, never()).build();
+    }
+
+    @Test
+    public void createLinkedVocabularyRepresentationContainsExpectedData()
+    {
+        final List<org.phenotips.vocabularies.rest.model.Category> categoryReps =
+            Arrays.asList(this.categoryRep1, this.categoryRep2);
+
+        final org.phenotips.vocabularies.rest.model.Vocabulary vocabulary =
+            this.component.createLinkedVocabularyRepresentation(this.vocabulary1, this.autolinker,
+                this::categoriesSupplier);
+        Assert.assertEquals(VOCAB_1_ID, vocabulary.getIdentifier());
+        Assert.assertEquals(categoryReps, vocabulary.getCategories());
+        verify(this.autolinker, times(1)).build();
     }
 
     @Test
@@ -271,7 +299,7 @@ public class DefaultDomainObjectFactoryTest
         vocabularies.add(this.vocabulary2);
         vocabularies.add(this.vocabulary3);
         final List<org.phenotips.vocabularies.rest.model.Vocabulary> vocabularyReps =
-            this.component.createVocabulariesList(vocabularies, this.autolinker, this.uriInfo, true);
+            this.component.createVocabulariesRepresentation(vocabularies, this.autolinker, null);
         Assert.assertEquals(3, vocabularyReps.size());
 
         // Sort by identifier for testing purposes.
@@ -315,16 +343,73 @@ public class DefaultDomainObjectFactoryTest
         Assert.assertNull(vocabRep1.getCategories());
     }
 
+    @Test
+    public void createVocabulariesListWithSupplierCreatesCorrectVocabularyRepresentations()
+    {
+        final List<org.phenotips.vocabularies.rest.model.Category> categoryReps =
+            Arrays.asList(this.categoryRep1, this.categoryRep2);
+
+        final Set<Vocabulary> vocabularies = new HashSet<>();
+        vocabularies.add(this.vocabulary1);
+        vocabularies.add(this.vocabulary2);
+        vocabularies.add(this.vocabulary3);
+        final List<org.phenotips.vocabularies.rest.model.Vocabulary> vocabularyReps =
+            this.component.createVocabulariesRepresentation(vocabularies, this.autolinker, this::categoriesSupplier);
+        Assert.assertEquals(3, vocabularyReps.size());
+
+        // Sort by identifier for testing purposes.
+        sortById(vocabularyReps);
+
+        final Set<String> aliasSet1 = new HashSet<>();
+        aliasSet1.add(VOCAB_1_ID);
+        aliasSet1.add(ALIAS_1);
+        final org.phenotips.vocabularies.rest.model.Vocabulary vocabRep1 = vocabularyReps.get(0);
+        Assert.assertEquals(VOCAB_1_ID, vocabRep1.getIdentifier());
+        Assert.assertEquals(VOCAB_1_ID, vocabRep1.getName());
+        Assert.assertEquals(2, vocabRep1.getAliases().size());
+        Assert.assertEquals(aliasSet1, new HashSet<>(vocabRep1.getAliases()));
+        Assert.assertEquals(VOCAB_1_SOURCE, vocabRep1.getDefaultSourceLocation());
+        Assert.assertEquals(VOCAB_1_SIZE, vocabRep1.getSize());
+        Assert.assertEquals(VOCAB_1_VERSION, vocabRep1.getVersion());
+        Assert.assertEquals(categoryReps, vocabRep1.getCategories());
+
+        final Set<String> aliasSet2 = new HashSet<>();
+        aliasSet2.add(VOCAB_2_ID);
+        final org.phenotips.vocabularies.rest.model.Vocabulary vocabRep2 = vocabularyReps.get(1);
+        Assert.assertEquals(VOCAB_2_ID, vocabRep2.getIdentifier());
+        Assert.assertEquals(VOCAB_2_ID, vocabRep2.getName());
+        Assert.assertEquals(1, vocabRep2.getAliases().size());
+        Assert.assertEquals(aliasSet2, new HashSet<>(vocabRep2.getAliases()));
+        Assert.assertNull(vocabRep2.getDefaultSourceLocation());
+        Assert.assertEquals(VOCAB_2_SIZE, vocabRep2.getSize());
+        Assert.assertEquals(VOCAB_2_VERSION, vocabRep2.getVersion());
+        Assert.assertEquals(categoryReps, vocabRep2.getCategories());
+
+        final Set<String> aliasSet3 = new HashSet<>();
+        aliasSet3.add(VOCAB_3_ID);
+        final org.phenotips.vocabularies.rest.model.Vocabulary vocabRep3 = vocabularyReps.get(2);
+        Assert.assertEquals(VOCAB_3_ID, vocabRep3.getIdentifier());
+        Assert.assertEquals(VOCAB_3_ID, vocabRep3.getName());
+        Assert.assertEquals(1, vocabRep3.getAliases().size());
+        Assert.assertEquals(aliasSet3, new HashSet<>(vocabRep3.getAliases()));
+        Assert.assertEquals(VOCAB_3_SOURCE, vocabRep3.getDefaultSourceLocation());
+        Assert.assertEquals(VOCAB_3_SIZE, vocabRep3.getSize());
+        Assert.assertNull(vocabRep3.getVersion());
+        Assert.assertEquals(categoryReps, vocabRep1.getCategories());
+    }
+
     private void sortById(final List<org.phenotips.vocabularies.rest.model.Vocabulary> vocabularyReps)
     {
-        Collections.sort(vocabularyReps, new Comparator<org.phenotips.vocabularies.rest.model.Vocabulary>()
-        {
-            @Override
-            public int compare(final org.phenotips.vocabularies.rest.model.Vocabulary o1,
-                final org.phenotips.vocabularies.rest.model.Vocabulary o2)
-            {
-                return o1.getIdentifier().compareTo(o2.getIdentifier());
-            }
-        });
+        vocabularyReps.sort(Comparator.comparing(org.phenotips.vocabularies.rest.model.Vocabulary::getIdentifier));
+    }
+
+    private List<org.phenotips.vocabularies.rest.model.Vocabulary> vocabulariesSupplier(final String categoryId)
+    {
+        return Arrays.asList(this.vocabularyRep1, this.vocabularyRep2, this.vocabularyRep3);
+    }
+
+    private List<org.phenotips.vocabularies.rest.model.Category> categoriesSupplier(final Vocabulary vocabulary)
+    {
+        return Arrays.asList(this.categoryRep1, this.categoryRep2);
     }
 }

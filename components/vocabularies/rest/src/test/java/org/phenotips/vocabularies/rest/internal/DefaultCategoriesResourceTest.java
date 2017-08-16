@@ -24,7 +24,6 @@ import org.phenotips.vocabularies.rest.CategoriesResource;
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
 import org.phenotips.vocabularies.rest.model.Categories;
 import org.phenotips.vocabularies.rest.model.Category;
-import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 
 import org.xwiki.component.manager.ComponentLookupException;
@@ -41,9 +40,8 @@ import org.xwiki.users.UserManager;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.function.Function;
 
 import javax.inject.Provider;
 import javax.ws.rs.core.UriInfo;
@@ -58,14 +56,10 @@ import org.mockito.MockitoAnnotations;
 import com.xpn.xwiki.XWikiContext;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 /**
  * Tests for the {@link DefaultCategoriesResource} class.
@@ -80,40 +74,10 @@ public class DefaultCategoriesResourceTest
 
     @Rule
     public MockitoComponentMockingRule<CategoriesResource> mocker =
-        new MockitoComponentMockingRule<CategoriesResource>(DefaultCategoriesResource.class);
+        new MockitoComponentMockingRule<>(DefaultCategoriesResource.class);
 
     @Mock
     private Provider<Autolinker> autolinkerProvider;
-
-    @Mock
-    private Vocabulary vocabA1;
-
-    @Mock
-    private Vocabulary vocabA2;
-
-    @Mock
-    private Vocabulary vocabB1;
-
-    @Mock
-    private Vocabulary vocabC1;
-
-    @Mock
-    private Vocabulary vocabC2;
-
-    @Mock
-    private org.phenotips.vocabularies.rest.model.Vocabulary vocabRepA1;
-
-    @Mock
-    private org.phenotips.vocabularies.rest.model.Vocabulary vocabRepA2;
-
-    @Mock
-    private org.phenotips.vocabularies.rest.model.Vocabulary vocabRepB1;
-
-    @Mock
-    private org.phenotips.vocabularies.rest.model.Vocabulary vocabRepC1;
-
-    @Mock
-    private org.phenotips.vocabularies.rest.model.Vocabulary vocabRepC2;
 
     @Mock
     private Category categoryA;
@@ -141,33 +105,11 @@ public class DefaultCategoriesResourceTest
         final UserManager users = this.mocker.getInstance(UserManager.class);
         final AuthorizationService authorizationService = this.mocker.getInstance(AuthorizationService.class);
 
-        final Set<Vocabulary> categoryAVocabs = new HashSet<>(Arrays.asList(this.vocabA1, this.vocabA2));
-        final Set<Vocabulary> categoryBVocabs = new HashSet<>(Collections.singletonList(this.vocabB1));
-        final Set<Vocabulary> categoryCVocabs = new HashSet<>(Arrays.asList(this.vocabC1, this.vocabC2));
+        final List<String> categoriesList = Arrays.asList(CATEGORY_A_LABEL, CATEGORY_B_LABEL, CATEGORY_C_LABEL);
+        when(vocabularyManager.getAvailableCategories()).thenReturn(categoriesList);
 
-        when(vocabularyManager.getAvailableCategories()).thenReturn(
-            Arrays.asList(CATEGORY_A_LABEL, CATEGORY_B_LABEL, CATEGORY_C_LABEL));
-        when(vocabularyManager.getVocabularies(CATEGORY_A_LABEL)).thenReturn(categoryAVocabs);
-        when(vocabularyManager.getVocabularies(CATEGORY_B_LABEL)).thenReturn(categoryBVocabs);
-        when(vocabularyManager.getVocabularies(CATEGORY_C_LABEL)).thenReturn(categoryCVocabs);
-
-        final List<org.phenotips.vocabularies.rest.model.Vocabulary> categoryAVocabReps =
-            Arrays.asList(this.vocabRepA1, this.vocabRepA2);
-        final List<org.phenotips.vocabularies.rest.model.Vocabulary> categoryBVocabReps =
-            Collections.singletonList(this.vocabRepB1);
-        final List<org.phenotips.vocabularies.rest.model.Vocabulary> categoryCVocabReps =
-            Arrays.asList(this.vocabRepC1, this.vocabRepC2);
-
-        when(objectFactory.createVocabulariesList(eq(categoryAVocabs), any(Autolinker.class),
-            any(UriInfo.class), anyBoolean())).thenReturn(categoryAVocabReps);
-        when(objectFactory.createVocabulariesList(eq(categoryBVocabs), any(Autolinker.class),
-            any(UriInfo.class), anyBoolean())).thenReturn(categoryBVocabReps);
-        when(objectFactory.createVocabulariesList(eq(categoryCVocabs), any(Autolinker.class),
-            any(UriInfo.class), anyBoolean())).thenReturn(categoryCVocabReps);
-
-        when(objectFactory.createCategoryRepresentation(CATEGORY_A_LABEL)).thenReturn(categoryA);
-        when(objectFactory.createCategoryRepresentation(CATEGORY_B_LABEL)).thenReturn(categoryB);
-        when(objectFactory.createCategoryRepresentation(CATEGORY_C_LABEL)).thenReturn(categoryC);
+        when(objectFactory.createCategoriesRepresentation(eq(categoriesList), any(Autolinker.class),
+            any(Function.class))).thenReturn(Arrays.asList(this.categoryA, this.categoryB, this.categoryC));
 
         final User user = mock(User.class);
         when(users.getCurrentUser()).thenReturn(user);
@@ -184,13 +126,6 @@ public class DefaultCategoriesResourceTest
         when(autolinker.withExtraParameters(anyString(), anyString())).thenReturn(autolinker);
         when(autolinker.withGrantedRight(any(Right.class))).thenReturn(autolinker);
         when(autolinker.build()).thenReturn(Collections.singletonList(mock(Link.class)));
-
-        when(categoryA.withLinks(anyListOf(Link.class))).thenReturn(categoryA);
-        when(categoryA.withVocabularies(categoryAVocabReps)).thenCallRealMethod();
-        when(categoryB.withLinks(anyListOf(Link.class))).thenReturn(categoryB);
-        when(categoryB.withVocabularies(categoryBVocabReps)).thenCallRealMethod();
-        when(categoryC.withLinks(anyListOf(Link.class))).thenReturn(categoryC);
-        when(categoryC.withVocabularies(categoryCVocabReps)).thenCallRealMethod();
     }
 
     @Test
@@ -199,11 +134,6 @@ public class DefaultCategoriesResourceTest
         final Categories categories = this.mocker.getComponentUnderTest().getAllCategories();
         final Collection<Category> categoryCollection = categories.getCategories();
         Assert.assertEquals(3, categoryCollection.size());
-        Assert.assertTrue(categoryCollection.contains(categoryA));
-        Assert.assertTrue(categoryCollection.contains(categoryB));
-        Assert.assertTrue(categoryCollection.contains(categoryC));
-        verify(categoryA, times(1)).setVocabularies(Arrays.asList(this.vocabRepA1, this.vocabRepA2));
-        verify(categoryB, times(1)).setVocabularies(Collections.singletonList(this.vocabRepB1));
-        verify(categoryC, times(1)).setVocabularies(Arrays.asList(this.vocabRepC1, this.vocabRepC2));
+        Assert.assertEquals(Arrays.asList(this.categoryA, this.categoryB, this.categoryC), categoryCollection);
     }
 }

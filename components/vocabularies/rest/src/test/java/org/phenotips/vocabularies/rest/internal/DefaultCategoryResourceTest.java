@@ -18,7 +18,6 @@
 package org.phenotips.vocabularies.rest.internal;
 
 import org.phenotips.rest.Autolinker;
-import org.phenotips.rest.model.Link;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.vocabularies.rest.CategoryResource;
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
@@ -36,21 +35,20 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.inject.Provider;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.UriInfo;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.junit.Assert;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
@@ -58,10 +56,8 @@ import org.slf4j.Logger;
 import com.xpn.xwiki.XWikiContext;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyCollectionOf;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -74,7 +70,7 @@ public class DefaultCategoryResourceTest
 
     @Rule
     public MockitoComponentMockingRule<CategoryResource> mocker =
-        new MockitoComponentMockingRule<CategoryResource>(DefaultCategoryResource.class);
+        new MockitoComponentMockingRule<>(DefaultCategoryResource.class);
 
     private Logger logger;
 
@@ -87,12 +83,6 @@ public class DefaultCategoryResourceTest
 
     @Mock
     private Vocabulary vocabA2;
-
-    @Mock
-    private org.phenotips.vocabularies.rest.model.Vocabulary vocabRepA1;
-
-    @Mock
-    private org.phenotips.vocabularies.rest.model.Vocabulary vocabRepA2;
 
     @Mock
     private Category categoryA;
@@ -131,14 +121,11 @@ public class DefaultCategoryResourceTest
 
         ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "autolinker", this.autolinkerProvider);
         ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "uriInfo", this.uriInfo);
-        final List<org.phenotips.vocabularies.rest.model.Vocabulary> vocabReps = Arrays.asList(this.vocabRepA1,
-            this.vocabRepA2);
 
         final DomainObjectFactory objectFactory = this.mocker.getInstance(DomainObjectFactory.class);
-        when(objectFactory.createCategoryRepresentation(CATEGORY_A)).thenReturn(this.categoryA);
         when(this.autolinkerProvider.get()).thenReturn(this.autolinker);
-        when(objectFactory.createVocabulariesList(vocabs, this.autolinker, this.uriInfo, true))
-            .thenReturn(vocabReps);
+        when(objectFactory.createLinkedCategoryRepresentation(eq(CATEGORY_A), any(Autolinker.class),
+            any(Function.class))).thenReturn(this.categoryA);
 
         this.logger = this.mocker.getMockedLogger();
         final UserManager users = this.mocker.getInstance(UserManager.class);
@@ -149,8 +136,7 @@ public class DefaultCategoryResourceTest
 
         when(this.autolinker.forResource(any(Class.class), eq(this.uriInfo))).thenReturn(this.autolinker);
         when(this.autolinker.withGrantedRight(any(Right.class))).thenReturn(this.autolinker);
-        when(this.autolinker.build()).thenReturn(Collections.<Link>emptyList());
-        when(this.categoryA.withVocabularies(Arrays.asList(this.vocabRepA1, this.vocabRepA2))).thenCallRealMethod();
+        when(this.autolinker.build()).thenReturn(Collections.emptyList());
     }
 
     @Test(expected = WebApplicationException.class)
@@ -164,16 +150,7 @@ public class DefaultCategoryResourceTest
     @Test(expected = WebApplicationException.class)
     public void getCategoryThrowsExceptionWhenCategoryIsNotValid()
     {
-        when(this.vm.getVocabularies(CATEGORY_A)).thenReturn(Collections.<Vocabulary>emptySet());
-        this.component.getCategory(CATEGORY_A);
-        verify(this.logger).error("Could not find specified category: {}", CATEGORY_A);
-        Assert.fail("An exception should have been thrown for invalid category.");
-    }
-
-    @Test(expected = WebApplicationException.class)
-    public void getCategoryThrowsExceptionWhenCategoryIsNotValid2()
-    {
-        when(this.vm.getVocabularies(CATEGORY_A)).thenReturn(null);
+        when(this.vm.hasCategory(CATEGORY_A)).thenReturn(false);
         this.component.getCategory(CATEGORY_A);
         verify(this.logger).error("Could not find specified category: {}", CATEGORY_A);
         Assert.fail("An exception should have been thrown for invalid category.");
@@ -182,9 +159,8 @@ public class DefaultCategoryResourceTest
     @Test
     public void getCategoryBehavesAsExpectedWithValidData()
     {
+        when(this.vm.hasCategory(CATEGORY_A)).thenReturn(true);
         final Category category = this.component.getCategory(CATEGORY_A);
         Assert.assertEquals(this.categoryA, category);
-        verify(category, times(1)).withVocabularies(Arrays.asList(this.vocabRepA1, this.vocabRepA2));
-        verify(category, times(1)).withLinks(anyCollectionOf(Link.class));
     }
 }

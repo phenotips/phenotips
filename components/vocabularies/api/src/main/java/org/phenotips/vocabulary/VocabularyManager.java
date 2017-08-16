@@ -90,4 +90,22 @@ public interface VocabularyManager
      * @since 1.4
      */
     List<VocabularyTerm> search(String input, String category, int maxResults);
+
+    /**
+     * Returns true iff the provided {@code vocabulary} identifier is valid, false otherwise.
+     *
+     * @param vocabulary a vocabulary identifier
+     * @return true iff {@code vocabulary} is valid, false otherwise.
+     * @since 1.4
+     */
+    boolean hasVocabulary(String vocabulary);
+
+    /**
+     * Returns true iff the provided {@code category} name is valid, false otherwise.
+     *
+     * @param category a category name
+     * @return true iff {@code category} is valid, false otherwise.
+     * @since 1.4
+     */
+    boolean hasCategory(String category);
 }

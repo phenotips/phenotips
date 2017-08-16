@@ -30,9 +30,21 @@
           <sequence>
             <element name="aliases" type="string" minOccurs="1" maxOccurs="unbounded"/>
           </sequence>
+          <element name="categories" type="anyType"/>
           <element name="size" type="long"/>
           <element name="version" type="string"/>
           <element name="defaultSourceLocation" type="string"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="Category">
+    <complexContent>
+      <extension base="ptcommons:LinkCollection">
+        <sequence>
+          <element name="category" type="string"/>
+          <element name="vocabularies" type="anyType"/>
         </sequence>
       </extension>
     </complexContent>
@@ -50,5 +62,18 @@
     </complexType>
   </element>
 
+  <element name="categories">
+    <complexType>
+      <complexContent>
+        <extension base="ptcommons:LinkCollection">
+          <sequence>
+            <element name="category" type="ptvocab:Category" minOccurs="0" maxOccurs="unbounded"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+
   <element name="vocabulary" type="ptvocab:Vocabulary"/>
+  <element name="category" type="ptvocab:Category"/>
 </schema>

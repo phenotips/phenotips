@@ -22,6 +22,8 @@ import org.phenotips.rest.Autolinker;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.vocabularies.rest.CategoryResource;
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
+import org.phenotips.vocabularies.rest.VocabularyResource;
+import org.phenotips.vocabularies.rest.VocabularyTermSuggestionsResource;
 import org.phenotips.vocabularies.rest.model.Category;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
@@ -46,7 +48,6 @@ import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
@@ -54,7 +55,7 @@ import org.slf4j.Logger;
  * Default implementation of {@link CategoryResource} using XWiki's support for REST resources.
  *
  * @version $Id $
- * @since 1.4M1
+ * @since 1.4
  */
 @Component
 @Named("org.phenotips.vocabularies.rest.internal.DefaultCategoryResource")
@@ -91,21 +92,50 @@ public class DefaultCategoryResource extends XWikiResource implements CategoryRe
             this.logger.error("The category should not be blank.");
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
-        final Set<Vocabulary> vocabularies = this.vm.getVocabularies(categoryName);
-        // List identifiers for vocabularies associated with the provided category.
-        if (CollectionUtils.isEmpty(vocabularies)) {
+        if (!this.vm.hasCategory(categoryName)) {
             this.logger.error("Could not find specified category: {}", categoryName);
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
-        // Create the category representation, and add vocabularies, links, and rights data.
-        final Category category = this.objectFactory.createCategoryRepresentation(categoryName);
-        final List<org.phenotips.vocabularies.rest.model.Vocabulary> vocabReps = this.objectFactory
-            .createVocabulariesList(vocabularies, this.autolinker.get(), this.uriInfo, userIsAdmin());
-        category.withVocabularies(vocabReps)
-            .withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo)
-                .withGrantedRight(userIsAdmin() ? Right.ADMIN : Right.VIEW)
-                .build());
-        return category;
+        return this.objectFactory.createLinkedCategoryRepresentation(categoryName, getCategoryLinks(),
+            this::getVocabulariesForCategory);
+    }
+
+    /**
+     * Returns a list of {@link org.phenotips.vocabularies.rest.model.Vocabulary} for a category with provided
+     * {@code categoryId}.
+     *
+     * @param categoryId an identifier for a vocabulary category
+     * @return a list of {@link org.phenotips.vocabularies.rest.model.Vocabulary} associated with {@code categoryId}
+     */
+    private List<org.phenotips.vocabularies.rest.model.Vocabulary> getVocabulariesForCategory(final String categoryId)
+    {
+        final Set<Vocabulary> vocabularies = this.vm.getVocabularies(categoryId);
+        return this.objectFactory.createVocabulariesRepresentation(vocabularies, getVocabularyLinks(), null);
+    }
+
+    /**
+     * Returns the autolinker with all resources common to all vocabularies set.
+     *
+     * @return an {@link Autolinker}
+     */
+    private Autolinker getVocabularyLinks()
+    {
+        return this.autolinker.get()
+            .forSecondaryResource(VocabularyResource.class, uriInfo)
+            .withActionableResources(VocabularyTermSuggestionsResource.class)
+            .withGrantedRight(userIsAdmin() ? Right.ADMIN : Right.VIEW);
+    }
+
+    /**
+     * Returns the autolinker with all resources common to all categories set.
+     *
+     * @return an {@link Autolinker}
+     */
+    private Autolinker getCategoryLinks()
+    {
+        return this.autolinker.get()
+            .forResource(getClass(), this.uriInfo)
+            .withGrantedRight(userIsAdmin() ? Right.ADMIN : Right.VIEW);
     }
 
     /**

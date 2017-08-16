@@ -530,6 +530,18 @@
               <justification>New method to get a list of all vocabularies that fall under some category.</justification>
             </difference>
             <difference>
+              <className>org/phenotips/vocabulary/VocabularyManager</className>
+              <differenceType>7012</differenceType>
+              <method>boolean hasCategory(java.lang.String)</method>
+              <justification>New method that returns true iff a category name is valid.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/vocabulary/VocabularyManager</className>
+              <differenceType>7012</differenceType>
+              <method>boolean hasVocabulary(java.lang.String)</method>
+              <justification>New method that returns true iff a vocabulary id is valid.</justification>
+            </difference>
+            <difference>
               <className>org/phenotips/data/permissions/script/PermissionsManagerScriptService</className>
               <differenceType>7005</differenceType>
               <method>org.phenotips.data.permissions.PatientAccess getPatientAccess(org.phenotips.data.Patient)</method>

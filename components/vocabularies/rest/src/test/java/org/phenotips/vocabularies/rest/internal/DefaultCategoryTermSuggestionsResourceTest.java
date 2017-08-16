@@ -18,11 +18,7 @@
 package org.phenotips.vocabularies.rest.internal;
 
 import org.phenotips.rest.Autolinker;
-import org.phenotips.rest.model.Link;
 import org.phenotips.vocabularies.rest.CategoryTermSuggestionsResource;
-import org.phenotips.vocabularies.rest.DomainObjectFactory;
-import org.phenotips.vocabularies.rest.model.VocabularyTermSummary;
-import org.phenotips.vocabularies.rest.model.VocabularyTerms;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
@@ -38,8 +34,11 @@ import java.util.List;
 
 import javax.inject.Provider;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -62,6 +61,8 @@ import static org.mockito.Mockito.when;
  */
 public class DefaultCategoryTermSuggestionsResourceTest
 {
+    private static final String ID_LABEL = "id";
+
     private static final String CATEGORY_A = "categoryA";
 
     private static final String TERM_PARTIAL = "term";
@@ -76,7 +77,7 @@ public class DefaultCategoryTermSuggestionsResourceTest
 
     @Rule
     public MockitoComponentMockingRule<CategoryTermSuggestionsResource> mocker =
-        new MockitoComponentMockingRule<CategoryTermSuggestionsResource>(DefaultCategoryTermSuggestionsResource.class);
+        new MockitoComponentMockingRule<>(DefaultCategoryTermSuggestionsResource.class);
 
     private CategoryTermSuggestionsResource component;
 
@@ -92,15 +93,6 @@ public class DefaultCategoryTermSuggestionsResourceTest
 
     @Mock
     private VocabularyTerm term3;
-
-    @Mock
-    private VocabularyTermSummary termSummary1;
-
-    @Mock
-    private VocabularyTermSummary termSummary2;
-
-    @Mock
-    private VocabularyTermSummary termSummary3;
 
     @Mock
     private Provider<Autolinker> autolinkerProvider;
@@ -129,22 +121,17 @@ public class DefaultCategoryTermSuggestionsResourceTest
         this.component = this.mocker.getComponentUnderTest();
         this.vm = this.mocker.getInstance(VocabularyManager.class);
         this.logger = this.mocker.getMockedLogger();
-        final DomainObjectFactory objectFactory = this.mocker.getInstance(DomainObjectFactory.class);
 
-        when(objectFactory.createVocabularyTermRepresentation(this.term1)).thenReturn(this.termSummary1);
-        when(objectFactory.createVocabularyTermRepresentation(this.term2)).thenReturn(this.termSummary2);
-        when(objectFactory.createVocabularyTermRepresentation(this.term3)).thenReturn(this.termSummary3);
-
-        when(this.termSummary1.getId()).thenReturn(TERM_1_ID);
-        when(this.termSummary2.getId()).thenReturn(TERM_2_ID);
-        when(this.termSummary3.getId()).thenReturn(TERM_3_ID);
+        when(this.term1.toJSON()).thenReturn(new JSONObject().put("id", TERM_1_ID));
+        when(this.term2.toJSON()).thenReturn(new JSONObject().put("id", TERM_2_ID));
+        when(this.term3.toJSON()).thenReturn(new JSONObject().put("id", TERM_3_ID));
 
         when(this.autolinkerProvider.get()).thenReturn(this.autolinker);
         when(this.autolinker.forSecondaryResource(any(Class.class), eq(this.uriInfo))).thenReturn(this.autolinker);
         when(this.autolinker.forResource(any(Class.class), eq(this.uriInfo))).thenReturn(this.autolinker);
         when(this.autolinker.withActionableResources(any(Class.class))).thenReturn(this.autolinker);
         when(this.autolinker.withExtraParameters(anyString(), anyString())).thenReturn(this.autolinker);
-        when(this.autolinker.build()).thenReturn(Collections.<Link>emptyList());
+        when(this.autolinker.build()).thenReturn(Collections.emptyList());
 
         when(this.vm.getAvailableCategories()).thenReturn(Collections.singletonList(DISEASE_CATEGORY));
     }
@@ -168,7 +155,7 @@ public class DefaultCategoryTermSuggestionsResourceTest
     @Test(expected = WebApplicationException.class)
     public void suggestThrowsExceptionWhenCategoryIsNotValid() throws Exception
     {
-        when(this.vm.getAvailableCategories()).thenReturn(Collections.<String>emptyList());
+        when(this.vm.hasCategory(anyString())).thenReturn(false);
         this.component.suggest(CATEGORY_A, "Abc", 11);
         verify(this.logger).error("The requested vocabulary category [{}] does not exist.", CATEGORY_A);
         Assert.fail("An exception should be thrown if an invalid category is provided.");
@@ -178,11 +165,14 @@ public class DefaultCategoryTermSuggestionsResourceTest
     public void suggestWorksAsExpectedWithValidData()
     {
         final List<VocabularyTerm> vocabularyTerms = Arrays.asList(this.term1, this.term2, this.term3);
+        when(this.vm.hasCategory(DISEASE_CATEGORY)).thenReturn(true);
         when(this.vm.search(TERM_PARTIAL, DISEASE_CATEGORY, 3)).thenReturn(vocabularyTerms);
-        final VocabularyTerms termReps = this.component.suggest(DISEASE_CATEGORY, TERM_PARTIAL, 3);
-        Assert.assertEquals(3, termReps.getVocabularyTerms().size());
-        Assert.assertEquals(TERM_1_ID, termReps.getVocabularyTerms().get(0).getId());
-        Assert.assertEquals(TERM_2_ID, termReps.getVocabularyTerms().get(1).getId());
-        Assert.assertEquals(TERM_3_ID, termReps.getVocabularyTerms().get(2).getId());
+        final Response response = this.component.suggest(DISEASE_CATEGORY, TERM_PARTIAL, 3);
+        final JSONObject entity = (JSONObject) response.getEntity();
+        final JSONArray rows = entity.getJSONArray("rows");
+        Assert.assertEquals(3, rows.length());
+        Assert.assertEquals(TERM_1_ID, rows.getJSONObject(0).getString(ID_LABEL));
+        Assert.assertEquals(TERM_2_ID, rows.getJSONObject(1).getString(ID_LABEL));
+        Assert.assertEquals(TERM_3_ID, rows.getJSONObject(2).getString(ID_LABEL));
     }
 }

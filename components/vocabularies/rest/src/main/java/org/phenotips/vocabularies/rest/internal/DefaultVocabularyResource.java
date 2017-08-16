@@ -20,9 +20,10 @@ package org.phenotips.vocabularies.rest.internal;
 import org.phenotips.Constants;
 import org.phenotips.rest.Autolinker;
 import org.phenotips.security.authorization.AuthorizationService;
+import org.phenotips.vocabularies.rest.CategoryResource;
+import org.phenotips.vocabularies.rest.CategoryTermSuggestionsResource;
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
 import org.phenotips.vocabularies.rest.VocabularyResource;
-import org.phenotips.vocabularies.rest.model.Category;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 
@@ -35,6 +36,7 @@ import org.xwiki.stability.Unstable;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -82,14 +84,45 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
         if (vocabulary == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
-        org.phenotips.vocabularies.rest.model.Vocabulary rep =
-            this.objectFactory.createVocabularyRepresentation(vocabulary);
-        final List<Category> categories = this.objectFactory.createCategoriesList(vocabulary.getSupportedCategories(),
-            this.autolinker.get(), this.uriInfo, userIsAdmin());
-        rep.withCategories(categories)
-            .withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo)
-            .withGrantedRight(userIsAdmin() ? Right.ADMIN : Right.VIEW).build());
-        return rep;
+        return this.objectFactory.createLinkedVocabularyRepresentation(vocabulary, getVocabularyLinks(),
+            this::getCategoriesForVocabulary);
+    }
+
+    /**
+     * Returns a list of {@link org.phenotips.vocabularies.rest.model.Category} for a specified vocabulary.
+     *
+     * @param vocab a {@link Vocabulary} of interest
+     * @return a list of {@link org.phenotips.vocabularies.rest.model.Category} associated with the {@code vocab}
+     */
+    private List<org.phenotips.vocabularies.rest.model.Category> getCategoriesForVocabulary(final Vocabulary vocab)
+    {
+        final Collection<String> categories = vocab.getSupportedCategories();
+        return this.objectFactory.createCategoriesRepresentation(categories, getCategoryLinks(), null);
+    }
+
+    /**
+     * Returns the autolinker with all resources common to all vocabularies set.
+     *
+     * @return an {@link Autolinker}
+     */
+    private Autolinker getVocabularyLinks()
+    {
+        return this.autolinker.get()
+            .forResource(getClass(), this.uriInfo)
+            .withGrantedRight(userIsAdmin() ? Right.ADMIN : Right.VIEW);
+    }
+
+    /**
+     * Returns the autolinker with all resources common to all categories set.
+     *
+     * @return an {@link Autolinker}
+     */
+    private Autolinker getCategoryLinks()
+    {
+        return this.autolinker.get()
+            .forSecondaryResource(CategoryResource.class, this.uriInfo)
+            .withActionableResources(CategoryTermSuggestionsResource.class)
+            .withGrantedRight(userIsAdmin() ? Right.ADMIN : Right.VIEW);
     }
 
     @Override
