@@ -799,7 +799,7 @@ Date.prototype.getWeekOfYear = function (firstDayOfWeek) {
  * @return {Boolean} True if DST is in effect.
  */
 Date.prototype.isDST = function () {
-    console.log('isDST');
+    console &amp;&amp; console.log('isDST');
     /* TODO: not sure if this is portable ... get from Date.CultureInfo? */
     return this.toString().match(/(E|C|M|P)(S|D)T/)[2] == "D";
 };

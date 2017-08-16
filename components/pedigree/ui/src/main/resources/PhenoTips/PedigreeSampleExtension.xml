@@ -179,10 +179,10 @@ var extendModelToPerson = function(modelToPersonParams) {
 
 //---------------------------------------------------
 var extendOnNewState = function(newStateParams) {
-  console.log("  == [Version Extension] event: " + newStateParams.modificationEvent.eventName);
+  console &amp;&amp; console.log("  == [Version Extension] event: " + newStateParams.modificationEvent.eventName);
   if (newStateParams.modificationEvent.hasOwnProperty("propertiesChanged")) {
     var propertiesChanged = newStateParams.modificationEvent.propertiesChanged;
-    console.log("  == [Version Extension] node property change (nodeID: " + newStateParams.modificationEvent.afectedNodeIDs +
+    console &amp;&amp; console.log("  == [Version Extension] node property change (nodeID: " + newStateParams.modificationEvent.afectedNodeIDs +
                                    ", properties: " + Object.keys(propertiesChanged) + ")");
 
     var affectsCancerHistory = false;
@@ -198,13 +198,13 @@ var extendOnNewState = function(newStateParams) {
     var affectedNodes = affectsCancerHistory ? editor.getGraph().getAllPersonIDs() : newStateParams.modificationEvent.afectedNodeIDs;
     var immediatelyChangedNodes = newStateParams.modificationEvent.afectedNodeIDs;
   } else {
-    console.log("  == [Version Extension] pedigree structure modification");
+    console &amp;&amp; console.log("  == [Version Extension] pedigree structure modification");
     var affectedNodes = editor.getGraph().getAllPersonIDs();
     var affectsCancerHistory = true;
     var immediatelyChangedNodes = [];
   }
 
-  console.log("  == [Version Extension] affected nodes: " + affectedNodes +
+  console &amp;&amp; console.log("  == [Version Extension] affected nodes: " + affectedNodes +
               ", cancerHistoryPotentiallyAffected: " + affectsCancerHistory);
   
   var newMessage = (new Date().toISOString().substring(0,16).replace("T"," ")) + ": ";

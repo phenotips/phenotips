@@ -5295,7 +5295,7 @@ document.observe("xwiki:dom:updated", init);
     },
     generateSegmentedBar: function() {
       if (this.value &gt; 1 || this.value &lt; 0) {
-        console.log("Invalid segmented bar value");
+        console &amp;&amp; console.warn("Invalid segmented bar value");
         return;
       }
       var bar = new Element('div', {
