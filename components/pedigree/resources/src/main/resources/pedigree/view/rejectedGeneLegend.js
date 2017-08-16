@@ -14,6 +14,10 @@
                    [], // these are never displayed in a legend so don't need colours
                    "getRejectedGenes",
                    "setRejectedGenes", true); // operation
+        },
+
+        addCase: function($super, id, symbol, nodeID) {
+            $super(id, symbol, nodeID, true);
         }
     });
     return RejectedGeneLegend;
