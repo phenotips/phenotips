@@ -274,12 +274,15 @@ define([
             // raphaelElement is either a set which has .forEach() defined (but has no .node),
             // or a single element which has .node but not .forEach()
             if (raphaelElement.node) {
-                raphaelElement.node.setAttribute('class', 'donothidehoverbox ' + raphaelElement.node.getAttribute('class'));
-                // a hack for raphael <tspan> complication when using SVG (on most modern browsers)
-                if (raphaelElement.node.children &&
-                    raphaelElement.node.children.length > 0 &&
-                    raphaelElement.node.children[0].nodeName == "tspan") {
-                    raphaelElement.node.children[0].setAttribute("class","donothidehoverbox");
+                if (!Helpers.elementHasClassName(raphaelElement.node, 'donothidehoverbox')) {
+                    var existingClasses = raphaelElement.node.getAttribute('class') ? (" " + raphaelElement.node.getAttribute('class')) : "";
+                    raphaelElement.node.setAttribute('class', 'donothidehoverbox' + existingClasses);
+                    // a hack for raphael <tspan> complication when using SVG (on most modern browsers)
+                    if (raphaelElement.node.children &&
+                        raphaelElement.node.children.length > 0 &&
+                        raphaelElement.node.children[0].nodeName == "tspan") {
+                        raphaelElement.node.children[0].setAttribute("class","donothidehoverbox");
+                    }
                 }
             } else {
                 var _this = this;
