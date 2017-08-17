@@ -17,6 +17,7 @@
  */
 package org.phenotips.groups.internal;
 
+import org.phenotips.Constants;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
@@ -42,7 +43,6 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.omg.CORBA.UNKNOWN;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
@@ -56,20 +56,15 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Singleton
 public class UsersAndGroups
 {
-    /** Result returned in case getType() result is a user. */
-    public static final String USER = "user";
-
-    /** Result returned in case getType() result is a group. */
-    public static final String GROUP = "group";
-
-    /** Result returned in case getType() result is unknown. */
-    public static final String UNKNOWN = "unknown";
-
     private static final EntityReference USER_CLASS = new EntityReference("XWikiUsers", EntityType.DOCUMENT,
-        new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
+        Constants.XWIKI_SPACE_REFERENCE);
 
-    private static final EntityReference GROUP_CLASS = new EntityReference("XWikiGroups", EntityType.DOCUMENT,
-        new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
+    private static final EntityReference GROUP_CLASS = new EntityReference("PhenoTipsGroupClass", EntityType.DOCUMENT,
+        Constants.CODE_SPACE_REFERENCE);
+
+    private static final String USER = "user";
+
+    private static final String GROUP = "group";
 
     private static final String INPUT_PARAMETER = "input";
 
@@ -84,6 +79,10 @@ public class UsersAndGroups
     private static String usersQueryString;
 
     private static String groupsQueryString;
+
+    private static String allUsersQueryString;
+
+    private static String allGroupsQueryString;
 
     @Inject
     private QueryManager qm;
@@ -105,7 +104,7 @@ public class UsersAndGroups
 
     static {
         StringBuilder usersQuerySb = new StringBuilder();
-        usersQuerySb.append("from doc.object(XWiki.XWikiUsers) as user ");
+        usersQuerySb.append("from doc.object(XWiki.XWikiUsers) as user");
         usersQuerySb.append(" where lower(doc.name) like :").append(UsersAndGroups.INPUT_PARAMETER);
         usersQuerySb.append(" or concat(concat(lower(user.first_name), ' '), lower(user.last_name)) like ");
         usersQuerySb.append(":").append(UsersAndGroups.INPUT_PARAMETER);
@@ -113,43 +112,67 @@ public class UsersAndGroups
         UsersAndGroups.usersQueryString = usersQuerySb.toString();
 
         StringBuilder groupsQuerySb = new StringBuilder();
-        groupsQuerySb.append("from doc.object(PhenoTips.PhenoTipsGroupClass) as groups ");
-        groupsQuerySb.append(" where lower(doc.name)  like :").append(UsersAndGroups.INPUT_PARAMETER);
-        groupsQuerySb.append(" and doc.fullName <> 'PhenoTips.PhenoTipsGroupTemplate' ");
+        groupsQuerySb.append("from doc.object(PhenoTips.PhenoTipsGroupClass) as group");
+        groupsQuerySb.append(" where lower(doc.name) like :").append(UsersAndGroups.INPUT_PARAMETER);
+        groupsQuerySb.append(" and doc.fullName <> 'PhenoTips.PhenoTipsGroupTemplate'");
         groupsQuerySb.append(" order by doc.name");
         UsersAndGroups.groupsQueryString = groupsQuerySb.toString();
+
+        StringBuilder allUsersQuerySb = new StringBuilder();
+        allUsersQuerySb.append("from doc.object(XWiki.XWikiUsers) as user order by user.first_name, user.last_name");
+        UsersAndGroups.allUsersQueryString = allUsersQuerySb.toString();
+
+        StringBuilder allGroupsQuerySb = new StringBuilder();
+        allGroupsQuerySb.append("from doc.object(PhenoTips.PhenoTipsGroupClass) as group");
+        allGroupsQuerySb.append(" and doc.fullName <> 'PhenoTips.PhenoTipsGroupTemplate'");
+        allGroupsQuerySb.append(" order by doc.name");
+        UsersAndGroups.allGroupsQueryString = allGroupsQuerySb.toString();
     }
 
     /**
-     * Checks whether an {@link userOrGroup} is an entity that represents a user or a group.
+     * Checks whether an {@link userOrGroup} is an entity that represents a user.
      *
      * @param userOrGroup entity to check
-     * @return {@link USER}, @{link GROUP}, or {@link UNKNOWN}
+     * @return true if an entity represents a {@link USER}, false otherwise
      */
-    public String getType(EntityReference userOrGroup)
+    public boolean isUser(EntityReference userOrGroup)
     {
         try {
             XWikiDocument doc = (XWikiDocument) this.bridge.getDocument((DocumentReference) userOrGroup);
-            if (doc.getXObject(USER_CLASS) != null) {
-                return USER;
-            } else if (doc.getXObject(GROUP_CLASS) != null) {
-                return GROUP;
-            }
+            return doc.getXObject(USER_CLASS) != null;
         } catch (Exception ex) {
-            this.logger.error("Error in getType({})", userOrGroup.getName(), ex.getMessage());
+            this.logger.error("Error in isUser({})", userOrGroup.getName(), ex.getMessage());
         }
-        return UNKNOWN;
+        return false;
+    }
+
+    /**
+     * Checks whether an {@link userOrGroup} is an entity that represents a group.
+     *
+     * @param userOrGroup entity to check
+     * @return true if an entity represents a {@link GROUP}, false otherwise
+     */
+    public boolean isGroup(EntityReference userOrGroup)
+    {
+        try {
+            XWikiDocument doc = (XWikiDocument) this.bridge.getDocument((DocumentReference) userOrGroup);
+            return doc.getXObject(GROUP_CLASS) != null;
+        } catch (Exception ex) {
+            this.logger.error("Error in isGroup({})", userOrGroup.getName(), ex.getMessage());
+        }
+        return false;
     }
 
     /**
      * Searches for users and/or groups matching the input parameter. Result is returned as JSON
      *
      * @param input string to look for
+     * @param maxResults The maximum number of results to be returned
      * @param searchUsers if true, includes users in result
      * @param searchGroups if true, includes groups in result
      * @return a json object containing all results found
      */
-    public JSONObject search(String input, boolean searchUsers, boolean searchGroups)
+    public JSONObject search(String input, int maxResults, boolean searchUsers, boolean searchGroups)
     {
         String formattedInput = input.toLowerCase();
         formattedInput = String.format(UsersAndGroups.INPUT_FORMAT, input);
@@ -157,11 +180,11 @@ public class UsersAndGroups
         JSONArray resultArray = new JSONArray();
         try {
             if (searchUsers) {
-                runUsersQuery(resultArray, formattedInput);
+                runUsersQuery(resultArray, UsersAndGroups.usersQueryString, formattedInput, maxResults);
             }
 
             if (searchGroups) {
-                runGroupsQuery(resultArray, formattedInput);
+                runGroupsQuery(resultArray, UsersAndGroups.groupsQueryString, formattedInput, maxResults);
             }
         } catch (Exception ex) {
             this.logger.error("Error in search ({})", input, ex.getMessage());
@@ -172,9 +195,30 @@ public class UsersAndGroups
         return result;
     }
 
-    private void runUsersQuery(JSONArray resultArray, String formattedInput) throws Exception
+    /**
+     * Searches for all users and groups. Result is returned as JSON
+     *
+     * @return a json object containing all results found
+     */
+    public JSONObject getAll()
     {
-        List<String> queryResult = runQuery(UsersAndGroups.usersQueryString, formattedInput, 10);
+        JSONArray resultArray = new JSONArray();
+        try {
+            runUsersQuery(resultArray, UsersAndGroups.allUsersQueryString, "", 0);
+            runGroupsQuery(resultArray, UsersAndGroups.allGroupsQueryString, "", 0);
+        } catch (Exception ex) {
+            this.logger.error("Error in search for all users and groups ({})", ex.getMessage());
+        }
+
+        JSONObject result = new JSONObject();
+        result.put("results", resultArray);
+        return result;
+    }
+
+    private void runUsersQuery(JSONArray resultArray, String queryString, String formattedInput, int maxResults)
+        throws Exception
+    {
+        List<String> queryResult = runQuery(queryString, formattedInput, maxResults);
         for (String userName : queryResult)
         {
             User user = this.userManager.getUser(userName);
@@ -194,12 +238,16 @@ public class UsersAndGroups
             }
             JSONObject o = createObject(user.getProfileDocument().toString(), name, avatarURL, USER);
             resultArray.put(o);
+            if (resultArray.length() == maxResults) {
+                break;
+            }
         }
     }
 
-    private void runGroupsQuery(JSONArray resultArray, String formattedInput) throws Exception
+    private void runGroupsQuery(JSONArray resultArray, String queryString, String formattedInput, int maxResults)
+        throws Exception
     {
-        List<String> queryResult = runQuery(UsersAndGroups.groupsQueryString, formattedInput, 10);
+        List<String> queryResult = runQuery(queryString, formattedInput, maxResults);
         for (String groupName : queryResult)
         {
             Group group = this.groupManager.getGroup(groupName);
@@ -214,6 +262,9 @@ public class UsersAndGroups
             }
             JSONObject o = createObject(groupName, group.getReference().getName(), avatarURL, GROUP);
             resultArray.put(o);
+            if (resultArray.length() == maxResults) {
+                break;
+            }
         }
     }
 
@@ -223,9 +274,13 @@ public class UsersAndGroups
         List<String> queryResults = null;
         try {
             query = this.qm.createQuery(queryString, Query.XWQL);
-            query.setLimit(resultsLimit);
-            query.setOffset(0);
-            query.bindValue(UsersAndGroups.INPUT_PARAMETER, formattedInput);
+            if (resultsLimit > 0) {
+                query.setLimit(resultsLimit);
+                query.setOffset(0);
+            }
+            if (StringUtils.isNotBlank(formattedInput)) {
+                query.bindValue(UsersAndGroups.INPUT_PARAMETER, formattedInput);
+            }
             queryResults = query.execute();
         } catch (QueryException e) {
             this.logger.error("Error while performing query: [{}] ", queryString, e.getMessage());

@@ -17,6 +17,7 @@
  */
 package org.phenotips.groups.internal;
 
+import org.phenotips.Constants;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
@@ -66,8 +67,8 @@ public class UsersAndGroupsTest
     private static final EntityReference USER_CLASS = new EntityReference("XWikiUsers", EntityType.DOCUMENT,
         new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
 
-    private static final EntityReference GROUP_CLASS = new EntityReference("XWikiGroups", EntityType.DOCUMENT,
-        new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
+    private static final EntityReference GROUP_CLASS = new EntityReference("PhenoTipsGroupClass", EntityType.DOCUMENT,
+        Constants.CODE_SPACE_REFERENCE);
 
     private static String groupsQueryString;
 
@@ -107,14 +108,14 @@ public class UsersAndGroupsTest
 
     static {
         StringBuilder groupsQuerySb = new StringBuilder();
-        groupsQuerySb.append("from doc.object(PhenoTips.PhenoTipsGroupClass) as groups ");
-        groupsQuerySb.append(" where lower(doc.name)  like :input");
-        groupsQuerySb.append(" and doc.fullName <> 'PhenoTips.PhenoTipsGroupTemplate' ");
+        groupsQuerySb.append("from doc.object(PhenoTips.PhenoTipsGroupClass) as group");
+        groupsQuerySb.append(" where lower(doc.name) like :input");
+        groupsQuerySb.append(" and doc.fullName <> 'PhenoTips.PhenoTipsGroupTemplate'");
         groupsQuerySb.append(" order by doc.name");
         UsersAndGroupsTest.groupsQueryString = groupsQuerySb.toString();
 
         StringBuilder usersQuerySb = new StringBuilder();
-        usersQuerySb.append("from doc.object(XWiki.XWikiUsers) as user ");
+        usersQuerySb.append("from doc.object(XWiki.XWikiUsers) as user");
         usersQuerySb.append(" where lower(doc.name) like :input");
         usersQuerySb.append(" or concat(concat(lower(user.first_name), ' '), lower(user.last_name)) like :input");
         usersQuerySb.append(" order by user.first_name, user.last_name");
@@ -158,7 +159,7 @@ public class UsersAndGroupsTest
         JSONObject expectedResult = new JSONObject();
         expectedResult.put("matched", resultsArray);
 
-        JSONObject searchResult = this.mocker.getComponentUnderTest().search(input, true, false);
+        JSONObject searchResult = this.mocker.getComponentUnderTest().search(input, 10, true, false);
         Assert.assertEquals(expectedResult.toString(), searchResult.toString());
     }
 
@@ -197,7 +198,7 @@ public class UsersAndGroupsTest
         JSONObject expectedResult = new JSONObject();
         expectedResult.put("matched", resultsArray);
 
-        JSONObject searchResult = this.mocker.getComponentUnderTest().search(input, false, true);
+        JSONObject searchResult = this.mocker.getComponentUnderTest().search(input, 10, false, true);
         Assert.assertEquals(expectedResult.toString(), searchResult.toString());
     }
 
@@ -261,7 +262,7 @@ public class UsersAndGroupsTest
         JSONObject expectedResult = new JSONObject();
         expectedResult.put("matched", resultsArray);
 
-        JSONObject searchResult = this.mocker.getComponentUnderTest().search(input, true, true);
+        JSONObject searchResult = this.mocker.getComponentUnderTest().search(input, 10, true, true);
         Assert.assertEquals(expectedResult.toString(), searchResult.toString());
     }
 
@@ -274,7 +275,7 @@ public class UsersAndGroupsTest
         JSONObject expectedResult = new JSONObject();
         expectedResult.put("matched", resultsArray);
 
-        JSONObject searchResult = this.mocker.getComponentUnderTest().search(input, false, false);
+        JSONObject searchResult = this.mocker.getComponentUnderTest().search(input, 10, false, false);
         Assert.assertEquals(expectedResult.toString(), searchResult.toString());
     }
 
@@ -302,12 +303,15 @@ public class UsersAndGroupsTest
         JSONObject expectedResult = new JSONObject();
         expectedResult.put("matched", resultsArray);
 
-        Assert.assertEquals(expectedResult.toString(), this.mocker.getComponentUnderTest().search(input, true, true)
+        Assert.assertEquals(expectedResult.toString(), this.mocker.getComponentUnderTest()
+            .search(input, 10, true, true)
             .toString());
-        Assert.assertEquals(expectedResult.toString(), this.mocker.getComponentUnderTest().search(input, true, false)
-            .toString());
-        Assert.assertEquals(expectedResult.toString(), this.mocker.getComponentUnderTest().search(input, false, true)
-            .toString());
+        Assert.assertEquals(expectedResult.toString(),
+            this.mocker.getComponentUnderTest().search(input, 10, true, false)
+                .toString());
+        Assert.assertEquals(expectedResult.toString(),
+            this.mocker.getComponentUnderTest().search(input, 10, false, true)
+                .toString());
     }
 
     @Test
@@ -326,10 +330,12 @@ public class UsersAndGroupsTest
         JSONObject expectedResult = new JSONObject();
         expectedResult.put("matched", resultsArray);
 
-        Assert.assertEquals(expectedResult.toString(), this.mocker.getComponentUnderTest().search(input, true, false)
-            .toString());
-        Assert.assertEquals(expectedResult.toString(), this.mocker.getComponentUnderTest().search(input, false, false)
-            .toString());
+        Assert.assertEquals(expectedResult.toString(),
+            this.mocker.getComponentUnderTest().search(input, 10, true, false)
+                .toString());
+        Assert.assertEquals(expectedResult.toString(),
+            this.mocker.getComponentUnderTest().search(input, 10, false, false)
+                .toString());
     }
 
     @Test
@@ -341,21 +347,23 @@ public class UsersAndGroupsTest
         DocumentAccessBridge bridge = this.mocker.getInstance(DocumentAccessBridge.class);
         when(bridge.getDocument(groupDocument)).thenReturn(groupXDocument);
         UsersAndGroups usersAndGroups = this.mocker.getComponentUnderTest();
-        org.junit.Assert.assertEquals(UsersAndGroups.GROUP, usersAndGroups.getType(groupDocument));
+        org.junit.Assert.assertEquals(true, usersAndGroups.isGroup(groupDocument));
 
         DocumentReference userDocument = new DocumentReference("xwiki", "XWiki", "u1");
         XWikiDocument userXDocument = mock(XWikiDocument.class);
         org.mockito.Mockito.when(userXDocument.getXObject(USER_CLASS)).thenReturn(new BaseObject());
         when(bridge.getDocument(userDocument)).thenReturn(userXDocument);
-        org.junit.Assert.assertEquals(UsersAndGroups.USER, usersAndGroups.getType(userDocument));
+        org.junit.Assert.assertEquals(true, usersAndGroups.isUser(userDocument));
 
         DocumentReference unknownDocument = new DocumentReference("xwiki", "qwerty", "qwerty");
         XWikiDocument unknownXDocument = mock(XWikiDocument.class);
         when(bridge.getDocument(unknownDocument)).thenReturn(unknownXDocument);
-        org.junit.Assert.assertEquals(UsersAndGroups.UNKNOWN, usersAndGroups.getType(unknownDocument));
+        org.junit.Assert.assertEquals(false, usersAndGroups.isUser(unknownDocument));
+        org.junit.Assert.assertEquals(false, usersAndGroups.isGroup(unknownDocument));
 
         DocumentReference mock = mock(DocumentReference.class);
         when(bridge.getDocument(mock)).thenThrow(new Exception("Failed"));
-        org.junit.Assert.assertEquals(UsersAndGroups.UNKNOWN, usersAndGroups.getType(mock));
+        org.junit.Assert.assertEquals(false, usersAndGroups.isUser(mock));
+        org.junit.Assert.assertEquals(false, usersAndGroups.isGroup(mock));
     }
 }

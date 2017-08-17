@@ -29,7 +29,7 @@
   <name>PhenoTips - Users and Groups - Java APIs</name>
 
   <properties>
-    <coverage.instructionRatio>0.96</coverage.instructionRatio>
+    <coverage.instructionRatio>0.93</coverage.instructionRatio>
   </properties>
 
   <dependencies>

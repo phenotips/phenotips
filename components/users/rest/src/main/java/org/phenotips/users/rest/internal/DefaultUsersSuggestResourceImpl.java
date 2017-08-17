@@ -19,6 +19,7 @@ package org.phenotips.users.rest.internal;
 
 import org.phenotips.groups.internal.UsersAndGroups;
 import org.phenotips.users.rest.UsersResource;
+import org.phenotips.users.rest.UsersSuggestResource;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rest.XWikiResource;
@@ -26,10 +27,13 @@ import org.xwiki.rest.XWikiResource;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 /**
  * Default implementation for {@link UsersResource} using XWiki's support for REST resources.
@@ -38,17 +42,37 @@ import org.json.JSONObject;
  * @since 1.4
  */
 @Component
-@Named("org.phenotips.users.rest.internal.DefaultUsersResourceImpl")
+@Named("org.phenotips.users.rest.internal.DefaultUsersSuggestResourceImpl")
 @Singleton
-public class DefaultUsersResourceImpl extends XWikiResource implements UsersResource
+public class DefaultUsersSuggestResourceImpl extends XWikiResource implements UsersSuggestResource
 {
+    /** The logging object. */
+    @Inject
+    private Logger logger;
+
     @Inject
     private UsersAndGroups usersAndGroups;
 
+    /**
+     * Searches for users and/or groups matching the input parameter. Result is returned as JSON
+     *
+     * @param input string to look for
+     * @param maxResults The maximum number of results to be returned
+     * @param searchUsers if true, includes users in result
+     * @param searchGroups if true, includes groups in result
+     * @return a json object containing all results found
+     */
     @Override
-    public Response getAllUsersAndGroups()
+    public Response searchUsersAndGroups(String input, @DefaultValue("10") int maxResults, boolean searchUsers,
+        boolean searchGroups)
     {
-        JSONObject json = this.usersAndGroups.getAll();
+        // Check if patient ID is provided.
+        if (StringUtils.isBlank(input)) {
+            this.logger.error("No search input is provided.");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        JSONObject json = this.usersAndGroups.search(input, maxResults, searchUsers, searchGroups);
         return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
     }
 }
