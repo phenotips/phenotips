@@ -21,9 +21,9 @@ import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.SimpleValuePatientData;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -53,7 +53,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -64,6 +63,8 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -77,20 +78,21 @@ public class LabeledExternalIdentifiersControllerTest
 
     private static final String CONTROLLER_NAME = IDENTIFIERS_STRING;
 
-    private static final String INTERNAL_LABEL_KEY = "eidLabel";
+    private static final String LABEL_KEY = "label";
 
-    private static final String INTERNAL_VALUE_KEY = "eidValue";
+    private static final String VALUE_KEY = "value";
 
-    private static final String JSON_LABEL_KEY = "label";
+    private static final String OBJ_1_LABEL = "obj1Label";
 
-    private static final String JSON_VALUE_KEY = "value";
+    private static final String OBJ_2_LABEL = "obj2Label";
+
+    private static final String OBJ_1_VALUE = "obj1Value";
+
+    private static final String OBJ_2_VALUE = "obj2Value";
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Map<String, String>>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<Map<String, String>>>(
-            LabeledExternalIdentifiersController.class);
-
-    private DocumentAccessBridge documentAccessBridge;
+        new MockitoComponentMockingRule<>(LabeledExternalIdentifiersController.class);
 
     @Mock
     private Patient patient;
@@ -98,59 +100,93 @@ public class LabeledExternalIdentifiersControllerTest
     @Mock
     private XWikiDocument doc;
 
+    @Mock
+    private BaseObject eidObj1;
+
+    @Mock
+    private BaseObject eidObj2;
+
+    @Mock
+    private BaseStringProperty obj1LabelProp;
+
+    @Mock
+    private BaseStringProperty obj2LabelProp;
+
+    @Mock
+    private BaseStringProperty obj1ValueProp;
+
+    @Mock
+    private BaseStringProperty obj2ValueProp;
+
     private List<BaseObject> identifiersXWikiObjects;
+
+    private XWikiContext context;
+
+    private PatientDataController<Map<String, String>> component;
 
     @Before
     public void setUp() throws Exception
     {
         MockitoAnnotations.initMocks(this);
 
-        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
-
         final DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
-        when(this.patient.getDocument()).thenReturn(patientDocument);
-        when(this.documentAccessBridge.getDocument(patientDocument)).thenReturn(this.doc);
+        when(this.patient.getDocumentReference()).thenReturn(patientDocument);
+        when(this.patient.getXDocument()).thenReturn(this.doc);
         this.identifiersXWikiObjects = new LinkedList<>();
         when(this.doc.getXObjects(any(EntityReference.class))).thenReturn(this.identifiersXWikiObjects);
+
+        final List<String> fieldList = Arrays.asList(LABEL_KEY, VALUE_KEY);
+        when(this.eidObj1.getFieldList()).thenReturn(fieldList);
+        when(this.eidObj2.getFieldList()).thenReturn(fieldList);
+        when(this.eidObj1.getField(LABEL_KEY)).thenReturn(this.obj1LabelProp);
+        when(this.eidObj1.getField(VALUE_KEY)).thenReturn(this.obj1ValueProp);
+        when(this.eidObj2.getField(LABEL_KEY)).thenReturn(this.obj2LabelProp);
+        when(this.eidObj2.getField(VALUE_KEY)).thenReturn(this.obj2ValueProp);
+
+        when(this.obj1LabelProp.getValue()).thenReturn(OBJ_1_LABEL);
+        when(this.obj1ValueProp.getValue()).thenReturn(OBJ_1_VALUE);
+        when(this.obj2LabelProp.getValue()).thenReturn(OBJ_2_LABEL);
+        when(this.obj2ValueProp.getValue()).thenReturn(OBJ_2_VALUE);
+
+        final Provider<XWikiContext> xcontextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
+        this.context = xcontextProvider.get();
+        this.component = this.mocker.getComponentUnderTest();
     }
 
     @Test
     public void checkGetName() throws ComponentLookupException
     {
-        Assert.assertEquals(CONTROLLER_NAME, this.mocker.getComponentUnderTest().getName());
+        Assert.assertEquals(CONTROLLER_NAME, this.component.getName());
     }
 
     @Test
     public void checkGetJsonPropertyName() throws ComponentLookupException
     {
-        Assert.assertEquals(CONTROLLER_NAME,
-            ((AbstractComplexController<Map<String, String>>) this.mocker.getComponentUnderTest())
-                .getJsonPropertyName());
+        Assert.assertEquals(CONTROLLER_NAME, ((AbstractComplexController<Map<String, String>>) this.component)
+            .getJsonPropertyName());
     }
 
     @Test
     public void checkGetProperties() throws ComponentLookupException
     {
-        final List<String> result =
-            ((AbstractComplexController<Map<String, String>>) this.mocker.getComponentUnderTest()).getProperties();
+        final List<String> result = ((AbstractComplexController<Map<String, String>>) this.component).getProperties();
 
-        Assert.assertTrue(result.contains(INTERNAL_LABEL_KEY));
-        Assert.assertTrue(result.contains(INTERNAL_VALUE_KEY));
+        Assert.assertTrue(result.contains(LABEL_KEY));
+        Assert.assertTrue(result.contains(VALUE_KEY));
         Assert.assertEquals(2, result.size());
     }
 
     @Test
     public void checkGetBooleanFields() throws ComponentLookupException
     {
-        Assert.assertTrue(
-            ((AbstractComplexController<Map<String, String>>) this.mocker.getComponentUnderTest()).getBooleanFields()
-                .isEmpty());
+        Assert.assertTrue(((AbstractComplexController<Map<String, String>>) this.component).getBooleanFields()
+            .isEmpty());
     }
 
     @Test
     public void checkGetCodeFields() throws ComponentLookupException
     {
-        Assert.assertTrue(((AbstractComplexController<Map<String, String>>) this.mocker.getComponentUnderTest())
+        Assert.assertTrue(((AbstractComplexController<Map<String, String>>) this.component)
             .getCodeFields().isEmpty());
     }
 
@@ -165,34 +201,34 @@ public class LabeledExternalIdentifiersControllerTest
 
             final BaseStringProperty labelString = mock(BaseStringProperty.class);
             when(labelString.getValue()).thenReturn("label" + i);
-            when(identifier.getField(INTERNAL_LABEL_KEY)).thenReturn(labelString);
+            when(identifier.getField(LABEL_KEY)).thenReturn(labelString);
 
             final BaseStringProperty valueString = mock(BaseStringProperty.class);
             when(valueString.getValue()).thenReturn("value" + i);
-            when(identifier.getField(INTERNAL_VALUE_KEY)).thenReturn(valueString);
+            when(identifier.getField(VALUE_KEY)).thenReturn(valueString);
 
             when(identifier.getFieldList()).thenReturn(Arrays.asList(labelString, valueString));
         }
 
-        PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<Map<String, String>> result = this.component.load(this.patient);
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isIndexed());
         Assert.assertEquals(3, result.size());
         for (int i = 0; i < 3; ++i) {
             Map<String, String> item = result.get(i);
-            Assert.assertEquals("label" + i, item.get(INTERNAL_LABEL_KEY));
-            Assert.assertEquals("value" + i, item.get(INTERNAL_VALUE_KEY));
+            Assert.assertEquals("label" + i, item.get(LABEL_KEY));
+            Assert.assertEquals("value" + i, item.get(VALUE_KEY));
         }
     }
 
     @Test
     public void loadCatchesExceptionFromDocumentAccess() throws Exception
     {
-        final Exception exception = new Exception();
-        when(this.documentAccessBridge.getDocument(any(DocumentReference.class))).thenThrow(exception);
+        final NullPointerException exception = new NullPointerException();
+        when(this.patient.getXDocument()).thenThrow(exception);
 
-        final PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
+        final PatientData<Map<String, String>> result = this.component.load(this.patient);
 
         Assert.assertNull(result);
         verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen "
@@ -204,7 +240,7 @@ public class LabeledExternalIdentifiersControllerTest
     {
         when(this.doc.getXObjects(any(EntityReference.class))).thenReturn(null);
 
-        final PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
+        final PatientData<Map<String, String>> result = this.component.load(this.patient);
 
         Assert.assertNull(result);
     }
@@ -212,9 +248,9 @@ public class LabeledExternalIdentifiersControllerTest
     @Test
     public void loadReturnsNullWhenPatientHasEmptyLabeledIdentifierClass() throws ComponentLookupException
     {
-        when(this.doc.getXObjects(any(EntityReference.class))).thenReturn(new LinkedList<BaseObject>());
+        when(this.doc.getXObjects(any(EntityReference.class))).thenReturn(new LinkedList<>());
 
-        final PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
+        final PatientData<Map<String, String>> result = this.component.load(this.patient);
 
         Assert.assertNull(result);
     }
@@ -226,7 +262,7 @@ public class LabeledExternalIdentifiersControllerTest
         when(obj.getField(anyString())).thenReturn(null);
         this.identifiersXWikiObjects.add(obj);
 
-        final PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
+        final PatientData<Map<String, String>> result = this.component.load(this.patient);
 
         Assert.assertNull(result);
     }
@@ -236,8 +272,8 @@ public class LabeledExternalIdentifiersControllerTest
     {
         // Deleted objects appear as nulls in XWikiObjects list
         this.identifiersXWikiObjects.add(null);
-        addLabeledIdentifierFields(INTERNAL_LABEL_KEY, new String[] { "MY ID" });
-        final PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
+        addLabeledIdentifierFields(LABEL_KEY, new String[] { "MY ID" });
+        final PatientData<Map<String, String>> result = this.component.load(this.patient);
 
         Assert.assertEquals(1, result.size());
     }
@@ -246,31 +282,31 @@ public class LabeledExternalIdentifiersControllerTest
     public void checkLoadParsingOfLabelKey() throws ComponentLookupException
     {
         final String[] labels = new String[] { "A", "<!'>;", "two words", " ", "" };
-        addLabeledIdentifierFields(INTERNAL_LABEL_KEY, labels);
+        addLabeledIdentifierFields(LABEL_KEY, labels);
 
-        final PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
+        final PatientData<Map<String, String>> result = this.component.load(this.patient);
 
         Assert.assertNotNull(result);
-        Assert.assertEquals(labels[0], result.get(0).get(INTERNAL_LABEL_KEY));
-        Assert.assertEquals(labels[1], result.get(1).get(INTERNAL_LABEL_KEY));
-        Assert.assertEquals(labels[2], result.get(2).get(INTERNAL_LABEL_KEY));
-        Assert.assertEquals(null, result.get(3).get(INTERNAL_LABEL_KEY));
-        Assert.assertEquals(null, result.get(4).get(INTERNAL_LABEL_KEY));
+        Assert.assertEquals(labels[0], result.get(0).get(LABEL_KEY));
+        Assert.assertEquals(labels[1], result.get(1).get(LABEL_KEY));
+        Assert.assertEquals(labels[2], result.get(2).get(LABEL_KEY));
+        Assert.assertEquals(null, result.get(3).get(LABEL_KEY));
+        Assert.assertEquals(null, result.get(4).get(LABEL_KEY));
     }
 
     @Test
     public void checkLoadParsingOfValueKey() throws ComponentLookupException
     {
         final String[] values = new String[] { "Hello world!", "<script></script>", "", "{{html}}" };
-        addLabeledIdentifierFields(INTERNAL_VALUE_KEY, values);
+        addLabeledIdentifierFields(VALUE_KEY, values);
 
-        final PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
+        final PatientData<Map<String, String>> result = this.component.load(this.patient);
 
         Assert.assertNotNull(result);
-        Assert.assertEquals(values[0], result.get(0).get(INTERNAL_VALUE_KEY));
-        Assert.assertEquals(values[1], result.get(1).get(INTERNAL_VALUE_KEY));
-        Assert.assertEquals(null, result.get(2).get(INTERNAL_VALUE_KEY));
-        Assert.assertEquals(values[3], result.get(3).get(INTERNAL_VALUE_KEY));
+        Assert.assertEquals(values[0], result.get(0).get(VALUE_KEY));
+        Assert.assertEquals(values[1], result.get(1).get(VALUE_KEY));
+        Assert.assertEquals(null, result.get(2).get(VALUE_KEY));
+        Assert.assertEquals(values[3], result.get(3).get(VALUE_KEY));
     }
 
     //-----------------------------------Test writeJSON()-----------------------------------//
@@ -283,7 +319,7 @@ public class LabeledExternalIdentifiersControllerTest
         final Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(IDENTIFIERS_STRING);
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+        this.component.writeJSON(this.patient, json, selectedFields);
 
         Assert.assertTrue(json.has(CONTROLLER_NAME));
         verify(this.patient).getData(CONTROLLER_NAME);
@@ -299,7 +335,7 @@ public class LabeledExternalIdentifiersControllerTest
         final Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(IDENTIFIERS_STRING);
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+        this.component.writeJSON(this.patient, json, selectedFields);
 
         Assert.assertTrue(json.has(CONTROLLER_NAME));
         verify(this.patient).getData(CONTROLLER_NAME);
@@ -320,7 +356,7 @@ public class LabeledExternalIdentifiersControllerTest
         // selectedFields could contain any number of random strings; it should not affect the behavior in this case
         selectedFields.add("some_string");
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+        this.component.writeJSON(this.patient, json, selectedFields);
 
         Assert.assertFalse(json.has(CONTROLLER_NAME));
     }
@@ -331,11 +367,11 @@ public class LabeledExternalIdentifiersControllerTest
         final List<Map<String, String>> internalList = new LinkedList<>();
 
         final Map<String, String> item = new LinkedHashMap<>();
-        item.put(INTERNAL_LABEL_KEY, "");
+        item.put(LABEL_KEY, "");
         internalList.add(item);
 
         final Map<String, String> item2 = new LinkedHashMap<>();
-        item2.put(INTERNAL_LABEL_KEY, null);
+        item2.put(LABEL_KEY, null);
         internalList.add(item2);
 
         final PatientData<Map<String, String>> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
@@ -344,7 +380,7 @@ public class LabeledExternalIdentifiersControllerTest
         final Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(IDENTIFIERS_STRING);
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+        this.component.writeJSON(this.patient, json, selectedFields);
 
         Assert.assertNotNull(json.get(CONTROLLER_NAME));
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
@@ -360,8 +396,8 @@ public class LabeledExternalIdentifiersControllerTest
         final String fieldValue = "fieldValue";
 
         final Map<String, String> item = new LinkedHashMap<>();
-        item.put(INTERNAL_LABEL_KEY, eidLabel);
-        item.put(INTERNAL_VALUE_KEY, StringUtils.EMPTY);
+        item.put(LABEL_KEY, eidLabel);
+        item.put(VALUE_KEY, StringUtils.EMPTY);
         item.put(randomField, fieldValue);
         internalList.add(item);
 
@@ -369,12 +405,12 @@ public class LabeledExternalIdentifiersControllerTest
         when((PatientData) this.patient.getData(CONTROLLER_NAME)).thenReturn(patientData);
         final JSONObject json = new JSONObject();
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, null);
+        this.component.writeJSON(this.patient, json, null);
 
         Assert.assertNotNull(json.get(CONTROLLER_NAME));
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
-        Assert.assertEquals(eidLabel, json.getJSONArray(CONTROLLER_NAME).getJSONObject(0).get(JSON_LABEL_KEY));
-        Assert.assertEquals(StringUtils.EMPTY, json.getJSONArray(CONTROLLER_NAME).getJSONObject(0).get(JSON_VALUE_KEY));
+        Assert.assertEquals(eidLabel, json.getJSONArray(CONTROLLER_NAME).getJSONObject(0).get(LABEL_KEY));
+        Assert.assertEquals(StringUtils.EMPTY, json.getJSONArray(CONTROLLER_NAME).getJSONObject(0).get(VALUE_KEY));
         Assert.assertEquals(null, json.getJSONArray(CONTROLLER_NAME).optJSONObject(0).optString(randomField, null));
     }
 
@@ -387,8 +423,8 @@ public class LabeledExternalIdentifiersControllerTest
         final String identifierValue = "VALUE";
 
         final Map<String, String> item = new LinkedHashMap<>();
-        item.put(INTERNAL_LABEL_KEY, identifierLabel);
-        item.put(INTERNAL_VALUE_KEY, identifierValue);
+        item.put(LABEL_KEY, identifierLabel);
+        item.put(VALUE_KEY, identifierValue);
         internalList.add(item);
 
         final PatientData<Map<String, String>> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
@@ -397,14 +433,14 @@ public class LabeledExternalIdentifiersControllerTest
         final Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(IDENTIFIERS_STRING);
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+        this.component.writeJSON(this.patient, json, selectedFields);
 
         Assert.assertNotNull(json.get(CONTROLLER_NAME));
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
         final JSONObject result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
-        Assert.assertEquals(identifierLabel, result.get(JSON_LABEL_KEY));
-        Assert.assertEquals(identifierValue, result.get(JSON_VALUE_KEY));
-        Assert.assertEquals(2, result.length()); // label, value
+        Assert.assertEquals(identifierLabel, result.get(LABEL_KEY));
+        Assert.assertEquals(identifierValue, result.get(VALUE_KEY));
+        Assert.assertEquals(2, result.length());
     }
 
     @Test
@@ -416,8 +452,8 @@ public class LabeledExternalIdentifiersControllerTest
         final String identifierValue = "VALUE";
 
         final Map<String, String> item = new LinkedHashMap<>();
-        item.put(INTERNAL_LABEL_KEY, identifierLabel);
-        item.put(INTERNAL_VALUE_KEY, identifierValue);
+        item.put(LABEL_KEY, identifierLabel);
+        item.put(VALUE_KEY, identifierValue);
         internalList.add(item);
 
         final PatientData<Map<String, String>> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
@@ -426,7 +462,7 @@ public class LabeledExternalIdentifiersControllerTest
         final Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(IDENTIFIERS_STRING);
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+        this.component.writeJSON(this.patient, json, selectedFields);
 
         Assert.assertNotNull(json.get(CONTROLLER_NAME));
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
@@ -439,13 +475,13 @@ public class LabeledExternalIdentifiersControllerTest
     @Test
     public void readWithNullJsonDoesNothing() throws ComponentLookupException
     {
-        Assert.assertNull(this.mocker.getComponentUnderTest().readJSON(null));
+        Assert.assertNull(this.component.readJSON(null));
     }
 
     @Test
     public void readWithNoDataDoesNothing() throws ComponentLookupException
     {
-        Assert.assertNull(this.mocker.getComponentUnderTest().readJSON(new JSONObject()));
+        Assert.assertNull(this.component.readJSON(new JSONObject()));
     }
 
     @Test
@@ -453,7 +489,7 @@ public class LabeledExternalIdentifiersControllerTest
     {
         final JSONObject json = new JSONObject();
         json.put(CONTROLLER_NAME, "Wrong data");
-        final PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().readJSON(json);
+        final PatientData<Map<String, String>> result = this.component.readJSON(json);
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
     }
@@ -463,7 +499,7 @@ public class LabeledExternalIdentifiersControllerTest
     {
         final JSONObject json = new JSONObject();
         json.put("WrongController", "[]");
-        final PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().readJSON(json);
+        final PatientData<Map<String, String>> result = this.component.readJSON(json);
         Assert.assertNull(result);
     }
 
@@ -472,7 +508,7 @@ public class LabeledExternalIdentifiersControllerTest
     {
         final JSONObject json = new JSONObject();
         json.put(CONTROLLER_NAME, new JSONArray());
-        final PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().readJSON(json);
+        final PatientData<Map<String, String>> result = this.component.readJSON(json);
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
     }
@@ -482,100 +518,201 @@ public class LabeledExternalIdentifiersControllerTest
     {
         final JSONArray data = new JSONArray();
         final JSONObject item = new JSONObject();
-        item.put(JSON_LABEL_KEY, "LABEL1");
-        item.put(JSON_VALUE_KEY, "value1");
+        item.put(LABEL_KEY, "LABEL1");
+        item.put(VALUE_KEY, "value1");
         data.put(item);
         final JSONObject item2 = new JSONObject();
-        item2.put(JSON_LABEL_KEY, "LABEL2");
-        item2.put(JSON_VALUE_KEY, "value2");
+        item2.put(LABEL_KEY, "LABEL2");
+        item2.put(VALUE_KEY, "value2");
         data.put(item2);
         final JSONObject item3 = new JSONObject();
-        item3.put(JSON_LABEL_KEY, "");
-        item3.put(JSON_VALUE_KEY, "value3");
+        item3.put(LABEL_KEY, "");
+        item3.put(VALUE_KEY, "value3");
         data.put(item3);
         final JSONObject item4 = new JSONObject();
-        item4.put(JSON_LABEL_KEY, "LABEL4");
-        item4.put(JSON_VALUE_KEY, "");
+        item4.put(LABEL_KEY, "LABEL4");
+        item4.put(VALUE_KEY, "");
         data.put(item4);
         final JSONObject json = new JSONObject();
         json.put(CONTROLLER_NAME, data);
-        final PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().readJSON(json);
+        final PatientData<Map<String, String>> result = this.component.readJSON(json);
         Assert.assertNotNull(result);
         Assert.assertEquals(3, result.size());
         Assert.assertTrue(result.isIndexed());
         final Iterator<Map<String, String>> it = result.iterator();
         final Map<String, String> identifier1 = it.next();
-        Assert.assertEquals("LABEL1", identifier1.get(INTERNAL_LABEL_KEY));
-        Assert.assertEquals("value1", identifier1.get(INTERNAL_VALUE_KEY));
+        Assert.assertEquals("LABEL1", identifier1.get(LABEL_KEY));
+        Assert.assertEquals("value1", identifier1.get(VALUE_KEY));
         final Map<String, String> identifier2 = it.next();
-        Assert.assertEquals("LABEL2", identifier2.get(INTERNAL_LABEL_KEY));
-        Assert.assertEquals("value2", identifier2.get(INTERNAL_VALUE_KEY));
+        Assert.assertEquals("LABEL2", identifier2.get(LABEL_KEY));
+        Assert.assertEquals("value2", identifier2.get(VALUE_KEY));
         final Map<String, String> identifier4 = it.next();
-        Assert.assertEquals("LABEL4", identifier4.get(INTERNAL_LABEL_KEY));
-        Assert.assertEquals(StringUtils.EMPTY, identifier4.get(INTERNAL_VALUE_KEY));
+        Assert.assertEquals("LABEL4", identifier4.get(LABEL_KEY));
+        Assert.assertEquals(StringUtils.EMPTY, identifier4.get(VALUE_KEY));
     }
 
     //-------------------------------------Test save()--------------------------------------//
 
     @Test
-    public void saveWithNoDataDoesNothing() throws ComponentLookupException
+    public void saveWithNoDataDoesNothingWhenPolicyIsUpdate() throws ComponentLookupException
     {
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.component.save(this.patient);
         Mockito.verifyZeroInteractions(this.doc);
+    }
+
+    @Test
+    public void saveWithNoDataDoesNothingWhenPolicyIsMerge() throws ComponentLookupException
+    {
+        this.component.save(this.patient, PatientWritePolicy.MERGE);
+        Mockito.verifyZeroInteractions(this.doc);
+    }
+
+    @Test
+    public void saveWithNoDataDeletesEverythingWhenPolicyIsReplace() throws ComponentLookupException
+    {
+        this.component.save(this.patient, PatientWritePolicy.REPLACE);
+        verify(this.doc, times(1)).removeXObjects(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE);
+        Mockito.verifyNoMoreInteractions(this.doc);
     }
 
     @Test
     public void saveWithWrongTypeOfDataDoesNothing() throws ComponentLookupException
     {
-        when(this.patient.getData(CONTROLLER_NAME)).thenReturn(new SimpleValuePatientData<Object>("a", "b"));
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        when(this.patient.getData(CONTROLLER_NAME)).thenReturn(new SimpleValuePatientData<>("a", "b"));
+        this.component.save(this.patient);
         Mockito.verifyZeroInteractions(this.doc);
     }
 
     @Test
-    public void saveWithEmptyDataClearsIdentifiers() throws ComponentLookupException
+    public void saveWithEmptyDataClearsIdentifiersWhenPolicyIsUpdate() throws ComponentLookupException
     {
         when(this.patient.getData(CONTROLLER_NAME))
             .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
-        final Provider<XWikiContext> xcontextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
-        final XWikiContext context = xcontextProvider.get();
-        when(context.getWiki()).thenReturn(mock(XWiki.class));
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        this.component.save(this.patient);
         verify(this.doc).removeXObjects(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE);
 
         Mockito.verifyNoMoreInteractions(this.doc);
     }
 
     @Test
-    public void saveUpdatesIdentifiers() throws ComponentLookupException, XWikiException
+    public void saveWithEmptyDataKeepsOldIdentifiersWhenPolicyIsMerge() throws ComponentLookupException, XWikiException
+    {
+        this.identifiersXWikiObjects.add(this.eidObj1);
+        when(this.patient.getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
+        when(this.doc.newXObject(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE, this.context))
+            .thenReturn(this.eidObj1);
+        this.component.save(this.patient, PatientWritePolicy.MERGE);
+        verify(this.doc).removeXObjects(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE);
+        verify(this.doc, times(1)).getXObjects(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE);
+        verify(this.doc, times(1)).newXObject(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE,
+            this.context);
+        verify(this.eidObj1, times(2)).set(anyString(), anyString(), any(XWikiContext.class));
+        verify(this.eidObj1, times(1)).set(LABEL_KEY, OBJ_1_LABEL, this.context);
+        verify(this.eidObj1, times(1)).set(VALUE_KEY, OBJ_1_VALUE, this.context);
+        Mockito.verifyNoMoreInteractions(this.doc);
+    }
+
+    @Test
+    public void saveWithEmptyDataClearsIdentifiersWhenPolicyIsReplace() throws ComponentLookupException
+    {
+        when(this.patient.getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
+        this.component.save(this.patient, PatientWritePolicy.REPLACE);
+        verify(this.doc).removeXObjects(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE);
+
+        Mockito.verifyNoMoreInteractions(this.doc);
+    }
+
+    @Test
+    public void saveUpdatesIdentifiersWhenPolicyIsUpdate() throws ComponentLookupException, XWikiException
     {
         final List<Map<String, String>> data = new LinkedList<>();
         final Map<String, String> item = new HashMap<>();
-        item.put(INTERNAL_LABEL_KEY, "LABEL1");
-        item.put(INTERNAL_VALUE_KEY, "value1");
+        item.put(LABEL_KEY, OBJ_1_LABEL);
+        item.put(VALUE_KEY, OBJ_1_VALUE);
         data.add(item);
         final Map<String, String> item2 = new HashMap<>();
-        item2.put(INTERNAL_LABEL_KEY, "LABEL2");
+        item2.put(LABEL_KEY, OBJ_2_LABEL);
         data.add(item2);
         when(this.patient.<Map<String, String>>getData(CONTROLLER_NAME))
             .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, data));
 
-        final Provider<XWikiContext> xcontextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
-        final XWikiContext context = xcontextProvider.get();
-        when(context.getWiki()).thenReturn(mock(XWiki.class));
+        when(this.doc.newXObject(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE, this.context))
+            .thenReturn(this.eidObj1, this.eidObj2);
 
-        final BaseObject o1 = mock(BaseObject.class);
-        final BaseObject o2 = mock(BaseObject.class);
-        when(this.doc.newXObject(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE, context))
-            .thenReturn(o1, o2);
+        this.component.save(this.patient);
 
-        this.mocker.getComponentUnderTest().save(this.patient, this.doc);
+        verify(this.doc, never()).getXObjects(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE);
+        verify(this.doc, times(1)).removeXObjects(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE);
+        verify(this.doc, times(2)).newXObject(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE,
+            this.context);
+        verify(this.eidObj1).set(LABEL_KEY, OBJ_1_LABEL, this.context);
+        verify(this.eidObj1).set(VALUE_KEY, OBJ_1_VALUE, this.context);
+        verify(this.eidObj2).set(LABEL_KEY, OBJ_2_LABEL, this.context);
+        verify(this.eidObj2, never()).set(eq(VALUE_KEY), anyString(), eq(this.context));
+        Mockito.verifyNoMoreInteractions(this.doc);
+    }
 
-        verify(this.doc).removeXObjects(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE);
-        verify(o1).set(INTERNAL_LABEL_KEY, "LABEL1", context);
-        verify(o1).set(INTERNAL_VALUE_KEY, "value1", context);
-        verify(o2).set(INTERNAL_LABEL_KEY, "LABEL2", context);
-        verify(o2, Mockito.never()).set(eq(INTERNAL_VALUE_KEY), anyString(), eq(context));
+    @Test
+    public void saveMergesIdentifiersWhenPolicyIsMerge() throws ComponentLookupException, XWikiException
+    {
+        this.identifiersXWikiObjects.add(this.eidObj2);
+        final List<Map<String, String>> data = new LinkedList<>();
+        final Map<String, String> item1 = new HashMap<>();
+        item1.put(LABEL_KEY, OBJ_1_LABEL);
+        item1.put(VALUE_KEY, OBJ_1_VALUE);
+        data.add(item1);
+        when(this.patient.<Map<String, String>>getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, data));
+
+        when(this.doc.newXObject(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE, this.context))
+            .thenReturn(this.eidObj2, this.eidObj1);
+
+        this.component.save(this.patient, PatientWritePolicy.MERGE);
+
+        verify(this.doc, times(1)).getXObjects(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE);
+        verify(this.doc, times(2)).newXObject(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE,
+            this.context);
+        verify(this.doc, times(1)).removeXObjects(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE);
+        verify(this.eidObj1, times(2)).set(anyString(), anyString(), any(XWikiContext.class));
+        verify(this.eidObj1, times(1)).set(LABEL_KEY, OBJ_1_LABEL, this.context);
+        verify(this.eidObj1, times(1)).set(VALUE_KEY, OBJ_1_VALUE, this.context);
+
+        verify(this.eidObj2, times(2)).set(anyString(), anyString(), any(XWikiContext.class));
+        verify(this.eidObj2, times(1)).set(LABEL_KEY, OBJ_2_LABEL, this.context);
+        verify(this.eidObj2, times(1)).set(VALUE_KEY, OBJ_2_VALUE, this.context);
+        Mockito.verifyNoMoreInteractions(this.doc);
+    }
+
+    @Test
+    public void saveUpdatesIdentifiersWhenPolicyIsReplace() throws ComponentLookupException, XWikiException
+    {
+        final List<Map<String, String>> data = new LinkedList<>();
+        final Map<String, String> item = new HashMap<>();
+        item.put(LABEL_KEY, OBJ_1_LABEL);
+        item.put(VALUE_KEY, OBJ_1_VALUE);
+        data.add(item);
+        final Map<String, String> item2 = new HashMap<>();
+        item2.put(LABEL_KEY, OBJ_2_LABEL);
+        data.add(item2);
+        when(this.patient.<Map<String, String>>getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, data));
+
+        when(this.doc.newXObject(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE, this.context))
+            .thenReturn(this.eidObj1, this.eidObj2);
+
+        this.component.save(this.patient, PatientWritePolicy.REPLACE);
+
+        verify(this.doc, never()).getXObjects(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE);
+        verify(this.doc, times(1)).removeXObjects(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE);
+        verify(this.doc, times(2)).newXObject(LabeledExternalIdentifiersController.IDENTIFIER_CLASS_REFERENCE,
+            this.context);
+        verify(this.eidObj1).set(LABEL_KEY, OBJ_1_LABEL, this.context);
+        verify(this.eidObj1).set(VALUE_KEY, OBJ_1_VALUE, this.context);
+        verify(this.eidObj2).set(LABEL_KEY, OBJ_2_LABEL, this.context);
+        verify(this.eidObj2, never()).set(eq(VALUE_KEY), anyString(), eq(this.context));
+        Mockito.verifyNoMoreInteractions(this.doc);
     }
 
     private void addLabeledIdentifierFields(final String key, final String[] fieldValues)

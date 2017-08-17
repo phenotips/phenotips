@@ -47,31 +47,31 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
-    <eidLabel>
+    <label>
       <customDisplay/>
       <disabled>0</disabled>
-      <name>eidLabel</name>
+      <name>label</name>
       <number>1</number>
       <picker>0</picker>
-      <prettyName>eidLabel</prettyName>
+      <prettyName>label</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </eidLabel>
-    <eidValue>
+    </label>
+    <value>
       <customDisplay/>
       <disabled>0</disabled>
-      <name>eidValue</name>
+      <name>value</name>
       <number>2</number>
       <picker>0</picker>
-      <prettyName>eidValue</prettyName>
+      <prettyName>value</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </eidValue>
+    </value>
   </class>
 </xwikidoc>

@@ -42,8 +42,8 @@
 {{html clean="false"}}
 #end
 #if ($request.getParameter('eid_label') &amp;&amp; $request.getParameter('id'))
-  #set ($labelParam = 'eidLabel')
-  #set ($valueParam = 'eidValue')
+  #set ($labelParam = 'label')
+  #set ($valueParam = 'value')
   #set ($eidLabel = "$!{request.eid_label}")
   #set ($eidValue = "$!{request.eid_value}")
   #set ($identifier = "$!{request.id}")

@@ -384,7 +384,7 @@
 
 #macro (__externalIdentifier_updatePresets $presets)
   #set ($presetLabelParam = 'label')
-  #set ($eidLabelParam = 'eidLabel')
+  #set ($eidLabelParam = 'label')
   #set ($preferencesClassName = 'XWiki.XWikiPreferences')
   #set ($presetEidClassName = 'PhenoTips.LabeledIdentifierSettings')
   #set ($targetClassName = 'PhenoTips.LabeledIdentifierClass')
@@ -403,8 +403,8 @@
 #end
 
 #macro (__externalIdentifier_displayTable $dataClassName $presets)
-  #set ($labelParam = 'eidLabel')
-  #set ($valueParam = 'eidValue')
+  #set ($labelParam = 'label')
+  #set ($valueParam = 'value')
   #set ($allowOthersParam = 'allowOtherEids')
   #set ($allowDuplicatesParam = 'allowDuplicateEids')
   #set ($formatParam = 'format')
@@ -454,8 +454,8 @@
 
 #macro (__externalIdentifier_eidEmptyRow $dataClassName)
   #set ($eidNumber = 'ZZEID_NUMBER_PLACEHOLDERZZ')
-  #set ($labelParam = 'eidLabel')
-  #set ($valueParam = 'eidValue')
+  #set ($labelParam = 'label')
+  #set ($valueParam = 'value')
   #set ($cssClassName = "${dataClassName}_${eidNumber}_")
   #set ($fakeObj = $doc.newObject($dataClassName))
   |(% class="labeled-eid label checked eid-$eidNumber" %)##
@@ -471,8 +471,8 @@
 #end
 
 #macro (__externalIdentifier_eidRow $o $dataClassName $uniqueValue $format $formatHint $displayMode)
-  #set ($labelParam = 'eidLabel')
-  #set ($valueParam = 'eidValue')
+  #set ($labelParam = 'label')
+  #set ($valueParam = 'value')
   #set ($eidLabel = "$!{o.getValue($labelParam)}")
   #if ($eidLabel != '')
     #set ($cssClassName = "${dataClassName}_$!{o.number}_")
