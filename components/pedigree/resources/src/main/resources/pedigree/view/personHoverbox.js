@@ -155,8 +155,11 @@ define([
             $super();
 
             this.generateMenuBtn();
-            if (this.getNode().getLifeStatus() == "alive" || this.getNode().getLifeStatus() == "deceased") {
-                this.generateAliveWell();
+
+            if (editor.getPatientAccessPermissions(this.getNode().getPhenotipsPatientId()).hasEdit) {
+                if (this.getNode().getLifeStatus() == "alive" || this.getNode().getLifeStatus() == "deceased") {
+                    this.generateAliveWell();
+                }
             }
 
             this._updateHoverBoxHeight();
