@@ -487,13 +487,14 @@ public class PhenotipsFamilyRepository implements FamilyRepository
 
         this.checkValidity(family, patientsToAdd, updatingUser);
 
+        XWikiContext context = this.provider.get();
+        context.setUserReference(updatingUser.getProfileDocument());
+
         // update patient data from pedigree's JSON
         // (no links to families are set at this point, only patient dat ais updated)
         this.updatePatientsFromJson(pedigree, updatingUser);
 
         boolean firstPedigree = (family.getPedigree() == null);
-
-        XWikiContext context = this.provider.get();
 
         this.setPedigreeObject(family, pedigree, context);
 
@@ -623,6 +624,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
         XWikiContext context)
     {
         try {
+            patientDocument.setAuthorReference(context.getUserReference());
             context.getWiki().saveDocument(patientDocument, documentHistoryComment, context);
         } catch (XWikiException e) {
             this.logger.error("Error saving patient [{}] document for commit {}: [{}]",
@@ -635,6 +637,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     private synchronized boolean saveFamilyDocument(Family family, String documentHistoryComment, XWikiContext context)
     {
         try {
+            family.getXDocument().setAuthorReference(context.getUserReference());
             context.getWiki().saveDocument(family.getXDocument(), documentHistoryComment, context);
         } catch (XWikiException e) {
             this.logger.error("Error saving family [{}] document for commit {}: [{}]",

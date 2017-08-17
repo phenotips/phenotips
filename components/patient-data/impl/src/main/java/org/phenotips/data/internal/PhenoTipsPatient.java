@@ -252,6 +252,7 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
                 }
             }
 
+            this.document.setAuthorReference(context.getUserReference());
             context.getWiki().saveDocument(this.document, "Updated from JSON", true, context);
         } catch (Exception ex) {
             this.logger.error("Failed to update patient data from JSON [{}]: {}", ex.getMessage(), ex);
