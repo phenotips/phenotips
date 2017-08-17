@@ -56,6 +56,17 @@ define ([], function(){
         }
     }
 
+    // takes a parameter which is either an SVG or a DOM element and checks if it has the given classname
+   Helpers.elementHasClassName = function(element, className) {
+       // hasClassName() may not be defined, classList is not implemented in some browsers and may be an array or a DOMTokenList,
+       // so getAttribute() is the safest most compatible way to go
+       var classList = element.getAttribute("class") ? element.getAttribute("class").split(" ") : [];
+       if (Helpers.arrayContains(classList, className)) {
+           return true;
+       }
+       return false;
+   }
+
     // Used for: cloning a 2D array of integers (i.e. no deep copy of elements is necessary)
     // Specific implementation is pciked based on http://jsperf.com/clone-2d-array/4
     Helpers.clone2DArray = function (arr2D) {

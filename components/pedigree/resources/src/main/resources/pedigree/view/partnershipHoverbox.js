@@ -47,8 +47,11 @@ define([
             var path = [["M", x, y],["L", x, y+PedigreeEditorParameters.attributes.partnershipHandleBreakY]];
             editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(this.getNode().getGraphics().getJunctionShape());            
             this.generateHandle('child', x, y+PedigreeEditorParameters.attributes.partnershipHandleBreakY, x, y+PedigreeEditorParameters.attributes.partnershipHandleLength);
-                    
-            this._currentHandles.push( editor.getPaper().setFinish() );
+
+            var handleElements = editor.getPaper().setFinish();
+            this.setDoNotHideHoverbox(handleElements);
+
+            this._currentHandles.push(handleElements);
         },
 
         /**

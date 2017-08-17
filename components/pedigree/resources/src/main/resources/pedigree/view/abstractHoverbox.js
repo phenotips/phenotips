@@ -53,6 +53,9 @@ define([
             this._backElements.insertBefore(nodeShapeSet);
             this._frontElements.insertAfter(nodeShapeSet);
 
+            this.setDoNotHideHoverbox(this._backElements);
+            this.setDoNotHideHoverbox(this._frontElements);
+
             this.animateDrawHoverZone = this.animateDrawHoverZone.bind(this);
             this.animateHideHoverZone = this.animateHideHoverZone.bind(this);
             // hide initially
@@ -267,6 +270,28 @@ define([
                 this.generateHandles();
         },
 
+        setDoNotHideHoverbox: function(raphaelElement) {
+            // raphaelElement is either a set which has .forEach() defined (but has no .node),
+            // or a single element which has .node but not .forEach()
+            if (raphaelElement.node) {
+                if (!Helpers.elementHasClassName(raphaelElement.node, 'donothidehoverbox')) {
+                    var existingClasses = raphaelElement.node.getAttribute('class') ? (" " + raphaelElement.node.getAttribute('class')) : "";
+                    raphaelElement.node.setAttribute('class', 'donothidehoverbox' + existingClasses);
+                    // a hack for raphael <tspan> complication when using SVG (on most modern browsers)
+                    if (raphaelElement.node.children &&
+                        raphaelElement.node.children.length > 0 &&
+                        raphaelElement.node.children[0].nodeName == "tspan") {
+                        raphaelElement.node.children[0].setAttribute("class","donothidehoverbox");
+                    }
+                }
+            } else {
+                var _this = this;
+                raphaelElement.forEach(function(element) {
+                    _this.setDoNotHideHoverbox(element);
+                });
+            }
+        },
+
         /**
          * Generates a button and places it on the hoverbox
          *
@@ -325,6 +350,7 @@ define([
             className && button.forEach(function(element) {
                 element.node.setAttribute('class', className);
             });
+            this.setDoNotHideHoverbox(button);
             button.icon = icon;
             button.mask = mask;
             if (this._hidden && !this.isMenuToggled())
@@ -670,26 +696,26 @@ define([
         animateHideHoverZone: function(event, x, y) {
             if (editor.getView().getCurrentDraggable() !== null) return; // do not hide when dragging
 
-            if (event) {
-                // hoverbox has a lot of internal elements, which trigger the event. To avoid reacting to those,
-                // the pointer position is computed i nterms of raw {x,y} coordinates, and hoverbox is hidden only if mouse
-                // is outside the hoverbox
-                var hoverarea = this.getFrontElements().getBBox();
-                var div = editor.getWorkspace().viewportToDiv(x,y);
-                var click = editor.getWorkspace().divToCanvas(div.x,div.y);
-
-                // only activate "do not hide" check if mouse is still on top of SVG, and not on top of main menu or other windows
-                var svgarea = document.getElementById("work-area").getBoundingClientRect();
-                if (y > svgarea.top && x > svgarea.left && y < svgarea.bottom && x < svgarea.right) {
+            // some older browsers (IE9, IE8) may represent classes of a node differently, and/or may not have event.relatedTarget defined,
+            // instead of checking all the conditions it is easier to just use what we need, and do not apply special logic on failure
+            try {
+                if (event && Helpers.elementHasClassName(event.relatedTarget, "donothidehoverbox")) {
+                    // make sure the cursor is within this node's hoverbox, not some other node's
+                    // (which may also have "donothide" attribute)
+                    var hoverarea = this.getFrontElements().getBBox();
+                    var div = editor.getWorkspace().viewportToDiv(x,y);
+                    var click = editor.getWorkspace().divToCanvas(div.x,div.y);
                     if (click.x > hoverarea.x && click.x < hoverarea.x2 &&
                         click.y > hoverarea.y && click.y < hoverarea.y2) {
                         return;
                     }
                 }
+            } catch (err) {
+                // do nothing on purpose: skip special "do not hide to avoid flicker" logic
+                // to make basic hide/show hoverbox functionality reliable
             }
 
             this._hidden = true;
-            //console.log("node: " + this.getNode().getID() + " -> hide HB");
 
             this.getNode().getGraphics().setSelected(false);
             this.getBoxOnHover().stop().animate({opacity:0}, 200);
