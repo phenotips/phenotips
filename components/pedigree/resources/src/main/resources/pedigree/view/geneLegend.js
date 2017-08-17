@@ -147,7 +147,7 @@
          * @param {String} symbol The gene symbol (displayed)
          * @param {Number} nodeID ID of the Person who has this phenotype
          */
-        addCase: function($super, id, symbol, nodeID) {
+        addCase: function($super, id, symbol, nodeID, disabledByDefault) {
             if (!editor._geneCache.hasOwnProperty(id)) {
                 console.log("[" + this._getPrefix() + "] adding new case " + id);
                 editor._geneCache[id] = new Gene(id, symbol);
@@ -156,7 +156,7 @@
                 symbol = this.getSymbol(id);
             }
 
-            $super(id, symbol, nodeID);
+            $super(id, symbol, nodeID, disabledByDefault);
         },
 
         /**
