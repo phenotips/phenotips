@@ -20,12 +20,13 @@ package org.phenotips.users.rest;
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
 
-import org.xwiki.rest.resources.RootResource;
 import org.xwiki.stability.Unstable;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -36,17 +37,25 @@ import javax.ws.rs.core.Response;
  * @since 1.4
  */
 @Unstable("New API introduced in 1.4")
-@Path("/principals")
-@ParentResource(RootResource.class)
-@Relation("https://phenotips.org/rel/principals")
-public interface UsersResource
+@Path("/principals/suggest")
+@ParentResource(PrincipalsResource.class)
+@Relation("https://phenotips.org/rel/suggest")
+public interface PrincipalsSuggestResource
 {
     /**
-     * Entry resource for the principals RESTful API, provides a list of available principals (users of groups).
+     * Searches for users and/or groups matching the input parameter. Result is returned as JSON
      *
+     * @param input string to look for
+     * @param maxResults The maximum number of results to be returned
+     * @param searchUsers if true, includes users in result
+     * @param searchGroups if true, includes groups in result
      * @return a json object containing all results found
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    Response getAllUsersAndGroups();
+    Response searchUsersAndGroups(
+        @QueryParam("input") String input,
+        @QueryParam("maxResults") @DefaultValue("10") int maxResults,
+        @QueryParam("searchUsers") @DefaultValue("true") boolean searchUsers,
+        @QueryParam("searchGroups") @DefaultValue("true") boolean searchGroups);
 }

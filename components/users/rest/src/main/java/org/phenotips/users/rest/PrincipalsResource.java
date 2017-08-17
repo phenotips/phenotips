@@ -15,40 +15,38 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.users.rest.internal;
+package org.phenotips.users.rest;
 
-import org.phenotips.groups.internal.UsersAndGroups;
-import org.phenotips.users.rest.UsersResource;
+import org.phenotips.rest.ParentResource;
+import org.phenotips.rest.Relation;
 
-import org.xwiki.component.annotation.Component;
-import org.xwiki.rest.XWikiResource;
+import org.xwiki.rest.resources.RootResource;
+import org.xwiki.stability.Unstable;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.json.JSONObject;
-
 /**
- * Default implementation for {@link UsersResource} using XWiki's support for REST resources.
+ * Root resource for working with users and groups of users.
  *
  * @version $Id$
  * @since 1.4
  */
-@Component
-@Named("org.phenotips.users.rest.internal.DefaultUsersResourceImpl")
-@Singleton
-public class DefaultUsersResourceImpl extends XWikiResource implements UsersResource
+@Unstable("New API introduced in 1.4")
+@Path("/principals")
+@ParentResource(RootResource.class)
+@Relation("https://phenotips.org/rel/principals")
+public interface PrincipalsResource
 {
-    @Inject
-    private UsersAndGroups usersAndGroups;
-
-    @Override
-    public Response getAllUsersAndGroups()
-    {
-        JSONObject json = this.usersAndGroups.getAll();
-        return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
-    }
+    /**
+     * Entry resource for the principals RESTful API, provides a list of available principals (users of groups).
+     *
+     * @return a json object containing all results found
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    Response getAllUsersAndGroups();
 }

@@ -18,8 +18,8 @@
 package org.phenotips.users.rest.internal;
 
 import org.phenotips.groups.internal.UsersAndGroups;
-import org.phenotips.users.rest.UsersResource;
-import org.phenotips.users.rest.UsersSuggestResource;
+import org.phenotips.users.rest.PrincipalsResource;
+import org.phenotips.users.rest.PrincipalsSuggestResource;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rest.XWikiResource;
@@ -36,15 +36,15 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 
 /**
- * Default implementation for {@link UsersResource} using XWiki's support for REST resources.
+ * Default implementation for {@link PrincipalsResource} using XWiki's support for REST resources.
  *
  * @version $Id$
  * @since 1.4
  */
 @Component
-@Named("org.phenotips.users.rest.internal.DefaultUsersSuggestResourceImpl")
+@Named("org.phenotips.users.rest.internal.DefaultPrincipalsSuggestResourceImpl")
 @Singleton
-public class DefaultUsersSuggestResourceImpl extends XWikiResource implements UsersSuggestResource
+public class DefaultPrincipalsSuggestResourceImpl extends XWikiResource implements PrincipalsSuggestResource
 {
     /** The logging object. */
     @Inject

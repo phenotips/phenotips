@@ -1,2 +1,2 @@
-org.phenotips.users.rest.internal.DefaultUsersResourceImpl
-org.phenotips.users.rest.internal.DefaultUsersSuggestResourceImpl
+org.phenotips.users.rest.internal.DefaultPrincipalsResourceImpl
+org.phenotips.users.rest.internal.DefaultPrincipalsSuggestResourceImpl
