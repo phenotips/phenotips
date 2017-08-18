@@ -33,7 +33,7 @@ import javax.ws.rs.core.MediaType;
  * A resource for working with an individual category that contains one or more
  * {@link org.phenotips.vocabulary.Vocabulary} objects.
  *
- * @version $Id $
+ * @version $Id$
  * @since 1.4
  */
 @Unstable("New API introduced in 1.4")

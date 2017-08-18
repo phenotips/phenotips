@@ -31,7 +31,7 @@ import javax.ws.rs.core.MediaType;
 /**
  * Resource for working with vocabulary categories, listing all the available categories.
  *
- * @version $Id $
+ * @version $Id$
  * @since 1.4
  */
 @Unstable("New API introduced in 1.4")

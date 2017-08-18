@@ -54,7 +54,7 @@ import org.slf4j.Logger;
 /**
  * Default implementation of {@link CategoryResource} using XWiki's support for REST resources.
  *
- * @version $Id $
+ * @version $Id$
  * @since 1.4
  */
 @Component
@@ -121,7 +121,7 @@ public class DefaultCategoryResource extends XWikiResource implements CategoryRe
     private Autolinker getVocabularyLinks()
     {
         return this.autolinker.get()
-            .forSecondaryResource(VocabularyResource.class, uriInfo)
+            .forSecondaryResource(VocabularyResource.class, this.uriInfo)
             .withActionableResources(VocabularyTermSuggestionsResource.class)
             .withGrantedRight(userIsAdmin() ? Right.ADMIN : Right.VIEW);
     }

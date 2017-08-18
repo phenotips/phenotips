@@ -54,12 +54,13 @@ import org.apache.solr.common.params.SpellingParams;
 @Singleton
 public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
 {
-    private static final String PHENOTYPE = "phenotype";
+    private static final String CATEGORY_PHENOTYPE = "phenotype";
 
-    private static final String PHENOTYPE_QUALIFIER = "phenotype-qualifier";
+    private static final String CATEGORY_QUALIFIER = "phenotype-qualifier";
 
     /** The list of supported categories for this vocabulary. */
-    private static final Collection<String> SUPPORTED_CATEGORIES = Arrays.asList(PHENOTYPE, PHENOTYPE_QUALIFIER);
+    private static final Collection<String> SUPPORTED_CATEGORIES =
+        Collections.unmodifiableCollection(Arrays.asList(CATEGORY_PHENOTYPE, CATEGORY_QUALIFIER));
 
     /** For determining if a query is a an id. */
     private static final Pattern ID_PATTERN = Pattern.compile("^HP:[0-9]+$", Pattern.CASE_INSENSITIVE);
@@ -104,7 +105,7 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
     @Override
     public Collection<String> getSupportedCategories()
     {
-        return Collections.unmodifiableCollection(SUPPORTED_CATEGORIES);
+        return SUPPORTED_CATEGORIES;
     }
 
     @Override
@@ -134,11 +135,7 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
     @Override
     public List<VocabularyTerm> search(String input, int maxResults, String sort, String customFilter)
     {
-        if (StringUtils.isBlank(input)) {
-            return Collections.emptyList();
-        }
-        boolean isId = this.isId(input);
-        return search(input, maxResults, sort, customFilter, isId);
+        return search(input, CATEGORY_PHENOTYPE, maxResults, sort, customFilter);
     }
 
     @Override
@@ -200,7 +197,7 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
     {
         return isId
             ? null
-            : PHENOTYPE.equals(category) ? DEFAULT_PHENOTYPE_FILTER : DEFAULT_QUALIFIER_FILTER;
+            : CATEGORY_PHENOTYPE.equals(category) ? DEFAULT_PHENOTYPE_FILTER : DEFAULT_QUALIFIER_FILTER;
     }
 
     private SolrQuery addGlobalQueryParameters(SolrQuery query)

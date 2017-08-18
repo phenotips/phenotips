@@ -74,16 +74,17 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
     private static final String GENE = "gene";
 
     /** The list of supported categories for this vocabulary. */
-    private static final Collection<String> SUPPORTED_CATEGORIES = Arrays.asList(DISEASE, GENE);
+    private static final Collection<String> SUPPORTED_CATEGORIES =
+        Collections.unmodifiableCollection(Arrays.asList(DISEASE, GENE));
 
     /** The standard name of this vocabulary, used as a term prefix. */
     private static final String STANDARD_NAME = "MIM";
 
     /** The default filter for disease OMIM vocabulary searches. */
-    private static final String DEFAULT_DISEASE_FILTER = "-(symbol:\\* symbol:\\+ symbol:\\^)";
+    private static final String DEFAULT_DISEASE_FILTER = "+type:disorder";
 
     /** The default filter for GENE OMIM vocabulary searches. */
-    private static final String DEFAULT_GENE_FILTER = "symbol:\\* symbol:\\+";
+    private static final String DEFAULT_GENE_FILTER = "+type:gene";
 
     private static final String GENE_ANNOTATIONS_URL = "http://omim.org/static/omim/data/mim2gene.txt";
 
@@ -201,7 +202,7 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
     @Override
     public Collection<String> getSupportedCategories()
     {
-        return Collections.unmodifiableCollection(SUPPORTED_CATEGORIES);
+        return SUPPORTED_CATEGORIES;
     }
 
     @Override
@@ -294,9 +295,8 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
         String queryString = originalQuery.trim();
         String escapedQuery = ClientUtils.escapeQueryChars(queryString);
 
-        if (StringUtils.isNotBlank(customFq)) {
-            query.setFilterQueries(customFq);
-        }
+        query.setFilterQueries(StringUtils.defaultIfBlank(customFq, DEFAULT_DISEASE_FILTER));
+
         query.setQuery(escapedQuery);
         query.set(SpellingParams.SPELLCHECK_Q, queryString);
         String lastWord = StringUtils.substringAfterLast(escapedQuery, " ");

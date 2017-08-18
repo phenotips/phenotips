@@ -91,7 +91,8 @@ public class OrphanetRareDiseaseOntology extends AbstractOWLSolrVocabulary
     private static final String DEFAULT_DISEASE_FILTER = "-(" + DEFAULT_GENE_FILTER + ")";
 
     /** The list of supported categories for this vocabulary. */
-    private static final Collection<String> SUPPORTED_CATEGORIES = Arrays.asList(DISEASE, GENE);
+    private static final Collection<String> SUPPORTED_CATEGORIES =
+        Collections.unmodifiableCollection(Arrays.asList(DISEASE, GENE));
 
     /**
      * The pattern for prevalence values. Values are expected to be in fraction format, and may include "<" or ">" or
@@ -685,6 +686,6 @@ public class OrphanetRareDiseaseOntology extends AbstractOWLSolrVocabulary
     @Override
     public Collection<String> getSupportedCategories()
     {
-        return Collections.unmodifiableCollection(SUPPORTED_CATEGORIES);
+        return SUPPORTED_CATEGORIES;
     }
 }

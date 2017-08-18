@@ -50,7 +50,7 @@ import javax.inject.Singleton;
 /**
  * Default implementation for {@link CategoriesResource} using XWiki's support for REST resources.
  *
- * @version $Id $
+ * @version $Id$
  * @since 1.4
  */
 @Component
@@ -113,7 +113,7 @@ public class DefaultCategoriesResource extends XWikiResource implements Categori
     private Autolinker getVocabularyLinks()
     {
         return this.autolinker.get()
-            .forSecondaryResource(VocabularyResource.class, uriInfo)
+            .forSecondaryResource(VocabularyResource.class, this.uriInfo)
             .withActionableResources(VocabularyTermSuggestionsResource.class)
             .withGrantedRight(userIsAdmin() ? Right.ADMIN : Right.VIEW);
     }

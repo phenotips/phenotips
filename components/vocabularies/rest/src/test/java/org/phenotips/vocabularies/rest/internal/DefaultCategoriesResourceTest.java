@@ -28,7 +28,6 @@ import org.phenotips.vocabulary.VocabularyManager;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
@@ -116,10 +115,7 @@ public class DefaultCategoriesResourceTest
         when(authorizationService.hasAccess(eq(user), eq(Right.ADMIN), any(DocumentReference.class)))
             .thenReturn(true);
 
-        ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "autolinker", this.autolinkerProvider);
-
-        final Autolinker autolinker = mock(Autolinker.class);
-        when(this.autolinkerProvider.get()).thenReturn(autolinker);
+        final Autolinker autolinker = this.mocker.getInstance(Autolinker.class);
         when(autolinker.forSecondaryResource(any(Class.class), any(UriInfo.class))).thenReturn(autolinker);
         when(autolinker.forResource(any(Class.class), any(UriInfo.class))).thenReturn(autolinker);
         when(autolinker.withActionableResources(any(Class.class))).thenReturn(autolinker);

@@ -40,7 +40,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 
-import javax.inject.Provider;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.UriInfo;
 
@@ -48,7 +47,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
@@ -87,10 +85,6 @@ public class DefaultCategoryResourceTest
     @Mock
     private Category categoryA;
 
-    @Mock
-    private Provider<Autolinker> autolinkerProvider;
-
-    @Mock
     private Autolinker autolinker;
 
     @Mock
@@ -119,11 +113,9 @@ public class DefaultCategoryResourceTest
         vocabs.add(this.vocabA2);
         when(this.vm.getVocabularies(CATEGORY_A)).thenReturn(vocabs);
 
-        ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "autolinker", this.autolinkerProvider);
-        ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "uriInfo", this.uriInfo);
+        ReflectionUtils.setFieldValue(this.component, "uriInfo", this.uriInfo);
 
         final DomainObjectFactory objectFactory = this.mocker.getInstance(DomainObjectFactory.class);
-        when(this.autolinkerProvider.get()).thenReturn(this.autolinker);
         when(objectFactory.createLinkedCategoryRepresentation(eq(CATEGORY_A), any(Autolinker.class),
             any(Function.class))).thenReturn(this.categoryA);
 
@@ -134,6 +126,7 @@ public class DefaultCategoryResourceTest
         when(authorizationService.hasAccess(eq(this.user), eq(Right.ADMIN), any(EntityReference.class)))
             .thenReturn(true);
 
+        this.autolinker = this.mocker.getInstance(Autolinker.class);
         when(this.autolinker.forResource(any(Class.class), eq(this.uriInfo))).thenReturn(this.autolinker);
         when(this.autolinker.withGrantedRight(any(Right.class))).thenReturn(this.autolinker);
         when(this.autolinker.build()).thenReturn(Collections.emptyList());

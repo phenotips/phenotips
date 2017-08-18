@@ -21,6 +21,7 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -119,7 +120,10 @@ public interface Vocabulary
      * @return a list of suggestions, possibly empty.
      * @since 1.4
      */
-    List<VocabularyTerm> search(String input, String category, int maxResults, String sort, String customFilter);
+    default List<VocabularyTerm> search(String input, String category, int maxResults, String sort, String customFilter)
+    {
+        return search(input, maxResults, sort, customFilter);
+    }
 
     /**
      * Get the number of terms that match a specific query.
@@ -192,7 +196,10 @@ public interface Vocabulary
      *         {@code feature}, or {@code feature-qualifier}; may be empty
      * @since 1.4
      */
-    Collection<String> getSupportedCategories();
+    default Collection<String> getSupportedCategories()
+    {
+        return Collections.emptySet();
+    }
 
     /**
      * Get the size (i.e. total number of terms) in this vocabulary.

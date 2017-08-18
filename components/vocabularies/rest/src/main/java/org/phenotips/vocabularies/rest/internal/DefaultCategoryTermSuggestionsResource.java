@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 /**
  * Default implementation for {@link CategoryTermSuggestionsResource} using XWiki's support for REST resources.
  *
- * @version $Id $
+ * @version $Id$
  * @since 1.4
  */
 @Component

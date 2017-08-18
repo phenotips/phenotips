@@ -21,9 +21,7 @@ import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.phase.InitializationException;
-import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.util.Arrays;
@@ -136,11 +134,9 @@ public class DefaultVocabularyManagerTest
     private VocabularyTerm result6;
 
     @Before
-    public void setUp() throws ComponentLookupException, InitializationException, NoSuchFieldException
+    public void setUp() throws Exception
     {
         MockitoAnnotations.initMocks(this);
-        this.vocabularyManager = this.mocker.getComponentUnderTest();
-
         // Add the vocabularies to the map.
         this.vocabularies = new HashMap<>();
         this.vocabularies.put(HGNC_LABEL, this.hgnc);
@@ -148,8 +144,6 @@ public class DefaultVocabularyManagerTest
         this.vocabularies.put(HPO_LABEL, this.hpo);
         this.vocabularies.put(ETHNICITY_LABEL, this.ethnicity);
         this.vocabularies.put(OMIM_LABEL, this.omim);
-
-        this.logger = this.mocker.getMockedLogger();
 
         // Mock a set of aliases for the hgnc vocabulary.
         final Set<String> hgncAliases = new HashSet<>();
@@ -190,9 +184,14 @@ public class DefaultVocabularyManagerTest
         when(this.ethnicity.getSupportedCategories()).thenReturn(Collections.singletonList(ETHNICITY_CATEGORY));
         when(this.omim.getSupportedCategories()).thenReturn(Arrays.asList(DISEASE_CATEGORY, GENE_CATEGORY));
 
-        // Set vocabularies field manually, and run initialize again to compute all other fields correctly.
-        ReflectionUtils.setFieldValue(this.vocabularyManager, VOCABULARIES_LABEL, this.vocabularies);
-        ((DefaultVocabularyManager) this.vocabularyManager).initialize();
+        this.mocker.registerComponent(Vocabulary.class, "hgnc", this.hgnc);
+        this.mocker.registerComponent(Vocabulary.class, "chebi", this.chebi);
+        this.mocker.registerComponent(Vocabulary.class, "hpo", this.hpo);
+        this.mocker.registerComponent(Vocabulary.class, "ethnicity", this.ethnicity);
+        this.mocker.registerComponent(Vocabulary.class, "omim", this.omim);
+
+        this.vocabularyManager = this.mocker.getComponentUnderTest();
+        this.logger = this.mocker.getMockedLogger();
     }
 
     @Test

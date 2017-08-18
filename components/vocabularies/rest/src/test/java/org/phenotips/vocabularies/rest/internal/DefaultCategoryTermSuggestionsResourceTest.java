@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Provider;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -94,10 +93,6 @@ public class DefaultCategoryTermSuggestionsResourceTest
     @Mock
     private VocabularyTerm term3;
 
-    @Mock
-    private Provider<Autolinker> autolinkerProvider;
-
-    @Mock
     private Autolinker autolinker;
 
     @Mock
@@ -115,7 +110,6 @@ public class DefaultCategoryTermSuggestionsResourceTest
         when(execution.getContext()).thenReturn(executionContext);
         when(executionContext.getProperty("xwikicontext")).thenReturn(mock(XWikiContext.class));
 
-        ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "autolinker", this.autolinkerProvider);
         ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "uriInfo", this.uriInfo);
 
         this.component = this.mocker.getComponentUnderTest();
@@ -126,7 +120,7 @@ public class DefaultCategoryTermSuggestionsResourceTest
         when(this.term2.toJSON()).thenReturn(new JSONObject().put("id", TERM_2_ID));
         when(this.term3.toJSON()).thenReturn(new JSONObject().put("id", TERM_3_ID));
 
-        when(this.autolinkerProvider.get()).thenReturn(this.autolinker);
+        this.autolinker = this.mocker.getInstance(Autolinker.class);
         when(this.autolinker.forSecondaryResource(any(Class.class), eq(this.uriInfo))).thenReturn(this.autolinker);
         when(this.autolinker.forResource(any(Class.class), eq(this.uriInfo))).thenReturn(this.autolinker);
         when(this.autolinker.withActionableResources(any(Class.class))).thenReturn(this.autolinker);

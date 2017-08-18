@@ -33,7 +33,7 @@ import javax.ws.rs.core.Response;
 /**
  * Resource for searching in a category for terms matching an input (vocabulary suggest).
  *
- * @version $Id $
+ * @version $Id$
  * @since 1.4
  */
 @Path("/vocabularies/categories/{category}/suggest")
@@ -42,9 +42,9 @@ import javax.ws.rs.core.Response;
 public interface CategoryTermSuggestionsResource
 {
     /**
-     * Provides term suggestions for the specified vocabulary category as a {@link Response}. Request can
-     * optionally specify the maximum number of results to return. If no suggestions are found, {@link Response}
-     * will not contain any terms.
+     * Provides term suggestions for the specified vocabulary category as a {@link Response}. Request can optionally
+     * specify the maximum number of results to return. If no suggestions are found, {@link Response} will not contain
+     * any terms.
      *
      * @param category The name of the vocabulary category to be used for suggestions. If no matching category is found,
      *            an error is returned to the user

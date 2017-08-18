@@ -29,7 +29,6 @@
   <name>PhenoTips - Vocabularies - REST services</name>
 
   <properties>
-    <!-- More tests should be added when the Solr core becomes a component -->
     <coverage.instructionRatio>0.44</coverage.instructionRatio>
   </properties>
 
