@@ -61,5 +61,13 @@
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
+    <dependencySet>
+      <includes>
+        <include>${project.groupId}:clinical-text-analysis-extension-ctakes-service</include>
+      </includes>
+      <outputDirectory>webapps/ctakes</outputDirectory>
+      <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
   </dependencySets>
 </assembly>
