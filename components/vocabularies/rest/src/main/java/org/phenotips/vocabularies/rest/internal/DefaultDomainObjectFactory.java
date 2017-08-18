@@ -17,11 +17,18 @@
  */
 package org.phenotips.vocabularies.rest.internal;
 
+import org.phenotips.rest.Autolinker;
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
+import org.phenotips.vocabularies.rest.model.Category;
 import org.phenotips.vocabulary.Vocabulary;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.stability.Unstable;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.inject.Singleton;
 
@@ -34,6 +41,10 @@ import javax.inject.Singleton;
 @Singleton
 public class DefaultDomainObjectFactory implements DomainObjectFactory
 {
+    private static final String CATEGORY_LABEL = "category";
+
+    private static final String VOCABULARY_ID_LABEL = "vocabulary-id";
+
     @Override
     public org.phenotips.vocabularies.rest.model.Vocabulary createVocabularyRepresentation(Vocabulary vocabulary)
     {
@@ -51,5 +62,61 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
             // Don't do anything and leave source empty
         }
         return result;
+    }
+
+    @Override
+    public List<org.phenotips.vocabularies.rest.model.Vocabulary> createVocabulariesRepresentation(
+        final Collection<Vocabulary> vocabularies,
+        final Autolinker linker,
+        final Function<Vocabulary, List<org.phenotips.vocabularies.rest.model.Category>> categorySupplier)
+    {
+        return vocabularies.stream()
+            .map(vocabulary -> createLinkedVocabularyRepresentation(vocabulary, linker, categorySupplier))
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public org.phenotips.vocabularies.rest.model.Vocabulary createLinkedVocabularyRepresentation(
+        final Vocabulary vocabulary,
+        final Autolinker linker,
+        final Function<Vocabulary, List<org.phenotips.vocabularies.rest.model.Category>> categorySupplier)
+    {
+        final org.phenotips.vocabularies.rest.model.Vocabulary vocabularyRep = categorySupplier != null
+                ? createVocabularyRepresentation(vocabulary).withCategories(categorySupplier.apply(vocabulary))
+                : createVocabularyRepresentation(vocabulary);
+        vocabularyRep.withLinks(linker.withExtraParameters(VOCABULARY_ID_LABEL, vocabulary.getIdentifier()).build());
+        return vocabularyRep;
+    }
+
+    @Override
+    public org.phenotips.vocabularies.rest.model.Category createCategoryRepresentation(final String categoryId)
+    {
+        org.phenotips.vocabularies.rest.model.Category result = new org.phenotips.vocabularies.rest.model.Category();
+        result.withCategory(categoryId);
+        return result;
+    }
+
+    @Override
+    public List<Category> createCategoriesRepresentation(
+        final Collection<String> categoryIds,
+        final Autolinker linker,
+        final Function<String, List<org.phenotips.vocabularies.rest.model.Vocabulary>> vocabularySupplier)
+    {
+        return categoryIds.stream()
+            .map(categoryId -> createLinkedCategoryRepresentation(categoryId, linker, vocabularySupplier))
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public org.phenotips.vocabularies.rest.model.Category createLinkedCategoryRepresentation(
+        final String categoryId,
+        final Autolinker linker,
+        final Function<String, List<org.phenotips.vocabularies.rest.model.Vocabulary>> vocabularySupplier)
+    {
+        final Category categoryRep = vocabularySupplier != null
+                ? createCategoryRepresentation(categoryId).withVocabularies(vocabularySupplier.apply(categoryId))
+                : createCategoryRepresentation(categoryId);
+        categoryRep.withLinks(linker.withExtraParameters(CATEGORY_LABEL, categoryId).build());
+        return categoryRep;
     }
 }

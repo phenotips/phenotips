@@ -19,6 +19,8 @@ package org.phenotips.vocabulary.internal.solr;
 
 import org.xwiki.component.annotation.Component;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,6 +39,9 @@ import javax.inject.Singleton;
 @Singleton
 public class ChEBIOntology extends AbstractOBOSolrVocabulary
 {
+    /** The list of supported categories for this vocabulary. */
+    private static final Collection<String> SUPPORTED_CATEGORIES = Collections.singletonList("chemical");
+
     /** The number of documents to be added and committed to Solr at a time. */
     @Override
     protected int getSolrDocsPerBatch()
@@ -76,6 +81,12 @@ public class ChEBIOntology extends AbstractOBOSolrVocabulary
         result.add("CHEBI");
         result.add("ChEBI");
         return result;
+    }
+
+    @Override
+    public Collection<String> getSupportedCategories()
+    {
+        return SUPPORTED_CATEGORIES;
     }
 
     @Override

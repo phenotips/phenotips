@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -65,11 +66,25 @@ import org.joda.time.format.ISODateTimeFormat;
 @Singleton
 public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
 {
-    /** The standard name of this vocabulary, used as a term prefix. */
-    public static final String STANDARD_NAME = "MIM";
-
     /** The location for the official OMIM source. */
     public static final String OMIM_SOURCE_URL = "http://data.omim.org/downloads/???/mimTitles.txt";
+
+    private static final String DISEASE = "disease";
+
+    private static final String GENE = "gene";
+
+    /** The list of supported categories for this vocabulary. */
+    private static final Collection<String> SUPPORTED_CATEGORIES =
+        Collections.unmodifiableCollection(Arrays.asList(DISEASE, GENE));
+
+    /** The standard name of this vocabulary, used as a term prefix. */
+    private static final String STANDARD_NAME = "MIM";
+
+    /** The default filter for disease OMIM vocabulary searches. */
+    private static final String DEFAULT_DISEASE_FILTER = "+type:disorder";
+
+    /** The default filter for GENE OMIM vocabulary searches. */
+    private static final String DEFAULT_GENE_FILTER = "+type:gene";
 
     private static final String GENE_ANNOTATIONS_URL = "http://omim.org/static/omim/data/mim2gene.txt";
 
@@ -151,6 +166,28 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
     }
 
     @Override
+    public List<VocabularyTerm> search(String input, String category, int maxResults, String sort, String customFilter)
+    {
+        if (!getSupportedCategories().contains(category)) {
+            this.logger.warn("The provided category [{}] is not supported by the OMIM vocabulary.", category);
+            return Collections.emptyList();
+        }
+        final String filter = StringUtils.defaultIfBlank(customFilter, generateDefaultFilter(category));
+        return search(input, maxResults, sort, filter);
+    }
+
+    /**
+     * Generates the default filter for the OMIM vocabulary given the {@code category vocabulary category}.
+     *
+     * @param category the valid vocabulary category
+     * @return the default filter for the query
+     */
+    private String generateDefaultFilter(final String category)
+    {
+        return DISEASE.equals(category) ? DEFAULT_DISEASE_FILTER : DEFAULT_GENE_FILTER;
+    }
+
+    @Override
     public String getIdentifier()
     {
         return "omim";
@@ -160,6 +197,12 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
     public String getName()
     {
         return "Online Mendelian Inheritance in Man (OMIM)";
+    }
+
+    @Override
+    public Collection<String> getSupportedCategories()
+    {
+        return SUPPORTED_CATEGORIES;
     }
 
     @Override
@@ -251,7 +294,9 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
     {
         String queryString = originalQuery.trim();
         String escapedQuery = ClientUtils.escapeQueryChars(queryString);
-        query.setFilterQueries(StringUtils.defaultIfBlank(customFq, "+type:disorder"));
+
+        query.setFilterQueries(StringUtils.defaultIfBlank(customFq, DEFAULT_DISEASE_FILTER));
+
         query.setQuery(escapedQuery);
         query.set(SpellingParams.SPELLCHECK_Q, queryString);
         String lastWord = StringUtils.substringAfterLast(escapedQuery, " ");

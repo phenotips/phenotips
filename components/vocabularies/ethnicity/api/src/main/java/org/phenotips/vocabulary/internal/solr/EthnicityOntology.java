@@ -22,6 +22,7 @@ import org.phenotips.vocabulary.VocabularyTerm;
 import org.xwiki.component.annotation.Component;
 
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -52,6 +53,9 @@ import org.apache.solr.common.params.SpellingParams;
 @Singleton
 public class EthnicityOntology extends AbstractSolrVocabulary
 {
+    /** The list of supported categories for this vocabulary. */
+    private static final Collection<String> SUPPORTED_CATEGORIES = Collections.singletonList("ethnicity");
+
     /** For determining if a query is a an id. */
     private static final Pattern ID_PATTERN = Pattern.compile("^ETHNO:\\w+$", Pattern.CASE_INSENSITIVE);
 
@@ -108,6 +112,12 @@ public class EthnicityOntology extends AbstractSolrVocabulary
     public String getDefaultSourceLocation()
     {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Collection<String> getSupportedCategories()
+    {
+        return SUPPORTED_CATEGORIES;
     }
 
     @Override

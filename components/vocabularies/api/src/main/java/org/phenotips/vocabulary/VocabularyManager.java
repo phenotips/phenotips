@@ -21,6 +21,7 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Provides access to the available vocabularies and their terms.
@@ -54,10 +55,57 @@ public interface VocabularyManager
     Vocabulary getVocabulary(String vocabularyId);
 
     /**
+     * Retrieve a set of {@link Vocabulary} objects that fall under the provided vocabulary {@code category}.
+     *
+     * @param category the vocabulary category, e.g. "phenotype"
+     * @return a set of {@link Vocabulary} objects that fall under the {@code category}
+     * @since 1.4
+     */
+    Set<Vocabulary> getVocabularies(String category);
+
+    /**
      * Retrieves a list of vocabulary ids that are available for use with {@link #getVocabulary(String)}.
      *
      * @return a list of {@link Vocabulary#getIdentifier() vocabulary identifiers}, one for each vocabulary
      * @since 1.3
      */
     List<String> getAvailableVocabularies();
+
+    /**
+     * Retrieves a list of category names that are available for use with {@link #getVocabularies(String)}.
+     *
+     * @return a list of available categories
+     * @since 1.4
+     */
+    List<String> getAvailableCategories();
+
+    /**
+     * Suggest the terms that best match the user's input, in all vocabularies
+     * {@link Vocabulary#getSupportedCategories() supporting the target category of terms}.
+     *
+     * @param input the text to search for
+     * @param category the category of terms to search in
+     * @param maxResults the maximum number of terms to be returned
+     * @return a list of suggestions, possibly empty
+     * @since 1.4
+     */
+    List<VocabularyTerm> search(String input, String category, int maxResults);
+
+    /**
+     * Returns true iff the provided {@code vocabulary} identifier is valid, false otherwise.
+     *
+     * @param vocabulary a vocabulary identifier
+     * @return true iff {@code vocabulary} is valid, false otherwise.
+     * @since 1.4
+     */
+    boolean hasVocabulary(String vocabulary);
+
+    /**
+     * Returns true iff the provided {@code category} name is valid, false otherwise.
+     *
+     * @param category a category name
+     * @return true iff {@code category} is valid, false otherwise.
+     * @since 1.4
+     */
+    boolean hasCategory(String category);
 }

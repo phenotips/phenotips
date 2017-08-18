@@ -3,4 +3,7 @@ org.phenotips.vocabularies.rest.internal.DefaultVocabularyResource
 org.phenotips.vocabularies.rest.internal.DefaultVocabularyTermResolveResource
 org.phenotips.vocabularies.rest.internal.DefaultVocabularyTermResource
 org.phenotips.vocabularies.rest.internal.DefaultVocabularyTermSuggestionsResource
+org.phenotips.vocabularies.rest.internal.DefaultCategoriesResource
+org.phenotips.vocabularies.rest.internal.DefaultCategoryResource
+org.phenotips.vocabularies.rest.internal.DefaultCategoryTermSuggestionsResource
 org.phenotips.vocabularies.rest.internal.DefaultDomainObjectFactory

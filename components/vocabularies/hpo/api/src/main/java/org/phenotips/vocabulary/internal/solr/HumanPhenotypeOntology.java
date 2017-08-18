@@ -22,6 +22,8 @@ import org.phenotips.vocabulary.VocabularyTerm;
 import org.xwiki.component.annotation.Component;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -29,6 +31,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nonnull;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -51,8 +54,22 @@ import org.apache.solr.common.params.SpellingParams;
 @Singleton
 public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
 {
+    private static final String CATEGORY_PHENOTYPE = "phenotype";
+
+    private static final String CATEGORY_QUALIFIER = "phenotype-qualifier";
+
+    /** The list of supported categories for this vocabulary. */
+    private static final Collection<String> SUPPORTED_CATEGORIES =
+        Collections.unmodifiableCollection(Arrays.asList(CATEGORY_PHENOTYPE, CATEGORY_QUALIFIER));
+
     /** For determining if a query is a an id. */
     private static final Pattern ID_PATTERN = Pattern.compile("^HP:[0-9]+$", Pattern.CASE_INSENSITIVE);
+
+    /** The default filter for phenotype vocabulary searches. */
+    private static final String DEFAULT_PHENOTYPE_FILTER = "term_category:HP\\:0000118";
+
+    /** The default filter for phenotype qualifier vocabulary searches. */
+    private static final String DEFAULT_QUALIFIER_FILTER = "term_category:HP\\:0012823";
 
     @Override
     protected String getCoreName()
@@ -86,6 +103,12 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
     }
 
     @Override
+    public Collection<String> getSupportedCategories()
+    {
+        return SUPPORTED_CATEGORIES;
+    }
+
+    @Override
     public Set<String> getAliases()
     {
         Set<String> result = new HashSet<>();
@@ -112,10 +135,43 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
     @Override
     public List<VocabularyTerm> search(String input, int maxResults, String sort, String customFilter)
     {
+        return search(input, CATEGORY_PHENOTYPE, maxResults, sort, customFilter);
+    }
+
+    @Override
+    public List<VocabularyTerm> search(String input, String category, int maxResults, String sort, String customFilter)
+    {
         if (StringUtils.isBlank(input)) {
             return Collections.emptyList();
         }
-        boolean isId = this.isId(input);
+        // If the wrong category was provided for the vocabulary, want to provide an appropriate log message.
+        if (!getSupportedCategories().contains(category)) {
+            this.logger.warn("The provided category [{}] is not supported by the HPO vocabulary.", category);
+            return Collections.emptyList();
+        }
+
+        final boolean isId = isId(input);
+        final String filter = StringUtils.defaultIfBlank(customFilter, generateDefaultFilter(category, isId));
+        return search(input, maxResults, sort, filter, isId);
+    }
+
+    /**
+     * Suggest the terms that best match the user's input, in a specific sub-category of this vocabulary.
+     *
+     * @param input the text that the user entered
+     * @param maxResults the maximum number of terms to be returned
+     * @param sort an optional sort parameter, in a format that depends on the actual engine that stores the vocabulary;
+     *            usually a property name followed by {@code asc} or {@code desc}; may be {@code null}
+     * @param customFilter an optional custom filter query to further restrict which terms may be returned, in a format
+     *            that depends on the actual engine that stores the vocabulary; some vocabularies may not support a
+     *            filter query; may be {@code null}
+     * @param isId specifies if the {@code input} is an HPO ID
+     * @return a list of suggestions, possibly empty.
+     * @since 1.1-rc-1
+     */
+    private List<VocabularyTerm> search(@Nonnull final String input, final int maxResults, final String sort,
+        final String customFilter, final boolean isId)
+    {
         SolrQuery query = new SolrQuery();
         this.addGlobalQueryParameters(query);
         if (!isId) {
@@ -127,6 +183,21 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
             result.add(new SolrVocabularyTerm(doc, this));
         }
         return result;
+    }
+
+    /**
+     * Generates the default filter for the HPO vocabulary given the {@code category vocabulary category} and a boolean
+     * {@code isId} specifying if the {@code input} is an ID.
+     *
+     * @param category the valid vocabulary category
+     * @param isId will be true if input is an ID, false otherwise
+     * @return the default filter for the query
+     */
+    private String generateDefaultFilter(@Nonnull final String category, final boolean isId)
+    {
+        return isId
+            ? null
+            : CATEGORY_PHENOTYPE.equals(category) ? DEFAULT_PHENOTYPE_FILTER : DEFAULT_QUALIFIER_FILTER;
     }
 
     private SolrQuery addGlobalQueryParameters(SolrQuery query)
@@ -158,8 +229,8 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
         if (isId) {
             query.setFilterQueries(StringUtils.defaultIfBlank(customFq,
                 new MessageFormat("id:{0} alt_id:{0}").format(new String[] { escapedQuery })));
-        } else {
-            query.setFilterQueries(StringUtils.defaultIfBlank(customFq, "term_category:HP\\:0000118"));
+        } else if (StringUtils.isNotBlank(customFq)) {
+            query.setFilterQueries(customFq);
         }
         query.setQuery(escapedQuery);
         query.set(SpellingParams.SPELLCHECK_Q, queryString);
