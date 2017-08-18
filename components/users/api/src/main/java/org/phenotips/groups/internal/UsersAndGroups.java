@@ -23,6 +23,8 @@ import org.phenotips.groups.GroupManager;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.AttachmentReference;
 import org.xwiki.model.reference.DocumentReference;
@@ -54,7 +56,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
  */
 @Component(roles = { UsersAndGroups.class })
 @Singleton
-public class UsersAndGroups
+public class UsersAndGroups implements Initializable
 {
     private static final EntityReference USER_CLASS = new EntityReference("XWikiUsers", EntityType.DOCUMENT,
         Constants.XWIKI_SPACE_REFERENCE);
@@ -102,7 +104,10 @@ public class UsersAndGroups
     @Inject
     private Provider<XWikiContext> xcontextProvider;
 
-    static {
+    @Override
+    public void initialize() throws InitializationException
+    {
+
         StringBuilder usersQuerySb = new StringBuilder();
         usersQuerySb.append("from doc.object(XWiki.XWikiUsers) as user");
         usersQuerySb.append(" where lower(doc.name) like :").append(UsersAndGroups.INPUT_PARAMETER);
@@ -167,7 +172,7 @@ public class UsersAndGroups
      * Searches for users and/or groups matching the input parameter. Result is returned as JSON
      *
      * @param input string to look for
-     * @param maxResults The maximum number of results to be returned
+     * @param maxResults the maximum number of results to be returned
      * @param searchUsers if true, includes users in result
      * @param searchGroups if true, includes groups in result
      * @return a json object containing all results found
@@ -183,8 +188,9 @@ public class UsersAndGroups
                 runUsersQuery(resultArray, UsersAndGroups.usersQueryString, formattedInput, maxResults);
             }
 
-            if (searchGroups) {
-                runGroupsQuery(resultArray, UsersAndGroups.groupsQueryString, formattedInput, maxResults);
+            if (searchGroups && resultArray.length() < maxResults) {
+                runGroupsQuery(resultArray, UsersAndGroups.groupsQueryString, formattedInput,
+                    maxResults - resultArray.length());
             }
         } catch (Exception ex) {
             this.logger.error("Error in search ({})", input, ex.getMessage());
@@ -262,9 +268,6 @@ public class UsersAndGroups
             }
             JSONObject o = createObject(groupName, group.getReference().getName(), avatarURL, GROUP);
             resultArray.put(o);
-            if (resultArray.length() == maxResults) {
-                break;
-            }
         }
     }
 
