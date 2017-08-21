@@ -21,15 +21,18 @@ import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.environment.Environment;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -297,7 +300,8 @@ public class AdditionalImagesControllerTest
     @Test
     public void loadSkipsAttachmentsNotSelected() throws ComponentLookupException
     {
-        when(this.doc.getXObjects(AdditionalImagesController.CLASS_REFERENCE)).thenReturn(Arrays.asList(this.image2));
+        when(this.doc.getXObjects(AdditionalImagesController.CLASS_REFERENCE)).thenReturn(
+            Collections.singletonList(this.image2));
 
         PatientData<Attachment> result = this.mocker.getComponentUnderTest().load(this.patient);
 
@@ -307,7 +311,7 @@ public class AdditionalImagesControllerTest
     }
 
     @Test
-    public void saveDoesNothingWhenNoDataPresent() throws ComponentLookupException
+    public void saveDoesNothingWhenNoDataPresentAndPolicyIsUpdate() throws ComponentLookupException
     {
         when(this.patient.getData(CONTROLLER_NAME)).thenReturn(null);
         this.mocker.getComponentUnderTest().save(this.patient);
@@ -315,7 +319,24 @@ public class AdditionalImagesControllerTest
     }
 
     @Test
-    public void saveClearsRecordsFieldWhenEmptyDataPresent() throws ComponentLookupException
+    public void saveDoesNothingWhenNoDataPresentAndPolicyIsMerge() throws ComponentLookupException
+    {
+        when(this.patient.getData(CONTROLLER_NAME)).thenReturn(null);
+        this.mocker.getComponentUnderTest().save(this.patient, PatientWritePolicy.MERGE);
+        Mockito.verifyZeroInteractions(this.doc);
+    }
+
+    @Test
+    public void saveRemovesEverythingWhenNoDataPresentAndPolicyIsReplace() throws ComponentLookupException
+    {
+        when(this.patient.getData(CONTROLLER_NAME)).thenReturn(null);
+        this.mocker.getComponentUnderTest().save(this.patient, PatientWritePolicy.REPLACE);
+        Mockito.verify(this.doc, times(1)).removeXObjects(AdditionalImagesController.CLASS_REFERENCE);
+        Mockito.verifyNoMoreInteractions(this.doc);
+    }
+
+    @Test
+    public void saveClearsRecordsFieldWhenEmptyDataPresentAndPolicyIsUpdate() throws ComponentLookupException
     {
         when(this.patient.getData(CONTROLLER_NAME))
             .thenReturn(new IndexedPatientData<>(DATA_NAME, Collections.emptyList()));
@@ -324,7 +345,53 @@ public class AdditionalImagesControllerTest
     }
 
     @Test
-    public void saveDoesNotRemoveAttachments() throws ComponentLookupException
+    public void saveClearsRecordsFieldWhenEmptyDataPresentAndPolicyIsReplace()
+        throws ComponentLookupException, XWikiException
+    {
+        when(this.patient.getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(DATA_NAME, Collections.emptyList()));
+        this.mocker.getComponentUnderTest().save(this.patient, PatientWritePolicy.REPLACE);
+        verify(this.doc).removeXObjects(AdditionalImagesController.CLASS_REFERENCE);
+        verify(this.doc, never()).newXObject(any(EntityReference.class), any(XWikiContext.class));
+        verify(this.doc, never()).getAttachment(anyString());
+    }
+
+    @Test
+    public void saveClearsRecordsFieldWhenEmptyDataPresentNoDataSavedAndPolicyIsMerge()
+        throws ComponentLookupException, XWikiException
+    {
+        when(this.patient.getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(DATA_NAME, Collections.emptyList()));
+        when(this.doc.getXObjects(AdditionalImagesController.CLASS_REFERENCE))
+            .thenReturn(Collections.emptyList());
+        this.mocker.getComponentUnderTest().save(this.patient, PatientWritePolicy.MERGE);
+        verify(this.doc).removeXObjects(AdditionalImagesController.CLASS_REFERENCE);
+        verify(this.doc, never()).newXObject(any(EntityReference.class), any(XWikiContext.class));
+        verify(this.doc, never()).getAttachment(anyString());
+        verify(this.doc, never()).addAttachment(any(XWikiAttachment.class));
+    }
+
+    @Test
+    public void saveKeepsRecordsFieldAsIsWhenEmptyDataPresentAndPolicyIsMerge()
+        throws ComponentLookupException, XWikiException, IOException
+    {
+        when(this.patient.getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(DATA_NAME, Collections.emptyList()));
+
+        when(this.doc.getXObjects(AdditionalImagesController.CLASS_REFERENCE))
+            .thenReturn(Collections.singletonList(this.image1));
+
+        this.mocker.getComponentUnderTest().save(this.patient, PatientWritePolicy.MERGE);
+        verify(this.doc).removeXObjects(AdditionalImagesController.CLASS_REFERENCE);
+        verify(this.doc, times(1)).newXObject(any(EntityReference.class), any(XWikiContext.class));
+        verify(this.doc, times(2)).getAttachment(anyString());
+        verify(this.doc, times(2)).getAttachment("a1.png");
+        verify(this.doc, never()).addAttachment(any(XWikiAttachment.class));
+        verify(this.xattachment1, times(1)).setContent(any(InputStream.class));
+    }
+
+    @Test
+    public void saveDoesNotRemoveAttachmentsWithUpdatePolicy() throws ComponentLookupException
     {
         when(this.patient.getData(CONTROLLER_NAME))
             .thenReturn(new IndexedPatientData<>(DATA_NAME, Collections.emptyList()));
@@ -333,10 +400,88 @@ public class AdditionalImagesControllerTest
     }
 
     @Test
-    public void saveUpdatesAttachmentsAndMedicalRecordsField()
+    public void saveDoesNotRemoveAttachmentsWithMergePolicy() throws ComponentLookupException
+    {
+        when(this.patient.getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(DATA_NAME, Collections.emptyList()));
+        this.mocker.getComponentUnderTest().save(this.patient, PatientWritePolicy.MERGE);
+        verify(this.doc, Mockito.never()).removeAttachment(any(XWikiAttachment.class));
+    }
+
+    @Test
+    public void saveDoesNotRemoveAttachmentsWithReplacePolicy() throws ComponentLookupException
+    {
+        when(this.patient.getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(DATA_NAME, Collections.emptyList()));
+        this.mocker.getComponentUnderTest().save(this.patient, PatientWritePolicy.REPLACE);
+        verify(this.doc, Mockito.never()).removeAttachment(any(XWikiAttachment.class));
+    }
+
+    @Test
+    public void saveUpdatesAttachmentsAndMedicalRecordsFieldWhenPolicyIsUpdate()
         throws ComponentLookupException, IOException, XWikiException
     {
         this.mocker.getComponentUnderTest().save(this.patient);
+
+        verify(this.doc).removeXObjects(AdditionalImagesController.CLASS_REFERENCE);
+        verify(this.doc, times(2)).newXObject(AdditionalImagesController.CLASS_REFERENCE, this.context);
+
+        verify(this.xattachment1).setFilesize(4);
+        verify(this.xattachment1).setDate(this.date1);
+        verify(this.xattachment1).setAuthorReference(this.author1);
+        verify(this.xattachment1).setContent(this.attachment1.getContent());
+        verify(this.image1).setStringValue(FILE_FIELD_NAME, "a1.png");
+        verify(this.image1).setLargeStringValue(COMMENTS_FIELD_NAME, "Comment 1");
+        verify(this.image1).setIntValue(PRINT_FIELD_NAME, 1);
+
+        verify(this.xattachment2).setFilesize(3);
+        verify(this.xattachment2).setDate(this.date2);
+        verify(this.xattachment2).setAuthorReference(this.author2);
+        verify(this.xattachment2).setContent(this.attachment2.getContent());
+        verify(this.image2).setStringValue(FILE_FIELD_NAME, "a2.png");
+        verify(this.image2).setLargeStringValue(Matchers.eq(COMMENTS_FIELD_NAME), Matchers.isNull(String.class));
+        verify(this.image2, never()).setIntValue(Matchers.eq(PRINT_FIELD_NAME), Matchers.anyInt());
+    }
+
+    @Test
+    public void saveUpdatesAttachmentsAndMedicalRecordsFieldWhenPolicyIsMerge()
+        throws ComponentLookupException, IOException, XWikiException
+    {
+        when(this.patient.getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(DATA_NAME, Collections.singletonList(this.attachment2)));
+        when(this.doc.getXObjects(AdditionalImagesController.CLASS_REFERENCE))
+            .thenReturn(Collections.singletonList(this.image1));
+        when(this.doc.newXObject(AdditionalImagesController.CLASS_REFERENCE, this.context)).thenReturn(this.image1,
+            this.image2);
+        this.mocker.getComponentUnderTest().save(this.patient, PatientWritePolicy.MERGE);
+
+        verify(this.doc).removeXObjects(AdditionalImagesController.CLASS_REFERENCE);
+        verify(this.doc, times(2)).newXObject(AdditionalImagesController.CLASS_REFERENCE, this.context);
+        verify(this.doc, never()).addAttachment(this.xattachment1);
+        verify(this.doc, never()).addAttachment(this.xattachment2);
+
+        verify(this.xattachment1).setFilesize(4);
+        verify(this.xattachment1).setDate(this.date1);
+        verify(this.xattachment1).setAuthorReference(this.author1);
+        verify(this.xattachment1).setContent(this.attachment1.getContent());
+        verify(this.image1).setStringValue(FILE_FIELD_NAME, "a1.png");
+        verify(this.image1).setLargeStringValue(COMMENTS_FIELD_NAME, "Comment 1");
+        verify(this.image1).setIntValue(PRINT_FIELD_NAME, 1);
+
+        verify(this.xattachment2).setFilesize(3);
+        verify(this.xattachment2).setDate(this.date2);
+        verify(this.xattachment2).setAuthorReference(this.author2);
+        verify(this.xattachment2).setContent(this.attachment2.getContent());
+        verify(this.image2).setStringValue(FILE_FIELD_NAME, "a2.png");
+        verify(this.image2).setLargeStringValue(Matchers.eq(COMMENTS_FIELD_NAME), Matchers.isNull(String.class));
+        verify(this.image2, never()).setIntValue(Matchers.eq(PRINT_FIELD_NAME), Matchers.anyInt());
+    }
+
+    @Test
+    public void saveUpdatesAttachmentsAndMedicalRecordsFieldWhenPolicyIsReplace()
+        throws ComponentLookupException, IOException, XWikiException
+    {
+        this.mocker.getComponentUnderTest().save(this.patient, PatientWritePolicy.REPLACE);
 
         verify(this.doc).removeXObjects(AdditionalImagesController.CLASS_REFERENCE);
         verify(this.doc, times(2)).newXObject(AdditionalImagesController.CLASS_REFERENCE, this.context);

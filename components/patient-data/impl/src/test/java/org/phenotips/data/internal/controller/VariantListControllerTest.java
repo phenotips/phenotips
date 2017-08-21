@@ -629,7 +629,8 @@ public class VariantListControllerTest
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
 
         final BaseObject variantObject = mock(BaseObject.class);
-        when(this.doc.getXObjects(VariantListController.VARIANT_CLASS_REFERENCE)).thenReturn(Collections.singletonList(variantObject));
+        when(this.doc.getXObjects(VariantListController.VARIANT_CLASS_REFERENCE))
+            .thenReturn(Collections.singletonList(variantObject));
 
         final BaseStringProperty variantProperty = mock(BaseStringProperty.class);
         final BaseStringProperty geneProperty = mock(BaseStringProperty.class);
@@ -759,7 +760,8 @@ public class VariantListControllerTest
         BaseObject o1 = mock(BaseObject.class);
         BaseObject o2 = mock(BaseObject.class);
         BaseObject o3 = mock(BaseObject.class);
-        when(this.doc.getXObjects(VariantListController.VARIANT_CLASS_REFERENCE)).thenReturn(Collections.singletonList(o3));
+        when(this.doc.getXObjects(VariantListController.VARIANT_CLASS_REFERENCE))
+            .thenReturn(Collections.singletonList(o3));
 
         final BaseStringProperty variantProperty = mock(BaseStringProperty.class);
         final BaseStringProperty geneProperty = mock(BaseStringProperty.class);

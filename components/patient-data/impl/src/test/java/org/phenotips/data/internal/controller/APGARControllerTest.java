@@ -149,7 +149,7 @@ public class APGARControllerTest
         Assert.assertEquals(Integer.valueOf(2), result.get(APGAR_5));
         Assert.assertEquals(2, result.size());
     }
-    
+
     @Test
     public void saveThrowsExceptionIfPatientHasNoPatientClass()
     {

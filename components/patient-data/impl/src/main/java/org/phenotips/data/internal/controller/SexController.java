@@ -106,7 +106,7 @@ public class SexController implements PatientDataController<String>
     {
         try {
             final BaseObject dataHolder = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE, true,
-                xcontext.get());
+                this.xcontext.get());
             final PatientData<String> data = patient.getData(DATA_NAME);
             if (data == null) {
                 if (PatientWritePolicy.REPLACE.equals(policy)) {

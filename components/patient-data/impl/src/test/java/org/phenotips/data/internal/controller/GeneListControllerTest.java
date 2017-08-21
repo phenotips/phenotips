@@ -625,7 +625,8 @@ public class GeneListControllerTest
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
 
         final BaseObject geneObject = mock(BaseObject.class);
-        when(this.doc.getXObjects(GeneListController.GENE_CLASS_REFERENCE)).thenReturn(Collections.singletonList(geneObject));
+        when(this.doc.getXObjects(GeneListController.GENE_CLASS_REFERENCE))
+            .thenReturn(Collections.singletonList(geneObject));
 
         final BaseStringProperty geneProperty = mock(BaseStringProperty.class);
         final BaseStringProperty statusProperty = mock(BaseStringProperty.class);

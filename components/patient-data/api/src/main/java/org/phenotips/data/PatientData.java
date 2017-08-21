@@ -129,7 +129,8 @@ public interface PatientData<T> extends Iterable<T>
     Iterator<Entry<String, T>> dictionaryIterator();
 
     @Override
-    default Spliterator<T> spliterator() {
+    default Spliterator<T> spliterator()
+    {
         return Spliterators.spliterator(iterator(), size(), Spliterator.SIZED);
     }
 }

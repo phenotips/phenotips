@@ -90,7 +90,7 @@ public abstract class AbstractSimpleController implements PatientDataController<
     {
         try {
             final BaseObject xwikiDataObject = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE, true,
-                contextProvider.get());
+                this.contextProvider.get());
             final PatientData<String> data = patient.getData(getName());
             if (data == null) {
                 // For replace policy, if no controller data is provided, everything that's stored should be removed.

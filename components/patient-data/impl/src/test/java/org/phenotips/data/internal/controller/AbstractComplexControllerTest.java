@@ -186,11 +186,11 @@ public class AbstractComplexControllerTest
         doReturn(this.baseProperty4).when(this.data).getField(PROPERTY_4);
         doReturn(this.baseProperty5).when(this.data).getField(PROPERTY_5);
 
-        when(vocabProperty1.getId()).thenReturn(ID_1);
-        when(vocabProperty2.getId()).thenReturn(ID_2);
-        when(vocabProperty3.getId()).thenReturn(ID_3);
-        when(vocabProperty4.getId()).thenReturn(ID_4);
-        when(vocabProperty5.getId()).thenReturn(ID_5);
+        when(this.vocabProperty1.getId()).thenReturn(ID_1);
+        when(this.vocabProperty2.getId()).thenReturn(ID_2);
+        when(this.vocabProperty3.getId()).thenReturn(ID_3);
+        when(this.vocabProperty4.getId()).thenReturn(ID_4);
+        when(this.vocabProperty5.getId()).thenReturn(ID_5);
     }
 
     @Test

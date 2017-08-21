@@ -353,7 +353,7 @@ public class FeaturesController extends AbstractComplexController<Feature>
                 Collectors.mapping(feature -> saveFeatureAndGetValue(docX, feature, context), Collectors.toList()))
             ).forEach(
                 (type, ids) -> dataHolder.set(type, ids, context)
-            );
+        );
     }
 
     /**
@@ -464,7 +464,8 @@ public class FeaturesController extends AbstractComplexController<Feature>
         @Nonnull final Feature feature,
         @Nonnull final XWikiContext context) throws XWikiException
     {
-        @SuppressWarnings("unchecked") final Map<String, FeatureMetadatum> metadata =
+        @SuppressWarnings("unchecked")
+        final Map<String, FeatureMetadatum> metadata =
             (Map<String, FeatureMetadatum>) feature.getMetadata();
 
         if (!metadata.isEmpty() || !feature.getNotes().isEmpty()) {

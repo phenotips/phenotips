@@ -92,7 +92,7 @@ public class DatesControllerTest
 
     @Mock
     private Patient patient;
-    
+
     private PatientDataController<PhenoTipsDate> component;
 
     @Before
@@ -226,7 +226,7 @@ public class DatesControllerTest
         this.component.save(this.patient);
         verifyZeroInteractions(this.data);
     }
-    
+
     @Test
     public void saveDoesNotContinueIfDateDataIsNotNamed()
     {

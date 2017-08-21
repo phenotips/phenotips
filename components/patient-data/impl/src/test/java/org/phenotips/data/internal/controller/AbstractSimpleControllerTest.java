@@ -47,21 +47,16 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.DATA_NAME;
-import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_1;
-import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_2;
-import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_3;
-
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for the {@link AbstractSimpleController} defined methods (load, save, writeJSON, readJSON). These methods are
@@ -70,6 +65,14 @@ import static org.mockito.Mockito.verify;
  */
 public class AbstractSimpleControllerTest
 {
+    private static final String DATA_NAME = AbstractSimpleControllerTestImplementation.DATA_NAME;
+
+    private static final String PROPERTY_1 = AbstractSimpleControllerTestImplementation.PROPERTY_1;
+
+    private static final String PROPERTY_2 = AbstractSimpleControllerTestImplementation.PROPERTY_2;
+
+    private static final String PROPERTY_3 = AbstractSimpleControllerTestImplementation.PROPERTY_3;
+
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
         new MockitoComponentMockingRule<>(

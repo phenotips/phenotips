@@ -99,7 +99,7 @@ public class LifeStatusController implements PatientDataController<String>
     {
         try {
             final BaseObject dataHolder = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE, true,
-                xcontext.get());
+                this.xcontext.get());
             final PatientData<String> lifeStatus = patient.getData(DATA_NAME);
             if (lifeStatus == null) {
                 if (PatientWritePolicy.REPLACE.equals(policy)) {

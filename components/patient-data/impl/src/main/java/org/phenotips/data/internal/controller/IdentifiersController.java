@@ -94,7 +94,8 @@ public class IdentifiersController implements PatientDataController<String>
     public void save(@Nonnull final Patient patient, @Nonnull final PatientWritePolicy policy)
     {
         try {
-            final BaseObject data = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE, true, xcontext.get());
+            final BaseObject data = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE, true,
+                this.xcontext.get());
             final PatientData<String> identifiers = patient.getData(DATA_NAME);
             if (identifiers == null) {
                 if (PatientWritePolicy.REPLACE.equals(policy)) {

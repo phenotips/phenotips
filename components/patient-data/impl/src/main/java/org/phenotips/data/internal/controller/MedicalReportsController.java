@@ -30,9 +30,9 @@ import org.xwiki.stability.Unstable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -117,7 +117,7 @@ public class MedicalReportsController implements PatientDataController<Attachmen
     {
         try {
             final XWikiDocument doc = patient.getXDocument();
-            final XWikiContext context = contextProvider.get();
+            final XWikiContext context = this.contextProvider.get();
             final BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE, true, context);
             PatientData<Attachment> reports = patient.getData(getName());
             if (reports == null) {
@@ -165,11 +165,15 @@ public class MedicalReportsController implements PatientDataController<Attachmen
                 .map(report -> saveAndGetFilename(doc, report, context))
                 .collect(Collectors.toList());
         } else {
-            final Set<String> mergedReports = Stream.of(storedReports, reports)
+            result = Stream.of(storedReports, reports)
                 .flatMap(s -> StreamSupport.stream(s.spliterator(), false))
+                .collect(
+                    Collectors.toMap(Attachment::getFilename, Function.identity(), (v1, v2) -> v2, LinkedHashMap::new)
+                )
+                .values()
+                .stream()
                 .map(report -> saveAndGetFilename(doc, report, context))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-            result = new ArrayList<>(mergedReports);
+                .collect(Collectors.toList());
         }
         data.setDBStringListValue(FIELD_NAME, result);
     }

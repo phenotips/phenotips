@@ -26,6 +26,7 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.internal.controller.MedicationController;
+
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -77,8 +78,6 @@ public class MedicationControllerTest
     @Mock
     private Patient patient;
 
-    private DocumentReference docRef = new DocumentReference("xwiki", "data", "P0000001");
-
     @Mock
     private XWikiDocument doc;
 
@@ -102,16 +101,18 @@ public class MedicationControllerTest
 
     @Mock
     private BaseObject obj5;
-    
+
     private PatientDataController<Medication> component;
+
+    private DocumentReference docRef = new DocumentReference("xwiki", "data", "P0000001");
 
     @Before
     public void setup() throws Exception
     {
         MockitoAnnotations.initMocks(this);
-        
+
         this.component = this.mocker.getComponentUnderTest();
-        
+
         when(this.patient.getDocumentReference()).thenReturn(this.docRef);
         when(this.patient.getXDocument()).thenReturn(this.doc);
 
@@ -218,7 +219,7 @@ public class MedicationControllerTest
         this.component.save(this.patient, PatientWritePolicy.UPDATE);
         verifyZeroInteractions(this.doc);
     }
-    
+
     @Test
     public void saveWithNoDataDoesNothingWhenPolicyIsMerge()
     {
@@ -226,16 +227,16 @@ public class MedicationControllerTest
         this.component.save(this.patient, PatientWritePolicy.MERGE);
         verifyZeroInteractions(this.doc);
     }
-    
+
     @Test
     public void saveWithNoDataNullsAllFieldsWhenPolicyIsReplace()
     {
         when(this.patient.getData(MedicationController.DATA_NAME)).thenReturn(null);
         this.component.save(this.patient, PatientWritePolicy.REPLACE);
-        
+
         verify(this.doc, times(1)).removeXObjects(Medication.CLASS_REFERENCE);
         verifyNoMoreInteractions(this.doc);
-    }    
+    }
 
     @Test
     public void saveWithNonIndexedDataDoesNothing()
@@ -401,7 +402,7 @@ public class MedicationControllerTest
     {
         setupSampleData();
         when(this.doc.newXObject(eq(Medication.CLASS_REFERENCE), any(XWikiContext.class)))
-            .thenReturn(obj1, obj2);
+            .thenReturn(this.obj1, this.obj2);
 
         this.component.save(this.patient, PatientWritePolicy.REPLACE);
 
