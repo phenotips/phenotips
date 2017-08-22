@@ -22,7 +22,6 @@ import org.phenotips.entities.PrimaryEntity;
 import org.phenotips.entities.PrimaryEntityGroupManager;
 import org.phenotips.entities.PrimaryEntityManager;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.model.reference.EntityReference;
@@ -39,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * Base class for implementing specific entity groups, where members declare the groups that they belong to. The class
@@ -219,23 +217,5 @@ public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntity,
             this.logger.error("Unexpected exception while getting the current context: {}", ex.getMessage());
         }
         return null;
-    }
-
-    protected DocumentAccessBridge getDataAccessBridge()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
-        } catch (Exception ex) {
-            this.logger.error("Unexpected exception while getting the data access bridge: {}", ex.getMessage());
-        }
-        return null;
-    }
-
-    protected XWikiDocument getXWikiDocument(PrimaryEntity p) throws Exception
-    {
-        DocumentAccessBridge dab = getDataAccessBridge();
-        // use getDocument()
-        XWikiDocument doc = (XWikiDocument) dab.getDocument(p.getDocumentReference());
-        return doc;
     }
 }

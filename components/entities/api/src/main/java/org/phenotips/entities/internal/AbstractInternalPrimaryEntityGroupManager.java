@@ -132,7 +132,7 @@ public abstract class AbstractInternalPrimaryEntityGroupManager<G extends Primar
     public boolean addMember(G group, E member)
     {
         try {
-            XWikiDocument groupDocument = getXWikiDocument(group);
+            XWikiDocument groupDocument = group.getXDocument();
             BaseObject obj = groupDocument.getXObject(GROUP_MEMBER_CLASS, getMembershipProperty(),
                 getFullSerializer().serialize(member.getDocumentReference()), false);
             if (obj != null) {
@@ -155,7 +155,7 @@ public abstract class AbstractInternalPrimaryEntityGroupManager<G extends Primar
     public boolean removeMember(G group, E member)
     {
         try {
-            XWikiDocument groupDocument = getXWikiDocument(group);
+            XWikiDocument groupDocument = group.getXDocument();
             BaseObject obj = groupDocument.getXObject(GROUP_MEMBER_CLASS, getMembershipProperty(),
                 getFullSerializer().serialize(member.getDocumentReference()), false);
             if (obj == null) {
