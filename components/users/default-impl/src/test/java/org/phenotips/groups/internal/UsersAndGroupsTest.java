@@ -63,6 +63,20 @@ import static org.mockito.Mockito.when;
  */
 public class UsersAndGroupsTest
 {
+    private static final EntityReference USER_CLASS = new EntityReference("XWikiUsers", EntityType.DOCUMENT,
+        new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
+
+    private static final EntityReference GROUP_CLASS = new EntityReference("XWikiGroups", EntityType.DOCUMENT,
+        new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
+
+    private static String groupsQueryString;
+
+    private static String usersQueryString;
+
+    @Rule
+    public final MockitoComponentMockingRule<UsersAndGroups> mocker =
+        new MockitoComponentMockingRule<UsersAndGroups>(UsersAndGroups.class);
+
     @Mock
     private Provider<XWikiContext> xcontextProvider;
 
@@ -71,20 +85,6 @@ public class UsersAndGroupsTest
 
     @Mock
     private ComponentManager cm;
-
-    private static final EntityReference USER_CLASS = new EntityReference("XWikiUsers", EntityType.DOCUMENT,
-        new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
-
-    private static final EntityReference GROUP_CLASS = new EntityReference("XWikiGroups", EntityType.DOCUMENT,
-        new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
-
-    @Rule
-    public final MockitoComponentMockingRule<UsersAndGroups> mocker =
-        new MockitoComponentMockingRule<UsersAndGroups>(UsersAndGroups.class);
-
-    private static String groupsQueryString;
-
-    private static String usersQueryString;
 
     @Mock
     private XWikiContext context;

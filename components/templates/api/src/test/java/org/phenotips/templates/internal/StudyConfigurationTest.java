@@ -17,8 +17,6 @@
  */
 package org.phenotips.templates.internal;
 
-import org.phenotips.templates.internal.StudyConfiguration;
-
 import org.xwiki.component.manager.ComponentLookupException;
 
 import java.util.Collections;

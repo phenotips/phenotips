@@ -34,7 +34,8 @@ public class ContributorAccessLevel extends AbstractProjectAccessLevel
     /**
      * Create a new ContributorAccessLevel.
      */
-    public ContributorAccessLevel() {
+    public ContributorAccessLevel()
+    {
         super(1, true);
     }
 

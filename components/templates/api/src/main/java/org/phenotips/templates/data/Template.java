@@ -26,6 +26,7 @@ import org.xwiki.model.reference.EntityReference;
 /**
  * @version $Id$
  */
+@SuppressWarnings("checkstyle:InterfaceIsType")
 public interface Template extends PrimaryEntity, Comparable<Template>
 {
     /** The XClass used for storing project data. */

@@ -82,12 +82,12 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>phenotips-constants</artifactId>
+      <artifactId>xwiki-platform-users-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>xwiki-platform-users-api</artifactId>
+      <artifactId>phenotips-templates-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -100,9 +100,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>phenotips-templates-default-impl</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>annotations</artifactId>
     </dependency>
     <!-- Test dependencies -->
     <dependency>

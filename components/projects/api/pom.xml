@@ -49,11 +49,6 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-extension-distribution</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-model</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
@@ -64,12 +59,12 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-query-manager</artifactId>
+      <artifactId>xwiki-platform-security-api</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-context</artifactId>
+      <artifactId>xwiki-commons-script</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
@@ -89,11 +84,6 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>application-configuration-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>component-registry</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -104,12 +94,12 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>users-api</artifactId>
+      <artifactId>phenotips-entities-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>vocabularies-api</artifactId>
+      <artifactId>xwiki-platform-users-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

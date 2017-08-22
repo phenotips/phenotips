@@ -19,6 +19,7 @@ package org.phenotips.groups.script;
 
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
+
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;

@@ -208,6 +208,7 @@
       <artifactId>projects-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

@@ -176,6 +176,9 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
     public boolean isProjectOpenForContribution()
     {
         BaseObject xObject = this.projectObject.getXObject(Project.CLASS_REFERENCE);
+        if (xObject == null) {
+            return false;
+        }
         int openIntValue = xObject.getIntValue(DefaultProject.OPEN_FOR_CONTRIBUTION_KEY);
         return openIntValue == 1;
     }
@@ -195,12 +198,6 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
     public int hashCode()
     {
         return this.getId().hashCode();
-    }
-
-    @Override
-    public String toString()
-    {
-        return getFullName();
     }
 
     @Override
@@ -225,7 +222,7 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
     {
         try {
             return ComponentManagerRegistry.getContextComponentManager().getInstance(
-                    PatientsInProjectManager.TYPE, "Project:Patient");
+                PatientsInProjectManager.TYPE, "Project:Patient");
         } catch (ComponentLookupException e) {
             this.logger.error("Unexpected exception while getting patientsInProjectManager: {}", e.getMessage());
         }
@@ -236,7 +233,7 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
     {
         try {
             return ComponentManagerRegistry.getContextComponentManager().getInstance(
-                    TemplatesInProjectManager.TYPE, "Project:Template");
+                TemplatesInProjectManager.TYPE, "Project:Template");
         } catch (ComponentLookupException e) {
             this.logger.error("Unexpected exception while getting templatesInProjectManager: {}", e.getMessage());
         }
@@ -247,7 +244,7 @@ public class DefaultProject extends AbstractPrimaryEntity implements Project
     {
         try {
             return ComponentManagerRegistry.getContextComponentManager().getInstance(
-                    CollaboratorsInProjectManager.TYPE, "Project:Collaborator");
+                CollaboratorsInProjectManager.TYPE, "Project:Collaborator");
         } catch (ComponentLookupException e) {
             this.logger.error("Unexpected exception while getting collaboratorsInProjectManager: {}", e.getMessage());
         }

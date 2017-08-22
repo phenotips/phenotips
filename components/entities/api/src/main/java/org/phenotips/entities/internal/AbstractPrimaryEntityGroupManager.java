@@ -84,7 +84,7 @@ public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntity,
     private PrimaryEntityManager<PrimaryEntity> getManager(EntityReference entityReference)
     {
         PrimaryEntityManager<PrimaryEntity> manager = null;
-        if (memberEntityReference != null) {
+        if (this.memberEntityReference != null) {
             ComponentManager cm = ComponentManagerRegistry.getContextComponentManager();
             String[] possibleRoles = new String[3];
             possibleRoles[0] = getLocalSerializer().serialize(entityReference);
@@ -111,7 +111,7 @@ public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntity,
     @Override
     public Collection<E> getMembers(G group)
     {
-        return getMembersOfType(group, memberEntityReference);
+        return getMembersOfType(group, this.memberEntityReference);
     }
 
     @Override
@@ -157,7 +157,7 @@ public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntity,
     {
         boolean success = true;
         for (G group : groups) {
-            if (!this.addMember(group,  member)) {
+            if (!this.addMember(group, member)) {
                 success = false;
             }
         }

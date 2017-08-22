@@ -211,8 +211,8 @@ public abstract class AbstractInternalPrimaryEntityGroupManager<G extends Primar
      * parameters is used in cases where rebuilding them requires more information than is saved in the XWiki document.
      * For example, a Collaborator is a User (which is a PrimaryEntity) combined with an AccessLevel. A Collaborator
      * reference is saved together with information about creating the AccessLevel - this is handled in {@link
-     * CollaboratorInProjectManager.setMemberParameters()}. This method returns the parameters needed to rebuild a
-     * Collaborator, and the rebuilding of these objects is done in {@link CollaboratorInProjectManager.getMembers()}.
+     * CollaboratorInProjectManager. setMemberParameters()}. This method returns the parameters needed to rebuild a
+     * Collaborator, and the rebuilding of these objects is done in {@link CollaboratorInProjectManager. getMembers()}.
      *
      * @return parameters map
      */

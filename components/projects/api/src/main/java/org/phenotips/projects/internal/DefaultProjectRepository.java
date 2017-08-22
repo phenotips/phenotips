@@ -44,7 +44,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * @version $Id$
  */
-@Component(roles = {PrimaryEntityManager.class, ProjectRepository.class})
+@Component(roles = { PrimaryEntityManager.class, ProjectRepository.class })
 @Named("Project")
 @Singleton
 public class DefaultProjectRepository
@@ -88,8 +88,8 @@ public class DefaultProjectRepository
     public Collection<Project> getProjectsCurrentUserCanContributeTo()
     {
         Set<ProjectAccessLevel> accessLevels = new HashSet<>();
-        accessLevels.add(contributorAccessLevel);
-        accessLevels.add(leaderAccessLevel);
+        accessLevels.add(this.contributorAccessLevel);
+        accessLevels.add(this.leaderAccessLevel);
         Collection<Project> projects = this.getAll(accessLevels);
 
         for (Project p : this.getAllProjectsOpenForContribution()) {
@@ -104,7 +104,7 @@ public class DefaultProjectRepository
     public Collection<Project> getProjectsWithLeadingRights()
     {
         Set<ProjectAccessLevel> accessLevels = new HashSet<>();
-        accessLevels.add(leaderAccessLevel);
+        accessLevels.add(this.leaderAccessLevel);
         return this.getAll(accessLevels);
     }
 

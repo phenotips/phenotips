@@ -58,7 +58,7 @@ public class DefaultGroupManagerTest
 
     @Rule
     public final MockitoComponentMockingRule<GroupManager> mocker =
-    new MockitoComponentMockingRule<GroupManager>(DefaultGroupManager.class);
+        new MockitoComponentMockingRule<GroupManager>(DefaultGroupManager.class);
 
     /** Basic tests for {@link DefaultGroupManager#getGroupsForUser(org.xwiki.model.reference.DocumentReference)}. */
     @Test
@@ -76,7 +76,7 @@ public class DefaultGroupManagerTest
         when(q.bindValue("u", "xwiki:XWiki.Admin")).thenReturn(q);
         when(q.bindValue("su", "XWiki.Admin")).thenReturn(q);
         when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (:u, :su)", Query.XWQL))
-        .thenReturn(q);
+            .thenReturn(q);
         List<Object> groupNames = new LinkedList<Object>();
         groupNames.add("Groups.Group A");
         groupNames.add("Group B Administrators");
@@ -92,8 +92,9 @@ public class DefaultGroupManagerTest
         q = mock(Query.class);
         when(q.bindValue(1, "xwiki:Groups.Group A")).thenReturn(q);
         when(q.bindValue(2, "xwiki:Groups.Group B Administrators")).thenReturn(q);
-        when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (:u1,:su1,:u2,:su2)", Query.XWQL))
-        .thenReturn(q);
+        when(
+            qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (:u1,:su1,:u2,:su2)",
+                Query.XWQL)).thenReturn(q);
         groupNames = new LinkedList<Object>();
         groupNames.add("Groups.Group B");
         when(q.<Object>execute()).thenReturn(groupNames);
@@ -103,7 +104,7 @@ public class DefaultGroupManagerTest
         when(resolver.resolve(eq("Groups.Group B"), eq(GROUP_SPACE))).thenReturn(b);
         when(q.bindValue(1, "xwiki:Groups.Group B")).thenReturn(q);
         when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (:u1,:su1)", Query.XWQL))
-        .thenReturn(q);
+            .thenReturn(q);
         when(q.<Object>execute()).thenReturn(Collections.emptyList());
 
         q = mock(Query.class);

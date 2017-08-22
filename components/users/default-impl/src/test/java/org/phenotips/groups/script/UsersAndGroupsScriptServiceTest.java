@@ -38,7 +38,7 @@ public class UsersAndGroupsScriptServiceTest
         new MockitoComponentMockingRule<UsersAndGroupsScriptService>(UsersAndGroupsScriptService.class);
 
     @Test
-    public void UsersAndGroupsScriptServiceTest1() throws ComponentLookupException, QueryException
+    public void usersAndGroupsScriptServiceTest1() throws ComponentLookupException, QueryException
     {
         JSONArray array = new JSONArray();
         JSONObject result = new JSONObject();

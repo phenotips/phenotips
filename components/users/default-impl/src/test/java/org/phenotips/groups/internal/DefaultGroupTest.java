@@ -55,6 +55,7 @@ import com.xpn.xwiki.web.Utils;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 /**
  * Tests for the default {@link Group} implementation, {@link DefaultGroup}.
  *
@@ -78,16 +79,16 @@ public class DefaultGroupTest
     private DocumentAccessBridge bridge;
 
     @Mock
-    DocumentReferenceResolver<String> resolver;
+    private DocumentReferenceResolver<String> resolver;
 
     @Mock
-    TemplateRepository templateRepository;
+    private TemplateRepository templateRepository;
 
     @Mock
-    UsersAndGroups usersAndGroups;
+    private UsersAndGroups usersAndGroups;
 
     @Mock
-    Logger logger;
+    private Logger logger;
 
     @Before
     public void setupComponentManager() throws ComponentLookupException
@@ -98,7 +99,7 @@ public class DefaultGroupTest
         when(this.mockProvider.get()).thenReturn(this.cm);
 
         when(this.cm.getInstance(GroupManager.class)).thenReturn(this.groupManager);
-        when(this.cm.getInstance(DocumentAccessBridge.class)).thenReturn(bridge);
+        when(this.cm.getInstance(DocumentAccessBridge.class)).thenReturn(this.bridge);
         when(this.cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current")).thenReturn(this.resolver);
         when(this.cm.getInstance(Logger.class)).thenReturn(this.logger);
         when(this.cm.getInstance(UsersAndGroups.class)).thenReturn(this.usersAndGroups);
@@ -230,7 +231,7 @@ public class DefaultGroupTest
         DocumentReference doc2 = mock(DocumentReference.class);
         when(base2.getField("member")).thenReturn(st2);
         when(st2.getValue()).thenReturn("user");
-        when(resolver.resolve("user", Group.GROUP_SPACE)).thenReturn(doc2);
+        when(this.resolver.resolve("user", Group.GROUP_SPACE)).thenReturn(doc2);
         when(this.usersAndGroups.getType(doc2)).thenReturn(UsersAndGroups.USER);
         membersList.add(base2);
 
@@ -239,7 +240,7 @@ public class DefaultGroupTest
         DocumentReference doc3 = mock(DocumentReference.class);
         when(base3.getField("member")).thenReturn(st3);
         when(st3.getValue()).thenReturn("group");
-        when(resolver.resolve("group", Group.GROUP_SPACE)).thenReturn(doc3);
+        when(this.resolver.resolve("group", Group.GROUP_SPACE)).thenReturn(doc3);
         when(this.usersAndGroups.getType(doc3)).thenReturn(UsersAndGroups.GROUP);
         membersList.add(base3);
 
@@ -247,14 +248,16 @@ public class DefaultGroupTest
     }
 
     @Test
-    public void getComponentsFailsTest() throws ComponentLookupException {
+    public void getComponentsFailsTest() throws ComponentLookupException
+    {
         MockitoAnnotations.initMocks(this);
         Utils.setComponentManager(this.cm);
         ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
         when(this.mockProvider.get()).thenReturn(this.cm);
 
         when(this.cm.getInstance(DocumentAccessBridge.class)).thenThrow(new ComponentLookupException(""));
-        when(this.cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current")).thenThrow(new ComponentLookupException(""));
+        when(this.cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current")).thenThrow(
+            new ComponentLookupException(""));
         when(this.cm.getInstance(Logger.class)).thenThrow(new ComponentLookupException(""));
         when(this.cm.getInstance(UsersAndGroups.class)).thenThrow(new ComponentLookupException(""));
 

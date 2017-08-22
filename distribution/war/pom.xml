@@ -717,6 +717,16 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-templates-default-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-templates-migrations</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-consents-api</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -728,6 +738,11 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>projects-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>projects-resources</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

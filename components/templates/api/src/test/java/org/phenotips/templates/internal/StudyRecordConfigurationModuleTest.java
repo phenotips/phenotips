@@ -21,7 +21,6 @@ import org.phenotips.configuration.RecordElement;
 import org.phenotips.configuration.RecordSection;
 import org.phenotips.configuration.internal.DefaultRecordConfiguration;
 import org.phenotips.configuration.spi.RecordConfigurationModule;
-import org.phenotips.templates.internal.StudyRecordConfigurationModule;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -131,7 +130,7 @@ public class StudyRecordConfigurationModuleTest
         when(this.dab.getCurrentDocumentReference()).thenReturn(this.currentDocument);
         when(this.dab.getProperty(this.currentDocument, this.bindingClassDocument,
             StudyRecordConfigurationModule.STUDY_REFERENCE_PROPERTY_LABEL))
-                .thenReturn("Studies.Ataxia");
+            .thenReturn("Studies.Ataxia");
 
         final Provider<XWikiContext> xcontextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         final XWikiContext context = mock(XWikiContext.class);
@@ -166,13 +165,13 @@ public class StudyRecordConfigurationModuleTest
     {
         when(this.dab.getProperty(this.currentDocument, this.bindingClassDocument,
             StudyRecordConfigurationModule.STUDY_REFERENCE_PROPERTY_LABEL))
-                .thenReturn("");
+            .thenReturn("");
         Assert.assertSame(this.config, this.mocker.getComponentUnderTest().process(this.config));
         verifyZeroInteractions(this.config);
 
         when(this.dab.getProperty(this.currentDocument, this.bindingClassDocument,
             StudyRecordConfigurationModule.STUDY_REFERENCE_PROPERTY_LABEL))
-                .thenReturn(null);
+            .thenReturn(null);
         Assert.assertSame(this.config, this.mocker.getComponentUnderTest().process(this.config));
         verifyZeroInteractions(this.config);
     }

@@ -49,6 +49,6 @@ public class UsersAndGroupsScriptService implements ScriptService
      */
     public JSONObject searchUsersAndGroups(String input, boolean searchUsers, boolean searchGroups)
     {
-        return usersAndGroups.search(input, searchUsers, searchGroups);
+        return this.usersAndGroups.search(input, searchUsers, searchGroups);
     }
 }
