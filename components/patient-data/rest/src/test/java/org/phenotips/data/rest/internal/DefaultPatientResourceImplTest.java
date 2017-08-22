@@ -19,6 +19,7 @@ package org.phenotips.data.rest.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.rest.Autolinker;
 
@@ -75,6 +76,8 @@ import static org.mockito.Mockito.when;
  */
 public class DefaultPatientResourceImplTest
 {
+    private static final String UPDATE = "update";
+
     @Rule
     public MockitoComponentMockingRule<PatientResource> mocker =
         new MockitoComponentMockingRule<>(DefaultPatientResourceImpl.class);
@@ -208,7 +211,7 @@ public class DefaultPatientResourceImplTest
 
         WebApplicationException ex = null;
         try {
-            this.patientResource.updatePatient("", this.id);
+            this.patientResource.updatePatient("", this.id, UPDATE);
         } catch (WebApplicationException temp) {
             ex = temp;
         }
@@ -227,7 +230,7 @@ public class DefaultPatientResourceImplTest
 
         WebApplicationException ex = null;
         try {
-            this.patientResource.updatePatient("", this.id);
+            this.patientResource.updatePatient("", this.id, UPDATE);
         } catch (WebApplicationException temp) {
             ex = temp;
         }
@@ -248,7 +251,7 @@ public class DefaultPatientResourceImplTest
 
         WebApplicationException ex = null;
         try {
-            this.patientResource.updatePatient(json.toString(), this.id);
+            this.patientResource.updatePatient(json.toString(), this.id, UPDATE);
         } catch (WebApplicationException temp) {
             ex = temp;
         }
@@ -265,11 +268,12 @@ public class DefaultPatientResourceImplTest
         JSONObject json = new JSONObject();
         json.put("id", this.id);
         doReturn(this.id).when(this.patient).getId();
-        doThrow(Exception.class).when(this.patient).updateFromJSON(any(JSONObject.class));
+        doThrow(Exception.class).when(this.patient).updateFromJSON(any(JSONObject.class),
+            any(PatientWritePolicy.class));
 
         WebApplicationException ex = null;
         try {
-            this.patientResource.updatePatient(json.toString(), this.id);
+            this.patientResource.updatePatient(json.toString(), this.id, UPDATE);
         } catch (WebApplicationException temp) {
             ex = temp;
         }
@@ -290,9 +294,9 @@ public class DefaultPatientResourceImplTest
         json.put("id", this.id);
         doReturn(this.id).when(this.patient).getId();
 
-        Response response = this.patientResource.updatePatient(json.toString(), this.id);
+        Response response = this.patientResource.updatePatient(json.toString(), this.id, UPDATE);
 
-        verify(this.patient).updateFromJSON(any(JSONObject.class));
+        verify(this.patient).updateFromJSON(any(JSONObject.class), any(PatientWritePolicy.class));
         Assert.assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 

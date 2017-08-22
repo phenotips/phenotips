@@ -23,11 +23,13 @@ import org.phenotips.rest.RequiredAccess;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -63,12 +65,14 @@ public interface PatientResource
      *
      * @param json the JSON representation of the new patient to add
      * @param id the patient's internal identifier, see {@link org.phenotips.data.Patient#getId()}
+     * @param policy the policy according to which patient data should be written
      * @return a status message
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @RequiredAccess("edit")
-    Response updatePatient(String json, @PathParam("patient-id") String id);
+    Response updatePatient(String json, @PathParam("patient-id") String id,
+        @QueryParam("policy") @DefaultValue("update") String policy);
 
     /**
      * Delete a patient record, identified by its internal PhenoTips identifier. If the indicated patient record doesn't

@@ -19,6 +19,7 @@ package org.phenotips.data.rest.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientByExternalIdResource;
 import org.phenotips.data.rest.PatientResource;
@@ -85,6 +86,8 @@ import static org.mockito.Mockito.when;
 
 public class DefaultPatientByExternalIdResourceImplTest
 {
+    private static final String UPDATE = "update";
+
     @Rule
     public final MockitoComponentMockingRule<PatientByExternalIdResource> mocker =
         new MockitoComponentMockingRule<>(DefaultPatientByExternalIdResourceImpl.class);
@@ -233,7 +236,7 @@ public class DefaultPatientByExternalIdResourceImplTest
         when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
         when(query.execute()).thenReturn(new ArrayList<>());
 
-        Response response = this.component.updatePatient("{}", this.eid);
+        Response response = this.component.updatePatient("{}", this.eid, UPDATE);
         verify(this.logger).debug("No patient record with external ID [{}] exists yet", this.eid);
         verify(this.logger).debug("Creating patient record with external ID [{}]", this.eid);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
@@ -247,7 +250,7 @@ public class DefaultPatientByExternalIdResourceImplTest
         when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
         when(query.execute()).thenReturn(new ArrayList<>());
 
-        Response response = this.component.updatePatient("[]", this.eid);
+        Response response = this.component.updatePatient("[]", this.eid, UPDATE);
         verify(this.logger).debug("No patient record with external ID [{}] exists yet", this.eid);
         verify(this.logger).debug("Creating patient record with external ID [{}]", this.eid);
         verify(this.repository, never()).create();
@@ -264,7 +267,7 @@ public class DefaultPatientByExternalIdResourceImplTest
         when(this.access.hasAccess(eq(Right.EDIT), eq(this.userReference), any(EntityReference.class)))
             .thenReturn(false);
 
-        Response response = this.component.updatePatient("{}", this.eid);
+        Response response = this.component.updatePatient("{}", this.eid, UPDATE);
         verify(this.logger).debug("No patient record with external ID [{}] exists yet", this.eid);
         verify(this.logger).debug("Creating patient record with external ID [{}]", this.eid);
         verify(this.logger).error("Edit access denied to user [{}].", this.user);
@@ -280,7 +283,7 @@ public class DefaultPatientByExternalIdResourceImplTest
         when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
         when(query.execute()).thenReturn(new ArrayList<>());
 
-        Response response = this.component.updatePatient("{\"external_id\":\"abc\"}", this.eid);
+        Response response = this.component.updatePatient("{\"external_id\":\"abc\"}", this.eid, UPDATE);
         verify(this.logger).debug("No patient record with external ID [{}] exists yet", this.eid);
         verify(this.logger).debug("Creating patient record with external ID [{}]", this.eid);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
@@ -299,7 +302,7 @@ public class DefaultPatientByExternalIdResourceImplTest
         when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
         when(query.execute()).thenReturn(new ArrayList<>());
 
-        Response response = this.component.updatePatient("{}", this.eid);
+        Response response = this.component.updatePatient("{}", this.eid, UPDATE);
         verify(this.logger).debug("No patient record with external ID [{}] exists yet", this.eid);
         verify(this.logger).debug("Creating patient record with external ID [{}]", this.eid);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
@@ -315,7 +318,7 @@ public class DefaultPatientByExternalIdResourceImplTest
     {
         when(this.access.hasAccess(Right.EDIT, this.userReference, this.patientReference)).thenReturn(false);
 
-        Response response = this.component.updatePatient("json", this.eid);
+        Response response = this.component.updatePatient("json", this.eid, UPDATE);
         verify(this.logger).debug("Edit access denied to user [{}] on patient record [{}]", null, this.patient.getId());
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
 
@@ -324,15 +327,16 @@ public class DefaultPatientByExternalIdResourceImplTest
     @Test(expected = WebApplicationException.class)
     public void updatePatientWrongJSONId() throws ComponentLookupException
     {
-        this.component.updatePatient("{\"id\":\"notid\"}", "eid");
+        this.component.updatePatient("{\"id\":\"notid\"}", "eid", UPDATE);
     }
 
     @Test(expected = WebApplicationException.class)
     public void updatePatientFromJSONException() throws ComponentLookupException
     {
-        doThrow(Exception.class).when(this.patient).updateFromJSON(Matchers.any(JSONObject.class));
+        doThrow(Exception.class).when(this.patient).updateFromJSON(Matchers.any(JSONObject.class), Matchers.any(
+            PatientWritePolicy.class));
 
-        this.component.updatePatient("{\"id\":\"id\"}", "eid");
+        this.component.updatePatient("{\"id\":\"id\"}", "eid", UPDATE);
         verify(this.logger).debug("Failed to update patient [{}] from JSON: {}. Source JSON was: {}",
             this.id, "{\"id\":\"id\"}");
     }
@@ -341,7 +345,7 @@ public class DefaultPatientByExternalIdResourceImplTest
     public void updatePatientReturnsNoContentResponse() throws ComponentLookupException
     {
         String json = "{\"id\":\"id\"}";
-        Response response = this.component.updatePatient(json, this.eid);
+        Response response = this.component.updatePatient(json, this.eid, UPDATE);
         verify(this.logger).debug("Updating patient record with external ID [{}] via REST with JSON: {}", this.eid,
             json);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
@@ -419,7 +423,7 @@ public class DefaultPatientByExternalIdResourceImplTest
         when(this.repository.getByName(this.eid)).thenReturn(null);
 
         Response responseGet = this.component.getPatient(this.eid);
-        Response responseUpdate = this.component.updatePatient(this.eid, this.eid);
+        Response responseUpdate = this.component.updatePatient(this.eid, this.eid, UPDATE);
         Response responseDelete = this.component.deletePatient(this.eid);
 
         verify(this.logger, times(3)).debug("Multiple patient records ({}) with external ID [{}]: {}",
@@ -439,7 +443,7 @@ public class DefaultPatientByExternalIdResourceImplTest
         when(this.repository.getByName(this.eid)).thenReturn(null);
 
         Response responseGet = this.component.getPatient(this.eid);
-        Response responseUpdate = this.component.updatePatient("{}", this.eid);
+        Response responseUpdate = this.component.updatePatient("{}", this.eid, UPDATE);
         Response responseDelete = this.component.deletePatient(this.eid);
 
         verify(this.logger, times(3)).warn("Failed to retrieve patient with external id [{}]: {}", this.eid, null);
