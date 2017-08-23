@@ -102,7 +102,7 @@ public interface PatientDataController<T>
      *                                                    loaded data
      *               {@link PatientWritePolicy#UPDATE}  : remove specified fields, and update them with loaded data
      *               {@link PatientWritePolicy#MERGE}   : merge the existing and loaded data; any overlaps will be
-     *                                                    resolved in favour of loaded data
+     *                                                    resolved in favor of loaded data
      * @since 1.4
      */
     void save(Patient patient, PatientWritePolicy policy);

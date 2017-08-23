@@ -562,7 +562,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         @Nullable final PatientData<Map<String, String>> genes,
         @Nullable final PatientData<Map<String, String>> storedGenes)
     {
-        // If map keys collide, merge genes in favour of the new value
+        // If map keys collide, merge genes in favor of the new value
         return Stream.of(storedGenes, genes)
             .filter(Objects::nonNull)
             .flatMap(s -> StreamSupport.stream(s.spliterator(), false))

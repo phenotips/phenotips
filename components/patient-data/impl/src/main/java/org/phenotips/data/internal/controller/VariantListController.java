@@ -612,7 +612,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
         @Nullable final PatientData<Map<String, String>> variants,
         @Nullable final PatientData<Map<String, String>> storedVariants)
     {
-        // If map keys collide, merge variant data in favour of the new value
+        // If map keys collide, merge variant data in favor of the new value
         return Stream.of(storedVariants, variants)
             .filter(Objects::nonNull)
             .flatMap(s -> StreamSupport.stream(s.spliterator(), false))

@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
  * The {@link #UPDATE} policy removes the data for specified properties, and updates it with provided data.
  * </p>
  * <p>
- * The {@link #MERGE} policy retains the old data and adds the new data. Any conflicts are resolved in favour of new
+ * The {@link #MERGE} policy retains the old data and adds the new data. Any conflicts are resolved in favor of new
  * data.
  * </p>
  * @version $Id$
