@@ -70,7 +70,7 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
 
     protected AbstractPrimaryEntity(DocumentReference reference)
     {
-        this.document =  this.getXWikiDocument(reference);
+        this.document = this.getXWikiDocument(reference);
     }
 
     /**

@@ -131,7 +131,8 @@ public abstract class AbstractExternalPrimaryEntityGroupManager<G extends Primar
             }
             obj = doc.newXObject(GROUP_MEMBERSHIP_CLASS, getXContext());
             obj.setStringValue(getMembershipProperty(), getFullSerializer().serialize(group.getDocumentReference()));
-            getXContext().getWiki().saveDocument(doc, "Added to group " + group.getDocumentReference(), true, getXContext());
+            getXContext().getWiki().saveDocument(doc, "Added to group " + group.getDocumentReference(), true,
+                getXContext());
             return true;
         } catch (Exception ex) {
             this.logger.warn("Failed to add member to group: {}", ex.getMessage());
@@ -143,14 +144,15 @@ public abstract class AbstractExternalPrimaryEntityGroupManager<G extends Primar
     public boolean removeMember(G group, E member)
     {
         try {
-            XWikiDocument doc = getXWikiDocument(member);
+            XWikiDocument doc = member.getXDocument();
             BaseObject obj = doc.getXObject(GROUP_MEMBERSHIP_CLASS, getMembershipProperty(),
                 getFullSerializer().serialize(group.getDocumentReference()), false);
             if (obj == null) {
                 return true;
             }
             doc.removeXObject(obj);
-            getXContext().getWiki().saveDocument(doc, "Removed from group " + group.getDocumentReference(), true, getXContext());
+            getXContext().getWiki().saveDocument(doc, "Removed from group " + group.getDocumentReference(), true,
+                getXContext());
             return true;
         } catch (Exception ex) {
             this.logger.warn("Failed to remove member from group: {}", ex.getMessage());
@@ -177,7 +179,7 @@ public abstract class AbstractExternalPrimaryEntityGroupManager<G extends Primar
                 + "groupObj.name = doc.fullName and "
                 + "groupObj.className = '" + groupClass + "'", Query.HQL);
             q.bindValue("gspace", this.groupManager.getDataSpace().getName());
-            q.bindValue("name", this.getLocalSerializer().serialize(member.getDocument()));
+            q.bindValue("name", this.getLocalSerializer().serialize(member.getDocumentReference()));
             List<String> docNames = q.execute();
             Collection<G> result = new ArrayList<>(docNames.size());
             for (String docName : docNames) {

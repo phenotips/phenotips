@@ -131,7 +131,7 @@ public abstract class AbstractInternalPrimaryEntityGroupManager<G extends Primar
     public boolean addMember(G group, E member)
     {
         try {
-            XWikiDocument groupDocument = getXWikiDocument(group);
+            XWikiDocument groupDocument = group.getXDocument();
             BaseObject obj = groupDocument.getXObject(GROUP_MEMBER_CLASS, getMembershipProperty(),
                 getFullSerializer().serialize(member.getDocumentReference()), false);
             if (obj != null) {
@@ -154,7 +154,7 @@ public abstract class AbstractInternalPrimaryEntityGroupManager<G extends Primar
     public boolean removeMember(G group, E member)
     {
         try {
-            XWikiDocument groupDocument = getXWikiDocument(group);
+            XWikiDocument groupDocument = group.getXDocument();
             BaseObject obj = groupDocument.getXObject(GROUP_MEMBER_CLASS, getMembershipProperty(),
                 getFullSerializer().serialize(member.getDocumentReference()), false);
             if (obj == null) {
@@ -189,7 +189,7 @@ public abstract class AbstractInternalPrimaryEntityGroupManager<G extends Primar
                 + "obj.className = '" + bindingClassName + "' and "
                 + "doc.space = :gspace", Query.HQL);
             q.bindValue("gspace", this.groupManager.getDataSpace().getName());
-            q.bindValue("referenceValue", this.getFullSerializer().serialize(member.getDocument()));
+            q.bindValue("referenceValue", this.getFullSerializer().serialize(member.getDocumentReference()));
             List<String> docNames = q.execute();
             Collection<G> result = new ArrayList<>(docNames.size());
             for (String docName : docNames) {
@@ -211,9 +211,9 @@ public abstract class AbstractInternalPrimaryEntityGroupManager<G extends Primar
      * Saving members with parameters is used in cases where rebuilding them requires more information than is saved
      * in the XWiki document. For example, a Collaborator is a User (which is a PrimaryEntity) combined with
      * an AccessLevel. A Collaborator reference is saved together with information about creating the AccessLevel -
-     * this is handled in {@link CollaboratorInProjectManager.setMemberParameters()}. This method returns the
+     * this is handled in {@link CollaboratorInProjectManager#setMemberParameters()}. This method returns the
      * parameters needed to rebuild a Collaborator, and the rebuilding of these objects is done in
-     * {@link CollaboratorInProjectManager.getMembers()}.
+     * {@link CollaboratorInProjectManager#getMembers()}.
      *
      * @return parameters map
      */
@@ -250,7 +250,7 @@ public abstract class AbstractInternalPrimaryEntityGroupManager<G extends Primar
 
             Query q = getQueryManager().createQuery(hql.toString(), Query.HQL);
 
-            q.bindValue("selfReference", getLocalSerializer().serialize(group.getDocument()));
+            q.bindValue("selfReference", getLocalSerializer().serialize(group.getDocumentReference()));
             q.bindValue("memberClass", getLocalSerializer().serialize(GROUP_MEMBER_CLASS));
             q.bindValue("entityType", getLocalSerializer().serialize(type));
             q.bindValue("referenceProperty", getMembershipProperty());
