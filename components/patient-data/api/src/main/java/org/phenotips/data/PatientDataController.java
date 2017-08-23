@@ -105,7 +105,10 @@ public interface PatientDataController<T>
      *                                                    resolved in favor of loaded data
      * @since 1.4
      */
-    void save(Patient patient, PatientWritePolicy policy);
+    default void save(Patient patient, PatientWritePolicy policy)
+    {
+        save(patient);
+    }
 
     /**
      * Exports the data being managed by this data controller into the patient JSON export.
