@@ -42,6 +42,9 @@ import com.xpn.xwiki.objects.BaseObject;
 /**
  * Base class for implementing specific entity groups, where groups declare the members that they contain.
  * <p>
+ * It is {@code abstract} because an actual implementation is supposed to be a component with appropriate annotations -
+ * other than that it can be instantiated and should work as is.
+ * <p>
  * By default, this uses the document name as the identifier, the document title as the name, and either a
  * {@code description} property in the main XObject, or the document content, as the description. If two objects use the
  * same document for storage, they are assumed to be equal, and no actual data equality is checked.
@@ -68,7 +71,7 @@ import com.xpn.xwiki.objects.BaseObject;
  * @since 1.3M2
  */
 @Unstable("New class and interface added in 1.3")
-public abstract class AbstractInternalPrimaryEntityGroupManager<G extends PrimaryEntity, E extends PrimaryEntity>
+public class AbstractInternalPrimaryEntityGroupManager<G extends PrimaryEntity, E extends PrimaryEntity>
     extends AbstractExternalPrimaryEntityGroupManager<G, E>
     implements PrimaryEntityGroupManager<G, E>
 {

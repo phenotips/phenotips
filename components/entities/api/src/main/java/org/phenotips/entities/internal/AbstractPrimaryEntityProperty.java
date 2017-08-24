@@ -26,28 +26,31 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Base class for implementing PrimaryEntityProperty. The implementation is done as a container of one object.
+ * Base class for implementing PrimaryEntityProperty. The implementation is done as a Group of one object.
+ * <p>
+ * It is {@code abstract} because an actual implementation is supposed to be a component with appropriate annotations -
+ * other than that it can be instantiated and should work as is.
  *
- * @param <G> the type of entity with the property
- * @param <E> the type of entity of the property
+ * @param <E> the type of entity with the property
+ * @param <P> the type of entity of the property
  * @version $Id$
  * @since 1.3M2
  */
-public abstract class AbstractPrimaryEntityProperty<G extends PrimaryEntity, E extends PrimaryEntity>
-    extends AbstractInternalPrimaryEntityGroupManager<G, E>
-    implements PrimaryEntityProperty<G, E>
+public abstract class AbstractPrimaryEntityProperty<E extends PrimaryEntity, P extends PrimaryEntity>
+    implements PrimaryEntityProperty<E, P>
 {
-    protected AbstractPrimaryEntityProperty(
-            EntityReference groupEntityReference, EntityReference memberEntityReference)
+    private AbstractInternalPrimaryEntityGroupManager<E, P> manager;
+
+    protected AbstractPrimaryEntityProperty(EntityReference groupEntityReference, EntityReference memberEntityReference)
     {
-        super(groupEntityReference, memberEntityReference);
+        this.manager = new AbstractInternalPrimaryEntityGroupManager<E, P>(groupEntityReference, memberEntityReference);
     }
 
     @Override
-    public E get(G group)
+    public P get(E entity)
     {
-        Collection<E> members = this.getMembers(group);
-        Iterator<E> iterator = members.iterator();
+        Collection<P> members = this.manager.getMembers(entity);
+        Iterator<P> iterator = members.iterator();
         if (iterator.hasNext()) {
             return iterator.next();
         } else {
@@ -56,29 +59,29 @@ public abstract class AbstractPrimaryEntityProperty<G extends PrimaryEntity, E e
     }
 
     @Override
-    public boolean set(G group, E property)
+    public boolean set(E entity, P property)
     {
-        boolean removed = this.remove(group);
+        boolean removed = this.remove(entity);
         if (property == null || !removed) {
             return removed;
         }
-        return addMember(group, property);
+        return this.manager.addMember(entity, property);
     }
 
     @Override
-    public boolean remove(G group)
+    public boolean remove(E entity)
     {
-        E property = this.get(group);
+        P property = this.get(entity);
         if (property == null) {
             return true;
         } else {
-            return this.removeMember(group, property);
+            return this.manager.removeMember(entity, property);
         }
     }
 
     @Override
-    public Collection<G> getGroupsForProperty(E property)
+    public Collection<E> getEntitiesForProperty(P property)
     {
-        return super.getGroupsForMember(property);
+        return this.manager.getGroupsForMember(property);
     }
 }

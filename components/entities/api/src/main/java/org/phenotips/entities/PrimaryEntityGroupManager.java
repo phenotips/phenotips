@@ -24,8 +24,9 @@ import org.xwiki.stability.Unstable;
 import java.util.Collection;
 
 /**
- * The property of a group containing members, both of type {@link PrimaryEntity}. For example, a Project is a group
- * of patients.
+ * Manages relations between entities, represented as a group containing members, both of type {@link PrimaryEntity}.
+ *
+ * For example, a Project is a group of patients, and a Family is also a group of patients.
  *
  * @param <G> the type of the group containing the members
  * @param <E> the type of entities belonging to this group; if more than one type of entities can be part of the group,
