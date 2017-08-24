@@ -36,6 +36,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -202,25 +204,30 @@ public class SolvedController extends AbstractSimpleController implements Initia
         return new DictionaryPatientData<>(this.getName(), result);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public void save(Patient patient)
+    void saveFieldValue(
+        @Nonnull final BaseObject xwikiDataObject,
+        @Nonnull final String property,
+        @Nullable final String value)
     {
-        PatientData<String> data = patient.getData(getName());
-
-        BaseObject xwikiDataObject = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE);
-        if (data == null || !data.isNamed() || xwikiDataObject == null) {
-            return;
+        @SuppressWarnings("unchecked")
+        final BaseProperty<ObjectPropertyReference> field =
+            (BaseProperty<ObjectPropertyReference>) xwikiDataObject.getField(property);
+        if (field != null) {
+            field.setValue(applyCast(value));
         }
+    }
 
-        for (String key : this.getProperties()) {
-            String datum = data.get(this.fields.get(key));
-            BaseProperty<ObjectPropertyReference> field =
-                (BaseProperty<ObjectPropertyReference>) xwikiDataObject.getField(key);
-            if (field != null) {
-                field.setValue(applyCast(datum));
-            }
-        }
+    @Override
+    String getValueForProperty(@Nonnull final PatientData<String> data, @Nonnull final String property)
+    {
+        return data.get(this.fields.get(property));
+    }
+
+    @Override
+    boolean containsProperty(@Nonnull final PatientData<String> data, @Nonnull final String property)
+    {
+        return data.containsKey(this.fields.get(property));
     }
 
     private Object applyCast(String value)

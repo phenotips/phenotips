@@ -19,13 +19,12 @@ package org.phenotips.data.rest.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.rest.Autolinker;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.EntityReference;
-import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.rest.XWikiResource;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
@@ -71,11 +70,6 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
     @Inject
     private Provider<Autolinker> autolinker;
 
-    /** Fills in missing reference fields with those from the current context document to create a full reference. */
-    @Inject
-    @Named("current")
-    private EntityReferenceResolver<EntityReference> currentResolver;
-
     @Override
     public Response getPatient(String id)
     {
@@ -109,9 +103,13 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
     }
 
     @Override
-    public Response updatePatient(String json, String id)
+    public Response updatePatient(String json, String id, String policy)
     {
         this.logger.debug("Updating patient record [{}] via REST with JSON: {}", id, json);
+        final PatientWritePolicy policyType = PatientWritePolicy.fromString(policy);
+        if (policyType == null) {
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
         Patient patient = this.repository.get(id);
         if (patient == null) {
             this.logger.debug(
@@ -141,7 +139,7 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
             throw new WebApplicationException(Status.CONFLICT);
         }
         try {
-            patient.updateFromJSON(jsonInput);
+            patient.updateFromJSON(jsonInput, policyType);
         } catch (Exception ex) {
             this.logger.warn("Failed to update patient [{}] from JSON: {}. Source JSON was: {}", patient.getId(),
                 ex.getMessage(), json);

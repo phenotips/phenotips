@@ -56,6 +56,10 @@ public interface PatientDataController<T>
      * The error message that should be used for exceptions indicating that a PhenoTips.PatientClass has not been found.
      */
     String ERROR_MESSAGE_NO_PATIENT_CLASS = "The patient does not have a PatientClass";
+    /**
+     * The error message that should be used for exceptions indicating that an XWikiDocument has not been found.
+     */
+    String ERROR_MESSAGE_NO_XWIKI_DOCUMENT = "The patient does not have an XWikiDocument";
 
     /**
      * The error message that should be used when a controller expects data in PatientClass associated with the
@@ -86,6 +90,25 @@ public interface PatientDataController<T>
      * @param patient the patient object with data to be saved
      */
     void save(Patient patient);
+
+    /**
+     * Plays the role of a serialization function. Given a patient, saves the data that it {@link #load(Patient) loaded}
+     * for this patient in the underlying document storing the patient record. The data is saved according to the
+     * predefined {@link PatientWritePolicy}.
+     *
+     * @param patient the {@link Patient} object with data to be saved
+     * @param policy the data integration policy (not {@code null}), where the value is one of the following three:
+     *               {@link PatientWritePolicy#REPLACE} : remove all existing data for the controller, and replace with
+     *                                                    loaded data
+     *               {@link PatientWritePolicy#UPDATE}  : remove specified fields, and update them with loaded data
+     *               {@link PatientWritePolicy#MERGE}   : merge the existing and loaded data; any overlaps will be
+     *                                                    resolved in favor of loaded data
+     * @since 1.4
+     */
+    default void save(Patient patient, PatientWritePolicy policy)
+    {
+        save(patient);
+    }
 
     /**
      * Exports the data being managed by this data controller into the patient JSON export.

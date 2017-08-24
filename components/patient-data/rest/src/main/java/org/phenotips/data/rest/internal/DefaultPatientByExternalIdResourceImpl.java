@@ -19,6 +19,7 @@ package org.phenotips.data.rest.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientByExternalIdResource;
 import org.phenotips.data.rest.PatientResource;
@@ -124,9 +125,13 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
     }
 
     @Override
-    public Response updatePatient(String json, String eid)
+    public Response updatePatient(String json, String eid, String policy)
     {
         this.logger.debug("Updating patient record with external ID [{}] via REST with JSON: {}", eid, json);
+        final PatientWritePolicy policyType = PatientWritePolicy.fromString(policy);
+        if (policyType == null) {
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
         Patient patient = this.repository.getByName(eid);
         if (patient == null) {
             return checkRecords(eid, json);
@@ -148,7 +153,7 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
             throw new WebApplicationException(Status.CONFLICT);
         }
         try {
-            patient.updateFromJSON(jsonInput);
+            patient.updateFromJSON(jsonInput, policyType);
         } catch (Exception ex) {
             this.logger.warn("Failed to update patient [{}] from JSON: {}. Source JSON was: {}", patient.getId(),
                 ex.getMessage(), json);

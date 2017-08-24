@@ -21,6 +21,7 @@ import org.phenotips.data.Disorder;
 import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
+import org.phenotips.data.PatientWritePolicy;
 
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -76,6 +77,18 @@ public class SecurePatient implements Patient
      */
     @Override
     public void updateFromJSON(JSONObject json)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Disallow updates for read-only patients.
+     *
+     * @param json a JSON object
+     * @param policy the policy according to which the patient should be updated
+     */
+    @Override
+    public void updateFromJSON(JSONObject json, PatientWritePolicy policy)
     {
         throw new UnsupportedOperationException();
     }

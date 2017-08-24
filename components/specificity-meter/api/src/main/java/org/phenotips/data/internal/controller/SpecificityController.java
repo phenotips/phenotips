@@ -23,6 +23,7 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.PatientSpecificity;
 import org.phenotips.data.PatientSpecificityService;
+import org.phenotips.data.PatientWritePolicy;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -89,6 +90,12 @@ public class SpecificityController implements PatientDataController<Object>, Ini
 
     @Override
     public void save(Patient patient)
+    {
+        save(patient, PatientWritePolicy.UPDATE);
+    }
+
+    @Override
+    public void save(final Patient patient, final PatientWritePolicy policy)
     {
         // Nothing to save, the score is always computed
     }

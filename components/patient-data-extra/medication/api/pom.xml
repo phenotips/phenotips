@@ -28,6 +28,10 @@
   <artifactId>phenotips-medication-api</artifactId>
   <name>PhenoTips - Extra fields for patient data - Medication - Java APIs</name>
 
+  <properties>
+    <coverage.instructionRatio>0.99</coverage.instructionRatio>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -69,6 +73,10 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>annotations</artifactId>
     </dependency>
     <!-- Test dependencies -->
     <dependency>

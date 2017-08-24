@@ -292,7 +292,8 @@ public class MedicalReportsControllerTest
     public void saveDoesNothingWhenNoDataPresent() throws ComponentLookupException
     {
         this.mocker.getComponentUnderTest().save(this.patient);
-        Mockito.verifyZeroInteractions(this.doc);
+        verify(this.doc).getXObject(Patient.CLASS_REFERENCE, true, this.context);
+        Mockito.verifyNoMoreInteractions(this.doc);
     }
 
     @Test

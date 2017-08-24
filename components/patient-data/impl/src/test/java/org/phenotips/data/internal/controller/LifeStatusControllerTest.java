@@ -20,9 +20,9 @@ package org.phenotips.data.internal.controller;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.SimpleValuePatientData;
 
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -37,15 +37,18 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for the {@link LifeStatusController} component, implementation of the
@@ -61,10 +64,7 @@ public class LifeStatusControllerTest
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<String>>(LifeStatusController.class);
-
-    @Mock
-    private XWiki xwiki;
+        new MockitoComponentMockingRule<>(LifeStatusController.class);
 
     @Mock
     private Patient patient;
@@ -75,138 +75,226 @@ public class LifeStatusControllerTest
     @Mock
     private BaseObject data;
 
+    private PatientDataController<String> component;
+
     @Before
     public void setUp() throws Exception
     {
         MockitoAnnotations.initMocks(this);
 
+        this.component = this.mocker.getComponentUnderTest();
+
         DocumentReference patientDocRef = new DocumentReference("wiki", "patient", "00000001");
         doReturn(patientDocRef).when(this.patient).getDocumentReference();
         doReturn(this.doc).when(this.patient).getXDocument();
         doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
+        doReturn(this.data).when(this.doc).getXObject(eq(Patient.CLASS_REFERENCE), eq(true), any());
     }
 
     @Test
-    public void loadCatchesInvalidDocument() throws ComponentLookupException
+    public void loadCatchesInvalidDocument()
     {
         doReturn(null).when(this.patient).getXDocument();
 
-        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<String> result = this.component.load(this.patient);
 
         verify(this.mocker.getMockedLogger()).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), anyString());
         Assert.assertNull(result);
     }
 
     @Test
-    public void loadCatchesExceptionWhenPatientDoesNotHavePatientClass() throws ComponentLookupException
+    public void loadCatchesExceptionWhenPatientDoesNotHavePatientClass()
     {
         doReturn(null).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
-        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<String> result = this.component.load(this.patient);
 
         Assert.assertNull(result);
     }
 
     @Test
-    public void writeJSONReturnsWhenGetDataReturnsNull() throws ComponentLookupException
+    public void writeJSONReturnsWhenGetDataReturnsNull()
     {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
+        this.component.writeJSON(this.patient, json);
 
         Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNotNull() throws ComponentLookupException
+    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNotNull()
     {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(DATA_NAME);
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+        this.component.writeJSON(this.patient, json, selectedFields);
 
         Assert.assertTrue(json.has(DATA_NAME));
     }
 
     @Test
-    public void writeJSONAddsLifeStatus() throws ComponentLookupException
+    public void writeJSONAddsLifeStatus()
     {
         doReturn(new SimpleValuePatientData<>(DATA_NAME, ALIVE)).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
+        this.component.writeJSON(this.patient, json);
 
         Assert.assertEquals(ALIVE, json.get(DATA_NAME));
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsAddsLifeStatus() throws ComponentLookupException
+    public void writeJSONWithSelectedFieldsAddsLifeStatus()
     {
         doReturn(new SimpleValuePatientData<>(DATA_NAME, DECEASED)).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(DATA_NAME);
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+        this.component.writeJSON(this.patient, json, selectedFields);
 
         Assert.assertEquals(DECEASED, json.get(DATA_NAME));
     }
 
     @Test
-    public void readJSONEmptyJsonReturnsNull() throws ComponentLookupException
+    public void readJSONEmptyJsonReturnsNull()
     {
-        Assert.assertNull(this.mocker.getComponentUnderTest().readJSON(new JSONObject()));
+        Assert.assertNull(this.component.readJSON(new JSONObject()));
     }
 
     @Test
-    public void readJSONReturnsCorrectLifeStatus() throws ComponentLookupException
+    public void readJSONReturnsCorrectLifeStatus()
     {
         JSONObject json = new JSONObject();
         json.put(DATA_NAME, ALIVE);
-        PatientData<String> result = this.mocker.getComponentUnderTest().readJSON(json);
+        PatientData<String> result = this.component.readJSON(json);
         Assert.assertEquals(ALIVE, result.getValue());
 
         json = new JSONObject();
         json.put(DATA_NAME, DECEASED);
-        result = this.mocker.getComponentUnderTest().readJSON(json);
+        result = this.component.readJSON(json);
         Assert.assertEquals(DECEASED, result.getValue());
     }
 
     @Test
-    public void readJSONDoesNotReturnUnexpectedValue() throws ComponentLookupException
+    public void readJSONDoesNotReturnUnexpectedValue()
     {
         JSONObject json = new JSONObject();
         json.put(DATA_NAME, "!!!!!");
-        Assert.assertNull(this.mocker.getComponentUnderTest().readJSON(json));
+        Assert.assertNull(this.component.readJSON(json));
     }
 
     @Test
-    public void checkGetName() throws ComponentLookupException
+    public void checkGetName()
     {
-        Assert.assertEquals(DATA_NAME, this.mocker.getComponentUnderTest().getName());
+        Assert.assertEquals(DATA_NAME, this.component.getName());
     }
 
     @Test
-    public void saveAliveWhenAlive() throws XWikiException, ComponentLookupException
+    public void saveDoesNothingWhenPatientHasNoPatientClass()
+    {
+        when(this.doc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(null);
+        this.component.save(this.patient);
+        verifyZeroInteractions(this.data);
+    }
+
+    @Test
+    public void saveDoesNothingIfNoDataProvidedAndPolicyIsUpdate()
+    {
+        when(this.patient.getData(DATA_NAME)).thenReturn(null);
+        this.component.save(this.patient, PatientWritePolicy.UPDATE);
+
+        verify(this.doc, times(1)).getXObject(eq(Patient.CLASS_REFERENCE), eq(true), any());
+        verifyZeroInteractions(this.data);
+    }
+
+    @Test
+    public void saveDoesNothingIfNoDataProvidedAndPolicyIsMerge()
+    {
+        when(this.patient.getData(DATA_NAME)).thenReturn(null);
+        this.component.save(this.patient, PatientWritePolicy.MERGE);
+
+        verify(this.doc, times(1)).getXObject(eq(Patient.CLASS_REFERENCE), eq(true), any());
+        verifyZeroInteractions(this.data);
+    }
+
+    @Test
+    public void saveSetsDefaultValueIfNoDataProvidedAndPolicyIsReplace()
+    {
+        when(this.patient.getData(DATA_NAME)).thenReturn(null);
+        this.component.save(this.patient, PatientWritePolicy.REPLACE);
+
+        verify(this.doc, times(1)).getXObject(eq(Patient.CLASS_REFERENCE), eq(true), any());
+        verify(this.data, times(1)).setStringValue(DATA_NAME, ALIVE);
+        verifyNoMoreInteractions(this.data);
+    }
+
+    @Test
+    public void saveAliveWhenAliveWithUpdatePolicy()
     {
         PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, ALIVE);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
 
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.component.save(this.patient);
 
         verify(this.data).setStringValue(DATA_NAME, ALIVE);
     }
 
     @Test
-    public void saveDeceasedWhenDeceased() throws XWikiException, ComponentLookupException
+    public void saveAliveWhenAliveWithMergePolicy()
+    {
+        PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, ALIVE);
+        doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
+
+        this.component.save(this.patient, PatientWritePolicy.MERGE);
+
+        verify(this.data).setStringValue(DATA_NAME, ALIVE);
+    }
+
+    @Test
+    public void saveAliveWhenAliveWithReplacePolicy()
+    {
+        PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, ALIVE);
+        doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
+
+        this.component.save(this.patient, PatientWritePolicy.REPLACE);
+
+        verify(this.data).setStringValue(DATA_NAME, ALIVE);
+    }
+
+    @Test
+    public void saveDeceasedWhenDeceasedWithUpdatePolicy()
     {
         PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, DECEASED);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
 
-        this.mocker.getComponentUnderTest().save(this.patient);
+        this.component.save(this.patient);
+
+        verify(this.data).setStringValue(DATA_NAME, DECEASED);
+    }
+
+    @Test
+    public void saveDeceasedWhenDeceasedWithMergePolicy()
+    {
+        PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, DECEASED);
+        doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
+
+        this.component.save(this.patient, PatientWritePolicy.MERGE);
+
+        verify(this.data).setStringValue(DATA_NAME, DECEASED);
+    }
+
+    @Test
+    public void saveDeceasedWhenDeceasedWithReplacePolicy()
+    {
+        PatientData<String> lifeStatus = new SimpleValuePatientData<>(DATA_NAME, DECEASED);
+        doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
+
+        this.component.save(this.patient, PatientWritePolicy.REPLACE);
 
         verify(this.data).setStringValue(DATA_NAME, DECEASED);
     }

@@ -23,8 +23,8 @@ import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Provider;
 
@@ -56,6 +57,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -97,11 +103,14 @@ public class ClinicalDiagnosisControllerTest
     @Mock
     private Disorder disorder2;
 
+    private PatientDataController<Disorder> component;
+
     @Before
     public void setUp() throws Exception
     {
         MockitoAnnotations.initMocks(this);
 
+        this.component = this.mocker.getComponentUnderTest();
         Provider<XWikiContext> xcp = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         when(xcp.get()).thenReturn(this.xcontext);
 
@@ -109,6 +118,7 @@ public class ClinicalDiagnosisControllerTest
         doReturn(patientDocRef).when(this.patient).getDocumentReference();
         doReturn(this.doc).when(this.patient).getXDocument();
 
+        when(this.doc.getXObject(Patient.CLASS_REFERENCE, true, this.xcontext)).thenReturn(this.dataHolder);
         when(this.doc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(this.dataHolder);
         when(this.dataHolder.get(XPROPERTY_NAME)).thenReturn(this.xproperty);
         when(this.disorder1.getValue()).thenReturn(DISORDER1);
@@ -118,31 +128,31 @@ public class ClinicalDiagnosisControllerTest
     }
 
     @Test
-    public void loadForNonPatientReturnsNull() throws ComponentLookupException
+    public void loadForNonPatientReturnsNull()
     {
         when(this.doc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(null);
 
-        PatientData<Disorder> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<Disorder> result = this.component.load(this.patient);
 
         assertNull(result);
     }
 
     @Test
-    public void loadWithNoDataReturnsNull() throws ComponentLookupException, XWikiException
+    public void loadWithNoDataReturnsNull() throws XWikiException
     {
         when(this.dataHolder.get(XPROPERTY_NAME)).thenReturn(null);
 
-        PatientData<Disorder> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<Disorder> result = this.component.load(this.patient);
 
         assertNull(result);
     }
 
     @Test
-    public void loadReturnsExpectedDisorders() throws ComponentLookupException, XWikiException
+    public void loadReturnsExpectedDisorders()
     {
         when(this.xproperty.getList()).thenReturn(Arrays.asList("ORDO:1", "ORDO:2"));
 
-        PatientData<Disorder> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<Disorder> result = this.component.load(this.patient);
 
         assertEquals(2, result.size());
         assertEquals("ORDO:1", result.get(0).getValue());
@@ -150,11 +160,11 @@ public class ClinicalDiagnosisControllerTest
     }
 
     @Test
-    public void loadSkipsEmptyValues() throws ComponentLookupException, XWikiException
+    public void loadSkipsEmptyValues()
     {
         when(this.xproperty.getList()).thenReturn(Arrays.asList("ORDO:1", "", null, "ORDO:2"));
 
-        PatientData<Disorder> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<Disorder> result = this.component.load(this.patient);
 
         assertEquals(2, result.size());
         assertEquals("ORDO:1", result.get(0).getValue());
@@ -162,84 +172,154 @@ public class ClinicalDiagnosisControllerTest
     }
 
     @Test
-    public void loadCatchesXWikiExceptionsThenReturnsNull() throws ComponentLookupException, XWikiException
+    public void loadCatchesXWikiExceptionsThenReturnsNull() throws XWikiException
     {
         when(this.dataHolder.get(XPROPERTY_NAME)).thenThrow(new XWikiException());
 
-        PatientData<Disorder> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<Disorder> result = this.component.load(this.patient);
 
         assertNull(result);
     }
 
     @Test
-    public void saveDoesNothingWhenNoDataAvailable() throws ComponentLookupException
+    public void saveThrowsExceptionWhenPatientHasNoPatientClass()
+    {
+        when(this.doc.getXObject(Patient.CLASS_REFERENCE, true, this.xcontext)).thenReturn(null);
+        this.component.save(this.patient);
+    }
+
+    @Test
+    public void saveDoesNothingWhenNoDataAvailableAndPolicyIsUpdate()
     {
         when(this.patient.getData(DATA_NAME)).thenReturn(null);
-        this.mocker.getComponentUnderTest().save(this.patient);
-        Mockito.verifyZeroInteractions(this.doc);
+        this.component.save(this.patient, PatientWritePolicy.UPDATE);
+        Mockito.verify(this.doc, times(1)).getXObject(Patient.CLASS_REFERENCE, true, this.xcontext);
+        verifyZeroInteractions(this.dataHolder);
+        verifyNoMoreInteractions(this.doc);
     }
 
     @Test
-    public void saveResetsDiagnosisToEmptyForEmptyData() throws ComponentLookupException
+    public void saveDoesNothingWhenNoDataAvailableAndPolicyIsMerge()
+    {
+        when(this.patient.getData(DATA_NAME)).thenReturn(null);
+        this.component.save(this.patient, PatientWritePolicy.MERGE);
+        verify(this.doc, times(1)).getXObject(Patient.CLASS_REFERENCE, true, this.xcontext);
+        verifyZeroInteractions(this.dataHolder);
+        verifyNoMoreInteractions(this.doc);
+    }
+
+    @Test
+    public void saveDeletesAllStoredDataWhenNoDataAvailableAndPolicyIsReplace()
+    {
+        when(this.patient.getData(DATA_NAME)).thenReturn(null);
+        this.component.save(this.patient, PatientWritePolicy.REPLACE);
+        verify(this.doc, times(1)).getXObject(Patient.CLASS_REFERENCE, true, this.xcontext);
+        verify(this.dataHolder, times(1)).set(XPROPERTY_NAME, null, this.xcontext);
+        verifyNoMoreInteractions(this.doc);
+        verifyNoMoreInteractions(this.dataHolder);
+    }
+
+    @Test
+    public void saveResetsDiagnosisToNullForEmptyData()
     {
         when(this.patient.getData(DATA_NAME)).thenReturn(new IndexedPatientData<>(DATA_NAME, Collections.emptyList()));
-        this.mocker.getComponentUnderTest().save(this.patient);
-        Mockito.verify(this.dataHolder).set(XPROPERTY_NAME, Collections.emptyList(), this.xcontext);
+        this.component.save(this.patient);
+        verify(this.dataHolder).set(XPROPERTY_NAME, null, this.xcontext);
     }
 
     @Test
-    public void saveIgnoresNonIndexedData() throws ComponentLookupException
+    public void saveDoesNothingForNonIndexedData()
     {
         when(this.patient.<Disorder>getData(DATA_NAME))
-            .thenReturn(new DictionaryPatientData<>(DATA_NAME, Collections.<String, Disorder>emptyMap()));
-        this.mocker.getComponentUnderTest().save(this.patient);
-        Mockito.verifyZeroInteractions(this.doc);
-        Mockito.verifyZeroInteractions(this.dataHolder);
+            .thenReturn(new DictionaryPatientData<>(DATA_NAME, Collections.emptyMap()));
+        this.component.save(this.patient);
+        verify(this.doc, times(1)).getXObject(Patient.CLASS_REFERENCE, true, this.xcontext);
+        verifyZeroInteractions(this.dataHolder);
+        verifyNoMoreInteractions(this.doc);
     }
 
     @Test
-    public void saveSetsCorrectDiagnosis() throws ComponentLookupException
+    public void saveSetsCorrectDiagnosisWhenPolicyIsUpdate()
     {
+        final List<String> dataList = Arrays.asList(DISORDER1, DISORDER2);
         PatientData<Disorder> data = new IndexedPatientData<>(DATA_NAME, Arrays.asList(this.disorder1, this.disorder2));
         when(this.patient.<Disorder>getData(DATA_NAME)).thenReturn(data);
-        this.mocker.getComponentUnderTest().save(this.patient);
-        Mockito.verify(this.dataHolder).set(XPROPERTY_NAME, Arrays.asList(DISORDER1, DISORDER2), this.xcontext);
+        this.component.save(this.patient);
+        verify(this.doc, times(1)).getXObject(Patient.CLASS_REFERENCE, true, this.xcontext);
+        verify(this.dataHolder).set(XPROPERTY_NAME, dataList, this.xcontext);
+        verifyNoMoreInteractions(this.dataHolder);
+        verifyNoMoreInteractions(this.doc);
     }
 
     @Test
-    public void writeJSONWritesEmptyArrayWhenNoDataAvailable() throws ComponentLookupException
+    public void saveSetsCorrectDiagnosisWhenPolicyIsMerge() throws XWikiException
+    {
+        final List<String> dataList = Arrays.asList(DISORDER2, DISORDER1);
+        PatientData<Disorder> data = new IndexedPatientData<>(DATA_NAME, Collections.singletonList(this.disorder1));
+        when(this.patient.<Disorder>getData(DATA_NAME)).thenReturn(data);
+
+        final ListProperty stored = mock(ListProperty.class);
+        when(this.dataHolder.get(XPROPERTY_NAME)).thenReturn(stored);
+        when(stored.getList()).thenReturn(Collections.singletonList(DISORDER2));
+
+        this.component.save(this.patient, PatientWritePolicy.MERGE);
+        // Once for save() and once for load().
+        verify(this.doc, times(1)).getXObject(Patient.CLASS_REFERENCE, true, this.xcontext);
+        verify(this.doc, times(1)).getXObject(Patient.CLASS_REFERENCE);
+        verify(this.dataHolder, times(1)).get(XPROPERTY_NAME);
+        verify(this.dataHolder, times(1)).set(XPROPERTY_NAME, dataList, this.xcontext);
+        verifyNoMoreInteractions(this.dataHolder);
+        verifyNoMoreInteractions(this.doc);
+    }
+
+    @Test
+    public void saveSetsCorrectDiagnosisWhenPolicyIsReplace()
+    {
+        final List<String> dataList = Collections.singletonList(DISORDER1);
+        PatientData<Disorder> data = new IndexedPatientData<>(DATA_NAME, Collections.singletonList(this.disorder1));
+        when(this.patient.<Disorder>getData(DATA_NAME)).thenReturn(data);
+
+        this.component.save(this.patient, PatientWritePolicy.REPLACE);
+        verify(this.doc, times(1)).getXObject(Patient.CLASS_REFERENCE, true, this.xcontext);
+        verify(this.dataHolder, times(1)).set(XPROPERTY_NAME, dataList, this.xcontext);
+        verifyNoMoreInteractions(this.dataHolder);
+        verifyNoMoreInteractions(this.doc);
+    }
+
+    @Test
+    public void writeJSONWritesEmptyArrayWhenNoDataAvailable()
     {
         when(this.patient.getData(DATA_NAME)).thenReturn(null);
         JSONObject json = new JSONObject();
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
+        this.component.writeJSON(this.patient, json);
 
         assertTrue(json.has(DATA_NAME));
         assertEquals(0, json.getJSONArray(DATA_NAME).length());
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsWritesEmptyArrayWhenNoDataAvailable() throws ComponentLookupException
+    public void writeJSONWithSelectedFieldsWritesEmptyArrayWhenNoDataAvailable()
     {
         when(this.patient.getData(DATA_NAME)).thenReturn(null);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new ArrayList<>();
         selectedFields.add(XPROPERTY_NAME);
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+        this.component.writeJSON(this.patient, json, selectedFields);
 
         assertTrue(json.has(DATA_NAME));
         assertEquals(0, json.getJSONArray(DATA_NAME).length());
     }
 
     @Test
-    public void writeJSONOutputsData() throws ComponentLookupException
+    public void writeJSONOutputsData()
     {
         PatientData<Disorder> data = new IndexedPatientData<>(DATA_NAME, Arrays.asList(this.disorder1, this.disorder2));
         when(this.patient.<Disorder>getData(DATA_NAME)).thenReturn(data);
         JSONObject json = new JSONObject();
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
+        this.component.writeJSON(this.patient, json);
 
         assertNotNull(json.getJSONArray(DATA_NAME));
         assertEquals(2, json.getJSONArray(DATA_NAME).length());
@@ -248,61 +328,60 @@ public class ClinicalDiagnosisControllerTest
     }
 
     @Test
-    public void writeJSONWithoutFieldSelectedDoesNothing() throws ComponentLookupException
+    public void writeJSONWithoutFieldSelectedDoesNothing()
     {
         PatientData<Disorder> data = new IndexedPatientData<>(DATA_NAME, Arrays.asList(this.disorder1, this.disorder2));
         when(this.patient.<Disorder>getData(DATA_NAME)).thenReturn(data);
         JSONObject json = new JSONObject();
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, Collections.singletonList("phenotype"));
+        this.component.writeJSON(this.patient, json, Collections.singletonList("phenotype"));
 
         assertFalse(json.has(DATA_NAME));
     }
 
     @Test
-    public void readJSONReturnsNullForNullInput() throws ComponentLookupException
+    public void readJSONReturnsNullForNullInput()
     {
-        assertNull(this.mocker.getComponentUnderTest().readJSON(null));
+        assertNull(this.component.readJSON(null));
     }
 
     @Test
-    public void readJSONReturnsNullWhenDataMissing() throws ComponentLookupException
+    public void readJSONReturnsNullWhenDataMissing()
     {
-        assertNull(this.mocker.getComponentUnderTest().readJSON(new JSONObject()));
+        assertNull(this.component.readJSON(new JSONObject()));
     }
 
     @Test
-    public void readJSONReturnsNullWhenDataIsNotArray() throws ComponentLookupException
+    public void readJSONReturnsNullWhenDataIsNotArray()
     {
-        assertNull(this.mocker.getComponentUnderTest().readJSON(new JSONObject("{\"clinical-diagnosis\":true}")));
-        assertNull(this.mocker.getComponentUnderTest().readJSON(new JSONObject("{\"clinical-diagnosis\":5}")));
-        assertNull(this.mocker.getComponentUnderTest().readJSON(new JSONObject("{\"clinical-diagnosis\":{}}")));
+        assertNull(this.component.readJSON(new JSONObject("{\"clinical-diagnosis\":true}")));
+        assertNull(this.component.readJSON(new JSONObject("{\"clinical-diagnosis\":5}")));
+        assertNull(this.component.readJSON(new JSONObject("{\"clinical-diagnosis\":{}}")));
     }
 
     @Test
-    public void readJSONReadsDisorders() throws ComponentLookupException
+    public void readJSONReadsDisorders()
     {
-        PatientData<Disorder> result = this.mocker.getComponentUnderTest()
-            .readJSON(new JSONObject("{\"clinical-diagnosis\":[{\"id\":\"ORDO:1\"},{\"id\":\"ORDO:2\"}]}"));
+        PatientData<Disorder> result = this.component.readJSON(
+            new JSONObject("{\"clinical-diagnosis\":[{\"id\":\"ORDO:1\"},{\"id\":\"ORDO:2\"}]}"));
         assertEquals(2, result.size());
         assertEquals(DISORDER1, result.get(0).getId());
         assertEquals(DISORDER2, result.get(1).getId());
     }
 
     @Test
-    public void readJSONIgnoresNonDisorders() throws ComponentLookupException
+    public void readJSONIgnoresNonDisorders()
     {
-        PatientData<Disorder> result = this.mocker.getComponentUnderTest()
-            .readJSON(
-                new JSONObject("{\"clinical-diagnosis\":[{\"id\":\"ORDO:1\"},null,false,5,{\"id\":\"ORDO:2\"}]}"));
+        PatientData<Disorder> result = this.component.readJSON(
+            new JSONObject("{\"clinical-diagnosis\":[{\"id\":\"ORDO:1\"},null,false,5,{\"id\":\"ORDO:2\"}]}"));
         assertEquals(2, result.size());
         assertEquals(DISORDER1, result.get(0).getId());
         assertEquals(DISORDER2, result.get(1).getId());
     }
 
     @Test
-    public void checkGetName() throws ComponentLookupException
+    public void checkGetName()
     {
-        Assert.assertEquals(DATA_NAME, this.mocker.getComponentUnderTest().getName());
+        Assert.assertEquals(DATA_NAME, this.component.getName());
     }
 }

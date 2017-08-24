@@ -21,6 +21,7 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.VocabularyProperty;
 import org.phenotips.data.internal.AbstractPhenoTipsVocabularyProperty;
 
@@ -30,16 +31,26 @@ import org.xwiki.model.reference.ObjectPropertyReference;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONArray;
@@ -293,29 +304,134 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     @Override
     public void save(Patient patient)
     {
-        BaseObject dataHolder = patient.getXDocument().getXObject(getXClassReference());
-        PatientData<T> data = patient.getData(this.getName());
-        if (dataHolder == null || data == null) {
-            return;
-        }
-        XWikiContext context = this.contextProvider.get();
-        for (String propertyName : getProperties()) {
-            Object propertyValue = data.get(propertyName);
-            if (isInKeySet(data, propertyName)) {
-                if (this.getCodeFields().contains(propertyName) && this.isCodeFieldsOnly()) {
-                    @SuppressWarnings("unchecked")
-                    List<VocabularyProperty> terms = (List<VocabularyProperty>) propertyValue;
-                    List<String> listToStore = new LinkedList<>();
-                    for (VocabularyProperty term : terms) {
-                        String name = StringUtils.isNotBlank(term.getId()) ? term.getId() : term.getName();
-                        listToStore.add(name);
-                    }
-                    dataHolder.set(propertyName, listToStore, context);
-                } else {
-                    dataHolder.set(propertyName, this.saveFormat(propertyValue), context);
+        save(patient, PatientWritePolicy.UPDATE);
+    }
+
+    @Override
+    public void save(@Nonnull final Patient patient, @Nonnull final PatientWritePolicy policy)
+    {
+        try {
+            final XWikiContext context = this.contextProvider.get();
+            final BaseObject dataHolder = patient.getXDocument().getXObject(getXClassReference(), true, context);
+            final PatientData<T> data = patient.getData(this.getName());
+            if (data == null) {
+                if (PatientWritePolicy.REPLACE.equals(policy)) {
+                    getProperties().forEach(propertyName -> dataHolder.set(propertyName, null, context));
                 }
+            } else {
+                if (!data.isNamed()) {
+                    this.logger.error(ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT);
+                    return;
+                }
+                saveControllerData(patient, dataHolder, data, policy, context);
             }
+        } catch (final Exception ex) {
+            this.logger.error("Failed to save controller data: {}", ex.getMessage(), ex);
         }
+    }
+
+    /**
+     * Saves the updated data for the controller.
+     *
+     * @param patient the {@link Patient} being modified
+     * @param dataHolder the {@link BaseObject}
+     * @param data the new {@link PatientData} to store
+     * @param policy the {@link PatientWritePolicy} according to which data will be saved
+     * @param context the {@link XWikiContext} object
+     */
+    private void saveControllerData(
+        @Nonnull final Patient patient,
+        @Nonnull final BaseObject dataHolder,
+        @Nonnull final PatientData<T> data,
+        @Nonnull final PatientWritePolicy policy,
+        @Nonnull final XWikiContext context)
+    {
+        final Predicate<String> propertyFilter;
+        final PatientData<T> storedData;
+        // If the policy is MERGE, need to merge incoming data with data already stored in patient.
+        if (PatientWritePolicy.MERGE.equals(policy)) {
+            propertyFilter = data::containsKey;
+            storedData = load(patient);
+        } else {
+            propertyFilter = PatientWritePolicy.REPLACE.equals(policy) ? p -> true : data::containsKey;
+            storedData = null;
+        }
+        getProperties().stream()
+            .filter(propertyFilter)
+            .forEach(property -> saveDataForProperty(property, dataHolder, data, storedData, context));
+    }
+
+    /**
+     * Saves the data provided for some property.
+     *
+     * @param propertyName the name of the property of interest
+     * @param dataHolder the {@link BaseObject}
+     * @param data the new {@link PatientData} to store
+     * @param storedData the {@link PatientData} already stored in patient
+     * @param context the {@link XWikiContext} object
+     */
+    private void saveDataForProperty(
+        @Nonnull final String propertyName,
+        @Nonnull final BaseObject dataHolder,
+        @Nonnull final PatientData<T> data,
+        @Nullable final PatientData<T> storedData,
+        @Nonnull final XWikiContext context)
+    {
+        final Object propertyValue = data.get(propertyName);
+        if (getCodeFields().contains(propertyName) && isCodeFieldsOnly()) {
+            final Object storedPropertyValue = storedData != null ? storedData.get(propertyName) : null;
+            @SuppressWarnings("unchecked")
+            final List<VocabularyProperty> storedTerms = (List<VocabularyProperty>) storedPropertyValue;
+            @SuppressWarnings("unchecked")
+            final List<VocabularyProperty> terms = (List<VocabularyProperty>) propertyValue;
+            final List<String> value = buildMergedCodeFieldData(storedTerms, terms);
+            dataHolder.set(propertyName, value, context);
+        } else {
+            final Object value = propertyValue instanceof Collection
+                ? buildMergedData(propertyValue, storedData != null ? storedData.get(propertyName) : null)
+                : saveFormat(propertyValue);
+            dataHolder.set(propertyName, value, context);
+        }
+    }
+
+    /**
+     * Returns a merged collection of data from {@code value} and {@code storedValue}.
+     *
+     * @param value the collection of new data
+     * @param storedValue the data collection stored in patient
+     * @return a merged list of objects for {@code value} and {@code storedValue}
+     */
+    private List<Object> buildMergedData(@Nullable final Object value, @Nullable final Object storedValue)
+    {
+        final Collection<Object> storedList = (Collection<Object>) storedValue;
+        final Collection<Object> valueList = (Collection<Object>) value;
+        final Set<Object> merged = Stream.of(storedList, valueList)
+            .filter(Objects::nonNull)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        return CollectionUtils.isNotEmpty(merged) ? new ArrayList<>(merged) : null;
+    }
+
+    /**
+     * Given a list of {@code storedTerms stored terms} and a list of updated {@code terms}, return a merged set of
+     * data.
+     *
+     * @param storedTerms the {@link VocabularyProperty terms} already stored in patient
+     * @param terms the updated list of {@link VocabularyProperty terms}
+     * @return a merged list of term identifiers
+     */
+    private List<String> buildMergedCodeFieldData(
+        @Nullable final List<VocabularyProperty> storedTerms,
+        @Nullable final List<VocabularyProperty> terms)
+    {
+        final Set<String> merged = Stream.of(storedTerms, terms)
+            .filter(Objects::nonNull)
+            .flatMap(Collection::stream)
+            .map(term -> StringUtils.isNotBlank(term.getId()) ? term.getId() : term.getName())
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        return CollectionUtils.isNotEmpty(merged) ? new ArrayList<>(merged) : null;
     }
 
     @Override

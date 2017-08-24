@@ -23,21 +23,27 @@ import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.internal.PhenoTipsFeature;
-import org.phenotips.data.internal.PhenoTipsFeatureMetadatum;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -66,14 +72,18 @@ import com.xpn.xwiki.objects.ListProperty;
 @Singleton
 public class FeaturesController extends AbstractComplexController<Feature>
 {
-    /** used for generating JSON and reading from JSON. */
+    /**
+     * used for generating JSON and reading from JSON.
+     */
     private static final String JSON_KEY_FEATURES = "features";
 
     private static final String JSON_KEY_NON_STANDARD_FEATURES = "nonstandard_features";
 
     private static final String CONTROLLER_NAME = JSON_KEY_FEATURES;
 
-    /** Known phenotype properties. */
+    /**
+     * Known phenotype properties.
+     */
     private static final String PHENOTYPE_POSITIVE_PROPERTY = "phenotype";
 
     private static final String PRENATAL_PHENOTYPE_PREFIX = "prenatal_";
@@ -92,7 +102,9 @@ public class FeaturesController extends AbstractComplexController<Feature>
     @Inject
     private Logger logger;
 
-    /** Provides access to the current execution context. */
+    /**
+     * Provides access to the current execution context.
+     */
     @Inject
     private Provider<XWikiContext> xcontextProvider;
 
@@ -141,7 +153,8 @@ public class FeaturesController extends AbstractComplexController<Feature>
             Collection<BaseProperty<EntityReference>> fields = data.getFieldList();
             for (BaseProperty<EntityReference> field : fields) {
                 if (field == null || !field.getName().matches("(?!extended_)(.*_)?phenotype")
-                    || !ListProperty.class.isInstance(field)) {
+                    || !ListProperty.class.isInstance(field))
+                {
                     continue;
                 }
                 ListProperty values = (ListProperty) field;
@@ -174,7 +187,9 @@ public class FeaturesController extends AbstractComplexController<Feature>
         json.put(JSON_KEY_NON_STANDARD_FEATURES, nonStandardFeaturesToJSON(data, selectedFieldNames));
     }
 
-    /** creates & returns a new JSON array of all patient features (as JSON objects). */
+    /**
+     * creates & returns a new JSON array of all patient features (as JSON objects).
+     */
     private JSONArray featuresToJSON(PatientData<Feature> data, Collection<String> selectedFields)
     {
         JSONArray featuresJSON = new JSONArray();
@@ -202,7 +217,8 @@ public class FeaturesController extends AbstractComplexController<Feature>
             while (iterator.hasNext()) {
                 Feature phenotype = iterator.next();
                 if (StringUtils.isNotBlank(phenotype.getId())
-                    || !isFieldIncluded(selectedFields, phenotype.getType())) {
+                    || !isFieldIncluded(selectedFields, phenotype.getType()))
+                {
                     continue;
                 }
                 JSONObject featureJSON = phenotype.toJSON();
@@ -281,96 +297,206 @@ public class FeaturesController extends AbstractComplexController<Feature>
     @Override
     public void save(Patient patient)
     {
-        PatientData<Feature> features = patient.getData(this.getName());
-        if (features == null || !features.isIndexed()) {
-            return;
-        }
+        save(patient, PatientWritePolicy.UPDATE);
+    }
 
-        XWikiDocument docX = patient.getXDocument();
-        BaseObject data = docX.getXObject(Patient.CLASS_REFERENCE);
-        XWikiContext context = this.xcontextProvider.get();
-
-        // new feature lists (for setting values in the Wiki document)
-        Map<String, List<String>> featuresMap = new TreeMap<>();
-        Iterator<Feature> iterator = features.iterator();
-        while (iterator.hasNext()) {
-            Feature feature = iterator.next();
-            String featureType = feature.getType();
-            if (!feature.isPresent()) {
-                featureType = PhenoTipsFeature.NEGATIVE_PHENOTYPE_PREFIX + featureType;
-            }
-            if (featuresMap.keySet().contains(featureType)) {
-                featuresMap.get(featureType).add(feature.getValue());
-            } else {
-                List<String> newFeatureType = new LinkedList<>();
-                newFeatureType.add(feature.getValue());
-                featuresMap.put(featureType, newFeatureType);
-            }
-        }
-
-        // to reset values in the document null them first
-        for (String type : PHENOTYPE_PROPERTIES) {
-            data.set(type, null, context);
-        }
-
-        for (String type : featuresMap.keySet()) {
-            data.set(type, featuresMap.get(type), context);
-        }
-
+    @Override
+    public void save(@Nonnull final Patient patient, @Nonnull final PatientWritePolicy policy)
+    {
         try {
-            // update features' metadata objects in document
-            updateMetaData(features, docX, context);
-
-            // update features' categories objects in document
-            updateCategories(features, docX, context);
-        } catch (Exception e) {
-            this.logger.error("Failed to update phenotypes: [{}]", e.getMessage());
+            final XWikiDocument docX = patient.getXDocument();
+            final XWikiContext context = this.xcontextProvider.get();
+            final BaseObject dataHolder = docX.getXObject(Patient.CLASS_REFERENCE, true, context);
+            final PatientData<Feature> features = patient.getData(getName());
+            if (features == null) {
+                if (PatientWritePolicy.REPLACE.equals(policy)) {
+                    clearFeatureData(docX, dataHolder, context);
+                }
+            } else {
+                if (!features.isIndexed()) {
+                    this.logger.error(ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT);
+                    return;
+                }
+                saveFeatures(docX, dataHolder, patient, features, policy, context);
+            }
+        } catch (final Exception ex) {
+            this.logger.error("Failed to save features data: {}", ex.getMessage(), ex);
         }
     }
 
-    private void updateMetaData(PatientData<Feature> features, XWikiDocument doc, XWikiContext context)
-        throws XWikiException
+    /**
+     * Saves specified {@code features} for {@code patient} according to the provided {@code policy}.
+     *
+     * @param docX the {@link XWikiDocument} object for the {@code patient}
+     * @param dataHolder the {@link BaseObject} for writing features
+     * @param patient the {@link Patient} of interest
+     * @param features a {@link PatientData} object containing feature data to be saved
+     * @param policy the {@link PatientWritePolicy} according to which data will be saved
+     * @param context the {@link XWikiContext}
+     */
+    private void saveFeatures(
+        @Nonnull final XWikiDocument docX,
+        @Nonnull final BaseObject dataHolder,
+        @Nonnull final Patient patient,
+        @Nonnull final PatientData<Feature> features,
+        @Nonnull final PatientWritePolicy policy,
+        @Nonnull final XWikiContext context)
     {
-        doc.removeXObjects(FeatureMetadatum.CLASS_REFERENCE);
-        Iterator<Feature> iterator = features.iterator();
-        while (iterator.hasNext()) {
-            Feature feature = iterator.next();
-            @SuppressWarnings("unchecked")
-            Map<String, FeatureMetadatum> metadataMap = (Map<String, FeatureMetadatum>) feature.getMetadata();
-            if (metadataMap.isEmpty() && feature.getNotes().isEmpty()) {
-                continue;
-            }
+        final Stream<Feature> featureStream = PatientWritePolicy.MERGE.equals(policy)
+            ? buildFeaturesStream(load(patient), features)
+            : StreamSupport.stream(features.spliterator(), false);
 
-            BaseObject metaObject = doc.newXObject(FeatureMetadatum.CLASS_REFERENCE, context);
+        clearFeatureData(docX, dataHolder, context);
+
+        featureStream
+            .collect(Collectors.groupingBy(this::getFeatureType,
+                Collectors.mapping(feature -> saveFeatureAndGetValue(docX, feature, context), Collectors.toList()))
+            ).forEach(
+                (type, ids) -> dataHolder.set(type, ids, context)
+        );
+    }
+
+    /**
+     * Gets the type from the provided {@code feature}.
+     *
+     * @param feature the {@link Feature} object of interest
+     * @return type as string
+     */
+    private String getFeatureType(@Nonnull final Feature feature)
+    {
+        return feature.isPresent() ? feature.getType() : this.addNegativePrefix(feature);
+    }
+
+    /**
+     * Builds a map of {@link Feature} ID to {@link Feature} from {@code storedFeatures stored feature} and newly
+     * entered {@code features} data.
+     *
+     * @param storedFeatures stored {@link PatientData} features data
+     * @param features newly added {@link PatientData} features data
+     * @return a merged map of feature ID to {@link Feature}
+     */
+    private Stream<Feature> buildFeaturesStream(
+        @Nullable final PatientData<Feature> storedFeatures,
+        @Nonnull final PatientData<Feature> features)
+    {
+        return storedFeatures == null
+            ? StreamSupport.stream(features.spliterator(), false)
+            : Stream.of(storedFeatures, features)
+                .flatMap(s -> StreamSupport.stream(s.spliterator(), false))
+                .collect(
+                    Collectors.toMap(Feature::getValue, Function.identity(), this::mergeFeatures, LinkedHashMap::new))
+                .values()
+                .stream();
+    }
+
+    /**
+     * Clears any stored feature data.
+     *
+     * @param docX the {@link XWikiDocument}
+     * @param dataHolder the {@link BaseObject} holding features data
+     * @param context the {@link XWikiContext}
+     */
+    private void clearFeatureData(
+        @Nonnull final XWikiDocument docX,
+        @Nonnull final BaseObject dataHolder,
+        @Nonnull final XWikiContext context)
+    {
+        Arrays.stream(PHENOTYPE_PROPERTIES).forEach(type -> dataHolder.set(type, null, context));
+        docX.removeXObjects(FeatureMetadatum.CLASS_REFERENCE);
+        docX.removeXObjects(PhenoTipsFeature.CATEGORY_CLASS_REFERENCE);
+    }
+
+    /**
+     * Resolves collisions between features with the same ID, by selecting the newly entered feature.
+     *
+     * @param oldFeature the {@link Feature} already stored
+     * @param newFeature the new {@link Feature}
+     * @return the merged {@link Feature} data; in this case this will be new new {@link Feature}
+     */
+    private Feature mergeFeatures(@Nonnull final Feature oldFeature, @Nonnull final Feature newFeature)
+    {
+        return newFeature;
+    }
+
+    /**
+     * Adds the negative phenotype prefix to {@code feature} type.
+     *
+     * @param feature the {@link Feature} object of interest
+     * @return a string of {@link Feature#getType()} prefixed by the negative phenotype prefix
+     */
+    private String addNegativePrefix(@Nonnull final Feature feature)
+    {
+        return PhenoTipsFeature.NEGATIVE_PHENOTYPE_PREFIX + feature.getType();
+    }
+
+    /**
+     * Saves data for provided {@code feature}, and returns its value.
+     *
+     * @param doc the {@link XWikiDocument} object for the patient
+     * @param feature the {@link Feature} of interest
+     * @param context the {@link XWikiContext}
+     * @return the {@code feature} value
+     */
+    private String saveFeatureAndGetValue(
+        @Nonnull final XWikiDocument doc,
+        @Nonnull final Feature feature,
+        @Nonnull final XWikiContext context)
+    {
+        try {
+            updateMetaData(doc, feature, context);
+            updateCategories(doc, feature, context);
+        } catch (final Exception e) {
+            this.logger.error("Failed to update phenotypes: [{}]", e.getMessage());
+        }
+        return feature.getValue();
+    }
+
+    /**
+     * Updates metadata for a {@code feature}.
+     *
+     * @param doc the {@link XWikiDocument} object for the patient
+     * @param feature the {@link Feature} of interest
+     * @param context the {@link XWikiContext}
+     * @throws XWikiException if meta data cannot be updated
+     */
+    private void updateMetaData(
+        @Nonnull final XWikiDocument doc,
+        @Nonnull final Feature feature,
+        @Nonnull final XWikiContext context) throws XWikiException
+    {
+        @SuppressWarnings("unchecked")
+        final Map<String, FeatureMetadatum> metadata =
+            (Map<String, FeatureMetadatum>) feature.getMetadata();
+
+        if (!metadata.isEmpty() || !feature.getNotes().isEmpty()) {
+            final BaseObject metaObject = doc.newXObject(FeatureMetadatum.CLASS_REFERENCE, context);
             metaObject.set(PhenoTipsFeature.META_PROPERTY_NAME, feature.getPropertyName(),
                 context);
             metaObject.set(PhenoTipsFeature.META_PROPERTY_VALUE, feature.getValue(), context);
-            for (String type : metadataMap.keySet()) {
-                PhenoTipsFeatureMetadatum metadatum = (PhenoTipsFeatureMetadatum) metadataMap.get(type);
-                metaObject.set(type, metadatum.getId(), context);
-            }
+            metadata.forEach((type, metadatum) -> metaObject.set(type, metadatum.getId(), context));
             metaObject.set("comments", feature.getNotes(), context);
         }
     }
 
-    private void updateCategories(PatientData<Feature> features, XWikiDocument doc, XWikiContext context)
-        throws XWikiException
+    /**
+     * Updates categories for a {@code feature}.
+     *
+     * @param doc the {@link XWikiDocument} object for the patient
+     * @param feature the {@link Feature} of interest
+     * @param context the {@link XWikiContext}
+     * @throws XWikiException if categories cannot be updated
+     */
+    private void updateCategories(
+        @Nonnull final XWikiDocument doc,
+        @Nonnull final Feature feature,
+        @Nonnull final XWikiContext context) throws XWikiException
     {
-        doc.removeXObjects(PhenoTipsFeature.CATEGORY_CLASS_REFERENCE);
-        Iterator<Feature> iterator = features.iterator();
-        while (iterator.hasNext()) {
-            Feature feature = iterator.next();
-            List<String> categories = feature.getCategories();
-            if (categories.isEmpty()) {
-                continue;
-            }
-
-            BaseObject categoriesObject = doc.newXObject(PhenoTipsFeature.CATEGORY_CLASS_REFERENCE, context);
-            categoriesObject.set(PhenoTipsFeature.META_PROPERTY_NAME, feature.getPropertyName(),
-                context);
+        final List<String> categories = feature.getCategories();
+        if (!categories.isEmpty()) {
+            final BaseObject categoriesObject = doc.newXObject(PhenoTipsFeature.CATEGORY_CLASS_REFERENCE, context);
+            categoriesObject.set(PhenoTipsFeature.META_PROPERTY_NAME, feature.getPropertyName(), context);
             categoriesObject.set(PhenoTipsFeature.META_PROPERTY_VALUE, feature.getValue(), context);
             categoriesObject.set(PhenoTipsFeature.META_PROPERTY_CATEGORIES, categories, context);
         }
     }
-
 }

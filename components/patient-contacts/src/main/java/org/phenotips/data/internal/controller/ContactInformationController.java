@@ -23,6 +23,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientContactsManager;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 
 import org.xwiki.component.annotation.Component;
 
@@ -64,6 +65,12 @@ public class ContactInformationController implements PatientDataController<Conta
 
     @Override
     public void save(Patient patient)
+    {
+        save(patient, PatientWritePolicy.UPDATE);
+    }
+
+    @Override
+    public void save(final Patient patient, final PatientWritePolicy policy)
     {
         // This is a read-only controller, at least for the moment, so nothing to do
     }

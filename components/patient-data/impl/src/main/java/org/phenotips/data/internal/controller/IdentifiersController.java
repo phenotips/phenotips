@@ -21,6 +21,7 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 
 import org.xwiki.component.annotation.Component;
 
@@ -30,13 +31,16 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -59,6 +63,9 @@ public class IdentifiersController implements PatientDataController<String>
     @Inject
     private Logger logger;
 
+    @Inject
+    private Provider<XWikiContext> xcontext;
+
     @Override
     public PatientData<String> load(Patient patient)
     {
@@ -80,17 +87,32 @@ public class IdentifiersController implements PatientDataController<String>
     @Override
     public void save(Patient patient)
     {
-        BaseObject data = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE);
-        if (data == null) {
-            throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
-        }
+        save(patient, PatientWritePolicy.UPDATE);
+    }
 
-        PatientData<String> identifiers = patient.<String>getData(DATA_NAME);
-        if (!identifiers.isNamed()) {
-            return;
+    @Override
+    public void save(@Nonnull final Patient patient, @Nonnull final PatientWritePolicy policy)
+    {
+        try {
+            final BaseObject data = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE, true,
+                this.xcontext.get());
+            final PatientData<String> identifiers = patient.getData(DATA_NAME);
+            if (identifiers == null) {
+                if (PatientWritePolicy.REPLACE.equals(policy)) {
+                    data.setStringValue(EXTERNAL_IDENTIFIER_PROPERTY_NAME, null);
+                }
+            } else {
+                if (!identifiers.isNamed()) {
+                    this.logger.error(ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT);
+                    return;
+                }
+
+                final String externalId = identifiers.get(EXTERNAL_IDENTIFIER_PROPERTY_NAME);
+                data.setStringValue(EXTERNAL_IDENTIFIER_PROPERTY_NAME, externalId);
+            }
+        } catch (final Exception ex) {
+            this.logger.error("Failed to save identifiers data: {}", ex.getMessage(), ex);
         }
-        String externalId = identifiers.get(EXTERNAL_IDENTIFIER_PROPERTY_NAME);
-        data.setStringValue(EXTERNAL_IDENTIFIER_PROPERTY_NAME, externalId);
     }
 
     @Override

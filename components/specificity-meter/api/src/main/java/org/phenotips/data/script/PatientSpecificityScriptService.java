@@ -23,6 +23,7 @@ import org.phenotips.data.FeatureMetadatum;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientSpecificityService;
+import org.phenotips.data.PatientWritePolicy;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
@@ -280,6 +281,12 @@ public class PatientSpecificityScriptService implements ScriptService
 
         @Override
         public void updateFromJSON(JSONObject json)
+        {
+            // Nothing to do
+        }
+
+        @Override
+        public void updateFromJSON(final JSONObject json, final PatientWritePolicy policy)
         {
             // Nothing to do
         }

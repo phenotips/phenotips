@@ -22,16 +22,22 @@ import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.internal.PhenoTipsDisorder;
 
 import org.xwiki.component.annotation.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -109,24 +115,83 @@ public class ClinicalDiagnosisController implements PatientDataController<Disord
     @Override
     public void save(Patient patient)
     {
-        PatientData<Disorder> disorders = patient.getData(this.getName());
-        if (disorders == null || !disorders.isIndexed()) {
-            return;
+        save(patient, PatientWritePolicy.UPDATE);
+    }
+
+    @Override
+    public void save(@Nonnull final Patient patient, @Nonnull final PatientWritePolicy policy)
+    {
+        try {
+            final XWikiContext context = this.xcontextProvider.get();
+            final BaseObject xobject = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE, true, context);
+            // Disorders that need to be saved to the patient.
+            final PatientData<Disorder> disorders = patient.getData(getName());
+            if (disorders == null) {
+                // If patient write policy is replace, need wipe all existing data if no data provided for controller
+                if (PatientWritePolicy.REPLACE.equals(policy)) {
+                    xobject.set(DIAGNOSIS_PROPERTY, null, context);
+                }
+            } else {
+                if (!disorders.isIndexed()) {
+                    this.logger.error(ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT);
+                    return;
+                }
+                saveDisordersData(patient, xobject, disorders, policy, context);
+            }
+        } catch (final Exception ex) {
+            this.logger.error("Failed to save clinical diagnosis data: {}", ex.getMessage(), ex);
         }
 
-        BaseObject data = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE);
+    }
 
-        // new disorders list (for setting values in the Wiki document)
-        List<String> disorderValues = new LinkedList<>();
+    /**
+     * Writes the {@code disorders} data to {@code xobject} according to the specified {@code policy}.
+     *
+     * @param patient the {@link Patient} of interest
+     * @param xobject the {@link BaseObject}
+     * @param disorders a {@link PatientData} object containing {@link Disorder disorder} information.
+     * @param policy the selected {@link PatientWritePolicy}
+     * @param context the {@link XWikiContext}
+     */
+    private void saveDisordersData(
+        @Nonnull final Patient patient,
+        @Nonnull final BaseObject xobject,
+        @Nonnull final PatientData<Disorder> disorders,
+        @Nonnull final PatientWritePolicy policy,
+        @Nonnull final XWikiContext context)
+    {
+        final PatientData<Disorder> storedDisorders = PatientWritePolicy.MERGE.equals(policy)
+            ? load(patient)
+            : null;
+        // Get a set of disorder identifiers.
+        final List<String> disorderValues = buildMergedDisorderList(storedDisorders, disorders);
+        xobject.set(DIAGNOSIS_PROPERTY, disorderValues.isEmpty() ? null : disorderValues, context);
+    }
 
-        Iterator<Disorder> iterator = disorders.iterator();
-        while (iterator.hasNext()) {
-            Disorder disorder = iterator.next();
-            disorderValues.add(disorder.getValue());
+    /**
+     * Returns a list of disorders, merging {@code storedDisorders stored disorders}, if any, and {@code disorders}.
+     *
+     * @param storedDisorders {@link PatientData} already stored in patient
+     * @param disorders {@link PatientData} to save for patient
+     * @return a merged list of disorders
+     */
+    private List<String> buildMergedDisorderList(
+        @Nullable final PatientData<Disorder> storedDisorders,
+        @Nonnull final PatientData<Disorder> disorders)
+    {
+        // If there are no disorders stored, then just return a list of new disorder names.
+        if (storedDisorders == null || storedDisorders.size() == 0) {
+            return StreamSupport.stream(disorders.spliterator(), false)
+                .map(Disorder::getValue)
+                .collect(Collectors.toList());
         }
+        // There are some stored disorders, merge them.
+        final Set<String> disorderValues = Stream.of(storedDisorders, disorders)
+            .flatMap(s -> StreamSupport.stream(s.spliterator(), false))
+            .map(Disorder::getValue)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        // update the values in the document (overwriting the old list, if any)
-        data.set(DIAGNOSIS_PROPERTY, disorderValues, this.xcontextProvider.get());
+        return new ArrayList<>(disorderValues);
     }
 
     @Override

@@ -21,6 +21,7 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.PhenoTipsDate;
 
 import org.xwiki.component.annotation.Component;
@@ -32,9 +33,13 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.collections4.MapUtils;
@@ -42,6 +47,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -101,6 +107,9 @@ public class DatesController implements PatientDataController<PhenoTipsDate>
     @Inject
     private Logger logger;
 
+    @Inject
+    private Provider<XWikiContext> xcontext;
+
     @Override
     public PatientData<PhenoTipsDate> load(Patient patient)
     {
@@ -142,28 +151,77 @@ public class DatesController implements PatientDataController<PhenoTipsDate>
     @Override
     public void save(Patient patient)
     {
-        BaseObject data = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE);
-        if (data == null) {
-            throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+        save(patient, PatientWritePolicy.UPDATE);
+    }
+
+    @Override
+    public void save(@Nonnull final Patient patient, @Nonnull final PatientWritePolicy policy)
+    {
+        try {
+            final BaseObject data = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE, true,
+                this.xcontext.get());
+            final PatientData<PhenoTipsDate> dates = patient.getData(DATA_NAME);
+            if (dates == null) {
+                if (PatientWritePolicy.REPLACE.equals(policy)) {
+                    getPatientDocumentProperties().forEach(property -> saveDateData(data, null, property));
+                }
+            } else {
+                if (!dates.isNamed()) {
+                    this.logger.error(ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT);
+                    return;
+                }
+                saveDatesData(data, dates, policy);
+            }
+        } catch (final Exception ex) {
+            this.logger.error("Failed to save dates data: {}", ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Saves the {@code dates} data for each property, as per the provided {@code policy}.
+     *
+     * @param data the {@link BaseObject} where new data will be saved
+     * @param dates the updated dates {@link PatientData data}
+     * @param policy the policy, according to which data will be saved
+     */
+    private void saveDatesData(
+        @Nonnull final BaseObject data,
+        @Nonnull final PatientData<PhenoTipsDate> dates,
+        @Nonnull final PatientWritePolicy policy)
+    {
+        // If the policy is REPLACE, then replace values for all properties in the controller. Otherwise make changes
+        // only in properties specified in dates.
+        final Predicate<String> propertyFilter = PatientWritePolicy.REPLACE.equals(policy)
+            ? property -> true
+            : dates::containsKey;
+        // For each selected property, save the data.
+        getPatientDocumentProperties().stream()
+            .filter(propertyFilter)
+            .forEach(property -> saveDateData(data, dates.get(property), property));
+    }
+
+    /**
+     * Saves the {@code date} data for some {@code property} into the object containing patient {@code data}.
+     *
+     * @param data the {@link BaseObject} where new data will be saved
+     * @param date the updated {@link PhenoTipsDate date} data for {@code property}
+     * @param property the patient document property of interest
+     */
+    private void saveDateData(
+        @Nonnull final BaseObject data,
+        @Nullable final PhenoTipsDate date,
+        @Nonnull final String property)
+    {
+        // note: `date` may be null if data is missing
+        if (CORRESPONDING_ASENTERED_FIELDNAMES.containsKey(property)) {
+            final String dateStr = date == null ? StringUtils.EMPTY : date.toString();
+            data.setStringValue(CORRESPONDING_ASENTERED_FIELDNAMES.get(property), dateStr);
         }
 
-        PatientData<PhenoTipsDate> dates = patient.getData(DATA_NAME);
-        if (!dates.isNamed()) {
-            throw new IllegalArgumentException(ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT);
-        }
-        for (String propertyName : this.getPatientDocumentProperties()) {
-            if (dates.containsKey(propertyName)) {
-                PhenoTipsDate date = dates.get(propertyName);
-                // note: `date` may be null if data is missing
-                if (CORRESPONDING_ASENTERED_FIELDNAMES.containsKey(propertyName)) {
-                    data.setStringValue(CORRESPONDING_ASENTERED_FIELDNAMES.get(propertyName),
-                        (date == null ? "" : date.toString()));
-                }
-                // if date is not a valid/complete date, toEarliestPossibleISODate() will return null
-                // and date will be effectively "unset"
-                data.setDateValue(propertyName, (date == null ? null : date.toEarliestPossibleISODate()));
-            }
-        }
+        // if date is not a valid/complete date, toEarliestPossibleISODate() will return null
+        // and date will be effectively "unset"
+        final Date dateObj = date == null ? null : date.toEarliestPossibleISODate();
+        data.setDateValue(property, dateObj);
     }
 
     @Override

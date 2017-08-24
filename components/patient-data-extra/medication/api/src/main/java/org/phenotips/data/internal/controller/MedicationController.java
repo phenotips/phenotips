@@ -22,14 +22,25 @@ import org.phenotips.data.Medication;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 
 import org.xwiki.component.annotation.Component;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -99,7 +110,7 @@ public class MedicationController implements PatientDataController<Medication>
                     medication.getLargeStringValue(Medication.NOTES)));
             }
             if (!result.isEmpty()) {
-                return new IndexedPatientData<Medication>(DATA_NAME, result);
+                return new IndexedPatientData<>(DATA_NAME, result);
             }
         } catch (Exception ex) {
             this.logger.error("Could not find requested document or some unforeseen"
@@ -111,33 +122,139 @@ public class MedicationController implements PatientDataController<Medication>
     @Override
     public void save(Patient patient)
     {
+        save(patient, PatientWritePolicy.UPDATE);
+    }
+
+    @Override
+    public void save(@Nonnull final Patient patient, @Nonnull final PatientWritePolicy policy)
+    {
         try {
-            PatientData<Medication> data = patient.getData(DATA_NAME);
-            if (data == null || !data.isIndexed()) {
-                return;
+            final XWikiDocument docX = patient.getXDocument();
+            final PatientData<Medication> medications = patient.getData(getName());
+
+            if (medications == null) {
+                if (PatientWritePolicy.REPLACE.equals(policy)) {
+                    docX.removeXObjects(Medication.CLASS_REFERENCE);
+                }
+            } else {
+                if (!medications.isIndexed()) {
+                    this.logger.error(ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT);
+                    return;
+                }
+                saveMedications(docX, patient, medications, policy, this.xcontext.get());
             }
-            patient.getXDocument().removeXObjects(Medication.CLASS_REFERENCE);
-            XWikiContext context = this.xcontext.get();
-            for (Medication m : data) {
-                if (m == null) {
-                    continue;
-                }
-                BaseObject o = patient.getXDocument().newXObject(Medication.CLASS_REFERENCE, context);
-                o.setStringValue(Medication.NAME, m.getName());
-                o.setStringValue(Medication.GENERIC_NAME, m.getGenericName());
-                o.setStringValue(Medication.DOSE, m.getDose());
-                o.setStringValue(Medication.FREQUENCY, m.getFrequency());
-                if (m.getDuration() != null) {
-                    o.setIntValue(DURATION_YEARS, m.getDuration().getYears());
-                    o.setIntValue(DURATION_MONTHS, m.getDuration().getMonths());
-                }
-                if (m.getEffect() != null) {
-                    o.setStringValue(Medication.EFFECT, m.getEffect().toString());
-                }
-                o.setLargeStringValue(Medication.NOTES, m.getNotes());
+        } catch (final Exception ex) {
+            this.logger.error("Failed to save medication data: {}", ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Saves {@code medications} data according to the provided {@code policy}.
+     *
+     * @param docX the {@link XWikiDocument}
+     * @param patient the {@link Patient} whose data is being updated
+     * @param medications the medication {@link PatientData data} to update {@code patient} with
+     * @param policy the {@link PatientWritePolicy} according to which data should be saved
+     * @param context the {@link XWikiContext}
+     */
+    private void saveMedications(
+        @Nonnull final XWikiDocument docX,
+        @Nonnull final Patient patient,
+        @Nonnull final PatientData<Medication> medications,
+        @Nonnull final PatientWritePolicy policy,
+        @Nonnull final XWikiContext context)
+    {
+        // A stream of medication objects to save.
+        final Stream<Medication> medsStream;
+        if (PatientWritePolicy.MERGE.equals(policy)) {
+            final PatientData<Medication> storedMedications = load(patient);
+            medsStream = storedMedications != null
+                ? buildMergedMedicationsMap(medications, storedMedications).entrySet().stream()
+                    .flatMap(mapEntry -> mapEntry.getValue().stream())
+                : StreamSupport.stream(medications.spliterator(), false)
+                    .filter(Objects::nonNull);
+        } else {
+            medsStream = StreamSupport.stream(medications.spliterator(), false)
+                .filter(Objects::nonNull);
+        }
+        docX.removeXObjects(Medication.CLASS_REFERENCE);
+        // Save each medication.
+        medsStream.forEach(medication -> saveMedication(docX, medication, context));
+    }
+
+    /**
+     * Saves the data specified in {@code medication}.
+     *
+     * @param docX the {@link XWikiDocument}
+     * @param medication a {@link Medication} to save
+     * @param context the {@link XWikiContext}
+     */
+    private void saveMedication(
+        @Nonnull final XWikiDocument docX,
+        @Nonnull final Medication medication,
+        @Nonnull final XWikiContext context)
+    {
+        try {
+            final BaseObject o = docX.newXObject(Medication.CLASS_REFERENCE, context);
+            o.setStringValue(Medication.NAME, medication.getName());
+            o.setStringValue(Medication.GENERIC_NAME, medication.getGenericName());
+            o.setStringValue(Medication.DOSE, medication.getDose());
+            o.setStringValue(Medication.FREQUENCY, medication.getFrequency());
+            if (medication.getDuration() != null) {
+                o.setIntValue(DURATION_YEARS, medication.getDuration().getYears());
+                o.setIntValue(DURATION_MONTHS, medication.getDuration().getMonths());
             }
-        } catch (Exception ex) {
+            if (medication.getEffect() != null) {
+                o.setStringValue(Medication.EFFECT, medication.getEffect().toString());
+            }
+            o.setLargeStringValue(Medication.NOTES, medication.getNotes());
+        } catch (final Exception ex) {
             this.logger.error("Failed to save medication data: [{}]", ex.getMessage());
+        }
+    }
+
+    /**
+     * Builds a map of medication name to list medications with that name. Will be a singleton list in most cases,
+     * unless the medication name is unknown.
+     *
+     * @param medications medication {@link PatientData data} to add to existing data
+     * @param storedMedications existing medication {@link PatientData data}
+     * @return a map of medication name to list of corresponding medications
+     */
+    private Map<String, List<Medication>> buildMergedMedicationsMap(
+        @Nonnull final PatientData<Medication> medications,
+        @Nonnull final PatientData<Medication> storedMedications)
+    {
+        // A function to obtain the medication name. If the medication name is null, "unknown" will be returned.
+        final Function<Medication, String> nameFx = medication -> medication.getName() == null
+            ? "unknown"
+            : medication.getName();
+        return Stream.of(storedMedications, medications)
+            .flatMap(s -> StreamSupport.stream(s.spliterator(), false))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toMap(nameFx, Collections::singletonList, this::mergeMedications, LinkedHashMap::new));
+    }
+
+    /**
+     * Resolves collisions in medication data. If the medication has a name specified, will always pick the new value;
+     * if the name is unknown will keep all.
+     *
+     * @param storedMeds a list of medications stored in patient; will be a singleton list if medication name is known
+     * @param newMeds a list of newly added medications; will be a singleton list
+     * @return a singleton list of medications, if medication name is known, an accumulated list otherwise
+     */
+    private List<Medication> mergeMedications(
+        @Nonnull final List<Medication> storedMeds,
+        @Nonnull final List<Medication> newMeds)
+    {
+        // If a medication does not have a specified name, then can't compare between medications. Store all.
+        // Otherwise, just store the new value.
+        if (storedMeds.get(0).getName() == null) {
+            final List<Medication> mergedMeds = new ArrayList<>(storedMeds);
+            mergedMeds.addAll(newMeds);
+            return mergedMeds;
+        } else {
+            return newMeds;
         }
     }
 

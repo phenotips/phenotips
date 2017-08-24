@@ -21,6 +21,7 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -28,12 +29,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -48,6 +54,9 @@ public abstract class AbstractSimpleController implements PatientDataController<
     /** Logging helper object. */
     @Inject
     private Logger logger;
+
+    @Inject
+    private Provider<XWikiContext> contextProvider;
 
     @Override
     public PatientData<String> load(Patient patient)
@@ -73,18 +82,97 @@ public abstract class AbstractSimpleController implements PatientDataController<
     @Override
     public void save(Patient patient)
     {
-        BaseObject xwikiDataObject = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE);
-        if (xwikiDataObject == null) {
-            throw new IllegalArgumentException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+        save(patient, PatientWritePolicy.UPDATE);
+    }
+
+    @Override
+    public void save(@Nonnull final Patient patient, @Nonnull final PatientWritePolicy policy)
+    {
+        try {
+            final BaseObject xwikiDataObject = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE, true,
+                this.contextProvider.get());
+            final PatientData<String> data = patient.getData(getName());
+            if (data == null) {
+                // For replace policy, if no controller data is provided, everything that's stored should be removed.
+                if (PatientWritePolicy.REPLACE.equals(policy)) {
+                    getProperties().forEach(property -> saveFieldValue(xwikiDataObject, property, null));
+                }
+            } else {
+                // Only start processing data if it has correct format.
+                if (!data.isNamed()) {
+                    this.logger.error(ERROR_MESSAGE_DATA_IN_MEMORY_IN_WRONG_FORMAT);
+                    return;
+                }
+                saveControllerData(xwikiDataObject, data, policy);
+            }
+        } catch (final Exception ex) {
+            this.logger.error("Failed to save controller data: {}", ex.getMessage(), ex);
         }
 
-        PatientData<String> data = patient.<String>getData(this.getName());
-        if (!data.isNamed()) {
-            return;
-        }
-        for (String property : this.getProperties()) {
-            xwikiDataObject.setStringValue(property, data.get(property));
-        }
+
+    }
+
+    /**
+     * Saves {@code data}, according to the provided {@code policy}. For any controller extending this class,
+     * {@link PatientWritePolicy#UPDATE} and {@link PatientWritePolicy#MERGE} are equivalent.
+     *
+     * @param xwikiDataObject the XWiki {@link BaseObject data object}
+     * @param data the {@link PatientData} object containing data that needs to be saved
+     * @param policy the policy, according to which patient data should be saved
+     */
+    private void saveControllerData(
+        @Nonnull final BaseObject xwikiDataObject,
+        @Nonnull final PatientData<String> data,
+        @Nonnull final PatientWritePolicy policy)
+    {
+        // The predicate, according to which fields will be filtered. For REPLACE policy, all fields should be altered,
+        // whereas for MERGE and UPDATE, only the fields that have data should be changed.
+        final Predicate<String> propertyFilter = PatientWritePolicy.REPLACE.equals(policy)
+            ? property -> true
+            : property -> containsProperty(data, property);
+        // For each selected property, set values.
+        getProperties().stream()
+            .filter(propertyFilter)
+            .forEach(property -> saveFieldValue(xwikiDataObject, property, getValueForProperty(data, property)));
+    }
+
+    /**
+     * Sets the {@code value} for a {@code property} field in {@code xwikiDataObject}.
+     *
+     * @param xwikiDataObject the {@link BaseObject} where data will be saved
+     * @param property the property of interest
+     * @param value the value for the {@code property} of interest
+     */
+    void saveFieldValue(
+        @Nonnull final BaseObject xwikiDataObject,
+        @Nonnull final String property,
+        @Nullable final String value)
+    {
+        xwikiDataObject.setStringValue(property, value);
+    }
+
+    /**
+     * Gets the value for the provided {@code property}.
+     *
+     * @param data the {@link PatientData} to be saved
+     * @param property the property of interest
+     * @return the value for the {@code property} of interest, or null if no such value
+     */
+    String getValueForProperty(@Nonnull final PatientData<String> data, @Nonnull final String property)
+    {
+        return data.get(property);
+    }
+
+    /**
+     * Returns true iff {@code data} contains the specified {@code property}.
+     *
+     * @param data the {@link PatientData} to save
+     * @param property the property of interest
+     * @return true iff {@code data} contains {@code property}
+     */
+    boolean containsProperty(@Nonnull final PatientData<String> data, @Nonnull final String property)
+    {
+        return data.containsKey(property);
     }
 
     @Override

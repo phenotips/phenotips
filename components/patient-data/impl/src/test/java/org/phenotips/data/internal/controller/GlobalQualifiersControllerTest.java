@@ -21,6 +21,7 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
@@ -41,6 +42,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
@@ -51,15 +53,21 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.DBStringListProperty;
+import com.xpn.xwiki.objects.ListProperty;
 import com.xpn.xwiki.objects.StringProperty;
 import com.xpn.xwiki.objects.classes.BaseClass;
 import com.xpn.xwiki.objects.classes.StringClass;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anySet;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 public class GlobalQualifiersControllerTest
@@ -76,15 +84,12 @@ public class GlobalQualifiersControllerTest
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<List<VocabularyTerm>>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<List<VocabularyTerm>>>(GlobalQualifiersController.class);
+        new MockitoComponentMockingRule<>(GlobalQualifiersController.class);
 
     private PatientDataController<List<VocabularyTerm>> tested;
 
     @Mock
     private Patient patient;
-
-    @Mock
-    private PatientData<List<VocabularyTerm>> mockPatientData;
 
     @Mock
     private Logger logger;
@@ -97,8 +102,6 @@ public class GlobalQualifiersControllerTest
 
     @Mock
     private BaseClass patientClass;
-
-    private Provider<XWikiContext> provider;
 
     private XWikiContext xWikiContext;
 
@@ -122,8 +125,8 @@ public class GlobalQualifiersControllerTest
         this.tested = this.mocker.getComponentUnderTest();
         this.logger = this.mocker.getMockedLogger();
 
-        this.provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
-        this.xWikiContext = this.provider.get();
+        final Provider<XWikiContext> provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
+        this.xWikiContext = provider.get();
         doReturn(this.xwiki).when(this.xWikiContext).getWiki();
 
         DocumentReference patientDocRef = new DocumentReference("wiki", "patient", "00000001");
@@ -145,6 +148,9 @@ public class GlobalQualifiersControllerTest
         StringClass inheritanceClass = mock(StringClass.class);
         when(this.patientClass.get(INHERITANCE)).thenReturn(inheritanceClass);
         when(inheritanceClass.newProperty()).thenReturn(new DBStringListProperty());
+
+        doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
+        doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE, true, this.xWikiContext);
     }
 
     @Test
@@ -231,12 +237,43 @@ public class GlobalQualifiersControllerTest
     }
 
     @Test
-    public void saveHandlesEmptyPatientTest() throws XWikiException
+    public void saveDoesNothingWhenPatientHasNoPatientClass()
+    {
+        when(this.doc.getXObject(Patient.CLASS_REFERENCE, true, this.xWikiContext)).thenReturn(null);
+        this.tested.save(this.patient);
+        verifyZeroInteractions(this.data);
+    }
+
+    @Test
+    public void saveWithUpdatePolicyHandlesEmptyPatientTest()
     {
         when(this.patient.getData(this.tested.getName())).thenReturn(null);
 
         this.tested.save(this.patient);
+        verify(this.doc, times(1)).getXObject(Patient.CLASS_REFERENCE, true, this.xWikiContext);
+        verifyZeroInteractions(this.data);
+    }
 
+    @Test
+    public void saveWithMergePolicyHandlesEmptyPatientTest()
+    {
+        when(this.patient.getData(this.tested.getName())).thenReturn(null);
+
+        this.tested.save(this.patient, PatientWritePolicy.MERGE);
+        verify(this.doc, times(1)).getXObject(Patient.CLASS_REFERENCE, true, this.xWikiContext);
+        verifyNoMoreInteractions(this.doc);
+    }
+
+    @Test
+    public void saveWithReplacePolicyErasesAllPropertyDataFromDocWhenDataIsNull()
+    {
+        when(this.patient.getData(this.tested.getName())).thenReturn(null);
+
+        this.tested.save(this.patient, PatientWritePolicy.REPLACE);
+        verify(this.doc, times(1)).getXObject(Patient.CLASS_REFERENCE, true, this.xWikiContext);
+        verifyNoMoreInteractions(this.doc);
+        verify(this.data, times(1)).set(ONSET, null, this.xWikiContext);
+        verify(this.data, times(1)).set(INHERITANCE, null, this.xWikiContext);
         verifyNoMoreInteractions(this.data);
     }
 
@@ -246,11 +283,78 @@ public class GlobalQualifiersControllerTest
         when(this.patient.<List<VocabularyTerm>>getData(this.tested.getName()))
             .thenReturn(setupMockPatientData(this.neonatalTerm, this.gonosomalTerm, this.mitochondrialTerm));
 
-        doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE, true, this.xWikiContext);
-
         this.tested.save(this.patient);
-        verify(this.data).set(ONSET, NEONATAL, this.xWikiContext);
-        verify(this.data).set(INHERITANCE, Arrays.asList(GONOSOMAL, MITOCHONDRIAL), this.xWikiContext);
+        verify(this.data, times(1)).set(ONSET, NEONATAL, this.xWikiContext);
+        verify(this.data, times(1)).set(INHERITANCE, Arrays.asList(GONOSOMAL, MITOCHONDRIAL),
+            this.xWikiContext);
+        verify(this.data, times(1)).getXClass(this.xWikiContext);
+        verifyNoMoreInteractions(this.data);
+    }
+
+    @Test
+    public void saveWithUpdatePolicyReplacesOnlySpecifiedProperties()
+    {
+        when(this.patient.<List<VocabularyTerm>>getData(this.tested.getName()))
+            .thenReturn(setupMockPatientData(this.neonatalTerm));
+        this.tested.save(this.patient, PatientWritePolicy.UPDATE);
+        verify(this.doc, times(1)).getXObject(Patient.CLASS_REFERENCE, true, this.xWikiContext);
+        verify(this.data, times(1)).set(ONSET, NEONATAL, this.xWikiContext);
+        verify(this.data, never()).set(Matchers.matches(INHERITANCE), anySet(), Matchers.any(XWikiContext.class));
+        verify(this.data, times(1)).getXClass(this.xWikiContext);
+        verifyNoMoreInteractions(this.data);
+    }
+
+    @Test
+    public void saveWithMergePolicyReplacesBaseStringPropertiesCorrectly() throws XWikiException
+    {
+        when(this.patient.<List<VocabularyTerm>>getData(this.tested.getName()))
+            .thenReturn(setupMockPatientData(this.neonatalTerm));
+        this.tested.save(this.patient, PatientWritePolicy.MERGE);
+        verify(this.doc, times(1)).getXObject(Patient.CLASS_REFERENCE);
+        verify(this.doc, times(1)).getXObject(Patient.CLASS_REFERENCE, true, this.xWikiContext);
+        verify(this.data, times(1)).set(ONSET, NEONATAL, this.xWikiContext);
+        verify(this.data, never()).set(Matchers.matches(INHERITANCE), anySet(), Matchers.any(XWikiContext.class));
+
+        // Loading data from patient.
+        verify(this.data, times(2)).get(anyString());
+
+        verify(this.data, times(1)).getXClass(this.xWikiContext);
+        verifyNoMoreInteractions(this.data);
+    }
+
+    @Test
+    public void saveWithMergePolicyMergesListPropertiesCorrectly() throws XWikiException
+    {
+        final ListProperty listProperty = mock(ListProperty.class);
+        when(listProperty.getList()).thenReturn(Collections.singletonList(GONOSOMAL));
+        when(this.data.get(INHERITANCE)).thenReturn(listProperty);
+        when(this.patient.<List<VocabularyTerm>>getData(this.tested.getName()))
+            .thenReturn(setupMockPatientData(this.neonatalTerm, this.mitochondrialTerm));
+        this.tested.save(this.patient, PatientWritePolicy.MERGE);
+        verify(this.doc, times(1)).getXObject(Patient.CLASS_REFERENCE);
+        verify(this.doc, times(1)).getXObject(Patient.CLASS_REFERENCE, true, this.xWikiContext);
+        verify(this.data, times(1)).set(ONSET, NEONATAL, this.xWikiContext);
+        verify(this.data, times(1)).set(INHERITANCE, Arrays.asList(GONOSOMAL, MITOCHONDRIAL),
+            this.xWikiContext);
+
+        // Loading data from patient.
+        verify(this.data, times(2)).get(anyString());
+
+        verify(this.data, times(1)).getXClass(this.xWikiContext);
+        verifyNoMoreInteractions(this.data);
+    }
+
+    @Test
+    public void saveWithReplacePolicyReplacesSpecifiedFieldsAndNullsTheRest()
+    {
+        when(this.patient.<List<VocabularyTerm>>getData(this.tested.getName()))
+            .thenReturn(setupMockPatientData(this.neonatalTerm));
+        this.tested.save(this.patient, PatientWritePolicy.REPLACE);
+        verify(this.doc, times(1)).getXObject(Patient.CLASS_REFERENCE, true, this.xWikiContext);
+        verify(this.data, times(1)).set(ONSET, NEONATAL, this.xWikiContext);
+        verify(this.data, times(1)).set(INHERITANCE, null, this.xWikiContext);
+        verify(this.data, times(1)).getXClass(this.xWikiContext);
+        verifyNoMoreInteractions(this.data);
     }
 
     @Test

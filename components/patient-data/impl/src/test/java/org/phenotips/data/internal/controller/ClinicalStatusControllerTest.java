@@ -20,6 +20,7 @@ package org.phenotips.data.internal.controller;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.component.manager.ComponentLookupException;
@@ -39,8 +40,16 @@ import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.BaseProperty;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for the {@link ClinicalStatusController} component, implementation of the
@@ -58,7 +67,7 @@ public class ClinicalStatusControllerTest
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<String>>(ClinicalStatusController.class);
+        new MockitoComponentMockingRule<>(ClinicalStatusController.class);
 
     @Mock
     private Patient patient;
@@ -69,15 +78,23 @@ public class ClinicalStatusControllerTest
     @Mock
     private BaseObject dataHolder;
 
+    @Mock
+    private BaseProperty field;
+
+    private PatientDataController<String> component;
+
     @Before
     public void setUp() throws Exception
     {
         MockitoAnnotations.initMocks(this);
 
+        this.component = this.mocker.getComponentUnderTest();
         DocumentReference patientDocRef = new DocumentReference("wiki", "patient", "00000001");
         doReturn(patientDocRef).when(this.patient).getDocumentReference();
         doReturn(this.doc).when(this.patient).getXDocument();
         doReturn(this.dataHolder).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
+        doReturn(this.dataHolder).when(this.doc).getXObject(eq(Patient.CLASS_REFERENCE), eq(true), any());
+        when(this.dataHolder.getField(UNAFFECTED)).thenReturn(this.field);
     }
 
     @Test
@@ -85,7 +102,7 @@ public class ClinicalStatusControllerTest
     {
         doReturn(null).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
-        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<String> result = this.component.load(this.patient);
 
         Assert.assertNull(result);
     }
@@ -95,7 +112,7 @@ public class ClinicalStatusControllerTest
     {
         doReturn(7314862).when(this.dataHolder).getIntValue(UNAFFECTED);
 
-        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<String> result = this.component.load(this.patient);
 
         Assert.assertNull(result);
     }
@@ -105,7 +122,7 @@ public class ClinicalStatusControllerTest
     {
         doReturn(0).when(this.dataHolder).getIntValue(UNAFFECTED);
 
-        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<String> result = this.component.load(this.patient);
 
         Assert.assertEquals(AFFECTED, result.getValue());
     }
@@ -115,50 +132,132 @@ public class ClinicalStatusControllerTest
     {
         doReturn(1).when(this.dataHolder).getIntValue(UNAFFECTED);
 
-        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<String> result = this.component.load(this.patient);
 
         Assert.assertEquals(UNAFFECTED, result.getValue());
     }
 
     @Test
-    public void writeJSONReturnsWhenGetDataReturnsNull() throws ComponentLookupException
+    public void saveDoesNothingIfPatientHasNoPatientClass()
+    {
+        when(this.doc.getXObject(eq(Patient.CLASS_REFERENCE), eq(true), any())).thenReturn(null);
+        this.component.save(this.patient);
+        verifyZeroInteractions(this.dataHolder);
+    }
+
+    @Test
+    public void saveDoesNothingIfClinicalStatusFieldIsAbsent()
+    {
+        when(this.dataHolder.getField(UNAFFECTED)).thenReturn(null);
+        this.component.save(this.patient);
+        verify(this.dataHolder, times(1)).getField(UNAFFECTED);
+        verifyNoMoreInteractions(this.dataHolder);
+    }
+
+    @Test
+    public void saveSetsStatusAsAffectedIfPolicyIsReplaceAndNoDataIsProvided()
+    {
+        when(this.patient.getData(this.component.getName())).thenReturn(null);
+        this.component.save(this.patient, PatientWritePolicy.REPLACE);
+        verify(this.dataHolder, times(1)).getField(UNAFFECTED);
+        verify(this.field, times(1)).setValue(0);
+        verifyNoMoreInteractions(this.dataHolder);
+        verifyNoMoreInteractions(this.field);
+    }
+
+    @Test
+    public void saveDoesNothingIfPolicyIsUpdateAndNoDataIsProvided()
+    {
+        when(this.patient.getData(this.component.getName())).thenReturn(null);
+        this.component.save(this.patient, PatientWritePolicy.UPDATE);
+        verify(this.dataHolder, times(1)).getField(UNAFFECTED);
+        verifyZeroInteractions(this.field);
+    }
+
+    @Test
+    public void saveDoesNothingIfPolicyIsMergeAndNoDataIsProvided()
+    {
+        when(this.patient.getData(this.component.getName())).thenReturn(null);
+        this.component.save(this.patient, PatientWritePolicy.MERGE);
+        verify(this.dataHolder, times(1)).getField(UNAFFECTED);
+        verifyZeroInteractions(this.field);
+    }
+
+    @Test
+    public void saveSavesDataIfPolicyIsMerge()
+    {
+        final PatientData<String> data = new SimpleValuePatientData<>(this.component.getName(), AFFECTED);
+        doReturn(data).when(this.patient).getData(this.component.getName());
+        this.component.save(this.patient, PatientWritePolicy.MERGE);
+        verify(this.dataHolder, times(1)).getField(UNAFFECTED);
+        verify(this.field, times(1)).setValue(0);
+        verifyNoMoreInteractions(this.dataHolder);
+        verifyNoMoreInteractions(this.field);
+    }
+
+    @Test
+    public void saveSavesDataIfPolicyIsUpdate()
+    {
+        final PatientData<String> data = new SimpleValuePatientData<>(this.component.getName(), AFFECTED);
+        doReturn(data).when(this.patient).getData(this.component.getName());
+        this.component.save(this.patient, PatientWritePolicy.UPDATE);
+        verify(this.dataHolder, times(1)).getField(UNAFFECTED);
+        verify(this.field, times(1)).setValue(0);
+        verifyNoMoreInteractions(this.dataHolder);
+        verifyNoMoreInteractions(this.field);
+    }
+
+    @Test
+    public void saveSavesDataIfPolicyIsReplace()
+    {
+        final PatientData<String> data = new SimpleValuePatientData<>(this.component.getName(), UNAFFECTED);
+        doReturn(data).when(this.patient).getData(this.component.getName());
+        this.component.save(this.patient, PatientWritePolicy.REPLACE);
+        verify(this.dataHolder, times(1)).getField(UNAFFECTED);
+        verify(this.field, times(1)).setValue(1);
+        verifyNoMoreInteractions(this.dataHolder);
+        verifyNoMoreInteractions(this.field);
+    }
+
+    @Test
+    public void writeJSONReturnsWhenGetDataReturnsNull()
     {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
+        this.component.writeJSON(this.patient, json);
 
         Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNotNull() throws ComponentLookupException
+    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNotNull()
     {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(CONTROLLING_FIELDNAME);
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+        this.component.writeJSON(this.patient, json, selectedFields);
 
         Assert.assertTrue(json.has(DATA_NAME));
     }
 
     @Test
-    public void writeJSONAddsAffectedValueToJSON() throws ComponentLookupException
+    public void writeJSONAddsAffectedValueToJSON()
     {
         PatientData<String> data = new SimpleValuePatientData<>(DATA_NAME, AFFECTED);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
+        this.component.writeJSON(this.patient, json);
 
         Assert.assertNotNull(json.opt(DATA_NAME));
         Assert.assertEquals(AFFECTED, json.getString(DATA_NAME));
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsAddsAffectedValueToJSON() throws ComponentLookupException
+    public void writeJSONWithSelectedFieldsAddsAffectedValueToJSON()
     {
         PatientData<String> data =
             new SimpleValuePatientData<>(DATA_NAME, AFFECTED);
@@ -167,27 +266,27 @@ public class ClinicalStatusControllerTest
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(CONTROLLING_FIELDNAME);
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+        this.component.writeJSON(this.patient, json, selectedFields);
 
         Assert.assertNotNull(json.optString(DATA_NAME, null));
         Assert.assertEquals(AFFECTED, json.getString(DATA_NAME));
     }
 
     @Test
-    public void writeJSONAddsUnaffectedValueToJSON() throws ComponentLookupException
+    public void writeJSONAddsUnaffectedValueToJSON()
     {
         PatientData<String> data = new SimpleValuePatientData<>(DATA_NAME, UNAFFECTED);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
+        this.component.writeJSON(this.patient, json);
 
         Assert.assertNotNull(json.optString(DATA_NAME, null));
         Assert.assertEquals(UNAFFECTED, json.getString(DATA_NAME));
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsAddsUnaffectedValueToJSON() throws ComponentLookupException
+    public void writeJSONWithSelectedFieldsAddsUnaffectedValueToJSON()
     {
         PatientData<String> data = new SimpleValuePatientData<>(DATA_NAME, UNAFFECTED);
         doReturn(data).when(this.patient).getData(DATA_NAME);
@@ -195,7 +294,7 @@ public class ClinicalStatusControllerTest
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(CONTROLLING_FIELDNAME);
 
-        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+        this.component.writeJSON(this.patient, json, selectedFields);
 
         Assert.assertNotNull(json.optString(DATA_NAME, null));
         Assert.assertEquals(UNAFFECTED, json.getString(DATA_NAME));
@@ -204,6 +303,6 @@ public class ClinicalStatusControllerTest
     @Test
     public void checkGetName() throws ComponentLookupException
     {
-        Assert.assertEquals(DATA_NAME, this.mocker.getComponentUnderTest().getName());
+        Assert.assertEquals(DATA_NAME, this.component.getName());
     }
 }
