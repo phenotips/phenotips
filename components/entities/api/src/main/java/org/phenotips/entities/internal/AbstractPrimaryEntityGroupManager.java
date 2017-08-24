@@ -72,6 +72,13 @@ public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntity,
     protected AbstractPrimaryEntityGroupManager(
         EntityReference groupEntityReference, EntityReference memberEntityReference)
     {
+        if (groupEntityReference == null) {
+            throw new IllegalArgumentException("group EntityReference is null");
+        }
+        if (memberEntityReference == null) {
+            throw new IllegalArgumentException("member EntityReference is null");
+        }
+
         this.groupEntityReference = groupEntityReference;
         this.memberEntityReference = memberEntityReference;
 
@@ -104,12 +111,6 @@ public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntity,
                 + " certain group operations will fail", entityReference);
         }
         return manager;
-    }
-
-    @Override
-    public Collection<E> getMembers(G group)
-    {
-        return getMembersOfType(group, this.memberEntityReference);
     }
 
     @Override

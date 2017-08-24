@@ -18,7 +18,6 @@
 package org.phenotips.entities;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
 import java.util.Collection;
@@ -123,16 +122,6 @@ public interface PrimaryEntityGroupManager<G extends PrimaryEntity, E extends Pr
      * @return a collection of Entities, may be empty
      */
     Collection<E> getMembers(G group);
-
-    /**
-     * Lists all the members (entities) of a given type that are part of a group.
-     *
-     * @param group to get members from
-     * @param type a reference to an XClass to filter members by; if {@code null}, all members are returned, regardless
-     *            of type
-     * @return a collection of Entities, may be empty
-     */
-    Collection<E> getMembersOfType(G group, EntityReference type);
 
     /**
      * Retrieves groups that have the specified entity as their member, in a random order.

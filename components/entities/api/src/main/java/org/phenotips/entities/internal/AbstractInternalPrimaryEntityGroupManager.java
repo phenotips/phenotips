@@ -85,41 +85,41 @@ public class AbstractInternalPrimaryEntityGroupManager<G extends PrimaryEntity, 
         super(groupEntityReference, memberEntityReference);
     }
 
+    @Override
+    public Collection<E> getMembers(G group)
+    {
+        return getMembersOfType(group, this.memberEntityReference);
+    }
+
     /**
      * Unlike getMembersMap, this will not read the parameters that may be saved with the members.
      */
-    @Override
-    public Collection<E> getMembersOfType(G group, EntityReference type)
+    private Collection<E> getMembersOfType(G group, EntityReference type)
     {
         Collection<E> result = new LinkedList<>();
         try {
             StringBuilder hql = new StringBuilder();
             hql.append("select distinct binding.value ")
-                .append(" from BaseObject groupReference, StringProperty binding ");
-            if (type != null) {
-                hql.append(",BaseObject entity ,StringProperty entityBinding ");
-            }
+                .append(" from BaseObject groupReference, StringProperty binding")
+                .append(", BaseObject entity, StringProperty entityBinding ");
             hql.append(" where groupReference.id.id = binding.id and ")
                 .append("       groupReference.number = entity.number and")
                 .append("       binding.id.name = :referenceProperty and ")
                 .append("       groupReference.name = :selfReference and ")
-                .append("       groupReference.className = :memberClass");
-            if (type != null) {
-                hql.append("   and entityBinding.id.name= :classProperty ")
-                    .append("   and entityBinding.value = :entityType ")
-                    .append("   and entity.name = groupReference.name ")
-                    .append("   and entity.id.id = entityBinding.id ");
-            }
+                .append("       groupReference.className = :memberClass")
+                .append("   and entityBinding.id.name= :classProperty ")
+                .append("   and entityBinding.value = :entityType ")
+                .append("   and entity.name = groupReference.name ")
+                .append("   and entity.id.id = entityBinding.id ");
 
             Query q = getQueryManager().createQuery(hql.toString(), Query.HQL);
 
             q.bindValue("selfReference", getLocalSerializer().serialize(group.getDocumentReference()));
             q.bindValue("referenceProperty", getMembershipProperty());
             q.bindValue("memberClass", getLocalSerializer().serialize(GROUP_MEMBER_CLASS));
-            if (type != null) {
-                q.bindValue("classProperty", CLASS_XPROPERTY);
-                q.bindValue("entityType", getLocalSerializer().serialize(type));
-            }
+            q.bindValue("classProperty", CLASS_XPROPERTY);
+            q.bindValue("entityType", getLocalSerializer().serialize(type));
+
             List<String> memberIds = q.execute();
             for (String memberId : memberIds) {
                 result.add(this.membersManager.get(memberId));
@@ -209,7 +209,8 @@ public class AbstractInternalPrimaryEntityGroupManager<G extends PrimaryEntity, 
     /**
      * Reads all members and their parameters. Returns a map with key: member name, value: parameters map (name:value).
      * This function is not exposed to users of the group. If you need to save a member with parameters, override
-     * {@link setMemberParameters} and wrap this method. See {@link CollaboratorInProjectManager}.
+     * {@link setMemberParameters} and override {@link getMembers()} to use this method.
+     * See {@link CollaboratorInProjectManager}.
      *
      * Saving members with parameters is used in cases where rebuilding them requires more information than is saved
      * in the XWiki document. For example, a Collaborator is a User (which is a PrimaryEntity) combined with

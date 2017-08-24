@@ -86,30 +86,29 @@ public class AbstractExternalPrimaryEntityGroupManager<G extends PrimaryEntity, 
     }
 
     @Override
-    public Collection<E> getMembersOfType(G group, EntityReference type)
+    public Collection<E> getMembers(G group)
+    {
+        return getMembersOfType(group, this.memberEntityReference);
+    }
+
+    private Collection<E> getMembersOfType(G group, EntityReference type)
     {
         Collection<E> result = new LinkedList<>();
         try {
             StringBuilder hql = new StringBuilder();
-            hql.append("select distinct binding.name from BaseObject binding, StringProperty groupReference");
-            if (type != null) {
-                hql.append(", BaseObject entity");
-            }
+            hql.append("select distinct binding.name from BaseObject binding, StringProperty groupReference")
+                .append(", BaseObject entity");
             hql.append(" where binding.className = :memberClass")
                 .append(" and groupReference.id.id = binding.id and groupReference.id.name = :referenceProperty")
-                .append(" and groupReference.value = :selfReference");
-            if (type != null) {
-                hql.append(" and entity.name = binding.name and entity.className = :entityType");
-            }
+                .append(" and groupReference.value = :selfReference")
+                .append(" and entity.name = binding.name and entity.className = :entityType");
 
             Query q = getQueryManager().createQuery(hql.toString(), Query.HQL);
 
             q.bindValue("memberClass", getLocalSerializer().serialize(GROUP_MEMBERSHIP_CLASS));
             q.bindValue("referenceProperty", getMembershipProperty());
             q.bindValue("selfReference", getFullSerializer().serialize(group.getDocumentReference()));
-            if (type != null) {
-                q.bindValue("entityType", getLocalSerializer().serialize(type));
-            }
+            q.bindValue("entityType", getLocalSerializer().serialize(type));
             List<String> memberIds = q.execute();
             for (String memberId : memberIds) {
                 result.add(this.membersManager.get(memberId));
