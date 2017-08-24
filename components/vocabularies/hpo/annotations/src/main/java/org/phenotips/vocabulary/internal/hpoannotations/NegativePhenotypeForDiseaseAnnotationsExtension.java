@@ -18,17 +18,19 @@
 package org.phenotips.vocabulary.internal.hpoannotations;
 
 import org.phenotips.vocabulary.VocabularyInputTerm;
+import org.phenotips.vocabulary.VocabularySourceRelocationService;
 
 import org.xwiki.component.annotation.Component;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Extends {@link AbstractPhenotypeForDiseaseAnnotationsExtension} to annotate a disease {@link VocabularyInputTerm} with its associated
- * negative phenotypes. Two annotations are added: one contains actual negative symptoms directly from the annotation
- * source (labeled {@link #getDirectPhenotypesLabel()}), the other one contains negative symptoms from the annotation
- * source, as well as the ancestor phenotypes (labeled {@link #getAllAncestorPhenotypesLabel()}).
+ * Extends {@link AbstractPhenotypeForDiseaseAnnotationsExtension} to annotate a disease {@link VocabularyInputTerm}
+ * with its associated negative phenotypes. Two annotations are added: one contains actual negative symptoms directly
+ * from the annotation source (labeled {@link #getDirectPhenotypesLabel()}), the other one contains negative symptoms
+ * from the annotation source, as well as the ancestor phenotypes (labeled {@link #getAllAncestorPhenotypesLabel()}).
  *
  * @version $Id$
  * @since 1.3
@@ -46,10 +48,13 @@ public class NegativePhenotypeForDiseaseAnnotationsExtension extends AbstractPhe
 
     private static final String NOT_SYMPTOM = "not_symptom";
 
+    @Inject
+    protected VocabularySourceRelocationService relocationService;
+
     @Override
     protected String getAnnotationSource()
     {
-        return ANNOTATION_SOURCE;
+        return this.relocationService.getRelocation(ANNOTATION_SOURCE);
     }
 
     @Override
