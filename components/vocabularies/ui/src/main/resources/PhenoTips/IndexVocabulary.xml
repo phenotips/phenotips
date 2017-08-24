@@ -54,7 +54,7 @@ $xwiki.ssx.use('PhenoTips.Widgets')##
 #foreach ($vocabularyId in $services.vocabularies.getAvailableVocabularies())
 #set ($vocabulary = $services.vocabularies.get($vocabularyId))
 #try()
-#set ($vocabularySource = $vocabulary.DefaultSourceLocation)
+#set ($vocabularySource = $vocabulary.getSourceLocation())
 #if ($vocabularySource != '')
 ## We can index this vocabulary
 &lt;form class="xform solr-admin" action='' method="post"&gt;
