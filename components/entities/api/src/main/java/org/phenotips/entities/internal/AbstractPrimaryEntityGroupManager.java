@@ -53,20 +53,20 @@ import com.xpn.xwiki.XWikiContext;
 public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntity, E extends PrimaryEntity>
     implements PrimaryEntityGroupManager<G, E>
 {
+    /** Logging helper object. */
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+
     /** Entity type of group object. */
     protected EntityReference groupEntityReference;
-
-    /** Manager of group primary entities. */
-    protected final PrimaryEntityManager<G> groupManager;
 
     /** Entity type of member object. */
     protected EntityReference memberEntityReference;
 
-    /** Manager of member primary entities. */
-    protected final PrimaryEntityManager<E> membersManager;
+    /** Manager of group primary entities. Lazy-initialized, so should be accessed only via {@link #getGroupManager()}. */
+    private PrimaryEntityManager<G> groupManager;
 
-    /** Logging helper object. */
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    /** Manager of member primary entities. Lazy-initialized, so should be accessed only via {@link #getMembersManager()}. */
+    private PrimaryEntityManager<E> membersManager;
 
     @SuppressWarnings("unchecked")
     protected AbstractPrimaryEntityGroupManager(
@@ -81,9 +81,22 @@ public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntity,
 
         this.groupEntityReference = groupEntityReference;
         this.memberEntityReference = memberEntityReference;
+    }
 
-        this.membersManager = (PrimaryEntityManager<E>) getManager(memberEntityReference);
-        this.groupManager = (PrimaryEntityManager<G>) getManager(groupEntityReference);
+    protected PrimaryEntityManager<E> getMembersManager()
+    {
+        if (this.membersManager == null) {
+            this.membersManager = (PrimaryEntityManager<E>) getManager(this.memberEntityReference);
+        }
+        return this.membersManager;
+    }
+
+    protected PrimaryEntityManager<G> getGroupManager()
+    {
+        if (this.groupManager == null) {
+            this.groupManager = (PrimaryEntityManager<G>) getManager(this.groupEntityReference);
+        }
+        return this.groupManager;
     }
 
     private PrimaryEntityManager<PrimaryEntity> getManager(EntityReference entityReference)
@@ -118,7 +131,7 @@ public abstract class AbstractPrimaryEntityGroupManager<G extends PrimaryEntity,
     {
         Collection<E> members = new ArrayList<>(memberIds.size());
         for (String id : memberIds) {
-            E member = this.membersManager.get(id);
+            E member = this.getMembersManager().get(id);
             if (member != null) {
                 members.add(member);
             }

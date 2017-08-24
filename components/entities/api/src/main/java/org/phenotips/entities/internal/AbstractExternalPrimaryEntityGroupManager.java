@@ -111,7 +111,7 @@ public class AbstractExternalPrimaryEntityGroupManager<G extends PrimaryEntity, 
             q.bindValue("entityType", getLocalSerializer().serialize(type));
             List<String> memberIds = q.execute();
             for (String memberId : memberIds) {
-                result.add(this.membersManager.get(memberId));
+                result.add(this.getMembersManager().get(memberId));
             }
         } catch (QueryException ex) {
             this.logger.warn("Failed to query members: {}", ex.getMessage());
@@ -180,12 +180,12 @@ public class AbstractExternalPrimaryEntityGroupManager<G extends PrimaryEntity, 
                 + "doc.space = :gspace and "
                 + "groupObj.name = doc.fullName and "
                 + "groupObj.className = '" + groupClass + "'", Query.HQL);
-            q.bindValue("gspace", this.groupManager.getDataSpace().getName());
+            q.bindValue("gspace", this.getGroupManager().getDataSpace().getName());
             q.bindValue("name", this.getLocalSerializer().serialize(member.getDocumentReference()));
             List<String> docNames = q.execute();
             Collection<G> result = new ArrayList<>(docNames.size());
             for (String docName : docNames) {
-                result.add(this.groupManager.get(docName));
+                result.add(this.getGroupManager().get(docName));
             }
             return result;
         } catch (QueryException ex) {
