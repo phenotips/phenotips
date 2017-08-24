@@ -105,9 +105,37 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
     @Override
     public Response updatePatient(String json, String id, String policy)
     {
-        this.logger.debug("Updating patient record [{}] via REST with JSON: {}", id, json);
         final PatientWritePolicy policyType = PatientWritePolicy.fromString(policy);
-        if (policyType == null) {
+        return updatePatient(json, id, policyType);
+    }
+
+    @Override
+    public Response patchPatient(final String json, final String id)
+    {
+        return updatePatient(json, id, PatientWritePolicy.MERGE);
+    }
+
+    /**
+     * Update a patient record, identified by its {@code id internal PhenoTips identifier}, from its {@code json JSON
+     * representation}, and according to the provided {@code policy}. If the indicated patient record doesn't exist, or
+     * if the user sending the request doesn't have the right to edit the target patient record, no change is performed
+     * and an error is returned. If a field is set in the patient record, but missing in the JSON, then that field is
+     * not changed, unless {@link PatientWritePolicy#REPLACE} is selected.
+     *
+     * @param json the JSON representation of the new patient to add
+     * @param id the patient's internal identifier, see {@link org.phenotips.data.Patient#getId()}
+     * @param policy the {@link PatientWritePolicy} according to which the patient should be updated
+     * @return a status message
+     */
+    private Response updatePatient(final String json, final String id, final PatientWritePolicy policy)
+    {
+        this.logger.debug("Updating patient record [{}] via REST with JSON: {}", id, json);
+        if (policy == null) {
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
+        if (json == null) {
+            // json == null does not create an exception when initializing a JSONObject
+            // need to handle it separately to give explicit BAD_REQUEST to the user
             throw new WebApplicationException(Status.BAD_REQUEST);
         }
         Patient patient = this.repository.get(id);
@@ -122,11 +150,6 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
             this.logger.debug("Edit access denied to user [{}] on patient record [{}]", currentUser, id);
             throw new WebApplicationException(Status.FORBIDDEN);
         }
-        if (json == null) {
-            // json == null does not create an exception when initializing a JSONObject
-            // need to handle it separately to give explicit BAD_REQUEST to the user
-            throw new WebApplicationException(Status.BAD_REQUEST);
-        }
         JSONObject jsonInput;
         try {
             jsonInput = new JSONObject(json);
@@ -139,7 +162,7 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
             throw new WebApplicationException(Status.CONFLICT);
         }
         try {
-            patient.updateFromJSON(jsonInput, policyType);
+            patient.updateFromJSON(jsonInput, policy);
         } catch (Exception ex) {
             this.logger.warn("Failed to update patient [{}] from JSON: {}. Source JSON was: {}", patient.getId(),
                 ex.getMessage(), json);

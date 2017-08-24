@@ -125,11 +125,41 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
     }
 
     @Override
-    public Response updatePatient(String json, String eid, String policy)
+    public Response updatePatient(final String json, final String eid, final String policy)
+    {
+        final PatientWritePolicy policyType = PatientWritePolicy.fromString(policy);
+        return updatePatient(json, eid, policyType);
+    }
+
+    @Override
+    public Response patchPatient(final String json, final String eid)
+    {
+        return updatePatient(json, eid, PatientWritePolicy.MERGE);
+    }
+
+    /**
+     * Update a patient record, identified by its given {@code eid "external" identifier}, from its {@code json JSON
+     * representation}, and according to the provided {@code policy}. If the user sending the request doesn't have the
+     * right to edit the target patient record, no change is performed and an error is returned. If the indicated
+     * patient record doesn't exist, and a valid JSON is provided, a new patient record is created with the provided
+     * data. If multiple records exist with the same given identifier, no change is performed, and a list of links to
+     * each such record is returned. If a field is set in the patient record, but missing in the JSON, then that field
+     * is not changed, unless {@link PatientWritePolicy#REPLACE} is selected.
+     *
+     * @param json the JSON representation of the new patient to add
+     * @param eid the patient's given "external" identifier, see {@link org.phenotips.data.Patient#getExternalId()}
+     * @param policy the {@link PatientWritePolicy} according to which the patient should be updated
+     * @return a status message
+     */
+    private Response updatePatient(final String json, final String eid, final PatientWritePolicy policy)
     {
         this.logger.debug("Updating patient record with external ID [{}] via REST with JSON: {}", eid, json);
-        final PatientWritePolicy policyType = PatientWritePolicy.fromString(policy);
-        if (policyType == null) {
+        if (policy == null) {
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
+        if (json == null) {
+            // json == null does not create an exception when initializing a JSONObject
+            // need to handle it separately to give explicit BAD_REQUEST to the user
             throw new WebApplicationException(Status.BAD_REQUEST);
         }
         Patient patient = this.repository.getByName(eid);
@@ -153,7 +183,7 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
             throw new WebApplicationException(Status.CONFLICT);
         }
         try {
-            patient.updateFromJSON(jsonInput, policyType);
+            patient.updateFromJSON(jsonInput, policy);
         } catch (Exception ex) {
             this.logger.warn("Failed to update patient [{}] from JSON: {}. Source JSON was: {}", patient.getId(),
                 ex.getMessage(), json);

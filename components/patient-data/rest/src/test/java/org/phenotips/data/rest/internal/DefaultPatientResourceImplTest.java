@@ -48,6 +48,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -68,6 +69,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -77,6 +79,12 @@ import static org.mockito.Mockito.when;
 public class DefaultPatientResourceImplTest
 {
     private static final String UPDATE = "update";
+
+    private static final String PATIENT_ID = "00000001";
+
+    private static final String URI_STRING = "http://self/uri";
+
+    private static final String EMPTY_JSON = "{}";
 
     @Rule
     public MockitoComponentMockingRule<PatientResource> mocker =
@@ -96,12 +104,6 @@ public class DefaultPatientResourceImplTest
     private PatientRepository repository;
 
     private AuthorizationManager access;
-
-    private UserManager users;
-
-    private String uriString = "http://self/uri";
-
-    private String id = "00000001";
 
     private DocumentReference patientDocument;
 
@@ -127,17 +129,21 @@ public class DefaultPatientResourceImplTest
         this.logger = this.mocker.getMockedLogger();
         this.repository = this.mocker.getInstance(PatientRepository.class);
         this.access = this.mocker.getInstance(AuthorizationManager.class);
-        this.users = this.mocker.getInstance(UserManager.class);
 
-        this.userProfileDocument = new DocumentReference("wiki", "user", "00000001");
-        doReturn(this.currentUser).when(this.users).getCurrentUser();
+        final UserManager users = this.mocker.getInstance(UserManager.class);
+        this.userProfileDocument = new DocumentReference("wiki", "user", PATIENT_ID);
+        doReturn(this.currentUser).when(users).getCurrentUser();
         doReturn(this.userProfileDocument).when(this.currentUser).getProfileDocument();
 
-        this.patientDocument = new DocumentReference("wiki", "data", "P0000001");
-        doReturn(this.patient).when(this.repository).get(this.id);
+        this.patientDocument = new DocumentReference("wiki", "data", PATIENT_ID);
+        doReturn(this.patient).when(this.repository).get(PATIENT_ID);
         doReturn(this.patientDocument).when(this.patient).getDocumentReference();
+        doReturn(true).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
 
-        doReturn(new URI(this.uriString)).when(this.uriInfo).getRequestUri();
+        when(this.repository.get(PATIENT_ID)).thenReturn(this.patient);
+        when(this.patient.getId()).thenReturn(PATIENT_ID);
+
+        doReturn(new URI(URI_STRING)).when(this.uriInfo).getRequestUri();
         ReflectionUtils.setFieldValue(this.patientResource, "uriInfo", this.uriInfo);
 
         Provider<XWikiContext> provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
@@ -149,7 +155,7 @@ public class DefaultPatientResourceImplTest
         when(autolinker.withExtraParameters(any(String.class), any(String.class))).thenReturn(autolinker);
         when(autolinker.build()).thenReturn(Collections
             .singletonList(new org.phenotips.rest.model.Link().withAllowedMethods(Collections.singletonList("GET"))
-                .withHref(this.uriString).withRel("self")));
+                .withHref(URI_STRING).withRel("self")));
     }
 
     // ----------------------------Get Patient Tests----------------------------
@@ -159,9 +165,9 @@ public class DefaultPatientResourceImplTest
     {
         doReturn(null).when(this.repository).get(anyString());
 
-        Response response = this.patientResource.getPatient(this.id);
+        Response response = this.patientResource.getPatient(PATIENT_ID);
 
-        verify(this.logger).debug("No such patient record: [{}]", this.id);
+        verify(this.logger).debug("No such patient record: [{}]", PATIENT_ID);
         Assert.assertEquals(Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 
@@ -170,9 +176,10 @@ public class DefaultPatientResourceImplTest
     {
         doReturn(false).when(this.access).hasAccess(Right.VIEW, this.userProfileDocument, this.patientDocument);
 
-        Response response = this.patientResource.getPatient(this.id);
+        Response response = this.patientResource.getPatient(PATIENT_ID);
 
-        verify(this.logger).debug("View access denied to user [{}] on patient record [{}]", this.currentUser, this.id);
+        verify(this.logger).debug("View access denied to user [{}] on patient record [{}]", this.currentUser,
+            PATIENT_ID);
         Assert.assertEquals(Status.FORBIDDEN.getStatusCode(), response.getStatus());
     }
 
@@ -182,7 +189,7 @@ public class DefaultPatientResourceImplTest
         doReturn(true).when(this.access).hasAccess(Right.VIEW, this.userProfileDocument, this.patientDocument);
         doReturn(new JSONObject()).when(this.patient).toJSON();
 
-        Response response = this.patientResource.getPatient(this.id);
+        Response response = this.patientResource.getPatient(PATIENT_ID);
 
         Assert.assertTrue(response.getEntity() instanceof JSONObject);
         JSONObject json = (JSONObject) response.getEntity();
@@ -196,7 +203,7 @@ public class DefaultPatientResourceImplTest
             }
         }
         Assert.assertNotNull(selfLink);
-        Assert.assertEquals(this.uriString, selfLink.getString("href"));
+        Assert.assertEquals(URI_STRING, selfLink.getString("href"));
         Map<String, List<Object>> actualMap = response.getMetadata();
         Assert.assertThat(actualMap, hasValue(hasItem(MediaType.APPLICATION_JSON_TYPE)));
         Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
@@ -211,7 +218,7 @@ public class DefaultPatientResourceImplTest
 
         WebApplicationException ex = null;
         try {
-            this.patientResource.updatePatient("", this.id, UPDATE);
+            this.patientResource.updatePatient("", PATIENT_ID, UPDATE);
         } catch (WebApplicationException temp) {
             ex = temp;
         }
@@ -220,7 +227,7 @@ public class DefaultPatientResourceImplTest
             + "when the patient could not be found", ex);
         Assert.assertEquals(Status.NOT_FOUND.getStatusCode(), ex.getResponse().getStatus());
         verify(this.logger).debug("Patient record [{}] doesn't exist yet. It can be created by POST-ing the"
-            + " JSON to /rest/patients", this.id);
+            + " JSON to /rest/patients", PATIENT_ID);
     }
 
     @Test
@@ -230,7 +237,7 @@ public class DefaultPatientResourceImplTest
 
         WebApplicationException ex = null;
         try {
-            this.patientResource.updatePatient("", this.id, UPDATE);
+            this.patientResource.updatePatient("", PATIENT_ID, UPDATE);
         } catch (WebApplicationException temp) {
             ex = temp;
         }
@@ -238,20 +245,20 @@ public class DefaultPatientResourceImplTest
         Assert.assertNotNull("updatePatient did not throw a WebApplicationException as expected "
             + "when the User did not have edit rights", ex);
         Assert.assertEquals(Status.FORBIDDEN.getStatusCode(), ex.getResponse().getStatus());
-        verify(this.logger).debug("Edit access denied to user [{}] on patient record [{}]", this.currentUser, this.id);
+        verify(this.logger).debug("Edit access denied to user [{}] on patient record [{}]", this.currentUser,
+            PATIENT_ID);
     }
 
     @Test
     public void updatePatientThrowsExceptionWhenSentWrongIdInJSON()
     {
-        doReturn(true).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
         JSONObject json = new JSONObject();
         json.put("id", "!!!!!");
-        doReturn(this.id).when(this.patient).getId();
+        doReturn(PATIENT_ID).when(this.patient).getId();
 
         WebApplicationException ex = null;
         try {
-            this.patientResource.updatePatient(json.toString(), this.id, UPDATE);
+            this.patientResource.updatePatient(json.toString(), PATIENT_ID, UPDATE);
         } catch (WebApplicationException temp) {
             ex = temp;
         }
@@ -264,16 +271,15 @@ public class DefaultPatientResourceImplTest
     @Test
     public void updatePatientCatchesExceptions()
     {
-        doReturn(true).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
         JSONObject json = new JSONObject();
-        json.put("id", this.id);
-        doReturn(this.id).when(this.patient).getId();
+        json.put("id", PATIENT_ID);
+        doReturn(PATIENT_ID).when(this.patient).getId();
         doThrow(Exception.class).when(this.patient).updateFromJSON(any(JSONObject.class),
             any(PatientWritePolicy.class));
 
         WebApplicationException ex = null;
         try {
-            this.patientResource.updatePatient(json.toString(), this.id, UPDATE);
+            this.patientResource.updatePatient(json.toString(), PATIENT_ID, UPDATE);
         } catch (WebApplicationException temp) {
             ex = temp;
         }
@@ -289,12 +295,11 @@ public class DefaultPatientResourceImplTest
     @Test
     public void updatePatientNormalBehaviour()
     {
-        doReturn(true).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
         JSONObject json = new JSONObject();
-        json.put("id", this.id);
-        doReturn(this.id).when(this.patient).getId();
+        json.put("id", PATIENT_ID);
+        doReturn(PATIENT_ID).when(this.patient).getId();
 
-        Response response = this.patientResource.updatePatient(json.toString(), this.id, UPDATE);
+        Response response = this.patientResource.updatePatient(json.toString(), PATIENT_ID, UPDATE);
 
         verify(this.patient).updateFromJSON(any(JSONObject.class), any(PatientWritePolicy.class));
         Assert.assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
@@ -307,9 +312,9 @@ public class DefaultPatientResourceImplTest
     {
         doReturn(null).when(this.repository).get(anyString());
 
-        Response response = this.patientResource.deletePatient(this.id);
+        Response response = this.patientResource.deletePatient(PATIENT_ID);
 
-        verify(this.logger).debug("Patient record [{}] didn't exist", this.id);
+        verify(this.logger).debug("Patient record [{}] didn't exist", PATIENT_ID);
         Assert.assertEquals(Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 
@@ -318,10 +323,10 @@ public class DefaultPatientResourceImplTest
     {
         doReturn(false).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
 
-        Response response = this.patientResource.deletePatient(this.id);
+        Response response = this.patientResource.deletePatient(PATIENT_ID);
 
         verify(this.logger).debug("Delete access denied to user [{}] on patient record [{}]", this.currentUser,
-            this.id);
+            PATIENT_ID);
         Assert.assertEquals(Status.FORBIDDEN.getStatusCode(), response.getStatus());
     }
 
@@ -333,7 +338,7 @@ public class DefaultPatientResourceImplTest
 
         WebApplicationException ex = null;
         try {
-            this.patientResource.deletePatient(this.id);
+            this.patientResource.deletePatient(PATIENT_ID);
         } catch (WebApplicationException temp) {
             ex = temp;
         }
@@ -341,7 +346,7 @@ public class DefaultPatientResourceImplTest
         Assert.assertNotNull("deletePatient did not throw a WebApplicationException as expected "
             + "when catching an Exception", ex);
         Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), ex.getResponse().getStatus());
-        verify(this.logger).warn(eq("Failed to delete patient record [{}]: {}"), eq(this.id), anyString());
+        verify(this.logger).warn(eq("Failed to delete patient record [{}]: {}"), eq(PATIENT_ID), anyString());
     }
 
     @Test
@@ -349,9 +354,144 @@ public class DefaultPatientResourceImplTest
     {
         doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
 
-        Response response = this.patientResource.deletePatient(this.id);
+        Response response = this.patientResource.deletePatient(PATIENT_ID);
 
         verify(this.repository).delete(this.patient);
+        Assert.assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
+    }
+
+    // ----------------------------Patch Patient Tests-----------------------------
+
+    @Test(expected = WebApplicationException.class)
+    public void patchPatientWithNullIdThrowsWebApplicationException()
+    {
+        try {
+            this.patientResource.patchPatient(EMPTY_JSON, null);
+        } catch (final WebApplicationException ex) {
+            Assert.assertEquals(Status.NOT_FOUND.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
+    }
+
+    @Test(expected = WebApplicationException.class)
+    public void patchPatientWithEmptyIdThrowsWebApplicationException()
+    {
+        try {
+            this.patientResource.patchPatient(EMPTY_JSON, StringUtils.EMPTY);
+        } catch (final WebApplicationException ex) {
+            Assert.assertEquals(Status.NOT_FOUND.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
+    }
+
+    @Test(expected = WebApplicationException.class)
+    public void patchPatientWithBlankIdThrowsWebApplicationException()
+    {
+        try {
+            this.patientResource.patchPatient(EMPTY_JSON, StringUtils.SPACE);
+        } catch (final WebApplicationException ex) {
+            Assert.assertEquals(Status.NOT_FOUND.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
+    }
+
+    @Test(expected = WebApplicationException.class)
+    public void patchPatientWithNullJsonThrowsWebApplicationException()
+    {
+        try {
+            this.patientResource.patchPatient(null, PATIENT_ID);
+        } catch (final WebApplicationException ex) {
+            Assert.assertEquals(Status.BAD_REQUEST.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
+    }
+
+    @Test(expected = WebApplicationException.class)
+    public void patchPatientWithEmptyJsonThrowsWebApplicationException()
+    {
+        try {
+            this.patientResource.patchPatient(StringUtils.EMPTY, PATIENT_ID);
+        } catch (final WebApplicationException ex) {
+            Assert.assertEquals(Status.BAD_REQUEST.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
+    }
+
+    @Test(expected = WebApplicationException.class)
+    public void patchPatientWithBlankJsonThrowsWebApplicationException()
+    {
+        try {
+            this.patientResource.patchPatient(StringUtils.SPACE, PATIENT_ID);
+        } catch (final WebApplicationException ex) {
+            Assert.assertEquals(Status.BAD_REQUEST.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
+    }
+
+    @Test(expected = WebApplicationException.class)
+    public void patchPatientNoPatientWithSpecifiedIdExistsResultsInWebApplicationException()
+    {
+        try {
+            when(this.repository.get(PATIENT_ID)).thenReturn(null);
+            this.patientResource.patchPatient(EMPTY_JSON, PATIENT_ID);
+        } catch (final WebApplicationException ex) {
+            Assert.assertEquals(Status.NOT_FOUND.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
+    }
+
+    @Test(expected = WebApplicationException.class)
+    public void patchPatientUserHasNoEditAccessThrowsWebApplicationException()
+    {
+        try {
+            when(this.access.hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument)).thenReturn(false);
+            this.patientResource.patchPatient(EMPTY_JSON, PATIENT_ID);
+        } catch (final WebApplicationException ex) {
+            Assert.assertEquals(Status.FORBIDDEN.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
+    }
+
+    @Test(expected = WebApplicationException.class)
+    public void patchPatientInvalidJsonThrowsWebApplicationException()
+    {
+        try {
+            this.patientResource.patchPatient("[]", PATIENT_ID);
+        } catch (final WebApplicationException ex) {
+            Assert.assertEquals(Status.BAD_REQUEST.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
+    }
+
+    @Test(expected = WebApplicationException.class)
+    public void patchPatientIdFromJsonAndPatientIdConflictThrowsWebApplicationException()
+    {
+        try {
+            this.patientResource.patchPatient("{\"id\":\"wrong\"}", PATIENT_ID);
+        } catch (final WebApplicationException ex) {
+            Assert.assertEquals(Status.CONFLICT.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
+    }
+
+    @Test(expected = WebApplicationException.class)
+    public void patchPatientUpdatingPatientFromJsonFailsResultsInWebApplicationException()
+    {
+        try {
+            doThrow(new RuntimeException()).when(this.patient).updateFromJSON(any(JSONObject.class),
+                eq(PatientWritePolicy.MERGE));
+            this.patientResource.patchPatient(EMPTY_JSON, PATIENT_ID);
+        } catch (final WebApplicationException ex) {
+            Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
+    }
+
+    @Test
+    public void patchPatientUpdatesPatientSuccessfully()
+    {
+        final Response response = this.patientResource.patchPatient(EMPTY_JSON, PATIENT_ID);
+        verify(this.patient, times(1)).updateFromJSON(any(JSONObject.class), eq(PatientWritePolicy.MERGE));
         Assert.assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 }
