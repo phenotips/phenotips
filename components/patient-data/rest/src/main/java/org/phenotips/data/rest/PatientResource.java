@@ -17,6 +17,7 @@
  */
 package org.phenotips.data.rest;
 
+import org.phenotips.rest.PATCH;
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
 import org.phenotips.rest.RequiredAccess;
@@ -73,6 +74,22 @@ public interface PatientResource
     @RequiredAccess("edit")
     Response updatePatient(String json, @PathParam("patient-id") String id,
         @QueryParam("policy") @DefaultValue("update") String policy);
+
+    /**
+     * Update a patient record, identified by its internal PhenoTips identifier, from its JSON representation. Existing
+     * patient data is merged with the provided JSON representation, if possible. If the indicated patient record
+     * doesn't exist, or if the user sending the request doesn't have the right to edit the target patient record, no
+     * change is performed and an error is returned. If a field is set in the patient record, but missing in the JSON,
+     * then that field is not changed.
+     *
+     * @param json the JSON representation of the new patient
+     * @param id the patient's internal identifier, see {@link org.phenotips.data.Patient#getId()}
+     * @return a status message
+     */
+    @PATCH
+    @Consumes(MediaType.APPLICATION_JSON)
+    @RequiredAccess("edit")
+    Response patchPatient(String json, @PathParam("patient-id") String id);
 
     /**
      * Delete a patient record, identified by its internal PhenoTips identifier. If the indicated patient record doesn't
