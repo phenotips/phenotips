@@ -192,8 +192,8 @@ public interface Vocabulary
      * specify type of terms are requested. If no categories are reported as supported, then this vocabulary must be
      * used explicitly to search for terms.
      *
-     * @return a collection of vocabulary term categories, as short names, for example {@code disorder},
-     *         {@code feature}, or {@code feature-qualifier}; may be empty
+     * @return a collection of vocabulary term categories, as short names, for example {@code disorder}, {@code feature}
+     *         , or {@code feature-qualifier}; may be empty
      * @since 1.4
      */
     default Collection<String> getSupportedCategories()
@@ -223,6 +223,17 @@ public interface Vocabulary
      * @return the string containing the default URL for the vocabulary source
      */
     String getDefaultSourceLocation();
+
+    /**
+     * Get the location where the sources for this vocabulary can be fetched from.
+     *
+     * @return the string containing the URL for the vocabulary source
+     * @since 1.4
+     */
+    default String getSourceLocation()
+    {
+        return getDefaultSourceLocation();
+    }
 
     /**
      * Get the available version of the vocabulary.
