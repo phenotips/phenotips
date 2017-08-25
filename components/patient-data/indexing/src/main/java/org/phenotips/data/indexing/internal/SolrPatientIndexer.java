@@ -148,8 +148,8 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
             }
         }
 
-        input.setField("visibility", this.permissions.getPatientAccess(patient).getVisibility().getName());
-        input.setField("accessLevel", this.permissions.getPatientAccess(patient).getVisibility().getPermissiveness());
+        input.setField("visibility", this.permissions.getEntityAccess(patient).getVisibility().getName());
+        input.setField("accessLevel", this.permissions.getEntityAccess(patient).getVisibility().getPermissiveness());
 
         addGenes(input, patient);
 

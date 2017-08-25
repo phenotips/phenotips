@@ -19,7 +19,7 @@ package org.phenotips.recordLocking.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.recordLocking.PatientRecordLockManager;
 
@@ -84,7 +84,7 @@ public class DefaultPatientRecordLockManagerTest
     private BaseObject lock;
 
     @Mock
-    private PatientAccess patientAccess;
+    private EntityAccess patientAccess;
 
     @Before
     public void setup() throws ComponentLookupException, XWikiException
@@ -104,7 +104,7 @@ public class DefaultPatientRecordLockManagerTest
         Mockito.doReturn(this.xwiki).when(this.context).getWiki();
         Mockito.doReturn(this.patientDocumentReference).when(this.patient).getDocumentReference();
         Mockito.doReturn(this.patientDocument).when(this.patient).getXDocument();
-        Mockito.doReturn(this.patientAccess).when(this.pm).getPatientAccess(this.patient);
+        Mockito.doReturn(this.patientAccess).when(this.pm).getEntityAccess(this.patient);
 
     }
 

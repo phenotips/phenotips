@@ -20,7 +20,7 @@ package org.phenotips.data.permissions.rest.internal.utils;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -49,7 +49,7 @@ public class PatientAccessContext
 
     private User currentUser;
 
-    private PatientAccess patientAccess;
+    private EntityAccess patientAccess;
 
     private PermissionsManager manager;
 
@@ -78,7 +78,7 @@ public class PatientAccessContext
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
         this.userOrGroupResolver = userOrGroupResolver;
-        this.patientAccess = this.manager.getPatientAccess(this.patient);
+        this.patientAccess = this.manager.getEntityAccess(this.patient);
         this.initializeUser(minimumAccessLevel, users, this.logger);
     }
 
@@ -115,11 +115,11 @@ public class PatientAccessContext
     }
 
     /**
-     * Allows for reuse of {@link PatientAccess} instance.
+     * Allows for reuse of {@link EntityAccess} instance.
      *
-     * @return an initialized instance of {@link PatientAccess}
+     * @return an initialized instance of {@link EntityAccess}
      */
-    public PatientAccess getPatientAccess()
+    public EntityAccess getPatientAccess()
     {
         return this.patientAccess;
     }

@@ -24,6 +24,7 @@ import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
+import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.model.reference.EntityReference;
 
@@ -37,7 +38,7 @@ public class SecurePatientAccess implements PatientAccess
 
     private final PermissionsManager manager;
 
-    public SecurePatientAccess(PatientAccess internalService, PermissionsManager manager)
+    SecurePatientAccess(PatientAccess internalService, PermissionsManager manager)
     {
         this.internalService = internalService;
         this.manager = manager;
@@ -47,6 +48,12 @@ public class SecurePatientAccess implements PatientAccess
     public Patient getPatient()
     {
         return this.internalService.getPatient();
+    }
+
+    @Override
+    public PrimaryEntity getEntity()
+    {
+        return this.internalService.getEntity();
     }
 
     @Override
@@ -70,10 +77,7 @@ public class SecurePatientAccess implements PatientAccess
     @Override
     public boolean setOwner(EntityReference userOrGroup)
     {
-        if (hasAccessLevel("manage")) {
-            return this.internalService.setOwner(userOrGroup);
-        }
-        return false;
+        return hasAccessLevel("manage") && this.internalService.setOwner(userOrGroup);
     }
 
     @Override
@@ -85,10 +89,7 @@ public class SecurePatientAccess implements PatientAccess
     @Override
     public boolean setVisibility(Visibility newVisibility)
     {
-        if (hasAccessLevel("manage")) {
-            return this.internalService.setVisibility(newVisibility);
-        }
-        return false;
+        return hasAccessLevel("manage") && this.internalService.setVisibility(newVisibility);
     }
 
     @Override
@@ -100,19 +101,14 @@ public class SecurePatientAccess implements PatientAccess
     @Override
     public boolean updateCollaborators(Collection<Collaborator> newCollaborators)
     {
-        if (hasAccessLevel("manage")) {
-            return this.internalService.updateCollaborators(newCollaborators);
-        }
-        return false;
+        return hasAccessLevel("manage") && this.internalService.updateCollaborators(newCollaborators);
     }
 
     public boolean updateCollaborators(Map<EntityReference, AccessLevel> newCollaborators)
     {
         if (hasAccessLevel("manage")) {
             Collection<Collaborator> collaborators = new LinkedHashSet<Collaborator>();
-            for (Map.Entry<EntityReference, AccessLevel> collaborator : newCollaborators.entrySet()) {
-                collaborators.add(new DefaultCollaborator(collaborator.getKey(), collaborator.getValue(), null));
-            }
+            newCollaborators.forEach((key, value) -> collaborators.add(new DefaultCollaborator(key, value, null)));
             return this.internalService.updateCollaborators(collaborators);
         }
         return false;
@@ -121,28 +117,19 @@ public class SecurePatientAccess implements PatientAccess
     @Override
     public boolean addCollaborator(EntityReference user, AccessLevel access)
     {
-        if (hasAccessLevel("manage")) {
-            return this.internalService.addCollaborator(user, access);
-        }
-        return false;
+        return hasAccessLevel("manage") && this.internalService.addCollaborator(user, access);
     }
 
     @Override
     public boolean removeCollaborator(EntityReference user)
     {
-        if (hasAccessLevel("manage")) {
-            return this.internalService.removeCollaborator(user);
-        }
-        return false;
+        return hasAccessLevel("manage") && this.internalService.removeCollaborator(user);
     }
 
     @Override
     public boolean removeCollaborator(Collaborator collaborator)
     {
-        if (hasAccessLevel("manage")) {
-            return this.internalService.removeCollaborator(collaborator);
-        }
-        return false;
+        return hasAccessLevel("manage") && this.internalService.removeCollaborator(collaborator);
     }
 
     @Override

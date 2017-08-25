@@ -19,7 +19,7 @@ package org.phenotips.data.permissions.rest.internal;
 
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.rest.CollaboratorsResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
@@ -116,7 +116,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         List<Object> accessLevels = this.container.getRequest().getProperties("level");
 
         PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
-        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
+        EntityAccess patientAccess = patientAccessContext.getPatientAccess();
 
         if (collaborators.size() != accessLevels.size()) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
@@ -158,7 +158,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         boolean replace)
     {
         PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
-        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
+        EntityAccess patientAccess = patientAccessContext.getPatientAccess();
 
         Map<EntityReference, Collaborator> internalCollaborators = new LinkedHashMap<>();
         if (!replace) {

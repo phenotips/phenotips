@@ -19,7 +19,7 @@ package org.phenotips.data.permissions.rest.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.rest.CollaboratorResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
@@ -132,7 +132,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         // besides getting the patient, checks that the user has manage access
         PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
 
-        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
+        EntityAccess patientAccess = patientAccessContext.getPatientAccess();
         EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorId);
         if (collaboratorReference == null) {
             // what would be a better status to indicate that the user/group id is not valid?
@@ -150,7 +150,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     }
 
     private CollaboratorRepresentation createCollaboratorRepresentation(Patient patient, String id,
-        PatientAccess patientAccess)
+        EntityAccess patientAccess)
     {
         String collaboratorId = id.trim();
         EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorId);
@@ -179,7 +179,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     {
         PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
         patientAccessContext.checkCollaboratorInfo(collaboratorId, accessLevelName);
-        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
+        EntityAccess patientAccess = patientAccessContext.getPatientAccess();
         EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorId);
         patientAccess.addCollaborator(collaboratorReference, this.manager.resolveAccessLevel(accessLevelName));
         this.manager.fireRightsUpdateEvent(patientId);
