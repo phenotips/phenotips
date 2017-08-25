@@ -61,7 +61,7 @@ public class GeneForPhenotypesAnnotationsExtension extends AbstractCSVAnnotation
     }
 
     @Override
-    protected String getAnnotationSource()
+    public String getAnnotationSource()
     {
         return this.relocationService.getRelocation(ANNOTATION_SOURCE);
     }
@@ -73,5 +73,11 @@ public class GeneForPhenotypesAnnotationsExtension extends AbstractCSVAnnotation
         // allow more than one null header
         return CSVFormat.TDF.withHeader("id", null, "", "associated_genes").withAllowMissingColumnNames()
             .withCommentMarker('#');
+    }
+
+    @Override
+    public String getName()
+    {
+        return "HPO annotation with associated genes";
     }
 }

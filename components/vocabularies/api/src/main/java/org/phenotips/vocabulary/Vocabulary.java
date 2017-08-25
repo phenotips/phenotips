@@ -255,4 +255,11 @@ public interface Vocabulary
      * @return the string containing the citation for the vocabulary.
      */
     String getCitation();
+
+    /**
+     * Get the list of {@link VocabularyExtension}s that extend a base vocabulary with additional annotations.
+     *
+     * @return the list of vocabulary extensions.
+     */
+    List<VocabularyExtension> getExtensions();
 }

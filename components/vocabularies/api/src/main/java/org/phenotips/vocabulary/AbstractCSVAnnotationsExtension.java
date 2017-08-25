@@ -243,14 +243,6 @@ public abstract class AbstractCSVAnnotationsExtension implements VocabularyExten
     protected abstract Collection<String> getTargetVocabularyIds();
 
     /**
-     * Specifies the annotation source URL. This can be either a web (http) link, a network file, a local
-     * {@code file:///} reference, a classpath resource, or any other URL format that can be read by the JVM.
-     *
-     * @return a valid annotation source URL
-     */
-    protected abstract String getAnnotationSource();
-
-    /**
      * <p>
      * Sets up a CSV parser so that it accepts the format of the input file, and has names for each column of interest.
      * Giving names to columns is mandatory if the default implementation of {@link #processCSVRecordRow} is used. A

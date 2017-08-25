@@ -52,7 +52,7 @@ public class NegativePhenotypeForDiseaseAnnotationsExtension extends AbstractPhe
     protected VocabularySourceRelocationService relocationService;
 
     @Override
-    protected String getAnnotationSource()
+    public String getAnnotationSource()
     {
         return this.relocationService.getRelocation(ANNOTATION_SOURCE);
     }
@@ -67,5 +67,11 @@ public class NegativePhenotypeForDiseaseAnnotationsExtension extends AbstractPhe
     protected String getAllAncestorPhenotypesLabel()
     {
         return NOT_SYMPTOM;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "The disease annotations with negative HPO";
     }
 }

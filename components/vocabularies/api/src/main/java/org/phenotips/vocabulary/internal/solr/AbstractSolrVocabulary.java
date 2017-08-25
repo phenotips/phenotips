@@ -251,6 +251,12 @@ public abstract class AbstractSolrVocabulary implements Vocabulary
         return this.relocationService.getRelocation(this.getDefaultSourceLocation());
     }
 
+    @Override
+    public List<VocabularyExtension> getExtensions()
+    {
+        return this.extensions.get();
+    }
+
     /**
      * Perform a search, falling back on the suggested spellchecked query if the original query fails to return any
      * results.
