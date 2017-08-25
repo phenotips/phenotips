@@ -22,6 +22,7 @@ import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
+
 import org.xwiki.component.annotation.Component;
 
 import java.util.Collection;

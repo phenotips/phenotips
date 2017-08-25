@@ -34,6 +34,7 @@ import javax.inject.Singleton;
 @Singleton
 public class OwnerAccessLevel extends AbstractAccessLevel
 {
+    /** Simple constructor. */
     public OwnerAccessLevel()
     {
         super(100, false);

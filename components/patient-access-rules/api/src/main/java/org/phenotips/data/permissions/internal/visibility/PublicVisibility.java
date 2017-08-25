@@ -38,6 +38,7 @@ public class PublicVisibility extends AbstractVisibility
     @Named("view")
     private AccessLevel access;
 
+    /** Simple constructor. */
     public PublicVisibility()
     {
         super(50);

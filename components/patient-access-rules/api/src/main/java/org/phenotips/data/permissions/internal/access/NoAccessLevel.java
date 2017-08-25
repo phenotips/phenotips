@@ -32,6 +32,7 @@ import javax.inject.Singleton;
 @Singleton
 public class NoAccessLevel extends AbstractAccessLevel
 {
+    /** Simple constructor. */
     public NoAccessLevel()
     {
         super(0, false);

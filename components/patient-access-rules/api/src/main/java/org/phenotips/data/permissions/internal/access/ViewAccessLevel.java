@@ -33,6 +33,7 @@ import javax.inject.Singleton;
 @Singleton
 public class ViewAccessLevel extends AbstractAccessLevel
 {
+    /** Simple constructor. */
     public ViewAccessLevel()
     {
         super(10, true);

@@ -366,6 +366,7 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
                 return "group";
             }
         } catch (Exception ex) {
+            this.logger.warn("Failed to determine user type: {}", ex.getMessage(), ex);
         }
         return "unknown";
     }

@@ -47,7 +47,7 @@ import com.xpn.xwiki.web.XWikiServletRequest;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the {@link VCFAccessRestrictionEventListener}
+ * Tests for the {@link VCFAccessRestrictionEventListener}.
  *
  * @version $Id$
  */
@@ -55,10 +55,9 @@ public class VCFAccessRestrictionEventListenerTest
 {
     @Rule
     public final MockitoComponentMockingRule<EventListener> mocker =
-    new MockitoComponentMockingRule<EventListener>(VCFAccessRestrictionEventListener.class);
+        new MockitoComponentMockingRule<>(VCFAccessRestrictionEventListener.class);
 
-    @Mock
-    private Event event;
+    private ActionExecutingEvent event = new ActionExecutingEvent("download");
 
     @Mock
     private XWikiDocument doc;
@@ -117,40 +116,36 @@ public class VCFAccessRestrictionEventListenerTest
     @Test
     public void forbidsDownloadingVcfAttachmentsIfAccessIsLowerThanEdit() throws ComponentLookupException
     {
-        ActionExecutingEvent event = new ActionExecutingEvent("download");
         when(this.request.getRequestURI()).thenReturn("/bin/download/data/P0000001/file.vcf");
         when(this.access.hasAccessLevel(this.edit)).thenReturn(false);
-        this.mocker.getComponentUnderTest().onEvent(event, this.doc, this.context);
-        Assert.assertTrue(event.isCanceled());
+        this.mocker.getComponentUnderTest().onEvent(this.event, this.doc, this.context);
+        Assert.assertTrue(this.event.isCanceled());
     }
 
     @Test
     public void allowsDownloadingVcfAttachmentsWhenHasEditAccess() throws ComponentLookupException
     {
-        ActionExecutingEvent event = new ActionExecutingEvent("download");
         when(this.request.getRequestURI()).thenReturn("/bin/download/data/P0000001/file.vcf");
         when(this.access.hasAccessLevel(this.edit)).thenReturn(true);
-        this.mocker.getComponentUnderTest().onEvent(event, this.doc, this.context);
-        Assert.assertFalse(event.isCanceled());
+        this.mocker.getComponentUnderTest().onEvent(this.event, this.doc, this.context);
+        Assert.assertFalse(this.event.isCanceled());
     }
 
     @Test
     public void alwaysAllowsDownloadingNonVcfAttachments() throws ComponentLookupException
     {
-        ActionExecutingEvent event = new ActionExecutingEvent("download");
         when(this.request.getRequestURI()).thenReturn("/bin/download/data/P0000001/file.png");
         when(this.access.hasAccessLevel(this.edit)).thenReturn(false);
-        this.mocker.getComponentUnderTest().onEvent(event, this.doc, this.context);
-        Assert.assertFalse(event.isCanceled());
+        this.mocker.getComponentUnderTest().onEvent(this.event, this.doc, this.context);
+        Assert.assertFalse(this.event.isCanceled());
     }
 
     @Test
     public void ignoresExtraFileparts() throws ComponentLookupException
     {
-        ActionExecutingEvent event = new ActionExecutingEvent("download");
         when(this.request.getRequestURI()).thenReturn("/bin/download/data/P0000001/file.vcf/hacked");
         when(this.access.hasAccessLevel(this.edit)).thenReturn(false);
-        this.mocker.getComponentUnderTest().onEvent(event, this.doc, this.context);
-        Assert.assertTrue(event.isCanceled());
+        this.mocker.getComponentUnderTest().onEvent(this.event, this.doc, this.context);
+        Assert.assertTrue(this.event.isCanceled());
     }
 }

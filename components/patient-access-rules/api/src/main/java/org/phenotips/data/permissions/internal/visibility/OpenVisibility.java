@@ -39,6 +39,7 @@ public class OpenVisibility extends AbstractVisibility
     @Named("edit")
     private AccessLevel access;
 
+    /** Simple constructor. */
     public OpenVisibility()
     {
         super(80);

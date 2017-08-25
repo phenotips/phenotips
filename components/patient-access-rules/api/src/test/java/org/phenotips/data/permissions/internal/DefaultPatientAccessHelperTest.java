@@ -79,14 +79,6 @@ public class DefaultPatientAccessHelperTest
     /** The patient used for tests. */
     private static final DocumentReference PATIENT_REFERENCE = new DocumentReference("xwiki", "data", "P0000001");
 
-    private Patient patient = mock(Patient.class);
-
-    private XWikiDocument patientDoc = mock(XWikiDocument.class);
-
-    private BaseObject ownerObject = mock(BaseObject.class);
-
-    private BaseObject visibilityObject = mock(BaseObject.class);
-
     /** The user used as the owner of the patient. */
     private static final DocumentReference OWNER = new DocumentReference("xwiki", "XWiki", "padams");
 
@@ -122,7 +114,15 @@ public class DefaultPatientAccessHelperTest
 
     @Rule
     public final MockitoComponentMockingRule<PatientAccessHelper> mocker =
-        new MockitoComponentMockingRule<PatientAccessHelper>(DefaultPatientAccessHelper.class);
+        new MockitoComponentMockingRule<>(DefaultPatientAccessHelper.class);
+
+    private Patient patient = mock(Patient.class);
+
+    private XWikiDocument patientDoc = mock(XWikiDocument.class);
+
+    private BaseObject ownerObject = mock(BaseObject.class);
+
+    private BaseObject visibilityObject = mock(BaseObject.class);
 
     private ParameterizedType entityResolverType = new DefaultParameterizedType(null, DocumentReferenceResolver.class,
         EntityReference.class);
@@ -181,7 +181,7 @@ public class DefaultPatientAccessHelperTest
         this.context = mock(XWikiContext.class);
         when(ec.getProperty("xwikicontext")).thenReturn(this.context);
         this.xwiki = mock(XWiki.class);
-        when(this.context.getWiki()).thenReturn(xwiki);
+        when(this.context.getWiki()).thenReturn(this.xwiki);
 
         when(this.patient.getDocumentReference()).thenReturn(PATIENT_REFERENCE);
         when(this.patient.getXDocument()).thenReturn(this.patientDoc);
@@ -249,7 +249,7 @@ public class DefaultPatientAccessHelperTest
     {
         Assert.assertTrue(this.mocker.getComponentUnderTest().setOwner(this.patient, OWNER));
         Mockito.verify(this.ownerObject).set("owner", OWNER_STR, this.context);
-        Mockito.verify(xwiki).saveDocument(this.patientDoc, "Set owner: " + OWNER_STR, true, this.context);
+        Mockito.verify(this.xwiki).saveDocument(this.patientDoc, "Set owner: " + OWNER_STR, true, this.context);
     }
 
     /** Basic tests for {@link PatientAccessHelper#setOwner(Patient, EntityReference)}. */
@@ -317,7 +317,7 @@ public class DefaultPatientAccessHelperTest
         XWikiDocument doc = mock(XWikiDocument.class);
         when(this.patient.getXDocument()).thenReturn(doc);
 
-        List<BaseObject> objects = new ArrayList<BaseObject>();
+        List<BaseObject> objects = new ArrayList<>();
         BaseObject collaborator = mock(BaseObject.class);
         when(collaborator.getStringValue("collaborator")).thenReturn(COLLABORATOR_STR);
         when(collaborator.getStringValue("access")).thenReturn("edit");
@@ -350,7 +350,7 @@ public class DefaultPatientAccessHelperTest
         XWikiDocument doc = mock(XWikiDocument.class);
         when(this.patient.getXDocument()).thenReturn(doc);
 
-        List<BaseObject> objects = new ArrayList<BaseObject>();
+        List<BaseObject> objects = new ArrayList<>();
         BaseObject collaborator = mock(BaseObject.class);
         when(collaborator.getStringValue("collaborator")).thenReturn(COLLABORATOR_STR);
         when(collaborator.getStringValue("access")).thenReturn("edit");
@@ -386,7 +386,7 @@ public class DefaultPatientAccessHelperTest
         XWikiDocument doc = mock(XWikiDocument.class);
         when(this.patient.getXDocument()).thenReturn(doc);
 
-        List<BaseObject> objects = new ArrayList<BaseObject>();
+        List<BaseObject> objects = new ArrayList<>();
         BaseObject collaborator = mock(BaseObject.class);
         when(collaborator.getStringValue("collaborator")).thenReturn(COLLABORATOR_STR);
         when(collaborator.getStringValue("access")).thenReturn("");
@@ -429,7 +429,7 @@ public class DefaultPatientAccessHelperTest
         AccessLevel view = mock(AccessLevel.class);
         when(view.getName()).thenReturn("view");
         when(manager.resolveAccessLevel("view")).thenReturn(view);
-        Collection<Collaborator> collaborators = new HashSet<Collaborator>();
+        Collection<Collaborator> collaborators = new HashSet<>();
         Collaborator c = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
         collaborators.add(c);
         c = new DefaultCollaborator(OTHER_USER, view, this.mocker.getComponentUnderTest());
@@ -446,17 +446,19 @@ public class DefaultPatientAccessHelperTest
         Mockito.verify(this.xwiki).saveDocument(doc, "Updated collaborators", true, this.context);
     }
 
-    /** {@link PatientAccessHelper#setCollaborators(Patient, Collection)} returns false when accessing the patient fails. */
+    /**
+     * {@link PatientAccessHelper#setCollaborators(Patient, Collection)} returns false when accessing the patient fails.
+     */
     @Test
     public void setCollaboratorsWithFailure() throws Exception
     {
         Mockito.doThrow(new RuntimeException()).when(this.patient).getXDocument();
-        Collection<Collaborator> collaborators = new HashSet<Collaborator>();
+        Collection<Collaborator> collaborators = new HashSet<>();
         Assert.assertFalse(this.mocker.getComponentUnderTest().setCollaborators(this.patient, collaborators));
     }
 
     /**
-     * {@link PatientAccessHelper#addCollaborator(Patient, Collaborator) adds a new Collaborator object if one doesn't
+     * {@link PatientAccessHelper#addCollaborator(Patient, Collaborator)} adds a new Collaborator object if one doesn't
      * exist already.
      */
     @Test
@@ -481,7 +483,7 @@ public class DefaultPatientAccessHelperTest
         Mockito.verify(this.xwiki).saveDocument(doc, "Added collaborator: " + COLLABORATOR_STR, true, this.context);
     }
 
-    /** {@link PatientAccessHelper#addCollaborator(Patient, Collaborator) modifies the existing Collaborator object. */
+    /** {@link PatientAccessHelper#addCollaborator(Patient, Collaborator)} modifies the existing Collaborator object. */
     @Test
     public void addCollaboratorWithExistingObject() throws Exception
     {
@@ -504,7 +506,7 @@ public class DefaultPatientAccessHelperTest
     }
 
     /**
-     * {@link PatientAccessHelper#addCollaborator(Patient, Collaborator) returns false when accessing the document
+     * {@link PatientAccessHelper#addCollaborator(Patient, Collaborator)} returns false when accessing the document
      * fails.
      */
     @Test
@@ -519,7 +521,7 @@ public class DefaultPatientAccessHelperTest
         Assert.assertFalse(this.mocker.getComponentUnderTest().addCollaborator(this.patient, collaborator));
     }
 
-    /** {@link PatientAccessHelper#removeCollaborator(Patient, Collaborator) removes the existing Collaborator. */
+    /** {@link PatientAccessHelper#removeCollaborator(Patient, Collaborator)} removes the existing Collaborator. */
     @Test
     public void removeCollaboratorWithExistingObject() throws Exception
     {
@@ -537,7 +539,7 @@ public class DefaultPatientAccessHelperTest
         Mockito.verify(this.xwiki).saveDocument(doc, "Removed collaborator: " + COLLABORATOR_STR, true, this.context);
     }
 
-    /** {@link PatientAccessHelper#removeCollaborator(Patient, Collaborator) does nothing if the object isn't found. */
+    /** {@link PatientAccessHelper#removeCollaborator(Patient, Collaborator)} does nothing if the object isn't found. */
     @Test
     public void removeCollaboratorWithMissingObject() throws Exception
     {
@@ -559,7 +561,7 @@ public class DefaultPatientAccessHelperTest
     }
 
     /**
-     * {@link PatientAccessHelper#removeCollaborator(Patient, Collaborator) returns false when accessing the document
+     * {@link PatientAccessHelper#removeCollaborator(Patient, Collaborator)} returns false when accessing the document
      * fails.
      */
     @Test
@@ -632,7 +634,7 @@ public class DefaultPatientAccessHelperTest
         XWikiDocument doc = mock(XWikiDocument.class);
         when(this.patient.getXDocument()).thenReturn(doc);
 
-        List<BaseObject> objects = new ArrayList<BaseObject>();
+        List<BaseObject> objects = new ArrayList<>();
         BaseObject collaborator = mock(BaseObject.class);
         when(collaborator.getStringValue("collaborator")).thenReturn(COLLABORATOR_STR);
         when(collaborator.getStringValue("access")).thenReturn("edit");
@@ -664,7 +666,7 @@ public class DefaultPatientAccessHelperTest
         XWikiDocument doc = mock(XWikiDocument.class);
         when(this.patient.getXDocument()).thenReturn(doc);
 
-        List<BaseObject> objects = new ArrayList<BaseObject>();
+        List<BaseObject> objects = new ArrayList<>();
         BaseObject collaborator = mock(BaseObject.class);
         when(collaborator.getStringValue("collaborator")).thenReturn(GROUP_STR);
         when(collaborator.getStringValue("access")).thenReturn("edit");

@@ -33,6 +33,7 @@ import javax.inject.Singleton;
 @Singleton
 public class EditAccessLevel extends AbstractAccessLevel
 {
+    /** Simple constructor. */
     public EditAccessLevel()
     {
         super(20, true);

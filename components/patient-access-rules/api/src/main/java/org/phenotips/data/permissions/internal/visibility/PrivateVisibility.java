@@ -38,6 +38,7 @@ public class PrivateVisibility extends AbstractVisibility
     @Named("none")
     private AccessLevel access;
 
+    /** Simple constructor. */
     public PrivateVisibility()
     {
         super(0);

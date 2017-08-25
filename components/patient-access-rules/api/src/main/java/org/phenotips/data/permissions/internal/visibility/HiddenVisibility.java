@@ -38,6 +38,7 @@ public class HiddenVisibility extends AbstractVisibility
     @Named("none")
     private AccessLevel access;
 
+    /** Simple constructor. */
     public HiddenVisibility()
     {
         super(-1);
