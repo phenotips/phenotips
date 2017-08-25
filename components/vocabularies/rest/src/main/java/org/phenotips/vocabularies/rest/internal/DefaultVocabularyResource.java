@@ -46,6 +46,8 @@ import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.validator.UrlValidator;
+
 /**
  * Default implementation of {@link VocabularyResource} using XWiki's support for REST resources.
  *
@@ -128,10 +130,18 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
     @Override
     public Response reindex(String vocabularyId, String url)
     {
+        // Validate URL before loading any extensions
+        // By default only http, https, and ftp are considered valid schemes
+        UrlValidator urlValidator = new UrlValidator();
+        if (!urlValidator.isValid(url)) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
         // Check permissions, the user must have admin rights on the entire wiki
         if (!this.userIsAdmin()) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
+
         Vocabulary vocabulary = this.vm.getVocabulary(vocabularyId);
         if (vocabulary == null) {
             return Response.status(Response.Status.NOT_FOUND).build();

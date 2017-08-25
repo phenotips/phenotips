@@ -86,11 +86,9 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
      */
     protected Map<String, TermData> load(final String sourceUrl)
     {
-        String realOntologyUrl = StringUtils.defaultIfBlank(sourceUrl, getDefaultSourceLocation());
-
         SolrUpdateGenerator generator = new SolrUpdateGenerator();
         Map<String, Double> fieldSelection = new HashMap<>();
-        return generator.transform(realOntologyUrl, fieldSelection);
+        return generator.transform(sourceUrl, fieldSelection);
     }
 
     /**
@@ -103,7 +101,8 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     @Override
     protected int index(String sourceUrl)
     {
-        Map<String, TermData> data = load(sourceUrl);
+        String url = StringUtils.defaultIfBlank(sourceUrl, getDefaultSourceLocation());
+        Map<String, TermData> data = load(url);
 
         if (data == null || data.isEmpty()) {
             return 2;
