@@ -507,6 +507,8 @@
               <differenceType>7012</differenceType>
               <method>void discardReplacementCore(java.lang.String)</method>
               <justification>New methods for safe vocabulary reindexing.</justification>
+            </difference>
+            <difference>
               <className>org/phenotips/vocabulary/VocabularyManager</className>
               <differenceType>7012</differenceType>
               <method>java.util.List search(java.lang.String, java.lang.String, int)</method>
