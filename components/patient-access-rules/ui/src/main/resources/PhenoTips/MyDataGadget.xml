@@ -130,14 +130,20 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 #set ($config = $xwiki.getDocument('data.WebHome').getObject('PhenoTips.DBConfigurationClass'))
 #set ($patientClassName = 'PhenoTips.PatientClass')
 #if ($config)
-#set ($columns = ['external_id', 'doc.creator', 'doc.creationDate', '_actions'])
-#set ($columnsProperties = {
-  '_actions' : {'actions': ['edit', 'delete']}
-})
+#set ($columns = ['doc.name', 'external_id', 'doc.creationDate'])
+#set ($columnsProperties = {})
 #foreach ($column in $columns)
-  #set ($isFilterable = ($column == 'external_id'))
-  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'view', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true  }))
+  #if ($foreach.index &lt;= 1)
+    #set ($link = 'view')
+    #set ($isFilterable = true)
+  #else
+    #set ($link = 'field')
+    #set ($isFilterable = false)
+  #end
+  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : $link, 'size' : 7, 'filterable' : $isFilterable, 'sortable': true  }))
 #end
+#set ($discard = $columns.add('_actions'))
+#set ($discard = $columnsProperties.put('_actions', {'actions': ['edit', 'delete']}))
 ##
 ##
 #set ($options = {

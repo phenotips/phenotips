@@ -404,6 +404,9 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
 .xwiki-livetable a:not(:link) {
   text-decoration: none;
 }
+.gadget .tipfilters {
+  display: none;
+}
 
 /*
  * Filters area, floating to the left side.
