@@ -124,48 +124,58 @@
   });
 });
 document.observe('xwiki:livetable:newrow', function(tableEvent){
-  tableEvent.memo.row.select(".actionedit").invoke('setAttribute', 'title', 'Edit');
-  tableEvent.memo.row.select(".actiondelete").invoke('setAttribute', 'title', 'Delete');
-  tableEvent.memo.row.select(".actiondelete").invoke('observe', 'click', function(clickEvent){
-    clickEvent.stop();
-    var item = clickEvent.element();
-    item.blur();
-    if (item.disabled) {
-      // Do nothing if the button was already clicked and it's waiting for a response from the server.
-      return;
-    } else {
-      var form_token = $$('meta[name=form_token]')[0].content;
-      new XWiki.widgets.ConfirmedAjaxRequest(
-        /* Ajax request URL */
-        item.readAttribute('href') + "?confirm=1&amp;form_token=" + form_token + (Prototype.Browser.Opera ? "" : "&amp;ajax=1"),
-        /* Ajax request parameters */
-        {
-          onCreate : function() {
-            // Disable the button, to avoid a cascade of clicks from impatient users
-            item.disabled = true;
+  var actionLinkDisplayUpdate = function(actionElt, icon) {
+    actionElt.setAttribute('title', actionElt.innerHTML.capitalize());
+    actionElt.setAttribute('class', 'fa fa-' + icon);
+    actionElt.update('');
+  };
+  tableEvent.memo.row.select(".actionedit").each(function(actionElt) {
+    actionLinkDisplayUpdate(actionElt, 'pencil');
+    actionElt.setAttribute('target', '_blank');
+  });
+  tableEvent.memo.row.select(".actiondelete").each(function(actionElt) {
+    actionLinkDisplayUpdate(actionElt, 'remove');
+    actionElt.observe('click', function(clickEvent) {
+      clickEvent.stop();
+      var item = clickEvent.element();
+      item.blur();
+      if (item.disabled) {
+        // Do nothing if the button was already clicked and it's waiting for a response from the server.
+        return;
+      } else {
+        var form_token = $$('meta[name=form_token]')[0].content;
+        new XWiki.widgets.ConfirmedAjaxRequest(
+          /* Ajax request URL */
+          item.readAttribute('href') + "?confirm=1&amp;form_token=" + form_token + (Prototype.Browser.Opera ? "" : "&amp;ajax=1"),
+          /* Ajax request parameters */
+          {
+            onCreate : function() {
+              // Disable the button, to avoid a cascade of clicks from impatient users
+              item.disabled = true;
+            },
+            onSuccess : function() {
+              // Refresh the table after deleting the row
+              var table = tableEvent.memo.table;
+              table.clearCache();
+              table.showRows(table.lastOffset, table.limit);
+            },
+            onFailure : function() {
+              // Better luck next time!
+              item.disabled = false;
+            }
           },
-          onSuccess : function() {
-            // Refresh the table after deleting the row
-            var table = tableEvent.memo.table;
-            table.clearCache();
-            table.showRows(table.lastOffset, table.limit);
-          },
-          onFailure : function() {
-            // Better luck next time!
-            item.disabled = false;
+          /* Interaction parameters */
+          {
+            confirmationText: "$services.localization.render('core.delete.confirm')"
           }
-        },
-        /* Interaction parameters */
-        {
-          confirmationText: "$services.localization.render('core.delete.confirm')"
-        }
-      );
-    }
+        );
+      }
+    });
   });
 });</code>
     </property>
     <property>
-      <name>Confirmed AJAX deletion</name>
+      <name>Action buttons look and confirmed AJAX deletion</name>
     </property>
     <property>
       <parse>1</parse>
@@ -392,7 +402,9 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
       <cache>long</cache>
     </property>
     <property>
-      <code>#xwikicontent {
+      <code>#template("colorThemeInit.vm")
+
+#xwikicontent {
   overflow: visible;
 }
 #document-title h1 {
@@ -403,6 +415,16 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
 }
 .xwiki-livetable a:not(:link) {
   text-decoration: none;
+}
+
+.xwiki-livetable .actions a {
+  color: $theme.textPrimaryColor !important;
+}
+.xwiki-livetable .actions a:hover {
+  color: $theme.linkColor !important;
+}
+.xwiki-livetable .actions a.fa-remove:hover {
+  color: $theme.notificationErrorColor !important;
 }
 
 /*
@@ -540,10 +562,10 @@ ul.filters ul label {
       <contentType>CSS</contentType>
     </property>
     <property>
-      <name>Layout customizations for filters</name>
+      <name>Table ui fixes and layout customizations for filters</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
