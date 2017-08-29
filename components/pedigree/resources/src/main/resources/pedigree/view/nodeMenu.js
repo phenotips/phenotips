@@ -601,7 +601,7 @@ define([
             'phenotipsid-picker' : function (data) {
                 var result = this._generateEmptyField(data);
                 var patientNewLinkContainer = new Element('div', { 'class': 'patient-newlink-container'});
-                var patientPicker = new Element('input', {type: 'text', 'class': 'suggest multi suggest-patients', name: data.name});
+                var patientPicker = new Element('input', {type: 'text', 'class': 'suggest suggest-patients', name: data.name});
                 var newPatientButton = new Element('span', {'class': 'patient-menu-button patient-create-button'}).update("Create new");
                 newPatientButton.observe('click', function(event) {
                     var setDoNotShow = function(checkBoxStatus) {
