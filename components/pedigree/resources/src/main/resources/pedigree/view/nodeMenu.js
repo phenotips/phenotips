@@ -276,7 +276,7 @@ define([
                         fadeOnClear : false,
                         timeout : 30000,
                         tooltip: 'omim-disease-info',
-                        parentContainer : $('body')
+                        parentContainer : item.up()
                     });
                     if (item.hasClassName('multi') && typeof(PhenoTips.widgets.SuggestPicker) != "undefined") {
                         item._suggestPicker = new PhenoTips.widgets.SuggestPicker(item, item._suggest, {
@@ -316,7 +316,7 @@ define([
                         enableHierarchy: false,
                         fadeOnClear : false,
                         timeout : 30000,
-                        parentContainer : $('body')
+                        parentContainer : item.up()
                     });
                     if (item.hasClassName('multi') && typeof(PhenoTips.widgets.SuggestPicker) != "undefined") {
                         item._suggestPicker = new PhenoTips.widgets.SuggestPicker(item, item._suggest, {
@@ -357,7 +357,7 @@ define([
                         tooltip : 'gene-info',
                         fadeOnClear : false,
                         timeout : 30000,
-                        parentContainer : $('body')
+                        parentContainer : item.up()
                     });
                     if (item.hasClassName('multi') && typeof(PhenoTips.widgets.SuggestPicker) != "undefined") {
                         item._suggestPicker = new PhenoTips.widgets.SuggestPicker(item, item._suggest, {
@@ -401,7 +401,7 @@ define([
                         tooltip: 'phenotype-info',
                         fadeOnClear : false,
                         timeout : 30000,
-                        parentContainer : $('body')
+                        parentContainer : item.up()
                     });
                     if (item.hasClassName('multi') && typeof(PhenoTips.widgets.SuggestPicker) != "undefined") {
                         item._suggestPicker = new PhenoTips.widgets.SuggestPicker(item, item._suggest, {
@@ -443,7 +443,7 @@ define([
                         enableHierarchy: false,
                         fadeOnClear: false,
                         timeout: 30000,
-                        parentContainer: $('body')
+                        parentContainer: item.up()
                     });
                     item.addClassName('initialized');
                     document.observe('ms:suggest:containerCreated', function(event) {
