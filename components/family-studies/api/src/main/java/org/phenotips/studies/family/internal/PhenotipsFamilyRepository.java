@@ -487,7 +487,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
         this.checkValidity(family, patientsToAdd, updatingUser);
 
         XWikiContext context = this.provider.get();
-        context.setUserReference(updatingUser.getProfileDocument());
+        context.setUserReference(updatingUser == null ? null : updatingUser.getProfileDocument());
 
         // update patient data from pedigree's JSON
         // (no links to families are set at this point, only patient dat ais updated)
