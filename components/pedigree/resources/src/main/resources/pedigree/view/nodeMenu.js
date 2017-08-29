@@ -304,6 +304,7 @@ define([
                 this.form.select('input.suggest-' + suggetTypes[i]).each(function(item) {
                     if (!item.hasClassName('initialized')) {
                         // Create the Suggest.
+                        options.parentContainer = item.up();
                         item._suggest = new PhenoTips.widgets.Suggest(item, options);
                         if (item.hasClassName('multi') && typeof(PhenoTips.widgets.SuggestPicker) != "undefined") {
                             item._suggestPicker = new PhenoTips.widgets.SuggestPicker(item, item._suggest, {
