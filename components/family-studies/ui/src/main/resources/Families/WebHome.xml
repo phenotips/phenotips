@@ -69,7 +69,8 @@ $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 })
 #foreach ($column in $columns)
   #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0) &amp;&amp; ($column != 'doc.creator') &amp;&amp; ($column != 'doc.author'))
-  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'auto', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true}))
+  #set ($link = "#if ($column == 'doc.name' || $column == 'external_id')view#{else}field#end")
+  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : $link, 'size' : 7, 'filterable' : $isFilterable, 'sortable': true}))
 #end
 #set ($discard = $columns.add('_actions'))
 ##  toggle-filters
