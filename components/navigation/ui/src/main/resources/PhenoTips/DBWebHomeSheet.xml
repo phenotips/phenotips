@@ -416,6 +416,9 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
 .xwiki-livetable a:not(:link) {
   text-decoration: none;
 }
+.gadget .tipfilters {
+  display: none;
+}
 
 .xwiki-livetable .actions a {
   color: $theme.textPrimaryColor !important;
