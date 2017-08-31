@@ -18,6 +18,8 @@
 package org.phenotips.measurements.internal;
 
 import org.phenotips.measurements.MeasurementHandler;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -25,6 +27,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+
+import javax.inject.Inject;
 
 /**
  * Tests for the {@link ChestCircumferenceMeasurementHandler} component, and a few methods from the base @{link
@@ -35,6 +39,10 @@ import org.junit.Test;
  */
 public class ChestCircumferenceTest
 {
+    /** Used to resolve vocabulary terms for associated phenotypes. */
+    @Inject
+    private VocabularyManager vocabularyManager;
+
     @Rule
     public final MockitoComponentMockingRule<MeasurementHandler> mocker =
         new MockitoComponentMockingRule<MeasurementHandler>(ChestCircumferenceMeasurementHandler.class);
@@ -75,11 +83,15 @@ public class ChestCircumferenceTest
     }
 
     @Test
-    public void hasNoAssociatedTerms() throws ComponentLookupException
+    public void checkAssociatedTerms() throws ComponentLookupException
     {
         Assert.assertTrue(getComponent().getAssociatedTerms(3.0).isEmpty());
-        Assert.assertTrue(getComponent().getAssociatedTerms(2.0).isEmpty());
-        Assert.assertTrue(getComponent().getAssociatedTerms(-2.0).isEmpty());
+        Assert.assertTrue(getComponent().getAssociatedTerms(2.0)
+            .contains(this.vocabularyManager.resolveTerm("HP:0005253")));
+        Assert.assertEquals(1,getComponent().getAssociatedTerms(2.0).size());
+        Assert.assertTrue(getComponent().getAssociatedTerms(-2.0)
+            .contains(this.vocabularyManager.resolveTerm("HP:0000774")));
+        Assert.assertEquals(1,getComponent().getAssociatedTerms(-2.0).size());
         Assert.assertTrue(getComponent().getAssociatedTerms(-3.0).isEmpty());
         Assert.assertTrue(getComponent().getAssociatedTerms(null).isEmpty());
     }
