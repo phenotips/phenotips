@@ -131,8 +131,8 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
     public Response reindex(String vocabularyId, String url)
     {
         // Validate URL before loading any extensions
-        // By default only http, https, and ftp are considered valid schemes
-        UrlValidator urlValidator = new UrlValidator();
+        String[] schemes = { "http", "https", "ftp", "file" };
+        UrlValidator urlValidator = new UrlValidator(schemes);
         if (!urlValidator.isValid(url)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }

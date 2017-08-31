@@ -398,16 +398,15 @@ $xwiki.ssx.use('PhenoTips.Widgets')##
    $$('form.solr-admin').invoke('observe', 'submit', function(event) {
       event.stop();
       var form = event.element();
-      var mandatoryElt = form.down('.mandatory input');
+      var mandatoryElt = form.down('.mandatory input[id^="vocabulary"]');
+      var vocabularyId = form.down('input[name="vocabulary"]').value;
       if (!mandatoryElt || mandatoryElt.value != "") {
-        var formData = new Hash(form.serialize(true));
-        formData.set('outputSyntax', 'plain');
-        formData.set('ajax', '1');
         // Create a notification message to display to the user when the submit is being sent
         form._x_notification = new XWiki.widgets.Notification("$!escapetool.javascript($services.localization.render('phenotips.indexVocabulary.inProgress'))", "inprogress");
         form.disable();
-        var vocabularyIndexURL = XWiki.contextPath + "/rest/vocabularies/" + vocabularyId + "?method=POST&amp;url=" + formData._object.url;
+        var vocabularyIndexURL = XWiki.contextPath + "/rest/vocabularies/" + vocabularyId + "?url=" + mandatoryElt.value;
         new Ajax.Request(vocabularyIndexURL, {
+            method: 'post',
             onSuccess : function (response) {
               form._x_notification.replace(new XWiki.widgets.Notification(response.responseText, "done"));
             }.bind(this),
