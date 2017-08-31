@@ -69,8 +69,6 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(PhenoTipsPatient.class);
 
-    private XWikiDocument familyDocument;
-
     static {
         try {
             PhenotipsFamily.patientRepository =
@@ -88,7 +86,6 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     public PhenotipsFamily(XWikiDocument familyDocument)
     {
         super(familyDocument);
-        this.familyDocument = familyDocument;
     }
 
     @Override
@@ -100,7 +97,7 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     @Override
     public List<String> getMembersIds()
     {
-        BaseObject familyObject = this.familyDocument.getXObject(CLASS_REFERENCE);
+        BaseObject familyObject = getXDocument().getXObject(CLASS_REFERENCE);
         if (familyObject == null) {
             return new LinkedList<>();
         }
@@ -171,7 +168,7 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     @Override
     public String getExternalId()
     {
-        BaseObject familyObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
+        BaseObject familyObject = getXDocument().getXObject(Family.CLASS_REFERENCE);
         StringProperty externalId;
         String externalIdString = "";
         try {
@@ -188,7 +185,7 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     @Override
     public String getURL(String actions)
     {
-        return this.familyDocument.getURL(actions, getXContext());
+        return getXDocument().getURL(actions, getXContext());
     }
 
     /*
@@ -198,7 +195,7 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     @Override
     public String getWarningMessage()
     {
-        BaseObject familyObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
+        BaseObject familyObject = getXDocument().getXObject(Family.CLASS_REFERENCE);
         return familyObject.getIntValue(WARNING) == 0
             ? StringUtils.EMPTY
             : familyObject.getStringValue("warning_message");
@@ -224,7 +221,7 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     @Override
     public Pedigree getPedigree()
     {
-        BaseObject pedigreeObj = this.familyDocument.getXObject(Pedigree.CLASS_REFERENCE);
+        BaseObject pedigreeObj = getXDocument().getXObject(Pedigree.CLASS_REFERENCE);
         if (pedigreeObj != null) {
             BaseStringProperty data;
             BaseStringProperty image;

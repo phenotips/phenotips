@@ -22,15 +22,10 @@ import org.phenotips.data.Patient;
 import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.List;
 import java.util.Map;
-
-import org.json.JSONObject;
-
-import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * TODO: refactor on top of Entities model. Split/re-arrange functionality between Family (Entity), FamilyRepository
@@ -53,21 +48,6 @@ public interface Family extends PrimaryEntity
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /**
-     * @return family id
-     */
-    String getId();
-
-    /**
-     * @return the copy o family document held in memory by this Family instance.
-     */
-    XWikiDocument getXDocument();
-
-    /**
-     * @return reference to family document
-     */
-    DocumentReference getDocumentReference();
-
-    /**
      * @return list of family members
      */
     List<Patient> getMembers();
@@ -88,13 +68,6 @@ public interface Family extends PrimaryEntity
      * @return true if a patient is a member of the family
      */
     boolean isMember(Patient patient);
-
-    /**
-     * Generates a JSON data structure that describes the family and its members.
-     *
-     * @return JSON with info about the family, each member and the current user's permissions.
-     */
-    JSONObject toJSON();
 
     /**
      * Retrieves medical reports for all family members.
