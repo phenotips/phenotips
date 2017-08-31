@@ -19,6 +19,7 @@ package org.phenotips.studies.family;
 
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
+import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
@@ -38,7 +39,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
  * @version $Id$
  * @since 1.4
  */
-public interface Family
+public interface Family extends PrimaryEntity
 {
     /** The XClass used for storing family data. */
     EntityReference CLASS_REFERENCE = new EntityReference("FamilyClass", EntityType.DOCUMENT,

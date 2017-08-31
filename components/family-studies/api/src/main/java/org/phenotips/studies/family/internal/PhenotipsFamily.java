@@ -21,13 +21,13 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.internal.PhenoTipsPatient;
+import org.phenotips.entities.internal.AbstractPrimaryEntity;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.Pedigree;
 import org.phenotips.studies.family.internal.export.PhenotipsFamilyExport;
 
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.context.Execution;
-import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -42,7 +43,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
@@ -55,7 +55,7 @@ import com.xpn.xwiki.objects.StringProperty;
  *
  * @version $Id$
  */
-public class PhenotipsFamily implements Family
+public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
 {
     /** Field name in the family document which holds the list of member patients. */
     public static final String FAMILY_MEMBERS_FIELD = "members";
@@ -87,25 +87,14 @@ public class PhenotipsFamily implements Family
      */
     public PhenotipsFamily(XWikiDocument familyDocument)
     {
+        super(familyDocument);
         this.familyDocument = familyDocument;
     }
 
     @Override
-    public String getId()
+    public EntityReference getType()
     {
-        return this.familyDocument.getDocumentReference().getName();
-    }
-
-    @Override
-    public XWikiDocument getXDocument()
-    {
-        return this.familyDocument;
-    }
-
-    @Override
-    public DocumentReference getDocumentReference()
-    {
-        return this.familyDocument.getDocumentReference();
+        return CLASS_REFERENCE;
     }
 
     @Override
@@ -133,22 +122,16 @@ public class PhenotipsFamily implements Family
     public List<Patient> getMembers()
     {
         List<String> memberIds = this.getMembersIds();
-        List<Patient> members = new ArrayList<>(memberIds.size());
-        for (String memberId : memberIds) {
-            Patient patient = PhenotipsFamily.patientRepository.get(memberId);
-            members.add(patient);
-        }
-        return members;
+        return memberIds.stream()
+            .map(memberId -> PhenotipsFamily.patientRepository.get(memberId))
+            .collect(Collectors.toCollection(() -> new ArrayList<>(memberIds.size())));
     }
 
     @Override
     public String getProbandId()
     {
         Pedigree pedigree = this.getPedigree();
-        if (pedigree == null) {
-            return null;
-        }
-        return pedigree.getProbandId();
+        return pedigree == null ? null : pedigree.getProbandId();
     }
 
     @Override
@@ -169,6 +152,12 @@ public class PhenotipsFamily implements Family
     }
 
     @Override
+    public void updateFromJSON(final JSONObject json)
+    {
+        throw new UnsupportedOperationException("Updating family from JSON is not yet supported.");
+    }
+
+    @Override
     public Map<String, Map<String, String>> getMedicalReports()
     {
         Map<String, Map<String, String>> allFamilyLinks = new HashMap<>();
@@ -183,7 +172,7 @@ public class PhenotipsFamily implements Family
     public String getExternalId()
     {
         BaseObject familyObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
-        StringProperty externalId = null;
+        StringProperty externalId;
         String externalIdString = "";
         try {
             externalId = (StringProperty) familyObject.get("external_id");
@@ -202,19 +191,6 @@ public class PhenotipsFamily implements Family
         return this.familyDocument.getURL(actions, getXContext());
     }
 
-    private XWikiContext getXContext()
-    {
-        Execution execution = null;
-        try {
-            execution = ComponentManagerRegistry.getContextComponentManager().getInstance(Execution.class);
-        } catch (ComponentLookupException ex) {
-            // Should not happen
-            return null;
-        }
-        XWikiContext context = (XWikiContext) execution.getContext().getProperty("xwikicontext");
-        return context;
-    }
-
     /*
      * Some pedigrees may contain sensitive information, which should be displayed on every edit of the pedigree. The
      * function returns a warning to display, or empty string
@@ -223,11 +199,9 @@ public class PhenotipsFamily implements Family
     public String getWarningMessage()
     {
         BaseObject familyObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
-        if (familyObject.getIntValue(WARNING) == 0) {
-            return "";
-        } else {
-            return familyObject.getStringValue("warning_message");
-        }
+        return familyObject.getIntValue(WARNING) == 0
+            ? StringUtils.EMPTY
+            : familyObject.getStringValue("warning_message");
     }
 
     @Override
@@ -252,8 +226,8 @@ public class PhenotipsFamily implements Family
     {
         BaseObject pedigreeObj = this.familyDocument.getXObject(Pedigree.CLASS_REFERENCE);
         if (pedigreeObj != null) {
-            BaseStringProperty data = null;
-            BaseStringProperty image = null;
+            BaseStringProperty data;
+            BaseStringProperty image;
 
             try {
                 data = (BaseStringProperty) pedigreeObj.get(Pedigree.DATA);
