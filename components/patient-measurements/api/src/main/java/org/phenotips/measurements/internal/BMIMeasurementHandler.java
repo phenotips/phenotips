@@ -97,7 +97,7 @@ public class BMIMeasurementHandler extends AbstractMeasurementHandler implements
     /**
      * Get the BMI percentile for the given weight and height.
      *
-     * @param male {@code true} for boys, {@code false} for girls
+     * @param male {@code true} for males, {@code false} for females and other/unknown sexes
      * @param ageInMonths the age of the measurement, in months
      * @param weightInKilograms the measured weight, in kilograms
      * @param heightInCentimeters the measured length for children under 24 months, or measured height for older
@@ -112,7 +112,7 @@ public class BMIMeasurementHandler extends AbstractMeasurementHandler implements
     /**
      * Get the BMI standard deviation for the given weight and height.
      *
-     * @param male {@code true} for boys, {@code false} for girls
+     * @param male {@code true} for males, {@code false} for females and other/unknown sexes
      * @param ageInMonths the age of the measurement, in months
      * @param weightInKilograms the measured weight, in kilograms
      * @param heightInCentimeters the measured length for children under 24 months, or measured height for older

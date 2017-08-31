@@ -254,7 +254,7 @@ public class MeasurementsController implements PatientDataController<Measurement
         }
         Double ageInMonths = MeasurementUtils.convertAgeStrToNumMonths(entry.getAge());
 
-        // getting gender for computations
+        // getting sex for computations
         PatientData<String> sexData = patient.getData("sex");
         String sex = (sexData != null) ? sexData.getValue() : "";
         // ideally, the constants from the SexController should be used here,

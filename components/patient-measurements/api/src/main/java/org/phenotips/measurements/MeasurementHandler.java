@@ -56,7 +56,7 @@ public interface MeasurementHandler
     /**
      * Get the percentile for the given measured value and age.
      *
-     * @param male {@code true} for boys, {@code false} for girls
+     * @param male {@code true} for males, {@code false} for females and other/unknown sexes
      * @param ageInMonths the age of the measurement, in months
      * @param value the measured value, usually in centimeters or kilograms
      * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
@@ -66,7 +66,7 @@ public interface MeasurementHandler
     /**
      * Get the standard deviation for the given measured value and age.
      *
-     * @param male {@code true} for boys, {@code false} for girls
+     * @param male {@code true} for males, {@code false} for females and other/unknown sexes
      * @param ageInMonths the age of the measurement, in months
      * @param value the measured value, usually in centimeters or kilograms
      * @return a number specifying how many standard deviations does this measurement deviate from the mean
@@ -76,7 +76,7 @@ public interface MeasurementHandler
     /**
      * Get the measurement that would correspond to the given percentile.
      *
-     * @param male {@code true} for boys, {@code false} for girls
+     * @param male {@code true} for males, {@code false} for females and other/unknown sexes
      * @param ageInMonths the age of the measurement, in months
      * @param targetPercentile a number between 0 and 100 (inclusive) specifying the target percentile
      * @return the measurement (usually in centimeters or kilograms) that falls in the middle of the target percentile,
@@ -88,7 +88,7 @@ public interface MeasurementHandler
     /**
      * Get the measurement that would correspond to the given standard deviation.
      *
-     * @param male {@code true} for boys, {@code false} for girls
+     * @param male {@code true} for males, {@code false} for females and other/unknown sexes
      * @param ageInMonths the age of the measurement, in months
      * @param targetDeviation a number specifying the target deviation
      * @return the measurement (usually in centimeters or kilograms) that falls on the target standard deviation

@@ -445,17 +445,18 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     }
 
     /**
-     * Choose between the girls and boys measurements list, depending on the requested sex and on the availability of
-     * distinct measurements for girls.
+     * Choose between the female and male measurements list, depending on the requested sex and on the
+     * availability of distinct measurements for males.
+     * Default to female measurements list for other- and unknown-sex patients.
      *
-     * @param male {@code true} for boys, {@code false} for girls
+     * @param male {@code true} for males, {@code false} for females and other/unknown sexes
      * @return a list of {@link LMS} triplets
      */
     protected List<LMS> getLMSList(boolean male)
     {
-        if (!male && !this.measurementsForAgeGirls.isEmpty()) {
-            return this.measurementsForAgeGirls;
+        if (male && !this.measurementsForAgeBoys.isEmpty()) {
+            return this.measurementsForAgeBoys;
         }
-        return this.measurementsForAgeBoys;
+        return this.measurementsForAgeGirls;
     }
 }
