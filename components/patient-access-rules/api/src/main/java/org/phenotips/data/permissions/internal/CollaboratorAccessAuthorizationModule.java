@@ -34,8 +34,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Implementation that allows access to a Collaborator based on the Access
- * Level.
+ * Implementation that allows access for a Collaborator based on the Access Level.
  *
  * @version $Id$
  * @since 1.4

@@ -184,7 +184,7 @@ public class DefaultPatientAccessTest
         Patient p = mock(Patient.class);
         PatientAccessHelper h = mock(PatientAccessHelper.class);
         PatientAccess pa = new DefaultPatientAccess(p, h, mock(PermissionsManager.class));
-        Collection<Collaborator> collaborators = new HashSet<Collaborator>();
+        Collection<Collaborator> collaborators = new HashSet<>();
         when(h.getCollaborators(p)).thenReturn(collaborators);
         Assert.assertSame(collaborators, pa.getCollaborators());
     }
@@ -196,7 +196,7 @@ public class DefaultPatientAccessTest
         Patient p = mock(Patient.class);
         PatientAccessHelper h = mock(PatientAccessHelper.class);
         PatientAccess pa = new DefaultPatientAccess(p, h, mock(PermissionsManager.class));
-        Collection<Collaborator> collaborators = new HashSet<Collaborator>();
+        Collection<Collaborator> collaborators = new HashSet<>();
         when(h.setCollaborators(p, collaborators)).thenReturn(true);
         Assert.assertTrue(pa.updateCollaborators(collaborators));
     }

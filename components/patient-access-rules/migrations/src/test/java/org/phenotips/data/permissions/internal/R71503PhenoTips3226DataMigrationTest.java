@@ -97,14 +97,14 @@ public class R71503PhenoTips3226DataMigrationTest
         when(q.list()).thenReturn(docs);
         DocumentReferenceResolver<String> resolver =
             this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
-        EntityReference RIGHTS_CLASS =
+        EntityReference rightsClass =
             new EntityReference("XWikiRights", EntityType.DOCUMENT, new EntityReference("XWiki", EntityType.SPACE));
 
         DocumentReference r1 = new DocumentReference("xwiki", "data", "ProperCreator");
         when(resolver.resolve("data.ProperCreator")).thenReturn(r1);
         XWikiDocument p1 = mock(XWikiDocument.class);
         when(xwiki.getDocument(r1, xc)).thenReturn(p1);
-        when(p1.removeXObjects(RIGHTS_CLASS)).thenReturn(true);
+        when(p1.removeXObjects(rightsClass)).thenReturn(true);
         callback.doInHibernate(session);
         Assert.assertTrue(!p1.getXClasses(xc).contains("XWikiRights"));
     }
@@ -142,14 +142,14 @@ public class R71503PhenoTips3226DataMigrationTest
         when(q.list()).thenReturn(docs);
         DocumentReferenceResolver<String> resolver =
             this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
-        EntityReference RIGHTS_CLASS =
+        EntityReference rightsClass =
             new EntityReference("XWikiRights", EntityType.DOCUMENT, new EntityReference("XWiki", EntityType.SPACE));
 
         DocumentReference r2 = new DocumentReference("xwiki", "data", "ThrowsDME");
         when(resolver.resolve("data.ThrowsDME")).thenReturn(r2);
         XWikiDocument p2 = mock(XWikiDocument.class);
         when(xwiki.getDocument(r2, xc)).thenReturn(p2);
-        when(p2.removeXObjects(RIGHTS_CLASS)).thenReturn(true);
+        when(p2.removeXObjects(rightsClass)).thenReturn(true);
         when(cm.getInstance(XWikiStoreInterface.class,
             "hibernate")).thenThrow(new ComponentLookupException("Nope"));
         callback.doInHibernate(session);

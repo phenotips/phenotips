@@ -49,7 +49,7 @@ public class OwnerAccessAuthorizationModuleTest
 {
     @Rule
     public final MockitoComponentMockingRule<AuthorizationModule> mocker =
-        new MockitoComponentMockingRule<AuthorizationModule>(OwnerAccessAuthorizationModule.class);
+        new MockitoComponentMockingRule<>(OwnerAccessAuthorizationModule.class);
 
     @Mock
     private User user;

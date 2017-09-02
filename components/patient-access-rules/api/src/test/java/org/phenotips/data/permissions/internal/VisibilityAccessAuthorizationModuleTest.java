@@ -53,7 +53,7 @@ public class VisibilityAccessAuthorizationModuleTest
 {
     @Rule
     public final MockitoComponentMockingRule<AuthorizationModule> mocker =
-        new MockitoComponentMockingRule<AuthorizationModule>(VisibilityAccessAuthorizationModule.class);
+        new MockitoComponentMockingRule<>(VisibilityAccessAuthorizationModule.class);
 
     @Mock
     private User user;

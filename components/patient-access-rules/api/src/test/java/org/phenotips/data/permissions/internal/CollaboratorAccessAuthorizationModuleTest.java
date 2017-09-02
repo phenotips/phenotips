@@ -49,7 +49,7 @@ public class CollaboratorAccessAuthorizationModuleTest
 {
     @Rule
     public final MockitoComponentMockingRule<AuthorizationModule> mocker =
-        new MockitoComponentMockingRule<AuthorizationModule>(CollaboratorAccessAuthorizationModule.class);
+        new MockitoComponentMockingRule<>(CollaboratorAccessAuthorizationModule.class);
 
     @Mock
     private User user;
