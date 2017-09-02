@@ -58,7 +58,7 @@ public class LockedAuthorizationModuleTest
 {
     @Rule
     public final MockitoComponentMockingRule<AuthorizationModule> mocker =
-        new MockitoComponentMockingRule<AuthorizationModule>(LockedAuthorizationModule.class);
+        new MockitoComponentMockingRule<>(LockedAuthorizationModule.class);
 
     @Mock
     private User user;
@@ -146,6 +146,6 @@ public class LockedAuthorizationModuleTest
     @Test
     public void expectedPriority() throws ComponentLookupException
     {
-        Assert.assertEquals(110, this.mocker.getComponentUnderTest().getPriority());
+        Assert.assertEquals(1000, this.mocker.getComponentUnderTest().getPriority());
     }
 }

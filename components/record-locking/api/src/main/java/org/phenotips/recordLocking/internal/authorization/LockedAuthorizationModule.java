@@ -60,7 +60,7 @@ public class LockedAuthorizationModule implements AuthorizationModule
     @Override
     public int getPriority()
     {
-        return 110;
+        return 1000;
     }
 
     @Override
