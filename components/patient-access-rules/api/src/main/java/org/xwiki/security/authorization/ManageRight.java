@@ -75,4 +75,10 @@ public class ManageRight extends Right
             }
         });
     }
+
+    @Override
+    public Set<EntityType> getTargetedEntityType()
+    {
+        return EnumSet.of(EntityType.DOCUMENT);
+    }
 }
