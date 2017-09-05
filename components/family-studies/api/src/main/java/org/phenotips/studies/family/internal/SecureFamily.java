@@ -23,13 +23,16 @@ import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.Pedigree;
 
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 
+import com.xpn.xwiki.api.Document;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
@@ -88,12 +91,9 @@ public class SecureFamily implements Family
     public List<Patient> getMembers()
     {
         List<Patient> members = this.family.getMembers();
-
-        List<Patient> result = new LinkedList<>();
-        for (Patient p : members) {
-            result.add(new SecurePatient(p));
-        }
-        return result;
+        return members.stream()
+            .map(SecurePatient::new)
+            .collect(Collectors.toCollection(LinkedList::new));
     }
 
     @Override
@@ -159,4 +159,41 @@ public class SecureFamily implements Family
     {
         return this.family.getPedigree();
     }
+
+    @Override
+    public EntityReference getType()
+    {
+        return this.family.getType();
+    }
+
+    @Override
+    public DocumentReference getDocument()
+    {
+        return this.family.getDocumentReference();
+    }
+
+    @Override
+    public Document getSecureDocument()
+    {
+        return this.family.getSecureDocument();
+    }
+
+    @Override
+    public String getName()
+    {
+        return this.family.getName();
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return this.family.getDescription();
+    }
+
+    @Override
+    public void updateFromJSON(final JSONObject json)
+    {
+        throw new UnsupportedOperationException();
+    }
+
 }

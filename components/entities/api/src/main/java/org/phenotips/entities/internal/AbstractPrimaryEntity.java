@@ -147,10 +147,8 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
     @Override
     public boolean equals(Object obj)
     {
-        if (!(obj instanceof PrimaryEntity)) {
-            return false;
-        }
-        return this.getDocumentReference().equals(((PrimaryEntity) obj).getDocumentReference());
+        return obj instanceof PrimaryEntity
+            && this.getDocumentReference().equals(((PrimaryEntity) obj).getDocumentReference());
     }
 
     @Override
