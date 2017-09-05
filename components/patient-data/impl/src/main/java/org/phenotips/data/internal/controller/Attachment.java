@@ -45,7 +45,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiAttachment;
 
 /**
@@ -160,7 +159,7 @@ public class Attachment
     {
         try {
             return this.attachment.getContentInputStream(this.contextProvider.get());
-        } catch (XWikiException e) {
+        } catch (Exception e) {
             return null;
         }
     }
