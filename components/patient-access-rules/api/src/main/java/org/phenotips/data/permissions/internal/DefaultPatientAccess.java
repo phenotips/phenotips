@@ -70,8 +70,11 @@ public class DefaultPatientAccess implements PatientAccess
     public boolean isOwner(EntityReference user)
     {
         Owner owner = this.helper.getOwner(this.patient);
-        if (user == null || owner == null) {
+        if (owner == null) {
             return false;
+        }
+        if (user == null) {
+            return owner.getUser() == null;
         }
 
         return user.equals(owner.getUser());
@@ -141,7 +144,10 @@ public class DefaultPatientAccess implements PatientAccess
     public AccessLevel getAccessLevel(EntityReference user)
     {
         if (user == null) {
-            return getVisibility().getDefaultAccessLevel();
+            if (this.getOwner().getUser() == null) {
+                return this.manager.resolveAccessLevel("owner");
+            }
+            return this.manager.resolveAccessLevel("none");
         }
         if (isOwner(user) || this.helper.isAdministrator(this.patient, new DocumentReference(user))) {
             return this.manager.resolveAccessLevel("owner");
