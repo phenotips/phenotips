@@ -23,6 +23,7 @@ import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
@@ -30,6 +31,8 @@ import org.xwiki.users.User;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * Implementation that allows access for a Collaborator based on the Access Level.
@@ -60,8 +63,8 @@ public class CollaboratorAccessAuthorizationModule implements AuthorizationModul
     @Override
     public Boolean hasAccess(User user, Right access, EntityReference entity)
     {
-        // Checks to see if the user, access or patient is null.
-        if (user == null || access == null || entity == null) {
+        if (!ObjectUtils.allNotNull(user, access, entity) || access.getTargetedEntityType() == null
+            || !access.getTargetedEntityType().contains(EntityType.DOCUMENT)) {
             return null;
         }
 

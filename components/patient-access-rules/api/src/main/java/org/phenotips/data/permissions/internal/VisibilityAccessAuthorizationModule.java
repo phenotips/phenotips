@@ -22,11 +22,14 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.security.authorization.AuthorizationModule;
 
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 
 import javax.inject.Inject;
+
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * Implementation that allows access based on Visibility rights.
@@ -54,7 +57,8 @@ public class VisibilityAccessAuthorizationModule implements AuthorizationModule
     @Override
     public Boolean hasAccess(User user, Right access, EntityReference entity)
     {
-        if (user == null || access == null || entity == null) {
+        if (!ObjectUtils.allNotNull(access, entity) || access.getTargetedEntityType() == null
+            || !access.getTargetedEntityType().contains(EntityType.DOCUMENT)) {
             return null;
         }
 

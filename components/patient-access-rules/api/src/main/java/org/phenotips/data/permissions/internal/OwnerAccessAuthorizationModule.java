@@ -24,6 +24,7 @@ import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
@@ -32,8 +33,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 /**
- * Implementation that allows all access to the owner of a patient.
+ * Implementation that allows all document access to the owner of a patient.
  *
  * @version $Id$
  * @since 1.4
@@ -65,7 +68,8 @@ public class OwnerAccessAuthorizationModule implements AuthorizationModule
     @Override
     public Boolean hasAccess(User user, Right access, EntityReference entity)
     {
-        if (user == null || entity == null) {
+        if (!ObjectUtils.allNotNull(access, entity) || access.getTargetedEntityType() == null
+            || !access.getTargetedEntityType().contains(EntityType.DOCUMENT)) {
             return null;
         }
 

@@ -208,6 +208,14 @@ public class VisibilityAccessAuthorizationModuleTest
     }
 
     @Test
+    public void noActionWithNonDocumentRight() throws ComponentLookupException
+    {
+        when(this.helper.getVisibility(this.patient)).thenReturn(this.openVisibility);
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.REGISTER, this.doc));
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.PROGRAM, this.doc));
+    }
+
+    @Test
     public void noActionForNullVisibility() throws ComponentLookupException
     {
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.VIEW, this.doc));

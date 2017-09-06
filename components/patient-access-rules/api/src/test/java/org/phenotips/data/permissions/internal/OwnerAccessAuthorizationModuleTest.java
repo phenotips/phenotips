@@ -192,6 +192,13 @@ public class OwnerAccessAuthorizationModuleTest
     }
 
     @Test
+    public void noActionWithNonDocumentRight() throws ComponentLookupException
+    {
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.REGISTER, this.doc));
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.PROGRAM, this.doc));
+    }
+
+    @Test
     public void noActionWithNullRight() throws ComponentLookupException
     {
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, null, this.doc));

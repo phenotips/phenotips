@@ -172,6 +172,13 @@ public class CollaboratorAccessAuthorizationModuleTest
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.VIEW, null));
     }
 
+    @Test
+    public void noActionWithNonDocumentRight() throws ComponentLookupException
+    {
+        when(this.helper.getAccessLevel(this.patient, this.userProfile)).thenReturn(this.manageAccess);
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.REGISTER, this.doc));
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.PROGRAM, this.doc));
+    }
 
     @Test
     public void expectedPriority() throws ComponentLookupException
