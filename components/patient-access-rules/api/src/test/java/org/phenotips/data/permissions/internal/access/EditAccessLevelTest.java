@@ -42,7 +42,7 @@ public class EditAccessLevelTest
 {
     @Rule
     public final MockitoComponentMockingRule<AccessLevel> mocker =
-        new MockitoComponentMockingRule<AccessLevel>(EditAccessLevel.class);
+        new MockitoComponentMockingRule<>(EditAccessLevel.class);
 
     @Before
     public void setup() throws ComponentLookupException
@@ -137,14 +137,14 @@ public class EditAccessLevelTest
         // Equals itself
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().compareTo(this.mocker.getComponentUnderTest()));
         // Nulls come after
-        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(null) < 0);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(null) > 0);
         // Equals another level with the same permissiveness
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().compareTo(new MockAccessLevel("modify", 20, true)));
         // Respects the permissiveness order
         Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(new MockAccessLevel("read", 10, true)) > 0);
         Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(new MockAccessLevel("manage", 30, true)) < 0);
         // Other types of levels are placed after
-        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(mock(AccessLevel.class)) < 0);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(mock(AccessLevel.class)) > 0);
     }
 
     /** Basic tests for {@link AccessLevel#hashCode()}. */

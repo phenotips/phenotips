@@ -42,7 +42,7 @@ public class NoAccessLevelTest
 {
     @Rule
     public final MockitoComponentMockingRule<AccessLevel> mocker =
-        new MockitoComponentMockingRule<AccessLevel>(NoAccessLevel.class);
+        new MockitoComponentMockingRule<>(NoAccessLevel.class);
 
     @Before
     public void setup() throws ComponentLookupException

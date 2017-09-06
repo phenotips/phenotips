@@ -42,7 +42,7 @@ public class OwnerAccessLevelTest
 {
     @Rule
     public final MockitoComponentMockingRule<AccessLevel> mocker =
-        new MockitoComponentMockingRule<AccessLevel>(OwnerAccessLevel.class);
+        new MockitoComponentMockingRule<>(OwnerAccessLevel.class);
 
     @Before
     public void setup() throws ComponentLookupException
@@ -137,7 +137,7 @@ public class OwnerAccessLevelTest
         // Equals itself
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().compareTo(this.mocker.getComponentUnderTest()));
         // Nulls come after
-        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(null) < 0);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(null) > 0);
         // Equals another level with the same permissiveness
         Assert.assertEquals(0, this.mocker.getComponentUnderTest()
             .compareTo(new MockAccessLevel("referrer", 100, true)));
@@ -145,6 +145,6 @@ public class OwnerAccessLevelTest
         Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(new MockAccessLevel("view", 10, true)) > 0);
         Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(new MockAccessLevel("admin", 110, true)) < 0);
         // Other types of levels are placed after
-        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(mock(AccessLevel.class)) < 0);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(mock(AccessLevel.class)) > 0);
     }
 }
