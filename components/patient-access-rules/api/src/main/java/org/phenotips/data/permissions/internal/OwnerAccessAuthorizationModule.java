@@ -17,12 +17,11 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.security.authorization.AuthorizationModule;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
-import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.EntityReference;
@@ -44,20 +43,18 @@ import javax.inject.Singleton;
 @Singleton
 public class OwnerAccessAuthorizationModule implements AuthorizationModule
 {
-    /**
-     * Checks to see if document is a patient (DocumentReference).
-     */
+    /** Checks to see if a document is a patient. */
     @Inject
     private PatientRepository patientRepository;
 
-    /**
-     * Checks to see if it has the permission to access the document or patient.
-     */
+    /** Checks to see if the user is the owner. */
     @Inject
     private PermissionsManager manager;
 
+    /** Minimal access level for granting access. */
     @Inject
-    private PatientAccessHelper helper;
+    @Named("owner")
+    private AccessLevel ownerAccess;
 
     @Override
     public int getPriority()
@@ -78,11 +75,10 @@ public class OwnerAccessAuthorizationModule implements AuthorizationModule
             return null;
         }
 
-        PatientAccess patientAccess = this.manager.getPatientAccess(patient);
-        // Access level of the group
-        AccessLevel groupAccess = this.helper.getAccessLevel(patient, user.getProfileDocument());
+        AccessLevel grantedAccess =
+            this.manager.getPatientAccess(patient).getAccessLevel(user != null ? user.getProfileDocument() : null);
 
-        if (patientAccess.isOwner(user.getProfileDocument()) || groupAccess.getName().equals("owner")) {
+        if (this.ownerAccess.compareTo(grantedAccess) <= 0) {
             return true;
         }
 
