@@ -20,8 +20,6 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.annotation.Component;
@@ -50,11 +48,8 @@ public class CollaboratorAccessAuthorizationModule implements AuthorizationModul
     @Inject
     private PatientRepository patientRepository;
 
-    /**
-     * Checks to see if it has the permission to access the document or patient.
-     */
     @Inject
-    private PermissionsManager permissionsManager;
+    private PatientAccessHelper accessHelper;
 
     @Override
     public int getPriority()
@@ -75,16 +70,15 @@ public class CollaboratorAccessAuthorizationModule implements AuthorizationModul
         if (patient == null) {
             return null;
         }
-        PatientAccess patientAccess = this.permissionsManager.getPatientAccess(patient);
         // This retrieves the access level for the patient.
-        AccessLevel grantedAccess = patientAccess.getAccessLevel(user.getProfileDocument());
-        // This retrieves the access level for the collaborator.
-        AccessLevel requestedAccess = this.permissionsManager.resolveAccessLevel(access.getName());
+        AccessLevel grantedAccess = this.accessHelper.getAccessLevel(patient, user.getProfileDocument());
+        Right grantedRight = grantedAccess.getGrantedRight();
 
-        // This grants access if nothing is null and the collaborator has the required access level.
-        if (grantedAccess != null && requestedAccess != null && grantedAccess.compareTo(requestedAccess) >= 0) {
+        if (grantedRight.equals(access)
+            || (grantedRight.getImpliedRights() != null && grantedRight.getImpliedRights().contains(access))) {
             return true;
         }
+
         return null;
     }
 }
