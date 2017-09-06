@@ -55,9 +55,9 @@ import com.xpn.xwiki.store.migration.hibernate.HibernateDataMigration;
  * @since 1.4
  */
 @Component(roles = { HibernateDataMigration.class })
-@Named("71503-PT-3226")
+@Named("71504-PT-3226")
 @Singleton
-public class R71503PhenoTips3226DataMigration extends AbstractHibernateDataMigration implements
+public class R71504PhenoTips3226DataMigration extends AbstractHibernateDataMigration implements
     XWikiHibernateBaseStore.HibernateCallback<Object>
 {
     /**
@@ -101,7 +101,7 @@ public class R71503PhenoTips3226DataMigration extends AbstractHibernateDataMigra
     @Override
     public XWikiDBVersion getVersion()
     {
-        return new XWikiDBVersion(71503);
+        return new XWikiDBVersion(71504);
     }
 
     /**
@@ -124,7 +124,7 @@ public class R71503PhenoTips3226DataMigration extends AbstractHibernateDataMigra
         this.logger.debug("Found {} patient documents", documents.size());
         for (String docName : documents) {
             try {
-                R71503PhenoTips3226DataMigration.this.logger.debug("Checking [{}]", docName);
+                R71504PhenoTips3226DataMigration.this.logger.debug("Checking [{}]", docName);
                 XWikiDocument doc =
                     xwiki.getDocument(this.resolver.resolve(docName), context);
                 if (doc == null) {
@@ -138,7 +138,7 @@ public class R71503PhenoTips3226DataMigration extends AbstractHibernateDataMigra
                 session.clear();
                 ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
                 session.flush();
-                R71503PhenoTips3226DataMigration.this.logger.debug("Updated [{}]", docName);
+                R71504PhenoTips3226DataMigration.this.logger.debug("Updated [{}]", docName);
             } catch (DataMigrationException e) {
                 // We're in the middle of a migration, we're not expecting another migration
             }

@@ -53,15 +53,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the {@link R71503PhenoTips3226DataMigration}.
+ * Tests for the {@link R71504PhenoTips3226DataMigration}.
  *
  * @version $Id$
  */
-public class R71503PhenoTips3226DataMigrationTest
+public class R71504PhenoTips3226DataMigrationTest
 {
     @Rule
     public final MockitoComponentMockingRule<HibernateDataMigration> mocker =
-        new MockitoComponentMockingRule<>(R71503PhenoTips3226DataMigration.class);
+        new MockitoComponentMockingRule<>(R71504PhenoTips3226DataMigration.class);
 
     /**
      * Sending an event with a non-patient document doesn't alter the document.
@@ -213,7 +213,7 @@ public class R71503PhenoTips3226DataMigrationTest
     @Test
     public void getVersion() throws Exception
     {
-        Assert.assertEquals(71503, this.mocker.getComponentUnderTest().getVersion().getVersion());
+        Assert.assertEquals(71504, this.mocker.getComponentUnderTest().getVersion().getVersion());
     }
 
     /**
