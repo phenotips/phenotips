@@ -421,12 +421,12 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
 }
 
 .xwiki-livetable .actions a {
-  color: $theme.textPrimaryColor !important;
+  color: $theme.textColor !important;
 }
-.xwiki-livetable .actions a:hover {
-  color: $theme.linkColor !important;
+.xwiki-livetable .actions a.fa-pencil {
+  color: $theme.notificationWarningColor !important;
 }
-.xwiki-livetable .actions a.fa-remove:hover {
+.xwiki-livetable .actions a.fa-remove {
   color: $theme.notificationErrorColor !important;
 }
 
