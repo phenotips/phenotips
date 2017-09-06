@@ -491,6 +491,15 @@
   color: $theme.linkColor;
   cursor: pointer;
   transition: all 0.2s linear;
+}
+
+/* Gene panels don't take negative phenotype into account when suggesting genes.
+ * Since the code generating the terms used in instant searches is generic for all
+ * services, here we're hiding the negative phenotypes in the gene panels instant
+ * search box specifically.
+ */
+.instant-search.gene-panels-search-box .default-search-terms-container .not_symptom {
+  display: none;
 }</code>
     </property>
     <property>
