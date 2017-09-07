@@ -1067,6 +1067,16 @@ h1:target, h2:target, h3:target {
 .commentcontent {
   white-space: pre-wrap;
 }
+.before-entity-data {
+  font-size: .87em;
+  margin: 0 -11px;
+  padding: 5px 10px;
+}
+.before-entity-data a.button {
+  font-size: 1em;
+  text-transform: none;
+  font-weight: normal
+}
 </code>
     </property>
     <property>
