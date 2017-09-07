@@ -20,7 +20,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>PatientAccessRightsManagement</name>
+  <name>AccessRightsManagement</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -69,7 +69,7 @@
 #end
 {{/velocity}}</content>
   <object>
-    <name>PhenoTips.PatientAccessRightsManagement</name>
+    <name>PhenoTips.AccessRightsManagement</name>
     <number>0</number>
     <className>XWiki.ConfigurableClass</className>
     <guid>7df2fc72-5cd6-4c35-a73c-de2bbf5f2fde</guid>
@@ -327,7 +327,7 @@
     </property>
   </object>
   <object>
-    <name>PhenoTips.PatientAccessRightsManagement</name>
+    <name>PhenoTips.AccessRightsManagement</name>
     <number>0</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>ab66e72f-1d22-4a38-ad9b-f55d74a0473f</guid>
@@ -1009,7 +1009,7 @@ document.observe("xwiki:dom:loaded", function() {
     </property>
   </object>
   <object>
-    <name>PhenoTips.PatientAccessRightsManagement</name>
+    <name>PhenoTips.AccessRightsManagement</name>
     <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
     <guid>3f13b7c9-93f5-4e94-b01e-b180d2a383de</guid>
@@ -1176,7 +1176,7 @@ document.observe("xwiki:dom:loaded", function() {
     </property>
   </object>
   <object>
-    <name>PhenoTips.PatientAccessRightsManagement</name>
+    <name>PhenoTips.AccessRightsManagement</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>3d24805b-d647-4e9b-a7ca-00f55fb5a7f3</guid>
@@ -1246,7 +1246,7 @@ document.observe("xwiki:dom:loaded", function() {
     </class>
     <property>
       <content>{{velocity output="false"}}
-#set ($serviceDocName = 'PhenoTips.PatientAccessRightsManagement')
+#set ($serviceDocName = 'PhenoTips.AccessRightsManagement')
 #set ($serviceDoc = $xwiki.getDocument($serviceDocName))
 $xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)
 $xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)
