@@ -396,7 +396,7 @@ document.observe('xwiki:dom:loading', function() {
     exportTools.each(function(exportTool) {
       exportTool.observe('click', function(event) {
         event.stop();
-        var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title':"$services.localization.render('phenotips.DBWebHomeSheet.exportPreferences.title')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
+        var dialog = new PhenoTips.widgets.ModalPopup('<img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/>', false, {'title':"$services.localization.render('phenotips.DBWebHomeSheet.exportPreferences.title')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
         dialog.showDialog();
         // =================================================================================
         // Generate the dialog content
