@@ -62,6 +62,12 @@
 #if ($activeFields.contains('external_id'))
 * $services.localization.render('phenotips.databaseFilters.externalID') {{html clean=false}}&lt;input type="text" name="external_id" value=""/&gt;{{/html}}
 #end
+#if (!$doc.getObject('PhenoTips.StudyClass'))
+#set ($studies = $services.query.xwql("from doc.object(PhenoTips.StudyClass) as s where doc.fullName &lt;&gt; 'PhenoTips.StudyTemplate'").execute())
+#if ($studies.size() &gt; 0)
+* $services.localization.render('phenotips.databaseFilters.study') {{html clean=false}}#foreach($sName in $studies)#set ($s = $xwiki.getDocument($sName))&lt;br/&gt;&lt;label&gt;&lt;input type="checkbox" name="studyReference" value="$services.model.serialize($s.documentReference, 'default')"/&gt;#if ("$!{s.plainTitle}" != '')${s.plainTitle}#else${s.name}#end&lt;/label&gt;#end&lt;input type="hidden" name="studyReference/class" value="PhenoTips.StudyBindingClass"/&gt;&lt;input type="hidden" name="studyReference/match" value="fullReference"/&gt;&lt;input type='hidden' name='studyReference/join_mode' value='OR'/&gt;{{/html}}
+#end
+#end
 #if (!$xwiki.getDocument('PhenoTips.VisibilityClass').isNew())
   * $services.localization.render('phenotips.databaseFilters.visibility') {{html clean=false}}#foreach ($visibility in $services.permissions.listVisibilityOptions())&lt;br /&gt;&lt;label&gt;&lt;input type="checkbox" class="multipleSelection privacyExport" name="visibility" value="$visibility.name"#if ($visibility.name != 'hidden') checked="checked"#end /&gt; $visibility.label&lt;/label&gt;#end&lt;input type="hidden" name="visibility/class" value="PhenoTips.VisibilityClass"/&gt;{{/html}}
 #end
