@@ -20,7 +20,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>PatientAccessRightsManagement</name>
+  <name>AccessRightsManagement</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -40,16 +40,17 @@
   <content>{{velocity wiki="false"}}
 #if ("$!{request.xaction}" == 'user-access')
   ## ============================================================================================
-  ## Get information about PatientAccess to the patient document for the currently logged in user
+  ## Get information about access rights to the record for the currently logged in user
   ## --------------------------------------------------------------------------------------------
   #set ($discard = $response.setContentType('application/json'))
-  #set ($patient = $services.patients.get("$!{request.patient}"))
-  #set ($patientAccess = $services.permissions.getPatientAccess($patient.getId()))
-  #if ("$!patient.id" != '')
+  #set ($record = $services.patients.get("$!{request.id}"))
+  #set ($entityType = 'patients')
+  #set ($recordAccess = $services.permissions.getPatientAccess($record.getId()))
+  #if ("$!record.id" != '')
     #set ($data = {})
-    #set ($canTransfer = $patientAccess.hasAccessLevel('owner'))
-    #set ($canManage = $patientAccess.hasAccessLevel('manage'))
-    #set ($owner = $patientAccess.getOwner())
+    #set ($canTransfer = $recordAccess.hasAccessLevel('owner'))
+    #set ($canManage = $recordAccess.hasAccessLevel('manage'))
+    #set ($owner = $recordAccess.getOwner())
     #if ($owner.isGroup())
       #set ($adminGroup = $xcontext.getDatabase() + ":Groups." + $owner.getUsername() + " Administrators")
       #if (!$xwiki.getUser().isUserInGroup($adminGroup))
@@ -61,18 +62,18 @@
     #end
     #set ($discard = $data.put('canTransfer', $canTransfer))
     #set ($discard = $data.put('canManage', $canManage))
-    #set ($discard = $data.put('level', $patientAccess.getAccessLevel().getName()))
+    #set ($discard = $data.put('level', $recordAccess.getAccessLevel().getName()))
     $jsontool.serialize($data)
   #else
-    #set ($discard = $response.setStatus(400))## no patient id parameter sent: bad request
+    #set ($discard = $response.setStatus(400))## no id parameter sent: bad request
   #end
 #end
 {{/velocity}}</content>
   <object>
-    <name>PhenoTips.PatientAccessRightsManagement</name>
+    <name>PhenoTips.AccessRightsManagement</name>
     <number>0</number>
     <className>XWiki.ConfigurableClass</className>
-    <guid>7df2fc72-5cd6-4c35-a73c-de2bbf5f2fde</guid>
+    <guid>31539c94-9a18-4d31-bfc3-db5f7a7c3ed9</guid>
     <class>
       <name>XWiki.ConfigurableClass</name>
       <customClass/>
@@ -278,8 +279,8 @@
 {{html clean=false}}
 &lt;form id="welcome_${targetDocName}" method="post" action="${targetDoc.getURL('save')}" class="xform half"&gt;
 &lt;fieldset&gt;&lt;dl id="default-visibility-selection"&gt;
-&lt;dt&gt;&lt;label for="${fullPrefix}private"&gt;$escapetool.xml($services.localization.render('phenotips.patientAccessRightsManagement.defaultVisibilityOption'))&lt;/label&gt;
-&lt;span class="xHint"&gt;$escapetool.xml($services.localization.render('phenotips.patientAccessRightsManagement.defaultVisibilityHint'))&lt;/span&gt;&lt;/dt&gt;
+&lt;dt&gt;&lt;label for="${fullPrefix}private"&gt;$escapetool.xml($services.localization.render('phenotips.accessRightsManagement.defaultVisibilityOption'))&lt;/label&gt;
+&lt;span class="xHint"&gt;$escapetool.xml($services.localization.render('phenotips.accessRightsManagement.defaultVisibilityHint'))&lt;/span&gt;&lt;/dt&gt;
 #foreach ($visibility in $services.permissions.listAllVisibilityOptions())
   &lt;dd&gt;
     &lt;label for="${fullPrefix}${visibility.name}"&gt;
@@ -293,7 +294,7 @@
 &lt;input type="hidden" name="objectPolicy" value="updateOrCreate"/&gt;
 &lt;/fieldset&gt;
 &lt;div class="bottombuttons"&gt;&lt;p class="admin-buttons"&gt;
-&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="action_saveandcontinue" value="$escapetool.xml($services.localization.render('phenotips.patientAccessRightsManagement.defaultVisibilitySave'))" /&gt;&lt;/span&gt;
+&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="action_saveandcontinue" value="$escapetool.xml($services.localization.render('phenotips.accessRightsManagement.defaultVisibilitySave'))" /&gt;&lt;/span&gt;
 &lt;/p&gt;&lt;/div&gt;
 &lt;/form&gt;
 {{/html}}</codeToExecute>
@@ -327,10 +328,10 @@
     </property>
   </object>
   <object>
-    <name>PhenoTips.PatientAccessRightsManagement</name>
+    <name>PhenoTips.AccessRightsManagement</name>
     <number>0</number>
     <className>XWiki.JavaScriptExtension</className>
-    <guid>ab66e72f-1d22-4a38-ad9b-f55d74a0473f</guid>
+    <guid>bb67aa60-d758-4ef6-962d-2cbabd7108e6</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -409,13 +410,17 @@
       <code>var PhenoTips = (function (PhenoTips) {
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   widgets.AccessRightsManager = Class.create({
-    initialize : function (patientId) {
-      this.permissionsURL   = XWiki.contextPath + "/rest/patients/" + patientId + "/permissions";
+    initialize : function (recordId) {
+      this.entityType = $('entity-type') &amp;&amp; $('entity-type').value;
+      if (!this.entityType) {
+        return;
+      }
+      this.permissionsURL   = XWiki.contextPath + "/rest/" + this.entityType + "/" + recordId + "/permissions";
       this.collaboratorsURL = this.permissionsURL + "/collaborators";
 
       this.visibilityValue = "";
-      this.patientId = patientId;
-      this._OWNER_INFO_TEMPLATE = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipInfo'))";
+      this.recordId = recordId;
+      this._OWNER_INFO_TEMPLATE = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipInfo'))";
 
       // keep track whether delete collaborators happened to know if the we need to reset collaborators
       this.collaboratorRemoved = false;
@@ -450,7 +455,7 @@
       // ---------------------------------------------------------------------
     },
 
-    // Access levels and visibility options are fetched from patient from hidden inputs generated by velocity
+    // Access levels and visibility options are fetched from record from hidden inputs generated by velocity
     _initAccessLevels : function() {
       var levels = {'access-level' : [], 'visibility' : []};
       this._element.select('input[name="access-level"], input[name="visibility"]').each(function (item) {
@@ -462,9 +467,9 @@
 
     _initManagerUI : function() {
       this._container = new Element('form', {'id' : 'access-levels-manager', 'class' : 'xform'});
-      this._container.insert(this._generateSection('manage-ownership', "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipHeader'))", "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipBody'))"))
-                     .insert(this._generateSection('manage-visibility', "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyVisibilityHeader'))", "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyVisibilityBody'))"))
-                     .insert(this._generateSection('manage-collaborators', "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyCollaboratorsHeader'))", "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyCollaboratorsBody'))"))
+      this._container.insert(this._generateSection('manage-ownership', "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipHeader'))", "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipBody'))"))
+                     .insert(this._generateSection('manage-visibility', "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyVisibilityHeader'))", "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyVisibilityBody'))"))
+                     .insert(this._generateSection('manage-collaborators', "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyCollaboratorsHeader'))", "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyCollaboratorsBody'))"))
                      .insert(new Element('div', {id : 'manager-messages'}));
       this._ownershipManager = this._container.down('#manage-ownership .section-contents');
       this._visibilityManager = this._container.down('#manage-visibility .section-contents');
@@ -475,7 +480,7 @@
       this._initVisibilityManager();
       this._initCollaboratorsManager();
       this._initManagerActions();
-      this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.heading'))".replace("__patientID__", this.patientId), 'verticalPosition': 'top', 'removeOnClose': false});
+      this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.heading'))".replace("{0}", this.recordId), 'verticalPosition': 'top', 'removeOnClose': false});
       document.fire('phenotips:permissions-manager:loaded', {'permissionsManager' : this});
     },
 
@@ -492,14 +497,14 @@
       // insert user or group icon
       var iconEl = new Element('span', {'class' : (owner.type) ? "fa fa-" + owner.type : "fa fa-user"}).update(' ');
       if (!owner.id) {
-        this._ownerInfo.update(this._OWNER_INFO_TEMPLATE.replace("__owner__", "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.noOwner'))"));
+        this._ownerInfo.update(this._OWNER_INFO_TEMPLATE.replace("{0}", "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.noOwner'))"));
       } else if (owner.id == currentUserName) {
-        this._ownerInfo.update(this._OWNER_INFO_TEMPLATE.replace("__owner__", "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.selfOwner'))"));
+        this._ownerInfo.update(this._OWNER_INFO_TEMPLATE.replace("{0}", "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.selfOwner'))"));
       } else {
-        this._ownerInfo.update(this._OWNER_INFO_TEMPLATE.replace("__owner__", iconEl.outerHTML + ' ' + owner.name));
+        this._ownerInfo.update(this._OWNER_INFO_TEMPLATE.replace("{0}", iconEl.outerHTML + ' ' + owner.name));
       }
       if (this._canTransferOwnership) {
-        this._ownerInfo.insert(" $escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipOptions'))");
+        this._ownerInfo.insert(" $escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipOptions'))");
         this._checkKeepOwnershipOption();
       }
     },
@@ -546,14 +551,14 @@
                         .insert(controlledElement &amp;&amp; controlledElement.wrap('td', {'class' : 'controlled-element'}) || '');
            return optionWrapper;
         }
-        this._defaultOwnerOption = _getTransferOption("check", "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipKeepOwnership'))", "");
+        this._defaultOwnerOption = _getTransferOption("check", "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipKeepOwnership'))", "");
         transfer.insert(this._defaultOwnerOption);
         //this._checkKeepOwnershipOption();
         if (newOwnerGroupSelect) {
-          transfer.insert(_getTransferOption("group", "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipTransferGroup'))", newOwnerGroupSelect));
+          transfer.insert(_getTransferOption("group", "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipTransferGroup'))", newOwnerGroupSelect));
         }
         if (newOwnerInput) {
-          transfer.insert(_getTransferOption("user", "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyOwnershipTransferUser'))", newOwnerInput));
+          transfer.insert(_getTransferOption("user", "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipTransferUser'))", newOwnerInput));
         }
         transfer.select('.controlled-element input, .controlled-element select').each(function (item) {
           item.disable();
@@ -622,8 +627,8 @@
     _initManagerActions : function() {
       var _this = this;
       this._buttons = new Element('div', {'class' : 'buttons'});
-      this._buttons.insert(new Element('input', {type: 'button', name : 'submit',  'value': "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifySubmitButton'))", 'class' : 'button'}).wrap('span', {'class' : 'buttonwrapper'}));
-      this._buttons.insert(new Element('input', {type: 'button', name : 'close',   'value': "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyCancelButton'))", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
+      this._buttons.insert(new Element('input', {type: 'button', name : 'submit',  'value': "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifySubmitButton'))", 'class' : 'button'}).wrap('span', {'class' : 'buttonwrapper'}));
+      this._buttons.insert(new Element('input', {type: 'button', name : 'close',   'value': "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyCancelButton'))", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
       this._container.insert(this._buttons);
       this._submitButton = this._buttons.down('input[name="submit"]');
 
@@ -695,14 +700,14 @@
           onCreate : function() {
             _this._submitButton._disabled = true;
             _this._buttons.addClassName('loading');
-            _this._messages.update(new Element('div', {'class' : 'xHint'}).update("$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyRequestSent'))"));
+            _this._messages.update(new Element('div', {'class' : 'xHint'}).update("$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyRequestSent'))"));
           },
           onFailure : function(response) {
             var failureReason = response.responseText || response.statusText;
             if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-              failureReason = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyNoServerResponse'))";
+              failureReason = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyNoServerResponse'))";
             }
-            _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyUpdateFailure')) " + failureReason));
+            _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyUpdateFailure')) " + failureReason));
           },
           on0 : function(response) {
             response.request.options.onFailure(response);
@@ -735,7 +740,7 @@
           onCreate : function() {
             _this._submitButton._disabled = true;
             _this._buttons.addClassName('loading');
-            _this._messages.update(new Element('div', {'class' : 'xHint'}).update("$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyRequestSent'))"));
+            _this._messages.update(new Element('div', {'class' : 'xHint'}).update("$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyRequestSent'))"));
           },
           onSuccess : function(response) {
             _this.collaboratorRemoved = false;
@@ -743,9 +748,9 @@
           onFailure : function(response) {
             var failureReason = response.responseText || response.statusText;
             if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-              failureReason = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyNoServerResponse'))";
+              failureReason = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyNoServerResponse'))";
             }
-            _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyUpdateFailure')) " + failureReason));
+            _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyUpdateFailure')) " + failureReason));
           },
           on1223 : function(response) {
             response.request.options.onSuccess(response);
@@ -763,21 +768,20 @@
       });
     },
 
-    // boolean parameter `updatePatientForm` is 'true' if we just made any permission updates
-    // and need to update patient form accordingly after making a GET request after those updates
+    // boolean parameter `doUpdate` is 'true' if we just made any permission updates
+    // and need to update the permissions form accordingly after making a GET request after those updates
     // boolean parameter `leaveDialogOpen' is 'true' if we either open dialog first time and populate it with data,
     // or we just made any permission updates and one of them failed so we want to keep dialog open to show error
-    _populateEditorData : function (updatePatientForm, leaveDialogOpen) {
+    _populateEditorData : function (doUpdate, leaveDialogOpen) {
       var _this = this;
-      if (!updatePatientForm) {
+      if (!doUpdate) {
         if (this._editorLauncher._disabled) { return; }
       }
-      var updatePatientSummary = updatePatientForm;
       var keepOpen = leaveDialogOpen;
 
       new Ajax.Request(_this.permissionsURL + "?method=GET", {
           onCreate : function() {
-            if (!updatePatientSummary) {
+            if (!doUpdate) {
               _this._editorLauncher._disabled = true;
               _this._messages.update('');
               _this._dialog.showDialog();
@@ -788,8 +792,8 @@
           onSuccess : function(response) {
             var updated = false;
             var data = response.responseJSON;
-            if (updatePatientSummary) {
-              _this._getUserAccessLevelAndUpdatePatientForm(data);
+            if (doUpdate) {
+              _this._getUserAccessLevelAndUpdatePermissionsForm(data);
             }
             if (keepOpen) {
               if (data.owner &amp;&amp; data.owner.name) {
@@ -810,18 +814,18 @@
           onFailure : function(response) {
             // if user just made a change in permission and there might be a situation
             // when user removes himself from collaborator and no longer has access to permissions info
-            if (updatePatientSummary) {
+            if (doUpdate) {
               window.location.reload(true);
             } else {
               var failureReason = response.responseText || response.statusText;
               if (response.statusText == ''  || response.status == 12031) {
-                failureReason = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyNoServerResponse'))";
+                failureReason = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyNoServerResponse'))";
               }
-              _this._messages.insert(new Element('div', {'class' : 'errormessage'}).update("$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyUpdateFailure')) " + failureReason));
+              _this._messages.insert(new Element('div', {'class' : 'errormessage'}).update("$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyUpdateFailure')) " + failureReason));
             }
           },
           onComplete : function(response) {
-            if (updatePatientSummary) {
+            if (doUpdate) {
               _this._submitButton._disabled = false;
               _this._buttons.removeClassName('loading');
             } else {
@@ -847,14 +851,14 @@
       collaborators.each(this._addCollaborator.bind(this));
     },
 
-    // Get information about PatientAccess to the patient document for the currently logged in user
-    _getUserAccessLevelAndUpdatePatientForm : function (data) {
+    // Get information about access rights to the record for the currently logged in user
+    _getUserAccessLevelAndUpdatePermissionsForm : function (data) {
       var _this = this;
       var permissionsData = data;
       var level = 'none';  // no access level
       var canTransfer = false;
       var canManage = false;
-      new Ajax.Request(this._serviceURL + "&amp;xaction=user-access&amp;patient=" + this.patientId, {
+      new Ajax.Request(this._serviceURL + "&amp;xaction=user-access&amp;id=" + this.recordId, {
         onSuccess : function(response) {
            var data = response.responseJSON;
            level = data.level.name;
@@ -862,13 +866,13 @@
            canManage = data.canManage;
         },
         onComplete : function() {
-          _this._updatePatientRightsSummary(permissionsData, level, canTransfer, canManage);
+          _this._updateRecordPermissionsSummary(permissionsData, level, canTransfer, canManage);
         }
       });
     },
 
-    _updatePatientRightsSummary : function (data, level, canTransfer, canManage) {
-      // if no access level to the patient document, reload
+    _updateRecordPermissionsSummary : function (data, level, canTransfer, canManage) {
+      // if no access level to the record, reload
       if (level == 'none') {
         window.location.reload(true);
       }
@@ -879,9 +883,9 @@
       var ownerNameContainer = this._element.down('.access-rights-info');
       var ownerNameEl = new Element('span', {'class' : 'owner'});
       if (!data.owner || !data.owner.id || !data.owner.name) {
-        ownerNameEl.innerText = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.noOwner'))";
+        ownerNameEl.innerText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.noOwner'))";
       } else if (data.owner.id == currentUserName) {
-        ownerNameEl.innerText = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.selfOwner'))";
+        ownerNameEl.innerText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.selfOwner'))";
       } else {
         var ownerNameEl = new Element('a', {'class' : 'owner'});
         var iconEl = new Element('span', {'class' : (data.owner.type) ? "fa fa-" + data.owner.type : "fa fa-user"}).update(' ');
@@ -909,7 +913,7 @@
         this._updateOwnershipManager(data.owner);
       }
 
-      // if cannot manage - remove all hidden inputs, dialog, collaborators info and manage button in patient record form
+      // if cannot manage - remove all hidden inputs, dialog, collaborators info and manage button in record form
       if (!canManage) {
         this._element.down('#collaborator-access-rights-info').remove();
         this._element.down('.buttonwrapper.tool.edit').remove();
@@ -929,16 +933,16 @@
         var beginHtml = '&lt;span class="access-rights-info"&gt;&lt;span class="fa fa-group"&gt;&lt;/span&gt;&lt;span class="collaborators"&gt;';
         var endHtml = '&lt;/span&gt;';
         if (collaboratorsCount == 0) {
-          collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.noCollaborators', ['__beginHtml__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__endHtml__", endHtml);
+          collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.noCollaborators', ['__beginHtml__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__endHtml__", endHtml);
         } else {
           var collaborator = data.collaborators.collaborators[0];
           if (collaboratorsCount == 1) {
-            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.oneCollaborator', ['__beginHtml__', '__collaborator.name__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", collaborator.name).replace("__endHtml__", endHtml);
+            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.oneCollaborator', ['__beginHtml__', '__collaborator.name__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", collaborator.name).replace("__endHtml__", endHtml);
           } else if (collaboratorsCount == 2) {
-            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.oneOtherCollaborator', ['__beginHtml__', '__collaborator.name__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", collaborator.name).replace("__endHtml__", endHtml);
+            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.oneOtherCollaborator', ['__beginHtml__', '__collaborator.name__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", collaborator.name).replace("__endHtml__", endHtml);
           } else {
             var count = collaboratorsCount - 1;
-            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.collaboratorsSummary.xOtherCollaborators', ['__beginHtml__', '__collaborator.name__', '__count__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", collaborator.name).replace("__count__", count).replace("__endHtml__", endHtml);
+            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.xOtherCollaborators', ['__beginHtml__', '__collaborator.name__', '__count__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", collaborator.name).replace("__count__", count).replace("__endHtml__", endHtml);
           }
         }
         collaboratorsEl.innerHTML = collaboratorText;
@@ -959,7 +963,7 @@
       );
       var rights = this._generateCollaborationOptions('accessLevel', c.level)
       row.insert(rights.wrap('td'));
-      var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times', title : "$escapetool.javascript($services.localization.render('phenotips.patientAccessRightsManagement.modifyRemoveCollaborator'))"});
+      var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times', title : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyRemoveCollaborator'))"});
       row.insert(deleteTool.wrap('td'));
       deleteTool.observe('click', this._removeCollaboratorRow.bindAsEventListener(this));
       return row;
@@ -1009,10 +1013,10 @@ document.observe("xwiki:dom:loaded", function() {
     </property>
   </object>
   <object>
-    <name>PhenoTips.PatientAccessRightsManagement</name>
+    <name>PhenoTips.AccessRightsManagement</name>
     <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
-    <guid>3f13b7c9-93f5-4e94-b01e-b180d2a383de</guid>
+    <guid>9f125d8b-8f4e-426b-8c28-3c1ca6022a2b</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -1176,10 +1180,10 @@ document.observe("xwiki:dom:loaded", function() {
     </property>
   </object>
   <object>
-    <name>PhenoTips.PatientAccessRightsManagement</name>
+    <name>PhenoTips.AccessRightsManagement</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>3d24805b-d647-4e9b-a7ca-00f55fb5a7f3</guid>
+    <guid>ea9b6a72-c4af-4e0b-876f-dacdfaf4098e</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -1246,7 +1250,7 @@ document.observe("xwiki:dom:loaded", function() {
     </class>
     <property>
       <content>{{velocity output="false"}}
-#set ($serviceDocName = 'PhenoTips.PatientAccessRightsManagement')
+#set ($serviceDocName = 'PhenoTips.AccessRightsManagement')
 #set ($serviceDoc = $xwiki.getDocument($serviceDocName))
 $xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)
 $xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)
@@ -1258,20 +1262,28 @@ $xwiki.ssx.use($serviceDocName)
 
 {{velocity}}
 #if ($xcontext.action != 'export')
-#set ($patient = $services.patients.get($doc.documentReference))
-#if ("$!patient.id" != '')
+#set ($record = $services.patients.get($doc.documentReference))
+#set ($entityType = 'patients')
+#if ("$!record.id" != '')
   #set ($_service = $services.permissions)
-  #set ($patientAccess = $_service.getPatientAccess($patient.getId()))
+  #set ($recordAccess = $_service.getPatientAccess($record.getId()))
   ## ===========================================================
-  ## Display access summary for this patient and enable changing
+  ## Display access summary for this record and enable changing
   ## -----------------------------------------------------------
-  #set ($visibility =  $patientAccess.visibility)
-  #set ($collaborators = $patientAccess.collaborators)
+  {{html clean=false}}&lt;input type="hidden" name="entity-type" id="entity-type" value="$entityType"/&gt;{{/html}}
+  #set ($visibility =  $recordAccess.visibility)
+  #if ("$!visibility" == '')
+    #set ($visibility =  $_service.defaultVisibility)
+  #end
+  #set ($collaborators = $recordAccess.collaborators)
+  #if ("$!collaborators" == '')
+    #set ($collaborators = [])
+  #end
   #set ($collaboratorsCount = $collaborators.size())
   #set ($collaboratorString = '')
   #set ($collaboratorTooltipStr = '')
   #if ($collaboratorsCount == 0)
-    #set ($collaboratorString = $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary.noCollaborators", ["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;", "&lt;/span&gt;{{/html}}(%%)"]))
+    #set ($collaboratorString = $services.localization.render("phenotips.accessRightsManagement.collaboratorsSummary.noCollaborators", ["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;", "&lt;/span&gt;{{/html}}(%%)"]))
   #elseif ($collaboratorsCount == 1)
     #set ($firstCollaborator = $collaborators.iterator().next())
     #set ($firstCollaboratorReference = $firstCollaborator.user)
@@ -1280,13 +1292,13 @@ $xwiki.ssx.use($serviceDocName)
     #else
       #set ($collaboratorName = $xwiki.getDocument($firstCollaboratorReference).plainTitle)
     #end
-    #set ($collaboratorString = $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary.oneCollaborator", ["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;", $collaboratorName, "&lt;/span&gt;{{/html}}(%%)"]))
+    #set ($collaboratorString = $services.localization.render("phenotips.accessRightsManagement.collaboratorsSummary.oneCollaborator", ["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;", $collaboratorName, "&lt;/span&gt;{{/html}}(%%)"]))
     #set ($collaboratorTooltipStr = $collaboratorName)
   #else
     #set ($topCollaborator = $collaborators.iterator().next())
     #set ($topCollaboratorReference = $topCollaborator.user)
     #foreach ($collaborator in $collaborators)
-      #if ($patientAccess.getAccessLevel($topCollaborator.user).compareTo($patientAccess.getAccessLevel($collaborator.user)) &lt; 0)
+      #if ($recordAccess.getAccessLevel($topCollaborator.user).compareTo($entityAccess.getAccessLevel($collaborator.user)) &lt; 0)
         #set ($topCollaborator = $collaborator)
       #end
       #if ($collaborator.isUser())
@@ -1304,17 +1316,17 @@ $xwiki.ssx.use($serviceDocName)
     #end
     #set ($collaboratorsCount = $collaboratorsCount - 1)
     #if ($collaboratorsCount == 1)
-      #set ($collaboratorString = $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary.oneOtherCollaborator", ["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;", $topCollaboratorName, "&lt;/span&gt;{{/html}}(%%)"]))
+      #set ($collaboratorString = $services.localization.render("phenotips.accessRightsManagement.collaboratorsSummary.oneOtherCollaborator", ["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;", $topCollaboratorName, "&lt;/span&gt;{{/html}}(%%)"]))
     #else
-      #set ($collaboratorString = $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary.xOtherCollaborators", ["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;", $topCollaboratorName, $collaboratorsCount, "&lt;/span&gt;{{/html}}(%%)"]))
+      #set ($collaboratorString = $services.localization.render("phenotips.accessRightsManagement.collaboratorsSummary.xOtherCollaborators", ["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;", $topCollaboratorName, $collaboratorsCount, "&lt;/span&gt;{{/html}}(%%)"]))
     #end
   #end
-  #set ($owner = $patientAccess.getOwner())
+  #set ($owner = $recordAccess.getOwner())
   #set ($ownerReference = $owner.user)
   #if (!$ownerReference)
-    #set ($ownerName = $services.localization.render("phenotips.patientAccessRightsManagement.noOwner"))
+    #set ($ownerName = $services.localization.render("phenotips.accessRightsManagement.noOwner"))
   #elseif ($ownerReference.equals($xcontext.userReference))
-    #set ($ownerName = $services.localization.render("phenotips.patientAccessRightsManagement.selfOwner"))
+    #set ($ownerName = $services.localization.render("phenotips.accessRightsManagement.selfOwner"))
   #else
     #if ($owner.isUser())
       #set ($ownerName = $xwiki.getUserName("$ownerReference", false))
@@ -1322,7 +1334,7 @@ $xwiki.ssx.use($serviceDocName)
       #set ($ownerName = $xwiki.getDocument($ownerReference).plainTitle)
     #end
   #end
-  #set ($canTransfer = $patientAccess.hasAccessLevel('owner'))
+  #set ($canTransfer = $recordAccess.hasAccessLevel('owner'))
   #if ($owner.isGroup())
     #set ($adminGroup = $xcontext.getDatabase() + ":Groups." + $owner.getUsername() + " Administrators")
     #if (!$xwiki.getUser().isUserInGroup($adminGroup))
@@ -1332,17 +1344,17 @@ $xwiki.ssx.use($serviceDocName)
   #if ($hasAdmin)
     #set ($canTransfer = true)
   #end
-  #set ($canManage = $patientAccess.hasAccessLevel('manage'))
+  #set ($canManage = $recordAccess.hasAccessLevel('manage'))
   #if ("$!{ownerReference}" != '')
     #set ($ownerElement = "{{html wiki='true' clean='false'}}&lt;a class='owner' href=""${xwiki.getURL($ownerReference)}""&gt;{{icon name='user'/}}$services.rendering.escape($ownerName, $doc.syntax)&lt;/a&gt;{{/html}}")
   #else
     #set ($ownerElement = "{{html wiki='true' clean='false'}}&lt;span class='owner'&gt;{{icon name='user'/}}$ownerName&lt;/span&gt;{{/html}}")
   #end
   (% id="access-rights-summary" %)((({{html wiki='true' clean='false'}}&lt;input type="hidden" name="currentUser" value="$!escapetool.xml($xcontext.userReference)"/&gt;{{/html}}##
-    $services.localization.render("phenotips.patientAccessRightsManagement.caseOwnerandVisibility",["(% class='access-rights-info' %)$ownerElement(%%)","(% class='access-rights-info visibility' title='$!{visibility.description}' %){{icon name='$visibility'/}}${visibility.label}(%%)"])##
+    $services.localization.render("phenotips.accessRightsManagement.recordOwnerandVisibility",["(% class='access-rights-info' %)$ownerElement(%%)","(% class='access-rights-info visibility' title='$!{visibility.description}' %){{icon name='$visibility'/}}$!{visibility.label}(%%)"])##
     #if ($canManage) ##
       {{html wiki='true' clean='false'}}&lt;span id="collaborator-access-rights-info" title="$collaboratorTooltipStr"&gt;$collaboratorString&lt;/span&gt;{{/html}}##
-      (% class="buttonwrapper tool edit" %)[[ {{icon name="wrench" title="$services.localization.render('phenotips.patientAccessRightsManagement.modifyButtonTitle')" /}} $services.localization.render("phenotips.patientAccessRightsManagement.modifyButton")&gt;&gt;path:#||class="button"]]##
+      (% class="buttonwrapper tool edit" %)[[ {{icon name="wrench" title="$services.localization.render('phenotips.accessRightsManagement.modifyButtonTitle')" /}} $services.localization.render("phenotips.accessRightsManagement.modifyButton")&gt;&gt;path:#||class="button"]]##
       (% class="hidden" %)((({{html wiki="true" clean="false"}}
         &lt;input type="hidden" name="serviceURL" value="$serviceDoc.getURL('get', 'outputSyntax=plain')"/&gt;
         #foreach ($l in $_service.listAccessLevels())
@@ -1351,10 +1363,10 @@ $xwiki.ssx.use($serviceDocName)
         #foreach ($l in $_service.listVisibilityOptions())
           &lt;input type="hidden" name="visibility" value="${l.name}" alt="$!{l.label}" title="$!{l.description}" /&gt;{{icon name="${l.name}" /}}
         #end
-        &lt;input type="text" name="user" class="suggestUsers" value="" placeholder="$services.localization.render('phenotips.patientAccessRightsManagement.newCollaborator')" id="new-collaborator-input" /&gt;
-        &lt;input type="text" name="group" class="suggestWorkgroups" value="" placeholder="$services.localization.render('phenotips.patientAccessRightsManagement.newGroupCollaborator')" id="new-group-input" /&gt;
+        &lt;input type="text" name="user" class="suggestUsers" value="" placeholder="$services.localization.render('phenotips.accessRightsManagement.newCollaborator')" id="new-collaborator-input" /&gt;
+        &lt;input type="text" name="group" class="suggestWorkgroups" value="" placeholder="$services.localization.render('phenotips.accessRightsManagement.newGroupCollaborator')" id="new-group-input" /&gt;
         #if ($canTransfer)
-          &lt;div id="new-owner-user-input"&gt;&lt;input type="text" name="owner" id="new-owner-user-select" class="suggestUsers" value="" placeholder="$services.localization.render('phenotips.patientAccessRightsManagement.newOwner')" /&gt;&lt;/div&gt;
+          &lt;div id="new-owner-user-input"&gt;&lt;input type="text" name="owner" id="new-owner-user-select" class="suggestUsers" value="" placeholder="$services.localization.render('phenotips.accessRightsManagement.newOwner')" /&gt;&lt;/div&gt;
           #set ($toProcess = $collectionstool.queue)
           #set ($discard = $toProcess.add($xcontext.userReference.toString()))
           #set ($groups = $collectionstool.sortedMap)
@@ -1391,8 +1403,8 @@ $xwiki.ssx.use($serviceDocName)
           #end
           #if (!$groups.isEmpty())
           &lt;select name="owner" id="new-owner-group-select"&gt;
-            &lt;option value="" selected="selected" class="hidden"&gt;$services.localization.render('phenotips.patientAccessRightsManagement.newOwnerGroup')&lt;/option&gt;
-            &lt;optgroup label="$services.localization.render('phenotips.patientAccessRightsManagement.newOwnerGroup')"&gt;
+            &lt;option value="" selected="selected" class="hidden"&gt;$services.localization.render('phenotips.accessRightsManagement.newOwnerGroup')&lt;/option&gt;
+            &lt;optgroup label="$services.localization.render('phenotips.accessRightsManagement.newOwnerGroup')"&gt;
             #foreach ($g in $groups.entrySet())
               &lt;option value="${escapetool.xml($services.rendering.escape($services.model.serialize($g.key), $doc.syntax))}"#if ("$!{ownerReference}" == "$g.key") selected="selected"#end&gt;${escapetool.xml($services.rendering.escape($g.value, $doc.syntax))}&lt;/option&gt;
             #end
@@ -1403,15 +1415,15 @@ $xwiki.ssx.use($serviceDocName)
       {{/html}})))
     #end
   )))
-#end## Patient exists
+#end## Record exists
 #end## xcontext.action
 {{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.before</extensionPointId>
+      <extensionPointId>org.phenotips.entitySheet.before</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.accessLevels</name>
+      <name>org.phenotips.entitySheet.accessLevels</name>
     </property>
     <property>
       <parameters>order=10</parameters>

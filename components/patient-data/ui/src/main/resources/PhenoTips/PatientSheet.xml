@@ -95,11 +95,20 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
 #end
 ##
 ## Extensions displayed before the content
-(% class="before-patient-data" %)(((
-#foreach ($e in $services.uix.getExtensions('org.phenotips.patientSheet.before', {'sortByParameter' : 'order'}))
-  #set ($hasExtensionsBefore = true)
+(% class="before-entity-data" %)(((
+#foreach ($e in $services.uix.getExtensions('org.phenotips.entitySheet.before', {'sortByParameter' : 'order'}))
   #set ($extension_disabled = ($e.getParameters().get('enabled') == 'false'))
   #if (!$extension_disabled)
+    #set ($hasExtensionsBefore = true)
+    {{html wiki=false clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
+
+  #end
+#end
+(% class="before-patient-data" %)(((
+#foreach ($e in $services.uix.getExtensions('org.phenotips.patientSheet.before', {'sortByParameter' : 'order'}))
+  #set ($extension_disabled = ($e.getParameters().get('enabled') == 'false'))
+  #if (!$extension_disabled)
+    #set ($hasExtensionsBefore = true)
     {{html wiki=false clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
 
   #end
