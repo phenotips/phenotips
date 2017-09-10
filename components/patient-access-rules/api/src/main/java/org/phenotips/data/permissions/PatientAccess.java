@@ -27,9 +27,11 @@ import java.util.Collection;
 /**
  * @version $Id$
  * @since 1.0M9
+ * @deprecated since 1.4; please use {@link EntityAccess}
  */
 @Unstable
-public interface PatientAccess
+@Deprecated
+public interface PatientAccess extends EntityAccess
 {
     Patient getPatient();
 

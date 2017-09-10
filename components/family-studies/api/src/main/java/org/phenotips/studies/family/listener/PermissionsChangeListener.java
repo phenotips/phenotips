@@ -19,7 +19,7 @@ package org.phenotips.studies.family.listener;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
-import org.phenotips.data.permissions.events.PatientRightsUpdatedEvent;
+import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 
@@ -57,17 +57,17 @@ public class PermissionsChangeListener extends AbstractEventListener
     /** Default constructor, sets up the listener name and the list of events to subscribe to. */
     public PermissionsChangeListener()
     {
-        super("family-studies-patient-permissions-listener", new PatientRightsUpdatedEvent());
+        super("family-studies-patient-permissions-listener", new EntityRightsUpdatedEvent());
     }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        String patientId = ((PatientRightsUpdatedEvent) event).getPatientId();
+        String entityId = ((EntityRightsUpdatedEvent) event).getEntityId();
 
-        this.logger.debug("Updating familypermissions for patient [{}]", patientId);
+        this.logger.debug("Updating familypermissions for patient [{}]", entityId);
 
-        Patient patient = this.patientRepository.get(patientId);
+        Patient patient = this.patientRepository.get(entityId);
         if (patient == null) {
             return;
         }

@@ -687,6 +687,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>entity-access-rules-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>patient-access-rules-migrations</artifactId>
       <version>${project.version}</version>
     </dependency>

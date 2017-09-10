@@ -20,7 +20,7 @@ package org.phenotips.recordLocking.internal;
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 
 import org.xwiki.component.annotation.Component;
@@ -111,7 +111,7 @@ public class DefaultPatientRecordLockManager implements org.phenotips.recordLock
 
     private boolean hasLockingPermission(Patient patient)
     {
-        PatientAccess patientAccess = this.pm.getPatientAccess(patient);
+        EntityAccess patientAccess = this.pm.getEntityAccess(patient);
         return patientAccess.hasAccessLevel(this.manageAccessLevel);
     }
 
