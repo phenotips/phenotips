@@ -18,9 +18,12 @@
 package org.phenotips.studies.family;
 
 import org.phenotips.data.Patient;
+import org.phenotips.entities.PrimaryEntity;
+import org.phenotips.entities.PrimaryEntityManager;
 import org.phenotips.studies.family.exceptions.PTException;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.users.User;
 
 /**
@@ -30,7 +33,7 @@ import org.xwiki.users.User;
  * @since 1.4
  */
 @Role
-public interface FamilyRepository
+public interface FamilyRepository extends PrimaryEntityManager<Family>
 {
     /**
      * @param patient whose family the function return
@@ -41,7 +44,9 @@ public interface FamilyRepository
     /**
      * @param id of family to return
      * @return family for which family.getId().equals(id) is true
+     * @deprecated use {@link #get(String)} instead
      */
+    @Deprecated
     Family getFamilyById(String id);
 
     /**
@@ -49,7 +54,9 @@ public interface FamilyRepository
      *
      * @param creator an entity (a user or a group) which will be set as the owner for the created {@link Family family}
      * @return new Family object
+     * @deprecated use {@link #create(DocumentReference)} instead
      */
+    @Deprecated
     Family createFamily(User creator);
 
     /**
@@ -59,8 +66,19 @@ public interface FamilyRepository
      * @param deleteAllMembers if true, also removes all member patients documents
      * @param updatingUser right checks are done for this user
      * @return true if successful
+     * @deprecated use {@link #delete(Family, boolean)} or {@link #delete(PrimaryEntity)} instead
      */
+    @Deprecated
     boolean deleteFamily(Family family, User updatingUser, boolean deleteAllMembers);
+
+    /**
+     * Deletes the family: unlinks or deletes all patients, then removes family document.
+     *
+     * @param family the family
+     * @param deleteAllMembers if true, also removes all member patients documents
+     * @return true if successful
+     */
+    boolean delete(Family family, boolean deleteAllMembers);
 
     /**
      * Unlinks all patients from the family. It is supposed to be used in the event handler for xwiki remove action,

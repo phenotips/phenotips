@@ -4,6 +4,7 @@ org.phenotips.studies.family.internal.PedigreeProcessorImpl
 org.phenotips.studies.family.internal.OwnerAccessAuthorizationModule
 org.phenotips.studies.family.internal.AccessThroughFamilyMemberAuthorisationModule
 org.phenotips.studies.family.internal.DenyAccessByDefaultAuthorizationModule
+org.phenotips.studies.family.internal.FamilyEntityManager
 org.phenotips.studies.family.internal.PhenotipsFamilyRepository
 org.phenotips.studies.family.internal.PhenotipsFamilyTools
 org.phenotips.studies.family.internal.SecureFamilyTools
