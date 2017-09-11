@@ -179,7 +179,7 @@ define([
                     { 'actual' : 'alive', 'displayed' : 'Alive' },
                     { 'actual' : 'deceased', 'displayed' : 'Deceased' },
                     { 'actual' : 'stillborn', 'displayed' : 'Stillborn' },
-                    { 'actual' : 'unborn', 'displayed' : 'Unborn' },
+                    { 'actual' : 'unborn', 'displayed' : 'A pregnancy' },
                     { 'actual' : 'miscarriage', 'displayed' : 'Miscarried' },
                     { 'actual' : 'aborted', 'displayed' : 'Elective abortion' }],
                 'values' : [
@@ -187,7 +187,7 @@ define([
                     { 'actual' : 'stillborn', 'displayed' : 'Stillborn' },
                     { 'actual' : 'deceased', 'displayed' : 'Deceased', 'columnshiftPX': -2 },
                     { 'actual' : 'miscarriage', 'displayed' : 'Miscarried', 'columnshiftPX': -2},
-                    { 'actual' : 'unborn', 'displayed' : 'Unborn', 'columnshiftPX': 8 },
+                    { 'actual' : 'unborn', 'displayed' : 'A pregnancy', 'columnshiftPX': 8 },
                     { 'actual' : 'aborted', 'displayed' : 'Aborted', 'columnshiftPX': 8 }],
                 'default' : 'alive',
                 'function' : 'setLifeStatus'
