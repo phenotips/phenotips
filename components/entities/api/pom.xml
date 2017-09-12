@@ -29,7 +29,7 @@
   <name>PhenoTips - Entities - Java APIs</name>
 
   <properties>
-    <coverage.instructionRatio>0.01</coverage.instructionRatio>
+    <coverage.instructionRatio>0.05</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -85,6 +85,10 @@
       <artifactId>xwiki-rendering-api</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>annotations</artifactId>
+    </dependency>
     <!-- Test dependencies -->
     <dependency>
       <groupId>junit</groupId>
@@ -94,6 +98,12 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-tool-test-component</artifactId>
+      <version>${xwiki.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
