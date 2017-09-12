@@ -4,9 +4,10 @@ org.phenotips.data.permissions.internal.DefaultPermissionsManager
 org.phenotips.data.permissions.internal.ManageRightRegistrationEventListener
 500:org.phenotips.data.permissions.internal.OwnerContactProvider
 org.phenotips.data.permissions.internal.OwnerUpdateEventListener
-org.phenotips.data.permissions.internal.CollaboratorAccessAuthorizationModule
 org.phenotips.data.permissions.internal.OwnerAccessAuthorizationModule
+org.phenotips.data.permissions.internal.CollaboratorAccessAuthorizationModule
 org.phenotips.data.permissions.internal.VisibilityAccessAuthorizationModule
+org.phenotips.data.permissions.internal.DenyAccessByDefaultAuthorizationModule
 org.phenotips.data.permissions.internal.SecurePermissionsManager
 org.phenotips.data.permissions.internal.VCFAccessRestrictionEventListener
 org.phenotips.data.permissions.internal.access.EditAccessLevel

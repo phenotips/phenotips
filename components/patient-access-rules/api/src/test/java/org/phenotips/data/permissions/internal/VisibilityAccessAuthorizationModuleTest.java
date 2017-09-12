@@ -117,24 +117,24 @@ public class VisibilityAccessAuthorizationModuleTest
     }
 
     @Test
-    public void openVisibilityDeniesComment() throws ComponentLookupException
+    public void openVisibilityDoesntAllowComment() throws ComponentLookupException
     {
         when(this.helper.getVisibility(this.patient)).thenReturn(this.openVisibility);
-        Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.COMMENT, this.doc));
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.COMMENT, this.doc));
     }
 
     @Test
-    public void openVisibilityDeniesDelete() throws ComponentLookupException
+    public void openVisibilityDoesntAllowDelete() throws ComponentLookupException
     {
         when(this.helper.getVisibility(this.patient)).thenReturn(this.openVisibility);
-        Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.DELETE, this.doc));
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.DELETE, this.doc));
     }
 
     @Test
-    public void openVisibilityDeniesGuestAccess() throws ComponentLookupException
+    public void openVisibilityDoesntAllowGuestAccess() throws ComponentLookupException
     {
         when(this.helper.getVisibility(this.patient)).thenReturn(this.openVisibility);
-        Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(null, Right.VIEW, this.doc));
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(null, Right.VIEW, this.doc));
     }
 
     @Test
@@ -145,66 +145,66 @@ public class VisibilityAccessAuthorizationModuleTest
     }
 
     @Test
-    public void publicVisibilityDeniesEdit() throws ComponentLookupException
+    public void publicVisibilityDoesntAllowEdit() throws ComponentLookupException
     {
         when(this.helper.getVisibility(this.patient)).thenReturn(this.publicVisibility);
-        Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.EDIT, this.doc));
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.EDIT, this.doc));
     }
 
     @Test
-    public void publicVisibilityDeniesComment() throws ComponentLookupException
+    public void publicVisibilityDoesntAllowComment() throws ComponentLookupException
     {
         when(this.helper.getVisibility(this.patient)).thenReturn(this.publicVisibility);
-        Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.COMMENT, this.doc));
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.COMMENT, this.doc));
     }
 
     @Test
-    public void publicVisibilityDeniesDelete() throws ComponentLookupException
+    public void publicVisibilityDoesntAllowDelete() throws ComponentLookupException
     {
         when(this.helper.getVisibility(this.patient)).thenReturn(this.publicVisibility);
-        Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.DELETE, this.doc));
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.DELETE, this.doc));
     }
 
     @Test
-    public void publicVisibilityDeniesGuestAccess() throws ComponentLookupException
+    public void publicVisibilityDoesntAllowGuestAccess() throws ComponentLookupException
     {
         when(this.helper.getVisibility(this.patient)).thenReturn(this.publicVisibility);
-        Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(null, Right.VIEW, this.doc));
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(null, Right.VIEW, this.doc));
     }
 
     @Test
-    public void privateVisibilityDeniesView() throws ComponentLookupException
+    public void privateVisibilityDoesntAllowView() throws ComponentLookupException
     {
         when(this.helper.getVisibility(this.patient)).thenReturn(this.privateVisibility);
-        Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.VIEW, this.doc));
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.VIEW, this.doc));
     }
 
     @Test
-    public void privateVisibilityDeniesEdit() throws ComponentLookupException
+    public void privateVisibilityDoesntAllowEdit() throws ComponentLookupException
     {
         when(this.helper.getVisibility(this.patient)).thenReturn(this.privateVisibility);
-        Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.EDIT, this.doc));
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.EDIT, this.doc));
     }
 
     @Test
-    public void privateVisibilityDeniesComment() throws ComponentLookupException
+    public void privateVisibilityDoesntAllowComment() throws ComponentLookupException
     {
         when(this.helper.getVisibility(this.patient)).thenReturn(this.privateVisibility);
-        Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.COMMENT, this.doc));
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.COMMENT, this.doc));
     }
 
     @Test
-    public void privateVisibilityDeniesDelete() throws ComponentLookupException
+    public void privateVisibilityDoesntAllowDelete() throws ComponentLookupException
     {
         when(this.helper.getVisibility(this.patient)).thenReturn(this.privateVisibility);
-        Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.DELETE, this.doc));
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.DELETE, this.doc));
     }
 
     @Test
-    public void privateVisibilityDeniesGuestAccess() throws ComponentLookupException
+    public void privateVisibilityDoesntAllowGuestAccess() throws ComponentLookupException
     {
         when(this.helper.getVisibility(this.patient)).thenReturn(this.privateVisibility);
-        Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(null, Right.VIEW, this.doc));
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(null, Right.VIEW, this.doc));
     }
 
     @Test

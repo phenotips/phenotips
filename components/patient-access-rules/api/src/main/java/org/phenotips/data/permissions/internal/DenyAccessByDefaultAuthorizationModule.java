@@ -19,39 +19,39 @@ package org.phenotips.data.permissions.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
-import org.phenotips.data.permissions.Visibility;
 import org.phenotips.security.authorization.AuthorizationModule;
 
+import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.commons.lang3.ObjectUtils;
 
 /**
- * Implementation that allows access based on Visibility rights.
+ * Low priority implementation that by default denies access to patient records.
  *
  * @version $Id$
  * @since 1.4
  */
-public class VisibilityAccessAuthorizationModule implements AuthorizationModule
+@Component
+@Named("deny-access")
+@Singleton
+public class DenyAccessByDefaultAuthorizationModule implements AuthorizationModule
 {
-    /**
-     * Checks to see if document is a patient (DocumentReference).
-     */
+    /** Checks to see if a document is a patient. */
     @Inject
     private PatientRepository patientRepository;
-
-    @Inject
-    private PatientAccessHelper helper;
 
     @Override
     public int getPriority()
     {
-        return 200;
+        return 110;
     }
 
     @Override
@@ -62,23 +62,11 @@ public class VisibilityAccessAuthorizationModule implements AuthorizationModule
             return null;
         }
 
-        // This converts the document to a patient.
         Patient patient = this.patientRepository.get(entity.toString());
         if (patient == null) {
             return null;
         }
 
-        Visibility visibility = this.helper.getVisibility(patient);
-        if (visibility == null) {
-            return null;
-        }
-
-        // Checks if the visibility of Patient Record and the access rights
-        Right grantedRight = visibility.getDefaultAccessLevel().getGrantedRight();
-        if (user != null && (grantedRight.equals(access)
-            || (grantedRight.getImpliedRights() != null && grantedRight.getImpliedRights().contains(access)))) {
-            return true;
-        }
-        return null;
+        return false;
     }
 }
