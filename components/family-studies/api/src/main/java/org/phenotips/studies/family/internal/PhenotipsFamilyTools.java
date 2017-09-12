@@ -76,7 +76,7 @@ public class PhenotipsFamilyTools implements FamilyTools
         User creator = this.userManager.getCurrentUser();
         if (this.access.hasAccess(creator, Right.EDIT,
             this.currentResolver.resolve(Family.DATA_SPACE, EntityType.SPACE))) {
-            return this.familyRepository.createFamily(creator);
+            return this.familyRepository.create();
         }
         throw new SecurityException("User not authorized to create new families");
     }
@@ -84,7 +84,7 @@ public class PhenotipsFamilyTools implements FamilyTools
     @Override
     public Family getFamilyById(String familyId)
     {
-        Family family = this.familyRepository.getFamilyById(familyId);
+        Family family = this.familyRepository.get(familyId);
         if (family == null) {
             return null;
         }
@@ -166,12 +166,12 @@ public class PhenotipsFamilyTools implements FamilyTools
     @Override
     public boolean deleteFamily(String familyId, boolean deleteAllMembers)
     {
-        Family family = this.familyRepository.getFamilyById(familyId);
+        Family family = this.familyRepository.get(familyId);
         if (family == null) {
             return false;
         }
         // the access rights checks are done in familyRepository.deleteFamily()
-        return this.familyRepository.deleteFamily(family, this.userManager.getCurrentUser(), deleteAllMembers);
+        return this.familyRepository.delete(family, deleteAllMembers);
     }
 
     @Override
@@ -183,7 +183,7 @@ public class PhenotipsFamilyTools implements FamilyTools
     @Override
     public boolean currentUserCanDeleteFamily(String familyId, boolean deleteAllMembers)
     {
-        Family family = this.familyRepository.getFamilyById(familyId);
+        Family family = this.familyRepository.get(familyId);
         if (family == null) {
             return false;
         }
@@ -194,13 +194,13 @@ public class PhenotipsFamilyTools implements FamilyTools
     @Override
     public boolean familyExists(String familyId)
     {
-        return this.familyRepository.getFamilyById(familyId) != null;
+        return this.familyRepository.get(familyId) != null;
     }
 
     @Override
     public boolean currentUserHasAccessRight(String familyId, Right right)
     {
-        Family family = this.familyRepository.getFamilyById(familyId);
+        Family family = this.familyRepository.get(familyId);
         if (family == null) {
             return false;
         }

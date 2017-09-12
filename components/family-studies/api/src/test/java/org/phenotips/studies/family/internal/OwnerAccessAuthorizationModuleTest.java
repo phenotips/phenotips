@@ -81,7 +81,7 @@ public class OwnerAccessAuthorizationModuleTest
         MockitoAnnotations.initMocks(this);
 
         this.repo = this.mocker.getInstance(FamilyRepository.class);
-        when(this.repo.getFamilyById("xwiki:Families.FAM01")).thenReturn(this.family);
+        when(this.repo.get("xwiki:Families.FAM01")).thenReturn(this.family);
         when(this.family.getDocumentReference()).thenReturn(this.doc);
 
         this.dab = this.mocker.getInstance(DocumentAccessBridge.class);
@@ -222,7 +222,7 @@ public class OwnerAccessAuthorizationModuleTest
     @Test
     public void noActionWithNonPatient() throws ComponentLookupException
     {
-        when(this.repo.getFamilyById("xwiki:Families.FAM01")).thenReturn(null);
+        when(this.repo.get("xwiki:Families.FAM01")).thenReturn(null);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.VIEW, this.doc));
     }
 
