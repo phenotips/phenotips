@@ -133,11 +133,7 @@
   #end
 #end
 #set ($groupsString = "('${stringtool.join($groups, ""','"")}')")
-#if ($groups.empty)
-  #set ($query = ", BaseObject accessObj, StringProperty accessProp, BaseObject familyObj, LongProperty iid where familyObj.name = doc.fullName and doc.fullName &lt;&gt; 'PhenoTips.FamilyTemplate' and familyObj.className = 'PhenoTips.FamilyClass' and iid.id.id = familyObj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ('${stringtool.join($groupsAndSelf, ""','"")}')")
-#else
-  #set ($query = ", BaseObject accessObj, StringProperty accessProp, BaseObject familyObj, LongProperty iid where familyObj.name = doc.fullName and doc.fullName &lt;&gt; 'PhenoTips.FamilyTemplate' and familyObj.className = 'PhenoTips.FamilyClass' and iid.id.id = familyObj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and ((accessObj.className = 'PhenoTips.OwnerClass' and accessProp.value in ('${stringtool.join($groups, ""','"")}')) or (accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ('${stringtool.join($groupsAndSelf, ""','"")}')))")
-#end
+#set ($query = ", BaseObject familyObj, LongProperty iid where familyObj.name = doc.fullName and doc.fullName &lt;&gt; 'PhenoTips.FamilyTemplate' and familyObj.className = 'PhenoTips.FamilyClass' and iid.id.id = familyObj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and (exists (from BaseObject accessObj, StringProperty accessProp where accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and ((accessObj.className = 'PhenoTips.OwnerClass' and accessProp.value in ('${stringtool.join($groups, ""','"")}')) or (accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ('${stringtool.join($groupsAndSelf, ""','"")}')))) or exists (from BaseObject familyReferenceObj, StringProperty familyReferenceProperty, BaseObject accessObj, StringProperty accessProp where familyReferenceObj.className = 'PhenoTips.FamilyReferenceClass' and familyReferenceProperty.id.id = familyReferenceObj.id and familyReferenceProperty.value = concat('${xcontext.database}:', doc.fullName) and familyReferenceObj.name = accessObj.name and accessObj.className in ('PhenoTips.OwnerClass', 'PhenoTips.CollaboratorClass') and accessProp.id.id = accessObj.id and accessProp.value in ('${stringtool.join($groupsAndSelf, ""','"")}'))) and not exists (from BaseObject ownerObj, StringProperty ownerProp where ownerObj.name = doc.fullName and ownerObj.className = 'PhenoTips.OwnerClass' and ownerProp.id.id = ownerObj.id and ownerProp.value  = '$!xcontext.userReference.toString()')")
 #set ($availableData = $services.query.hql($query).count())
 #if ($availableData &gt; 0)
 $xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
@@ -181,13 +177,8 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
   'defaultOrder'      : 'asc',
   'resultPage'        : 'PhenoTips.LiveTableResults'
 })
-#set ($filterFrom = ", BaseObject accessObj, StringProperty accessProp, LongProperty iid")
-#set ($filterWhere = "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and (")
-#if (!$groups.isEmpty())
-  #set ($filterWhere = "${filterWhere}(accessObj.className = 'PhenoTips.OwnerClass' and accessProp.value in ('${stringtool.join($groups, ""','"")}')) or ")
-#end
-#set ($discard = $groups.add($services.model.serialize($xcontext.userReference, 'default')))
-#set ($filterWhere = "${filterWhere}(accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ('${stringtool.join($groups, ""','"")}')))")
+#set ($filterFrom = ", LongProperty iid")
+#set ($filterWhere = "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and (exists (from BaseObject accessObj, StringProperty accessProp where accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ('${stringtool.join($groupsAndSelf, ""','"")}')) or exists (from BaseObject familyReferenceObj, StringProperty familyReferenceProperty, BaseObject accessObj, StringProperty accessProp where familyReferenceObj.className = 'PhenoTips.FamilyReferenceClass' and familyReferenceProperty.id.id = familyReferenceObj.id and familyReferenceProperty.value = concat('${xcontext.database}:', doc.fullName) and familyReferenceObj.name = accessObj.name and accessObj.className in ('PhenoTips.OwnerClass', 'PhenoTips.CollaboratorClass') and accessProp.id.id = accessObj.id and accessProp.value in ('${stringtool.join($groupsAndSelf, ""','"")}'))) and not exists (from BaseObject ownerObj, StringProperty ownerProp where ownerObj.name = doc.fullName and ownerObj.className = 'PhenoTips.OwnerClass' and ownerProp.id.id = ownerObj.id and ownerProp.value in ('$!xcontext.userReference.toString()'))")
 #set ($discard = $options.put('extraParams', "&amp;filterFrom=${escapetool.url($filterFrom)}&amp;filterWhere=${escapetool.url($filterWhere)}"))
 #if ("$!config.getProperty('livetableRows').value" != '' &amp;&amp; $config.getProperty('livetableRows').value &gt; 0)
   #set ($options.rowCount = $config.getProperty('livetableRows').value)
