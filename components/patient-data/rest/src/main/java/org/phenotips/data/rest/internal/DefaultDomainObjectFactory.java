@@ -24,11 +24,11 @@ import org.phenotips.data.rest.model.Alternative;
 import org.phenotips.data.rest.model.Alternatives;
 import org.phenotips.data.rest.model.PatientSummary;
 import org.phenotips.rest.Autolinker;
+import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.stability.Unstable;
 import org.xwiki.users.User;
@@ -61,7 +61,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 public class DefaultDomainObjectFactory implements DomainObjectFactory
 {
     @Inject
-    private AuthorizationManager access;
+    private AuthorizationService access;
 
     @Inject
     private UserManager users;
@@ -82,8 +82,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         }
         User currentUser = this.users.getCurrentUser();
 
-        if (!this.access.hasAccess(Right.VIEW, currentUser == null ? null : currentUser.getProfileDocument(),
-            patient.getDocumentReference())) {
+        if (!this.access.hasAccess(currentUser, Right.VIEW, patient.getDocumentReference())) {
             return null;
         }
 
@@ -113,7 +112,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         User currentUser = this.users.getCurrentUser();
         DocumentReference doc = this.stringResolver.resolve(String.valueOf(summaryData[0]));
 
-        if (!this.access.hasAccess(Right.VIEW, currentUser == null ? null : currentUser.getProfileDocument(), doc)) {
+        if (!this.access.hasAccess(currentUser, Right.VIEW, doc)) {
             return null;
         }
 
@@ -137,8 +136,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         result.withLinks(this.autolinker.get().forResource(getClass(), uriInfo).build());
         for (String id : alternativeIdentifiers) {
             DocumentReference reference = this.stringResolver.resolve(id, Patient.DEFAULT_DATA_SPACE);
-            if (!this.access.hasAccess(Right.VIEW, currentUser == null ? null : currentUser.getProfileDocument(),
-                reference)) {
+            if (!this.access.hasAccess(currentUser, Right.VIEW, reference)) {
                 continue;
             }
             result.getPatients().add(createAlternative(reference.getName(), uriInfo));

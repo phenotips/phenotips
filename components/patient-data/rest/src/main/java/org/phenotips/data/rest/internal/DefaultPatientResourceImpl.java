@@ -22,11 +22,10 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.rest.Autolinker;
+import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.rest.XWikiResource;
-import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
@@ -62,7 +61,7 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
     private PatientRepository repository;
 
     @Inject
-    private AuthorizationManager access;
+    private AuthorizationService access;
 
     @Inject
     private UserManager users;
@@ -80,20 +79,19 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
             return Response.status(Status.NOT_FOUND).build();
         }
         User currentUser = this.users.getCurrentUser();
-        DocumentReference currentUserProfile = currentUser == null ? null : currentUser.getProfileDocument();
         Right grantedRight;
-        if (!this.access.hasAccess(Right.VIEW, currentUserProfile, patient.getDocumentReference())) {
+        if (!this.access.hasAccess(currentUser, Right.VIEW, patient.getDocumentReference())) {
             this.logger.debug("View access denied to user [{}] on patient record [{}]", currentUser, id);
             return Response.status(Status.FORBIDDEN).build();
         } else {
             grantedRight = Right.VIEW;
         }
-        if (this.access.hasAccess(Right.EDIT, currentUserProfile, patient.getDocumentReference())) {
+        if (this.access.hasAccess(currentUser, Right.EDIT, patient.getDocumentReference())) {
             grantedRight = Right.EDIT;
         }
         Right manageRight = Right.toRight("manage");
         if (manageRight != Right.ILLEGAL
-            && this.access.hasAccess(manageRight, currentUserProfile, patient.getDocumentReference())) {
+            && this.access.hasAccess(currentUser, manageRight, patient.getDocumentReference())) {
             grantedRight = manageRight;
         }
         JSONObject json = patient.toJSON();
@@ -145,8 +143,7 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
             throw new WebApplicationException(Status.NOT_FOUND);
         }
         User currentUser = this.users.getCurrentUser();
-        if (!this.access.hasAccess(Right.EDIT, currentUser == null ? null : currentUser.getProfileDocument(),
-            patient.getDocumentReference())) {
+        if (!this.access.hasAccess(currentUser, Right.EDIT, patient.getDocumentReference())) {
             this.logger.debug("Edit access denied to user [{}] on patient record [{}]", currentUser, id);
             throw new WebApplicationException(Status.FORBIDDEN);
         }
@@ -181,8 +178,7 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
             return Response.status(Status.NOT_FOUND).build();
         }
         User currentUser = this.users.getCurrentUser();
-        if (!this.access.hasAccess(Right.DELETE, currentUser == null ? null : currentUser.getProfileDocument(),
-            patient.getDocumentReference())) {
+        if (!this.access.hasAccess(currentUser, Right.DELETE, patient.getDocumentReference())) {
             this.logger.debug("Delete access denied to user [{}] on patient record [{}]", currentUser, id);
             return Response.status(Status.FORBIDDEN).build();
         }

@@ -24,6 +24,7 @@ import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientByExternalIdResource;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.rest.Autolinker;
+import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -38,7 +39,6 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.query.internal.DefaultQuery;
-import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
@@ -51,7 +51,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Provider;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -115,7 +114,7 @@ public class DefaultPatientByExternalIdResourceImplTest
     private UriBuilder uriBuilder;
 
     @Mock
-    private User user;
+    private User currentUser;
 
     @Mock
     private EntityReferenceResolver<EntityReference> resolver;
@@ -128,15 +127,11 @@ public class DefaultPatientByExternalIdResourceImplTest
 
     private QueryManager qm;
 
-    private AuthorizationManager access;
+    private AuthorizationService access;
 
     private URI uri;
 
-    private XWikiContext context;
-
     private DefaultPatientByExternalIdResourceImpl component;
-
-    private DocumentReference userReference = new DocumentReference("wiki", "XWiki", "padams");
 
     private DocumentReference patientReference = new DocumentReference("wiki", "data", PATIENT_ID);
 
@@ -156,14 +151,12 @@ public class DefaultPatientByExternalIdResourceImplTest
         this.repository = this.mocker.getInstance(PatientRepository.class);
         this.factory = this.mocker.getInstance(DomainObjectFactory.class);
         this.qm = this.mocker.getInstance(QueryManager.class);
-        this.access = this.mocker.getInstance(AuthorizationManager.class);
+        this.access = this.mocker.getInstance(AuthorizationService.class);
 
         final UserManager users = this.mocker.getInstance(UserManager.class);
         this.component = (DefaultPatientByExternalIdResourceImpl) this.mocker.getComponentUnderTest();
         this.logger = this.mocker.getMockedLogger();
         this.resolver = this.mocker.getInstance(EntityReferenceResolver.TYPE_REFERENCE, "current");
-        Provider<XWikiContext> provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
-        this.context = provider.get();
         ReflectionUtils.setFieldValue(this.component, "uriInfo", this.uriInfo);
 
         when(this.resolver.resolve(any(EntityReference.class), any(EntityType.class), any()))
@@ -171,14 +164,13 @@ public class DefaultPatientByExternalIdResourceImplTest
         doReturn(this.uriBuilder).when(this.uriInfo).getBaseUriBuilder();
         when(this.patient.getId()).thenReturn(ID);
         when(this.patient.getDocumentReference()).thenReturn(this.patientReference);
-        when(users.getCurrentUser()).thenReturn(this.user);
-        when(this.user.getProfileDocument()).thenReturn(this.userReference);
+        when(users.getCurrentUser()).thenReturn(this.currentUser);
         when(this.repository.getByName(EID)).thenReturn(this.patient);
         when(this.repository.create()).thenReturn(this.patient);
-        when(this.access.hasAccess(Right.VIEW, this.userReference, this.patientReference)).thenReturn(true);
-        when(this.access.hasAccess(Right.EDIT, this.userReference, this.patientReference)).thenReturn(true);
-        when(this.access.hasAccess(Right.DELETE, this.userReference, this.patientReference)).thenReturn(true);
-        when(this.access.hasAccess(eq(Right.EDIT), eq(this.userReference), any(EntityReference.class)))
+        when(this.access.hasAccess(this.currentUser, Right.VIEW, this.patientReference)).thenReturn(true);
+        when(this.access.hasAccess(this.currentUser, Right.EDIT, this.patientReference)).thenReturn(true);
+        when(this.access.hasAccess(this.currentUser, Right.DELETE, this.patientReference)).thenReturn(true);
+        when(this.access.hasAccess(eq(this.currentUser), eq(Right.EDIT), any(EntityReference.class)))
             .thenReturn(true);
 
         Autolinker autolinker = this.mocker.getInstance(Autolinker.class);
@@ -194,10 +186,10 @@ public class DefaultPatientByExternalIdResourceImplTest
     @Test
     public void getPatientWithNoAccessReturnsForbiddenCode() throws ComponentLookupException
     {
-        when(this.access.hasAccess(Right.VIEW, this.userReference, this.patientReference)).thenReturn(false);
+        when(this.access.hasAccess(this.currentUser, Right.VIEW, this.patientReference)).thenReturn(false);
 
         Response response = this.component.getPatient(EID);
-        verify(this.logger).debug("View access denied to user [{}] on patient record [{}]", this.user,
+        verify(this.logger).debug("View access denied to user [{}] on patient record [{}]", this.currentUser,
             this.patient.getId());
 
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
@@ -272,13 +264,13 @@ public class DefaultPatientByExternalIdResourceImplTest
         when(this.repository.getByName(EID)).thenReturn(null);
         when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
         when(query.execute()).thenReturn(new ArrayList<>());
-        when(this.access.hasAccess(eq(Right.EDIT), eq(this.userReference), any(EntityReference.class)))
+        when(this.access.hasAccess(eq(this.currentUser), eq(Right.EDIT), any(EntityReference.class)))
             .thenReturn(false);
 
         Response response = this.component.updatePatient(EMPTY_JSON, EID, UPDATE);
         verify(this.logger).debug("No patient record with external ID [{}] exists yet", EID);
         verify(this.logger).debug("Creating patient record with external ID [{}]", EID);
-        verify(this.logger).error("Edit access denied to user [{}].", this.user);
+        verify(this.logger).error("Edit access denied to user [{}].", this.currentUser);
         verify(this.repository, never()).create();
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
     }
@@ -324,7 +316,7 @@ public class DefaultPatientByExternalIdResourceImplTest
     @Test(expected = WebApplicationException.class)
     public void updatePatientNoAccessReturnsForbiddenCode() throws ComponentLookupException
     {
-        when(this.access.hasAccess(Right.EDIT, this.userReference, this.patientReference)).thenReturn(false);
+        when(this.access.hasAccess(this.currentUser, Right.EDIT, this.patientReference)).thenReturn(false);
 
         Response response = this.component.updatePatient("json", EID, UPDATE);
         verify(this.logger).debug("Edit access denied to user [{}] on patient record [{}]", null, this.patient.getId());
@@ -376,11 +368,11 @@ public class DefaultPatientByExternalIdResourceImplTest
     @Test
     public void deletePatientNoAccessReturnsForbiddenCode()
     {
-        when(this.access.hasAccess(Right.DELETE, this.userReference, this.patientReference)).thenReturn(false);
+        when(this.access.hasAccess(this.currentUser, Right.DELETE, this.patientReference)).thenReturn(false);
 
         Response response = this.component.deletePatient(EID);
 
-        verify(this.logger).debug("Delete access denied to user [{}] on patient record [{}]", this.user,
+        verify(this.logger).debug("Delete access denied to user [{}] on patient record [{}]", this.currentUser,
             this.patient.getId());
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
     }
@@ -390,7 +382,7 @@ public class DefaultPatientByExternalIdResourceImplTest
     {
         doThrow(Exception.class).when(this.repository).delete(this.patient);
         when(this.repository.getByName(EID)).thenReturn(this.patient);
-        when(this.access.hasAccess(Right.DELETE, null, null)).thenReturn(true);
+        when(this.access.hasAccess(null, Right.DELETE, null)).thenReturn(true);
 
         WebApplicationException ex = null;
         try {
@@ -523,7 +515,7 @@ public class DefaultPatientByExternalIdResourceImplTest
     public void patchPatientUserHasNoEditAccessThrowsWebApplicationException()
     {
         try {
-            when(this.access.hasAccess(Right.EDIT, this.userReference, this.patientReference)).thenReturn(false);
+            when(this.access.hasAccess(this.currentUser, Right.EDIT, this.patientReference)).thenReturn(false);
             this.component.patchPatient(EMPTY_JSON, EID);
         } catch (final WebApplicationException ex) {
             Assert.assertEquals(Response.Status.FORBIDDEN.getStatusCode(), ex.getResponse().getStatus());

@@ -17,6 +17,7 @@
  */
 package org.phenotips.studies.family.rest.internal;
 
+import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyTools;
 import org.phenotips.studies.family.rest.FamiliesResource;
@@ -30,7 +31,6 @@ import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryManager;
 import org.xwiki.rest.XWikiResource;
-import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
@@ -78,7 +78,7 @@ public class DefaultFamiliesResourceImpl extends XWikiResource implements Famili
     private QueryManager queries;
 
     @Inject
-    private AuthorizationManager access;
+    private AuthorizationService access;
 
     @Inject
     private UserManager users;
@@ -102,7 +102,7 @@ public class DefaultFamiliesResourceImpl extends XWikiResource implements Famili
         this.logger.error("Importing new family from JSON via REST: {}", json);
 
         User currentUser = this.users.getCurrentUser();
-        if (!this.access.hasAccess(Right.EDIT, currentUser == null ? null : currentUser.getProfileDocument(),
+        if (!this.access.hasAccess(currentUser, Right.EDIT,
             this.currentResolver.resolve(Family.DATA_SPACE, EntityType.SPACE))) {
             throw new WebApplicationException(Status.UNAUTHORIZED);
         }
@@ -152,7 +152,6 @@ public class DefaultFamiliesResourceImpl extends XWikiResource implements Famili
             List<Object[]> records = query.execute();
 
             User currentUser = this.users.getCurrentUser();
-            DocumentReference userProfileDocument = (currentUser == null) ? null : currentUser.getProfileDocument();
 
             int total = 0;
             int skipped = 0;
@@ -166,7 +165,7 @@ public class DefaultFamiliesResourceImpl extends XWikiResource implements Famili
                     this.logger.debug("REST: Skipping family, misformatted data");
                     continue;
                 }
-                if (!hasViewRights(familyID, userProfileDocument)) {
+                if (!hasViewRights(familyID, currentUser)) {
                     this.logger.debug("REST: Skipping family, no view rights for the user");
                     continue;
                 }
@@ -214,7 +213,6 @@ public class DefaultFamiliesResourceImpl extends XWikiResource implements Famili
         }
     }
 
-
     private JSONObject getFullFamilyJSON(String familyID, Object[] summaryData, UriInfo uriInfo)
     {
         Family family = this.familyTools.getFamilyById(familyID);
@@ -255,10 +253,10 @@ public class DefaultFamiliesResourceImpl extends XWikiResource implements Famili
         return true;
     }
 
-    private boolean hasViewRights(String familyID, DocumentReference userProfileDocument)
+    private boolean hasViewRights(String familyID, User currentUser)
     {
         DocumentReference doc = this.stringResolver.resolve(String.valueOf(familyID), Family.DATA_SPACE);
-        if (!this.access.hasAccess(Right.VIEW, userProfileDocument, doc)) {
+        if (!this.access.hasAccess(currentUser, Right.VIEW, doc)) {
             return false;
         }
         return true;

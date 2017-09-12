@@ -25,16 +25,15 @@ import org.phenotips.data.rest.PatientsResource;
 import org.phenotips.data.rest.model.PatientSummary;
 import org.phenotips.data.rest.model.Patients;
 import org.phenotips.rest.Autolinker;
+import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryManager;
 import org.xwiki.rest.XWikiResource;
-import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
@@ -78,7 +77,7 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
     private QueryManager queries;
 
     @Inject
-    private AuthorizationManager access;
+    private AuthorizationService access;
 
     @Inject
     private UserManager users;
@@ -100,7 +99,7 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
         this.logger.debug("Importing new patient from JSON via REST: {}", json);
 
         final User currentUser = this.users.getCurrentUser();
-        if (!this.access.hasAccess(Right.EDIT, currentUser == null ? null : currentUser.getProfileDocument(),
+        if (!this.access.hasAccess(currentUser, Right.EDIT,
             this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
             throw new WebApplicationException(Status.UNAUTHORIZED);
         }
@@ -241,12 +240,11 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
     private Right getGrantedRight()
     {
         User currentUser = this.users.getCurrentUser();
-        DocumentReference currentUserProfile = currentUser == null ? null : currentUser.getProfileDocument();
         EntityReference dataSpace = this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE);
         Right grantedRight = Right.ILLEGAL;
-        if (this.access.hasAccess(Right.EDIT, currentUserProfile, dataSpace)) {
+        if (this.access.hasAccess(currentUser, Right.EDIT, dataSpace)) {
             grantedRight = Right.EDIT;
-        } else if (this.access.hasAccess(Right.VIEW, currentUserProfile, dataSpace)) {
+        } else if (this.access.hasAccess(currentUser, Right.VIEW, dataSpace)) {
             grantedRight = Right.VIEW;
         }
         return grantedRight;
