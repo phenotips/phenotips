@@ -17,14 +17,14 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.permissions.Visibility;
-
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.util.ArrayList;
@@ -43,29 +43,29 @@ import org.mockito.Mockito;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.store.XWikiHibernateBaseStore.HibernateCallback;
+import com.xpn.xwiki.store.XWikiHibernateBaseStore;
 import com.xpn.xwiki.store.XWikiHibernateStore;
 import com.xpn.xwiki.store.XWikiStoreInterface;
 import com.xpn.xwiki.store.migration.XWikiDBVersion;
 import com.xpn.xwiki.store.migration.hibernate.HibernateDataMigration;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the {@link R54590PhenoTips931DataMigration}.
+ * Tests for the {@link R71504PhenoTips3226DataMigration}.
  *
  * @version $Id$
  */
-public class R54692PhenoTips1378DataMigrationTest
+public class R71504PhenoTips3226DataMigrationTest
 {
     @Rule
     public final MockitoComponentMockingRule<HibernateDataMigration> mocker =
-        new MockitoComponentMockingRule<>(R54692PhenoTips1378DataMigration.class);
+        new MockitoComponentMockingRule<>(R71504PhenoTips3226DataMigration.class);
 
-    /** Sending an event with a non-patient document doesn't alter the document. */
+    /**
+     * Sending an event with a non-patient document doesn't alter the document.
+     */
     @Test
     public void hibernateMigrate() throws Exception
     {
@@ -79,34 +79,39 @@ public class R54692PhenoTips1378DataMigrationTest
         XWikiContext xc = mock(XWikiContext.class);
         when(ec.getProperty("xwikicontext")).thenReturn(xc);
         @SuppressWarnings("deprecation")
-        ArgumentCaptor<HibernateCallback<Object>> callbackCaptor = new ArgumentCaptor<>();
+        ArgumentCaptor<XWikiHibernateBaseStore.HibernateCallback<Object>> callbackCaptor =
+            new ArgumentCaptor<>();
         this.mocker.getComponentUnderTest().migrate();
         Mockito.verify(store).executeWrite(Matchers.same(xc), callbackCaptor.capture());
 
         XWiki xwiki = mock(XWiki.class);
         when(xc.getWiki()).thenReturn(xwiki);
-        HibernateCallback<Object> callback = callbackCaptor.getValue();
+        XWikiHibernateBaseStore.HibernateCallback<Object> callback = callbackCaptor.getValue();
         Assert.assertNotNull(callback);
         Session session = mock(Session.class);
         Query q = mock(Query.class);
         when(session.createQuery(Matchers.anyString())).thenReturn(q);
         List<String> docs = new ArrayList<>();
-        docs.add("data.hasNoVisibility");
+        docs.add("data.ProperCreator");
+        docs.add("data.NullDoc");
         when(q.list()).thenReturn(docs);
         DocumentReferenceResolver<String> resolver =
             this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
+        EntityReference rightsClass =
+            new EntityReference("XWikiRights", EntityType.DOCUMENT, new EntityReference("XWiki", EntityType.SPACE));
 
-        DocumentReference r1 = new DocumentReference("xwiki", "data", "hasNoVisibility");
-        when(resolver.resolve("data.hasNoVisibility")).thenReturn(r1);
+        DocumentReference r1 = new DocumentReference("xwiki", "data", "ProperCreator");
+        when(resolver.resolve("data.ProperCreator")).thenReturn(r1);
         XWikiDocument p1 = mock(XWikiDocument.class);
         when(xwiki.getDocument(r1, xc)).thenReturn(p1);
-        BaseObject o1 = mock(BaseObject.class);
-        when(p1.newXObject(Visibility.CLASS_REFERENCE, xc)).thenReturn(o1);
+        when(p1.removeXObjects(rightsClass)).thenReturn(true);
         callback.doInHibernate(session);
-        verify(o1).set("visibility", "private", xc);
+        Assert.assertTrue(!p1.getXClasses(xc).contains("XWikiRights"));
     }
 
-    /** Although no migration exception should be thrown during migrations, such an exception won't break the code. */
+    /**
+     * Although no migration exception should be thrown during migrations, such an exception won't break the code.
+     */
     @Test
     public void hibernateMigrateIgnoresMigrationErrors() throws Exception
     {
@@ -120,13 +125,14 @@ public class R54692PhenoTips1378DataMigrationTest
         XWikiContext xc = mock(XWikiContext.class);
         when(ec.getProperty("xwikicontext")).thenReturn(xc);
         @SuppressWarnings("deprecation")
-        ArgumentCaptor<HibernateCallback<Object>> callbackCaptor = new ArgumentCaptor<>();
+        ArgumentCaptor<XWikiHibernateBaseStore.HibernateCallback<Object>> callbackCaptor =
+            new ArgumentCaptor<>();
         this.mocker.getComponentUnderTest().migrate();
         Mockito.verify(store).executeWrite(Matchers.same(xc), callbackCaptor.capture());
 
         XWiki xwiki = mock(XWiki.class);
         when(xc.getWiki()).thenReturn(xwiki);
-        HibernateCallback<Object> callback = callbackCaptor.getValue();
+        XWikiHibernateBaseStore.HibernateCallback<Object> callback = callbackCaptor.getValue();
         Assert.assertNotNull(callback);
         Session session = mock(Session.class);
         Query q = mock(Query.class);
@@ -136,19 +142,22 @@ public class R54692PhenoTips1378DataMigrationTest
         when(q.list()).thenReturn(docs);
         DocumentReferenceResolver<String> resolver =
             this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
+        EntityReference rightsClass =
+            new EntityReference("XWikiRights", EntityType.DOCUMENT, new EntityReference("XWiki", EntityType.SPACE));
 
         DocumentReference r2 = new DocumentReference("xwiki", "data", "ThrowsDME");
         when(resolver.resolve("data.ThrowsDME")).thenReturn(r2);
         XWikiDocument p2 = mock(XWikiDocument.class);
         when(xwiki.getDocument(r2, xc)).thenReturn(p2);
-        BaseObject o2 = mock(BaseObject.class);
-        when(p2.newXObject(Visibility.CLASS_REFERENCE, xc)).thenReturn(o2);
+        when(p2.removeXObjects(rightsClass)).thenReturn(true);
         when(cm.getInstance(XWikiStoreInterface.class,
             "hibernate")).thenThrow(new ComponentLookupException("Nope"));
         callback.doInHibernate(session);
     }
 
-    /** Unreadable data doesn't affect the migrator. */
+    /**
+     * Unreadable data doesn't affect the migrator.
+     */
     @Test
     public void hibernateMigrateIgnoresMissingDocuments() throws Exception
     {
@@ -162,13 +171,14 @@ public class R54692PhenoTips1378DataMigrationTest
         XWikiContext xc = mock(XWikiContext.class);
         when(ec.getProperty("xwikicontext")).thenReturn(xc);
         @SuppressWarnings("deprecation")
-        ArgumentCaptor<HibernateCallback<Object>> callbackCaptor = new ArgumentCaptor<>();
+        ArgumentCaptor<XWikiHibernateBaseStore.HibernateCallback<Object>> callbackCaptor =
+            new ArgumentCaptor<>();
         this.mocker.getComponentUnderTest().migrate();
         Mockito.verify(store).executeWrite(Matchers.same(xc), callbackCaptor.capture());
 
         XWiki xwiki = mock(XWiki.class);
         when(xc.getWiki()).thenReturn(xwiki);
-        HibernateCallback<Object> callback = callbackCaptor.getValue();
+        XWikiHibernateBaseStore.HibernateCallback<Object> callback = callbackCaptor.getValue();
         Assert.assertNotNull(callback);
         Session session = mock(Session.class);
         Query q = mock(Query.class);
@@ -179,25 +189,31 @@ public class R54692PhenoTips1378DataMigrationTest
         callback.doInHibernate(session);
     }
 
-    /** Non empty description. */
+    /**
+     * Non empty description.
+     */
     @Test
     public void getDescription() throws Exception
     {
         Assert.assertTrue(StringUtils.isNotBlank(this.mocker.getComponentUnderTest().getDescription()));
     }
 
-    /** Non empty name. */
+    /**
+     * Non empty name.
+     */
     @Test
     public void getName() throws Exception
     {
         Assert.assertTrue(StringUtils.isNotBlank(this.mocker.getComponentUnderTest().getName()));
     }
 
-    /** Correct version number. */
+    /**
+     * Correct version number.
+     */
     @Test
     public void getVersion() throws Exception
     {
-        Assert.assertEquals(54692, this.mocker.getComponentUnderTest().getVersion().getVersion());
+        Assert.assertEquals(71504, this.mocker.getComponentUnderTest().getVersion().getVersion());
     }
 
     /**

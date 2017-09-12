@@ -97,7 +97,7 @@ public abstract class AbstractAccessLevel implements AccessLevel
         if (o instanceof AbstractAccessLevel) {
             return this.permissiveness - ((AbstractAccessLevel) o).permissiveness;
         }
-        return Integer.MIN_VALUE;
+        return Integer.MAX_VALUE;
     }
 
     @Override

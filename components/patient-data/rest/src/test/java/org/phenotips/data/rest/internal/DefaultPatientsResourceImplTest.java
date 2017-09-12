@@ -24,19 +24,18 @@ import org.phenotips.data.rest.PatientsResource;
 import org.phenotips.data.rest.model.PatientSummary;
 import org.phenotips.data.rest.model.Patients;
 import org.phenotips.rest.Autolinker;
+import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.query.internal.DefaultQuery;
-import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
@@ -78,7 +77,7 @@ public class DefaultPatientsResourceImplTest
 {
     @Rule
     public MockitoComponentMockingRule<PatientsResource> mocker =
-        new MockitoComponentMockingRule<PatientsResource>(DefaultPatientsResourceImpl.class);
+        new MockitoComponentMockingRule<>(DefaultPatientsResourceImpl.class);
 
     @Mock
     private User currentUser;
@@ -98,11 +97,9 @@ public class DefaultPatientsResourceImplTest
 
     private QueryManager queries;
 
-    private AuthorizationManager access;
+    private AuthorizationService access;
 
     private UserManager users;
-
-    private DocumentReference userProfileDocument;
 
     private URI uri;
 
@@ -125,12 +122,11 @@ public class DefaultPatientsResourceImplTest
 
         this.repository = this.mocker.getInstance(PatientRepository.class);
         this.users = this.mocker.getInstance(UserManager.class);
-        this.access = this.mocker.getInstance(AuthorizationManager.class);
+        this.access = this.mocker.getInstance(AuthorizationService.class);
         this.patientsResource = this.mocker.getComponentUnderTest();
         this.logger = this.mocker.getMockedLogger();
         this.queries = this.mocker.getInstance(QueryManager.class);
         this.uri = new URI("http://uri");
-        this.userProfileDocument = new DocumentReference("wiki", "user", "00000001");
         this.factory = this.mocker.getInstance(DomainObjectFactory.class);
 
         doReturn(this.uri).when(this.uriInfo).getBaseUri();
@@ -139,7 +135,6 @@ public class DefaultPatientsResourceImplTest
 
         doReturn("P00000001").when(this.patient).getId();
         doReturn(this.currentUser).when(this.users).getCurrentUser();
-        doReturn(this.userProfileDocument).when(this.currentUser).getProfileDocument();
 
         Autolinker autolinker = this.mocker.getInstance(Autolinker.class);
         when(autolinker.forResource(any(Class.class), any(UriInfo.class))).thenReturn(autolinker);
@@ -155,8 +150,7 @@ public class DefaultPatientsResourceImplTest
     public void addPatientUserDoesNotHaveAccess()
     {
         WebApplicationException exception = null;
-        doReturn(false).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
-            any(EntityReference.class));
+        doReturn(false).when(this.access).hasAccess(any(User.class), eq(Right.EDIT), any(EntityReference.class));
         try {
             this.patientsResource.add("");
         } catch (WebApplicationException ex) {
@@ -182,8 +176,7 @@ public class DefaultPatientsResourceImplTest
     {
         JSONObject json = new JSONObject();
         Exception exception = new NullPointerException();
-        doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
-            any(EntityReference.class));
+        doReturn(true).when(this.access).hasAccess(any(User.class), eq(Right.EDIT), any(EntityReference.class));
         doThrow(exception).when(this.repository).create();
         Response response = this.patientsResource.add(json.toString());
         Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
@@ -195,8 +188,7 @@ public class DefaultPatientsResourceImplTest
     {
         JSONArray json = new JSONArray("[{}, {}, {}]");
         Exception exception = new NullPointerException();
-        doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
-            any(EntityReference.class));
+        doReturn(true).when(this.access).hasAccess(any(User.class), eq(Right.EDIT), any(EntityReference.class));
         doThrow(exception).when(this.repository).create();
         Response response = this.patientsResource.add(json.toString());
         Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
@@ -207,8 +199,7 @@ public class DefaultPatientsResourceImplTest
     public void addPatientsAsJSONEmptyArray()
     {
         JSONArray json = new JSONArray();
-        doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
-            any(EntityReference.class));
+        doReturn(true).when(this.access).hasAccess(any(User.class), eq(Right.EDIT), any(EntityReference.class));
         doReturn(this.patient).when(this.repository).create();
         Response response = this.patientsResource.add(json.toString());
         Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
@@ -218,8 +209,7 @@ public class DefaultPatientsResourceImplTest
     @Test
     public void addPatientAsJSON()
     {
-        doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
-            any(EntityReference.class));
+        doReturn(true).when(this.access).hasAccess(any(User.class), eq(Right.EDIT), any(EntityReference.class));
         doReturn(this.patient).when(this.repository).create();
         JSONObject jsonPatient = new JSONObject();
         Response response = this.patientsResource.add(jsonPatient.toString());
@@ -230,8 +220,7 @@ public class DefaultPatientsResourceImplTest
     @Test
     public void addPatientsAsJSON()
     {
-        doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
-            any(EntityReference.class));
+        doReturn(true).when(this.access).hasAccess(any(User.class), eq(Right.EDIT), any(EntityReference.class));
         doReturn(this.patient).when(this.repository).create();
         JSONArray jsonPatients = new JSONArray().put(new JSONObject()).put(new JSONObject()).put(new JSONObject());
         Response response = this.patientsResource.add(jsonPatients.toString());
@@ -294,8 +283,7 @@ public class DefaultPatientsResourceImplTest
         doReturn(query).when(this.queries).createQuery(anyString(), anyString());
         doReturn(query).when(query).bindValue(anyString(), anyString());
         doReturn(patientList).when(query).execute();
-        doReturn(false).when(this.access).hasAccess(eq(Right.VIEW), any(DocumentReference.class),
-            any(EntityReference.class));
+        doReturn(false).when(this.access).hasAccess(any(User.class), eq(Right.VIEW), any(EntityReference.class));
         doReturn(null).when(this.factory).createPatientSummary(patientSummaryData, this.uriInfo);
         Patients result = this.patientsResource.listPatients(0, 30, "id", "asc");
         verify(this.queries).createQuery(
@@ -316,8 +304,7 @@ public class DefaultPatientsResourceImplTest
         doReturn(query).when(this.queries).createQuery(anyString(), anyString());
         doReturn(query).when(query).bindValue(anyString(), anyString());
         doReturn(patientList).when(query).execute();
-        doReturn(true).when(this.access).hasAccess(eq(Right.VIEW), any(DocumentReference.class),
-            any(EntityReference.class));
+        doReturn(true).when(this.access).hasAccess(any(User.class), eq(Right.VIEW), any(EntityReference.class));
         doReturn(new PatientSummary()).when(this.factory).createPatientSummary(any(Object[].class), eq(this.uriInfo));
         Patients result = this.patientsResource.listPatients(0, 30, "id", "asc");
         verify(this.queries).createQuery(
@@ -340,8 +327,7 @@ public class DefaultPatientsResourceImplTest
         doReturn(query).when(this.queries).createQuery(anyString(), anyString());
         doReturn(query).when(query).bindValue(anyString(), anyString());
         doReturn(patientList).when(query).execute();
-        doReturn(true).when(this.access).hasAccess(eq(Right.VIEW), any(DocumentReference.class),
-            any(EntityReference.class));
+        doReturn(true).when(this.access).hasAccess(any(User.class), eq(Right.VIEW), any(EntityReference.class));
         doReturn(new PatientSummary()).when(this.factory).createPatientSummary(any(Object[].class), eq(this.uriInfo));
 
         Patients allPatients = this.patientsResource.listPatients(0, 30, "id", "asc");
@@ -369,8 +355,7 @@ public class DefaultPatientsResourceImplTest
         doReturn(query).when(this.queries).createQuery(anyString(), anyString());
         doReturn(query).when(query).bindValue(anyString(), anyString());
         doReturn(patientList).when(query).execute();
-        doReturn(true).when(this.access).hasAccess(eq(Right.VIEW), any(DocumentReference.class),
-            any(EntityReference.class));
+        doReturn(true).when(this.access).hasAccess(any(User.class), eq(Right.VIEW), any(EntityReference.class));
         doReturn(new PatientSummary()).when(this.factory).createPatientSummary(any(Object[].class), eq(this.uriInfo));
         Patients result = this.patientsResource.listPatients(0, 30, "id", "asc");
         Assert.assertEquals(15, result.getPatientSummaries().size());

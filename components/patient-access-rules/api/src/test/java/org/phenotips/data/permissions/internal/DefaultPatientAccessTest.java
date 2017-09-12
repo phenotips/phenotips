@@ -53,8 +53,11 @@ public class DefaultPatientAccessTest
     /** The user used as the owner of the patient. */
     private static final DocumentReference OWNER = new DocumentReference("xwiki", "XWiki", "padams");
 
-    /** The user used as the owner of the patient. */
+    /** The owner of the patient, when owned by OWNER. */
     private static final Owner OWNER_OBJECT = new DefaultOwner(OWNER, mock(PatientAccessHelper.class));
+
+    /** The owner of the patient, when owned by guest. */
+    private static final Owner GUEST_OWNER_OBJECT = new DefaultOwner(null, mock(PatientAccessHelper.class));
 
     /** The user used as a collaborator. */
     private static final DocumentReference COLLABORATOR = new DocumentReference("xwiki", "XWiki", "hmccoy");
@@ -84,6 +87,17 @@ public class DefaultPatientAccessTest
         Assert.assertSame(OWNER, pa.getOwner().getUser());
     }
 
+    @Test
+    public void getOwnerWithGuestOwner() throws ComponentLookupException
+    {
+        Patient p = mock(Patient.class);
+        PatientAccessHelper h = mock(PatientAccessHelper.class);
+        when(h.getOwner(p)).thenReturn(GUEST_OWNER_OBJECT);
+        PatientAccess pa = new DefaultPatientAccess(p, h, mock(PermissionsManager.class));
+        Assert.assertSame(GUEST_OWNER_OBJECT, pa.getOwner());
+        Assert.assertSame(null, pa.getOwner().getUser());
+    }
+
     /** Basic tests for {@link PatientAccess#isOwner()}. */
     @Test
     public void isOwner() throws ComponentLookupException
@@ -110,8 +124,32 @@ public class DefaultPatientAccessTest
         PatientAccess pa = new DefaultPatientAccess(p, h, mock(PermissionsManager.class));
         Assert.assertFalse(pa.isOwner());
 
-        // False even if the owner is guest as well
+        // False even if the owner cannot be computed
         when(h.getOwner(p)).thenReturn(null);
+        Assert.assertFalse(pa.isOwner());
+    }
+
+    /** {@link PatientAccess#isOwner()} with guest as the current user returns true if the owner is also guest. */
+    @Test
+    public void isOwnerWithGuestOwnerForGuests() throws ComponentLookupException
+    {
+        Patient p = mock(Patient.class);
+        PatientAccessHelper h = mock(PatientAccessHelper.class);
+        when(h.getOwner(p)).thenReturn(GUEST_OWNER_OBJECT);
+        when(h.getCurrentUser()).thenReturn(null);
+        PatientAccess pa = new DefaultPatientAccess(p, h, mock(PermissionsManager.class));
+        Assert.assertTrue(pa.isOwner());
+    }
+
+    /** {@link PatientAccess#isOwner()} for guest owners and a non-guest user returns false. */
+    @Test
+    public void isOwnerWithGuestOwnerForOtherUsers() throws ComponentLookupException
+    {
+        Patient p = mock(Patient.class);
+        PatientAccessHelper h = mock(PatientAccessHelper.class);
+        when(h.getOwner(p)).thenReturn(GUEST_OWNER_OBJECT);
+        when(h.getCurrentUser()).thenReturn(OTHER_USER);
+        PatientAccess pa = new DefaultPatientAccess(p, h, mock(PermissionsManager.class));
         Assert.assertFalse(pa.isOwner());
     }
 
@@ -184,7 +222,7 @@ public class DefaultPatientAccessTest
         Patient p = mock(Patient.class);
         PatientAccessHelper h = mock(PatientAccessHelper.class);
         PatientAccess pa = new DefaultPatientAccess(p, h, mock(PermissionsManager.class));
-        Collection<Collaborator> collaborators = new HashSet<Collaborator>();
+        Collection<Collaborator> collaborators = new HashSet<>();
         when(h.getCollaborators(p)).thenReturn(collaborators);
         Assert.assertSame(collaborators, pa.getCollaborators());
     }
@@ -196,12 +234,14 @@ public class DefaultPatientAccessTest
         Patient p = mock(Patient.class);
         PatientAccessHelper h = mock(PatientAccessHelper.class);
         PatientAccess pa = new DefaultPatientAccess(p, h, mock(PermissionsManager.class));
-        Collection<Collaborator> collaborators = new HashSet<Collaborator>();
+        Collection<Collaborator> collaborators = new HashSet<>();
         when(h.setCollaborators(p, collaborators)).thenReturn(true);
         Assert.assertTrue(pa.updateCollaborators(collaborators));
     }
 
-    /** Basic tests for {@link PatientAccess#addCollaborator(org.xwiki.model.reference.EntityReference, AccessLevel)}. */
+    /**
+     * Basic tests for {@link PatientAccess#addCollaborator(org.xwiki.model.reference.EntityReference, AccessLevel)}.
+     */
     @Test
     public void addCollaborator() throws ComponentLookupException
     {
@@ -228,7 +268,7 @@ public class DefaultPatientAccessTest
         Assert.assertTrue(pa.removeCollaborator(collaborator));
     }
 
-    /** {@link PatientAccess#getAccessLevel()} returns the default visibility access for guest users. */
+    /** {@link PatientAccess#getAccessLevel()} returns no access for guest users. */
     @Test
     public void getAccessLevelWithGuestUser() throws ComponentLookupException
     {
@@ -236,13 +276,15 @@ public class DefaultPatientAccessTest
         PatientAccessHelper helper = mock(PatientAccessHelper.class);
         PermissionsManager manager = mock(PermissionsManager.class);
         PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(null);
+        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
         when(helper.getCurrentUser()).thenReturn(null);
         Visibility publicV = mock(Visibility.class);
         when(helper.getVisibility(p)).thenReturn(publicV);
         AccessLevel view = new ViewAccessLevel();
         when(publicV.getDefaultAccessLevel()).thenReturn(view);
-        Assert.assertSame(view, pa.getAccessLevel());
+        AccessLevel none = new NoAccessLevel();
+        when(manager.resolveAccessLevel("none")).thenReturn(none);
+        Assert.assertSame(none, pa.getAccessLevel());
     }
 
     /** {@link PatientAccess#getAccessLevel()} returns the default visibility access for guest users. */
@@ -253,13 +295,33 @@ public class DefaultPatientAccessTest
         PatientAccessHelper helper = mock(PatientAccessHelper.class);
         PermissionsManager manager = mock(PermissionsManager.class);
         PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(null);
+        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
         when(helper.getCurrentUser()).thenReturn(null);
         Visibility privateV = mock(Visibility.class);
         when(helper.getVisibility(p)).thenReturn(privateV);
         AccessLevel none = new NoAccessLevel();
         when(privateV.getDefaultAccessLevel()).thenReturn(none);
+        when(manager.resolveAccessLevel("none")).thenReturn(none);
         Assert.assertSame(none, pa.getAccessLevel());
+    }
+
+    /** {@link PatientAccess#getAccessLevel()} returns owner access for guest users and guest owner. */
+    @Test
+    public void getAccessLevelWithGuestUserAndGuestOwner() throws ComponentLookupException
+    {
+        Patient p = mock(Patient.class);
+        PatientAccessHelper helper = mock(PatientAccessHelper.class);
+        PermissionsManager manager = mock(PermissionsManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
+        when(helper.getOwner(p)).thenReturn(GUEST_OWNER_OBJECT);
+        when(helper.getCurrentUser()).thenReturn(null);
+        Visibility privateV = mock(Visibility.class);
+        when(helper.getVisibility(p)).thenReturn(privateV);
+        AccessLevel none = new NoAccessLevel();
+        when(privateV.getDefaultAccessLevel()).thenReturn(none);
+        AccessLevel owner = new OwnerAccessLevel();
+        when(manager.resolveAccessLevel("owner")).thenReturn(owner);
+        Assert.assertSame(owner, pa.getAccessLevel());
     }
 
     /** {@link PatientAccess#getAccessLevel()} returns Owner access for the owner. */
@@ -424,6 +486,50 @@ public class DefaultPatientAccessTest
         Assert.assertTrue(pa.hasAccessLevel(COLLABORATOR, edit));
         Assert.assertFalse(pa.hasAccessLevel(COLLABORATOR, new ManageAccessLevel()));
         Assert.assertFalse(pa.hasAccessLevel(COLLABORATOR, new OwnerAccessLevel()));
+    }
+
+    @Test
+    public void hasAccessLevelForGuestUsers()
+    {
+        Patient p = mock(Patient.class);
+        PatientAccessHelper helper = mock(PatientAccessHelper.class);
+        PermissionsManager manager = mock(PermissionsManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
+        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
+        when(helper.getCurrentUser()).thenReturn(null);
+        AccessLevel edit = new EditAccessLevel();
+        when(helper.getAccessLevel(p, COLLABORATOR)).thenReturn(edit);
+        Visibility publicV = mock(Visibility.class);
+        when(helper.getVisibility(p)).thenReturn(publicV);
+        AccessLevel view = new ViewAccessLevel();
+        when(publicV.getDefaultAccessLevel()).thenReturn(view);
+        when(manager.resolveAccessLevel("none")).thenReturn(new NoAccessLevel());
+        Assert.assertFalse(pa.hasAccessLevel(view));
+        Assert.assertFalse(pa.hasAccessLevel(edit));
+        Assert.assertFalse(pa.hasAccessLevel(new ManageAccessLevel()));
+        Assert.assertFalse(pa.hasAccessLevel(new OwnerAccessLevel()));
+    }
+
+    @Test
+    public void hasAccessLevelForGuestUsersAsOwners()
+    {
+        Patient p = mock(Patient.class);
+        PatientAccessHelper helper = mock(PatientAccessHelper.class);
+        PermissionsManager manager = mock(PermissionsManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
+        when(helper.getOwner(p)).thenReturn(GUEST_OWNER_OBJECT);
+        when(helper.getCurrentUser()).thenReturn(null);
+        AccessLevel edit = new EditAccessLevel();
+        Visibility publicV = mock(Visibility.class);
+        when(helper.getVisibility(p)).thenReturn(publicV);
+        AccessLevel view = new ViewAccessLevel();
+        when(publicV.getDefaultAccessLevel()).thenReturn(view);
+        when(manager.resolveAccessLevel("none")).thenReturn(new NoAccessLevel());
+        when(manager.resolveAccessLevel("owner")).thenReturn(new OwnerAccessLevel());
+        Assert.assertTrue(pa.hasAccessLevel(view));
+        Assert.assertTrue(pa.hasAccessLevel(edit));
+        Assert.assertTrue(pa.hasAccessLevel(new ManageAccessLevel()));
+        Assert.assertTrue(pa.hasAccessLevel(new OwnerAccessLevel()));
     }
 
     /** {@link PatientAccess#toString()} is customized. */

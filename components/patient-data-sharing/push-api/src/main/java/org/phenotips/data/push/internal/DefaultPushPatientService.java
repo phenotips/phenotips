@@ -30,13 +30,13 @@ import org.phenotips.data.push.PushServerSendPatientResponse;
 import org.phenotips.data.securestorage.PatientPushedToInfo;
 import org.phenotips.data.securestorage.RemoteLoginData;
 import org.phenotips.data.securestorage.SecureStorageManager;
+import org.phenotips.security.authorization.AuthorizationService;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
+import org.xwiki.users.UserManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -89,11 +89,11 @@ public class DefaultPushPatientService implements PushPatientService
 
     /** Used for checking access rights. */
     @Inject
-    private AuthorizationManager access;
+    private AuthorizationService access;
 
     /** Used for obtaining the current user. */
     @Inject
-    private DocumentAccessBridge bridge;
+    private UserManager users;
 
     protected RemoteLoginData getStoredData(String remoteServerIdentifier)
     {
@@ -213,7 +213,7 @@ public class DefaultPushPatientService implements PushPatientService
         }
 
         // FIXME: Access rights should be checked in the script service, not here
-        if (!this.access.hasAccess(Right.toRight(accessLevelName), this.bridge.getCurrentUserReference(),
+        if (!this.access.hasAccess(this.users.getCurrentUser(), Right.toRight(accessLevelName),
             patient.getDocumentReference())) {
             this.logger.warn("Can't access patient [{}] at level [{}]: access level violation", patientID,
                 accessLevelName);

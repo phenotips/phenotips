@@ -65,7 +65,7 @@ public class R54590PhenoTips931DataMigrationTest
 {
     @Rule
     public final MockitoComponentMockingRule<HibernateDataMigration> mocker =
-        new MockitoComponentMockingRule<HibernateDataMigration>(R54590PhenoTips931DataMigration.class);
+        new MockitoComponentMockingRule<>(R54590PhenoTips931DataMigration.class);
 
     /** Sending an event with a non-patient document doesn't alter the document. */
     @Test
@@ -81,7 +81,7 @@ public class R54590PhenoTips931DataMigrationTest
         XWikiContext xc = mock(XWikiContext.class);
         when(ec.getProperty("xwikicontext")).thenReturn(xc);
         @SuppressWarnings("deprecation")
-        ArgumentCaptor<HibernateCallback<Object>> callbackCaptor = new ArgumentCaptor<HibernateCallback<Object>>();
+        ArgumentCaptor<HibernateCallback<Object>> callbackCaptor = new ArgumentCaptor<>();
         this.mocker.getComponentUnderTest().migrate();
         Mockito.verify(store).executeWrite(Matchers.same(xc), callbackCaptor.capture());
 
@@ -92,7 +92,7 @@ public class R54590PhenoTips931DataMigrationTest
         Session session = mock(Session.class);
         Query q = mock(Query.class);
         when(session.createQuery(Matchers.anyString())).thenReturn(q);
-        List<String> docs = new ArrayList<String>();
+        List<String> docs = new ArrayList<>();
         docs.add("data.ProperCreator");
         docs.add("data.NullDoc");
         docs.add("data.ThrowsException");

@@ -22,6 +22,7 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.rest.Autolinker;
+import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -29,7 +30,6 @@ import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
@@ -41,7 +41,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Provider;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -103,13 +102,9 @@ public class DefaultPatientResourceImplTest
 
     private PatientRepository repository;
 
-    private AuthorizationManager access;
+    private AuthorizationService access;
 
     private DocumentReference patientDocument;
-
-    private DocumentReference userProfileDocument;
-
-    private XWikiContext context;
 
     private DefaultPatientResourceImpl patientResource;
 
@@ -128,26 +123,21 @@ public class DefaultPatientResourceImplTest
 
         this.logger = this.mocker.getMockedLogger();
         this.repository = this.mocker.getInstance(PatientRepository.class);
-        this.access = this.mocker.getInstance(AuthorizationManager.class);
+        this.access = this.mocker.getInstance(AuthorizationService.class);
 
         final UserManager users = this.mocker.getInstance(UserManager.class);
-        this.userProfileDocument = new DocumentReference("wiki", "user", PATIENT_ID);
         doReturn(this.currentUser).when(users).getCurrentUser();
-        doReturn(this.userProfileDocument).when(this.currentUser).getProfileDocument();
 
         this.patientDocument = new DocumentReference("wiki", "data", PATIENT_ID);
         doReturn(this.patient).when(this.repository).get(PATIENT_ID);
         doReturn(this.patientDocument).when(this.patient).getDocumentReference();
-        doReturn(true).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
+        doReturn(true).when(this.access).hasAccess(this.currentUser, Right.EDIT, this.patientDocument);
 
         when(this.repository.get(PATIENT_ID)).thenReturn(this.patient);
         when(this.patient.getId()).thenReturn(PATIENT_ID);
 
         doReturn(new URI(URI_STRING)).when(this.uriInfo).getRequestUri();
         ReflectionUtils.setFieldValue(this.patientResource, "uriInfo", this.uriInfo);
-
-        Provider<XWikiContext> provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
-        this.context = provider.get();
 
         Autolinker autolinker = this.mocker.getInstance(Autolinker.class);
         when(autolinker.forResource(any(Class.class), any(UriInfo.class))).thenReturn(autolinker);
@@ -174,7 +164,7 @@ public class DefaultPatientResourceImplTest
     @Test
     public void getPatientRejectsRequestWhenUserDoesNotHaveAccess()
     {
-        doReturn(false).when(this.access).hasAccess(Right.VIEW, this.userProfileDocument, this.patientDocument);
+        doReturn(false).when(this.access).hasAccess(this.currentUser, Right.VIEW, this.patientDocument);
 
         Response response = this.patientResource.getPatient(PATIENT_ID);
 
@@ -186,7 +176,7 @@ public class DefaultPatientResourceImplTest
     @Test
     public void getPatientNormalBehaviour()
     {
-        doReturn(true).when(this.access).hasAccess(Right.VIEW, this.userProfileDocument, this.patientDocument);
+        doReturn(true).when(this.access).hasAccess(this.currentUser, Right.VIEW, this.patientDocument);
         doReturn(new JSONObject()).when(this.patient).toJSON();
 
         Response response = this.patientResource.getPatient(PATIENT_ID);
@@ -233,7 +223,7 @@ public class DefaultPatientResourceImplTest
     @Test
     public void updatePatientRejectsRequestWhenUserDoesNotHaveAccess()
     {
-        doReturn(false).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
+        doReturn(false).when(this.access).hasAccess(this.currentUser, Right.EDIT, this.patientDocument);
 
         WebApplicationException ex = null;
         try {
@@ -321,7 +311,7 @@ public class DefaultPatientResourceImplTest
     @Test
     public void deletePatientRejectsRequestWhenUserDoesNotHaveAccess()
     {
-        doReturn(false).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
+        doReturn(false).when(this.access).hasAccess(this.currentUser, Right.DELETE, this.patientDocument);
 
         Response response = this.patientResource.deletePatient(PATIENT_ID);
 
@@ -333,7 +323,7 @@ public class DefaultPatientResourceImplTest
     @Test
     public void deletePatientCatchesException() throws WebApplicationException
     {
-        doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
+        doReturn(true).when(this.access).hasAccess(this.currentUser, Right.DELETE, this.patientDocument);
         doThrow(Exception.class).when(this.repository).delete(this.patient);
 
         WebApplicationException ex = null;
@@ -352,7 +342,7 @@ public class DefaultPatientResourceImplTest
     @Test
     public void deletePatientNormalBehaviour() throws WebApplicationException
     {
-        doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
+        doReturn(true).when(this.access).hasAccess(this.currentUser, Right.DELETE, this.patientDocument);
 
         Response response = this.patientResource.deletePatient(PATIENT_ID);
 
@@ -444,7 +434,7 @@ public class DefaultPatientResourceImplTest
     public void patchPatientUserHasNoEditAccessThrowsWebApplicationException()
     {
         try {
-            when(this.access.hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument)).thenReturn(false);
+            when(this.access.hasAccess(this.currentUser, Right.EDIT, this.patientDocument)).thenReturn(false);
             this.patientResource.patchPatient(EMPTY_JSON, PATIENT_ID);
         } catch (final WebApplicationException ex) {
             Assert.assertEquals(Status.FORBIDDEN.getStatusCode(), ex.getResponse().getStatus());

@@ -358,6 +358,10 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     @Override
     public String getType(EntityReference userOrGroup)
     {
+        if (userOrGroup == null) {
+            // Guest user
+            return "user";
+        }
         try {
             XWikiDocument doc = (XWikiDocument) this.bridge.getDocument((DocumentReference) userOrGroup);
             if (doc.getXObject(USER_CLASS) != null) {

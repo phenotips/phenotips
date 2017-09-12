@@ -18,6 +18,7 @@
 package org.phenotips.studies.family.rest.internal;
 
 import org.phenotips.rest.Autolinker;
+import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.FamilyTools;
@@ -25,7 +26,6 @@ import org.phenotips.studies.family.rest.FamilyResource;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rest.XWikiResource;
-import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
@@ -61,7 +61,7 @@ public class DefaultFamilyResourceImpl extends XWikiResource implements FamilyRe
     private FamilyRepository repository;
 
     @Inject
-    private AuthorizationManager access;
+    private AuthorizationService access;
 
     @Inject
     private UserManager users;
@@ -82,8 +82,7 @@ public class DefaultFamilyResourceImpl extends XWikiResource implements FamilyRe
             return Response.status(Status.NOT_FOUND).build();
         }
         User currentUser = this.users.getCurrentUser();
-        if (!this.access.hasAccess(Right.VIEW, currentUser == null ? null : currentUser.getProfileDocument(),
-            family.getDocumentReference())) {
+        if (!this.access.hasAccess(currentUser, Right.VIEW, family.getDocumentReference())) {
             this.logger.error("View access denied to user [{}] on family record [{}]", currentUser, id);
             return Response.status(Status.FORBIDDEN).build();
         }

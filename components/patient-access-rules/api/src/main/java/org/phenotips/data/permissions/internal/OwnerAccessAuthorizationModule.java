@@ -15,70 +15,75 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.recordLocking.internal.authorization;
+package org.phenotips.data.permissions.internal;
 
-import org.phenotips.Constants;
+import org.phenotips.data.Patient;
+import org.phenotips.data.PatientRepository;
+import org.phenotips.data.permissions.AccessLevel;
+import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
- * An authorization module to check if a given Patient Document has a lock on it. Will return false if a lock is found
- * regardless of which user is trying to edit the document.
+ * Implementation that allows all document access to the owner of a patient.
  *
  * @version $Id$
- * @since 1.2M5
+ * @since 1.4
  */
 @Component
-@Named("locked")
+@Named("owner-access")
 @Singleton
-public class LockedAuthorizationModule implements AuthorizationModule
+public class OwnerAccessAuthorizationModule implements AuthorizationModule
 {
-    /** The XClass used for patient lock objects. */
-    private EntityReference lockClassReference = new EntityReference("PatientLock", EntityType.DOCUMENT,
-        Constants.CODE_SPACE_REFERENCE);
-
-    /** Provides access to the current context. */
+    /** Checks to see if a document is a patient. */
     @Inject
-    private Provider<XWikiContext> contextProvider;
+    private PatientRepository patientRepository;
+
+    /** Checks to see if the user is the owner. */
+    @Inject
+    private PermissionsManager manager;
+
+    /** Minimal access level for granting access. */
+    @Inject
+    @Named("owner")
+    private AccessLevel ownerAccess;
 
     @Override
     public int getPriority()
     {
-        return 1000;
+        return 400;
     }
 
     @Override
     public Boolean hasAccess(User user, Right access, EntityReference entity)
     {
-        if (!(entity instanceof DocumentReference)) {
+        if (!ObjectUtils.allNotNull(access, entity) || access.getTargetedEntityType() == null
+            || !access.getTargetedEntityType().contains(EntityType.DOCUMENT)) {
             return null;
         }
-        XWikiContext context = this.contextProvider.get();
 
-        try {
-            XWikiDocument doc = context.getWiki().getDocument((DocumentReference) entity, context);
-            BaseObject lock = doc.getXObject(this.lockClassReference);
-            if (lock != null && !access.isReadOnly()) {
-                return Boolean.FALSE;
-            }
-        } catch (XWikiException | NullPointerException e) {
+        // This converts the document to a patient.
+        Patient patient = this.patientRepository.get(entity.toString());
+        if (patient == null) {
             return null;
+        }
+
+        AccessLevel grantedAccess =
+            this.manager.getPatientAccess(patient).getAccessLevel(user != null ? user.getProfileDocument() : null);
+
+        if (this.ownerAccess.compareTo(grantedAccess) <= 0) {
+            return true;
         }
 
         return null;

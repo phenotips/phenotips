@@ -17,6 +17,7 @@
  */
 package org.phenotips.data.permissions.internal.access;
 
+import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.internal.AbstractAccessLevel;
 
 import org.xwiki.component.annotation.Component;
@@ -42,5 +43,17 @@ public class NoAccessLevel extends AbstractAccessLevel
     public String getName()
     {
         return "none";
+    }
+
+    @Override
+    public int compareTo(AccessLevel o)
+    {
+        // Overridden so that this access level is considered less permissive than null and unknown access levels
+        if (o instanceof AbstractAccessLevel) {
+            // For comparisons with other AbstractAccessLevel-based levels, the default implementation is correct
+            return super.compareTo(o);
+        }
+        // For other cases, this is to be considered the least permissive level.
+        return Integer.MIN_VALUE;
     }
 }

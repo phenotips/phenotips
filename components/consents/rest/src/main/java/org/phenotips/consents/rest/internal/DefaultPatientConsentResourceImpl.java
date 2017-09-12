@@ -22,10 +22,10 @@ import org.phenotips.consents.ConsentManager;
 import org.phenotips.consents.rest.PatientConsentResource;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rest.XWikiResource;
-import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
@@ -67,7 +67,7 @@ public class DefaultPatientConsentResourceImpl extends XWikiResource implements 
     private PatientRepository repository;
 
     @Inject
-    private AuthorizationManager access;
+    private AuthorizationService access;
 
     @Inject
     private UserManager users;
@@ -168,8 +168,7 @@ public class DefaultPatientConsentResourceImpl extends XWikiResource implements 
             return new Security(patient, response, false);
         }
         User currentUser = this.users.getCurrentUser();
-        if (!this.access.hasAccess(right, currentUser == null ? null : currentUser.getProfileDocument(),
-            patient.getDocumentReference())) {
+        if (!this.access.hasAccess(currentUser, right, patient.getDocumentReference())) {
             this.logger.debug("View access denied to user [{}] on patient record [{}]", currentUser, patientId);
             Response response = Response.status(ACCESS_DENIED).build();
             return new Security(patient, response, false);

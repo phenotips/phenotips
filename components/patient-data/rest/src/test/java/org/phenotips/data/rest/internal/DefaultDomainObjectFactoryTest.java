@@ -23,12 +23,12 @@ import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.Alternatives;
 import org.phenotips.data.rest.model.PatientSummary;
 import org.phenotips.rest.Autolinker;
+import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
@@ -68,7 +68,7 @@ public class DefaultDomainObjectFactoryTest
 
     @Rule
     public MockitoComponentMockingRule<DomainObjectFactory> mocker =
-        new MockitoComponentMockingRule<DomainObjectFactory>(DefaultDomainObjectFactory.class);
+        new MockitoComponentMockingRule<>(DefaultDomainObjectFactory.class);
 
     @Mock
     private Patient patient;
@@ -101,7 +101,7 @@ public class DefaultDomainObjectFactoryTest
     private ParameterizedType stringResolverType = new DefaultParameterizedType(null, DocumentReferenceResolver.class,
         String.class);
 
-    private AuthorizationManager access;
+    private AuthorizationService access;
 
     private UserManager users;
 
@@ -113,7 +113,7 @@ public class DefaultDomainObjectFactoryTest
         throws ComponentLookupException, IllegalArgumentException, UriBuilderException, URISyntaxException
     {
         MockitoAnnotations.initMocks(this);
-        this.access = this.mocker.getInstance(AuthorizationManager.class);
+        this.access = this.mocker.getInstance(AuthorizationService.class);
         this.users = this.mocker.getInstance(UserManager.class);
         this.stringResolver = this.mocker.getInstance(this.stringResolverType, "current");
 
@@ -123,7 +123,6 @@ public class DefaultDomainObjectFactoryTest
         when(this.patient.getReporter()).thenReturn(this.userReference1);
 
         when(this.users.getCurrentUser()).thenReturn(this.user);
-        when(this.user.getProfileDocument()).thenReturn(this.userReference1);
         when(this.stringResolver.resolve(this.patientReference1.getName(), Patient.DEFAULT_DATA_SPACE))
             .thenReturn(this.patientReference1);
         when(this.stringResolver.resolve("data.P0000001")).thenReturn(this.patientReference1);
@@ -135,7 +134,7 @@ public class DefaultDomainObjectFactoryTest
         when(this.uriBuilder.path(PatientResource.class)).thenReturn(this.uriBuilder);
         when(this.uriBuilder.build(this.patientReference1.getName())).thenReturn(new URI(this.uri1));
         when(this.uriBuilder.build(this.patientReference2.getName())).thenReturn(new URI(this.uri2));
-        when(this.access.hasAccess(Right.VIEW, this.userReference1, this.patientReference1)).thenReturn(true);
+        when(this.access.hasAccess(this.user, Right.VIEW, this.patientReference1)).thenReturn(true);
 
         Autolinker autolinker = this.mocker.getInstance(Autolinker.class);
         when(autolinker.forResource(any(Class.class), any(UriInfo.class))).thenReturn(autolinker);
@@ -157,7 +156,7 @@ public class DefaultDomainObjectFactoryTest
     @Test
     public void cannotCreatePatientWithNoAccess() throws ComponentLookupException
     {
-        when(this.access.hasAccess(Right.VIEW, this.userReference1, this.patientReference1)).thenReturn(false);
+        when(this.access.hasAccess(this.user, Right.VIEW, this.patientReference1)).thenReturn(false);
         assertNull(this.mocker.getComponentUnderTest().createPatientSummary(this.patient, this.uriInfo));
     }
 
@@ -193,7 +192,7 @@ public class DefaultDomainObjectFactoryTest
     public void createPatientWithNoCurrentUserSucceeds() throws Exception
     {
         when(this.users.getCurrentUser()).thenReturn(null);
-        when(this.access.hasAccess(Right.VIEW, null, this.patientReference1)).thenReturn(true);
+        when(this.access.hasAccess(null, Right.VIEW, this.patientReference1)).thenReturn(true);
 
         XWikiDocument document = mock(XWikiDocument.class);
         Date creationDate = new Date(0);
@@ -242,7 +241,7 @@ public class DefaultDomainObjectFactoryTest
     {
         Object[] summary =
             { "data.P0000001", this.eid, "XWiki.padams", new Date(), "version", "XWiki.hmccoy", new Date() };
-        when(this.access.hasAccess(Right.VIEW, this.userReference1, this.patientReference1)).thenReturn(false);
+        when(this.access.hasAccess(this.user, Right.VIEW, this.patientReference1)).thenReturn(false);
         assertNull(this.mocker.getComponentUnderTest().createPatientSummary(summary, this.uriInfo));
     }
 
@@ -274,7 +273,7 @@ public class DefaultDomainObjectFactoryTest
     public void createPatientFromSummaryWithNoCurrentUserPerformsCorrectly() throws Exception
     {
         when(this.users.getCurrentUser()).thenReturn(null);
-        when(this.access.hasAccess(Right.VIEW, null, this.patientReference1)).thenReturn(true);
+        when(this.access.hasAccess(null, Right.VIEW, this.patientReference1)).thenReturn(true);
 
         Date createdOn = new Date();
         Date modifiedOn = new Date();
@@ -304,7 +303,7 @@ public class DefaultDomainObjectFactoryTest
         idList.add(this.patientReference1.getName());
         idList.add(this.patientReference2.getName());
 
-        when(this.access.hasAccess(Right.VIEW, this.userReference1, this.patientReference2)).thenReturn(true);
+        when(this.access.hasAccess(this.user, Right.VIEW, this.patientReference2)).thenReturn(true);
 
         Alternatives alternatives = this.mocker.getComponentUnderTest().createAlternatives(idList, this.uriInfo);
 
@@ -322,8 +321,8 @@ public class DefaultDomainObjectFactoryTest
         idList.add(this.patientReference1.getName());
         idList.add(this.patientReference2.getName());
 
-        when(this.access.hasAccess(Right.VIEW, null, this.patientReference1)).thenReturn(true);
-        when(this.access.hasAccess(Right.VIEW, null, this.patientReference2)).thenReturn(false);
+        when(this.access.hasAccess(null, Right.VIEW, this.patientReference1)).thenReturn(true);
+        when(this.access.hasAccess(null, Right.VIEW, this.patientReference2)).thenReturn(false);
 
         Alternatives alternatives = this.mocker.getComponentUnderTest().createAlternatives(idList, this.uriInfo);
 

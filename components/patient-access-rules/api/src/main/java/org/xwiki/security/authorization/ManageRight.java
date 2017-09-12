@@ -65,7 +65,7 @@ public class ManageRight extends Right
             @Override
             public Set<Right> getImpliedRights()
             {
-                return new RightSet(Right.VIEW, Right.EDIT, Right.DELETE);
+                return new RightSet(Right.VIEW, Right.EDIT, Right.DELETE, Right.COMMENT);
             }
 
             @Override
@@ -74,5 +74,11 @@ public class ManageRight extends Right
                 return RuleState.DENY;
             }
         });
+    }
+
+    @Override
+    public Set<EntityType> getTargetedEntityType()
+    {
+        return EnumSet.of(EntityType.DOCUMENT);
     }
 }
