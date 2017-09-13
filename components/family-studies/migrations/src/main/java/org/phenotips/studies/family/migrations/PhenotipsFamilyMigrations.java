@@ -18,14 +18,11 @@
 package org.phenotips.studies.family.migrations;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.Owner;
-import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.Pedigree;
-import org.phenotips.studies.family.internal.PhenotipsFamilyPermissions;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
@@ -74,12 +71,6 @@ public class PhenotipsFamilyMigrations
 
     private static final String ACCESS_PROPERTY_NAME = "access";
 
-    private static final String VIEW_RIGHT = "view";
-
-    private static final String EDIT_RIGHT = "view,edit";
-
-    private static final String FULL_RIGHT = "view,edit,delete";
-
     private static final String JSON_TOP_LEVEL = "GG";
 
     private static final String JSON_NODE_PROPERTIES = "prop";
@@ -92,24 +83,12 @@ public class PhenotipsFamilyMigrations
 
     private static final String JSON_COMMENTS = "comments";
 
-    private EntityReference rightsClassReference = new EntityReference("XWikiRights", EntityType.DOCUMENT,
-        new EntityReference("XWiki", EntityType.SPACE));
-
     private EntityReference familyParentReference = new EntityReference("WebHome", EntityType.DOCUMENT,
         Family.DATA_SPACE);
 
     private Session session;
 
     private XWikiContext context;
-
-    @Inject
-    private PhenotipsFamilyPermissions familyPermissions;
-
-    @Inject
-    private PatientRepository patientRepository;
-
-    @Inject
-    private PermissionsManager permissionsManager;
 
     /** Serializes the class name without the wiki prefix, to be used in the database query. */
     @Inject
@@ -148,8 +127,6 @@ public class PhenotipsFamilyMigrations
             this.setOwner(newFamilyXDocument, patientXDoc);
             this.setFamilyObject(newFamilyXDocument, patientXDoc, nextId);
             this.setPedigreeObject(newFamilyXDocument, pedigreeData, pedigreeImage);
-            this.setPermissionsObject(newFamilyXDocument,
-                this.patientRepository.get(patientXDoc.getDocumentReference()));
             this.setVisibilityObject(newFamilyXDocument, patientXDoc);
             this.setCollaborators(newFamilyXDocument, patientXDoc);
 
@@ -335,32 +312,6 @@ public class PhenotipsFamilyMigrations
         BaseObject pedigreeObject = familyXDocument.newXObject(Pedigree.CLASS_REFERENCE, this.context);
         pedigreeObject.set(Pedigree.IMAGE, pedigreeImage, this.context);
         pedigreeObject.set(Pedigree.DATA, data.toString(), this.context);
-    }
-
-    /**
-     * Set permissions object properties.
-     */
-    private void setPermissionsObject(XWikiDocument familyXDocument, Patient patient)
-        throws XWikiException
-    {
-        setRights(familyXDocument, patient, VIEW_RIGHT, VIEW_RIGHT);
-        setRights(familyXDocument, patient, "edit", EDIT_RIGHT);
-        setRights(familyXDocument, patient, "manage", FULL_RIGHT);
-    }
-
-    /**
-     * Helper method - set permissions object properties for one access level.
-     */
-    private void setRights(XWikiDocument familyXDocument, Patient patient, String grantedAccess,
-        String targetLevel) throws XWikiException
-    {
-        BaseObject permissionsObject = familyXDocument.newXObject(this.rightsClassReference, this.context);
-        String[] rightHolders = this.familyPermissions.getEntitiesWithAccessAsString(patient,
-            this.permissionsManager.resolveAccessLevel(grantedAccess));
-        permissionsObject.setStringValue("users", rightHolders[0]);
-        permissionsObject.setStringValue("groups", rightHolders[1]);
-        permissionsObject.setStringValue("levels", targetLevel);
-        permissionsObject.setIntValue("allow", 1);
     }
 
     /**
