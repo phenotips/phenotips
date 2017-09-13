@@ -1741,7 +1741,7 @@
     displayedValue.insert({'bottom' : new Element("span", {"class": "value"}).update(value.escapeHTML())});
     listItem.insert(displayedValue);
     if(this.suggest.options.tooltip) {
-      var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton ' + this.suggest.options.tooltip, title : key});
+      var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton ' + this.suggest.options.tooltip, title : key, 'data-source' : this.input &amp;&amp; this.input.id || ''});
       listItem.insert(infoTool);
     }
     if (category &amp;&amp; category != '') {
@@ -4228,12 +4228,13 @@ document.observe("xwiki:dom:updated", init);
             c.insert(advancedInfo);
           }
 
-          if (PhenoTips.widgets.OntologyBrowser) {
+          var suggestedInput = helpButton.icon.getAttribute('data-source') &amp;&amp; $(helpButton.icon.getAttribute('data-source')) || $('quick-phenotype-search') || $$('input.suggest-hpo')[0];
+          if (PhenoTips.widgets.OntologyBrowser &amp;&amp; suggestedInput) {
             var browseButton = new Element('a', {'class' : 'button', href : '#'}).update("$services.localization.render('phenotips.widgets.helpButtons.phenotype.browseRelated')");
             browseButton._id = json.id;
             browseButton.observe('click', function(event){
               event.stop();
-              var suggest = ((helpButton.icon.getAttribute('data-source') &amp;&amp; $(helpButton.icon.getAttribute('data-source'))) || $('quick-phenotype-search') || $$('input.suggestHpo')[0])._suggest;
+              var suggest = suggestedInput._suggest;
               var params = {};
               if (typeof isPhenotypeSelected !== 'undefined') {
                 params = {
@@ -6236,6 +6237,7 @@ div.resultContainer div.sourceContent.loading {
       <code>#template("colorThemeInit.vm")
 
 .ontology-tree {
+  text-align: left;
 }
 .ontology-tree .parents{
   list-style-type: none;
