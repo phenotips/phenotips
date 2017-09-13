@@ -2070,6 +2070,14 @@ widgets.ModalPopup = Class.create({
        Event.observe(window, eventName, __enableUpdateScreenSize);
     }.bind(this));
     Event.observe(document, 'ms:popup:content-updated', __enableUpdateScreenSize);
+
+    // Stop the propagation of mouse events beyond the dialog element to prevent unwanted interaction with anything in the back
+    var _this = this;
+    ['mousedown', 'mouseup', 'click'].each(function(eventName) {
+      _this.dialog.observe(eventName, function(event) {
+        event.stop();
+      });
+    });
   },
   positionDialog : function() {
     switch(this.options.verticalPosition) {
