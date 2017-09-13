@@ -2073,7 +2073,7 @@ widgets.ModalPopup = Class.create({
 
     // Stop the propagation of mouse events beyond the dialog element to prevent unwanted interaction with anything in the back
     var _this = this;
-    ['mousedown', 'mouseup', 'click'].each(function(eventName) {
+    ['mousedown', 'click'].each(function(eventName) {
       _this.dialog.observe(eventName, function(event) {
         event.stop();
       });
