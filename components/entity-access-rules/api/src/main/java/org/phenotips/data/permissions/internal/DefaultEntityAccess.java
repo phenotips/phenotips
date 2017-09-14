@@ -20,9 +20,9 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Owner;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 
 import org.xwiki.model.reference.DocumentReference;
@@ -33,15 +33,15 @@ import java.util.Collection;
 /**
  * @version $Id$
  */
-public class DefaultPatientAccess implements PatientAccess
+public class DefaultEntityAccess implements EntityAccess
 {
     private final Patient patient;
 
-    private final PatientAccessHelper helper;
+    private final EntityAccessHelper helper;
 
-    private final PermissionsManager manager;
+    private final EntityPermissionsManager manager;
 
-    public DefaultPatientAccess(Patient patient, PatientAccessHelper helper, PermissionsManager manager)
+    public DefaultEntityAccess(Patient patient, EntityAccessHelper helper, EntityPermissionsManager manager)
     {
         this.patient = patient;
         this.helper = helper;

@@ -17,7 +17,7 @@
  */
 package org.phenotips.data.permissions.events;
 
-import org.phenotips.data.Patient;
+import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.observation.event.Event;
 import org.xwiki.stability.Unstable;
@@ -25,29 +25,29 @@ import org.xwiki.stability.Unstable;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * An event that is fired every time patient permissions are updated.
+ * An event that is fired every time entity permissions are updated.
  *
  * @version $Id$
- * @since 1.3M3
+ * @since 1.4
  */
 @Unstable
-public class PatientRightsUpdatedEvent implements Event
+public class EntityRightsUpdatedEvent implements Event
 {
-    /** The affected patient id. */
-    protected final String patientId;
+    /** The affected entity id. */
+    protected final String entityId;
 
     /**
      * Constructor initializing the required fields.
      *
-     * @param patientId the {@link Patient#getId() identifier} of the affected patient
+     * @param entityId the {@link PrimaryEntity#getId() identifier} of the affected entity
      */
-    public PatientRightsUpdatedEvent(String patientId)
+    public EntityRightsUpdatedEvent(String entityId)
     {
-        this.patientId = patientId;
+        this.entityId = entityId;
     }
 
     /** Default constructor, to be used for declaring the events a listener wants to observe. */
-    public PatientRightsUpdatedEvent()
+    public EntityRightsUpdatedEvent()
     {
         this(null);
     }
@@ -55,24 +55,21 @@ public class PatientRightsUpdatedEvent implements Event
     @Override
     public boolean matches(Object otherEvent)
     {
-        if (otherEvent instanceof PatientRightsUpdatedEvent) {
-            PatientRightsUpdatedEvent otherRightsUpdateEvent = (PatientRightsUpdatedEvent) otherEvent;
-            if (this.patientId != null && !StringUtils.equals(otherRightsUpdateEvent.getPatientId(), this.patientId)) {
-                return false;
-            }
-            return true;
+        if (otherEvent instanceof EntityRightsUpdatedEvent) {
+            EntityRightsUpdatedEvent otherRightsUpdateEvent = (EntityRightsUpdatedEvent) otherEvent;
+            return this.entityId == null || StringUtils.equals(otherRightsUpdateEvent.getEntityId(), this.entityId);
         }
         return false;
     }
 
     /**
-     * Returns the {@link Patient#getId() identifier} of the patient being updated.
+     * Returns the {@link PrimaryEntity#getId() identifier} of the entity being updated.
      *
-     * @return the {@link Patient#getId() identifier} of the affected patient, or {@code null} if this isn't an actual
-     *         event on a patient
+     * @return the {@link PrimaryEntity#getId() identifier} of the affected entity, or {@code null} if this isn't an
+     *         actual event on an entity
      */
-    public String getPatientId()
+    public String getEntityId()
     {
-        return this.patientId;
+        return this.entityId;
     }
 }

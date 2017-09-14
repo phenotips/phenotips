@@ -20,8 +20,8 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 
 import org.xwiki.bridge.event.ActionExecutingEvent;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -75,12 +75,12 @@ public class VCFAccessRestrictionEventListenerTest
     @Mock
     private Patient patient;
 
-    private PermissionsManager permissions;
+    private EntityPermissionsManager permissions;
 
     private AccessLevel edit;
 
     @Mock
-    private PatientAccess access;
+    private EntityAccess access;
 
     @Before
     public void setUp() throws ComponentLookupException
@@ -88,7 +88,7 @@ public class VCFAccessRestrictionEventListenerTest
         MockitoAnnotations.initMocks(this);
         this.patients = this.mocker.getInstance(PatientRepository.class);
         when(this.patients.get("xwiki:data.P0000001")).thenReturn(this.patient);
-        this.permissions = this.mocker.getInstance(PermissionsManager.class);
+        this.permissions = this.mocker.getInstance(EntityPermissionsManager.class);
         when(this.permissions.getPatientAccess(this.patient)).thenReturn(this.access);
         this.edit = this.mocker.getInstance(AccessLevel.class, "edit");
 

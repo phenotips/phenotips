@@ -18,7 +18,8 @@
 package org.phenotips.data.permissions.internal;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 
 import java.util.Iterator;
@@ -26,7 +27,7 @@ import java.util.NoSuchElementException;
 
 /**
  * Filters an iterator over {@link Patient}s, returning only those that have their
- * {@link org.phenotips.data.permissions.PatientAccess#getVisibility() visibility} equal or above a threshold. The
+ * {@link EntityAccess#getVisibility() visibility} equal or above a threshold. The
  * {@link #remove()} method is not supported.
  *
  * @version $Id$
@@ -38,7 +39,7 @@ public class FilteringIterator implements Iterator<Patient>
 
     private final Visibility thresholdVisibility;
 
-    private final PermissionsManager permissionsManager;
+    private final EntityPermissionsManager entityPermissionsManager;
 
     private Patient next;
 
@@ -47,14 +48,14 @@ public class FilteringIterator implements Iterator<Patient>
      *
      * @param input the iterator to filter, {@code null} and empty iterators are accepted
      * @param thresholdVisibility a threshold visibility; if {@code null}, then the input is returned unchanged
-     * @param permissionsManager required for computing the visibility of each input patient
+     * @param entityPermissionsManager required for computing the visibility of each input patient
      */
     public FilteringIterator(Iterator<Patient> input, Visibility thresholdVisibility,
-        PermissionsManager permissionsManager)
+        EntityPermissionsManager entityPermissionsManager)
     {
         this.input = input;
         this.thresholdVisibility = thresholdVisibility;
-        this.permissionsManager = permissionsManager;
+        this.entityPermissionsManager = entityPermissionsManager;
         this.findNext();
     }
 
@@ -91,7 +92,7 @@ public class FilteringIterator implements Iterator<Patient>
             Patient potentialNextPatient = this.input.next();
             if (potentialNextPatient != null) {
                 Visibility patientVisibility =
-                    this.permissionsManager.getPatientAccess(potentialNextPatient).getVisibility();
+                    this.entityPermissionsManager.getPatientAccess(potentialNextPatient).getVisibility();
                 if (this.thresholdVisibility.compareTo(patientVisibility) <= 0) {
                     this.next = potentialNextPatient;
                 }

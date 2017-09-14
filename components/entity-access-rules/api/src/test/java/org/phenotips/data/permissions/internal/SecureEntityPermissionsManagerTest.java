@@ -15,47 +15,42 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data.permissions.script;
+package org.phenotips.data.permissions.internal;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
-import org.phenotips.data.permissions.internal.SecurePermissionsManager;
 import org.phenotips.data.permissions.internal.access.EditAccessLevel;
 import org.phenotips.data.permissions.internal.visibility.PublicVisibility;
-import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
-import org.xwiki.users.User;
-import org.xwiki.users.UserManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the secure {@link PermissionsManager} implementation, {@link SecurePermissionsManager}.
+ * Tests for the secure {@link EntityPermissionsManager} implementation, {@link SecureEntityPermissionsManager}.
  *
  * @version $Id$
  */
-public class PermissionsManagerScriptServiceTest
+public class SecureEntityPermissionsManagerTest
 {
     @Rule
-    public final MockitoComponentMockingRule<PermissionsManagerScriptService> mocker =
-        new MockitoComponentMockingRule<>(PermissionsManagerScriptService.class);
+    public final MockitoComponentMockingRule<EntityPermissionsManager> mocker =
+        new MockitoComponentMockingRule<EntityPermissionsManager>(SecureEntityPermissionsManager.class);
 
     private AccessLevel edit = new EditAccessLevel();
 
@@ -64,7 +59,7 @@ public class PermissionsManagerScriptServiceTest
     @Test
     public void listAccessLevelsForwardsCalls() throws ComponentLookupException
     {
-        PermissionsManager internal = this.mocker.getInstance(PermissionsManager.class, "secure");
+        EntityPermissionsManager internal = this.mocker.getInstance(EntityPermissionsManager.class);
         List<AccessLevel> levels = new ArrayList<>();
         when(internal.listAccessLevels()).thenReturn(levels);
         Collection<AccessLevel> returnedLevels = this.mocker.getComponentUnderTest().listAccessLevels();
@@ -74,7 +69,7 @@ public class PermissionsManagerScriptServiceTest
     @Test
     public void resolveAccessLevelForwardsCalls() throws ComponentLookupException
     {
-        PermissionsManager internal = this.mocker.getInstance(PermissionsManager.class, "secure");
+        EntityPermissionsManager internal = this.mocker.getInstance(EntityPermissionsManager.class);
         when(internal.resolveAccessLevel("edit")).thenReturn(this.edit);
         Assert.assertSame(this.edit, this.mocker.getComponentUnderTest().resolveAccessLevel("edit"));
     }
@@ -82,7 +77,7 @@ public class PermissionsManagerScriptServiceTest
     @Test
     public void listVisibilityOptionsForwardsCalls() throws ComponentLookupException
     {
-        PermissionsManager internal = this.mocker.getInstance(PermissionsManager.class, "secure");
+        EntityPermissionsManager internal = this.mocker.getInstance(EntityPermissionsManager.class);
         List<Visibility> visibilities = new ArrayList<>();
         when(internal.listVisibilityOptions()).thenReturn(visibilities);
         Collection<Visibility> returnedVisibilities = this.mocker.getComponentUnderTest().listVisibilityOptions();
@@ -92,7 +87,7 @@ public class PermissionsManagerScriptServiceTest
     @Test
     public void listAllVisibilityOptionsForwardsCalls() throws ComponentLookupException
     {
-        PermissionsManager internal = this.mocker.getInstance(PermissionsManager.class, "secure");
+        EntityPermissionsManager internal = this.mocker.getInstance(EntityPermissionsManager.class);
         List<Visibility> visibilities = new ArrayList<>();
         when(internal.listAllVisibilityOptions()).thenReturn(visibilities);
         Collection<Visibility> returnedVisibilities = this.mocker.getComponentUnderTest().listAllVisibilityOptions();
@@ -102,7 +97,7 @@ public class PermissionsManagerScriptServiceTest
     @Test
     public void getDefaultVisibilityForwardsCalls() throws ComponentLookupException
     {
-        PermissionsManager internal = this.mocker.getInstance(PermissionsManager.class, "secure");
+        EntityPermissionsManager internal = this.mocker.getInstance(EntityPermissionsManager.class);
         when(internal.getDefaultVisibility()).thenReturn(this.publicVisibility);
         Visibility result = this.mocker.getComponentUnderTest().getDefaultVisibility();
         Assert.assertSame(this.publicVisibility, result);
@@ -111,40 +106,45 @@ public class PermissionsManagerScriptServiceTest
     @Test
     public void resolveVisibilityForwardsCalls() throws ComponentLookupException
     {
-        PermissionsManager internal = this.mocker.getInstance(PermissionsManager.class, "secure");
+        EntityPermissionsManager internal = this.mocker.getInstance(EntityPermissionsManager.class);
         when(internal.resolveVisibility("public")).thenReturn(this.publicVisibility);
         Assert.assertSame(this.publicVisibility, this.mocker.getComponentUnderTest().resolveVisibility("public"));
     }
 
     @Test
-    public void getPatientAccessForwardsCallsCorrectly() throws ComponentLookupException
+    public void getPatientAccessReturnsSecureAccess() throws ComponentLookupException
     {
-        PermissionsManager internal = this.mocker.getInstance(PermissionsManager.class, "secure");
+        EntityPermissionsManager internal = this.mocker.getInstance(EntityPermissionsManager.class);
         Patient patient = mock(Patient.class);
-        DocumentReference patientReference = mock(DocumentReference.class);
-        when(patient.getDocumentReference()).thenReturn(patientReference);
-
-        PatientAccess internalAccess = mock(PatientAccess.class);
+        EntityAccess internalAccess = mock(EntityAccess.class);
         when(internal.getPatientAccess(patient)).thenReturn(internalAccess);
+        EntityAccess result = this.mocker.getComponentUnderTest().getPatientAccess(patient);
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result instanceof SecureEntityAccess);
+    }
 
-        User currentUser = mock(User.class);
-        UserManager userManager = this.mocker.getInstance(UserManager.class);
-        when(userManager.getCurrentUser()).thenReturn(currentUser);
+    @Test
+    public void filterCollectionByVisibilityForwardsCalls() throws ComponentLookupException
+    {
+        EntityPermissionsManager internal = this.mocker.getInstance(EntityPermissionsManager.class);
+        Collection<Patient> input = new ArrayList<>();
+        when(internal.filterByVisibility(input, this.publicVisibility)).thenReturn(input);
 
-        String testID = "TESTID";
-        PatientRepository patientRepo = this.mocker.getInstance(PatientRepository.class);
-        when(patientRepo.get(testID)).thenReturn(patient);
+        Collection<Patient> result =
+            this.mocker.getComponentUnderTest().filterByVisibility(input, this.publicVisibility);
+        Mockito.verify(internal).filterByVisibility(input, this.publicVisibility);
+        Assert.assertSame(input, result);
+    }
 
-        AuthorizationService access = this.mocker.getInstance(AuthorizationService.class);
+    @Test
+    public void filterIteratorByVisibilityForwardsCalls() throws ComponentLookupException
+    {
+        EntityPermissionsManager internal = this.mocker.getInstance(EntityPermissionsManager.class);
+        Iterator<Patient> input = new ArrayList<Patient>().iterator();
+        when(internal.filterByVisibility(input, this.publicVisibility)).thenReturn(input);
 
-        // test when has VIEW rights
-        when(access.hasAccess(currentUser, Right.VIEW, patientReference)).thenReturn(true);
-        PatientAccess result1 = this.mocker.getComponentUnderTest().getPatientAccess(testID);
-        Assert.assertSame(internalAccess, result1);
-
-        // test when no VIEW rights
-        when(access.hasAccess(currentUser, Right.VIEW, patientReference)).thenReturn(false);
-        PatientAccess result2 = this.mocker.getComponentUnderTest().getPatientAccess(testID);
-        Assert.assertNull(result2);
+        Iterator<Patient> result = this.mocker.getComponentUnderTest().filterByVisibility(input, this.publicVisibility);
+        Mockito.verify(internal).filterByVisibility(input, this.publicVisibility);
+        Assert.assertSame(input, result);
     }
 }

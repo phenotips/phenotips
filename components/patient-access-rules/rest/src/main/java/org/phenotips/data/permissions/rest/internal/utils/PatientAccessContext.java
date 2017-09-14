@@ -20,8 +20,8 @@ package org.phenotips.data.permissions.rest.internal.utils;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.users.User;
@@ -49,9 +49,9 @@ public class PatientAccessContext
 
     private User currentUser;
 
-    private PatientAccess patientAccess;
+    private EntityAccess entityAccess;
 
-    private PermissionsManager manager;
+    private EntityPermissionsManager manager;
 
     private DocumentReferenceResolver<String> userOrGroupResolver;
 
@@ -68,7 +68,7 @@ public class PatientAccessContext
      * @throws WebApplicationException if the patient could not be found, or the current user has insufficient rights
      */
     public PatientAccessContext(String patientId, AccessLevel minimumAccessLevel, PatientRepository repository,
-        UserManager users, PermissionsManager manager, DocumentReferenceResolver<String> userOrGroupResolver)
+        UserManager users, EntityPermissionsManager manager, DocumentReferenceResolver<String> userOrGroupResolver)
         throws WebApplicationException
     {
         this.manager = manager;
@@ -78,14 +78,14 @@ public class PatientAccessContext
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
         this.userOrGroupResolver = userOrGroupResolver;
-        this.patientAccess = this.manager.getPatientAccess(this.patient);
+        this.entityAccess = this.manager.getPatientAccess(this.patient);
         this.initializeUser(minimumAccessLevel, users, this.logger);
     }
 
     private void initializeUser(AccessLevel minimumAccessLevel, UserManager users, Logger logger)
     {
         this.currentUser = users.getCurrentUser();
-        if (!this.patientAccess.hasAccessLevel(this.currentUser == null ? null : this.currentUser.getProfileDocument(),
+        if (!this.entityAccess.hasAccessLevel(this.currentUser == null ? null : this.currentUser.getProfileDocument(),
             minimumAccessLevel)) {
             logger.debug("{} access denied to user [{}] on patient record [{}]",
                 minimumAccessLevel.getName(), this.currentUser, this.patient.getId());
@@ -114,13 +114,13 @@ public class PatientAccessContext
     }
 
     /**
-     * Allows for reuse of {@link PatientAccess} instance.
+     * Allows for reuse of {@link EntityAccess} instance.
      *
-     * @return an initialized instance of {@link PatientAccess}
+     * @return an initialized instance of {@link EntityAccess}
      */
-    public PatientAccess getPatientAccess()
+    public EntityAccess getEntityAccess()
     {
-        return this.patientAccess;
+        return this.entityAccess;
     }
 
     /**

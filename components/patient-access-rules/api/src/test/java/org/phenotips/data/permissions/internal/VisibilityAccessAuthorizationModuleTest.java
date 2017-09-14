@@ -75,7 +75,7 @@ public class VisibilityAccessAuthorizationModuleTest
     @Mock
     private Visibility privateVisibility;
 
-    private PatientAccessHelper helper;
+    private EntityAccessHelper helper;
 
     private PatientRepository repo;
 
@@ -86,7 +86,7 @@ public class VisibilityAccessAuthorizationModuleTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.helper = this.mocker.getInstance(PatientAccessHelper.class);
+        this.helper = this.mocker.getInstance(EntityAccessHelper.class);
         this.repo = this.mocker.getInstance(PatientRepository.class);
         when(this.repo.get("xwiki:data.P01")).thenReturn(this.patient);
 

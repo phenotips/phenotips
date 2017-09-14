@@ -19,7 +19,7 @@ package org.phenotips.data.permissions.rest.internal.utils;
 
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -49,7 +49,7 @@ public class DefaultSecureContextFactory implements SecureContextFactory
 
     @Inject
     @Named("secure")
-    private PermissionsManager permissionsManager;
+    private EntityPermissionsManager entityPermissionsManager;
 
     @Inject
     @Named("userOrGroup")
@@ -58,8 +58,8 @@ public class DefaultSecureContextFactory implements SecureContextFactory
     @Override
     public PatientAccessContext getContext(String patientId, String minimumAccessLevel) throws WebApplicationException
     {
-        AccessLevel level = this.permissionsManager.resolveAccessLevel(minimumAccessLevel);
-        return new PatientAccessContext(patientId, level, this.repository, this.users, this.permissionsManager,
+        AccessLevel level = this.entityPermissionsManager.resolveAccessLevel(minimumAccessLevel);
+        return new PatientAccessContext(patientId, level, this.repository, this.users, this.entityPermissionsManager,
             this.userOrGroupResolver);
     }
 

@@ -20,8 +20,8 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Owner;
-import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 
 import org.xwiki.bridge.DocumentAccessBridge;
@@ -63,7 +63,7 @@ import com.xpn.xwiki.user.api.XWikiGroupService;
  */
 @Component
 @Singleton
-public class DefaultPatientAccessHelper implements PatientAccessHelper
+public class DefaultEntityAccessHelper implements EntityAccessHelper
 {
     private static final EntityReference USER_CLASS = new EntityReference("XWikiUsers", EntityType.DOCUMENT,
         new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
@@ -92,7 +92,7 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     private EntityReferenceSerializer<String> entitySerializer;
 
     @Inject
-    private PermissionsManager manager;
+    private EntityPermissionsManager manager;
 
     @Inject
     private AuthorizationManager rights;

@@ -33,7 +33,7 @@ import java.util.Collection;
  * @version $Id$
  */
 @Role
-public interface PatientAccessHelper
+public interface EntityAccessHelper
 {
     DocumentReference getCurrentUser();
 

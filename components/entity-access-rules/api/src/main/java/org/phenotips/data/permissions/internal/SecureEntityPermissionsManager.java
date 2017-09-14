@@ -19,8 +19,8 @@ package org.phenotips.data.permissions.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 
 import org.xwiki.component.annotation.Component;
@@ -42,10 +42,10 @@ import javax.inject.Singleton;
 @Component
 @Named("secure")
 @Singleton
-public class SecurePermissionsManager implements PermissionsManager
+public class SecureEntityPermissionsManager implements EntityPermissionsManager
 {
     @Inject
-    private PermissionsManager internalService;
+    private EntityPermissionsManager internalService;
 
     @Override
     public Collection<Visibility> listVisibilityOptions()
@@ -84,9 +84,9 @@ public class SecurePermissionsManager implements PermissionsManager
     }
 
     @Override
-    public PatientAccess getPatientAccess(Patient targetPatient)
+    public EntityAccess getPatientAccess(Patient targetPatient)
     {
-        return new SecurePatientAccess(this.internalService.getPatientAccess(targetPatient), this.internalService);
+        return new SecureEntityAccess(this.internalService.getPatientAccess(targetPatient), this.internalService);
     }
 
     @Override

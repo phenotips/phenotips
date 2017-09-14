@@ -40,7 +40,7 @@ public class DefaultOwnerTest
     private static final DocumentReference OWNER = new DocumentReference("xwiki", "XWiki", "hmccoy");
 
     @Mock
-    private PatientAccessHelper helper;
+    private EntityAccessHelper helper;
 
     @Before
     public void setUp()

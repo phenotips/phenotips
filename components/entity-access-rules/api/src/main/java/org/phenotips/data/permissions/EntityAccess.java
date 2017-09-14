@@ -29,7 +29,7 @@ import java.util.Collection;
  * @since 1.0M9
  */
 @Unstable
-public interface PatientAccess
+public interface EntityAccess
 {
     Patient getPatient();
 

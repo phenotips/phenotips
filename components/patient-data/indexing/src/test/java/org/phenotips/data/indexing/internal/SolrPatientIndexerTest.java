@@ -23,10 +23,10 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.indexing.PatientIndexer;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
-import org.phenotips.data.permissions.internal.DefaultPatientAccess;
+import org.phenotips.data.permissions.internal.DefaultEntityAccess;
 import org.phenotips.data.permissions.internal.visibility.PublicVisibility;
 import org.phenotips.vocabulary.SolrCoreContainerHandler;
 import org.phenotips.vocabulary.Vocabulary;
@@ -95,7 +95,7 @@ public class SolrPatientIndexerTest
 
     private PatientRepository patientRepository;
 
-    private PermissionsManager permissions;
+    private EntityPermissionsManager permissions;
 
     private DocumentReference patientDocReference;
 
@@ -108,7 +108,7 @@ public class SolrPatientIndexerTest
         SolrCoreContainerHandler cores = this.mocker.getInstance(SolrCoreContainerHandler.class);
         doReturn(mock(CoreContainer.class)).when(cores).getContainer();
 
-        this.permissions = this.mocker.getInstance(PermissionsManager.class);
+        this.permissions = this.mocker.getInstance(EntityPermissionsManager.class);
         this.qm = this.mocker.getInstance(QueryManager.class);
         this.patientRepository = this.mocker.getInstance(PatientRepository.class);
         this.patientDocReference = new DocumentReference("wiki", "patient", "P0000001");
@@ -160,7 +160,7 @@ public class SolrPatientIndexerTest
         doReturn(patientFeatures).when(this.patient).getFeatures();
 
         DocumentReference reporterReference = new DocumentReference("xwiki", "XWiki", "user");
-        PatientAccess patientAccess = mock(DefaultPatientAccess.class);
+        EntityAccess entityAccess = mock(DefaultEntityAccess.class);
         Visibility patientVisibility = new PublicVisibility();
 
         CapturingMatcher<SolrInputDocument> capturedArgument = new CapturingMatcher<>();
@@ -168,8 +168,8 @@ public class SolrPatientIndexerTest
 
         doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
         doReturn(reporterReference).when(this.patient).getReporter();
-        doReturn(patientAccess).when(this.permissions).getPatientAccess(this.patient);
-        doReturn(patientVisibility).when(patientAccess).getVisibility();
+        doReturn(entityAccess).when(this.permissions).getPatientAccess(this.patient);
+        doReturn(patientVisibility).when(entityAccess).getVisibility();
 
         this.patientIndexer.index(this.patient);
 
@@ -188,7 +188,7 @@ public class SolrPatientIndexerTest
         Feature testFeature = mock(Feature.class);
         patientFeatures.add(testFeature);
         DocumentReference reporterReference = new DocumentReference("xwiki", "XWiki", "user");
-        PatientAccess patientAccess = mock(DefaultPatientAccess.class);
+        EntityAccess entityAccess = mock(DefaultEntityAccess.class);
         Visibility patientVisibility = new PublicVisibility();
 
         CapturingMatcher<SolrInputDocument> capturedArgument = new CapturingMatcher<>();
@@ -228,8 +228,8 @@ public class SolrPatientIndexerTest
             new IndexedPatientData<>("genes", fakeGenes);
         doReturn(fakeGeneData).when(this.patient).getData("genes");
 
-        doReturn(patientAccess).when(this.permissions).getPatientAccess(this.patient);
-        doReturn(patientVisibility).when(patientAccess).getVisibility();
+        doReturn(entityAccess).when(this.permissions).getPatientAccess(this.patient);
+        doReturn(patientVisibility).when(entityAccess).getVisibility();
 
         this.patientIndexer.index(this.patient);
         SolrInputDocument inputDoc = capturedArgument.getLastValue();
@@ -262,7 +262,7 @@ public class SolrPatientIndexerTest
         Feature testFeature = mock(Feature.class);
         patientFeatures.add(testFeature);
         DocumentReference reporterReference = new DocumentReference("xwiki", "XWiki", "user");
-        PatientAccess patientAccess = mock(DefaultPatientAccess.class);
+        EntityAccess entityAccess = mock(DefaultEntityAccess.class);
         Visibility patientVisibility = new PublicVisibility();
 
         doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
@@ -273,8 +273,8 @@ public class SolrPatientIndexerTest
         doReturn("phenotype").when(testFeature).getType();
         doReturn("id").when(testFeature).getId();
 
-        doReturn(patientAccess).when(this.permissions).getPatientAccess(this.patient);
-        doReturn(patientVisibility).when(patientAccess).getVisibility();
+        doReturn(entityAccess).when(this.permissions).getPatientAccess(this.patient);
+        doReturn(patientVisibility).when(entityAccess).getVisibility();
         doThrow(new SolrServerException("Error while adding SolrInputDocument")).when(this.server)
             .add(any(SolrInputDocument.class));
 
@@ -290,7 +290,7 @@ public class SolrPatientIndexerTest
         Feature testFeature = mock(Feature.class);
         patientFeatures.add(testFeature);
         DocumentReference reporterReference = new DocumentReference("xwiki", "XWiki", "user");
-        PatientAccess patientAccess = mock(DefaultPatientAccess.class);
+        EntityAccess entityAccess = mock(DefaultEntityAccess.class);
         Visibility patientVisibility = new PublicVisibility();
 
         doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
@@ -301,8 +301,8 @@ public class SolrPatientIndexerTest
         doReturn("phenotype").when(testFeature).getType();
         doReturn("id").when(testFeature).getId();
 
-        doReturn(patientAccess).when(this.permissions).getPatientAccess(this.patient);
-        doReturn(patientVisibility).when(patientAccess).getVisibility();
+        doReturn(entityAccess).when(this.permissions).getPatientAccess(this.patient);
+        doReturn(patientVisibility).when(entityAccess).getVisibility();
         doThrow(new IOException("Error while adding SolrInputDocument")).when(this.server)
             .add(any(SolrInputDocument.class));
 
@@ -318,7 +318,7 @@ public class SolrPatientIndexerTest
         Set<Feature> patientFeatures = new HashSet<>();
         Feature testFeature = mock(Feature.class);
         patientFeatures.add(testFeature);
-        PatientAccess patientAccess = mock(DefaultPatientAccess.class);
+        EntityAccess entityAccess = mock(DefaultEntityAccess.class);
         Visibility patientVisibility = new PublicVisibility();
 
         CapturingMatcher<SolrInputDocument> capturedArgument = new CapturingMatcher<>();
@@ -332,8 +332,8 @@ public class SolrPatientIndexerTest
         doReturn("phenotype").when(testFeature).getType();
         doReturn("id").when(testFeature).getId();
 
-        doReturn(patientAccess).when(this.permissions).getPatientAccess(this.patient);
-        doReturn(patientVisibility).when(patientAccess).getVisibility();
+        doReturn(entityAccess).when(this.permissions).getPatientAccess(this.patient);
+        doReturn(patientVisibility).when(entityAccess).getVisibility();
 
         this.patientIndexer.index(this.patient);
         SolrInputDocument inputDoc = capturedArgument.getLastValue();
@@ -384,7 +384,7 @@ public class SolrPatientIndexerTest
         Feature testFeature = mock(Feature.class);
         patientFeatures.add(testFeature);
         DocumentReference reporterReference = new DocumentReference("xwiki", "XWiki", "user");
-        PatientAccess patientAccess = mock(DefaultPatientAccess.class);
+        EntityAccess entityAccess = mock(DefaultEntityAccess.class);
         Visibility patientVisibility = new PublicVisibility();
 
         doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
@@ -395,8 +395,8 @@ public class SolrPatientIndexerTest
         doReturn("phenotype").when(testFeature).getType();
         doReturn("id").when(testFeature).getId();
 
-        doReturn(patientAccess).when(this.permissions).getPatientAccess(this.patient);
-        doReturn(patientVisibility).when(patientAccess).getVisibility();
+        doReturn(entityAccess).when(this.permissions).getPatientAccess(this.patient);
+        doReturn(patientVisibility).when(entityAccess).getVisibility();
 
         this.patientIndexer.reindex();
 
