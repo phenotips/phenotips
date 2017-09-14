@@ -1,4 +1,4 @@
-org.phenotips.data.permissions.internal.DefaultPatientAccessHelper
+org.phenotips.data.permissions.internal.DefaultPermissionsConfiguration
 org.phenotips.data.permissions.internal.DefaultPermissionsManager
 org.phenotips.data.permissions.internal.SecurePermissionsManager
 org.phenotips.data.permissions.internal.OwnerAccessAuthorizationModule
@@ -7,3 +7,5 @@ org.phenotips.data.permissions.internal.VisibilityAccessAuthorizationModule
 org.phenotips.data.permissions.internal.DenyAccessByDefaultAuthorizationModule
 org.phenotips.data.permissions.script.PermissionsManagerScriptService
 org.phenotips.data.permissions.events.EntityRightsUpdatedEvent
+org.phenotips.data.permissions.events.PatientRightsUpdatedEvent
+500:org.phenotips.data.permissions.internal.OwnerContactProvider

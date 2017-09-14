@@ -17,7 +17,7 @@
  */
 package org.phenotips.data.permissions;
 
-import org.phenotips.data.Patient;
+import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
@@ -27,11 +27,12 @@ import java.util.Collection;
 /**
  * @version $Id$
  * @since 1.0M9
+ * @since 1.4; under new name and moved from patient-access-rules
  */
 @Unstable
 public interface EntityAccess
 {
-    Patient getPatient();
+    PrimaryEntity getEntity();
 
     Owner getOwner();
 

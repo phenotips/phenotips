@@ -17,7 +17,6 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
@@ -32,6 +31,7 @@ import org.phenotips.data.permissions.internal.visibility.HiddenVisibility;
 import org.phenotips.data.permissions.internal.visibility.MockVisibility;
 import org.phenotips.data.permissions.internal.visibility.PrivateVisibility;
 import org.phenotips.data.permissions.internal.visibility.PublicVisibility;
+import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -264,27 +264,27 @@ public class DefaultEntityPermissionsManagerTest
         Assert.assertNull(this.mocker.getComponentUnderTest().resolveVisibility("unknown"));
     }
 
-    /** {@link EntityPermissionsManager#getPatientAccess(Patient)} returns a {@link DefaultEntityAccess}. */
+    /** {@link EntityPermissionsManager#getEntityAccess(PrimaryEntity)} returns a {@link DefaultEntityAccess}. */
     @Test
-    public void getPatientAccess() throws ComponentLookupException
+    public void getPrimaryEntityAccess() throws ComponentLookupException
     {
         ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
-        Patient patient = mock(Patient.class);
+        PrimaryEntity entity = mock(PrimaryEntity.class);
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
         when(cm.getInstance(EntityAccessHelper.class)).thenReturn(helper);
-        EntityAccess result = this.mocker.getComponentUnderTest().getPatientAccess(patient);
+        EntityAccess result = this.mocker.getComponentUnderTest().getEntityAccess(entity);
         Assert.assertNotNull(result);
         Assert.assertTrue(result instanceof DefaultEntityAccess);
     }
 
-    /** {@link EntityPermissionsManager#getPatientAccess(Patient)} returns a {@link DefaultEntityAccess}. */
+    /** {@link EntityPermissionsManager#getEntityAccess(PrimaryEntity)} returns a {@link DefaultEntityAccess}. */
     @Test
-    public void getPatientAccessWithMissingHelper() throws ComponentLookupException
+    public void getPrimaryEntityAccessWithMissingHelper() throws ComponentLookupException
     {
         ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
-        Patient patient = mock(Patient.class);
+        PrimaryEntity entity = mock(PrimaryEntity.class);
         when(cm.getInstance(EntityAccessHelper.class)).thenThrow(new ComponentLookupException("Missing"));
-        EntityAccess result = this.mocker.getComponentUnderTest().getPatientAccess(patient);
+        EntityAccess result = this.mocker.getComponentUnderTest().getEntityAccess(entity);
         Assert.assertNotNull(result);
         Assert.assertTrue(result instanceof DefaultEntityAccess);
     }
@@ -292,8 +292,8 @@ public class DefaultEntityPermissionsManagerTest
     @Test
     public void filterCollectionByVisibilityWithEmptyInputReturnsEmptyCollection() throws ComponentLookupException
     {
-        Collection<Patient> result = this.mocker.getComponentUnderTest()
-            .filterByVisibility(Collections.<Patient>emptyList(), new PrivateVisibility());
+        Collection<? extends PrimaryEntity> result = this.mocker.getComponentUnderTest()
+            .filterByVisibility(Collections.<PrimaryEntity>emptyList(), new PrivateVisibility());
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isEmpty());
     }
@@ -301,8 +301,8 @@ public class DefaultEntityPermissionsManagerTest
     @Test
     public void filterIteratorByVisibilityWithEmptyInputReturnsEmptyIterator() throws ComponentLookupException
     {
-        Iterator<Patient> result = this.mocker.getComponentUnderTest()
-            .filterByVisibility(Collections.<Patient>emptyIterator(), new PrivateVisibility());
+        Iterator<? extends PrimaryEntity> result = this.mocker.getComponentUnderTest()
+            .filterByVisibility(Collections.<PrimaryEntity>emptyIterator(), new PrivateVisibility());
         Assert.assertNotNull(result);
         Assert.assertFalse(result.hasNext());
     }
@@ -310,8 +310,8 @@ public class DefaultEntityPermissionsManagerTest
     @Test
     public void filterCollectionByVisibilityWithNullInputReturnsEmptyCollection() throws ComponentLookupException
     {
-        Collection<Patient> result = this.mocker.getComponentUnderTest()
-            .filterByVisibility((Collection<Patient>) null, new PrivateVisibility());
+        Collection<? extends PrimaryEntity> result = this.mocker.getComponentUnderTest()
+            .filterByVisibility((Collection<PrimaryEntity>) null, new PrivateVisibility());
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isEmpty());
     }
@@ -319,58 +319,58 @@ public class DefaultEntityPermissionsManagerTest
     @Test
     public void filterIteratorByVisibilityWithNullInputReturnsEmptyIterator() throws ComponentLookupException
     {
-        Iterator<Patient> result = this.mocker.getComponentUnderTest()
-            .filterByVisibility((Iterator<Patient>) null, new PrivateVisibility());
+        Iterator<? extends PrimaryEntity> result = this.mocker.getComponentUnderTest()
+            .filterByVisibility((Iterator<PrimaryEntity>) null, new PrivateVisibility());
         Assert.assertNotNull(result);
         Assert.assertFalse(result.hasNext());
     }
 
     @Test
-    public void filterCollectionByVisibilityWithValidInputFiltersPatients() throws ComponentLookupException
+    public void filterCollectionByVisibilityWithValidInputFiltersPrimaryEntitys() throws ComponentLookupException
     {
         ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
         when(cm.getInstance(EntityAccessHelper.class)).thenReturn(helper);
 
-        Collection<Patient> input = new ArrayList<>();
-        Patient p1 = mock(Patient.class);
+        Collection<PrimaryEntity> input = new ArrayList<>();
+        PrimaryEntity p1 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p1)).thenReturn(new PublicVisibility());
         input.add(p1);
-        Patient p2 = mock(Patient.class);
+        PrimaryEntity p2 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p2)).thenReturn(new HiddenVisibility());
         input.add(p2);
-        Patient p3 = mock(Patient.class);
+        PrimaryEntity p3 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p3)).thenReturn(new PrivateVisibility());
         input.add(p3);
 
-        Collection<Patient> result = this.mocker.getComponentUnderTest()
+        Collection<? extends PrimaryEntity> result = this.mocker.getComponentUnderTest()
             .filterByVisibility(input, new PrivateVisibility());
         Assert.assertNotNull(result);
         Assert.assertEquals(2, result.size());
-        Iterator<Patient> it = result.iterator();
+        Iterator<? extends PrimaryEntity> it = result.iterator();
         Assert.assertSame(p1, it.next());
         Assert.assertSame(p3, it.next());
     }
 
     @Test
-    public void filterIteratorByVisibilityWithValidInputFiltersPatients() throws ComponentLookupException
+    public void filterIteratorByVisibilityWithValidInputFiltersPrimaryEntitys() throws ComponentLookupException
     {
         ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
         when(cm.getInstance(EntityAccessHelper.class)).thenReturn(helper);
 
-        Collection<Patient> input = new ArrayList<>();
-        Patient p1 = mock(Patient.class);
+        Collection<PrimaryEntity> input = new ArrayList<>();
+        PrimaryEntity p1 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p1)).thenReturn(new PublicVisibility());
         input.add(p1);
-        Patient p2 = mock(Patient.class);
+        PrimaryEntity p2 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p2)).thenReturn(new HiddenVisibility());
         input.add(p2);
-        Patient p3 = mock(Patient.class);
+        PrimaryEntity p3 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p3)).thenReturn(new PrivateVisibility());
         input.add(p3);
 
-        Iterator<Patient> result = this.mocker.getComponentUnderTest()
+        Iterator<? extends PrimaryEntity> result = this.mocker.getComponentUnderTest()
             .filterByVisibility(input.iterator(), new PrivateVisibility());
         Assert.assertNotNull(result);
         Assert.assertTrue(result.hasNext());
@@ -381,55 +381,55 @@ public class DefaultEntityPermissionsManagerTest
     }
 
     @Test
-    public void filterCollectionByVisibilityWithNullInInputFiltersValidPatients() throws ComponentLookupException
+    public void filterCollectionByVisibilityWithNullInInputFiltersValidPrimaryEntitys() throws ComponentLookupException
     {
         ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
         when(cm.getInstance(EntityAccessHelper.class)).thenReturn(helper);
 
-        Collection<Patient> input = new ArrayList<>();
-        Patient p1 = mock(Patient.class);
+        Collection<PrimaryEntity> input = new ArrayList<>();
+        PrimaryEntity p1 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p1)).thenReturn(new PublicVisibility());
         input.add(p1);
-        Patient p2 = mock(Patient.class);
+        PrimaryEntity p2 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p2)).thenReturn(new HiddenVisibility());
         input.add(p2);
         input.add(null);
-        Patient p3 = mock(Patient.class);
+        PrimaryEntity p3 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p3)).thenReturn(new PrivateVisibility());
         input.add(p3);
         input.add(null);
 
-        Collection<Patient> result = this.mocker.getComponentUnderTest()
+        Collection<? extends PrimaryEntity> result = this.mocker.getComponentUnderTest()
             .filterByVisibility(input, new PrivateVisibility());
         Assert.assertNotNull(result);
         Assert.assertEquals(2, result.size());
-        Iterator<Patient> it = result.iterator();
+        Iterator<? extends PrimaryEntity> it = result.iterator();
         Assert.assertSame(p1, it.next());
         Assert.assertSame(p3, it.next());
     }
 
     @Test
-    public void filterIteratorByVisibilityWithNullInInputFiltersValidPatients() throws ComponentLookupException
+    public void filterIteratorByVisibilityWithNullInInputFiltersValidPrimaryEntitys() throws ComponentLookupException
     {
         ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
         when(cm.getInstance(EntityAccessHelper.class)).thenReturn(helper);
 
-        Collection<Patient> input = new ArrayList<>();
-        Patient p1 = mock(Patient.class);
+        Collection<PrimaryEntity> input = new ArrayList<>();
+        PrimaryEntity p1 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p1)).thenReturn(new PublicVisibility());
         input.add(p1);
-        Patient p2 = mock(Patient.class);
+        PrimaryEntity p2 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p2)).thenReturn(new HiddenVisibility());
         input.add(p2);
         input.add(null);
-        Patient p3 = mock(Patient.class);
+        PrimaryEntity p3 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p3)).thenReturn(new PrivateVisibility());
         input.add(p3);
         input.add(null);
 
-        Iterator<Patient> result = this.mocker.getComponentUnderTest()
+        Iterator<? extends PrimaryEntity> result = this.mocker.getComponentUnderTest()
             .filterByVisibility(input.iterator(), new PrivateVisibility());
         Assert.assertNotNull(result);
         Assert.assertTrue(result.hasNext());
@@ -446,19 +446,19 @@ public class DefaultEntityPermissionsManagerTest
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
         when(cm.getInstance(EntityAccessHelper.class)).thenReturn(helper);
 
-        Collection<Patient> input = new ArrayList<>();
-        Patient p1 = mock(Patient.class);
+        Collection<PrimaryEntity> input = new ArrayList<>();
+        PrimaryEntity p1 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p1)).thenReturn(new HiddenVisibility());
         input.add(p1);
-        Patient p2 = mock(Patient.class);
+        PrimaryEntity p2 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p2)).thenReturn(new HiddenVisibility());
         input.add(p2);
         input.add(null);
-        Patient p3 = mock(Patient.class);
+        PrimaryEntity p3 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p3)).thenReturn(new PrivateVisibility());
         input.add(p3);
 
-        Collection<Patient> result = this.mocker.getComponentUnderTest()
+        Collection<? extends PrimaryEntity> result = this.mocker.getComponentUnderTest()
             .filterByVisibility(input, new PublicVisibility());
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isEmpty());
@@ -471,19 +471,19 @@ public class DefaultEntityPermissionsManagerTest
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
         when(cm.getInstance(EntityAccessHelper.class)).thenReturn(helper);
 
-        Collection<Patient> input = new ArrayList<>();
-        Patient p1 = mock(Patient.class);
+        Collection<PrimaryEntity> input = new ArrayList<>();
+        PrimaryEntity p1 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p1)).thenReturn(new HiddenVisibility());
         input.add(p1);
-        Patient p2 = mock(Patient.class);
+        PrimaryEntity p2 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p2)).thenReturn(new HiddenVisibility());
         input.add(p2);
         input.add(null);
-        Patient p3 = mock(Patient.class);
+        PrimaryEntity p3 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p3)).thenReturn(new PrivateVisibility());
         input.add(p3);
 
-        Iterator<Patient> result = this.mocker.getComponentUnderTest()
+        Iterator<? extends PrimaryEntity> result = this.mocker.getComponentUnderTest()
             .filterByVisibility(input.iterator(), new PublicVisibility());
         Assert.assertNotNull(result);
         Assert.assertFalse(result.hasNext());
@@ -496,23 +496,23 @@ public class DefaultEntityPermissionsManagerTest
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
         when(cm.getInstance(EntityAccessHelper.class)).thenReturn(helper);
 
-        Collection<Patient> input = new ArrayList<>();
-        Patient p1 = mock(Patient.class);
+        Collection<PrimaryEntity> input = new ArrayList<>();
+        PrimaryEntity p1 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p1)).thenReturn(new PublicVisibility());
         input.add(p1);
-        Patient p2 = mock(Patient.class);
+        PrimaryEntity p2 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p2)).thenReturn(new HiddenVisibility());
         input.add(p2);
         input.add(null);
-        Patient p3 = mock(Patient.class);
+        PrimaryEntity p3 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p3)).thenReturn(new PrivateVisibility());
         input.add(p3);
 
-        Collection<Patient> result = this.mocker.getComponentUnderTest()
+        Collection<? extends PrimaryEntity> result = this.mocker.getComponentUnderTest()
             .filterByVisibility(input, null);
         Assert.assertNotNull(result);
         Assert.assertEquals(4, result.size());
-        Iterator<Patient> it = result.iterator();
+        Iterator<? extends PrimaryEntity> it = result.iterator();
         Assert.assertSame(p1, it.next());
         Assert.assertSame(p2, it.next());
         Assert.assertNull(it.next());
@@ -526,19 +526,19 @@ public class DefaultEntityPermissionsManagerTest
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
         when(cm.getInstance(EntityAccessHelper.class)).thenReturn(helper);
 
-        Collection<Patient> input = new ArrayList<>();
-        Patient p1 = mock(Patient.class);
+        Collection<PrimaryEntity> input = new ArrayList<>();
+        PrimaryEntity p1 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p1)).thenReturn(new PublicVisibility());
         input.add(p1);
-        Patient p2 = mock(Patient.class);
+        PrimaryEntity p2 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p2)).thenReturn(new HiddenVisibility());
         input.add(p2);
         input.add(null);
-        Patient p3 = mock(Patient.class);
+        PrimaryEntity p3 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p3)).thenReturn(new PrivateVisibility());
         input.add(p3);
 
-        Iterator<Patient> result = this.mocker.getComponentUnderTest()
+        Iterator<? extends PrimaryEntity> result = this.mocker.getComponentUnderTest()
             .filterByVisibility(input.iterator(), null);
         Assert.assertTrue(result.hasNext());
         Assert.assertSame(p1, result.next());
@@ -558,19 +558,19 @@ public class DefaultEntityPermissionsManagerTest
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
         when(cm.getInstance(EntityAccessHelper.class)).thenReturn(helper);
 
-        Collection<Patient> input = new ArrayList<>();
-        Patient p1 = mock(Patient.class);
+        Collection<PrimaryEntity> input = new ArrayList<>();
+        PrimaryEntity p1 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p1)).thenReturn(new PublicVisibility());
         input.add(p1);
-        Patient p2 = mock(Patient.class);
+        PrimaryEntity p2 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p2)).thenReturn(new HiddenVisibility());
         input.add(p2);
         input.add(null);
-        Patient p3 = mock(Patient.class);
+        PrimaryEntity p3 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p3)).thenReturn(new PrivateVisibility());
         input.add(p3);
 
-        Iterator<Patient> result = this.mocker.getComponentUnderTest()
+        Iterator<? extends PrimaryEntity> result = this.mocker.getComponentUnderTest()
             .filterByVisibility(input.iterator(), new PrivateVisibility());
         Assert.assertSame(p1, result.next());
         result.remove();
@@ -583,12 +583,12 @@ public class DefaultEntityPermissionsManagerTest
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
         when(cm.getInstance(EntityAccessHelper.class)).thenReturn(helper);
 
-        Collection<Patient> input = new ArrayList<>();
-        Patient p1 = mock(Patient.class);
+        Collection<PrimaryEntity> input = new ArrayList<>();
+        PrimaryEntity p1 = mock(PrimaryEntity.class);
         when(helper.getVisibility(p1)).thenReturn(new PublicVisibility());
         input.add(p1);
 
-        Iterator<Patient> result = this.mocker.getComponentUnderTest()
+        Iterator<? extends PrimaryEntity> result = this.mocker.getComponentUnderTest()
             .filterByVisibility(input.iterator(), new PrivateVisibility());
         Assert.assertSame(p1, result.next());
         Assert.assertFalse(result.hasNext());

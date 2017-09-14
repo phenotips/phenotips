@@ -168,7 +168,7 @@ public class SolrPatientIndexerTest
 
         doReturn(this.patientDocReference).when(this.patient).getDocumentReference();
         doReturn(reporterReference).when(this.patient).getReporter();
-        doReturn(entityAccess).when(this.permissions).getPatientAccess(this.patient);
+        doReturn(entityAccess).when(this.permissions).getEntityAccess(this.patient);
         doReturn(patientVisibility).when(entityAccess).getVisibility();
 
         this.patientIndexer.index(this.patient);
@@ -228,7 +228,7 @@ public class SolrPatientIndexerTest
             new IndexedPatientData<>("genes", fakeGenes);
         doReturn(fakeGeneData).when(this.patient).getData("genes");
 
-        doReturn(entityAccess).when(this.permissions).getPatientAccess(this.patient);
+        doReturn(entityAccess).when(this.permissions).getEntityAccess(this.patient);
         doReturn(patientVisibility).when(entityAccess).getVisibility();
 
         this.patientIndexer.index(this.patient);
@@ -273,7 +273,7 @@ public class SolrPatientIndexerTest
         doReturn("phenotype").when(testFeature).getType();
         doReturn("id").when(testFeature).getId();
 
-        doReturn(entityAccess).when(this.permissions).getPatientAccess(this.patient);
+        doReturn(entityAccess).when(this.permissions).getEntityAccess(this.patient);
         doReturn(patientVisibility).when(entityAccess).getVisibility();
         doThrow(new SolrServerException("Error while adding SolrInputDocument")).when(this.server)
             .add(any(SolrInputDocument.class));
@@ -301,7 +301,7 @@ public class SolrPatientIndexerTest
         doReturn("phenotype").when(testFeature).getType();
         doReturn("id").when(testFeature).getId();
 
-        doReturn(entityAccess).when(this.permissions).getPatientAccess(this.patient);
+        doReturn(entityAccess).when(this.permissions).getEntityAccess(this.patient);
         doReturn(patientVisibility).when(entityAccess).getVisibility();
         doThrow(new IOException("Error while adding SolrInputDocument")).when(this.server)
             .add(any(SolrInputDocument.class));
@@ -332,7 +332,7 @@ public class SolrPatientIndexerTest
         doReturn("phenotype").when(testFeature).getType();
         doReturn("id").when(testFeature).getId();
 
-        doReturn(entityAccess).when(this.permissions).getPatientAccess(this.patient);
+        doReturn(entityAccess).when(this.permissions).getEntityAccess(this.patient);
         doReturn(patientVisibility).when(entityAccess).getVisibility();
 
         this.patientIndexer.index(this.patient);
@@ -395,7 +395,7 @@ public class SolrPatientIndexerTest
         doReturn("phenotype").when(testFeature).getType();
         doReturn("id").when(testFeature).getId();
 
-        doReturn(entityAccess).when(this.permissions).getPatientAccess(this.patient);
+        doReturn(entityAccess).when(this.permissions).getEntityAccess(this.patient);
         doReturn(patientVisibility).when(entityAccess).getVisibility();
 
         this.patientIndexer.reindex();

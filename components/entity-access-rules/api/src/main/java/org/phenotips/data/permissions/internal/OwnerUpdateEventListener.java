@@ -37,14 +37,14 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
- * This listener creates a {@code PhenoTips.OwnerClass} object when a new patient is created, with the creator set as
+ * This listener creates a {@code PhenoTips.OwnerClass} object when a new entity is created, with the creator set as
  * the owner.
  *
  * @version $Id$
  * @since 1.0M13
  */
 @Component
-@Named("phenotips-patient-owner-updater")
+@Named("phenotips-entity-owner-updater")
 @Singleton
 public class OwnerUpdateEventListener extends AbstractEventListener
 {
@@ -57,7 +57,7 @@ public class OwnerUpdateEventListener extends AbstractEventListener
     /** Default constructor, sets up the listener name and the list of events to subscribe to. */
     public OwnerUpdateEventListener()
     {
-        super("phenotips-patient-owner-updater", new PatientCreatingEvent());
+        super("phenotips-entity-owner-updater", new PatientCreatingEvent());
     }
 
     @Override
@@ -76,7 +76,7 @@ public class OwnerUpdateEventListener extends AbstractEventListener
                 ownerObject.setStringValue("owner", "");
             }
         } catch (XWikiException ex) {
-            this.logger.error("Failed to set the initial owner for patient [{}]: {}", doc.getDocumentReference(),
+            this.logger.error("Failed to set the initial owner for entity [{}]: {}", doc.getDocumentReference(),
                 ex.getMessage(), ex);
         }
     }

@@ -17,11 +17,11 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
+import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.component.annotation.Component;
 
@@ -84,26 +84,29 @@ public class SecureEntityPermissionsManager implements EntityPermissionsManager
     }
 
     @Override
-    public EntityAccess getPatientAccess(Patient targetPatient)
+
+    public EntityAccess getEntityAccess(PrimaryEntity targetEntity)
     {
-        return new SecureEntityAccess(this.internalService.getPatientAccess(targetPatient), this.internalService);
+        return new SecureEntityAccess(this.internalService.getEntityAccess(targetEntity), this.internalService);
     }
 
     @Override
-    public Collection<Patient> filterByVisibility(Collection<Patient> patients, Visibility requiredVisibility)
+    public Collection<? extends PrimaryEntity> filterByVisibility(Collection<? extends PrimaryEntity> entities,
+        Visibility requiredVisibility)
     {
-        return this.internalService.filterByVisibility(patients, requiredVisibility);
+        return this.internalService.filterByVisibility(entities, requiredVisibility);
     }
 
     @Override
-    public Iterator<Patient> filterByVisibility(Iterator<Patient> patients, Visibility requiredVisibility)
+    public Iterator<? extends PrimaryEntity> filterByVisibility(Iterator<? extends PrimaryEntity> entities,
+        Visibility requiredVisibility)
     {
-        return this.internalService.filterByVisibility(patients, requiredVisibility);
+        return this.internalService.filterByVisibility(entities, requiredVisibility);
     }
 
     @Override
-    public void fireRightsUpdateEvent(String patientId)
+    public void fireRightsUpdateEvent(String entityId)
     {
-        this.internalService.fireRightsUpdateEvent(patientId);
+        this.internalService.fireRightsUpdateEvent(entityId);
     }
 }

@@ -94,7 +94,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
             this.factory.createCollaboratorsRepresentation(patientAccessContext.getPatient(), this.uriInfo);
 
         result.withLinks(this.autolinker.get().forResource(this.getClass(), this.uriInfo)
-            .withGrantedRight(patientAccessContext.getEntityAccess().getAccessLevel().getGrantedRight())
+            .withGrantedRight(patientAccessContext.getPatientAccess().getAccessLevel().getGrantedRight())
             .build());
 
         return result;
@@ -116,7 +116,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         List<Object> accessLevels = this.container.getRequest().getProperties("level");
 
         PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
-        EntityAccess entityAccess = patientAccessContext.getEntityAccess();
+        EntityAccess entityAccess = patientAccessContext.getPatientAccess();
 
         if (collaborators.size() != accessLevels.size()) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
@@ -158,7 +158,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         boolean replace)
     {
         PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
-        EntityAccess entityAccess = patientAccessContext.getEntityAccess();
+        EntityAccess entityAccess = patientAccessContext.getPatientAccess();
 
         Map<EntityReference, Collaborator> internalCollaborators = new LinkedHashMap<>();
         if (!replace) {

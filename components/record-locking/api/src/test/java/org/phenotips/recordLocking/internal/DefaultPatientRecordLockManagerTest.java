@@ -104,7 +104,7 @@ public class DefaultPatientRecordLockManagerTest
         Mockito.doReturn(this.xwiki).when(this.context).getWiki();
         Mockito.doReturn(this.patientDocumentReference).when(this.patient).getDocumentReference();
         Mockito.doReturn(this.patientDocument).when(this.patient).getXDocument();
-        Mockito.doReturn(this.entityAccess).when(this.pm).getPatientAccess(this.patient);
+        Mockito.doReturn(this.entityAccess).when(this.pm).getEntityAccess(this.patient);
 
     }
 

@@ -88,7 +88,7 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
 
         // adding links relative to this context
         result.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo)
-            .withGrantedRight(patientAccessContext.getEntityAccess().getAccessLevel().getGrantedRight())
+            .withGrantedRight(patientAccessContext.getPatientAccess().getAccessLevel().getGrantedRight())
             .build());
 
         return result;
@@ -139,7 +139,7 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
         // the helper in EntityAccess needs to use this.entitySerializer.serialize
         DocumentReference ownerDocRef = new DocumentReference(ownerReference);
 
-        EntityAccess entityAccess = patientAccessContext.getEntityAccess();
+        EntityAccess entityAccess = patientAccessContext.getPatientAccess();
         if (!entityAccess.setOwner(ownerDocRef)) {
             // todo. should this status be an internal server error, or a bad request?
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);

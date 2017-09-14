@@ -26,6 +26,7 @@ import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.internal.SecureEntityPermissionsManager;
 import org.phenotips.data.permissions.internal.access.EditAccessLevel;
 import org.phenotips.data.permissions.internal.visibility.PublicVisibility;
+import org.phenotips.entities.PrimaryEntityResolver;
 import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.manager.ComponentLookupException;
@@ -125,26 +126,26 @@ public class EntityPermissionsManagerScriptServiceTest
         when(patient.getDocumentReference()).thenReturn(patientReference);
 
         EntityAccess internalAccess = mock(EntityAccess.class);
-        when(internal.getPatientAccess(patient)).thenReturn(internalAccess);
+        when(internal.getEntityAccess(patient)).thenReturn(internalAccess);
 
         User currentUser = mock(User.class);
         UserManager userManager = this.mocker.getInstance(UserManager.class);
         when(userManager.getCurrentUser()).thenReturn(currentUser);
 
         String testID = "TESTID";
-        PatientRepository patientRepo = this.mocker.getInstance(PatientRepository.class);
-        when(patientRepo.get(testID)).thenReturn(patient);
+        PrimaryEntityResolver patientRepo = this.mocker.getInstance(PrimaryEntityResolver.class);
+        when(patientRepo.resolveEntity(testID)).thenReturn(patient);
 
         AuthorizationService access = this.mocker.getInstance(AuthorizationService.class);
 
         // test when has VIEW rights
         when(access.hasAccess(currentUser, Right.VIEW, patientReference)).thenReturn(true);
-        EntityAccess result1 = this.mocker.getComponentUnderTest().getPatientAccess(testID);
+        EntityAccess result1 = this.mocker.getComponentUnderTest().getEntityAccess(testID);
         Assert.assertSame(internalAccess, result1);
 
         // test when no VIEW rights
         when(access.hasAccess(currentUser, Right.VIEW, patientReference)).thenReturn(false);
-        EntityAccess result2 = this.mocker.getComponentUnderTest().getPatientAccess(testID);
+        EntityAccess result2 = this.mocker.getComponentUnderTest().getEntityAccess(testID);
         Assert.assertNull(result2);
     }
 }

@@ -89,7 +89,7 @@ public class OwnerAccessAuthorizationModuleTest
         when(this.repo.get("xwiki:data.P01")).thenReturn(this.patient);
 
         this.pm = this.mocker.getInstance(EntityPermissionsManager.class);
-        when(this.pm.getPatientAccess(this.patient)).thenReturn(this.entityAccess);
+        when(this.pm.getEntityAccess(this.patient)).thenReturn(this.entityAccess);
         this.mocker.registerComponent(AccessLevel.class, "owner", this.ownerAccess);
         when(this.entityAccess.getAccessLevel(Matchers.any())).thenReturn(this.noAccess);
         when(this.entityAccess.getAccessLevel(this.userProfile)).thenReturn(this.userAccess);

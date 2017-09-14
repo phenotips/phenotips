@@ -17,13 +17,13 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.PermissionsConfiguration;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent;
+import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -102,7 +102,7 @@ public class DefaultEntityPermissionsManager implements EntityPermissionsManager
                 return this.componentManager.get().getInstance(Visibility.class, name);
             }
         } catch (ComponentLookupException ex) {
-            this.logger.warn("Invalid patient visibility requested: {}", name);
+            this.logger.warn("Invalid entity visibility requested: {}", name);
         }
         return null;
     }
@@ -133,49 +133,51 @@ public class DefaultEntityPermissionsManager implements EntityPermissionsManager
                 return this.componentManager.get().getInstance(AccessLevel.class, name);
             }
         } catch (ComponentLookupException ex) {
-            this.logger.warn("Invalid patient access level requested: {}", name);
+            this.logger.warn("Invalid entity access level requested: {}", name);
         }
         return null;
     }
 
     @Override
-    public EntityAccess getPatientAccess(Patient targetPatient)
+    public EntityAccess getEntityAccess(PrimaryEntity targetPatient)
     {
         return new DefaultEntityAccess(targetPatient, getHelper(), this);
     }
 
     @Override
-    public Collection<Patient> filterByVisibility(Collection<Patient> patients, Visibility requiredVisibility)
+    public Collection<? extends PrimaryEntity> filterByVisibility(Collection<? extends PrimaryEntity> entities,
+        Visibility requiredVisibility)
     {
         if (requiredVisibility == null) {
-            return patients;
+            return entities;
         }
-        Collection<Patient> patientsWithVisibility = new LinkedList<>();
-        if (patients == null || patients.isEmpty()) {
-            return patientsWithVisibility;
+        Collection<PrimaryEntity> entitiesWithVisibility = new LinkedList<>();
+        if (entities == null || entities.isEmpty()) {
+            return entitiesWithVisibility;
         }
-        for (Patient patient : patients) {
-            if (patient != null) {
-                Visibility patientVisibility = this.getPatientAccess(patient).getVisibility();
-                if (requiredVisibility.compareTo(patientVisibility) <= 0) {
-                    patientsWithVisibility.add(patient);
+        for (PrimaryEntity entity : entities) {
+            if (entity != null) {
+                Visibility entityVisibility = this.getEntityAccess(entity).getVisibility();
+                if (requiredVisibility.compareTo(entityVisibility) <= 0) {
+                    entitiesWithVisibility.add(entity);
                 }
             }
         }
 
-        return patientsWithVisibility;
+        return entitiesWithVisibility;
     }
 
     @Override
-    public Iterator<Patient> filterByVisibility(Iterator<Patient> patients, Visibility requiredVisibility)
+    public Iterator<? extends PrimaryEntity> filterByVisibility(Iterator<? extends PrimaryEntity> entities,
+        Visibility requiredVisibility)
     {
         if (requiredVisibility == null) {
-            return patients;
+            return entities;
         }
-        if (patients == null || !patients.hasNext()) {
+        if (entities == null || !entities.hasNext()) {
             return Collections.emptyIterator();
         }
-        return new FilteringIterator(patients, requiredVisibility, this);
+        return new FilteringIterator(entities, requiredVisibility, this);
     }
 
     private EntityAccessHelper getHelper()
@@ -188,8 +190,8 @@ public class DefaultEntityPermissionsManager implements EntityPermissionsManager
         return null;
     }
 
-    public void fireRightsUpdateEvent(String patientId)
+    public void fireRightsUpdateEvent(String entityId)
     {
-        this.observationManager.notify(new EntityRightsUpdatedEvent(patientId), null);
+        this.observationManager.notify(new EntityRightsUpdatedEvent(entityId), null);
     }
 }

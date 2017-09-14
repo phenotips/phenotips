@@ -78,7 +78,7 @@ public class PatientAccessContext
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
         this.userOrGroupResolver = userOrGroupResolver;
-        this.entityAccess = this.manager.getPatientAccess(this.patient);
+        this.entityAccess = this.manager.getEntityAccess(this.patient);
         this.initializeUser(minimumAccessLevel, users, this.logger);
     }
 
@@ -118,7 +118,7 @@ public class PatientAccessContext
      *
      * @return an initialized instance of {@link EntityAccess}
      */
-    public EntityAccess getEntityAccess()
+    public EntityAccess getPatientAccess()
     {
         return this.entityAccess;
     }

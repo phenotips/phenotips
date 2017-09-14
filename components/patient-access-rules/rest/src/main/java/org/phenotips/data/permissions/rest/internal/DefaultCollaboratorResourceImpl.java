@@ -89,7 +89,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         CollaboratorRepresentation result;
         try {
             result = this.createCollaboratorRepresentation(patientAccessContext.getPatient(), collaboratorId.trim(),
-                patientAccessContext.getEntityAccess());
+                patientAccessContext.getPatientAccess());
         } catch (WebApplicationException ex) {
             this.logger.debug("Collaborator of patient record [{}] with id [{}] was not found",
                 patientId, collaboratorId);
@@ -98,7 +98,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
 
         // adding links relative to this context
         result.withLinks(this.autolinker.get().forResource(this.getClass(), this.uriInfo)
-            .withGrantedRight(patientAccessContext.getEntityAccess().getAccessLevel().getGrantedRight())
+            .withGrantedRight(patientAccessContext.getPatientAccess().getAccessLevel().getGrantedRight())
             .build());
         return result;
     }
@@ -132,7 +132,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         // besides getting the patient, checks that the user has manage access
         PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
 
-        EntityAccess entityAccess = patientAccessContext.getEntityAccess();
+        EntityAccess entityAccess = patientAccessContext.getPatientAccess();
         EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorId);
         if (collaboratorReference == null) {
             // what would be a better status to indicate that the user/group id is not valid?
@@ -179,7 +179,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     {
         PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
         patientAccessContext.checkCollaboratorInfo(collaboratorId, accessLevelName);
-        EntityAccess entityAccess = patientAccessContext.getEntityAccess();
+        EntityAccess entityAccess = patientAccessContext.getPatientAccess();
         EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorId);
         entityAccess.addCollaborator(collaboratorReference, this.manager.resolveAccessLevel(accessLevelName));
         this.manager.fireRightsUpdateEvent(patientId);

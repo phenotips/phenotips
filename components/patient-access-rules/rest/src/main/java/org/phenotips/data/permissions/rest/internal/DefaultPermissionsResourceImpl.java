@@ -94,7 +94,7 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
         CollaboratorsRepresentation collaborators =
             this.factory.createCollaboratorsRepresentation(patientAccessContext.getPatient(), this.uriInfo);
 
-        AccessLevel accessLevel = patientAccessContext.getEntityAccess().getAccessLevel();
+        AccessLevel accessLevel = patientAccessContext.getPatientAccess().getAccessLevel();
         // adding links into sub-parts
         owner.withLinks(this.autolinker.get().forSecondaryResource(OwnerResource.class, this.uriInfo)
             .withGrantedRight(accessLevel.getGrantedRight())

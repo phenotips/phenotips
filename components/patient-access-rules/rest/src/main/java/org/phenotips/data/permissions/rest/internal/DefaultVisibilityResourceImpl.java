@@ -82,7 +82,7 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
         VisibilityRepresentation result =
             this.factory.createVisibilityRepresentation(patientAccessContext.getPatient());
 
-        AccessLevel accessLevel = patientAccessContext.getEntityAccess().getAccessLevel();
+        AccessLevel accessLevel = patientAccessContext.getPatientAccess().getAccessLevel();
         result.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo)
             .withGrantedRight(accessLevel.getGrantedRight())
             .build());
@@ -139,7 +139,7 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
         // besides getting the patient, checks that the user has manage access
         PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
 
-        EntityAccess entityAccess = patientAccessContext.getEntityAccess();
+        EntityAccess entityAccess = patientAccessContext.getPatientAccess();
         if (!entityAccess.setVisibility(visibility)) {
             // todo. should this status be an internal server error, or a bad request?
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);

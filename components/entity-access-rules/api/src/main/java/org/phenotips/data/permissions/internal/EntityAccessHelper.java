@@ -17,11 +17,11 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.Visibility;
+import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.DocumentReference;
@@ -37,27 +37,27 @@ public interface EntityAccessHelper
 {
     DocumentReference getCurrentUser();
 
-    boolean isAdministrator(Patient patient);
+    boolean isAdministrator(PrimaryEntity entity);
 
-    boolean isAdministrator(Patient patient, DocumentReference user);
+    boolean isAdministrator(PrimaryEntity entity, DocumentReference user);
 
-    Owner getOwner(Patient patient);
+    Owner getOwner(PrimaryEntity entity);
 
-    boolean setOwner(Patient patient, EntityReference userOrGroup);
+    boolean setOwner(PrimaryEntity entity, EntityReference userOrGroup);
 
-    Visibility getVisibility(Patient patient);
+    Visibility getVisibility(PrimaryEntity entity);
 
-    AccessLevel getAccessLevel(Patient patient, EntityReference userOrGroup);
+    AccessLevel getAccessLevel(PrimaryEntity entity, EntityReference userOrGroup);
 
-    boolean setVisibility(Patient patient, Visibility visibility);
+    boolean setVisibility(PrimaryEntity entity, Visibility visibility);
 
-    Collection<Collaborator> getCollaborators(Patient patient);
+    Collection<Collaborator> getCollaborators(PrimaryEntity entity);
 
-    boolean setCollaborators(Patient patient, Collection<Collaborator> newCollaborators);
+    boolean setCollaborators(PrimaryEntity entity, Collection<Collaborator> newCollaborators);
 
-    boolean addCollaborator(Patient patient, Collaborator collaborator);
+    boolean addCollaborator(PrimaryEntity entity, Collaborator collaborator);
 
-    boolean removeCollaborator(Patient patient, Collaborator collaborator);
+    boolean removeCollaborator(PrimaryEntity entity, Collaborator collaborator);
 
     String getType(EntityReference userOrGroup);
 }

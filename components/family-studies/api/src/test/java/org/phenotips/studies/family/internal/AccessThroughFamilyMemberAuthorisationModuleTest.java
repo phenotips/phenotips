@@ -19,7 +19,7 @@ package org.phenotips.studies.family.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.internal.PatientAccessHelper;
+import org.phenotips.data.permissions.internal.EntityAccessHelper;
 import org.phenotips.security.authorization.AuthorizationModule;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
@@ -71,7 +71,7 @@ public class AccessThroughFamilyMemberAuthorisationModuleTest
     @Mock
     private AccessLevel access2;
 
-    private PatientAccessHelper helper;
+    private EntityAccessHelper helper;
 
     private FamilyRepository repo;
 
@@ -90,7 +90,7 @@ public class AccessThroughFamilyMemberAuthorisationModuleTest
         when(this.family.getDocumentReference()).thenReturn(this.doc);
         when(this.family.getMembers()).thenReturn(Arrays.asList(this.patient1, this.patient2));
 
-        this.helper = this.mocker.getInstance(PatientAccessHelper.class);
+        this.helper = this.mocker.getInstance(EntityAccessHelper.class);
 
         when(this.user.getProfileDocument()).thenReturn(this.userProfile);
 

@@ -111,7 +111,7 @@ public class DefaultPatientRecordLockManager implements org.phenotips.recordLock
 
     private boolean hasLockingPermission(Patient patient)
     {
-        EntityAccess entityAccess = this.pm.getPatientAccess(patient);
+        EntityAccess entityAccess = this.pm.getEntityAccess(patient);
         return entityAccess.hasAccessLevel(this.manageAccessLevel);
     }
 

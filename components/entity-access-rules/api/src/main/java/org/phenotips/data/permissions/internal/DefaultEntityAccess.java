@@ -17,13 +17,13 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.Visibility;
+import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -35,29 +35,29 @@ import java.util.Collection;
  */
 public class DefaultEntityAccess implements EntityAccess
 {
-    private final Patient patient;
+    private final PrimaryEntity entity;
 
     private final EntityAccessHelper helper;
 
     private final EntityPermissionsManager manager;
 
-    public DefaultEntityAccess(Patient patient, EntityAccessHelper helper, EntityPermissionsManager manager)
+    public DefaultEntityAccess(PrimaryEntity entity, EntityAccessHelper helper, EntityPermissionsManager manager)
     {
-        this.patient = patient;
+        this.entity = entity;
         this.helper = helper;
         this.manager = manager;
     }
 
     @Override
-    public Patient getPatient()
+    public PrimaryEntity getEntity()
     {
-        return this.patient;
+        return this.entity;
     }
 
     @Override
     public Owner getOwner()
     {
-        return this.helper.getOwner(this.patient);
+        return this.helper.getOwner(this.entity);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class DefaultEntityAccess implements EntityAccess
     @Override
     public boolean isOwner(EntityReference user)
     {
-        Owner owner = this.helper.getOwner(this.patient);
+        Owner owner = this.helper.getOwner(this.entity);
         if (owner == null) {
             return false;
         }
@@ -83,13 +83,13 @@ public class DefaultEntityAccess implements EntityAccess
     @Override
     public boolean setOwner(EntityReference userOrGroup)
     {
-        return this.helper.setOwner(this.patient, userOrGroup);
+        return this.helper.setOwner(this.entity, userOrGroup);
     }
 
     @Override
     public Visibility getVisibility()
     {
-        Visibility result = this.helper.getVisibility(this.patient);
+        Visibility result = this.helper.getVisibility(this.entity);
         if (result == null) {
             result = this.manager.resolveVisibility("private");
         }
@@ -99,26 +99,26 @@ public class DefaultEntityAccess implements EntityAccess
     @Override
     public boolean setVisibility(Visibility newVisibility)
     {
-        return this.helper.setVisibility(this.patient, newVisibility);
+        return this.helper.setVisibility(this.entity, newVisibility);
     }
 
     @Override
     public Collection<Collaborator> getCollaborators()
     {
-        return this.helper.getCollaborators(this.patient);
+        return this.helper.getCollaborators(this.entity);
     }
 
     @Override
     public boolean updateCollaborators(Collection<Collaborator> newCollaborators)
     {
-        return this.helper.setCollaborators(this.patient, newCollaborators);
+        return this.helper.setCollaborators(this.entity, newCollaborators);
     }
 
     @Override
     public boolean addCollaborator(EntityReference user, AccessLevel access)
     {
         Collaborator collaborator = new DefaultCollaborator(user, access, null);
-        return this.helper.addCollaborator(this.patient, collaborator);
+        return this.helper.addCollaborator(this.entity, collaborator);
     }
 
     @Override
@@ -131,7 +131,7 @@ public class DefaultEntityAccess implements EntityAccess
     @Override
     public boolean removeCollaborator(Collaborator collaborator)
     {
-        return this.helper.removeCollaborator(this.patient, collaborator);
+        return this.helper.removeCollaborator(this.entity, collaborator);
     }
 
     @Override
@@ -149,10 +149,10 @@ public class DefaultEntityAccess implements EntityAccess
             }
             return this.manager.resolveAccessLevel("none");
         }
-        if (isOwner(user) || this.helper.isAdministrator(this.patient, new DocumentReference(user))) {
+        if (isOwner(user) || this.helper.isAdministrator(this.entity, new DocumentReference(user))) {
             return this.manager.resolveAccessLevel("owner");
         }
-        AccessLevel userAccess = this.helper.getAccessLevel(this.patient, user);
+        AccessLevel userAccess = this.helper.getAccessLevel(this.entity, user);
         AccessLevel defaultAccess = getVisibility().getDefaultAccessLevel();
         if (userAccess.compareTo(defaultAccess) > 0) {
             return userAccess;
@@ -177,6 +177,6 @@ public class DefaultEntityAccess implements EntityAccess
     public String toString()
     {
         return "Access rules for "
-            + (this.patient != null ? this.patient.getDocumentReference() : "<unknown patient>");
+            + (this.entity != null ? this.entity.getDocumentReference() : "<unknown entity>");
     }
 }
