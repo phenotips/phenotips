@@ -52,7 +52,7 @@ public class CollaboratorAccessAuthorizationModule implements AuthorizationModul
     private PatientRepository patientRepository;
 
     @Inject
-    private PatientAccessHelper accessHelper;
+    private EntityAccessHelper accessHelper;
 
     @Override
     public int getPriority()

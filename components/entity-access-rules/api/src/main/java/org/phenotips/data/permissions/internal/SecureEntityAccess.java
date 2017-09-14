@@ -21,8 +21,8 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.Owner;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 
 import org.xwiki.model.reference.EntityReference;
@@ -31,13 +31,13 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-public class SecurePatientAccess implements PatientAccess
+public class SecureEntityAccess implements EntityAccess
 {
-    private final PatientAccess internalService;
+    private final EntityAccess internalService;
 
-    private final PermissionsManager manager;
+    private final EntityPermissionsManager manager;
 
-    public SecurePatientAccess(PatientAccess internalService, PermissionsManager manager)
+    public SecureEntityAccess(EntityAccess internalService, EntityPermissionsManager manager)
     {
         this.internalService = internalService;
         this.manager = manager;

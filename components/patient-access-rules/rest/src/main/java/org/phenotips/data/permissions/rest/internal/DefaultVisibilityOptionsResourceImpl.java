@@ -17,7 +17,7 @@
  */
 package org.phenotips.data.permissions.rest.internal;
 
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.VisibilityOptionsResource;
@@ -48,7 +48,7 @@ import javax.inject.Singleton;
 public class DefaultVisibilityOptionsResourceImpl extends XWikiResource implements VisibilityOptionsResource
 {
     @Inject
-    private PermissionsManager manager;
+    private EntityPermissionsManager manager;
 
     @Inject
     private DomainObjectFactory factory;

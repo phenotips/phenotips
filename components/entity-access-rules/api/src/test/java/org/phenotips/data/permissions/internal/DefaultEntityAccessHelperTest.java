@@ -20,9 +20,9 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Owner;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.internal.access.EditAccessLevel;
 import org.phenotips.data.permissions.internal.access.NoAccessLevel;
@@ -70,11 +70,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the default {@link PatientAccessHelper} implementation, {@link DefaultPatientAccessHelper}.
+ * Tests for the default {@link EntityAccessHelper} implementation, {@link DefaultEntityAccessHelper}.
  *
  * @version $Id$
  */
-public class DefaultPatientAccessHelperTest
+public class DefaultEntityAccessHelperTest
 {
     /** The patient used for tests. */
     private static final DocumentReference PATIENT_REFERENCE = new DocumentReference("xwiki", "data", "P0000001");
@@ -113,8 +113,8 @@ public class DefaultPatientAccessHelperTest
         "Collaborator");
 
     @Rule
-    public final MockitoComponentMockingRule<PatientAccessHelper> mocker =
-        new MockitoComponentMockingRule<>(DefaultPatientAccessHelper.class);
+    public final MockitoComponentMockingRule<EntityAccessHelper> mocker =
+        new MockitoComponentMockingRule<>(DefaultEntityAccessHelper.class);
 
     private Patient patient = mock(Patient.class);
 
@@ -192,7 +192,7 @@ public class DefaultPatientAccessHelperTest
         when(this.patientDoc.getXObject(VISIBILITY_CLASS, true, this.context)).thenReturn(this.visibilityObject);
     }
 
-    /** Basic tests for {@link PatientAccessHelper#getCurrentUser()}. */
+    /** Basic tests for {@link EntityAccessHelper#getCurrentUser()}. */
     @Test
     public void getCurrentUser() throws ComponentLookupException
     {
@@ -200,7 +200,7 @@ public class DefaultPatientAccessHelperTest
         Assert.assertSame(OWNER, this.mocker.getComponentUnderTest().getCurrentUser());
     }
 
-    /** {@link PatientAccessHelper#getCurrentUser()} returns null for guests. */
+    /** {@link EntityAccessHelper#getCurrentUser()} returns null for guests. */
     @Test
     public void getCurrentUserForGuest() throws ComponentLookupException
     {
@@ -208,14 +208,14 @@ public class DefaultPatientAccessHelperTest
         Assert.assertNull(this.mocker.getComponentUnderTest().getCurrentUser());
     }
 
-    /** Basic tests for {@link PatientAccessHelper#getOwner(Patient)}. */
+    /** Basic tests for {@link EntityAccessHelper#getOwner(Patient)}. */
     @Test
     public void getOwner() throws ComponentLookupException
     {
         Assert.assertSame(OWNER, this.mocker.getComponentUnderTest().getOwner(this.patient).getUser());
     }
 
-    /** {@link PatientAccessHelper#getOwner(Patient)} returns a null user when the owner isn't specified. */
+    /** {@link EntityAccessHelper#getOwner(Patient)} returns a null user when the owner isn't specified. */
     @Test
     public void getOwnerWithMissingOwnerAndReferrer() throws ComponentLookupException
     {
@@ -228,14 +228,14 @@ public class DefaultPatientAccessHelperTest
         Mockito.verify(this.patient, Mockito.never()).getReporter();
     }
 
-    /** {@link PatientAccessHelper#getOwner(Patient)} returns {@code null} when the patient is missing. */
+    /** {@link EntityAccessHelper#getOwner(Patient)} returns {@code null} when the patient is missing. */
     @Test
     public void getOwnerWithMissingPatient() throws ComponentLookupException
     {
         Assert.assertNull(this.mocker.getComponentUnderTest().getOwner(null));
     }
 
-    /** {@link PatientAccessHelper#getOwner(Patient)} returns {@code null} when the patient is missing. */
+    /** {@link EntityAccessHelper#getOwner(Patient)} returns {@code null} when the patient is missing. */
     @Test
     public void getOwnerWithMissingDocument() throws ComponentLookupException
     {
@@ -243,7 +243,7 @@ public class DefaultPatientAccessHelperTest
         Assert.assertNull(this.mocker.getComponentUnderTest().getOwner(this.patient));
     }
 
-    /** Basic tests for {@link PatientAccessHelper#setOwner(Patient, EntityReference)}. */
+    /** Basic tests for {@link EntityAccessHelper#setOwner(Patient, EntityReference)}. */
     @Test
     public void setOwner() throws Exception
     {
@@ -252,7 +252,7 @@ public class DefaultPatientAccessHelperTest
         Mockito.verify(this.xwiki).saveDocument(this.patientDoc, "Set owner: " + OWNER_STR, true, this.context);
     }
 
-    /** Basic tests for {@link PatientAccessHelper#setOwner(Patient, EntityReference)}. */
+    /** Basic tests for {@link EntityAccessHelper#setOwner(Patient, EntityReference)}. */
     @Test
     public void setOwnerWithFailure() throws Exception
     {
@@ -260,18 +260,18 @@ public class DefaultPatientAccessHelperTest
         Assert.assertFalse(this.mocker.getComponentUnderTest().setOwner(this.patient, OWNER));
     }
 
-    /** Basic tests for {@link PatientAccessHelper#getVisibility(Patient)}. */
+    /** Basic tests for {@link EntityAccessHelper#getVisibility(Patient)}. */
     @Test
     public void getVisibility() throws ComponentLookupException
     {
         when(this.visibilityObject.getStringValue("visibility")).thenReturn("public");
-        PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
+        EntityPermissionsManager manager = this.mocker.getInstance(EntityPermissionsManager.class);
         Visibility publicV = mock(Visibility.class);
         when(manager.resolveVisibility("public")).thenReturn(publicV);
         Assert.assertSame(publicV, this.mocker.getComponentUnderTest().getVisibility(this.patient));
     }
 
-    /** {@link PatientAccessHelper#getVisibility(Patient)} returns null when the owner isn't specified. */
+    /** {@link EntityAccessHelper#getVisibility(Patient)} returns null when the owner isn't specified. */
     @Test
     public void getVisibilityWithMissingVisibility() throws ComponentLookupException
     {
@@ -282,7 +282,7 @@ public class DefaultPatientAccessHelperTest
         Assert.assertNull(this.mocker.getComponentUnderTest().getVisibility(this.patient));
     }
 
-    /** Basic tests for {@link PatientAccessHelper#setOwner(Patient, EntityReference)}. */
+    /** Basic tests for {@link EntityAccessHelper#setOwner(Patient, EntityReference)}. */
     @Test
     public void setVisibility() throws Exception
     {
@@ -292,7 +292,7 @@ public class DefaultPatientAccessHelperTest
         Mockito.verify(this.visibilityObject).set("visibility", "public", this.context);
     }
 
-    /** Basic tests for {@link PatientAccessHelper#setOwner(Patient, EntityReference)}. */
+    /** Basic tests for {@link EntityAccessHelper#setOwner(Patient, EntityReference)}. */
     @Test
     public void setVisibilityWithNullVisibility() throws Exception
     {
@@ -300,7 +300,7 @@ public class DefaultPatientAccessHelperTest
         Mockito.verify(this.visibilityObject).set("visibility", "", this.context);
     }
 
-    /** Basic tests for {@link PatientAccessHelper#setVisibility(Patient, Visibility)}. */
+    /** Basic tests for {@link EntityAccessHelper#setVisibility(Patient, Visibility)}. */
     @Test
     public void setVisibilityWithFailure() throws Exception
     {
@@ -310,7 +310,7 @@ public class DefaultPatientAccessHelperTest
         Assert.assertFalse(this.mocker.getComponentUnderTest().setVisibility(this.patient, publicV));
     }
 
-    /** Basic tests for {@link PatientAccessHelper#getCollaborators(Patient)}. */
+    /** Basic tests for {@link EntityAccessHelper#getCollaborators(Patient)}. */
     @Test
     public void getCollaborators() throws Exception
     {
@@ -327,7 +327,7 @@ public class DefaultPatientAccessHelperTest
         when(collaborator.getStringValue("access")).thenReturn("view");
         objects.add(collaborator);
         when(doc.getXObjects(COLLABORATOR_CLASS)).thenReturn(objects);
-        PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
+        EntityPermissionsManager manager = this.mocker.getInstance(EntityPermissionsManager.class);
         AccessLevel edit = mock(AccessLevel.class);
         when(manager.resolveAccessLevel("edit")).thenReturn(edit);
         AccessLevel view = mock(AccessLevel.class);
@@ -341,7 +341,7 @@ public class DefaultPatientAccessHelperTest
     }
 
     /**
-     * {@link PatientAccessHelper#getCollaborators(Patient)} returns the most permissive access level when multiple
+     * {@link EntityAccessHelper#getCollaborators(Patient)} returns the most permissive access level when multiple
      * entries are present.
      */
     @Test
@@ -364,7 +364,7 @@ public class DefaultPatientAccessHelperTest
         when(collaborator.getStringValue("access")).thenReturn("manage");
         objects.add(collaborator);
         when(doc.getXObjects(COLLABORATOR_CLASS)).thenReturn(objects);
-        PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
+        EntityPermissionsManager manager = this.mocker.getInstance(EntityPermissionsManager.class);
         AccessLevel edit = mock(AccessLevel.class);
         when(manager.resolveAccessLevel("edit")).thenReturn(edit);
         AccessLevel view = mock(AccessLevel.class);
@@ -379,7 +379,7 @@ public class DefaultPatientAccessHelperTest
         Assert.assertTrue(collaborators.contains(c));
     }
 
-    /** {@link PatientAccessHelper#getCollaborators(Patient)} skips objects with missing values. */
+    /** {@link EntityAccessHelper#getCollaborators(Patient)} skips objects with missing values. */
     @Test
     public void getCollaboratorsWithMissingValues() throws Exception
     {
@@ -405,7 +405,7 @@ public class DefaultPatientAccessHelperTest
         Assert.assertTrue(collaborators.isEmpty());
     }
 
-    /** {@link PatientAccessHelper#getCollaborators(Patient)} returns an empty set when accessing the patient fails. */
+    /** {@link EntityAccessHelper#getCollaborators(Patient)} returns an empty set when accessing the patient fails. */
     @Test
     public void getCollaboratorsWithException() throws Exception
     {
@@ -415,14 +415,14 @@ public class DefaultPatientAccessHelperTest
         Assert.assertTrue(collaborators.isEmpty());
     }
 
-    /** Basic tests for {@link PatientAccessHelper#setCollaborators(Patient, Collection)}. */
+    /** Basic tests for {@link EntityAccessHelper#setCollaborators(Patient, Collection)}. */
     @Test
     public void setCollaborators() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         when(this.patient.getXDocument()).thenReturn(doc);
 
-        PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
+        EntityPermissionsManager manager = this.mocker.getInstance(EntityPermissionsManager.class);
         AccessLevel edit = mock(AccessLevel.class);
         when(edit.getName()).thenReturn("edit");
         when(manager.resolveAccessLevel("edit")).thenReturn(edit);
@@ -447,7 +447,7 @@ public class DefaultPatientAccessHelperTest
     }
 
     /**
-     * {@link PatientAccessHelper#setCollaborators(Patient, Collection)} returns false when accessing the patient fails.
+     * {@link EntityAccessHelper#setCollaborators(Patient, Collection)} returns false when accessing the patient fails.
      */
     @Test
     public void setCollaboratorsWithFailure() throws Exception
@@ -458,7 +458,7 @@ public class DefaultPatientAccessHelperTest
     }
 
     /**
-     * {@link PatientAccessHelper#addCollaborator(Patient, Collaborator)} adds a new Collaborator object if one doesn't
+     * {@link EntityAccessHelper#addCollaborator(Patient, Collaborator)} adds a new Collaborator object if one doesn't
      * exist already.
      */
     @Test
@@ -467,7 +467,7 @@ public class DefaultPatientAccessHelperTest
         XWikiDocument doc = mock(XWikiDocument.class);
         when(this.patient.getXDocument()).thenReturn(doc);
 
-        PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
+        EntityPermissionsManager manager = this.mocker.getInstance(EntityPermissionsManager.class);
         BaseObject o = mock(BaseObject.class);
         when(doc.getXObject(COLLABORATOR_CLASS, "collaborator", COLLABORATOR_STR, false)).thenReturn(null);
         when(doc.newXObject(COLLABORATOR_CLASS, this.context)).thenReturn(o);
@@ -483,14 +483,14 @@ public class DefaultPatientAccessHelperTest
         Mockito.verify(this.xwiki).saveDocument(doc, "Added collaborator: " + COLLABORATOR_STR, true, this.context);
     }
 
-    /** {@link PatientAccessHelper#addCollaborator(Patient, Collaborator)} modifies the existing Collaborator object. */
+    /** {@link EntityAccessHelper#addCollaborator(Patient, Collaborator)} modifies the existing Collaborator object. */
     @Test
     public void addCollaboratorWithExistingObject() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         when(this.patient.getXDocument()).thenReturn(doc);
 
-        PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
+        EntityPermissionsManager manager = this.mocker.getInstance(EntityPermissionsManager.class);
         BaseObject o = mock(BaseObject.class);
         when(doc.getXObject(COLLABORATOR_CLASS, "collaborator", COLLABORATOR_STR, false)).thenReturn(o);
 
@@ -506,7 +506,7 @@ public class DefaultPatientAccessHelperTest
     }
 
     /**
-     * {@link PatientAccessHelper#addCollaborator(Patient, Collaborator)} returns false when accessing the document
+     * {@link EntityAccessHelper#addCollaborator(Patient, Collaborator)} returns false when accessing the document
      * fails.
      */
     @Test
@@ -521,7 +521,7 @@ public class DefaultPatientAccessHelperTest
         Assert.assertFalse(this.mocker.getComponentUnderTest().addCollaborator(this.patient, collaborator));
     }
 
-    /** {@link PatientAccessHelper#removeCollaborator(Patient, Collaborator)} removes the existing Collaborator. */
+    /** {@link EntityAccessHelper#removeCollaborator(Patient, Collaborator)} removes the existing Collaborator. */
     @Test
     public void removeCollaboratorWithExistingObject() throws Exception
     {
@@ -539,14 +539,14 @@ public class DefaultPatientAccessHelperTest
         Mockito.verify(this.xwiki).saveDocument(doc, "Removed collaborator: " + COLLABORATOR_STR, true, this.context);
     }
 
-    /** {@link PatientAccessHelper#removeCollaborator(Patient, Collaborator)} does nothing if the object isn't found. */
+    /** {@link EntityAccessHelper#removeCollaborator(Patient, Collaborator)} does nothing if the object isn't found. */
     @Test
     public void removeCollaboratorWithMissingObject() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         when(this.patient.getXDocument()).thenReturn(doc);
 
-        PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
+        EntityPermissionsManager manager = this.mocker.getInstance(EntityPermissionsManager.class);
         when(doc.getXObject(COLLABORATOR_CLASS, "collaborator", COLLABORATOR_STR, false)).thenReturn(null);
 
         AccessLevel edit = mock(AccessLevel.class);
@@ -561,7 +561,7 @@ public class DefaultPatientAccessHelperTest
     }
 
     /**
-     * {@link PatientAccessHelper#removeCollaborator(Patient, Collaborator)} returns false when accessing the document
+     * {@link EntityAccessHelper#removeCollaborator(Patient, Collaborator)} returns false when accessing the document
      * fails.
      */
     @Test
@@ -576,13 +576,13 @@ public class DefaultPatientAccessHelperTest
         Assert.assertFalse(this.mocker.getComponentUnderTest().removeCollaborator(this.patient, collaborator));
     }
 
-    /** {@link PatientAccessHelper#getAccessLevel(Patient, EntityReference)} returns no access for guest users. */
+    /** {@link EntityAccessHelper#getAccessLevel(Patient, EntityReference)} returns no access for guest users. */
     @Test
     public void getAccessLevelWithOwner() throws Exception
     {
         AccessLevel none = new NoAccessLevel();
         AccessLevel owner = new OwnerAccessLevel();
-        PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
+        EntityPermissionsManager manager = this.mocker.getInstance(EntityPermissionsManager.class);
         when(manager.resolveAccessLevel("none")).thenReturn(none);
         when(manager.resolveAccessLevel("owner")).thenReturn(owner);
 
@@ -594,40 +594,40 @@ public class DefaultPatientAccessHelperTest
         Assert.assertSame(owner, this.mocker.getComponentUnderTest().getAccessLevel(this.patient, OWNER));
     }
 
-    /** {@link PatientAccessHelper#getAccessLevel(Patient, EntityReference)} returns no access for guest users. */
+    /** {@link EntityAccessHelper#getAccessLevel(Patient, EntityReference)} returns no access for guest users. */
     @Test
     public void getAccessLevelWithGuestUser() throws ComponentLookupException
     {
         AccessLevel none = new NoAccessLevel();
-        PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
+        EntityPermissionsManager manager = this.mocker.getInstance(EntityPermissionsManager.class);
         when(manager.resolveAccessLevel("none")).thenReturn(none);
         Assert.assertSame(none, this.mocker.getComponentUnderTest().getAccessLevel(this.patient, null));
     }
 
-    /** {@link PatientAccessHelper#getAccessLevel(Patient, EntityReference)} returns no access with missing patient. */
+    /** {@link EntityAccessHelper#getAccessLevel(Patient, EntityReference)} returns no access with missing patient. */
     @Test
     public void getAccessLevelWithMissingPatient() throws ComponentLookupException
     {
         AccessLevel none = new NoAccessLevel();
-        PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
+        EntityPermissionsManager manager = this.mocker.getInstance(EntityPermissionsManager.class);
         when(manager.resolveAccessLevel("none")).thenReturn(none);
         Assert.assertSame(none, this.mocker.getComponentUnderTest().getAccessLevel(null, OTHER_USER));
     }
 
     /**
-     * {@link PatientAccessHelper#getAccessLevel(Patient, EntityReference)} returns no access with missing patient and
+     * {@link EntityAccessHelper#getAccessLevel(Patient, EntityReference)} returns no access with missing patient and
      * user.
      */
     @Test
     public void getAccessLevelWithMissingPatientAndGuestUser() throws ComponentLookupException
     {
         AccessLevel none = new NoAccessLevel();
-        PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
+        EntityPermissionsManager manager = this.mocker.getInstance(EntityPermissionsManager.class);
         when(manager.resolveAccessLevel("none")).thenReturn(none);
         Assert.assertSame(none, this.mocker.getComponentUnderTest().getAccessLevel(null, null));
     }
 
-    /** {@link PatientAccess#getAccessLevel()} returns the specified access for a registered collaborator. */
+    /** {@link EntityAccess#getAccessLevel()} returns the specified access for a registered collaborator. */
     @Test
     public void getAccessLevelWithSpecifiedCollaborator() throws Exception
     {
@@ -644,7 +644,7 @@ public class DefaultPatientAccessHelperTest
         when(collaborator.getStringValue("access")).thenReturn("view");
         objects.add(collaborator);
         when(doc.getXObjects(COLLABORATOR_CLASS)).thenReturn(objects);
-        PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
+        EntityPermissionsManager manager = this.mocker.getInstance(EntityPermissionsManager.class);
         AccessLevel edit = new EditAccessLevel();
         when(manager.resolveAccessLevel("edit")).thenReturn(edit);
         AccessLevel view = new ViewAccessLevel();
@@ -659,7 +659,7 @@ public class DefaultPatientAccessHelperTest
         Assert.assertSame(edit, this.mocker.getComponentUnderTest().getAccessLevel(this.patient, COLLABORATOR));
     }
 
-    /** {@link PatientAccess#getAccessLevel()} returns the specified access for a registered collaborator. */
+    /** {@link EntityAccess#getAccessLevel()} returns the specified access for a registered collaborator. */
     @Test
     public void getAccessLevelWithGroupMemberCollaborator() throws Exception
     {
@@ -676,7 +676,7 @@ public class DefaultPatientAccessHelperTest
         when(collaborator.getStringValue("access")).thenReturn("view");
         objects.add(collaborator);
         when(doc.getXObjects(COLLABORATOR_CLASS)).thenReturn(objects);
-        PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
+        EntityPermissionsManager manager = this.mocker.getInstance(EntityPermissionsManager.class);
         AccessLevel edit = new EditAccessLevel();
         when(manager.resolveAccessLevel("edit")).thenReturn(edit);
         AccessLevel view = new ViewAccessLevel();
@@ -692,20 +692,20 @@ public class DefaultPatientAccessHelperTest
     }
 
     /**
-     * {@link PatientAccessHelper#getAccessLevel(Patient, EntityReference)} returns no access when XWiki throws
+     * {@link EntityAccessHelper#getAccessLevel(Patient, EntityReference)} returns no access when XWiki throws
      * exceptions.
      */
     @Test
     public void getAccessLevelWithExceptions() throws ComponentLookupException, XWikiException
     {
         AccessLevel none = new NoAccessLevel();
-        PermissionsManager manager = this.mocker.getInstance(PermissionsManager.class);
+        EntityPermissionsManager manager = this.mocker.getInstance(EntityPermissionsManager.class);
         when(manager.resolveAccessLevel("none")).thenReturn(none);
         when(this.xwiki.getGroupService(this.context)).thenThrow(new XWikiException());
         Assert.assertSame(none, this.mocker.getComponentUnderTest().getAccessLevel(this.patient, OTHER_USER));
     }
 
-    /** Basic tests for {@link PatientAccessHelper#getType(EntityReference)}. */
+    /** Basic tests for {@link EntityAccessHelper#getType(EntityReference)}. */
     @Test
     public void getType() throws Exception
     {

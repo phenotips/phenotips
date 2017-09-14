@@ -24,7 +24,7 @@ import org.xwiki.model.reference.EntityReference;
 import java.util.Objects;
 
 /**
- * Default implementation of the {@link Owner} interface, making use of a {@link PatientAccessHelper} component for any
+ * Default implementation of the {@link Owner} interface, making use of a {@link EntityAccessHelper} component for any
  * actual owner type detection.
  *
  * @version $Id$
@@ -33,9 +33,9 @@ public class DefaultOwner implements Owner
 {
     private final EntityReference user;
 
-    private final PatientAccessHelper helper;
+    private final EntityAccessHelper helper;
 
-    public DefaultOwner(EntityReference user, PatientAccessHelper helper)
+    public DefaultOwner(EntityReference user, EntityAccessHelper helper)
     {
         this.user = user;
         this.helper = helper;

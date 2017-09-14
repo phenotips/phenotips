@@ -19,11 +19,11 @@ package org.phenotips.data.permissions.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.PermissionsConfiguration;
-import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
-import org.phenotips.data.permissions.events.PatientRightsUpdatedEvent;
+import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -49,7 +49,7 @@ import org.slf4j.Logger;
  */
 @Component
 @Singleton
-public class DefaultPermissionsManager implements PermissionsManager
+public class DefaultEntityPermissionsManager implements EntityPermissionsManager
 {
     @Inject
     private Logger logger;
@@ -139,9 +139,9 @@ public class DefaultPermissionsManager implements PermissionsManager
     }
 
     @Override
-    public PatientAccess getPatientAccess(Patient targetPatient)
+    public EntityAccess getPatientAccess(Patient targetPatient)
     {
-        return new DefaultPatientAccess(targetPatient, getHelper(), this);
+        return new DefaultEntityAccess(targetPatient, getHelper(), this);
     }
 
     @Override
@@ -178,18 +178,18 @@ public class DefaultPermissionsManager implements PermissionsManager
         return new FilteringIterator(patients, requiredVisibility, this);
     }
 
-    private PatientAccessHelper getHelper()
+    private EntityAccessHelper getHelper()
     {
         try {
-            return this.componentManager.get().getInstance(PatientAccessHelper.class);
+            return this.componentManager.get().getInstance(EntityAccessHelper.class);
         } catch (ComponentLookupException ex) {
-            this.logger.error("Mandatory component [PatientAccessHelper] missing: {}", ex.getMessage(), ex);
+            this.logger.error("Mandatory component [EntityAccessHelper] missing: {}", ex.getMessage(), ex);
         }
         return null;
     }
 
     public void fireRightsUpdateEvent(String patientId)
     {
-        this.observationManager.notify(new PatientRightsUpdatedEvent(patientId), null);
+        this.observationManager.notify(new EntityRightsUpdatedEvent(patientId), null);
     }
 }

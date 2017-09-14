@@ -24,7 +24,7 @@ import org.phenotips.consents.ConsentManager;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.internal.PhenoTipsPatient;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.receive.ReceivePatientData;
 import org.phenotips.data.securestorage.LocalLoginToken;
 import org.phenotips.data.securestorage.SecureStorageManager;
@@ -142,7 +142,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
     private ConfigurationSource configuration;
 
     @Inject
-    private PermissionsManager permissionManager;
+    private EntityPermissionsManager permissionManager;
 
     @Inject
     private AuthorizationService authService;

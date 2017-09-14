@@ -31,7 +31,7 @@ import java.util.Iterator;
  */
 @Unstable
 @Role
-public interface PermissionsManager
+public interface EntityPermissionsManager
 {
     /**
      * Get the visibility options available, excluding {@link Visibility#isDisabled() disabled} ones.
@@ -62,7 +62,7 @@ public interface PermissionsManager
 
     AccessLevel resolveAccessLevel(String name);
 
-    PatientAccess getPatientAccess(Patient targetPatient);
+    EntityAccess getPatientAccess(Patient targetPatient);
 
     /**
      * Receives a collection of patients and returns a new collection containing only those with

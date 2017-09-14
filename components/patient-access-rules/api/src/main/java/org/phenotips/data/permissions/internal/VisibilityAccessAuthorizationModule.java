@@ -46,7 +46,7 @@ public class VisibilityAccessAuthorizationModule implements AuthorizationModule
     private PatientRepository patientRepository;
 
     @Inject
-    private PatientAccessHelper helper;
+    private EntityAccessHelper helper;
 
     @Override
     public int getPriority()

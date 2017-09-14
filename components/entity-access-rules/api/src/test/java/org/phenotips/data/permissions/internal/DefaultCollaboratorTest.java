@@ -49,7 +49,7 @@ public class DefaultCollaboratorTest
     private AccessLevel access;
 
     @Mock
-    private PatientAccessHelper helper;
+    private EntityAccessHelper helper;
 
     @Before
     public void setUp()

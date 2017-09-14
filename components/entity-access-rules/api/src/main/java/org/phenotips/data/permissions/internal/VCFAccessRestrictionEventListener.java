@@ -20,8 +20,8 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 
 import org.xwiki.bridge.event.ActionExecutingEvent;
 import org.xwiki.component.annotation.Component;
@@ -66,7 +66,7 @@ public class VCFAccessRestrictionEventListener extends AbstractEventListener
 
     /** Checks the current user's access on the target patient record. */
     @Inject
-    private PermissionsManager permissions;
+    private EntityPermissionsManager permissions;
 
     /** The threshold access level needed for getting access to the VCF. */
     @Inject
@@ -97,7 +97,7 @@ public class VCFAccessRestrictionEventListener extends AbstractEventListener
         if (StringUtils.endsWithIgnoreCase(filename, ".vcf")) {
             XWikiDocument doc = context.getDoc();
             Patient patient = this.patients.get(doc.getDocumentReference().toString());
-            PatientAccess access = this.permissions.getPatientAccess(patient);
+            EntityAccess access = this.permissions.getPatientAccess(patient);
             if (!access.hasAccessLevel(this.edit)) {
                 ((CancelableEvent) event).cancel();
             }

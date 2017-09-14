@@ -33,9 +33,9 @@ public class DefaultCollaborator implements Collaborator
 
     private final AccessLevel access;
 
-    private final PatientAccessHelper helper;
+    private final EntityAccessHelper helper;
 
-    public DefaultCollaborator(EntityReference user, AccessLevel access, PatientAccessHelper helper)
+    public DefaultCollaborator(EntityReference user, AccessLevel access, EntityAccessHelper helper)
     {
         this.user = user;
         this.access = access;

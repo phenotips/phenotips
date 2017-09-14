@@ -20,8 +20,8 @@ package org.phenotips.data.permissions.script;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.security.authorization.AuthorizationService;
 
@@ -43,11 +43,11 @@ import javax.inject.Singleton;
 @Component
 @Named("permissions")
 @Singleton
-public class PermissionsManagerScriptService implements ScriptService
+public class EntityPermissionsManagerScriptService implements ScriptService
 {
     @Inject
     @Named("secure")
-    private PermissionsManager manager;
+    private EntityPermissionsManager manager;
 
     @Inject
     private PatientRepository patientRepository;
@@ -108,19 +108,19 @@ public class PermissionsManagerScriptService implements ScriptService
     }
 
     /**
-     * Returns PatientAccess to the given patient for the given user.
+     * Returns EntityAccess to the given patient for the given user.
      *
      * @param targetPatient the patient
      */
-    public PatientAccess getPatientAccess(Patient targetPatient)
+    public EntityAccess getPatientAccess(Patient targetPatient)
     {
         return this.getPatientAccess(targetPatient.getId());
     }
 
-    public PatientAccess getPatientAccess(String targetPatientId)
+    public EntityAccess getPatientAccess(String targetPatientId)
     {
         // scripts have only access to a SecurePatient implementation of a Patient,
-        // which does not support all the functionality PatientAccess needs. So
+        // which does not support all the functionality EntityAccess needs. So
         // need to get the full Patient object here instead of taking it as an argument
         //
         // Since this is a script service, need to check access rights the same way SecurePatientReporistory does.
