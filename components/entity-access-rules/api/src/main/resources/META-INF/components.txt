@@ -9,9 +9,7 @@ org.phenotips.data.permissions.internal.visibility.PrivateVisibility
 org.phenotips.data.permissions.internal.visibility.PublicVisibility
 org.phenotips.data.permissions.internal.visibility.OpenVisibility
 org.phenotips.data.permissions.script.EntityPermissionsManagerScriptService
-org.phenotips.data.permissions.internal.DefaultPermissionsConfiguration
 org.phenotips.data.permissions.internal.ManageRightRegistrationEventListener
-500:org.phenotips.data.permissions.internal.OwnerContactProvider
 org.phenotips.data.permissions.internal.OwnerUpdateEventListener
 org.phenotips.data.permissions.internal.VCFAccessRestrictionEventListener
 org.phenotips.data.permissions.internal.DefaultEntityAccessHelper

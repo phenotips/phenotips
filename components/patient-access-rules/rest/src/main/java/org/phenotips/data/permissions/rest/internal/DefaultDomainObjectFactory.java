@@ -20,8 +20,8 @@ package org.phenotips.data.permissions.rest.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.EntityAccess;
-import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.EntityPermissionsManager;
+import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.rest.CollaboratorResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
@@ -75,7 +75,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     @Override
     public OwnerRepresentation createOwnerRepresentation(Patient patient)
     {
-        EntityAccess entityAccess = this.manager.getPatientAccess(patient);
+        EntityAccess entityAccess = this.manager.getEntityAccess(patient);
         Owner owner = entityAccess.getOwner();
 
         // links should be added at a later point, to allow the reuse of this method in different contexts
@@ -102,7 +102,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     @Override
     public VisibilityRepresentation createVisibilityRepresentation(Patient patient)
     {
-        EntityAccess entityAccess = this.manager.getPatientAccess(patient);
+        EntityAccess entityAccess = this.manager.getEntityAccess(patient);
         Visibility visibility = entityAccess.getVisibility();
 
         return this.createVisibilityRepresentation(visibility);
@@ -123,7 +123,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     @Override
     public CollaboratorsRepresentation createCollaboratorsRepresentation(Patient patient, UriInfo uriInfo)
     {
-        EntityAccess entityAccess = this.manager.getPatientAccess(patient);
+        EntityAccess entityAccess = this.manager.getEntityAccess(patient);
         Collection<Collaborator> collaborators = entityAccess.getCollaborators();
 
         CollaboratorsRepresentation result = new CollaboratorsRepresentation();
@@ -145,7 +145,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     @Override
     public CollaboratorRepresentation createCollaboratorRepresentation(Patient patient, Collaborator collaborator)
     {
-        EntityAccess entityAccess = this.manager.getPatientAccess(patient);
+        EntityAccess entityAccess = this.manager.getEntityAccess(patient);
         return this.createCollaboratorRepresentation(entityAccess, collaborator);
     }
 

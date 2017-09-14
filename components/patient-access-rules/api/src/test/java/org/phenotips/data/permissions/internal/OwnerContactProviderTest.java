@@ -94,7 +94,7 @@ public class OwnerContactProviderTest
     {
         EntityPermissionsManager permissions = this.mocker.getInstance(EntityPermissionsManager.class);
         EntityAccess access = mock(EntityAccess.class);
-        when(permissions.getPatientAccess(this.patient)).thenReturn(access);
+        when(permissions.getEntityAccess(this.patient)).thenReturn(access);
         Owner owner = mock(Owner.class);
         when(access.getOwner()).thenReturn(owner);
         when(owner.isGroup()).thenReturn(false);
@@ -123,7 +123,7 @@ public class OwnerContactProviderTest
     {
         EntityPermissionsManager permissions = this.mocker.getInstance(EntityPermissionsManager.class);
         EntityAccess access = mock(EntityAccess.class);
-        when(permissions.getPatientAccess(this.patient)).thenReturn(access);
+        when(permissions.getEntityAccess(this.patient)).thenReturn(access);
         Owner owner = mock(Owner.class);
         when(access.getOwner()).thenReturn(owner);
         when(owner.isGroup()).thenReturn(false);
@@ -152,7 +152,7 @@ public class OwnerContactProviderTest
     {
         EntityPermissionsManager permissions = this.mocker.getInstance(EntityPermissionsManager.class);
         EntityAccess access = mock(EntityAccess.class);
-        when(permissions.getPatientAccess(this.patient)).thenReturn(access);
+        when(permissions.getEntityAccess(this.patient)).thenReturn(access);
         Owner owner = mock(Owner.class);
         when(access.getOwner()).thenReturn(owner);
         when(owner.isGroup()).thenReturn(false);
@@ -170,7 +170,7 @@ public class OwnerContactProviderTest
     {
         EntityPermissionsManager permissions = this.mocker.getInstance(EntityPermissionsManager.class);
         EntityAccess access = mock(EntityAccess.class);
-        when(permissions.getPatientAccess(this.patient)).thenReturn(access);
+        when(permissions.getEntityAccess(this.patient)).thenReturn(access);
         Owner owner = mock(Owner.class);
         when(access.getOwner()).thenReturn(owner);
         when(owner.isGroup()).thenReturn(true);
@@ -200,7 +200,7 @@ public class OwnerContactProviderTest
     {
         EntityPermissionsManager permissions = this.mocker.getInstance(EntityPermissionsManager.class);
         EntityAccess access = mock(EntityAccess.class);
-        when(permissions.getPatientAccess(this.patient)).thenReturn(access);
+        when(permissions.getEntityAccess(this.patient)).thenReturn(access);
         Owner owner = mock(Owner.class);
         when(access.getOwner()).thenReturn(owner);
         when(owner.isGroup()).thenReturn(true);
@@ -231,7 +231,7 @@ public class OwnerContactProviderTest
     {
         EntityPermissionsManager permissions = this.mocker.getInstance(EntityPermissionsManager.class);
         EntityAccess access = mock(EntityAccess.class);
-        when(permissions.getPatientAccess(this.patient)).thenReturn(access);
+        when(permissions.getEntityAccess(this.patient)).thenReturn(access);
         Owner owner = mock(Owner.class);
         when(access.getOwner()).thenReturn(owner);
         when(owner.isGroup()).thenReturn(true);
@@ -249,7 +249,7 @@ public class OwnerContactProviderTest
     {
         EntityPermissionsManager permissions = this.mocker.getInstance(EntityPermissionsManager.class);
         EntityAccess access = mock(EntityAccess.class);
-        when(permissions.getPatientAccess(this.patient)).thenReturn(access);
+        when(permissions.getEntityAccess(this.patient)).thenReturn(access);
         when(access.getOwner()).thenReturn(null);
 
         List<ContactInfo> result = this.mocker.getComponentUnderTest().getContacts(this.patient);
@@ -262,7 +262,7 @@ public class OwnerContactProviderTest
     {
         EntityPermissionsManager permissions = this.mocker.getInstance(EntityPermissionsManager.class);
         EntityAccess access = mock(EntityAccess.class);
-        when(permissions.getPatientAccess(this.patient)).thenReturn(access);
+        when(permissions.getEntityAccess(this.patient)).thenReturn(access);
         Owner owner = mock(Owner.class);
         when(access.getOwner()).thenReturn(owner);
         when(owner.getUser()).thenReturn(null);

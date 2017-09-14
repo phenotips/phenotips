@@ -17,12 +17,12 @@
  */
 package org.phenotips.data.permissions.script;
 
-import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
+import org.phenotips.entities.PrimaryEntity;
+import org.phenotips.entities.PrimaryEntityResolver;
 import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.annotation.Component;
@@ -50,7 +50,7 @@ public class EntityPermissionsManagerScriptService implements ScriptService
     private EntityPermissionsManager manager;
 
     @Inject
-    private PatientRepository patientRepository;
+    private PrimaryEntityResolver resolver;
 
     /** Used for obtaining the current user. */
     @Inject
@@ -82,7 +82,7 @@ public class EntityPermissionsManagerScriptService implements ScriptService
     }
 
     /**
-     * Get the default visibility to set for new patient records.
+     * Get the default visibility to set for new entity records.
      *
      * @return a visibility, or {@code null} if none is configured or the configured one isn't valid
      * @since 1.3M2
@@ -108,16 +108,16 @@ public class EntityPermissionsManagerScriptService implements ScriptService
     }
 
     /**
-     * Returns EntityAccess to the given patient for the given user.
+     * Returns EntityAccess to the given entity for the given user.
      *
-     * @param targetPatient the patient
+     * @param targetEntity the entity
      */
-    public EntityAccess getPatientAccess(Patient targetPatient)
+    public EntityAccess getEntityAccess(PrimaryEntity targetEntity)
     {
-        return this.getPatientAccess(targetPatient.getId());
+        return this.getEntityAccess(targetEntity.getId());
     }
 
-    public EntityAccess getPatientAccess(String targetPatientId)
+    public EntityAccess getEntityAccess(String targetEntityId)
     {
         // scripts have only access to a SecurePatient implementation of a Patient,
         // which does not support all the functionality EntityAccess needs. So
@@ -128,18 +128,18 @@ public class EntityPermissionsManagerScriptService implements ScriptService
         // TODO: rights management should be refactored so that less is done from velocity
         //       and this method won't be needed any more
 
-        Patient patient = this.patientRepository.get(targetPatientId);
-        if (patient == null) {
+        PrimaryEntity entity = this.resolver.resolveEntity(targetEntityId);
+        if (entity == null) {
             return null;
         }
-        if (!this.access.hasAccess(this.userManager.getCurrentUser(), Right.VIEW, patient.getDocumentReference())) {
+        if (!this.access.hasAccess(this.userManager.getCurrentUser(), Right.VIEW, entity.getDocumentReference())) {
             return null;
         }
-        return this.manager.getPatientAccess(patient);
+        return this.manager.getEntityAccess(entity);
     }
 
-    public void fireRightsUpdateEvent(String targetPatientId)
+    public void fireRightsUpdateEvent(String targetEntityId)
     {
-        this.manager.fireRightsUpdateEvent(targetPatientId);
+        this.manager.fireRightsUpdateEvent(targetEntityId);
     }
 }

@@ -17,11 +17,11 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
+import org.phenotips.entities.PrimaryEntity;
+import org.phenotips.entities.PrimaryEntityResolver;
 
 import org.xwiki.bridge.event.ActionExecutingEvent;
 import org.xwiki.component.annotation.Component;
@@ -43,7 +43,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.web.XWikiRequest;
 
 /**
- * Forbids access to VCF files if the user doesn't have at least edit rights on the patient record, since a VCF contains
+ * Forbids access to VCF files if the user doesn't have at least edit rights on the entity record, since a VCF contains
  * very confidential information.
  *
  * @version $Id$
@@ -60,11 +60,11 @@ public class VCFAccessRestrictionEventListener extends AbstractEventListener
     /** The name of the XWiki action used to download files. */
     private static final String ACTION = "download";
 
-    /** Provides access to the patient record data model. */
+    /** Provides access to the entity record data model. */
     @Inject
-    private PatientRepository patients;
+    private PrimaryEntityResolver resolver;
 
-    /** Checks the current user's access on the target patient record. */
+    /** Checks the current user's access on the target entity record. */
     @Inject
     private EntityPermissionsManager permissions;
 
@@ -96,8 +96,8 @@ public class VCFAccessRestrictionEventListener extends AbstractEventListener
 
         if (StringUtils.endsWithIgnoreCase(filename, ".vcf")) {
             XWikiDocument doc = context.getDoc();
-            Patient patient = this.patients.get(doc.getDocumentReference().toString());
-            EntityAccess access = this.permissions.getPatientAccess(patient);
+            PrimaryEntity primaryEntity = this.resolver.resolveEntity(doc.getDocumentReference().toString());
+            EntityAccess access = this.permissions.getEntityAccess(primaryEntity);
             if (!access.hasAccessLevel(this.edit)) {
                 ((CancelableEvent) event).cancel();
             }

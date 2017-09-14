@@ -77,9 +77,6 @@ public class CollaboratorAccessAuthorizationModuleTest
     @Mock
     private AccessLevel manageAccess;
 
-    @Mock
-    private AccessLevel requestedAccess;
-
     private EntityAccessHelper helper;
 
     private PatientRepository repo;

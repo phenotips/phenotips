@@ -17,40 +17,40 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
+import org.phenotips.entities.PrimaryEntity;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * Filters an iterator over {@link Patient}s, returning only those that have their
+ * Filters an iterator over {@link PrimaryEntity}s, returning only those that have their
  * {@link EntityAccess#getVisibility() visibility} equal or above a threshold. The
  * {@link #remove()} method is not supported.
  *
  * @version $Id$
  * @since 1.3M2
  */
-public class FilteringIterator implements Iterator<Patient>
+public class FilteringIterator implements Iterator<PrimaryEntity>
 {
-    private final Iterator<Patient> input;
+    private final Iterator<? extends PrimaryEntity> input;
 
     private final Visibility thresholdVisibility;
 
     private final EntityPermissionsManager entityPermissionsManager;
 
-    private Patient next;
+    private PrimaryEntity next;
 
     /**
      * Basic constructor.
      *
      * @param input the iterator to filter, {@code null} and empty iterators are accepted
      * @param thresholdVisibility a threshold visibility; if {@code null}, then the input is returned unchanged
-     * @param entityPermissionsManager required for computing the visibility of each input patient
+     * @param entityPermissionsManager required for computing the visibility of each input entity
      */
-    public FilteringIterator(Iterator<Patient> input, Visibility thresholdVisibility,
+    public FilteringIterator(Iterator<? extends PrimaryEntity> input, Visibility thresholdVisibility,
         EntityPermissionsManager entityPermissionsManager)
     {
         this.input = input;
@@ -66,13 +66,13 @@ public class FilteringIterator implements Iterator<Patient>
     }
 
     @Override
-    public Patient next()
+    public PrimaryEntity next()
     {
         if (!hasNext()) {
             throw new NoSuchElementException();
         }
 
-        Patient toReturn = this.next;
+        PrimaryEntity toReturn = this.next;
         this.findNext();
 
         return toReturn;
@@ -89,12 +89,12 @@ public class FilteringIterator implements Iterator<Patient>
         this.next = null;
 
         while (this.input.hasNext() && this.next == null) {
-            Patient potentialNextPatient = this.input.next();
-            if (potentialNextPatient != null) {
-                Visibility patientVisibility =
-                    this.entityPermissionsManager.getPatientAccess(potentialNextPatient).getVisibility();
-                if (this.thresholdVisibility.compareTo(patientVisibility) <= 0) {
-                    this.next = potentialNextPatient;
+            PrimaryEntity potentialNextEntity = this.input.next();
+            if (potentialNextEntity != null) {
+                Visibility entityVisibility =
+                    this.entityPermissionsManager.getEntityAccess(potentialNextEntity).getVisibility();
+                if (this.thresholdVisibility.compareTo(entityVisibility) <= 0) {
+                    this.next = potentialNextEntity;
                 }
             }
         }

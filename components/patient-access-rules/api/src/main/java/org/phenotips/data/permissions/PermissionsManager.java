@@ -18,6 +18,7 @@
 package org.phenotips.data.permissions;
 
 import org.phenotips.data.Patient;
+import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
@@ -31,13 +32,16 @@ import java.util.Iterator;
  */
 @Unstable
 @Role
+@Deprecated
 public interface PermissionsManager
 {
     /**
      * Get the visibility options available, excluding {@link Visibility#isDisabled() disabled} ones.
      *
      * @return a collection of enabled visibilities, may be empty if none are enabled
+     * @deprecated since 1.4; use {@link EntityPermissionsManager#listVisibilityOptions()} instead
      */
+    @Deprecated
     Collection<Visibility> listVisibilityOptions();
 
     /**
@@ -45,7 +49,9 @@ public interface PermissionsManager
      *
      * @return a collection of visibilities, may be empty if none are available
      * @since 1.3M2
+     * @deprecated since 1.4; use {@link EntityPermissionsManager#listAllVisibilityOptions()} instead
      */
+    @Deprecated
     Collection<Visibility> listAllVisibilityOptions();
 
     /**
@@ -53,15 +59,47 @@ public interface PermissionsManager
      *
      * @return a visibility, or {@code null} if none is configured or the configured one isn't valid
      * @since 1.3M2
+     * @deprecated since 1.4; use {@link EntityPermissionsManager#getDefaultVisibility()} instead
      */
+    @Deprecated
     Visibility getDefaultVisibility();
 
+    /**
+     * Resolves visibility from its name.
+     *
+     * @param name the name of the visibility
+     * @return the {@link Visibility} associated with provided {@code name}
+     * @deprecated since 1.4; use {@link EntityPermissionsManager#resolveVisibility(String)} instead
+     */
+    @Deprecated
     Visibility resolveVisibility(String name);
 
+    /**
+     * Lists all available access levels.
+     *
+     * @return a collection of available {@link AccessLevel} objects
+     * @deprecated since 1.4; use {@link EntityPermissionsManager#listAccessLevels()} instead
+     */
+    @Deprecated
     Collection<AccessLevel> listAccessLevels();
 
+    /**
+     * Resolves the access level from its name.
+     *
+     * @param name the name of the {@link AccessLevel}
+     * @return the {@link AccessLevel} associated with the provided {@code name}
+     * @deprecated since 1.4; use {@link EntityPermissionsManager#resolveAccessLevel(String)} instead
+     */
+    @Deprecated
     AccessLevel resolveAccessLevel(String name);
 
+    /**
+     * Gets the {@link PatientAccess} for the {@code targetPatient}.
+     * @param targetPatient the {@link Patient} of interest
+     * @return the {@link PatientAccess} for {@code targetPatient}
+     * @deprecated since 1.4; use {@link EntityPermissionsManager#getEntityAccess(PrimaryEntity)} instead
+     */
+    @Deprecated
     PatientAccess getPatientAccess(Patient targetPatient);
 
     /**
@@ -74,7 +112,9 @@ public interface PermissionsManager
      *         the order of the input collection; if the threshold visibility is {@code null}, the input collection is
      *         returned unaltered
      * @since 1.3M2
+     * @deprecated since 1.4; use {@link EntityPermissionsManager#filterByVisibility(Collection, Visibility)} instead
      */
+    @Deprecated
     Collection<Patient> filterByVisibility(Collection<Patient> patients, Visibility requiredVisibility);
 
     /**
@@ -86,7 +126,9 @@ public interface PermissionsManager
      *         preserves the order of the input iterator; if the threshold visibility is {@code null}, the input is
      *         returned unaltered
      * @since 1.3M2
+     * @deprecated since 1.4; use {@link EntityPermissionsManager#filterByVisibility(Iterator, Visibility)} instead
      */
+    @Deprecated
     Iterator<Patient> filterByVisibility(Iterator<Patient> patients, Visibility requiredVisibility);
 
     /**
@@ -94,6 +136,8 @@ public interface PermissionsManager
      * only one event after a bunch of updates have been performed.
      *
      * @param patientId the {@link Patient#getId() identifier} of the affected patient
+     * @deprecated since 1.4; use {@link EntityPermissionsManager#fireRightsUpdateEvent(String)} instead
      */
+    @Deprecated
     void fireRightsUpdateEvent(String patientId);
 }

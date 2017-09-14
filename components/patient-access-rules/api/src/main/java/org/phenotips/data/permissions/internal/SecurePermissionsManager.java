@@ -19,6 +19,7 @@ package org.phenotips.data.permissions.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
@@ -45,7 +46,7 @@ import javax.inject.Singleton;
 public class SecurePermissionsManager implements PermissionsManager
 {
     @Inject
-    private PermissionsManager internalService;
+    private EntityPermissionsManager internalService;
 
     @Override
     public Collection<Visibility> listVisibilityOptions()
@@ -86,19 +87,19 @@ public class SecurePermissionsManager implements PermissionsManager
     @Override
     public PatientAccess getPatientAccess(Patient targetPatient)
     {
-        return new SecurePatientAccess(this.internalService.getPatientAccess(targetPatient), this.internalService);
+        return new SecurePatientAccess(this.internalService.getEntityAccess(targetPatient), this.internalService);
     }
 
     @Override
     public Collection<Patient> filterByVisibility(Collection<Patient> patients, Visibility requiredVisibility)
     {
-        return this.internalService.filterByVisibility(patients, requiredVisibility);
+        return (Collection<Patient>) this.internalService.filterByVisibility(patients, requiredVisibility);
     }
 
     @Override
     public Iterator<Patient> filterByVisibility(Iterator<Patient> patients, Visibility requiredVisibility)
     {
-        return this.internalService.filterByVisibility(patients, requiredVisibility);
+        return (Iterator<Patient>) this.internalService.filterByVisibility(patients, requiredVisibility);
     }
 
     @Override

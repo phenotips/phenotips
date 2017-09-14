@@ -17,7 +17,7 @@
  */
 package org.phenotips.data.permissions;
 
-import org.phenotips.data.Patient;
+import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
@@ -28,6 +28,7 @@ import java.util.Iterator;
 /**
  * @version $Id$
  * @since 1.0M9
+ * @since 1.4, under new name and moved from patient-access-rules
  */
 @Unstable
 @Role
@@ -49,7 +50,7 @@ public interface EntityPermissionsManager
     Collection<Visibility> listAllVisibilityOptions();
 
     /**
-     * Get the default visibility to set for new patient records.
+     * Get the default visibility to set for new entity records.
      *
      * @return a visibility, or {@code null} if none is configured or the configured one isn't valid
      * @since 1.3M2
@@ -62,38 +63,40 @@ public interface EntityPermissionsManager
 
     AccessLevel resolveAccessLevel(String name);
 
-    EntityAccess getPatientAccess(Patient targetPatient);
+    EntityAccess getEntityAccess(PrimaryEntity targetEntity);
 
     /**
-     * Receives a collection of patients and returns a new collection containing only those with
+     * Receives a collection of entities and returns a new collection containing only those with
      * {@code visibility >= requiredVisibility}.
      *
-     * @param patients a collection of patients
-     * @param requiredVisibility minimum level of visibility required for patients
+     * @param entities a collection of entities
+     * @param requiredVisibility minimum level of visibility required for entities
      * @return a collection containing only those with {@code visibility >= requiredVisibility}; may be empty; preserves
      *         the order of the input collection; if the threshold visibility is {@code null}, the input collection is
      *         returned unaltered
      * @since 1.3M2
      */
-    Collection<Patient> filterByVisibility(Collection<Patient> patients, Visibility requiredVisibility);
+    Collection<? extends PrimaryEntity> filterByVisibility(Collection<? extends PrimaryEntity> entities,
+        Visibility requiredVisibility);
 
     /**
-     * Receives a collection of patients and returns a only those with {@code visibility >= requiredVisibility}.
+     * Receives a collection of entities and returns a only those with {@code visibility >= requiredVisibility}.
      *
-     * @param patients an iterator over a collection of patients
-     * @param requiredVisibility minimum level of visibility required for patients
-     * @return an iterator returning only the patients with {@code visibility >= requiredVisibility}; may be empty;
+     * @param entities an iterator over a collection of entities
+     * @param requiredVisibility minimum level of visibility required for entities
+     * @return an iterator returning only the entities with {@code visibility >= requiredVisibility}; may be empty;
      *         preserves the order of the input iterator; if the threshold visibility is {@code null}, the input is
      *         returned unaltered
      * @since 1.3M2
      */
-    Iterator<Patient> filterByVisibility(Iterator<Patient> patients, Visibility requiredVisibility);
+    Iterator<? extends PrimaryEntity> filterByVisibility(Iterator<? extends PrimaryEntity> entities,
+        Visibility requiredVisibility);
 
     /**
      * Fires a right update event to notify interested parties that some permissions have changed. The idea is to fire
      * only one event after a bunch of updates have been performed.
      *
-     * @param patientId the {@link Patient#getId() identifier} of the affected patient
+     * @param entityId the {@link PrimaryEntity#getId() identifier} of the affected entity
      */
-    void fireRightsUpdateEvent(String patientId);
+    void fireRightsUpdateEvent(String entityId);
 }

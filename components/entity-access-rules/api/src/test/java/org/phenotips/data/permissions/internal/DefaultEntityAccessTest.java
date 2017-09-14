@@ -66,14 +66,14 @@ public class DefaultEntityAccessTest
     /** The user used as a non-collaborator. */
     private static final DocumentReference OTHER_USER = new DocumentReference("xwiki", "XWiki", "cxavier");
 
-    /** Basic tests for {@link EntityAccess#getPatient()}. */
+    /** Basic tests for {@link EntityAccess#getEntity()}. */
     @Test
     public void getPatient() throws ComponentLookupException
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper h = mock(EntityAccessHelper.class);
         EntityAccess pa = new DefaultEntityAccess(p, h, mock(EntityPermissionsManager.class));
-        Assert.assertSame(p, pa.getPatient());
+        Assert.assertSame(p, pa.getEntity());
     }
 
     /** Basic tests for {@link EntityAccess#getOwner()}. */
@@ -549,6 +549,6 @@ public class DefaultEntityAccessTest
     public void toStringWithNullPatient()
     {
         EntityAccess pa = new DefaultEntityAccess(null, null, null);
-        Assert.assertEquals("Access rules for <unknown patient>", pa.toString());
+        Assert.assertEquals("Access rules for <unknown entity>", pa.toString());
     }
 }

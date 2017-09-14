@@ -45,7 +45,7 @@
   #set ($discard = $response.setContentType('application/json'))
   #set ($record = $services.patients.get("$!{request.id}"))
   #set ($entityType = 'patients')
-  #set ($recordAccess = $services.permissions.getPatientAccess($record.getId()))
+  #set ($recordAccess = $services.permissions.getEntityAccess($record.getId()))
   #if ("$!record.id" != '')
     #set ($data = {})
     #set ($canTransfer = $recordAccess.hasAccessLevel('owner'))
@@ -1266,7 +1266,7 @@ $xwiki.ssx.use($serviceDocName)
 #set ($entityType = 'patients')
 #if ("$!record.id" != '')
   #set ($_service = $services.permissions)
-  #set ($recordAccess = $_service.getPatientAccess($record.getId()))
+  #set ($recordAccess = $_service.getEntityAccess($record.getId()))
   ## ===========================================================
   ## Display access summary for this record and enable changing
   ## -----------------------------------------------------------

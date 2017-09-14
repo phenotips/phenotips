@@ -17,11 +17,11 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
+import org.phenotips.entities.PrimaryEntity;
+import org.phenotips.entities.PrimaryEntityResolver;
 
 import org.xwiki.bridge.event.ActionExecutingEvent;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -70,10 +70,10 @@ public class VCFAccessRestrictionEventListenerTest
     @Mock
     private XWikiServletRequest request;
 
-    private PatientRepository patients;
+    private PrimaryEntityResolver resolver;
 
     @Mock
-    private Patient patient;
+    private PrimaryEntity primaryEntity;
 
     private EntityPermissionsManager permissions;
 
@@ -86,10 +86,10 @@ public class VCFAccessRestrictionEventListenerTest
     public void setUp() throws ComponentLookupException
     {
         MockitoAnnotations.initMocks(this);
-        this.patients = this.mocker.getInstance(PatientRepository.class);
-        when(this.patients.get("xwiki:data.P0000001")).thenReturn(this.patient);
+        this.resolver = this.mocker.getInstance(PrimaryEntityResolver.class);
+        when(this.resolver.resolveEntity("xwiki:data.P0000001")).thenReturn(this.primaryEntity);
         this.permissions = this.mocker.getInstance(EntityPermissionsManager.class);
-        when(this.permissions.getPatientAccess(this.patient)).thenReturn(this.access);
+        when(this.permissions.getEntityAccess(this.primaryEntity)).thenReturn(this.access);
         this.edit = this.mocker.getInstance(AccessLevel.class, "edit");
 
         when(this.context.getRequest()).thenReturn(this.request);

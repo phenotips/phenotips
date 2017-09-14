@@ -17,13 +17,13 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
+import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.model.reference.EntityReference;
 
@@ -44,9 +44,9 @@ public class SecureEntityAccess implements EntityAccess
     }
 
     @Override
-    public Patient getPatient()
+    public PrimaryEntity getEntity()
     {
-        return this.internalService.getPatient();
+        return this.internalService.getEntity();
     }
 
     @Override

@@ -80,7 +80,7 @@ public class OwnerAccessAuthorizationModule implements AuthorizationModule
         }
 
         AccessLevel grantedAccess =
-            this.manager.getPatientAccess(patient).getAccessLevel(user != null ? user.getProfileDocument() : null);
+            this.manager.getEntityAccess(patient).getAccessLevel(user != null ? user.getProfileDocument() : null);
 
         if (this.ownerAccess.compareTo(grantedAccess) <= 0) {
             return true;

@@ -89,7 +89,7 @@ public class OwnerContactProvider implements PatientContactProvider
     @Override
     public List<ContactInfo> getContacts(Patient patient)
     {
-        EntityAccess referenceAccess = this.entityPermissionsManager.getPatientAccess(patient);
+        EntityAccess referenceAccess = this.entityPermissionsManager.getEntityAccess(patient);
         Owner owner = referenceAccess.getOwner();
         ContactInfo result = getContactInfo(owner);
         if (result == null) {
