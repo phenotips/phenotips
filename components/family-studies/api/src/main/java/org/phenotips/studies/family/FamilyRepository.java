@@ -134,15 +134,4 @@ public interface FamilyRepository
      */
     boolean canDeleteFamily(Family family, User updatingUser, boolean deleteAllMembers, boolean throwException)
         throws PTException;
-
-    /**
-     * For every family member, read users and groups that have either view or edit edit access on the patient, then
-     * gives the sam elevel of access on the family for those users and groups. After performing this method, if p is a
-     * member of the family, and x has level y access on p, x has level y access on the family. The user who is the
-     * owner of the family always has full access to the family. access on p, x has edit access of the family. The famly
-     * document is saved to disk after permissions are updated.
-     *
-     * @param family the family
-     */
-    void updateFamilyPermissions(Family family);
 }

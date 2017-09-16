@@ -92,9 +92,6 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     private PatientRepository patientRepository;
 
     @Inject
-    private PhenotipsFamilyPermissions familyPermissions;
-
-    @Inject
     private AuthorizationService authorizationService;
 
     @Inject
@@ -282,11 +279,6 @@ public class PhenotipsFamilyRepository implements FamilyRepository
 
         // only save family document if this add() is not performed as a part of a batch update
         if (!batchUpdate) {
-            // updating permisisons is an expensive operation which takes all patients into account,
-            // so don't do it when doing a bulk add or remove, instead the calling code will do one
-            // update at the end
-            this.updateFamilyPermissions(family, context, false);
-
             if (!saveFamilyDocument(family, "added " + patientId + " to the family", context)) {
                 throw new PTInternalErrorException();
             }
@@ -353,8 +345,6 @@ public class PhenotipsFamilyRepository implements FamilyRepository
         familyObject.set(PhenotipsFamily.FAMILY_MEMBERS_FIELD, members, context);
 
         if (!batchUpdate) {
-            this.updateFamilyPermissions(family, context, false);
-
             if (!saveFamilyDocument(family, "removed " + patientId + " from the family", context)) {
                 throw new PTInternalErrorException();
             }
@@ -367,21 +357,6 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     private String patientLinkString(Patient patient)
     {
         return patient.getId();
-    }
-
-    @Override
-    public synchronized void updateFamilyPermissions(Family family)
-    {
-        XWikiContext context = this.provider.get();
-        this.updateFamilyPermissions(family, context, true);
-    }
-
-    private void updateFamilyPermissions(Family family, XWikiContext context, boolean saveXwikiDocument)
-    {
-        this.familyPermissions.updatePermissions(family, context);
-        if (saveXwikiDocument) {
-            this.saveFamilyDocument(family, "updated permissions", context);
-        }
     }
 
     @Override
@@ -429,7 +404,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
                 // check permissions on all patients
                 for (Patient patient : family.getMembers()) {
                     if (!this.authorizationService.hasAccess(
-                            updatingUser, Right.DELETE, patient.getDocumentReference())) {
+                        updatingUser, Right.DELETE, patient.getDocumentReference())) {
                         throw new PTNotEnoughPermissionsOnPatientException(Right.DELETE, patient.getId());
                     }
                 }
@@ -523,8 +498,6 @@ public class PhenotipsFamilyRepository implements FamilyRepository
             }
         }
 
-        this.updateFamilyPermissions(family, context, false);
-
         if (!this.saveFamilyDocument(family, "Updated family from saved pedigree", context)) {
             throw new PTInternalErrorException();
         }
@@ -561,7 +534,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
                 if (singlePatient.has(idKey)) {
                     Patient patient = this.patientRepository.get(singlePatient.getString(idKey));
                     if (!this.authorizationService.hasAccess(
-                            updatingUser, Right.EDIT, patient.getDocumentReference())) {
+                        updatingUser, Right.EDIT, patient.getDocumentReference())) {
                         // skip patients the current user does not have edit rights for
                         continue;
                     }
@@ -605,7 +578,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
             if (!StringUtils.isEmpty(probandId)) {
                 Patient patient = this.patientRepository.get(probandId);
                 familyClassObject.setStringValue("proband_id",
-                        (patient == null) ? "" : patient.getDocumentReference().toString());
+                    (patient == null) ? "" : patient.getDocumentReference().toString());
             } else {
                 familyClassObject.setStringValue("proband_id", "");
             }
@@ -702,8 +675,6 @@ public class PhenotipsFamilyRepository implements FamilyRepository
             newFamilyDoc.setAuthorReference(creatorRef);
             newFamilyDoc.setContentAuthorReference(creatorRef);
         }
-
-        this.updateFamilyPermissions(new PhenotipsFamily(newFamilyDoc), context, false);
 
         wiki.saveDocument(newFamilyDoc, context);
 
