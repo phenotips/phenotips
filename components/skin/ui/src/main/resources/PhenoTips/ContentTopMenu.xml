@@ -898,7 +898,7 @@ $xwiki.ssx.use('PhenoTips.JSONImportDialog')##
 #end## isAdvancedUser
 #foreach ($e in $services.uix.getExtensions("org.phenotips.patientRecordMenu.moreActions"))
   #set ($extensionContent = $services.rendering.render($e.execute(), 'xhtml/1.0'))
-  #if ($stringtool.isNotBlank($extensionContent) &amp;&amp; !$foreach.hasContent)
+  #if ($stringtool.isNotBlank($extensionContent))
     #if (!$foreach.hasContent)
       ** ----
       #set ($foreach.hasContent = true)
