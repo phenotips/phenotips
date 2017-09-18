@@ -141,7 +141,7 @@ public class DefaultCollaboratorTest
         Assert.assertNull(c.getAccessLevel());
     }
 
-    /** Basic tests for {@link Collaborator#equals()}. */
+    /** Basic tests for {@link Collaborator#equals(Object)}. */
     @Test
     public void equalsTest() throws ComponentLookupException
     {

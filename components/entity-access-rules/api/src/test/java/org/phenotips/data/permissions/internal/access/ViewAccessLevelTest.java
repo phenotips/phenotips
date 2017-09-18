@@ -129,7 +129,7 @@ public class ViewAccessLevelTest
         Assert.assertFalse(this.mocker.getComponentUnderTest().equals("view"));
     }
 
-    /** Basic test for {@link AccessLevel#compareTo(AccessLevel)}. */
+    /** Basic test for {@link AccessLevel#compareTo(Object)}. */
     @Test
     public void compareToTest() throws ComponentLookupException
     {

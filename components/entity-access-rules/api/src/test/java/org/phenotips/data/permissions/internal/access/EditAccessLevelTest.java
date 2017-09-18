@@ -38,11 +38,11 @@ import static org.mockito.Mockito.when;
  *
  * @version $Id$
  */
-public class NoAccessLevelTest
+public class EditAccessLevelTest
 {
     @Rule
     public final MockitoComponentMockingRule<AccessLevel> mocker =
-        new MockitoComponentMockingRule<>(NoAccessLevel.class);
+        new MockitoComponentMockingRule<>(EditAccessLevel.class);
 
     @Before
     public void setup() throws ComponentLookupException
@@ -55,20 +55,20 @@ public class NoAccessLevelTest
     @Test
     public void getName() throws ComponentLookupException
     {
-        Assert.assertEquals("none", this.mocker.getComponentUnderTest().getName());
+        Assert.assertEquals("edit", this.mocker.getComponentUnderTest().getName());
     }
 
     /** Basic test for {@link AccessLevel#isAssignable()}. */
     @Test
     public void isAssignable() throws ComponentLookupException
     {
-        Assert.assertFalse(this.mocker.getComponentUnderTest().isAssignable());
+        Assert.assertTrue(this.mocker.getComponentUnderTest().isAssignable());
     }
 
     @Test
-    public void grantsNoRight() throws ComponentLookupException
+    public void grantsEditRight() throws ComponentLookupException
     {
-        Assert.assertSame(Right.ILLEGAL, this.mocker.getComponentUnderTest().getGrantedRight());
+        Assert.assertSame(Right.EDIT, this.mocker.getComponentUnderTest().getGrantedRight());
     }
 
     /** Basic test for {@link AccessLevel#getLabel()}. */
@@ -76,15 +76,15 @@ public class NoAccessLevelTest
     public void getLabel() throws ComponentLookupException
     {
         TranslationManager tm = this.mocker.getInstance(TranslationManager.class);
-        when(tm.translate("phenotips.permissions.accessLevels.none.label")).thenReturn("Other");
-        Assert.assertEquals("Other", this.mocker.getComponentUnderTest().getLabel());
+        when(tm.translate("phenotips.permissions.accessLevels.edit.label")).thenReturn("Editor");
+        Assert.assertEquals("Editor", this.mocker.getComponentUnderTest().getLabel());
     }
 
     /** {@link AccessLevel#getLabel()} returns the name when a translation isn't found. */
     @Test
     public void getLabelWithoutTranslation() throws ComponentLookupException
     {
-        Assert.assertEquals("none", this.mocker.getComponentUnderTest().getLabel());
+        Assert.assertEquals("edit", this.mocker.getComponentUnderTest().getLabel());
     }
 
     /** Basic test for {@link AccessLevel#getDescription()}. */
@@ -92,9 +92,10 @@ public class NoAccessLevelTest
     public void getDescription() throws ComponentLookupException
     {
         TranslationManager tm = this.mocker.getInstance(TranslationManager.class);
-        when(tm.translate("phenotips.permissions.accessLevels.none.description"))
-            .thenReturn("Can't access the patient data");
-        Assert.assertEquals("Can't access the patient data", this.mocker.getComponentUnderTest().getDescription());
+        when(tm.translate("phenotips.permissions.accessLevels.edit.description"))
+            .thenReturn("Can view and modify the patient data");
+        Assert.assertEquals("Can view and modify the patient data",
+            this.mocker.getComponentUnderTest().getDescription());
     }
 
     /** {@link AccessLevel#getDescription()} returns an empty string when a translation isn't found. */
@@ -108,7 +109,7 @@ public class NoAccessLevelTest
     @Test
     public void toStringTest() throws ComponentLookupException
     {
-        Assert.assertEquals("none", this.mocker.getComponentUnderTest().toString());
+        Assert.assertEquals("edit", this.mocker.getComponentUnderTest().toString());
     }
 
     /** Basic test for {@link AccessLevel#equals(Object)}. */
@@ -121,28 +122,45 @@ public class NoAccessLevelTest
         Assert.assertFalse(this.mocker.getComponentUnderTest().equals(null));
         // Equals another level with the same name
         AccessLevel other = mock(AccessLevel.class);
-        when(other.getName()).thenReturn("none", "view");
+        when(other.getName()).thenReturn("edit", "view");
         Assert.assertTrue(this.mocker.getComponentUnderTest().equals(other));
         // Doesn't equal a level with a different name
         Assert.assertFalse(this.mocker.getComponentUnderTest().equals(other));
         // Doesn't equal other types of objects
-        Assert.assertFalse(this.mocker.getComponentUnderTest().equals("none"));
+        Assert.assertFalse(this.mocker.getComponentUnderTest().equals("edit"));
     }
 
-    /** Basic test for {@link AccessLevel#compareTo(AccessLevel)}. */
+    /** Basic test for {@link AccessLevel#compareTo(Object)}. */
     @Test
     public void compareToTest() throws ComponentLookupException
     {
         // Equals itself
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().compareTo(this.mocker.getComponentUnderTest()));
         // Nulls come after
-        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(null) < 0);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(null) > 0);
         // Equals another level with the same permissiveness
-        Assert.assertEquals(0, this.mocker.getComponentUnderTest().compareTo(new MockAccessLevel("nothing", 0, true)));
+        Assert.assertEquals(0, this.mocker.getComponentUnderTest().compareTo(new MockAccessLevel("modify", 20, true)));
         // Respects the permissiveness order
-        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(new MockAccessLevel("unknown", -1, true)) > 0);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(new MockAccessLevel("read", 10, true)) > 0);
         Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(new MockAccessLevel("manage", 30, true)) < 0);
         // Other types of levels are placed after
-        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(mock(AccessLevel.class)) < 0);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(mock(AccessLevel.class)) > 0);
+    }
+
+    /** Basic tests for {@link AccessLevel#hashCode()}. */
+    @Test
+    public void hashCodeTest() throws ComponentLookupException
+    {
+        AccessLevel edit = this.mocker.getComponentUnderTest();
+        AccessLevel other = new MockAccessLevel("edit", 120, true);
+        // Same hashcode for a different access level with the same name and assignable flag, ignoring permissiveness
+        Assert.assertEquals(edit.hashCode(), other.hashCode());
+        // Different hashcodes for different coordinates
+        other = new MockAccessLevel("view", 20, true);
+        Assert.assertNotEquals(edit.hashCode(), other.hashCode());
+        other = new MockAccessLevel("edit", 20, false);
+        Assert.assertNotEquals(edit.hashCode(), other.hashCode());
+        other = new MockAccessLevel("none", 20, false);
+        Assert.assertNotEquals(edit.hashCode(), other.hashCode());
     }
 }

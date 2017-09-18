@@ -35,15 +35,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the {@link HiddenVisibility hidden visibility level}.
+ * Tests for the {@link OpenVisibility open visibility level}.
  *
  * @version $Id$
  */
-public class HiddenVisibilityTest
+public class OpenVisibilityTest
 {
     @Rule
-    public final MockitoComponentMockingRule<Visibility> mocker = new MockitoComponentMockingRule<Visibility>(
-        HiddenVisibility.class);
+    public final MockitoComponentMockingRule<Visibility> mocker =
+        new MockitoComponentMockingRule<Visibility>(OpenVisibility.class);
 
     @Before
     public void setup() throws ComponentLookupException
@@ -56,7 +56,7 @@ public class HiddenVisibilityTest
     @Test
     public void getName() throws ComponentLookupException
     {
-        Assert.assertEquals("hidden", this.mocker.getComponentUnderTest().getName());
+        Assert.assertEquals("open", this.mocker.getComponentUnderTest().getName());
     }
 
     /** Basic test for {@link Visibility#getLabel()}. */
@@ -64,15 +64,15 @@ public class HiddenVisibilityTest
     public void getLabel() throws ComponentLookupException
     {
         TranslationManager tm = this.mocker.getInstance(TranslationManager.class);
-        when(tm.translate("phenotips.permissions.visibility.hidden.label")).thenReturn("Hidden");
-        Assert.assertEquals("Hidden", this.mocker.getComponentUnderTest().getLabel());
+        when(tm.translate("phenotips.permissions.visibility.open.label")).thenReturn("Open");
+        Assert.assertEquals("Open", this.mocker.getComponentUnderTest().getLabel());
     }
 
     /** {@link Visibility#getLabel()} returns the capitalized name when a translation isn't found. */
     @Test
     public void getLabelWithoutTranslation() throws ComponentLookupException
     {
-        Assert.assertEquals("Hidden", this.mocker.getComponentUnderTest().getLabel());
+        Assert.assertEquals("Open", this.mocker.getComponentUnderTest().getLabel());
     }
 
     /** Basic test for {@link Visibility#getDescription()}. */
@@ -80,9 +80,9 @@ public class HiddenVisibilityTest
     public void getDescription() throws ComponentLookupException
     {
         TranslationManager tm = this.mocker.getInstance(TranslationManager.class);
-        when(tm.translate("phenotips.permissions.visibility.hidden.description"))
-            .thenReturn("Hidden cases don't appear in statistics.");
-        Assert.assertEquals("Hidden cases don't appear in statistics.", this.mocker.getComponentUnderTest()
+        when(tm.translate("phenotips.permissions.visibility.open.description"))
+            .thenReturn("All registered users can edit open cases.");
+        Assert.assertEquals("All registered users can edit open cases.", this.mocker.getComponentUnderTest()
             .getDescription());
     }
 
@@ -97,7 +97,7 @@ public class HiddenVisibilityTest
     @Test
     public void toStringTest() throws ComponentLookupException
     {
-        Assert.assertEquals("hidden", this.mocker.getComponentUnderTest().toString());
+        Assert.assertEquals("open", this.mocker.getComponentUnderTest().toString());
     }
 
     /** Basic test for {@link Visibility#equals(Object)}. */
@@ -109,10 +109,10 @@ public class HiddenVisibilityTest
         // Never equals null
         Assert.assertFalse(this.mocker.getComponentUnderTest().equals(null));
         Visibility other = mock(Visibility.class);
-        when(other.getName()).thenReturn("hidden", "hidden", "public", "public");
-        AccessLevel edit = mock(AccessLevel.class);
-        AccessLevel none = this.mocker.getInstance(AccessLevel.class, "none");
-        when(other.getDefaultAccessLevel()).thenReturn(none, edit, none, edit);
+        when(other.getName()).thenReturn("open", "open", "private", "private");
+        AccessLevel view = mock(AccessLevel.class);
+        AccessLevel edit = this.mocker.getInstance(AccessLevel.class, "edit");
+        when(other.getDefaultAccessLevel()).thenReturn(edit, view, edit, view);
         // Equals another visibility with the same name and access level
         Assert.assertTrue(this.mocker.getComponentUnderTest().equals(other));
         // Doesn't equal a visibility with a different access level but the same name
@@ -122,10 +122,10 @@ public class HiddenVisibilityTest
         // Doesn't equal a visibility with a different access level and a different name
         Assert.assertFalse(this.mocker.getComponentUnderTest().equals(other));
         // Doesn't equal other types of objects
-        Assert.assertFalse(this.mocker.getComponentUnderTest().equals("hidden"));
+        Assert.assertFalse(this.mocker.getComponentUnderTest().equals("open"));
     }
 
-    /** Basic test for {@link Visibility#compareTo(Visibility)}. */
+    /** Basic test for {@link Visibility#compareTo(Object)}. */
     @Test
     public void compareToTest() throws ComponentLookupException
     {
@@ -134,28 +134,46 @@ public class HiddenVisibilityTest
         // Nulls come after
         Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(null) < 0);
         AccessLevel other = mock(AccessLevel.class);
-        AccessLevel none = this.mocker.getInstance(AccessLevel.class, "none");
+        AccessLevel edit = this.mocker.getInstance(AccessLevel.class, "edit");
         // Equals another visibility with the same permissiveness
-        Assert
-            .assertEquals(0, this.mocker.getComponentUnderTest().compareTo(new MockVisibility("invisible", -1, none)));
+        Assert.assertEquals(0, this.mocker.getComponentUnderTest().compareTo(new MockVisibility("writable", 80, edit)));
         // Respects the permissiveness order
-        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(new MockVisibility("gone", -10, other)) > 0);
-        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(new MockVisibility("open", 100, other)) < 0);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(new MockVisibility("hidden", 0, other)) > 0);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(new MockVisibility("", 100, other)) < 0);
         // Other types of visibilities are placed after
         Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(mock(Visibility.class)) < 0);
+    }
+
+    /** Basic tests for {@link Visibility#hashCode()}. */
+    @Test
+    public void hashCodeTest() throws ComponentLookupException
+    {
+        Visibility open = this.mocker.getComponentUnderTest();
+        AccessLevel none = mock(AccessLevel.class);
+        AccessLevel edit = this.mocker.getInstance(AccessLevel.class, "edit");
+        Visibility other = new MockVisibility("open", 120, edit);
+        // Same hashcode for a different access level with the same name and default right, ignoring permissiveness
+        Assert.assertEquals(open.hashCode(), other.hashCode());
+        // Different hashcodes for different coordinates
+        other = new MockVisibility("open", 80, none);
+        Assert.assertNotEquals(edit.hashCode(), other.hashCode());
+        other = new MockVisibility("private", 80, edit);
+        Assert.assertNotEquals(edit.hashCode(), other.hashCode());
+        other = new MockVisibility("private", 80, none);
+        Assert.assertNotEquals(edit.hashCode(), other.hashCode());
     }
 
     @Test
     public void getPermissiveness() throws ComponentLookupException
     {
-        Assert.assertEquals(-1, this.mocker.getComponentUnderTest().getPermissiveness());
+        Assert.assertEquals(80, this.mocker.getComponentUnderTest().getPermissiveness());
     }
 
     @Test
     public void isDisabled() throws Exception
     {
         PermissionsConfiguration config = this.mocker.getInstance(PermissionsConfiguration.class);
-        when(config.isVisibilityDisabled("hidden")).thenReturn(true, false);
+        when(config.isVisibilityDisabled("open")).thenReturn(true, false);
         Assert.assertTrue(this.mocker.getComponentUnderTest().isDisabled());
         Assert.assertFalse(this.mocker.getComponentUnderTest().isDisabled());
     }

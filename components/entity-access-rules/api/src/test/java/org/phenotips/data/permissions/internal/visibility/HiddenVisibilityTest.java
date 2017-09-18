@@ -35,15 +35,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the {@link PrivateVisibility private visibility level}.
+ * Tests for the {@link HiddenVisibility hidden visibility level}.
  *
  * @version $Id$
  */
-public class PrivateVisibilityTest
+public class HiddenVisibilityTest
 {
     @Rule
-    public final MockitoComponentMockingRule<Visibility> mocker =
-        new MockitoComponentMockingRule<Visibility>(PrivateVisibility.class);
+    public final MockitoComponentMockingRule<Visibility> mocker = new MockitoComponentMockingRule<Visibility>(
+        HiddenVisibility.class);
 
     @Before
     public void setup() throws ComponentLookupException
@@ -56,7 +56,7 @@ public class PrivateVisibilityTest
     @Test
     public void getName() throws ComponentLookupException
     {
-        Assert.assertEquals("private", this.mocker.getComponentUnderTest().getName());
+        Assert.assertEquals("hidden", this.mocker.getComponentUnderTest().getName());
     }
 
     /** Basic test for {@link Visibility#getLabel()}. */
@@ -64,15 +64,15 @@ public class PrivateVisibilityTest
     public void getLabel() throws ComponentLookupException
     {
         TranslationManager tm = this.mocker.getInstance(TranslationManager.class);
-        when(tm.translate("phenotips.permissions.visibility.private.label")).thenReturn("Private");
-        Assert.assertEquals("Private", this.mocker.getComponentUnderTest().getLabel());
+        when(tm.translate("phenotips.permissions.visibility.hidden.label")).thenReturn("Hidden");
+        Assert.assertEquals("Hidden", this.mocker.getComponentUnderTest().getLabel());
     }
 
     /** {@link Visibility#getLabel()} returns the capitalized name when a translation isn't found. */
     @Test
     public void getLabelWithoutTranslation() throws ComponentLookupException
     {
-        Assert.assertEquals("Private", this.mocker.getComponentUnderTest().getLabel());
+        Assert.assertEquals("Hidden", this.mocker.getComponentUnderTest().getLabel());
     }
 
     /** Basic test for {@link Visibility#getDescription()}. */
@@ -80,10 +80,10 @@ public class PrivateVisibilityTest
     public void getDescription() throws ComponentLookupException
     {
         TranslationManager tm = this.mocker.getInstance(TranslationManager.class);
-        when(tm.translate("phenotips.permissions.visibility.private.description"))
-            .thenReturn("Private cases are only accessible to their owners.");
-        Assert.assertEquals("Private cases are only accessible to their owners.",
-            this.mocker.getComponentUnderTest().getDescription());
+        when(tm.translate("phenotips.permissions.visibility.hidden.description"))
+            .thenReturn("Hidden cases don't appear in statistics.");
+        Assert.assertEquals("Hidden cases don't appear in statistics.", this.mocker.getComponentUnderTest()
+            .getDescription());
     }
 
     /** {@link Visibility#getDescription()} returns the empty string when a translation isn't found. */
@@ -97,7 +97,7 @@ public class PrivateVisibilityTest
     @Test
     public void toStringTest() throws ComponentLookupException
     {
-        Assert.assertEquals("private", this.mocker.getComponentUnderTest().toString());
+        Assert.assertEquals("hidden", this.mocker.getComponentUnderTest().toString());
     }
 
     /** Basic test for {@link Visibility#equals(Object)}. */
@@ -109,7 +109,7 @@ public class PrivateVisibilityTest
         // Never equals null
         Assert.assertFalse(this.mocker.getComponentUnderTest().equals(null));
         Visibility other = mock(Visibility.class);
-        when(other.getName()).thenReturn("private", "private", "public", "public");
+        when(other.getName()).thenReturn("hidden", "hidden", "public", "public");
         AccessLevel edit = mock(AccessLevel.class);
         AccessLevel none = this.mocker.getInstance(AccessLevel.class, "none");
         when(other.getDefaultAccessLevel()).thenReturn(none, edit, none, edit);
@@ -122,10 +122,10 @@ public class PrivateVisibilityTest
         // Doesn't equal a visibility with a different access level and a different name
         Assert.assertFalse(this.mocker.getComponentUnderTest().equals(other));
         // Doesn't equal other types of objects
-        Assert.assertFalse(this.mocker.getComponentUnderTest().equals("private"));
+        Assert.assertFalse(this.mocker.getComponentUnderTest().equals("hidden"));
     }
 
-    /** Basic test for {@link Visibility#compareTo(Visibility)}. */
+    /** Basic test for {@link Visibility#compareTo(Object)}. */
     @Test
     public void compareToTest() throws ComponentLookupException
     {
@@ -136,9 +136,10 @@ public class PrivateVisibilityTest
         AccessLevel other = mock(AccessLevel.class);
         AccessLevel none = this.mocker.getInstance(AccessLevel.class, "none");
         // Equals another visibility with the same permissiveness
-        Assert.assertEquals(0, this.mocker.getComponentUnderTest().compareTo(new MockVisibility("personal", 0, none)));
+        Assert
+            .assertEquals(0, this.mocker.getComponentUnderTest().compareTo(new MockVisibility("invisible", -1, none)));
         // Respects the permissiveness order
-        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(new MockVisibility("hidden", -10, other)) > 0);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(new MockVisibility("gone", -10, other)) > 0);
         Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(new MockVisibility("open", 100, other)) < 0);
         // Other types of visibilities are placed after
         Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(mock(Visibility.class)) < 0);
@@ -147,14 +148,14 @@ public class PrivateVisibilityTest
     @Test
     public void getPermissiveness() throws ComponentLookupException
     {
-        Assert.assertEquals(0, this.mocker.getComponentUnderTest().getPermissiveness());
+        Assert.assertEquals(-1, this.mocker.getComponentUnderTest().getPermissiveness());
     }
 
     @Test
     public void isDisabled() throws Exception
     {
         PermissionsConfiguration config = this.mocker.getInstance(PermissionsConfiguration.class);
-        when(config.isVisibilityDisabled("private")).thenReturn(true, false);
+        when(config.isVisibilityDisabled("hidden")).thenReturn(true, false);
         Assert.assertTrue(this.mocker.getComponentUnderTest().isDisabled());
         Assert.assertFalse(this.mocker.getComponentUnderTest().isDisabled());
     }
