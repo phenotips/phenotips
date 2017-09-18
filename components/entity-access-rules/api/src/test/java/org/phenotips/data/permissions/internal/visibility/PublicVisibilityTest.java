@@ -126,7 +126,7 @@ public class PublicVisibilityTest
         Assert.assertFalse(this.mocker.getComponentUnderTest().equals("edit"));
     }
 
-    /** Basic test for {@link Visibility#compareTo(Visibility)}. */
+    /** Basic test for {@link Visibility#compareTo(Object)}. */
     @Test
     public void compareToTest() throws ComponentLookupException
     {

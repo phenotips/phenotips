@@ -115,7 +115,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>patient-access-rules-api</artifactId>
+      <artifactId>entity-access-rules-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

@@ -130,7 +130,7 @@ public class OwnerAccessLevelTest
         Assert.assertFalse(this.mocker.getComponentUnderTest().equals("owner"));
     }
 
-    /** Basic test for {@link AccessLevel#compareTo(AccessLevel)}. */
+    /** Basic test for {@link AccessLevel#compareTo(Object)}. */
     @Test
     public void compareToTest() throws ComponentLookupException
     {

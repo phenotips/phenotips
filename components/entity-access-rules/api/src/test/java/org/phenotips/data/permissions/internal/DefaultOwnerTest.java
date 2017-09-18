@@ -116,7 +116,7 @@ public class DefaultOwnerTest
         Assert.assertNull(o.getUsername());
     }
 
-    /** Basic tests for {@link Owner#equals()}. */
+    /** Basic tests for {@link Owner#equals(Object)}. */
     @Test
     public void equalsTest() throws ComponentLookupException
     {

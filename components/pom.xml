@@ -48,6 +48,7 @@
     <module>patient-data</module>
     <module>patient-data-extra</module>
     <module>security</module>
+    <module>entity-access-rules</module>
     <module>patient-access-rules</module>
     <module>patient-contacts</module>
     <module>patient-data-sharing</module>
