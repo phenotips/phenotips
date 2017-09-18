@@ -123,7 +123,7 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
     @Override
     protected int index(@Nullable final String sourceUrl)
     {
-        final String url = StringUtils.isNotBlank(sourceUrl) ? sourceUrl : getDefaultSourceLocation();
+        final String url = StringUtils.defaultIfBlank(sourceUrl, getDefaultSourceLocation());
         // Fetch the ontology. If this is over the network, it may take a while.
         final OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM_TRANS_INF);
         ontModel.read(url);

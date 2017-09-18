@@ -36,6 +36,9 @@ import org.xwiki.stability.Unstable;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Collection;
 import java.util.List;
 
@@ -45,6 +48,8 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+
+import org.apache.commons.validator.routines.UrlValidator;
 
 /**
  * Default implementation of {@link VocabularyResource} using XWiki's support for REST resources.
@@ -128,10 +133,18 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
     @Override
     public Response reindex(String vocabularyId, String url)
     {
+        // Validate URL before loading any extensions
+        String[] schemes = { "http", "https", "ftp", "file" };
+        UrlValidator urlValidator = new UrlValidator(schemes);
+        if (!urlValidator.isValid(url) || !exists(url)) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
         // Check permissions, the user must have admin rights on the entire wiki
         if (!this.userIsAdmin()) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
+
         Vocabulary vocabulary = this.vm.getVocabulary(vocabularyId);
         if (vocabulary == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -159,5 +172,35 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
         User user = this.users.getCurrentUser();
         return this.authorizationService.hasAccess(user, Right.ADMIN,
             this.resolver.resolve(Constants.XWIKI_SPACE_REFERENCE));
+    }
+
+    private boolean exists(String urlStr)
+    {
+        try {
+            URL url = new URL(urlStr);
+            URLConnection connection = url.openConnection();
+            connection.setConnectTimeout(5000);
+            if (connection instanceof HttpURLConnection) {
+                HttpURLConnection httpConnection = (HttpURLConnection) connection;
+                httpConnection.setInstanceFollowRedirects(true);
+                httpConnection.setRequestMethod("HEAD");
+            }
+            try {
+                connection.connect();
+            } catch (Exception ex) {
+                return false;
+            }
+            if (connection instanceof HttpURLConnection) {
+                HttpURLConnection httpConnection = (HttpURLConnection) connection;
+                String newLocation = connection.getHeaderField("Location");
+                if (newLocation != null) {
+                    return exists(newLocation);
+                }
+                return httpConnection.getResponseCode() == 200;
+            }
+            return (connection.getContentLengthLong() > 0);
+        } catch (Exception ex) {
+            return false;
+        }
     }
 }

@@ -38,27 +38,6 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
-#if ("$!{request.url}" != '' &amp;&amp; "$!{request.vocabulary}" != '' &amp;&amp; $request.form_token &amp;&amp; $services.csrf.isTokenValid("$!{request.form_token}"))
-  #set($result = '')
-  #set($result = $services.vocabularies.get($request.vocabulary).reindex("$!{request.url}"))
-
-  #if ("$!{request.ajax}" == '1')
-    #if ($result == 0)
-      $services.localization.render('phenotips.indexVocabulary.success')
-    #else
-      $response.setStatus(500)##
-      $services.localization.render('phenotips.indexVocabulary.failure')
-    #end
-
-  #else
-    #if ($result == 0)
-      #set ($indexMessage = "{{info}}$services.localization.render('phenotips.indexVocabulary.successMessage', [$!{request.url}]){{/info}}")
-    #else
-      #set ($indexMessage = "{{error}}$services.localization.render('phenotips.indexVocabulary.failureMessage', [$!{request.url}]){{/error}}")
-    #end
-  #end
-#end
-#if ("$!{request.ajax}" != '1')
 $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 $xwiki.jsx.use('PhenoTips.IndexVocabulary')##
 $xwiki.ssx.use('PhenoTips.IndexVocabulary')##
@@ -114,7 +93,6 @@ $xwiki.ssx.use('PhenoTips.Widgets')##
 {{/html}}
 
 )))
-#end
 {{/velocity}}</content>
   <object>
     <name>PhenoTips.IndexVocabulary</name>
@@ -420,18 +398,15 @@ $xwiki.ssx.use('PhenoTips.Widgets')##
    $$('form.solr-admin').invoke('observe', 'submit', function(event) {
       event.stop();
       var form = event.element();
-      var mandatoryElt = form.down('.mandatory input');
+      var mandatoryElt = form.down('.mandatory input[id^="vocabulary"]');
+      var vocabularyId = form.down('input[name="vocabulary"]').value;
       if (!mandatoryElt || mandatoryElt.value != "") {
-        var formData = new Hash(form.serialize(true));
-        formData.set('outputSyntax', 'plain');
-        formData.set('ajax', '1');
         // Create a notification message to display to the user when the submit is being sent
         form._x_notification = new XWiki.widgets.Notification("$!escapetool.javascript($services.localization.render('phenotips.indexVocabulary.inProgress'))", "inprogress");
         form.disable();
-        // FIXME Use the XWiki.Document JS API after upgrading to XWiki 6.0
-        new Ajax.Request("$xwiki.getURL('PhenoTips.IndexVocabulary', 'get')", {
-            method : 'post',
-            parameters : formData,
+        var vocabularyIndexURL = XWiki.contextPath + "/rest/vocabularies/" + vocabularyId + "?url=" + mandatoryElt.value;
+        new Ajax.Request(vocabularyIndexURL, {
+            method: 'post',
             onSuccess : function (response) {
               form._x_notification.replace(new XWiki.widgets.Notification(response.responseText, "done"));
             }.bind(this),
