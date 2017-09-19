@@ -126,10 +126,8 @@
   #set ($family = $services.families.getFamilyForPatient($doc.name))
   #set ($familyRef = "$!doc.getObject('PhenoTips.FamilyReferenceClass').getValue('reference')")
   #if ("$!family" == '' &amp;&amp; $familyRef != '' &amp;&amp; !$xwiki.getDocument($familyRef).isNew())
-    #if($xcontext.action == 'edit')
-      {{warning}}{{translation key="phenotips.patientRecord.pedigree.inaccessibleWarning" /}}{{/warning}}
+    {{warning}}{{translation key="phenotips.patientRecord.pedigree.inaccessibleWarning" /}}{{/warning}}
 
-    #end
   #else
     #pedigreeThumbnail($family, $doc.name)
   #end
