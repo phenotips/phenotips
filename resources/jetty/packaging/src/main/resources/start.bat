@@ -31,7 +31,7 @@ REM -------------------------------------------------------------------------
 setlocal EnableDelayedExpansion
 
 set JETTY_HOME=jetty
-if not defined START_OPTS set START_OPTS=-Xmx1536m
+if not defined START_OPTS set START_OPTS=-Xmx2048m
 
 REM The port on which to start Jetty can be defined in an enviroment variable called JETTY_PORT
 if not defined JETTY_PORT (
