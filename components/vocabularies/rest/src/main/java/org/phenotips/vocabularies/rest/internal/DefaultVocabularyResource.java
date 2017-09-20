@@ -180,6 +180,7 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
             URL url = new URL(urlStr);
             URLConnection connection = url.openConnection();
             connection.setConnectTimeout(5000);
+            connection.addRequestProperty("Accept", "*/*");
             if (connection instanceof HttpURLConnection) {
                 HttpURLConnection httpConnection = (HttpURLConnection) connection;
                 httpConnection.setInstanceFollowRedirects(true);
