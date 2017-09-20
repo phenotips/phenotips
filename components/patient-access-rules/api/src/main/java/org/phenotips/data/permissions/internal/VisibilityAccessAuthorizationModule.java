@@ -75,7 +75,7 @@ public class VisibilityAccessAuthorizationModule implements AuthorizationModule
 
         // Checks if the visibility of Patient Record and the access rights
         Right grantedRight = visibility.getDefaultAccessLevel().getGrantedRight();
-        if (user != null && (grantedRight.equals(access)
+        if (user != null && user.getProfileDocument() != null && (grantedRight.equals(access)
             || (grantedRight.getImpliedRights() != null && grantedRight.getImpliedRights().contains(access)))) {
             return true;
         }

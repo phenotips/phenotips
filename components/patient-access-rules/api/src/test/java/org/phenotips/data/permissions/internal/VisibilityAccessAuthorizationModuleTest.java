@@ -28,6 +28,7 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
+import org.xwiki.users.internal.InvalidUser;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -100,6 +101,8 @@ public class VisibilityAccessAuthorizationModuleTest
         when(this.privateVisibility.getName()).thenReturn("private");
         when(this.privateVisibility.getDefaultAccessLevel()).thenReturn(this.noneAccessLevel);
         when(this.noneAccessLevel.getGrantedRight()).thenReturn(Right.ILLEGAL);
+
+        when(this.user.getProfileDocument()).thenReturn(new DocumentReference("xwiki", "Users", "padams"));
     }
 
     @Test
@@ -232,6 +235,8 @@ public class VisibilityAccessAuthorizationModuleTest
     public void noActionForGuestUser() throws ComponentLookupException
     {
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(null, Right.VIEW, this.doc));
+        Assert.assertNull(
+            this.mocker.getComponentUnderTest().hasAccess(new InvalidUser(null, null), Right.VIEW, this.doc));
     }
 
     @Test
