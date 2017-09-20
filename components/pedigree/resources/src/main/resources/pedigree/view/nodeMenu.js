@@ -1252,7 +1252,7 @@ define([
                 }
 
                 var range = value.hasOwnProperty("range") && value.range.hasOwnProperty("years") ? value.range.years : 1;
-                var year  = value.hasOwnProperty("year") ? value.year.toString() : "";
+                var year  = value.hasOwnProperty("year") && value.year ? value.year.toString() : "";
                 if (range > 1 && year != "") {
                     year = year + "s";
                 }
