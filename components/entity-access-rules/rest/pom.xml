@@ -29,6 +29,7 @@
   <name>PhenoTips - Entity access rules - REST services</name>
 
   <properties>
+    <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
     <!-- Fixme. Coverage. -->
     <coverage.instructionRatio>0.0</coverage.instructionRatio>
   </properties>
@@ -70,6 +71,11 @@
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-security-api</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-constants</artifactId>
       <version>${project.version}</version>
@@ -77,6 +83,11 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-entities-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>users-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -109,6 +120,16 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-rest-commons</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>family-studies-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>patient-data-api</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

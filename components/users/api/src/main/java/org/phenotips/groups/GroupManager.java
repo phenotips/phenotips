@@ -24,6 +24,8 @@ import org.xwiki.users.User;
 
 import java.util.Set;
 
+import com.xpn.xwiki.api.Document;
+
 /**
  * API for manipulating groups.
  *
@@ -57,4 +59,12 @@ public interface GroupManager
      * @return the corresponding group, if found, or {@code null} if the requested group doesn't exist
      */
     Group getGroup(DocumentReference groupReference);
+
+    /**
+     * Retrieves all members of the group identified by the passed name.
+     *
+     * @param name the name of the group
+     * @return the Collection of members XWiki Documents.
+     */
+    Set<Document> getAllMembersForGroup(String name);
 }

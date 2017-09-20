@@ -40,7 +40,7 @@
     </complexContent>
   </complexType>
 
-  <complexType name="CollaboratorSummary">
+  <complexType name="CollaboratorRepresentation">
     <complexContent>
       <extension base="ptperm:UserSummary">
         <sequence>
@@ -54,7 +54,7 @@
     <complexContent>
       <extension base="ptcommons:LinkCollection">
         <sequence>
-          <element name="collaborator" type="ptperm:CollaboratorSummary" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="collaborator" type="ptperm:CollaboratorRepresentation" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
       </extension>
     </complexContent>
@@ -94,6 +94,28 @@
     </complexContent>
   </complexType>
 
+  <complexType name="PrincipalSummary">
+    <complexContent>
+      <extension base="ptperm:CollaboratorRepresentation">
+        <sequence>
+          <element name="role" type="string"/>
+          <element name="group" type="string"/>
+          <element name="url" type="string"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="PrincipalsCollection">
+    <complexContent>
+      <extension base="ptcommons:LinkCollection">
+        <sequence>
+          <element name="principal" type="ptperm:PrincipalSummary" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
   <!--
   *
   * ELEMENTS
@@ -102,8 +124,6 @@
 
   <element name="ownerRepresentation" type="ptperm:OwnerSummary"/>
 
-  <element name="collaboratorRepresentation" type="ptperm:CollaboratorSummary"/>
-
   <element name="visibilityRepresentation" type="ptperm:VisibilitySummary"/>
 
   <element name="collaboratorsRepresentation" type="ptperm:CollaboratorsCollection"/>
@@ -111,4 +131,9 @@
   <element name="visibilityOptionsRepresentation" type="ptperm:VisibilityOptions"/>
 
   <element name="permissionsRepresentation" type="ptperm:PermissionsSummary"/>
+
+  <element name="principalRepresentation" type="ptperm:PrincipalSummary"/>
+
+  <element name="principalsRepresentation" type="ptperm:PrincipalsCollection"/>
+
 </schema>

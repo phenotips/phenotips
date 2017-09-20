@@ -573,6 +573,18 @@
               <method>java.util.List search(java.lang.String, java.lang.String, int, java.lang.String, java.lang.String)</method>
               <justification>Adding support for vocabulary categories</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/groups/GroupManager</className>
+              <differenceType>7012</differenceType>
+              <method>java.util.List getAllMembersForGroup(java.lang.String)</method>
+              <justification>Adding new method to get all members of the group</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/permissions/internal</className>
+              <differenceType>7012</differenceType>
+              <method>com.xpn.xwiki.api.Document getDocument(org.xwiki.model.reference.EntityReference)</method>
+              <justification>Adding new method to get Document of user or group reference</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

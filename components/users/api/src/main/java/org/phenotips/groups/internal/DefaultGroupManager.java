@@ -20,7 +20,9 @@ package org.phenotips.groups.internal;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -33,6 +35,7 @@ import org.xwiki.stability.Unstable;
 import org.xwiki.users.User;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -44,6 +47,12 @@ import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.api.Document;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.user.api.XWikiGroupService;
 
 /**
  * Default implementation for {@link GroupManager}, using XDocuments as the place where groups are defined.
@@ -59,6 +68,9 @@ public class DefaultGroupManager implements GroupManager
     /** The space where groups are stored. */
     private static final EntityReference GROUP_SPACE = new EntityReference("Groups", EntityType.SPACE);
 
+    private static final EntityReference USER_CLASS = new EntityReference("XWikiUsers", EntityType.DOCUMENT,
+        new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
+
     /** Logging helper. */
     @Inject
     private Logger logger;
@@ -67,10 +79,20 @@ public class DefaultGroupManager implements GroupManager
     @Inject
     private QueryManager qm;
 
+    @Inject
+    private Execution execution;
+
     /** Solves partial group references in the current wiki. */
     @Inject
     @Named("current")
     private DocumentReferenceResolver<String> resolver;
+
+    @Inject
+    @Named("userOrGroup")
+    private DocumentReferenceResolver<String> userOrGroupResolver;
+
+    @Inject
+    private DocumentAccessBridge bridge;
 
     @Inject
     @Named("compactwiki")
@@ -142,5 +164,48 @@ public class DefaultGroupManager implements GroupManager
             return null;
         }
         return new DefaultGroup(groupReference);
+    }
+
+    @Override
+    public Set<Document> getAllMembersForGroup(String name)
+    {
+        if (StringUtils.isBlank(name)) {
+            return null;
+        }
+
+        Set<Document> result = new LinkedHashSet<>();
+
+        try {
+            XWikiContext context = getXWikiContext();
+            XWikiGroupService groupService = context.getWiki().getGroupService(context);
+
+            List<String> nestedGroups = new ArrayList<>();
+            nestedGroups.add(name);
+
+            while (!nestedGroups.isEmpty()) {
+                String groupName = nestedGroups.get(0);
+                nestedGroups.remove(0);
+                Collection<String> members = groupService.getAllMembersNamesForGroup(groupName, 0, 0, context);
+                for (String memberName : members) {
+                    EntityReference userOrGroup = this.userOrGroupResolver.resolve(memberName);
+                    XWikiDocument doc = (XWikiDocument) this.bridge.getDocument((DocumentReference) userOrGroup);
+                    if (doc.getXObject(Group.CLASS_REFERENCE) != null || doc.getXObject(USER_CLASS) != null) {
+                        if (doc.getXObject(Group.CLASS_REFERENCE) != null) {
+                            nestedGroups.add(memberName);
+                        }
+                        result.add(doc.newDocument(context));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            //
+        }
+
+        return Collections.unmodifiableSet(result);
+    }
+
+    private XWikiContext getXWikiContext()
+    {
+        return (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
     }
 }
