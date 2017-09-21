@@ -268,20 +268,6 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
         return newDoc;
     }
 
-    /**
-     * Gets a prefix for all {@code #create() generated} documents. This implementation computes it from the uppercase
-     * letters of the XClass name, excluding {@code Class}, e.g. for {@code PhenoTips.DiseaseStudyClass} the prefix will
-     * be {@code DS}.
-     *
-     * @return a short string
-     */
-    protected String getIdPrefix()
-    {
-        String name = getEntityXClassReference().getName();
-        name = StringUtils.removeEnd(name, "Class");
-        return name.replaceAll("\\p{Lower}++", "");
-    }
-
     protected long getLastUsedId()
     {
         long crtMaxID = 0;

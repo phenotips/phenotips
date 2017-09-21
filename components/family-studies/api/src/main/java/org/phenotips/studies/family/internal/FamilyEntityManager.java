@@ -56,7 +56,7 @@ public class FamilyEntityManager extends AbstractPrimaryEntityManager<Family>
     }
 
     @Override
-    protected String getIdPrefix()
+    public String getIdPrefix()
     {
         return "FAM";
     }

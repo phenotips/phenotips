@@ -54,4 +54,10 @@ public class PatientEntityManager extends AbstractPrimaryEntityManager<Patient>
     {
         return this.referenceResolver.resolve(Patient.CLASS_REFERENCE);
     }
+
+    @Override
+    public String getIdPrefix()
+    {
+        return "P";
+    }
 }

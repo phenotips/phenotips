@@ -176,6 +176,12 @@ public class SecurePatientRepository implements PatientRepository
     }
 
     @Override
+    public String getIdPrefix()
+    {
+        return this.internalService.getIdPrefix();
+    }
+
+    @Override
     public Patient loadPatientFromDocument(DocumentModelBridge document)
     {
         return load(document);
