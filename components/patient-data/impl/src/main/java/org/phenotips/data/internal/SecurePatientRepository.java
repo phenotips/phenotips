@@ -182,6 +182,12 @@ public class SecurePatientRepository implements PatientRepository
     }
 
     @Override
+    public String getType()
+    {
+        return this.internalService.getType();
+    }
+
+    @Override
     public Patient loadPatientFromDocument(DocumentModelBridge document)
     {
         return load(document);

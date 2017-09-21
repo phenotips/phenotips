@@ -60,4 +60,10 @@ public class PatientEntityManager extends AbstractPrimaryEntityManager<Patient>
     {
         return "P";
     }
+
+    @Override
+    public String getType()
+    {
+        return "patients";
+    }
 }

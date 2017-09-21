@@ -122,4 +122,11 @@ public interface PrimaryEntityManager<E extends PrimaryEntity>
      * @return a short string
      */
     String getIdPrefix();
+
+    /**
+     * Gets the primary entity manager type (e.g. "patients").
+     *
+     * @return the {@link PrimaryEntityManager} type as string
+     */
+    String getType();
 }

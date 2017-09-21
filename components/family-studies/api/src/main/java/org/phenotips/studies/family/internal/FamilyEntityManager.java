@@ -60,4 +60,10 @@ public class FamilyEntityManager extends AbstractPrimaryEntityManager<Family>
     {
         return "FAM";
     }
+
+    @Override
+    public String getType()
+    {
+        return "families";
+    }
 }
