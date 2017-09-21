@@ -34,6 +34,7 @@
     <xwiki.war.legacy.excludes />
     <checkstyle.skip>true</checkstyle.skip>
     <clirr.skip>true</clirr.skip>
+    <maven.javadoc.skip>true</maven.javadoc.skip>
   </properties>
   <dependencies>
     <!-- Needed for compiling patched Java code -->
