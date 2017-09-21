@@ -104,7 +104,17 @@
       #else
         #set ($hasOutput = false)
       #end## results.size() &gt; 0
-    #end## html format
+    #elseif ("$!{request.format}" == 'json')
+      $response.setContentType('application/json')
+      #set ($resultsToFetch = $limit * $page)
+      #set ($results = $_service.getDifferentialPhenotypes($data, $ndata, $resultsToFetch))
+      #if ("$!{request.outputSyntax}" == 'plain')
+        {{content syntax="plain/1.0"}}$jsontool.serialize($results){{/content}}
+      #else
+       {{html wiki="false" clean="false"}}$jsontool.serialize($results){{/html}}
+      #end
+      #set ($hasOutput = true)
+    #end## format
   #else
     #set ($hasOutput = false)
   #end## non-empty query
