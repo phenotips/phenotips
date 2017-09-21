@@ -104,6 +104,7 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
 
   #end
 #end
+)))
 (% class="before-patient-data" %)(((
 #foreach ($e in $services.uix.getExtensions('org.phenotips.patientSheet.before', {'sortByParameter' : 'order'}))
   #set ($extension_disabled = ($e.getParameters().get('enabled') == 'false'))
@@ -113,10 +114,10 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
 
   #end
 #end
+)))
 #if ($hasExtensionsBefore)
 ----
 #end
-)))
 ##
 #if ($config.getProperty('no_pii_warning').value == 1)
 {{warning}}$services.localization.render('phenotips.PatientSheet.noPIIWarning'){{/warning}}
