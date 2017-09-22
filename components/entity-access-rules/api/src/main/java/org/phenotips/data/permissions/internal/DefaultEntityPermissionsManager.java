@@ -20,29 +20,20 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
-import org.phenotips.data.permissions.PermissionsConfiguration;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent;
 import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.observation.ObservationManager;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.TreeSet;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Provider;
 import javax.inject.Singleton;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 
 /**
  * @version $Id$
@@ -52,145 +43,92 @@ import org.slf4j.Logger;
 public class DefaultEntityPermissionsManager implements EntityPermissionsManager
 {
     @Inject
-    private Logger logger;
-
-    @Inject
     private ObservationManager observationManager;
 
     @Inject
-    @Named("context")
-    private Provider<ComponentManager> componentManager;
+    private EntityAccessHelper helper;
 
     @Inject
-    private PermissionsConfiguration configuration;
+    private EntityVisibilityManager visibilityManager;
 
+    @Inject
+    private EntityAccessManager accessManager;
+
+    @Nonnull
     @Override
     public Collection<Visibility> listVisibilityOptions()
     {
-        Collection<Visibility> result = new TreeSet<>();
-        for (Visibility visibility : listAllVisibilityOptions()) {
-            if (!visibility.isDisabled()) {
-                result.add(visibility);
-            }
-        }
-        return result;
+        return this.visibilityManager.listVisibilityOptions();
     }
 
+    @Nonnull
     @Override
     public Collection<Visibility> listAllVisibilityOptions()
     {
-        try {
-            Collection<Visibility> result = new TreeSet<>();
-            result.addAll(this.componentManager.get().<Visibility>getInstanceList(Visibility.class));
-            return result;
-        } catch (ComponentLookupException ex) {
-            return Collections.emptyList();
-        }
+        return this.visibilityManager.listAllVisibilityOptions();
     }
 
+    @Nonnull
     @Override
     public Visibility getDefaultVisibility()
     {
-        return resolveVisibility(this.configuration.getDefaultVisibility());
+        return this.visibilityManager.getDefaultVisibility();
     }
 
+    @Nonnull
     @Override
-    public Visibility resolveVisibility(String name)
+    public Visibility resolveVisibility(@Nullable final String name)
     {
-        try {
-            if (StringUtils.isNotBlank(name)) {
-                return this.componentManager.get().getInstance(Visibility.class, name);
-            }
-        } catch (ComponentLookupException ex) {
-            this.logger.warn("Invalid entity visibility requested: {}", name);
-        }
-        return null;
+        return this.visibilityManager.resolveVisibility(name);
     }
 
+    @Nonnull
     @Override
     public Collection<AccessLevel> listAccessLevels()
     {
-        try {
-            Collection<AccessLevel> result = new TreeSet<>();
-            result.addAll(this.componentManager.get().<AccessLevel>getInstanceList(AccessLevel.class));
-            Iterator<AccessLevel> it = result.iterator();
-            while (it.hasNext()) {
-                if (!it.next().isAssignable()) {
-                    it.remove();
-                }
-            }
-            return result;
-        } catch (ComponentLookupException ex) {
-            return Collections.emptyList();
-        }
+        return this.accessManager.listAccessLevels();
     }
 
+    @Nonnull
     @Override
-    public AccessLevel resolveAccessLevel(String name)
+    public Collection<AccessLevel> listAllAccessLevels()
     {
-        try {
-            if (StringUtils.isNotBlank(name)) {
-                return this.componentManager.get().getInstance(AccessLevel.class, name);
-            }
-        } catch (ComponentLookupException ex) {
-            this.logger.warn("Invalid entity access level requested: {}", name);
-        }
-        return null;
+        return this.accessManager.listAllAccessLevels();
     }
 
+    @Nonnull
     @Override
-    public EntityAccess getEntityAccess(PrimaryEntity targetPatient)
+    public AccessLevel resolveAccessLevel(@Nullable final String name)
     {
-        return new DefaultEntityAccess(targetPatient, getHelper(), this);
+        return this.accessManager.resolveAccessLevel(name);
     }
 
+    @Nonnull
     @Override
-    public Collection<? extends PrimaryEntity> filterByVisibility(Collection<? extends PrimaryEntity> entities,
-        Visibility requiredVisibility)
+    public EntityAccess getEntityAccess(@Nullable final PrimaryEntity targetPatient)
     {
-        if (requiredVisibility == null) {
-            return entities;
-        }
-        Collection<PrimaryEntity> entitiesWithVisibility = new LinkedList<>();
-        if (entities == null || entities.isEmpty()) {
-            return entitiesWithVisibility;
-        }
-        for (PrimaryEntity entity : entities) {
-            if (entity != null) {
-                Visibility entityVisibility = this.getEntityAccess(entity).getVisibility();
-                if (requiredVisibility.compareTo(entityVisibility) <= 0) {
-                    entitiesWithVisibility.add(entity);
-                }
-            }
-        }
-
-        return entitiesWithVisibility;
+        return new DefaultEntityAccess(targetPatient, this.helper, this.accessManager, this.visibilityManager);
     }
 
+    @Nonnull
     @Override
-    public Iterator<? extends PrimaryEntity> filterByVisibility(Iterator<? extends PrimaryEntity> entities,
-        Visibility requiredVisibility)
+    public Collection<? extends PrimaryEntity> filterByVisibility(
+        @Nullable final Collection<? extends PrimaryEntity> entities,
+        @Nullable final Visibility requiredVisibility)
     {
-        if (requiredVisibility == null) {
-            return entities;
-        }
-        if (entities == null || !entities.hasNext()) {
-            return Collections.emptyIterator();
-        }
-        return new FilteringIterator(entities, requiredVisibility, this);
+        return this.visibilityManager.filterByVisibility(entities, requiredVisibility);
     }
 
-    private EntityAccessHelper getHelper()
+    @Nonnull
+    @Override
+    public Iterator<? extends PrimaryEntity> filterByVisibility(
+        @Nullable final Iterator<? extends PrimaryEntity> entities,
+        @Nullable final Visibility requiredVisibility)
     {
-        try {
-            return this.componentManager.get().getInstance(EntityAccessHelper.class);
-        } catch (ComponentLookupException ex) {
-            this.logger.error("Mandatory component [EntityAccessHelper] missing: {}", ex.getMessage(), ex);
-        }
-        return null;
+        return this.visibilityManager.filterByVisibility(entities, requiredVisibility);
     }
 
-    public void fireRightsUpdateEvent(String entityId)
+    public void fireRightsUpdateEvent(@Nonnull final String entityId)
     {
         this.observationManager.notify(new EntityRightsUpdatedEvent(entityId), null);
     }

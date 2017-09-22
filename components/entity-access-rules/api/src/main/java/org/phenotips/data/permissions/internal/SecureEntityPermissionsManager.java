@@ -28,6 +28,8 @@ import org.xwiki.component.annotation.Component;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -47,65 +49,82 @@ public class SecureEntityPermissionsManager implements EntityPermissionsManager
     @Inject
     private EntityPermissionsManager internalService;
 
+    @Nonnull
     @Override
     public Collection<Visibility> listVisibilityOptions()
     {
         return this.internalService.listVisibilityOptions();
     }
 
+    @Nonnull
     @Override
     public Collection<Visibility> listAllVisibilityOptions()
     {
         return this.internalService.listAllVisibilityOptions();
     }
 
+    @Nonnull
     @Override
     public Visibility getDefaultVisibility()
     {
         return this.internalService.getDefaultVisibility();
     }
 
+    @Nonnull
     @Override
-    public Visibility resolveVisibility(String name)
+    public Visibility resolveVisibility(@Nullable final String name)
     {
         return this.internalService.resolveVisibility(name);
     }
 
+    @Nonnull
     @Override
     public Collection<AccessLevel> listAccessLevels()
     {
         return this.internalService.listAccessLevels();
     }
 
+    @Nonnull
     @Override
-    public AccessLevel resolveAccessLevel(String name)
+    public Collection<AccessLevel> listAllAccessLevels()
+    {
+        return this.internalService.listAllAccessLevels();
+    }
+
+    @Nonnull
+    @Override
+    public AccessLevel resolveAccessLevel(@Nullable final String name)
     {
         return this.internalService.resolveAccessLevel(name);
     }
 
+    @Nonnull
     @Override
-
-    public EntityAccess getEntityAccess(PrimaryEntity targetEntity)
+    public EntityAccess getEntityAccess(@Nullable final PrimaryEntity targetEntity)
     {
         return new SecureEntityAccess(this.internalService.getEntityAccess(targetEntity), this.internalService);
     }
 
+    @Nonnull
     @Override
-    public Collection<? extends PrimaryEntity> filterByVisibility(Collection<? extends PrimaryEntity> entities,
-        Visibility requiredVisibility)
+    public Collection<? extends PrimaryEntity> filterByVisibility(
+        @Nullable final Collection<? extends PrimaryEntity> entities,
+        @Nullable final Visibility requiredVisibility)
+    {
+        return this.internalService.filterByVisibility(entities, requiredVisibility);
+    }
+
+    @Nonnull
+    @Override
+    public Iterator<? extends PrimaryEntity> filterByVisibility(
+        @Nullable final Iterator<? extends PrimaryEntity> entities,
+        @Nullable final Visibility requiredVisibility)
     {
         return this.internalService.filterByVisibility(entities, requiredVisibility);
     }
 
     @Override
-    public Iterator<? extends PrimaryEntity> filterByVisibility(Iterator<? extends PrimaryEntity> entities,
-        Visibility requiredVisibility)
-    {
-        return this.internalService.filterByVisibility(entities, requiredVisibility);
-    }
-
-    @Override
-    public void fireRightsUpdateEvent(String entityId)
+    public void fireRightsUpdateEvent(@Nonnull final String entityId)
     {
         this.internalService.fireRightsUpdateEvent(entityId);
     }

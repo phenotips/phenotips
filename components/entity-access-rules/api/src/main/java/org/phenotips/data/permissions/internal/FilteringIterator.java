@@ -18,7 +18,6 @@
 package org.phenotips.data.permissions.internal;
 
 import org.phenotips.data.permissions.EntityAccess;
-import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.entities.PrimaryEntity;
 
@@ -39,7 +38,7 @@ public class FilteringIterator implements Iterator<PrimaryEntity>
 
     private final Visibility thresholdVisibility;
 
-    private final EntityPermissionsManager entityPermissionsManager;
+    private final EntityVisibilityManager visibilityManager;
 
     private PrimaryEntity next;
 
@@ -48,14 +47,14 @@ public class FilteringIterator implements Iterator<PrimaryEntity>
      *
      * @param input the iterator to filter, {@code null} and empty iterators are accepted
      * @param thresholdVisibility a threshold visibility; if {@code null}, then the input is returned unchanged
-     * @param entityPermissionsManager required for computing the visibility of each input entity
+     * @param visibilityManager required for computing the visibility of each input entity
      */
-    public FilteringIterator(Iterator<? extends PrimaryEntity> input, Visibility thresholdVisibility,
-        EntityPermissionsManager entityPermissionsManager)
+    FilteringIterator(Iterator<? extends PrimaryEntity> input, Visibility thresholdVisibility,
+        EntityVisibilityManager visibilityManager)
     {
         this.input = input;
         this.thresholdVisibility = thresholdVisibility;
-        this.entityPermissionsManager = entityPermissionsManager;
+        this.visibilityManager = visibilityManager;
         this.findNext();
     }
 
@@ -92,7 +91,7 @@ public class FilteringIterator implements Iterator<PrimaryEntity>
             PrimaryEntity potentialNextEntity = this.input.next();
             if (potentialNextEntity != null) {
                 Visibility entityVisibility =
-                    this.entityPermissionsManager.getEntityAccess(potentialNextEntity).getVisibility();
+                    this.visibilityManager.getVisibility(potentialNextEntity);
                 if (this.thresholdVisibility.compareTo(entityVisibility) <= 0) {
                     this.next = potentialNextEntity;
                 }

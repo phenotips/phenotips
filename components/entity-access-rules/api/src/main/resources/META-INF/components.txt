@@ -13,6 +13,8 @@ org.phenotips.data.permissions.internal.ManageRightRegistrationEventListener
 org.phenotips.data.permissions.internal.OwnerUpdateEventListener
 org.phenotips.data.permissions.internal.VCFAccessRestrictionEventListener
 org.phenotips.data.permissions.internal.DefaultEntityAccessHelper
+org.phenotips.data.permissions.internal.DefaultEntityVisibilityManager
+org.phenotips.data.permissions.internal.DefaultEntityAccessManager
 org.phenotips.data.permissions.internal.DefaultEntityPermissionsManager
 org.phenotips.data.permissions.internal.SecureEntityPermissionsManager
 

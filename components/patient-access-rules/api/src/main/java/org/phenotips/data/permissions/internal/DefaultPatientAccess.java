@@ -19,7 +19,6 @@ package org.phenotips.data.permissions.internal;
 
 import org.phenotips.data.Patient;
 
-import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.PatientAccess;
 
 /**
@@ -29,9 +28,10 @@ public class DefaultPatientAccess extends DefaultEntityAccess implements Patient
 {
     private final Patient patient;
 
-    public DefaultPatientAccess(Patient patient, EntityAccessHelper helper, EntityPermissionsManager manager)
+    public DefaultPatientAccess(Patient patient, EntityAccessHelper helper, EntityAccessManager accessManager,
+        EntityVisibilityManager visibilityManager)
     {
-        super(patient, helper, manager);
+        super(patient, helper, accessManager, visibilityManager);
         this.patient = patient;
     }
 
