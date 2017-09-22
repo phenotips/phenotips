@@ -20,7 +20,6 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.Visibility;
@@ -72,7 +71,9 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper h = mock(EntityAccessHelper.class);
-        PatientAccess pa = new DefaultPatientAccess(p, h, mock(EntityPermissionsManager.class));
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, h, am, vm);
         Assert.assertSame(p, pa.getPatient());
     }
 
@@ -82,8 +83,10 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper h = mock(EntityAccessHelper.class);
-        when(h.getOwner(p)).thenReturn(OWNER_OBJECT);
-        PatientAccess pa = new DefaultPatientAccess(p, h, mock(EntityPermissionsManager.class));
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        when(am.getOwner(p)).thenReturn(OWNER_OBJECT);
+        PatientAccess pa = new DefaultPatientAccess(p, h, am, vm);
         Assert.assertSame(OWNER_OBJECT, pa.getOwner());
         Assert.assertSame(OWNER, pa.getOwner().getUser());
     }
@@ -93,8 +96,10 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper h = mock(EntityAccessHelper.class);
-        when(h.getOwner(p)).thenReturn(GUEST_OWNER_OBJECT);
-        PatientAccess pa = new DefaultPatientAccess(p, h, mock(EntityPermissionsManager.class));
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        when(am.getOwner(p)).thenReturn(GUEST_OWNER_OBJECT);
+        PatientAccess pa = new DefaultPatientAccess(p, h, am, vm);
         Assert.assertSame(GUEST_OWNER_OBJECT, pa.getOwner());
         Assert.assertSame(null, pa.getOwner().getUser());
     }
@@ -105,9 +110,11 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper h = mock(EntityAccessHelper.class);
-        when(h.getOwner(p)).thenReturn(OWNER_OBJECT);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        when(am.getOwner(p)).thenReturn(OWNER_OBJECT);
         when(h.getCurrentUser()).thenReturn(OWNER);
-        PatientAccess pa = new DefaultPatientAccess(p, h, mock(EntityPermissionsManager.class));
+        PatientAccess pa = new DefaultPatientAccess(p, h, am, vm);
         Assert.assertTrue(pa.isOwner());
 
         when(h.getCurrentUser()).thenReturn(OTHER_USER);
@@ -120,13 +127,15 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper h = mock(EntityAccessHelper.class);
-        when(h.getOwner(p)).thenReturn(OWNER_OBJECT);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        when(am.getOwner(p)).thenReturn(OWNER_OBJECT);
         when(h.getCurrentUser()).thenReturn(null);
-        PatientAccess pa = new DefaultPatientAccess(p, h, mock(EntityPermissionsManager.class));
+        PatientAccess pa = new DefaultPatientAccess(p, h, am, vm);
         Assert.assertFalse(pa.isOwner());
 
         // False even if the owner cannot be computed
-        when(h.getOwner(p)).thenReturn(null);
+        when(am.getOwner(p)).thenReturn(null);
         Assert.assertFalse(pa.isOwner());
     }
 
@@ -136,9 +145,11 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper h = mock(EntityAccessHelper.class);
-        when(h.getOwner(p)).thenReturn(GUEST_OWNER_OBJECT);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        when(am.getOwner(p)).thenReturn(GUEST_OWNER_OBJECT);
         when(h.getCurrentUser()).thenReturn(null);
-        PatientAccess pa = new DefaultPatientAccess(p, h, mock(EntityPermissionsManager.class));
+        PatientAccess pa = new DefaultPatientAccess(p, h, am, vm);
         Assert.assertTrue(pa.isOwner());
     }
 
@@ -148,9 +159,11 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper h = mock(EntityAccessHelper.class);
-        when(h.getOwner(p)).thenReturn(GUEST_OWNER_OBJECT);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        when(am.getOwner(p)).thenReturn(GUEST_OWNER_OBJECT);
         when(h.getCurrentUser()).thenReturn(OTHER_USER);
-        PatientAccess pa = new DefaultPatientAccess(p, h, mock(EntityPermissionsManager.class));
+        PatientAccess pa = new DefaultPatientAccess(p, h, am, vm);
         Assert.assertFalse(pa.isOwner());
     }
 
@@ -160,8 +173,10 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper h = mock(EntityAccessHelper.class);
-        when(h.getOwner(p)).thenReturn(OWNER_OBJECT);
-        PatientAccess pa = new DefaultPatientAccess(p, h, mock(EntityPermissionsManager.class));
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        when(am.getOwner(p)).thenReturn(OWNER_OBJECT);
+        PatientAccess pa = new DefaultPatientAccess(p, h, am, vm);
         Assert.assertTrue(pa.isOwner(OWNER));
         Assert.assertFalse(pa.isOwner(OTHER_USER));
         Assert.assertFalse(pa.isOwner(null));
@@ -173,8 +188,10 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper h = mock(EntityAccessHelper.class);
-        PatientAccess pa = new DefaultPatientAccess(p, h, mock(EntityPermissionsManager.class));
-        when(h.setOwner(p, OTHER_USER)).thenReturn(true);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, h, am, vm);
+        when(am.setOwner(p, OTHER_USER)).thenReturn(true);
         Assert.assertTrue(pa.setOwner(OTHER_USER));
     }
 
@@ -184,23 +201,11 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper h = mock(EntityAccessHelper.class);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
         Visibility v = mock(Visibility.class);
-        when(h.getVisibility(p)).thenReturn(v);
-        PatientAccess pa = new DefaultPatientAccess(p, h, mock(EntityPermissionsManager.class));
-        Assert.assertSame(v, pa.getVisibility());
-    }
-
-    /** Basic tests for {@link PatientAccess#getVisibility()}. */
-    @Test
-    public void getVisibilityWithNoVisibilitySpecified() throws ComponentLookupException
-    {
-        Patient p = mock(Patient.class);
-        EntityAccessHelper h = mock(EntityAccessHelper.class);
-        Visibility v = mock(Visibility.class);
-        when(h.getVisibility(p)).thenReturn(null);
-        EntityPermissionsManager manager = mock(EntityPermissionsManager.class);
-        when(manager.resolveVisibility("private")).thenReturn(v);
-        PatientAccess pa = new DefaultPatientAccess(p, h, manager);
+        when(vm.getVisibility(p)).thenReturn(v);
+        PatientAccess pa = new DefaultPatientAccess(p, h, am, vm);
         Assert.assertSame(v, pa.getVisibility());
     }
 
@@ -210,9 +215,11 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper h = mock(EntityAccessHelper.class);
-        PatientAccess pa = new DefaultPatientAccess(p, h, mock(EntityPermissionsManager.class));
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, h, am, vm);
         Visibility v = mock(Visibility.class);
-        when(h.setVisibility(p, v)).thenReturn(true);
+        when(vm.setVisibility(p, v)).thenReturn(true);
         Assert.assertTrue(pa.setVisibility(v));
     }
 
@@ -222,9 +229,11 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper h = mock(EntityAccessHelper.class);
-        PatientAccess pa = new DefaultPatientAccess(p, h, mock(EntityPermissionsManager.class));
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, h, am, vm);
         Collection<Collaborator> collaborators = new HashSet<>();
-        when(h.getCollaborators(p)).thenReturn(collaborators);
+        when(am.getCollaborators(p)).thenReturn(collaborators);
         Assert.assertSame(collaborators, pa.getCollaborators());
     }
 
@@ -234,9 +243,11 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper h = mock(EntityAccessHelper.class);
-        PatientAccess pa = new DefaultPatientAccess(p, h, mock(EntityPermissionsManager.class));
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, h, am, vm);
         Collection<Collaborator> collaborators = new HashSet<>();
-        when(h.setCollaborators(p, collaborators)).thenReturn(true);
+        when(am.setCollaborators(p, collaborators)).thenReturn(true);
         Assert.assertTrue(pa.updateCollaborators(collaborators));
     }
 
@@ -248,8 +259,10 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper h = mock(EntityAccessHelper.class);
-        PatientAccess pa = new DefaultPatientAccess(p, h, mock(EntityPermissionsManager.class));
-        when(h.addCollaborator(Matchers.same(p), Matchers.any(Collaborator.class))).thenReturn(true);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, h, am, vm);
+        when(am.addCollaborator(Matchers.same(p), Matchers.any(Collaborator.class))).thenReturn(true);
         Assert.assertTrue(pa.addCollaborator(COLLABORATOR, mock(AccessLevel.class)));
     }
 
@@ -259,13 +272,15 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
-        PatientAccess pa = new DefaultPatientAccess(p, helper, mock(EntityPermissionsManager.class));
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, am, vm);
 
-        when(helper.removeCollaborator(Matchers.same(p), Matchers.any(Collaborator.class))).thenReturn(true);
+        when(am.removeCollaborator(Matchers.same(p), Matchers.any(Collaborator.class))).thenReturn(true);
         Assert.assertTrue(pa.removeCollaborator(COLLABORATOR));
 
         Collaborator collaborator = mock(Collaborator.class);
-        when(helper.removeCollaborator(p, collaborator)).thenReturn(true);
+        when(am.removeCollaborator(p, collaborator)).thenReturn(true);
         Assert.assertTrue(pa.removeCollaborator(collaborator));
     }
 
@@ -275,16 +290,17 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
-        EntityPermissionsManager manager = mock(EntityPermissionsManager.class);
-        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, am, vm);
+        when(am.getOwner(p)).thenReturn(OWNER_OBJECT);
         when(helper.getCurrentUser()).thenReturn(null);
         Visibility publicV = mock(Visibility.class);
-        when(helper.getVisibility(p)).thenReturn(publicV);
+        when(vm.getVisibility(p)).thenReturn(publicV);
         AccessLevel view = new ViewAccessLevel();
         when(publicV.getDefaultAccessLevel()).thenReturn(view);
         AccessLevel none = new NoAccessLevel();
-        when(manager.resolveAccessLevel("none")).thenReturn(none);
+        when(am.resolveAccessLevel("none")).thenReturn(none);
         Assert.assertSame(none, pa.getAccessLevel());
     }
 
@@ -294,15 +310,16 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
-        EntityPermissionsManager manager = mock(EntityPermissionsManager.class);
-        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, am, vm);
+        when(am.getOwner(p)).thenReturn(OWNER_OBJECT);
         when(helper.getCurrentUser()).thenReturn(null);
         Visibility privateV = mock(Visibility.class);
-        when(helper.getVisibility(p)).thenReturn(privateV);
+        when(vm.getVisibility(p)).thenReturn(privateV);
         AccessLevel none = new NoAccessLevel();
         when(privateV.getDefaultAccessLevel()).thenReturn(none);
-        when(manager.resolveAccessLevel("none")).thenReturn(none);
+        when(am.resolveAccessLevel("none")).thenReturn(none);
         Assert.assertSame(none, pa.getAccessLevel());
     }
 
@@ -312,16 +329,17 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
-        EntityPermissionsManager manager = mock(EntityPermissionsManager.class);
-        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(GUEST_OWNER_OBJECT);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, am, vm);
+        when(am.getOwner(p)).thenReturn(GUEST_OWNER_OBJECT);
         when(helper.getCurrentUser()).thenReturn(null);
         Visibility privateV = mock(Visibility.class);
-        when(helper.getVisibility(p)).thenReturn(privateV);
+        when(vm.getVisibility(p)).thenReturn(privateV);
         AccessLevel none = new NoAccessLevel();
         when(privateV.getDefaultAccessLevel()).thenReturn(none);
         AccessLevel owner = new OwnerAccessLevel();
-        when(manager.resolveAccessLevel("owner")).thenReturn(owner);
+        when(am.resolveAccessLevel("owner")).thenReturn(owner);
         Assert.assertSame(owner, pa.getAccessLevel());
     }
 
@@ -331,12 +349,13 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
-        EntityPermissionsManager manager = mock(EntityPermissionsManager.class);
-        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, am, vm);
+        when(am.getOwner(p)).thenReturn(OWNER_OBJECT);
         when(helper.getCurrentUser()).thenReturn(OWNER);
         AccessLevel owner = new OwnerAccessLevel();
-        when(manager.resolveAccessLevel("owner")).thenReturn(owner);
+        when(am.resolveAccessLevel("owner")).thenReturn(owner);
         Assert.assertSame(owner, pa.getAccessLevel());
     }
 
@@ -346,13 +365,14 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
-        EntityPermissionsManager manager = mock(EntityPermissionsManager.class);
-        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, am, vm);
+        when(am.getOwner(p)).thenReturn(OWNER_OBJECT);
         when(helper.getCurrentUser()).thenReturn(OTHER_USER);
-        when(helper.isAdministrator(p, OTHER_USER)).thenReturn(true);
+        when(am.isAdministrator(p, OTHER_USER)).thenReturn(true);
         AccessLevel owner = new OwnerAccessLevel();
-        when(manager.resolveAccessLevel("owner")).thenReturn(owner);
+        when(am.resolveAccessLevel("owner")).thenReturn(owner);
         Assert.assertSame(owner, pa.getAccessLevel());
     }
 
@@ -362,15 +382,16 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
-        EntityPermissionsManager manager = mock(EntityPermissionsManager.class);
-        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, am, vm);
+        when(am.getOwner(p)).thenReturn(OWNER_OBJECT);
         AccessLevel edit = new EditAccessLevel();
-        when(helper.isAdministrator(p, COLLABORATOR)).thenReturn(false);
+        when(am.isAdministrator(p, COLLABORATOR)).thenReturn(false);
         when(helper.getCurrentUser()).thenReturn(COLLABORATOR);
-        when(helper.getAccessLevel(p, COLLABORATOR)).thenReturn(edit);
+        when(am.getAccessLevel(p, COLLABORATOR)).thenReturn(edit);
         Visibility publicV = mock(Visibility.class);
-        when(helper.getVisibility(p)).thenReturn(publicV);
+        when(vm.getVisibility(p)).thenReturn(publicV);
         AccessLevel view = new ViewAccessLevel();
         when(publicV.getDefaultAccessLevel()).thenReturn(view);
         Assert.assertSame(edit, pa.getAccessLevel());
@@ -385,15 +406,16 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
-        EntityPermissionsManager manager = mock(EntityPermissionsManager.class);
-        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, am, vm);
+        when(am.getOwner(p)).thenReturn(OWNER_OBJECT);
         AccessLevel edit = new EditAccessLevel();
-        when(helper.isAdministrator(p, COLLABORATOR)).thenReturn(false);
+        when(am.isAdministrator(p, COLLABORATOR)).thenReturn(false);
         when(helper.getCurrentUser()).thenReturn(OTHER_USER);
-        when(helper.getAccessLevel(p, COLLABORATOR)).thenReturn(edit);
+        when(am.getAccessLevel(p, COLLABORATOR)).thenReturn(edit);
         Visibility publicV = mock(Visibility.class);
-        when(helper.getVisibility(p)).thenReturn(publicV);
+        when(vm.getVisibility(p)).thenReturn(publicV);
         AccessLevel view = new ViewAccessLevel();
         when(publicV.getDefaultAccessLevel()).thenReturn(view);
         Assert.assertSame(edit, pa.getAccessLevel(COLLABORATOR));
@@ -407,17 +429,18 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
-        EntityPermissionsManager manager = mock(EntityPermissionsManager.class);
-        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, am, vm);
+        when(am.getOwner(p)).thenReturn(OWNER_OBJECT);
         AccessLevel edit = new EditAccessLevel();
-        when(helper.isAdministrator(p, OTHER_USER)).thenReturn(true);
+        when(am.isAdministrator(p, OTHER_USER)).thenReturn(true);
         when(helper.getCurrentUser()).thenReturn(COLLABORATOR);
-        when(helper.getAccessLevel(p, OTHER_USER)).thenReturn(edit);
+        when(am.getAccessLevel(p, OTHER_USER)).thenReturn(edit);
         Visibility publicV = mock(Visibility.class);
-        when(helper.getVisibility(p)).thenReturn(publicV);
+        when(vm.getVisibility(p)).thenReturn(publicV);
         AccessLevel owner = new OwnerAccessLevel();
-        when(manager.resolveAccessLevel("owner")).thenReturn(owner);
+        when(am.resolveAccessLevel("owner")).thenReturn(owner);
         Assert.assertSame(owner, pa.getAccessLevel(OTHER_USER));
     }
 
@@ -427,15 +450,16 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
-        EntityPermissionsManager manager = mock(EntityPermissionsManager.class);
-        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, am, vm);
+        when(am.getOwner(p)).thenReturn(OWNER_OBJECT);
         AccessLevel none = new NoAccessLevel();
-        when(helper.isAdministrator(p, OTHER_USER)).thenReturn(false);
+        when(am.isAdministrator(p, OTHER_USER)).thenReturn(false);
         when(helper.getCurrentUser()).thenReturn(OTHER_USER);
-        when(helper.getAccessLevel(p, OTHER_USER)).thenReturn(none);
+        when(am.getAccessLevel(p, OTHER_USER)).thenReturn(none);
         Visibility publicV = mock(Visibility.class);
-        when(helper.getVisibility(p)).thenReturn(publicV);
+        when(vm.getVisibility(p)).thenReturn(publicV);
         AccessLevel view = new ViewAccessLevel();
         when(publicV.getDefaultAccessLevel()).thenReturn(view);
         Assert.assertSame(view, pa.getAccessLevel());
@@ -450,14 +474,15 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
-        EntityPermissionsManager manager = mock(EntityPermissionsManager.class);
-        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, am, vm);
+        when(am.getOwner(p)).thenReturn(OWNER_OBJECT);
         when(helper.getCurrentUser()).thenReturn(COLLABORATOR);
         AccessLevel edit = new EditAccessLevel();
-        when(helper.getAccessLevel(p, COLLABORATOR)).thenReturn(edit);
+        when(am.getAccessLevel(p, COLLABORATOR)).thenReturn(edit);
         Visibility publicV = mock(Visibility.class);
-        when(helper.getVisibility(p)).thenReturn(publicV);
+        when(vm.getVisibility(p)).thenReturn(publicV);
         AccessLevel view = new ViewAccessLevel();
         when(publicV.getDefaultAccessLevel()).thenReturn(view);
         Assert.assertTrue(pa.hasAccessLevel(view));
@@ -475,13 +500,14 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
-        EntityPermissionsManager manager = mock(EntityPermissionsManager.class);
-        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, am, vm);
+        when(am.getOwner(p)).thenReturn(OWNER_OBJECT);
         AccessLevel edit = new EditAccessLevel();
-        when(helper.getAccessLevel(p, COLLABORATOR)).thenReturn(edit);
+        when(am.getAccessLevel(p, COLLABORATOR)).thenReturn(edit);
         Visibility publicV = mock(Visibility.class);
-        when(helper.getVisibility(p)).thenReturn(publicV);
+        when(vm.getVisibility(p)).thenReturn(publicV);
         AccessLevel view = new ViewAccessLevel();
         when(publicV.getDefaultAccessLevel()).thenReturn(view);
         Assert.assertTrue(pa.hasAccessLevel(COLLABORATOR, view));
@@ -495,17 +521,18 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
-        EntityPermissionsManager manager = mock(EntityPermissionsManager.class);
-        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, am, vm);
+        when(am.getOwner(p)).thenReturn(OWNER_OBJECT);
         when(helper.getCurrentUser()).thenReturn(null);
         AccessLevel edit = new EditAccessLevel();
-        when(helper.getAccessLevel(p, COLLABORATOR)).thenReturn(edit);
+        when(am.getAccessLevel(p, COLLABORATOR)).thenReturn(edit);
         Visibility publicV = mock(Visibility.class);
-        when(helper.getVisibility(p)).thenReturn(publicV);
+        when(vm.getVisibility(p)).thenReturn(publicV);
         AccessLevel view = new ViewAccessLevel();
         when(publicV.getDefaultAccessLevel()).thenReturn(view);
-        when(manager.resolveAccessLevel("none")).thenReturn(new NoAccessLevel());
+        when(am.resolveAccessLevel("none")).thenReturn(new NoAccessLevel());
         Assert.assertFalse(pa.hasAccessLevel(view));
         Assert.assertFalse(pa.hasAccessLevel(edit));
         Assert.assertFalse(pa.hasAccessLevel(new ManageAccessLevel()));
@@ -517,17 +544,18 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         EntityAccessHelper helper = mock(EntityAccessHelper.class);
-        EntityPermissionsManager manager = mock(EntityPermissionsManager.class);
-        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(GUEST_OWNER_OBJECT);
+        EntityAccessManager am = mock(EntityAccessManager.class);
+        EntityVisibilityManager vm = mock(EntityVisibilityManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, am, vm);
+        when(am.getOwner(p)).thenReturn(GUEST_OWNER_OBJECT);
         when(helper.getCurrentUser()).thenReturn(null);
         AccessLevel edit = new EditAccessLevel();
         Visibility publicV = mock(Visibility.class);
-        when(helper.getVisibility(p)).thenReturn(publicV);
+        when(vm.getVisibility(p)).thenReturn(publicV);
         AccessLevel view = new ViewAccessLevel();
         when(publicV.getDefaultAccessLevel()).thenReturn(view);
-        when(manager.resolveAccessLevel("none")).thenReturn(new NoAccessLevel());
-        when(manager.resolveAccessLevel("owner")).thenReturn(new OwnerAccessLevel());
+        when(am.resolveAccessLevel("none")).thenReturn(new NoAccessLevel());
+        when(am.resolveAccessLevel("owner")).thenReturn(new OwnerAccessLevel());
         Assert.assertTrue(pa.hasAccessLevel(view));
         Assert.assertTrue(pa.hasAccessLevel(edit));
         Assert.assertTrue(pa.hasAccessLevel(new ManageAccessLevel()));
@@ -539,7 +567,7 @@ public class DefaultPatientAccessTest
     public void toStringTest()
     {
         Patient p = mock(Patient.class);
-        PatientAccess pa = new DefaultPatientAccess(p, null, null);
+        PatientAccess pa = new DefaultPatientAccess(p, null, null, null);
         when(p.getDocumentReference()).thenReturn(new DocumentReference("xwiki", "data", "P123"));
         Assert.assertEquals("Access rules for xwiki:data.P123", pa.toString());
     }
@@ -548,7 +576,7 @@ public class DefaultPatientAccessTest
     @Test
     public void toStringWithNullPatient()
     {
-        PatientAccess pa = new DefaultPatientAccess(null, null, null);
+        PatientAccess pa = new DefaultPatientAccess(null, null, null, null);
         Assert.assertEquals("Access rules for <unknown patient>", pa.toString());
     }
 }

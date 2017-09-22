@@ -77,7 +77,7 @@ public class CollaboratorAccessAuthorizationModuleTest
     @Mock
     private AccessLevel manageAccess;
 
-    private EntityAccessHelper helper;
+    private EntityAccessManager helper;
 
     private PatientRepository repo;
 
@@ -85,7 +85,7 @@ public class CollaboratorAccessAuthorizationModuleTest
     public void setupMocks() throws ComponentLookupException
     {
         MockitoAnnotations.initMocks(this);
-        this.helper = this.mocker.getInstance(EntityAccessHelper.class);
+        this.helper = this.mocker.getInstance(EntityAccessManager.class);
 
         when(this.noAccess.getGrantedRight()).thenReturn(Right.ILLEGAL);
         when(this.viewAccess.getGrantedRight()).thenReturn(Right.VIEW);
