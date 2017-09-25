@@ -14,7 +14,8 @@ define([
             this._currentState = 0;
             this._stack        = [];
             this._MAXUNDOSIZE  = 100;
-            this._savedState   = "";
+
+            this._savedState   = null;
 
             // observe patient deletion events to remove all references to the deleted patient from all undo/redo states
             document.observe("pedigree:patient:deleted", this.handlePatientDeleted.bind(this));
@@ -96,8 +97,7 @@ define([
                 memo["noUndoRedo"] = true;  // so that this event is not added to the undo/redo stack again
                 document.fire( nextState.eventToGetToThisState.eventName, memo );
             } else {
-                editor.getSaveLoadEngine().createGraphFromSerializedData( nextState.serializedState, true /* do not re-add to undo/redo stack */,
-                                                                          false /* do not center around proband */, null /* no callback */, "redo" );
+                editor.getSaveLoadEngine().createGraphFromUndoRedoState( nextState.serializedState, "redo" );
             }
             document.fire("pedigree:historychange", null);
         },
@@ -122,8 +122,7 @@ define([
                 document.fire( currentState.eventToUndo.eventName, memo );
             } else {
                 // no easy way - have to recreate the graph from serialization
-                editor.getSaveLoadEngine().createGraphFromSerializedData( prevState.serializedState, true /* do not re-add to undo/redo stack */,
-                                                                          false /* do not center around proband */, null /* no callback */, "undo");
+                editor.getSaveLoadEngine().createGraphFromUndoRedoState( prevState.serializedState, "undo" );
             }
             document.fire("pedigree:historychange", null);
         },
@@ -135,7 +134,7 @@ define([
          * This method takes the current state of pedigree and makes the last undo/redo history state be equal to this state.
          */
         updateLastState: function() {
-            this._stack[this._currentState - 1].serializedState = editor.getSaveLoadEngine().serialize();
+            this._stack[this._currentState - 1].serializedState = editor.getGraph().toUndoRedoState();
             this._stack[this._currentState - 1].eventToGetToThisState = null;
         },
 
@@ -189,7 +188,7 @@ define([
             }
 
             if (!serializedState) {
-                serializedState = editor.getSaveLoadEngine().serialize();
+                serializedState = editor.getGraph().toUndoRedoState();
             }
             //console.log("Serialized state: " + Helpers.stringifyObject(serializedState));
 

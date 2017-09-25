@@ -613,7 +613,7 @@ define([
         {
             // all person nodes which are not ancestors of v and which do not already have parents
             var result = [];
-            var persons = this.getAllPersonsIDs();
+            var persons = this.getAllPersonIDs();
             for (var i = 0; i < persons.length; i++) {
                var potentialChild = persons[i];
                if (this.DG.GG.inedges[potentialChild].length != 0) continue;
@@ -1587,7 +1587,60 @@ define([
                      "removed": removedBeforeRedrawList };
         },
 
-        toJSONObject: function (skipUpdateJSONFromInternal)
+        //=============================================================
+
+        /**
+         * Creates a special serializationof the pedigree which is quick to save and load, and which
+         * preserves IDs which is good for efficient undo/redos
+         *
+         * @return Serialization data for the entire graph
+         */
+        toUndoRedoState: function()
+        {
+            var serializationJSON = { "baseGraph": this.DG.GG.toJSONObject(),
+                                      "probandNodeId": this.getProbandId(),
+                                      "ranks": this.DG.ranks.slice(),
+                                      "order": this.DG.order.toJSONObject(),
+                                      "positions": this.DG.positions.slice()
+                                    };
+
+            return JSON.stringify(serializationJSON);
+        },
+
+        /**
+         * A shortcut initializer which avoids error checkinhg and ensures node IDs are preserved
+         * (which is essential for fast/efficient/reliable undo/redo)
+         */
+        fromUndoRedoState: function(undoRedoState)
+        {
+            var timer = new Helpers.Timer();
+
+            var removedNodes = this._getAllNodes();
+
+            var undoRedoJSON = JSON.parse(undoRedoState);
+
+            var baseGraph = BaseGraph.fromJSON(undoRedoJSON.baseGraph);
+
+            var order = Ordering.fromJSON(undoRedoJSON.order);
+
+            if (!this._initializeFromBaseGraphAndLayout(baseGraph,
+                                                        undoRedoJSON.probandNodeId,
+                                                        { "ranks": undoRedoJSON.ranks,
+                                                          "order": order,
+                                                          "positions": undoRedoJSON.positions }) ) {
+                return null;  // unable to genersate pedigree using import data, no import => no changes
+            }
+
+            var newNodes = this._getAllNodes();
+
+            timer.printSinceLast("=== FromUndoRedo runtime: ");
+
+            return {"new": newNodes, "removed": removedNodes};
+        },
+
+        //=============================================================
+
+        toJSONObject: function()
         {
             var timer = new Helpers.Timer();
 
@@ -1613,7 +1666,7 @@ define([
                     if (!Helpers.isObjectEmpty(pedigreeSpecificProperties)) {
                         memberData["pedigreeProperties"] = pedigreeSpecificProperties;
                     }
-                    var phenotipsJSON = skipUpdateJSONFromInternal ? this.getRawJSONProperties(i) : this.getPatientPhenotipsJSON(i);
+                    var phenotipsJSON = this.getPatientPhenotipsJSON(i);
                     if (!Helpers.isObjectEmpty(phenotipsJSON)) {
                         memberData["properties"] = phenotipsJSON;
                     }
@@ -1708,6 +1761,8 @@ define([
 
         fromImport: function (importString, importType, importOptions)
         {
+            var timer = new Helpers.Timer();
+
             var removedNodes = this._getAllNodes();
 
             var importData = null;
@@ -1724,13 +1779,6 @@ define([
                 // as stored in PhenoTips and used in Phenotips REST; also used for saving internal pedigree states
                 importData = PedigreeImport.initFromFullJSON(importString);
             }
-
-            // TODO: investigate if it makes sense to use "fast" serializer/deserializer for undo/redo,
-            //       or if we can use the "full JSON" format for undo/redo. For now using the full format
-            //       to make sure it is tested more
-            //  else if (importType == "internalUndoRedo") {
-            //    // fastest format with no error checking
-            //    importData = PedigreeImport.initFromInternalUndoRedoJSON(importString);
 
             if (importData == null
                 || !importData.hasOwnProperty("baseGraph")
@@ -1755,6 +1803,8 @@ define([
 
             var newNodes = this._getAllNodes();
 
+            timer.printSinceLast("=== Import runtime: ");
+
             return {"new": newNodes, "removed": removedNodes};
         },
 
@@ -1775,6 +1825,7 @@ define([
             this.DG = newDG;
             return true;
         },
+
 
         //=============================================================
 

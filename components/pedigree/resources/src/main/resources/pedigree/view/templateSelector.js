@@ -93,14 +93,8 @@ define([
         _onTemplateSelected: function(event, pictureBox) {
             //console.log("observe onTemplateSelected");
             this.close();
-            if (pictureBox.type == 'internal') {
-                var updatedJSONData = editor.getVersionUpdater().updateToCurrentVersion(pictureBox.pedigreeData);
-                editor.getSaveLoadEngine().createGraphFromSerializedData(updatedJSONData, false /* add to undo stack */,
-                                                                         true /* center around proband */, null /* no callback */, "template" /* data source */);
-            } else if (pictureBox.type == 'simpleJSON') {
-                editor.getSaveLoadEngine().createGraphFromImportData(pictureBox.pedigreeData, 'simpleJSON', {}, false /* add to undo stack */,
-                                                                     true /* center around proband */, "template" /* data source */);
-            }
+            var updatedJSONData = pictureBox.pedigreeData;
+            editor.getSaveLoadEngine().createGraphFromStoredData(updatedJSONData, "template" /* data source */);
         },
 
         onShow: function() {
