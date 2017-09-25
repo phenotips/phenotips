@@ -79,9 +79,8 @@ define([
 
     var PedigreeEditor = Class.create({
         initialize: function() {
-            this.INTERNALJSON_VERSION = "1.0";
+            this.DEBUG_MODE = false;
 
-            //this.DEBUG_MODE = true;
             window.editor = this;
 
             this._extensionManager = new PedigreeExtensionManager();
@@ -115,7 +114,7 @@ define([
             this._preferencesManager = new PreferencesManager(this._defaultPreferences);
 
             // initialize main data structure which holds the graph structure
-            this._graphModel = DynamicPositionedGraph.makeEmpty(PedigreeEditorParameters.attributes.layoutRelativePersonWidth, PedigreeEditorParameters.attributes.layoutRelativeOtherWidth);
+            this._graphModel = DynamicPositionedGraph.makeEmpty();
 
             //initialize the elements of the app
             this._workspace = new Workspace();
@@ -406,10 +405,10 @@ define([
         },
 
         /**
-         * Returns the version of the internal JSON represenations which will be saved to PhenpoTips patient record
+         * Returns the version of the PhenoTips instance (used mainly for generating Patient JSONs)
          */
-        getInternalJSONVersion: function() {
-            return this.INTERNALJSON_VERSION;
+        getPhenotipsVersion: function() {
+            return this.getPreferencesManager().getPhenotipsVersion();
         },
 
         /**
