@@ -351,7 +351,7 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
       </image>
     </class>
     <property>
-      <data>{"GG":[{"id":0,"prop":{"gender":"U"}}],"ranks":[3],"order":[[],[],[],[0]],"positions":[5]}</data>
+      <data>{"JSON_version":"1.0","members":[{"id":0}],"relationships":[],"proband":0}</data>
     </property>
     <property>
       <description>Proband</description>
@@ -424,7 +424,7 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
       </image>
     </class>
     <property>
-      <data>{"GG":[{"id":0,"prop":{"gender":"U"}},{"id":1,"chhub":true,"prop":{},"outedges":[{"to":0}]},{"id":2,"rel":true,"hub":true,"prop":{},"outedges":[{"to":1}]},{"id":3,"prop":{"gender":"F"},"outedges":[{"to":2}]},{"id":4,"prop":{"gender":"M"},"outedges":[{"to":2}]}],"ranks":[3,2,1,1,1],"order":[[],[4,2,3],[1],[0]],"positions":[5,5,5,17,-7]}</data>
+      <data>{"JSON_version":"1.0","members":[{"id":0},{"id":3,"properties":{"life_status":"alive","sex":"F"}},{"id":4,"properties":{"life_status":"alive","sex":"M"}}],"relationships":[{"id":0,"members":[3,4],"children":[{"id":0}]}],"proband":0}</data>
     </property>
     <property>
       <description>Proband with parents</description>
@@ -497,7 +497,7 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
       </image>
     </class>
     <property>
-      <data>{"GG":[{"id":0,"prop":{"gender":"U"}},{"id":1,"chhub":true,"prop":{},"outedges":[{"to":0}]},{"id":2,"rel":true,"hub":true,"prop":{},"outedges":[{"to":1}]},{"id":3,"prop":{"gender":"F"},"outedges":[{"to":2}]},{"id":4,"prop":{"gender":"M"},"outedges":[{"to":2}]},{"id":5,"chhub":true,"prop":{},"outedges":[{"to":4}]},{"id":6,"rel":true,"hub":true,"prop":{},"outedges":[{"to":5}]},{"id":7,"prop":{"gender":"F"},"outedges":[{"to":6}]},{"id":8,"prop":{"gender":"M"},"outedges":[{"to":6}]},{"id":9,"chhub":true,"prop":{},"outedges":[{"to":3}]},{"id":10,"rel":true,"hub":true,"prop":{},"outedges":[{"to":9}]},{"id":11,"prop":{"gender":"F"},"outedges":[{"to":10}]},{"id":12,"prop":{"gender":"M"},"outedges":[{"to":10}]}],"ranks":[5,4,3,3,3,2,1,1,1,2,1,1,1],"order":[[],[8,6,7,12,10,11],[5,9],[4,2,3],[1],[0]],"positions":[15,15,15,37,-7,-7,-7,5,-19,37,37,49,25]}</data>
+      <data>{"JSON_version":"1.0","members":[{"id":0},{"id":3,"properties":{"life_status":"alive","sex":"F"}},{"id":4,"properties":{"life_status":"alive","sex":"M"}},{"id":5,"properties":{"life_status":"alive","sex":"F"}},{"id":6,"properties":{"life_status":"alive","sex":"M"}},{"id":7,"properties":{"life_status":"alive","sex":"F"}},{"id":8,"properties":{"life_status":"alive","sex":"M"}}],"relationships":[{"id":0,"members":[3,4],"children":[{"id":0}]},{"id":1,"members":[5,6],"children":[{"id":3}]},{"id":2,"members":[7,8],"children":[{"id":4}]}],"proband":0}</data>
     </property>
     <property>
       <description>Proband with two generations of ancestors</description>
@@ -570,7 +570,7 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
       </image>
     </class>
     <property>
-      <data>{"GG":[{"id":0,"prop":{"gender":"U"}},{"id":1,"chhub":true,"prop":{},"outedges":[{"to":0}]},{"id":2,"rel":true,"hub":true,"prop":{},"outedges":[{"to":1}]},{"id":3,"prop":{"gender":"F"},"outedges":[{"to":2}]},{"id":4,"prop":{"gender":"M"},"outedges":[{"to":2}]},{"id":5,"chhub":true,"prop":{},"outedges":[{"to":4}]},{"id":6,"rel":true,"hub":true,"prop":{},"outedges":[{"to":5}]},{"id":7,"prop":{"gender":"F"},"outedges":[{"to":6}]},{"id":8,"prop":{"gender":"M"},"outedges":[{"to":6}]},{"id":9,"chhub":true,"prop":{},"outedges":[{"to":3}]},{"id":10,"rel":true,"hub":true,"prop":{},"outedges":[{"to":9}]},{"id":11,"prop":{"gender":"F"},"outedges":[{"to":10}]},{"id":12,"prop":{"gender":"M"},"outedges":[{"to":10}]},{"id":13,"chhub":true,"prop":{},"outedges":[{"to":8}]},{"id":14,"rel":true,"hub":true,"prop":{},"outedges":[{"to":13}]},{"id":15,"prop":{"gender":"F"},"outedges":[{"to":14}]},{"id":16,"prop":{"gender":"M"},"outedges":[{"to":14}]},{"id":17,"chhub":true,"prop":{},"outedges":[{"to":7}]},{"id":18,"rel":true,"hub":true,"prop":{},"outedges":[{"to":17}]},{"id":19,"prop":{"gender":"F"},"outedges":[{"to":18}]},{"id":20,"prop":{"gender":"M"},"outedges":[{"to":18}]},{"id":21,"chhub":true,"prop":{},"outedges":[{"to":12}]},{"id":22,"rel":true,"hub":true,"prop":{},"outedges":[{"to":21}]},{"id":23,"prop":{"gender":"F"},"outedges":[{"to":22}]},{"id":24,"prop":{"gender":"M"},"outedges":[{"to":22}]},{"id":25,"chhub":true,"prop":{},"outedges":[{"to":11}]},{"id":26,"rel":true,"hub":true,"prop":{},"outedges":[{"to":25}]},{"id":27,"prop":{"gender":"F"},"outedges":[{"to":26}]},{"id":28,"prop":{"gender":"M"},"outedges":[{"to":26}]}],"ranks":[7,6,5,5,5,4,3,3,3,4,3,3,3,2,1,1,1,2,1,1,1,2,1,1,1,2,1,1,1],"order":[[],[16,14,15,20,18,19,24,22,23,28,26,27],[13,17,21,25],[8,6,7,12,10,11],[5,9],[4,2,3],[1],[0]],"positions":[47,47,47,91,3,3,3,25,-19,91,91,113,69,-19,-19,-7,-31,25,25,37,13,69,69,81,57,113,113,125,101]}</data>
+      <data>{"JSON_version":"1.0","members":[{"id":0},{"id":3,"properties":{"life_status":"alive","sex":"F"}},{"id":4,"properties":{"life_status":"alive","sex":"M"}},{"id":5,"properties":{"life_status":"alive","sex":"F"}},{"id":6,"properties":{"life_status":"alive","sex":"M"}},{"id":7,"properties":{"life_status":"alive","sex":"F"}},{"id":8,"properties":{"life_status":"alive","sex":"M"}},{"id":9,"properties":{"life_status":"alive","sex":"F"}},{"id":10,"properties":{"life_status":"alive","sex":"M"}},{"id":11,"properties":{"life_status":"alive","sex":"F"}},{"id":12,"properties":{"life_status":"alive","sex":"M"}},{"id":13,"properties":{"life_status":"alive","sex":"F"}},{"id":14,"properties":{"life_status":"alive","sex":"M"}},{"id":15,"properties":{"life_status":"alive","sex":"F"}},{"id":16,"properties":{"life_status":"alive","sex":"M"}}],"relationships":[{"id":0,"members":[3,4],"children":[{"id":0}]},{"id":1,"members":[5,6],"children":[{"id":3}]},{"id":2,"members":[7,8],"children":[{"id":4}]},{"id":3,"members":[9,10],"children":[{"id":5}]},{"id":4,"members":[11,12],"children":[{"id":6}]},{"id":5,"members":[13,14],"children":[{"id":7}]},{"id":6,"members":[15,16],"children":[{"id":8}]}],"proband":0}</data>
     </property>
     <property>
       <description>Proband with three generations of ancestors</description>
@@ -643,7 +643,7 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
       </image>
     </class>
     <property>
-      <data>{"GG":[{"id":0,"prop":{"gender":"U"}},{"id":1,"chhub":true,"prop":{},"outedges":[{"to":0}]},{"id":2,"rel":true,"hub":true,"prop":{},"outedges":[{"to":1}]},{"id":3,"prop":{"gender":"F"},"outedges":[{"to":2}]},{"id":4,"prop":{"gender":"M"},"outedges":[{"to":2}]},{"id":5,"chhub":true,"prop":{},"outedges":[{"to":4}]},{"id":6,"rel":true,"hub":true,"prop":{},"outedges":[{"to":5}]},{"id":7,"prop":{"gender":"U"},"outedges":[{"to":6}]},{"id":8,"prop":{"gender":"U"},"outedges":[{"to":6}]},{"id":9,"chhub":true,"prop":{},"outedges":[{"to":3}]},{"id":10,"rel":true,"hub":true,"prop":{},"outedges":[{"to":9}]},{"id":11,"prop":{"gender":"U"},"outedges":[{"to":10}]},{"id":12,"prop":{"gender":"U"},"outedges":[{"to":10}]},{"id":13,"chhub":true,"prop":{},"outedges":[{"to":7},{"to":12}]},{"id":14,"rel":true,"hub":true,"prop":{},"outedges":[{"to":13}]},{"id":15,"prop":{"gender":"F"},"outedges":[{"to":14}]},{"id":16,"prop":{"gender":"M"},"outedges":[{"to":14}]}],"ranks":[7,6,5,5,5,4,3,3,3,4,3,3,3,2,1,1,1],"order":[[],[16,14,15],[13],[8,6,7,12,10,11],[5,9],[4,2,3],[1],[0]],"positions":[39,39,39,61,17,17,17,29,5,61,61,73,49,39,39,51,27]}</data>
+      <data>{"JSON_version":"1.0","members":[{"id":0},{"id":3,"properties":{"life_status":"alive","sex":"F"}},{"id":4,"properties":{"life_status":"alive","sex":"M"}},{"id":5,"properties":{"life_status":"alive"}},{"id":6,"properties":{"life_status":"alive"}},{"id":7,"properties":{"life_status":"alive"}},{"id":8,"properties":{"life_status":"alive"}},{"id":9,"properties":{"life_status":"alive","sex":"F"}},{"id":10,"properties":{"life_status":"alive","sex":"M"}}],"relationships":[{"id":0,"members":[3,4],"children":[{"id":0}]},{"id":1,"members":[5,6],"children":[{"id":3}]},{"id":2,"members":[7,8],"children":[{"id":4}]},{"id":3,"members":[9,10],"children":[{"id":6}, {"id":7}]}],"proband":0}</data>
     </property>
     <property>
       <description>Consanguineous marriage - cousins</description>
