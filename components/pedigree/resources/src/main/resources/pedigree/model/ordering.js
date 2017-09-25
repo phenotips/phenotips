@@ -10,28 +10,41 @@ define([
         // TODO: verify validity?
     };
 
+    Ordering.createOrdering = function(vOrder, ranks) {
+        if (vOrder.length != ranks.length) {
+            throw "Can not create ordering since the number of positions and nodes does not match";
+        }
+
+        var maxRank = Math.max.apply(null, ranks)
+        var order = [];
+        for (var r = 0; r <= maxRank; r++) {
+            order[r] = [];
+        }
+
+        // fill in order 2d array which represents orders-per-rank based on given order-per-vertex 1D array
+        for (var i = 0; i < vOrder.length; i++) {
+            if (order[ranks[i]][vOrder[i]] !== undefined) {
+                throw "Some nodes have the same generation (" +  ranks[i] + ") and same order (" + vOrder[i] + ")";
+            }
+            order[ranks[i]][vOrder[i]] = i;
+        }
+
+        // remove gaps on each rank
+        for (var r = 0; r <= maxRank; r++) {
+            order[r] = order[r].filter(function(v){return v !== undefined})
+        }
+
+        return new Ordering(order, vOrder);
+    };
+
+    Ordering.fromJSON = function(json) {
+        return new Ordering(json.order, json.vOrder);
+    },
+
     Ordering.prototype = {
 
-        serialize: function() {
-            return this.order;
-        },
-
-        deserialize: function(data) {
-            this.order  = data;
-            this.vOrder = [];
-            //console.log("Order deserialization: [" + Helpers.stringifyObject(this.order) + "]");
-
-            this._updateVOrderArray();
-        },
-
-        _updateVOrderArray: function() {
-            // recompute vOrders
-            for (var r = 0; r < this.order.length; r++) {
-                var ordersAtRank = this.order[r];
-                for (var i = 0; i < ordersAtRank.length; i++) {
-                    this.vOrder[ordersAtRank[i]] = i;
-                }
-            }
+        toJSONObject: function() {
+            return JSON.parse(JSON.stringify(this));
         },
 
         insert: function(rank, insertOrder, vertex) {
@@ -212,6 +225,16 @@ define([
                 this.order[r].reverse();
             }
             this._updateVOrderArray();
+        },
+
+        _updateVOrderArray: function() {
+            // recompute vOrders
+            for (var r = 0; r < this.order.length; r++) {
+                var ordersAtRank = this.order[r];
+                for (var i = 0; i < ordersAtRank.length; i++) {
+                    this.vOrder[ordersAtRank[i]] = i;
+                }
+            }
         }
     };
 
