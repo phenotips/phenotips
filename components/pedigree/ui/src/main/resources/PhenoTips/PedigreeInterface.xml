@@ -96,7 +96,8 @@ $response.setContentType('application/json')##
             "propagateFatherLastName"      : #__convertToBooleanString("$!{config.getProperty('propagateFatherLastName').value}"),
             "lineStyle"                    : "$!{config.getProperty('lineStyle').value}"
         #end
-    }
+    },
+    "phenotipsVersion": "$!{services.distribution.distributionExtension.id.version}"
   }
 #else
   Unknown action
