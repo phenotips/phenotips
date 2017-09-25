@@ -19,8 +19,6 @@ package org.phenotips.studies.family.internal;
 
 import org.phenotips.studies.family.Pedigree;
 import org.phenotips.studies.family.PedigreeProcessor;
-import org.phenotips.vocabulary.Vocabulary;
-import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 
@@ -28,10 +26,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
@@ -44,36 +40,8 @@ import org.slf4j.Logger;
 @Component
 public class PedigreeProcessorImpl implements PedigreeProcessor
 {
-    private static final String PATIENT_JSON_KEY_FEATURES = "features";
-
-    private static final String PEDIGREE_JSON_KEY_FEATURES = PATIENT_JSON_KEY_FEATURES;
-
-    private static final String PATIENT_JSON_KEY_NON_STANDARD_FEATURES = "nonstandard_features";
-
-    private static final String PEDIGREE_JSON_KEY_NON_STANDARD_FEATURES = PATIENT_JSON_KEY_NON_STANDARD_FEATURES;
-
-    private static final String PATIENT_JSON_KEY_GENES = "genes";
-
-    private static final String PEDIGREE_JSON_KEY_GENES = PATIENT_JSON_KEY_GENES;
-
-    private static final String PATIENT_JSON_KEY_FAMILY_HISTORY = "family_history";
-
-    private static final String PEDIGREE_JSON_KEY_FAMILY_HISTORY = PATIENT_JSON_KEY_FAMILY_HISTORY;
-
-    private static final String PATIENT_ALIVE_STATUS = "alive";
-
-    private static final String PATIENT_DECEASED_STATUS = "deceased";
-
     @Inject
     private Logger logger;
-
-    @Inject
-    @Named("hpo")
-    private Vocabulary hpoService;
-
-    @Inject
-    @Named("omim")
-    private Vocabulary omimService;
 
     /**
      * Returns a list of Phenotips JSONs for each patient found in pedigree.
@@ -95,170 +63,9 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
                 this.logger.warn("The version of the pedigree JSON differs from the expected.");
             }
 
-            List<JSONObject> patientJson = pedigree.extractPatientJSONProperties();
-
-            for (JSONObject singlePatient : patientJson) {
-                convertedPatients.add(patientJsonToObject(singlePatient));
-            }
+            return pedigree.extractPatientJSONProperties();
         }
 
         return convertedPatients;
-    }
-
-    private JSONObject patientJsonToObject(JSONObject externalPatient)
-    {
-        JSONObject phenotipsPatient = new JSONObject();
-
-        try {
-            phenotipsPatient = exchangeIds(externalPatient, phenotipsPatient, this.logger);
-            phenotipsPatient = exchangeBasicPatientData(externalPatient, phenotipsPatient);
-            phenotipsPatient = exchangeLifeStatus(externalPatient, phenotipsPatient);
-            phenotipsPatient = exchangeDates(externalPatient, phenotipsPatient, this.logger);
-            phenotipsPatient = exchangePhenotypes(externalPatient, phenotipsPatient, this.hpoService, this.logger);
-            phenotipsPatient = exchangeDisorders(externalPatient, phenotipsPatient, this.omimService, this.logger);
-            phenotipsPatient = exchangeFamilyHistory(externalPatient, phenotipsPatient);
-            phenotipsPatient = exchangeGenes(externalPatient, phenotipsPatient);
-        } catch (Exception ex) {
-            this.logger.error("Could not convert patient: {}", ex.getMessage());
-        }
-
-        return phenotipsPatient;
-    }
-
-    private static JSONObject exchangeFamilyHistory(JSONObject pedigreePatient, JSONObject phenotipsPatientJSON)
-    {
-        phenotipsPatientJSON.put(PATIENT_JSON_KEY_FAMILY_HISTORY,
-            pedigreePatient.opt(PEDIGREE_JSON_KEY_FAMILY_HISTORY));
-        return phenotipsPatientJSON;
-    }
-
-    private static JSONObject exchangeIds(JSONObject pedigreePatient, JSONObject phenotipsPatientJSON, Logger logger)
-    {
-        String patientID = "phenotipsId";
-        String externalID = "externalID";
-        try {
-            if (pedigreePatient.has(patientID)) {
-                phenotipsPatientJSON.put("id", pedigreePatient.getString(patientID));
-            }
-            phenotipsPatientJSON.put("external_id", pedigreePatient.optString(externalID, ""));
-        } catch (Exception ex) {
-            logger.error("Could not convert patient IDs: {}", ex.getMessage());
-        }
-        return phenotipsPatientJSON;
-    }
-
-    private static JSONObject exchangeBasicPatientData(JSONObject pedigreePatient, JSONObject phenotipsPatientJSON)
-    {
-        JSONObject name = new JSONObject();
-        name.put("first_name", pedigreePatient.opt("fName"));
-        name.put("last_name", pedigreePatient.opt("lName"));
-
-        phenotipsPatientJSON.put("sex", pedigreePatient.opt("gender"));
-        phenotipsPatientJSON.put("patient_name", name);
-        return phenotipsPatientJSON;
-    }
-
-    private static JSONObject exchangeLifeStatus(JSONObject pedigreePatient, JSONObject phenotipsPatientJSON)
-    {
-        String pedigreeLifeStatus = pedigreePatient.optString("lifeStatus", "alive");
-
-        String lifeStatus = PATIENT_ALIVE_STATUS;
-        if (!StringUtils.equalsIgnoreCase(pedigreeLifeStatus, "alive")) {
-            lifeStatus = PATIENT_DECEASED_STATUS;
-        }
-
-        phenotipsPatientJSON.put("life_status", lifeStatus);
-        return phenotipsPatientJSON;
-    }
-
-    private static JSONObject exchangeDates(JSONObject pedigreePatient, JSONObject phenotipsPatientJSON, Logger logger)
-    {
-        String dob = "dob";
-        String dod = "dod";
-        if (pedigreePatient.has(dob)) {
-            try {
-                phenotipsPatientJSON.put("date_of_birth",
-                    PedigreeProcessorImpl.pedigreeDateToDate(pedigreePatient.getJSONObject(dob)));
-            } catch (Exception ex) {
-                // may happen if date JSON is incorrectly formatted - more likely to happen
-                // than in other parts of JSON since we are debating how dates should be stored
-                logger.error("Could not convert date of birth: {}", ex.getMessage());
-            }
-        } else {
-            phenotipsPatientJSON.put("date_of_birth", "");
-        }
-
-        String lifeStatus = phenotipsPatientJSON.optString("life_status", PATIENT_ALIVE_STATUS);
-        if (StringUtils.equalsIgnoreCase(lifeStatus, PATIENT_ALIVE_STATUS) || !pedigreePatient.has(dod)) {
-            // if patient is alive, date of death should be explicitly blanked
-            phenotipsPatientJSON.put("date_of_death", "");
-        } else {
-            try {
-                phenotipsPatientJSON.put("date_of_death",
-                    PedigreeProcessorImpl.pedigreeDateToDate(pedigreePatient.getJSONObject(dod)));
-            } catch (Exception ex) {
-                logger.error("Could not convert date of death: {}", ex.getMessage());
-            }
-        }
-        return phenotipsPatientJSON;
-    }
-
-    private static JSONObject exchangePhenotypes(JSONObject pedigreePatient,
-        JSONObject phenotipsPatientJSON, Vocabulary hpoService, Logger logger)
-    {
-        JSONArray pedigreeFeatures = pedigreePatient.optJSONArray(PEDIGREE_JSON_KEY_FEATURES);
-        if (pedigreeFeatures != null) {
-            phenotipsPatientJSON.put(PATIENT_JSON_KEY_FEATURES, pedigreeFeatures);
-        }
-
-        JSONArray pedigreeNonStdFeatures = pedigreePatient.optJSONArray(PEDIGREE_JSON_KEY_NON_STANDARD_FEATURES);
-        if (pedigreeNonStdFeatures != null) {
-            phenotipsPatientJSON.put(PATIENT_JSON_KEY_NON_STANDARD_FEATURES, pedigreeNonStdFeatures);
-        }
-
-        return phenotipsPatientJSON;
-    }
-
-    private static JSONObject exchangeDisorders(JSONObject pedigreePatient,
-        JSONObject phenotipsPatientJSON, Vocabulary omimService, Logger logger)
-    {
-        String disordersKey = "disorders";
-        JSONArray internalTerms = new JSONArray();
-        JSONArray externalTerms = pedigreePatient.optJSONArray(disordersKey);
-
-        if (externalTerms != null) {
-            for (Object termIdObj : externalTerms) {
-                try {
-                    VocabularyTerm term = omimService.getTerm(termIdObj.toString());
-                    if (term != null) {
-                        internalTerms.put(term.toJSON());
-                    }
-                } catch (Exception ex) {
-                    logger.error("Could not convert disorder {} from pedigree JSON to patient JSON", termIdObj);
-                }
-            }
-        }
-
-        phenotipsPatientJSON.put(disordersKey, internalTerms);
-        return phenotipsPatientJSON;
-    }
-
-    private static JSONObject exchangeGenes(JSONObject pedigreePatient, JSONObject phenotipsPatientJSON)
-    {
-        JSONArray pedigreeGenes = pedigreePatient.optJSONArray(PEDIGREE_JSON_KEY_GENES);
-        if (pedigreeGenes != null) {
-            phenotipsPatientJSON.put(PATIENT_JSON_KEY_GENES, pedigreeGenes);
-        }
-        return phenotipsPatientJSON;
-    }
-
-    /**
-     * Used for converting a pedigree JSON date to a PhenoTips JSON date.
-     *
-     * @param pedigreeDate cannot be null.
-     */
-    private static JSONObject pedigreeDateToDate(JSONObject pedigreeDate)
-    {
-        return pedigreeDate;
     }
 }

@@ -236,14 +236,10 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
                 image = (BaseStringProperty) pedigreeObj.get(Pedigree.IMAGE);
 
                 if (StringUtils.isNotBlank(data.toText())) {
-                    // internally pedigree may be stored in either "old internal" or "simpleJSON" format
-                    // for now simpleJSON may only be stored after a migration, and some of the
-                    // methods
                     JSONObject pedigreeJSON = new JSONObject(data.toText());
+                    // Do a basic data format check before attempting to initialize a pedigree
                     if (DefaultPedigree.isSupportedPedigreeFormat(pedigreeJSON)) {
                         return new DefaultPedigree(pedigreeJSON, image.toText());
-                    } else if (NewFormatPedigree.isSupportedPedigreeFormat(pedigreeJSON)) {
-                        return new NewFormatPedigree(pedigreeJSON, image.toText());
                     }
                 }
             } catch (XWikiException e) {
