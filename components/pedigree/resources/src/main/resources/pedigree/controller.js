@@ -34,14 +34,18 @@ define([
 
         handleUndo: function(event)
         {
+            var timer = new Helpers.Timer();
             //console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
             editor.getUndoRedoManager().undo();
+            timer.printSinceLast("=== Undo runtime: ");
         },
 
         handleRedo: function(event)
         {
+            var timer = new Helpers.Timer();
             //console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
             editor.getUndoRedoManager().redo();
+            timer.printSinceLast("=== Redo runtime: ");
         },
 
         handleRenumber: function(event)
@@ -144,7 +148,7 @@ define([
             var changeSet = editor.getGraph().clearAll(editor.isFamilyPage());
 
             var noUndoRedo = event.memo ? ( event.memo.hasOwnProperty("noUndoRedo") ? event.memo.noUndoRedo : false ) : false;
-            editor.getSaveLoadEngine()._finalizeCreateGraph(changeSet, noUndoRedo, true);
+            editor.getSaveLoadEngine()._finalizeCreateGraph("clear", changeSet, noUndoRedo, true);
 
             editor.getView().unmarkAll();
         },
@@ -603,7 +607,7 @@ define([
                                     patientJSONObject.pedigreeProperties = node.getPatientIndependentProperties();
                                     delete patientJSONObject.pedigreeProperties.gender; // this one is loaded from the patient
 
-                                    editor.getGraph().setNodeDataFromPhenotipsJSON( nodeID, patientJSONObject);
+                                    editor.getGraph().setPersonNodeDataFromPhenotipsJSON(nodeID, patientJSONObject);
 
                                     // update visual node's properties using data in graph model which was just loaded from phenotips
                                     node.assignProperties(editor.getGraph().getProperties(nodeID));
