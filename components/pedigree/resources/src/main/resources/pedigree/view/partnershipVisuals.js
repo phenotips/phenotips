@@ -179,12 +179,13 @@ define([
             var cornerRadius  = PedigreeEditorParameters.attributes.curvedLinesCornerRadius;
 
             for (var p = 0; p < partnerPaths.length; p++) {
-                var path = partnerPaths[p];
-
                 // for the last piece which attaches to the person:
                 // need to consider which attachment point to use, and may have to do a bended curve from current Y to the attachment point Y
-                var person           = path[path.length-1];
+                var person           = partnerPaths[p].parent;
                 var finalSegmentInfo = editor.getGraph().getRelationshipLineInfo(id, person);
+
+                var path = partnerPaths[p].path;
+                path.push(person);  // add person as the last item on the path
 
                 var nodePos       = editor.getGraph().getPosition(person);
                 var finalPosition = editor.convertGraphCoordToCanvasCoord( nodePos.x, nodePos.y );

@@ -2,11 +2,13 @@ define([
       "pedigree/pedigreeDate",
       "pedigree/hpoTerm",
       "pedigree/model/baseGraph",
+      "pedigree/model/ordering",
       "pedigree/model/helpers"
     ], function(
       PedigreeDate,
       HPOTerm,
       BaseGraph,
+      Ordering,
       Helpers
     ){
     PedigreeImport = function () {
@@ -15,137 +17,416 @@ define([
     PedigreeImport.prototype = {
     };
 
-    /*PedigreeImport.SUPORTED_FORMATS = {
-      PED:                    1,      // standard .PED format. Can only import family structure, gender and the affected status
-      PHENOTIPS_GRAPH:        2,      // Phenotips pedigree format, whithout positioning information (needs to be laid out automaticaly)
-      PHENOTIPS_INTERNAL_OLD: 3       // Phenotips internal format used during development and in test cases (to be replaced)
-    };
+    /**
+     * Returns the current version of the Full JSON represenation
+     */
+    PedigreeImport.getCurrentFullJSONVersion = function() {
+        return "1.0";
+    },
 
-    PedigreeImport.autodetectFormat = function(input) {
+    /**
+     * Returns the set of all supported Full JSON versions which can be imported
+     */
+    PedigreeImport.getSupportedPedigreeJSONVersions = function() {
+        var versions = {};
+        versions[PedigreeImport.getCurrentFullJSONVersion()] = true;
+        return versions;
+    },
 
-    }*/
-
-    PedigreeImport.initFromPhenotipsInternal = function(inputG)
+    PedigreeImport.initFromFullJSON = function(inputText)
     {
-        // note: serialize() produces the correct input for this function
+        var KEY_PROBAND = "proband";
+        var KEY_MEMBERS = "members";
+        var KEY_RELATIONSHIPS = "relationships";
+        var KEY_RELATIONSHIPS_MEMBERS = "members";
+        var KEY_RELATIONSHIPS_CHILDREN = "children";
+        var KEY_LAYOUT = "layout";
+        var KEY_PROPERTIES_PHENOTIPSID = "id";
+        var KEY_PROPERTIES_GENDER = "sex";
+
+        try {
+            var input = JSON.parse(inputText);
+        } catch(err) {
+            throw "Unable to import pedigree: input is not a valid pedigree JSON: " + err.message;
+        }
+
+        if (!input.hasOwnProperty("JSON_version")
+            || !PedigreeImport.getSupportedPedigreeJSONVersions().hasOwnProperty(input["JSON_version"])) {
+            throw("Can not initialize from JSON: unsupported version of pedigree JSON format [" + input["JSON_version"] + "]");
+        }
+        if (typeof input != 'object') {
+            throw "Unable to import pedigree: JSON does not represent an object";
+        }
+        if (!input.hasOwnProperty(KEY_MEMBERS) || !Array.isArray(input[KEY_MEMBERS])) {
+            throw "Unable to import pedigree: required field <" + KEY_MEMBERS + "> is missing or not an array";
+        }
+        if (input.hasOwnProperty(KEY_RELATIONSHIPS) && !Array.isArray(input[KEY_RELATIONSHIPS])) {
+            throw "Unable to import pedigree: field <" + KEY_RELATIONSHIPS + "> is not an array";
+        }
+
+        // if import code has to create new virtual nodes (e.g. a missing second parent) it means
+        // the layout can't possibly work, need to redo it from sratch
+        var ignoreLayout = false;
+
+        var memberIDToNodeID = {};
+        var relationshipIDToNodeID = {};
 
         var newG = new BaseGraph();
 
-        var nameToId = {};
-
-        var relationshipHasExplicitChHub = {};
-
         // first pass: add all vertices and assign vertex IDs
-        for (var v = 0; v < inputG.length; v++) {
+        var members = input[KEY_MEMBERS];
+        for (var i = 0; i < members.length; i++) {
+            var nextPerson = members[i];
 
-            if (!inputG[v].hasOwnProperty("name") && !inputG[v].hasOwnProperty("id"))
-                throw "Invalid input: a node without id and without name";
-
-            var type = BaseGraph.TYPE.PERSON;
-            if ( inputG[v].hasOwnProperty('relationship') || inputG[v].hasOwnProperty('rel') ) {
-                type = BaseGraph.TYPE.RELATIONSHIP;
-                // normally users wont specify childhubs explicitly - but save via JSON does
-                if (inputG[v].hasOwnProperty('hub') || inputG[v].hasOwnProperty('haschhub'))
-                    relationshipHasExplicitChHub[v] = true;
+            if (typeof nextPerson != 'object') {
+                throw "Unable to import pedigree: a person is not represented as a JSON object";
             }
-            else if ( inputG[v].hasOwnProperty('chhub') ) {
-                type = BaseGraph.TYPE.CHILDHUB;
+            if (!nextPerson.hasOwnProperty("id")) {
+                throw "Unable to import pedigree: a person has no ID";
             }
-            else if ( inputG[v].hasOwnProperty('virtual') || inputG[v].hasOwnProperty('virt')) {
-                type = BaseGraph.TYPE.VIRTUALEDGE;
+            if (memberIDToNodeID.hasOwnProperty(nextPerson.id)) {
+                throw "Unable to import pedigree: duplicate person ID <" + nextPerson.id + ">";
             }
 
             var properties = {};
-            if (inputG[v].hasOwnProperty('properties') || inputG[v].hasOwnProperty('prop'))
-                properties = inputG[v].hasOwnProperty('properties') ? inputG[v]["properties"] : inputG[v]["prop"];
-
-            if ( type == BaseGraph.TYPE.PERSON ) {
-                if (properties.hasOwnProperty("sex") && !properties.hasOwnProperty("gender")) {
-                    properties["gender"] = properties["sex"];
-                }
-
-                if (!properties.hasOwnProperty("gender"))
-                    properties["gender"] = "U";
-
-                if (inputG[v].hasOwnProperty("gender")) {
-                     var genderString = inputG[v]["gender"].toLowerCase();
-                     if( genderString == "female" || genderString == "f")
-                        properties["gender"] = "F";
-                     if( genderString == "other" || genderString == "o")
-                        properties["gender"] = "O";
-                    else if( genderString == "male" || genderString == "m")
-                        properties["gender"] = "M";
-                }
+            if (nextPerson.hasOwnProperty("pedigreeProperties") && typeof nextPerson.pedigreeProperties == 'object') {
+                properties = nextPerson.pedigreeProperties;
             }
 
-            var width = inputG[v].hasOwnProperty('width') ?
-                        inputG[v].width :
-                        (type == BaseGraph.TYPE.PERSON ? newG.defaultPersonNodeWidth : newG.defaultNonPersonNodeWidth);
+            var nodeID = newG._addVertex( null, BaseGraph.TYPE.PERSON, properties, {} );
+            memberIDToNodeID[nextPerson.id] = nodeID;
 
-            var newID = newG._addVertex( null, type, properties, width );   // "null" since id is not known yet
-
-            if (inputG[v].hasOwnProperty("name")) {  // note: this means using user input (not produced by this.serialize)
-                if (nameToId[inputG[v].name])
-                    throw "Invalid user input: multiple nodes with the same name";
-                if (type == BaseGraph.TYPE.PERSON)
-                    newG.properties[newID]["fName"] = inputG[v].name;
-                nameToId[inputG[v].name] = newID;
-            }
-
-            // when entered by user manually allow users to skip childhub nodes (and create them automatically)
-            // (but when saving/restoring from a JSON need to save/restore childhub nodes as they
-            //  may have some properties assigned by the user which we need to save/restore)
-            if ( type == BaseGraph.TYPE.RELATIONSHIP && !relationshipHasExplicitChHub.hasOwnProperty(v) ) {
-                var chHubId = newG._addVertex(null, BaseGraph.TYPE.CHILDHUB, null, width );
-                nameToId["_chhub_" + newID] = chHubId;
+            if (nextPerson.hasOwnProperty("properties") && typeof nextPerson.properties == 'object' &&
+                !nextPerson.hasOwnProperty("placeholder") ) {
+                newG.rawJSONProperties[nodeID] = nextPerson.properties;
+                if (nextPerson.properties.hasOwnProperty(KEY_PROPERTIES_PHENOTIPSID)) {
+                    newG.properties[nodeID]["phenotipsId"] = nextPerson.properties[KEY_PROPERTIES_PHENOTIPSID];
+                }
+                // layout algorithm, which is run before an updated JSON is loaded, uses gender as one of the parameters,
+                // thus gender needs to be set at all times and from the very beginning
+                if (nextPerson.properties.hasOwnProperty(KEY_PROPERTIES_GENDER)) {
+                    newG.properties[nodeID]["gender"] = nextPerson.properties[KEY_PROPERTIES_GENDER];
+                } else {
+                    newG.properties[nodeID]["gender"] = "U";
+                }
+            } else {
+                newG.rawJSONProperties[nodeID] = {};
             }
         }
 
-        // second pass (once all vertex IDs are known): process edges
-        for (var v = 0; v < inputG.length; v++) {
-            var nextV = inputG[v];
+        var relationshipTracker = new RelationshipTracker(newG);
 
-            var vID    = nextV.hasOwnProperty("id") ? nextV.id : nameToId[nextV.name];
-            var origID = vID;
+        var childToRelationship = {};
 
-            var substitutedID = false;
+        // once all node/vertex IDs are known: second pass, process relationships/parents/children and add edges
+        if (input.hasOwnProperty(KEY_RELATIONSHIPS)) {
+            var relationships = input[KEY_RELATIONSHIPS];
+            for (var r = 0; r < relationships.length; r++) {
+                var nextRelationship = relationships[r];
 
-            if (newG.type[vID] == BaseGraph.TYPE.RELATIONSHIP && !relationshipHasExplicitChHub.hasOwnProperty(vID)) {
-                // replace edges from rel node by edges from childhub node
-                var childhubID = nameToId["_chhub_" + vID];
-                vID = childhubID;
-                substitutedID = true;
-            }
-
-            var maxChildEdgeWeight = 0;
-
-            if (nextV.outedges) {
-                for (var outE = 0; outE < nextV.outedges.length; outE++) {
-                    var target   = nextV.outedges[outE].to;
-                    var targetID = nameToId[target] ? nameToId[target] : target;  // can specify target either by name or ID
-
-                    if (!newG.isValidId(targetID))
-                        throw "Invalid input: invalid edge target (" + target + ")";
-
-                    var weight = 1;
-                    if (nextV.outedges[outE].hasOwnProperty('weight'))
-                        weight = nextV.outedges[outE].weight;
-                    if ( weight > maxChildEdgeWeight )
-                        maxChildEdgeWeight = weight;
-
-                    newG.addEdge( vID, targetID, weight );
+                if (!nextRelationship.hasOwnProperty(KEY_RELATIONSHIPS_MEMBERS) ||
+                    !Array.isArray(nextRelationship[KEY_RELATIONSHIPS_MEMBERS])) {
+                    throw "Unable to import pedigree: relationship is missing <" + KEY_RELATIONSHIPS_MEMBERS + "> array";
                 }
-            }
+                var members = nextRelationship[KEY_RELATIONSHIPS_MEMBERS];
 
-            if (substitutedID) {
-                newG.addEdge( origID, vID, maxChildEdgeWeight );
+                if (nextRelationship.hasOwnProperty(KEY_RELATIONSHIPS_CHILDREN) &&
+                    Array.isArray(nextRelationship[KEY_RELATIONSHIPS_CHILDREN]) &&
+                    nextRelationship[KEY_RELATIONSHIPS_CHILDREN].length > 0) {
+                    var children = nextRelationship[KEY_RELATIONSHIPS_CHILDREN];
+                } else {
+                    var children = [];
+                }
+
+                if (members.length < 1) {
+                    // can only happen if there are at least two children, e.g. relationship is used
+                    // to indicate "sibling" relationship between two or more persons
+                    if (children.length == 0) {
+                        throw "Unable to import pedigree: relationship has no members (at least one required)";
+                    }
+                    ignoreLayout = true;
+                    // create virtual second parent
+                    var nodeID1 = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "U"}, {} );
+                } else {
+                    var nodeID1 = memberIDToNodeID[members[0]];
+                }
+
+                if (members.length < 2) {
+                    ignoreLayout = true;
+                     // create virtual second parent
+                    var nodeID2 = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "U"}, {} );
+                } else {
+                    var nodeID2 = memberIDToNodeID[members[1]];
+                }
+
+                // get or create a relationship
+                var chhubID = relationshipTracker.createOrGetChildhub(nodeID1, nodeID2);
+
+                if (nextRelationship.hasOwnProperty("id")) {
+                    relationshipIDToNodeID[nextRelationship.id] = relationshipTracker.getRelationshipIDForChildHub(chhubID);
+                }
+
+                // add links to all children (or create a placeholder child if there are none)
+                if (children.length > 0) {
+                    for (var i = 0; i < children.length; i++) {
+                        var child = children[i];
+                        if (!child.hasOwnProperty("id")) {
+                            throw "Unable to import pedigree: a relationship child has no id";
+                        }
+                        if (!memberIDToNodeID.hasOwnProperty(child.id)) {
+                            throw "Unable to import pedigree: child id <" + child.id + "> is not an id of an existing person";
+                        }
+
+                        if (childToRelationship.hasOwnProperty(child.id)) {
+                            // TODO: in the future multiple relationships referencing the same child will be
+                            //       supported for the case of one relationship adopting out, and another adopting in
+                            throw "Unable to import pedigree: child id <" + child.id + "> belongs to two relationships";
+                        }
+                        childToRelationship[child.id] = chhubID;
+
+                        newG.addEdge( chhubID, memberIDToNodeID[child.id] );
+
+                        // process supported relationship properties (TODO: for now only adopted status)
+                        if (child.hasOwnProperty("adopted") && child.adopted != "no") {
+                            newG.properties[child.id].adoptedStatus = (child.adopted == "out") ? "adoptedOut" : "adoptedIn";
+                        }
+                    }
+                } else {
+                    // add placehodlre child, as required by current version of pedigree
+                    // TODO: get rid of this requirement, placehodlrer children are non-intuitive and add layout issues
+                    ignoreLayout = true;
+                    var placeholderID = newG._addVertex(null, BaseGraph.TYPE.PERSON, {"gender":"U", "placeholder":true}, {} );
+                    newG.addEdge( chhubID, placeholderID );
+                }
+
+                if (nextRelationship.hasOwnProperty("properties")) {
+                    // set relationship properties
+                    var relationshipID = relationshipTracker.getRelationshipIDForChildHub(chhubID);
+                    for (var property in nextRelationship.properties) {
+                        if (nextRelationship.properties.hasOwnProperty(property)) {
+                            var value    = nextRelationship.properties[property];
+                            var property = property.toLowerCase();
+
+                            var processed = PedigreeImport.convertRelationshipProperty(property, value);
+                            if (processed !== null) {
+                                // supported property
+                                newG.properties[relationshipID][processed.propertyName] = processed.value;
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        newG.validate();
+        try {
+            var probandID = input.hasOwnProperty(KEY_PROBAND) ? memberIDToNodeID[input[KEY_PROBAND]] : null;
+        } catch( err) {
+            throw "Unable to import pedigree: proband is not specified correctly";
+        }
 
-        return newG;
+        // process layout:
+        var internalLayout = (ignoreLayout || !input.hasOwnProperty(KEY_LAYOUT)) ? null
+                : PedigreeImport._processLayout(input[KEY_LAYOUT], newG, memberIDToNodeID, relationshipIDToNodeID);
+
+        PedigreeImport.validateBaseGraph(newG);
+
+        return {"baseGraph": newG, "probandNodeID": probandID, "layout": internalLayout};
     }
+
+    PedigreeImport._processLayout = function(inputLayout, newG, memberIDToNodeID, relationshipIDToNodeID)
+    {
+        // one complication is the difference between internal and external formats: internally
+        // each relationship has a hidden "child hub" node, which have no layout information in
+        // the input - however it can be derived from relationship data, which this code does
+        //
+        // another complication is mult-generation ("long") edges, which go from person nodes to
+        // relationships nodes across multiple generations ("ranks") - "drawing" one requires replacing
+        // a graph edge between them with multiple edges and "virtual" nodes, one per intermediate rank
+
+        // TODO: verify that all possible error kinds have been accounted for
+
+        try {
+            var ranks = PedigreeImport._generateRanksFromLayout(inputLayout, newG, memberIDToNodeID, relationshipIDToNodeID);
+        } catch (err) {
+            console.log("Error reading generations from layout: [" + err.message + "]");
+            return null;
+        }
+
+        try {
+            var suggestedLayout = PedigreeImport._generateOrdersAndPositionsFromLayout(inputLayout, ranks, newG, memberIDToNodeID, relationshipIDToNodeID);
+        } catch (err) {
+            console.log("Error reading positioning data from layout: [" + err.message + "]");
+            // cancel long edge expansion
+            newG.collapseMultiRankEdges();
+            suggestedLayout = { "ranks": ranks, "order": null, "positions": null };
+        }
+
+        return suggestedLayout;
+    }
+
+    PedigreeImport._generateRanksFromLayout = function(inputLayout, newG, memberIDToNodeID, relationshipIDToNodeID)
+    {
+        var ranks = [];
+
+        // use specified person ranks (generations)
+        var members = inputLayout["members"];
+        for (var memberID in memberIDToNodeID) {
+            if (memberIDToNodeID.hasOwnProperty(memberID)) {
+                var nodeID = memberIDToNodeID[memberID];
+                if (members.hasOwnProperty(memberID)) {
+                    ranks[nodeID] = members[memberID]["generation"];
+                    if (!Helpers.isInt(ranks[nodeID])) {
+                        throw "Generations should be integers";
+                    }
+                } else {
+                    throw "No generation specified for member " + memberID;
+                }
+            }
+        }
+
+        // normalize ranks to 1 ... N, close any gaps, and adjust ranks so that persons
+        // are ranked on every second rank (need a gap between generations to insert childhubs on their own rank)
+        var rankCopy = Helpers.filterUnique(ranks);
+        rankCopy.sort(function(a, b) { return a - b; });  // numeric sort
+        rankToAdjustedRank = {};
+        for (var i = 0; i < rankCopy.length; i++) {
+            rankToAdjustedRank[rankCopy[i]] = i*2 + 1;
+        }
+        for (var i = 0; i < ranks.length; i++) {
+            ranks[i] = rankToAdjustedRank[ranks[i]];
+        }
+
+        // given adjusted person ranks, assign ranks to relationships and childhubs
+        for (var relationshipID in relationshipIDToNodeID) {
+            if (relationshipIDToNodeID.hasOwnProperty(relationshipID)) {
+                var nodeID = relationshipIDToNodeID[relationshipID];
+                var parents = newG.getParents(nodeID);                           // at this point guaranteed to be 2 parents by construction
+                ranks[nodeID] = Math.max(ranks[parents[0]], ranks[parents[1]]);  // relationship should be on the same generatrion with "youngest" partner
+
+                var childHubID = newG.getOutEdges(nodeID)[0]; // relationships have only one outedge
+                ranks[childHubID] = ranks[nodeID] + 1;
+
+                // validate that all children produced by this relationship are on the same rank and
+                // the rank is 2 rankes below the relationship (which it should be according to construction and assumptions)
+                var children = newG.getAllChildren(nodeID);
+                for (var i = 0; i < children.length; i++) {
+                    var childRank = ranks[children[i]];
+                    if (childRank != ranks[nodeID] + 2) {
+                        throw "Child generation is not greater than parent generation for relationship " + relationshipID;
+                    }
+                }
+            }
+        }
+
+        return ranks;
+    },
+
+    PedigreeImport._generateOrdersAndPositionsFromLayout = function(inputLayout, initialRanks, newG, memberIDToNodeID, relationshipIDToNodeID)
+    {
+        // Note: if inputLayout is missing some of the required fields the code below may throw when attempting to
+        //       access that data - the calling code will know it needs to discard the layout in that case
+
+        var ranks = initialRanks.slice();
+        var vOrder = [];
+        var positions = [];
+
+        var setOrderAndPosition = function(id, nodeID, data) {
+            vOrder[nodeID] = data[id]["order"];
+            if (!Helpers.isInt(vOrder[nodeID])) {
+                throw "Orders should be integers";
+            }
+            if (vOrder[nodeID] < 0) {
+                throw "Orders should be positive integers starting from 1";
+            }
+            if (positions && data[id].hasOwnProperty("x") && Helpers.isInt(data[id]["x"]) ) {
+                positions[nodeID] = data[id]["x"];
+            } else {
+                positions = null;
+            }
+        }
+
+        var members = inputLayout["members"];
+        for (var memberID in memberIDToNodeID) {
+            if (memberIDToNodeID.hasOwnProperty(memberID)) {
+                var nodeID = memberIDToNodeID[memberID];
+                setOrderAndPosition(memberID, nodeID, members);
+            }
+        }
+
+        var relationships = inputLayout["relationships"];
+        var longedges     = inputLayout["longedges"];
+        for (var relationshipID in relationshipIDToNodeID) {
+            if (relationshipIDToNodeID.hasOwnProperty(relationshipID)) {
+                var relNodeID = relationshipIDToNodeID[relationshipID];
+                setOrderAndPosition(relationshipID, relNodeID, relationships);
+
+                // set order/positions for childhub. It is ok to have gaps in orders for childhubs,
+                // Ordering.createOrdering() will take care of those
+                var childhubID = newG.getOutEdges(relNodeID)[0]; // relationships have only one outedge
+                vOrder[childhubID] = vOrder[relNodeID];
+                positions && (positions[childhubID] = positions[relNodeID]);
+
+                // check if there are multi-generation ("long") edges and try to collect positioning data for them if
+                // long-edge data is available. If there is a long edge and ther eis no data => discard layout
+                var parents = newG.getParents(relNodeID);
+                if (ranks[parents[0]] != ranks[parents[1]]) {
+                    // multi-rank edge detected
+                    var longEdgeParent = (ranks[parents[0]] > ranks[parents[1]]) ? parents[1] : parents[0];
+                    var rankDifference = ranks[relNodeID] - ranks[longEdgeParent];
+
+                    if (!longedges || !longedges.hasOwnProperty(relationshipID)
+                        || !longedges[relationshipID].hasOwnProperty("member")
+                        || longedges[relationshipID].member != longEdgeParent
+                        || !longedges[relationshipID].hasOwnProperty("path")) {
+                        throw "There is a relationship connecting persons of different generations but the provided " +
+                        "layout does not have enough data to draw this connection: discarding layout";
+                    }
+
+                    //-----------------------------------------------------------------------------------
+                    // FIXME: logic below is valid, but need to make sure this assumption does not break
+                    //        if/when new long-edge laying algorithm is implemented:
+                    // There is a difficulty ordering long edges, since they go through childhub ranks,
+                    // but ordering of childhubs is lost in the input format (we only know they are ordered
+                    // in the same order as their relationships). However in the current long edge laying
+                    // algorithm long edge is always going straight verticaly through childhub ranks, so
+                    // since relationship order is used for childhubs, we can use the order from the previous
+                    // segment of long edges to order long egde segments passing through chidhub ranks
+                    //-----------------------------------------------------------------------------------
+
+                    var path = longedges[relationshipID].path;
+                    if (path.length != (rankDifference + 1)) {
+                        throw "The provided long edge path has incorrect length " + path.length + ", expected " + (rankDifference + 1);
+                    }
+
+                    newG.removeEdge(longEdgeParent, relNodeID);
+                    var prevV = longEdgeParent;
+                    for (var p = 0; p < path.length; p++) {
+                        var nextV = newG._addVertex( null, BaseGraph.TYPE.VIRTUALEDGE, {}, {});
+                        newG.addEdge( prevV, nextV );
+                        ranks[nextV] = ranks[longEdgeParent] + p;
+                        positions[nextV] = path[p].x;
+
+                        // now comes the complication: while order of vertices on person+relationship rank is
+                        // known, the order of childhubs is lost and may be different from what is stored;
+                        // thus for those ranks we'll use the same order previou segment used, since this is
+                        // the same logic we use for ordering new chldhubs, thus there should be no conflicts
+                        if (ranks[nextV] % 2 != 0) {
+                            // person/relationship rank
+                            vOrder[nextV] = path[p].order;
+                        } else {
+                            // childhub rank
+                            vOrder[nextV] = path[p - 1].order;
+                        }
+                        prevV = nextV;
+                    }
+                    newG.addEdge(prevV, relNodeID);
+                }
+            }
+        }
+
+        return { "ranks": ranks, "order": Ordering.createOrdering(vOrder, ranks), "positions": positions };
+    },
+
 
     /* ===============================================================================================
      *
@@ -257,7 +538,7 @@ define([
                 useID = 0;
             }
 
-            var pedigreeID = newG._addVertex( useID, BaseGraph.TYPE.PERSON, properties, newG.defaultPersonNodeWidth );
+            var pedigreeID = newG._addVertex( useID, BaseGraph.TYPE.PERSON, properties, {} );
 
             nameToId[pedID] = pedigreeID;
 
@@ -296,9 +577,7 @@ define([
             }
         }
 
-        var defaultEdgeWeight = 1;
-
-        var relationshipTracker = new RelationshipTracker(newG, defaultEdgeWeight);
+        var relationshipTracker = new RelationshipTracker(newG);
 
         // second pass (once all vertex IDs are known): process edges
         for (var i = 0; i < inputLines.length; i++) {
@@ -341,7 +620,7 @@ define([
             // .PED supports specifying only mohter of father. Pedigree editor requires both (for now).
             // So create a virtual parent in case one of the parents is missing
             if (fatherID == 0) {
-               fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, newG.defaultPersonNodeWidth );
+               fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, {} );
             } else {
                 fatherID = nameToId[fatherID];
                 if (typeof fatherID === 'undefined') {
@@ -349,7 +628,7 @@ define([
                 }
             }
             if (motherID == 0) {
-                motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, newG.defaultPersonNodeWidth );
+                motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, {} );
             } else {
                 motherID = nameToId[motherID];
                 if (typeof motherID === 'undefined') {
@@ -363,7 +642,7 @@ define([
             // if there is no relationship, a new one is created together with the chldhub
             var chhubID = relationshipTracker.createOrGetChildhub(motherID, fatherID);
 
-            newG.addEdge( chhubID, id, defaultEdgeWeight );
+            newG.addEdge( chhubID, id );
         }
 
         PedigreeImport.validateBaseGraph(newG);
@@ -556,14 +835,12 @@ define([
               useID = 0;
             }
 
-            var pedigreeID = newG._addVertex( useID, BaseGraph.TYPE.PERSON, properties, newG.defaultPersonNodeWidth );
+            var pedigreeID = newG._addVertex( useID, BaseGraph.TYPE.PERSON, properties, {} );
 
             nameToId[extID] = pedigreeID;
         }
 
-        var defaultEdgeWeight = 1;
-
-        var relationshipTracker = new RelationshipTracker(newG, defaultEdgeWeight);
+        var relationshipTracker = new RelationshipTracker(newG);
 
         // second pass (once all vertex IDs are known): process edges
         for (var i = 0; i < inputLines.length; i++) {
@@ -586,12 +863,12 @@ define([
           // .PED supports specifying only mother or father. Pedigree editor requires both (for now).
           // So create a virtual parent in case one of the parents is missing
           if (fatherID == 0) {
-           fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, newG.defaultPersonNodeWidth );
+           fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, {} );
           } else {
             fatherID = nameToId[fatherID];
           }
           if (motherID == 0) {
-            motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, newG.defaultPersonNodeWidth );
+            motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, {} );
           } else {
             motherID = nameToId[motherID];
           }
@@ -602,7 +879,7 @@ define([
           // if there is no relationship, a new one is created together with the childhub
           var chhubID = relationshipTracker.createOrGetChildhub(motherID, fatherID);
 
-          newG.addEdge( chhubID, id, defaultEdgeWeight );
+          newG.addEdge( chhubID, id );
         }
 
         PedigreeImport.validateBaseGraph(newG);
@@ -716,8 +993,8 @@ define([
     {
        try {
            var inputArray = JSON.parse(inputText);
-       } catch( err) {
-           throw "Unable to import pedigree: input is not a valid JSON string " + err;
+       } catch(err) {
+           throw "Unable to import pedigree: input is not a valid JSON string: " + err.message;
        }
 
        if (typeof inputArray != 'object' || Object.prototype.toString.call(inputArray) !== '[object Array]') {
@@ -757,7 +1034,7 @@ define([
           personSeqNumber++;
        }
 
-       // first pass: add all vertices and assign vertex IDs
+       // first pass: add all persons and assign pedigree node IDs to all persons
        var personSeqNumber = 0;
        for (var i = 0; i < inputArray.length; i++) {
            if (inputArray[i].hasOwnProperty("relationshipId")) {
@@ -775,7 +1052,7 @@ define([
                throw "Unable to import pedigree: a node with no ID or name is found";
            }
 
-           var pedigreeID = newG._addVertex( newPersonIDs[personSeqNumber], BaseGraph.TYPE.PERSON, {}, newG.defaultPersonNodeWidth );
+           var pedigreeID = newG._addVertex( newPersonIDs[personSeqNumber], BaseGraph.TYPE.PERSON, {}, {} );
            personSeqNumber++;
 
            var properties = {};
@@ -868,11 +1145,9 @@ define([
            throw "Unable to import pedigree: [" + reference + "] is not a valid " + refType + " reference (does not correspond to a name or an ID of another person)";
        };
 
-       var defaultEdgeWeight = 1;
+       var relationshipTracker = new RelationshipTracker(newG);
 
-       var relationshipTracker = new RelationshipTracker(newG, defaultEdgeWeight);
-
-       // second pass (once all vertex IDs are known): process parents/children & add edges
+       // second pass (once all person IDs are known): process parents/children & add edges
        for (var i = 0; i < inputArray.length; i++) {
            if (inputArray[i].hasOwnProperty("relationshipId")) {
                continue;
@@ -890,12 +1165,12 @@ define([
 
            // create a virtual parent in case one of the parents is missing
            if (fatherLink == null) {
-               var fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, newG.defaultPersonNodeWidth );
+               var fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, {} );
            } else {
                var fatherID = findReferencedPerson(fatherLink, "father");
            }
            if (motherLink == null) {
-               var motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, newG.defaultPersonNodeWidth );
+               var motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, {} );
            } else {
                var motherID = findReferencedPerson(motherLink, "mother");
            }
@@ -909,7 +1184,7 @@ define([
            // if there is no relationship, a new one is created together with the chldhub
            var chhubID = relationshipTracker.createOrGetChildhub(motherID, fatherID);
 
-           newG.addEdge( chhubID, personID, defaultEdgeWeight );
+           newG.addEdge( chhubID, personID );
        }
 
        // finally, go over relationships specified in the input, and either create those not yet created
@@ -935,8 +1210,8 @@ define([
 
            // if there are no children, create a placeholder child
            if (newG.getOutEdges(chhubID).length == 0) {
-               var placeholderID = newG._addVertex(null, BaseGraph.TYPE.PERSON, {"gender": "U", "placeholder":true}, newG.defaultPersonNodeWidth );
-               newG.addEdge( chhubID, placeholderID, defaultEdgeWeight );
+               var placeholderID = newG._addVertex(null, BaseGraph.TYPE.PERSON, {"gender": "U", "placeholder":true}, {} );
+               newG.addEdge( chhubID, placeholderID );
            }
 
            // set relationship properties
@@ -1131,7 +1406,7 @@ define([
        for (var i = 0; i < gedcom.individuals.length; i++) {
            var nextPerson =  gedcom.individuals[i];
 
-           var pedigreeID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {}, newG.defaultPersonNodeWidth );
+           var pedigreeID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {}, {} );
 
            externalIDToID[nextPerson.id] = pedigreeID;
 
@@ -1284,9 +1559,7 @@ define([
            newG.properties[pedigreeID] = properties;
        }
 
-       var defaultEdgeWeight = 1;
-
-       var relationshipTracker = new RelationshipTracker(newG, defaultEdgeWeight);
+       var relationshipTracker = new RelationshipTracker(newG);
 
        // second pass (once all vertex IDs are known): process families & add edges
        for (var i = 0; i < gedcom.families.length; i++) {
@@ -1297,12 +1570,12 @@ define([
 
            // create a virtual parent in case one of the parents is missing
            if (fatherLink == null) {
-               var fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, newG.defaultPersonNodeWidth );
+               var fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, {} );
            } else {
                var fatherID = externalIDToID[fatherLink];
            }
            if (motherLink == null) {
-               var motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, newG.defaultPersonNodeWidth );
+               var motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, {} );
            } else {
                var motherID = externalIDToID[motherLink];
            }
@@ -1317,7 +1590,7 @@ define([
 
            if (children == null) {
                // create a virtual child
-               var childID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "U", "placeholder": true}, newG.defaultPersonNodeWidth );
+               var childID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "U", "placeholder": true}, {} );
                externalIDToID[childID] = childID;
                children = [{"value": childID}];
                // TODO: add "infertile by choice" property to the relationship
@@ -1332,7 +1605,7 @@ define([
                    throw "Unable to import pedigree: child link does not point to an existing individual: [" + externalID + "]";
                }
 
-               newG.addEdge( chhubID, childID, defaultEdgeWeight );
+               newG.addEdge( chhubID, childID );
            }
        }
 
@@ -1448,6 +1721,7 @@ define([
             "separated":       "broken"
         };
 
+    // works for both SimpleJSON and FullJSON
     PedigreeImport.convertRelationshipProperty = function(externalPropertyName, value) {
         try {
             if (!PedigreeImport.JSONToInternalRelationshipPropertyMapping.hasOwnProperty(externalPropertyName)) {
@@ -1457,9 +1731,19 @@ define([
             var internalPropertyName = PedigreeImport.JSONToInternalRelationshipPropertyMapping[externalPropertyName];
 
             if (externalPropertyName == "consanguinity") {
-                if (value != "Y" && value != "N") {
-                    return null;
+                if (value != "yes" && value != "no" && value != "Y" && value != "N") {
+                    return null;  // equivalent to "auto"
                 }
+                if (value == "yes") {
+                    value = "Y";
+                } else if (value == "no") {
+                    value = "N";
+                }
+            } else if (externalPropertyName == "childless") {
+                if (value == "no") {
+                    return null;  // not childless
+                }
+                // ... other properties are the same in external and internal formats
             }
             return {"propertyName": internalPropertyName, "value": value };
         } catch (err) {
@@ -1467,15 +1751,14 @@ define([
             return null;
         }
     }
+
     //===============================================================================================
 
     /*
      * Helper class which keeps track of relationships already seen in pedigree being imported
      */
-    RelationshipTracker = function (newG, defaultEdgeWeight) {
+    RelationshipTracker = function (newG) {
         this.newG = newG;
-
-        this.defaultEdgeWeight = defaultEdgeWeight;
 
         this.relationships = {};
         this.relChildHubs  = {};
@@ -1496,12 +1779,12 @@ define([
                 if (this.relationships[partnerID1] === undefined) this.relationships[partnerID1] = {};
                 if (this.relationships[partnerID2] === undefined) this.relationships[partnerID2] = {};
 
-                var relID   = this.newG._addVertex( null, BaseGraph.TYPE.RELATIONSHIP, {}, this.newG.defaultNonPersonNodeWidth );
-                var chhubID = this.newG._addVertex( null, BaseGraph.TYPE.CHILDHUB,     {}, this.newG.defaultNonPersonNodeWidth );
+                var relID   = this.newG._addVertex( null, BaseGraph.TYPE.RELATIONSHIP, {}, {} );
+                var chhubID = this.newG._addVertex( null, BaseGraph.TYPE.CHILDHUB,     {}, {} );
 
-                this.newG.addEdge( relID,    chhubID, this.defaultEdgeWeight );
-                this.newG.addEdge( partnerID1, relID,   this.defaultEdgeWeight );
-                this.newG.addEdge( partnerID2, relID,   this.defaultEdgeWeight );
+                this.newG.addEdge( relID,    chhubID );
+                this.newG.addEdge( partnerID1, relID );
+                this.newG.addEdge( partnerID2, relID );
 
                 this.relationships[partnerID1][partnerID2] = relID;
                 this.relationships[partnerID2][partnerID1] = relID;
