@@ -202,6 +202,9 @@ define ([], function(){
 
     // Returns true iff the object has no properties
     Helpers.isObjectEmpty = function(map) {
+        if (!map) {
+            return true;
+        }
         for(var key in map) {
            if (map.hasOwnProperty(key)) {
               return false;
