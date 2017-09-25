@@ -8,17 +8,25 @@ define([
     /*
      * xinit: coordinates of _center_ of every vertex, or null
      */
-    XCoord = function(xinit, graph)
+    XCoord = function(xinit, graph, doNotValidate, _halfWidth)
     {
         // local copies just for convenience & performance
-        this.halfWidth = [];
-        for (var i = 0; i < graph.GG.vWidth.length; i++)
-            this.halfWidth[i] = Math.floor(graph.GG.vWidth[i]/2);
+        if (_halfWidth) {
+            this.halfWidth = _halfWidth;
+        } else {
+            this.halfWidth = [];
+            for (var i = 0; i < graph.GG.vWidth.length; i++)
+                this.halfWidth[i] = Math.floor(graph.GG.vWidth[i]/2);
+        }
 
         this.graph = graph;
 
-        if (xinit)
+        if (xinit) {
             this.xcoord = xinit; // coordinates of _center_ of every vertex
+            if (!doNotValidate) {
+                this.validate();
+            }
+        }
         else
             this.xcoord = this.init_xcoord();
     };
@@ -30,26 +38,32 @@ define([
             return false;
         },
 
-        getSeparation: function (v1, v2) {
+        // returns minimum separation between borders of nodes of type of v1 and nodes of type of v2
+        getSeparationByType: function (v1, v2) {
             if (this.relationshipOrChhub(v1) && this.relationshipOrChhub(v2))
-                return this.graph.horizontalTwinSeparationDist;
+                return this.graph.options.horizontalRelRelSeparationDist;
 
             if (this.relationshipOrChhub(v1) || this.relationshipOrChhub(v2))
-                return this.graph.horizontalRelSeparationDist;
+                return this.graph.options.horizontalRelSeparationDist;
 
             if ((this.graph.GG.type[v1] == BaseGraph.TYPE.VIRTUALEDGE || this.graph.GG.type[v2] == BaseGraph.TYPE.VIRTUALEDGE)) {
                 if (this.graph.GG.hasEdge(v1,v2) || this.graph.GG.hasEdge(v2,v1))
-                    return this.graph.horizontalRelSeparationDist;
-                return this.graph.horizontalTwinSeparationDist;
+                    return this.graph.options.horizontalRelSeparationDist;
+                return this.graph.options.horizontalTwinSeparationDist;
             }
 
             // separation between twins: a bit less than between other people
             if ((this.graph.GG.type[v1] == BaseGraph.TYPE.PERSON || this.graph.GG.type[v2] == BaseGraph.TYPE.PERSON) &&
                 (this.graph.GG.getTwinGroupId(v1) == this.graph.GG.getTwinGroupId(v2)) &&
                 (this.graph.GG.getTwinGroupId(v1) != null) )
-                return this.graph.horizontalTwinSeparationDist;
+                return this.graph.options.horizontalTwinSeparationDist;
 
-            return this.graph.horizontalPersonSeparationDist;
+            return this.graph.options.horizontalPersonSeparationDist;
+        },
+
+        // returns minimum separation between centers of nodes v1 and v2
+        getMinSeparation: function(v1, v2) {
+            return this.halfWidth[v1] + this.getSeparationByType(v1,v2) + this.halfWidth[v2];
         },
 
         init_xcoord: function()
@@ -64,21 +78,34 @@ define([
                 xinit[this.graph.order.order[r][0]] = this.halfWidth[this.graph.order.order[r][0]];
 
                 for (var i = 1; i < this.graph.order.order[r].length; i++) {
-                    var vPrev      = this.graph.order.order[r][i-1];
-                    var v          = this.graph.order.order[r][i];
-                    var separation = this.getSeparation(vPrev,v);
+                    var vPrev = this.graph.order.order[r][i-1];
+                    var v     = this.graph.order.order[r][i];
 
-                    xinit[v] = xinit[vPrev] + this.halfWidth[vPrev] + separation + this.halfWidth[v];
+                    xinit[v] = xinit[vPrev] + this.getMinSeparation(vPrev, v);
                 }
             }
             return xinit;
         },
 
+        validate: function()
+        {
+            for (var r = 0; r < this.graph.order.order.length; r++) {
+                for (var i = 1; i < this.graph.order.order[r].length; i++) {
+                    var vPrev = this.graph.order.order[r][i-1];
+                    var v     = this.graph.order.order[r][i];
+
+                    if (this.xcoord[v] < this.xcoord[vPrev] + this.getMinSeparation(vPrev, v)) {
+                        throw "Incorrect positioning: separation between nodes is too small";
+                    }
+                }
+            }
+        },
+
         getLeftMostNoDisturbPosition: function(v) {
             var leftNeighbour = this.graph.order.getLeftNeighbour(v, this.graph.ranks[v]);
             if ( leftNeighbour !== null) {
-                var leftBoundary = this.getRightEdge(leftNeighbour) + this.getSeparation(v, leftNeighbour) + this.halfWidth[v];
-                //console.log("leftNeighbour: " + leftNeighbour + ", rightEdge: " + this.getRightEdge(leftNeighbour) + ", separation: " + this.getSeparation(v, leftNeighbour));
+                var leftBoundary = this.getRightEdge(leftNeighbour) + this.getSeparationByType(v, leftNeighbour) + this.halfWidth[v];
+                //console.log("leftNeighbour: " + leftNeighbour + ", rightEdge: " + this.getRightEdge(leftNeighbour) + ", separation: " + this.getSeparationByType(v, leftNeighbour));
                 return leftBoundary;
             }
             return -Infinity;
@@ -91,7 +118,7 @@ define([
         getRightMostNoDisturbPosition: function(v, alsoMoveRelationship) {
             var rightNeighbour = this.graph.order.getRightNeighbour(v, this.graph.ranks[v]);
             if ( rightNeighbour !== null ) {
-                var rightBoundary = this.getLeftEdge(rightNeighbour) - this.getSeparation(v, rightNeighbour) - this.halfWidth[v];
+                var rightBoundary = this.getLeftEdge(rightNeighbour) - this.getSeparationByType(v, rightNeighbour) - this.halfWidth[v];
 
                 if (alsoMoveRelationship && this.graph.GG.type[rightNeighbour] == BaseGraph.TYPE.RELATIONSHIP) {
                     var rightMost = this.getRightMostNoDisturbPosition(rightNeighbour);
@@ -152,12 +179,12 @@ define([
 
             for (var i = order + 1; i < this.graph.order.order[rank].length; i++) {
                 var rightNeighbour = this.graph.order.order[rank][i];
-                if (this.getLeftEdge(rightNeighbour) >= rightEdge + this.getSeparation(v, rightNeighbour)) {
+                if (this.getLeftEdge(rightNeighbour) >= rightEdge + this.getSeparationByType(v, rightNeighbour)) {
                     // we are not interfering with the vertex to the right
                     break;
 
                 }
-                this.xcoord[rightNeighbour] = rightEdge + this.getSeparation(v, rightNeighbour) + this.halfWidth[rightNeighbour];
+                this.xcoord[rightNeighbour] = rightEdge + this.getSeparationByType(v, rightNeighbour) + this.halfWidth[rightNeighbour];
 
                 rightEdge = this.getRightEdge(rightNeighbour);
                 v         = rightNeighbour;
@@ -199,7 +226,7 @@ define([
 
         copy: function () {
             // returns an instance with deep copy of this.xcoord
-            var newX = new XCoord(this.xcoord.slice(0), this.graph, this.halfWidth);
+            var newX = new XCoord(this.xcoord.slice(0), this.graph, true, this.halfWidth);
 
             return newX;
         },
