@@ -84,8 +84,10 @@ define([
             if (disorderName != disorderID && match) {
                 // must be  astandard term
                 disorderID = "MIM:" + match[1];
+                outputDisorders.push( {"id": disorderID, "label": disorderName} );
+            } else {
+                outputDisorders.push( {"label": disorderName} );
             }
-            outputDisorders.push( {"id": disorderID, "label": disorderName} );
         }
         initialPatientJSON["disorders"] = outputDisorders;
 
@@ -217,7 +219,7 @@ define([
         if (patientJSON.hasOwnProperty("disorders")) {
             // e.g.: "disorders":[{"id":"MIM:120970","label":"#120970 CONE-ROD DYSTROPHY 2; CORD2 ;;CONE-ROD DYSTROPHY; CORD;; CONE-ROD RETINAL DYSTROPHY; CRD; CRD2;; RETINAL CONE-ROD DYSTROPHY; RCRD2"},{"id":"MIM:190685","label":"#190685 DOWN SYNDROME TRISOMY 21, INCLUDED;; DOWN SYNDROME CHROMOSOME REGION, INCLUDED; DCR, INCLUDED;; DOWN SYNDROME CRITICAL REGION, INCLUDED; DSCR, INCLUDED;; TRANSIENT MYELOPROLIFERATIVE DISORDER OF DOWN SYNDROME, INCLUDED;; LEUKEMIA, MEGAKARYOBLASTIC, OF DOWN SYNDROME, INCLUDED"}]
             for (var i = 0; i < patientJSON.disorders.length; i++) {
-                var disorderID = patientJSON.disorders[i].id;
+                var disorderID = patientJSON.disorders[i].id || patientObject.disorders[i].label;
                 var match = disorderID.match(/^MIM:(\d+)$/);
                 match && (disorderID = match[1]);
                 disorders.push(disorderID);
