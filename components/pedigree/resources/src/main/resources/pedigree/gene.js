@@ -62,18 +62,18 @@ define([
             var oldSymbol = this._symbol;
             var needUpdate = false;
             try {
-                var parsed = JSON.parse(response);
+                var gene = response.responseJSON;
 
-                if (parsed && parsed.hasOwnProperty("id") && parsed.hasOwnProperty("symbol")) {
-                    console.log("LOADED GENE INFO: id = " + parsed.id + ", name = " + parsed.symbol);
+                if (gene && gene.hasOwnProperty("id") && gene.hasOwnProperty("symbol")) {
+                    console.log("LOADED GENE INFO: id = " + gene.id + ", name = " + gene.symbol);
 
                     // may have to change ID, if old ID was actually a symbol which has an EnsembleID
-                    if (parsed.id.toUpperCase() == this._geneID.toUpperCase()) {
-                        if (this._symbol != parsed.symbol) {
+                    if (gene.id.toUpperCase() == this._geneID.toUpperCase()) {
+                        if (this._symbol != gene.symbol) {
                             console.log("LOADED GENE INFO: loaded symbol for ID (new)");
                         }
                         needUpdate = true;
-                    } else if (parsed.symbol.toUpperCase() == this._geneID.toUpperCase()) {
+                    } else if (gene.symbol.toUpperCase() == this._geneID.toUpperCase()) {
                         console.log("LOADED GENE INFO: got ID for symbol");
                         needUpdate = true;
                     } else {
@@ -81,8 +81,8 @@ define([
                     }
                     if (needUpdate) {
                         // update even if it matched - in case of upper/lower case differences
-                        this._geneID = parsed.id;
-                        this._symbol = parsed.symbol;
+                        this._geneID = gene.id;
+                        this._symbol = gene.symbol;
                         if (oldID != this._geneID || oldSymbol != this._symbol) {
                             document.fire('gene:loaded', {'oldid' : oldID, 'newid': this._geneID, 'symbol': this._symbol});
                         }
