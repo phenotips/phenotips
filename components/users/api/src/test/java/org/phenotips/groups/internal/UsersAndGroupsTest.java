@@ -135,7 +135,7 @@ public class UsersAndGroupsTest
         usersList.add(userFullName);
 
         JSONObject resultItem = new JSONObject();
-        resultItem.put("id", userFullName + ";user");
+        resultItem.put("id", userFullName);
         resultItem.put("value", userName);
         resultsArray.put(resultItem);
 
@@ -191,7 +191,7 @@ public class UsersAndGroupsTest
         when(gm.getGroup(groupFullName)).thenReturn(g);
 
         JSONObject resultItem = new JSONObject();
-        resultItem.put("id", groupFullName + ";group");
+        resultItem.put("id", groupFullName);
         resultItem.put("value", groupName);
         resultsArray.put(resultItem);
 
@@ -214,7 +214,7 @@ public class UsersAndGroupsTest
         List<String> usersList = new LinkedList<String>();
         usersList.add(userFullName);
         JSONObject resultItem = new JSONObject();
-        resultItem.put("id", userFullName + ";user");
+        resultItem.put("id", userFullName);
         resultItem.put("value", userName);
         resultsArray.put(resultItem);
 
@@ -255,7 +255,7 @@ public class UsersAndGroupsTest
         when(gm.getGroup(groupFullName)).thenReturn(g);
 
         JSONObject resultGroupItem = new JSONObject();
-        resultGroupItem.put("id", groupFullName + ";group");
+        resultGroupItem.put("id", groupFullName);
         resultGroupItem.put("value", groupName);
         resultsArray.put(resultGroupItem);
 

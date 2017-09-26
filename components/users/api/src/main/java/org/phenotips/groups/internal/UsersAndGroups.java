@@ -117,7 +117,7 @@ public class UsersAndGroups implements Initializable
         UsersAndGroups.usersQueryString = usersQuerySb.toString();
 
         StringBuilder groupsQuerySb = new StringBuilder();
-        groupsQuerySb.append("from doc.object(PhenoTips.PhenoTipsGroupClass) as group");
+        groupsQuerySb.append("from doc.object(PhenoTips.PhenoTipsGroupClass) as groups");
         groupsQuerySb.append(" where lower(doc.name) like :").append(UsersAndGroups.INPUT_PARAMETER);
         groupsQuerySb.append(" and doc.fullName <> 'PhenoTips.PhenoTipsGroupTemplate'");
         groupsQuerySb.append(" order by doc.name");
@@ -128,8 +128,8 @@ public class UsersAndGroups implements Initializable
         UsersAndGroups.allUsersQueryString = allUsersQuerySb.toString();
 
         StringBuilder allGroupsQuerySb = new StringBuilder();
-        allGroupsQuerySb.append("from doc.object(PhenoTips.PhenoTipsGroupClass) as group");
-        allGroupsQuerySb.append(" and doc.fullName <> 'PhenoTips.PhenoTipsGroupTemplate'");
+        allGroupsQuerySb.append("from doc.object(PhenoTips.PhenoTipsGroupClass) as groups");
+        allGroupsQuerySb.append(" where doc.fullName <> 'PhenoTips.PhenoTipsGroupTemplate'");
         allGroupsQuerySb.append(" order by doc.name");
         UsersAndGroups.allGroupsQueryString = allGroupsQuerySb.toString();
     }
@@ -297,7 +297,7 @@ public class UsersAndGroups implements Initializable
         JSONObject o = new JSONObject();
 
         StringBuilder idWithType = new StringBuilder();
-        idWithType.append(id).append(";").append(type);
+        idWithType.append(id);
         o.put(UsersAndGroups.ID_KEY, idWithType.toString());
         o.put(UsersAndGroups.VALUE_KEY, value);
         o.put(UsersAndGroups.ICON_KEY, avatar);

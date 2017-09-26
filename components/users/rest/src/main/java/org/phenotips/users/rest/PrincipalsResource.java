@@ -42,7 +42,7 @@ import javax.ws.rs.core.Response;
 public interface PrincipalsResource
 {
     /**
-     * Entry resource for the principals RESTful API, provides a list of available principals (users of groups).
+     * Entry resource for the principals RESTful API, provides a list of available principals (users or groups).
      *
      * @return a json object containing all results found
      */
