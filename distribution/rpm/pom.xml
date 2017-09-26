@@ -279,7 +279,7 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
               <sources>
                 <source>
                   <location>${project.build.outputDirectory}/context.xml</location>
-                  <destination>phenotips.xml</destination>
+                  <destination>ROOT.xml</destination>
                 </source>
                 <source>
                   <location>${project.build.outputDirectory}/ctakes.xml</location>
