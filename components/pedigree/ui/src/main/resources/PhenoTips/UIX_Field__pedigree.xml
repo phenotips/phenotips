@@ -124,7 +124,13 @@
 {{velocity}}
 #if ($xcontext.action != 'export')
   #set ($family = $services.families.getFamilyForPatient($doc.name))
-  #pedigreeThumbnail($family, $doc.name)
+  #set ($familyRef = "$!doc.getObject('PhenoTips.FamilyReferenceClass').getValue('reference')")
+  #if ("$!family" == '' &amp;&amp; $familyRef != '' &amp;&amp; !$xwiki.getDocument($familyRef).isNew())
+    {{warning}}{{translation key="phenotips.patientRecord.pedigree.inaccessibleWarning" /}}{{/warning}}
+
+  #else
+    #pedigreeThumbnail($family, $doc.name)
+  #end
 #end
 {{/velocity}}</content>
     </property>
