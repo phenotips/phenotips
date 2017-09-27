@@ -21,11 +21,12 @@ import org.phenotips.entities.PrimaryEntity;
 import org.phenotips.entities.PrimaryEntityManager;
 import org.phenotips.entities.PrimaryEntityResolver;
 
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
+import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -116,46 +117,19 @@ public class DefaultPrimaryEntityResolverTest
         when(this.familyResolver.get(FAMILY_1_ID)).thenReturn(this.family1);
         when(this.patientResolver.get(PATIENT_1_ID)).thenReturn(this.patient1);
 
-        this.mocker.registerComponent(PrimaryEntityManager.class, "Family", this.familyResolver);
-        this.mocker.registerComponent(PrimaryEntityManager.class, "Patient", this.patientResolver);
-
         this.referenceResolver = this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
 
         this.component = this.mocker.getComponentUnderTest();
+
+        final ComponentManager componentManager = this.mocker.getInstance(ComponentManager.class, "context");
+        when(componentManager.getInstanceList(PrimaryEntityManager.class))
+            .thenReturn(Arrays.asList(this.familyResolver, this.patientResolver));
 
         when(this.referenceResolver.resolve(PATIENT_2_ID)).thenReturn(P002);
         when(this.referenceResolver.resolve(PATIENT_1_ID)).thenReturn(P001);
         when(this.referenceResolver.resolve(FAMILY_1_ID)).thenReturn(FAM001);
         when(this.referenceResolver.resolve(NUMERIC_ID)).thenReturn(NO_NAME);
         when(this.referenceResolver.resolve(NONEXISTENT_ID)).thenReturn(ABC123123);
-    }
-
-    @Test(expected = InitializationException.class)
-    public void initializeThrowsExceptionIfSomePrimaryEntityManagerHasNullIdPrefix() throws Exception
-    {
-        when(this.familyResolver.getIdPrefix()).thenReturn(null);
-        ((Initializable) this.component).initialize();
-    }
-
-    @Test(expected = InitializationException.class)
-    public void initializeThrowsExceptionIfSomePrimaryEntityManagerHasEmptyIdPrefix() throws Exception
-    {
-        when(this.familyResolver.getIdPrefix()).thenReturn(StringUtils.EMPTY);
-        ((Initializable) this.component).initialize();
-    }
-
-    @Test(expected = InitializationException.class)
-    public void initializeThrowsExceptionIfSomePrimaryEntityManagerHasBlankIdPrefix() throws Exception
-    {
-        when(this.familyResolver.getIdPrefix()).thenReturn(StringUtils.SPACE);
-        ((Initializable) this.component).initialize();
-    }
-
-    @Test(expected = InitializationException.class)
-    public void initializeThrowsExceptionIfPrimaryEntityManagersHaveDuplicatePrefix() throws Exception
-    {
-        when(this.familyResolver.getIdPrefix()).thenReturn(PATIENT_ID_PREFIX);
-        ((Initializable) this.component).initialize();
     }
 
     @Test
@@ -187,11 +161,17 @@ public class DefaultPrimaryEntityResolverTest
     public void resolveEntityReturnsNullWhenEntityIdHasInvalidFormat()
     {
         Assert.assertNull(this.component.resolveEntity(INVALID_ID));
+        verify(this.familyResolver, never()).get(anyString());
+        verify(this.patientResolver, never()).get(anyString());
         Assert.assertNull(this.component.resolveEntity(NUMERIC_ID));
         verify(this.familyResolver, never()).get(anyString());
         verify(this.patientResolver, never()).get(anyString());
         Assert.assertNull(this.component.resolveEntity(PATIENT_ID_PREFIX));
+        verify(this.familyResolver, never()).get(anyString());
+        verify(this.patientResolver, never()).get(anyString());
         Assert.assertNull(this.component.resolveEntity(FAMILY_ID_PREFIX));
+        verify(this.familyResolver, never()).get(anyString());
+        verify(this.patientResolver, never()).get(anyString());
     }
 
     @Test
@@ -206,7 +186,7 @@ public class DefaultPrimaryEntityResolverTest
     public void resolveEntityReturnsNullWhenRepositoryDoesNotHaveEntity()
     {
         Assert.assertNull(this.component.resolveEntity(PATIENT_2_ID));
-        verify(this.familyResolver, never()).get(anyString());
+        verify(this.familyResolver, times(1)).get(anyString());
         verify(this.patientResolver, times(1)).get(PATIENT_2_ID);
     }
 

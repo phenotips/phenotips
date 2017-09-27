@@ -22,21 +22,24 @@ import org.phenotips.entities.PrimaryEntityManager;
 import org.phenotips.entities.PrimaryEntityResolver;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 /**
  * Default implementation of the {@link PrimaryEntityResolver} component, which uses all the
@@ -47,34 +50,18 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Component
 @Singleton
-public class DefaultPrimaryEntityResolver implements PrimaryEntityResolver, Initializable
+public class DefaultPrimaryEntityResolver implements PrimaryEntityResolver
 {
-    /** The currently available primary entity managers. */
-    @Inject
-    private Map<String, PrimaryEntityManager> repositories;
-
     @Inject
     @Named("current")
     private DocumentReferenceResolver<String> referenceParser;
 
-    /** Currently available primary entity managers, mapped by their entity ID prefix. */
-    private Map<String, PrimaryEntityManager> repositoriesByPrefix;
+    @Inject
+    @Named("context")
+    private Provider<ComponentManager> cmProvider;
 
-    /** Currently available primary entity managers, mapped by their type. */
-    private Map<String, PrimaryEntityManager> repositoriesByType;
-
-    @Override
-    public void initialize() throws InitializationException
-    {
-        try {
-            this.repositoriesByPrefix = new HashMap<>();
-            this.repositoriesByType = new HashMap<>();
-
-            this.repositories.values().forEach(this::addToMaps);
-        } catch (final RuntimeException ex) {
-            throw new InitializationException(ex.getMessage());
-        }
-    }
+    @Inject
+    private Logger logger;
 
     @Nullable
     @Override
@@ -91,79 +78,90 @@ public class DefaultPrimaryEntityResolver implements PrimaryEntityResolver, Init
         // Entity name cannot be null or empty.
         // Try to get the prefix; don't bother searching if it's blank.
         final String prefix = entityDoc.getName().replaceAll("^(\\D+)\\d+$", "$1");
-        if (StringUtils.isBlank(prefix)) {
+        if (StringUtils.isBlank(prefix) || prefix.equals(entityId)) {
             return null;
         }
-        // Get the repository by prefix.
-        final PrimaryEntityManager repository = this.repositoriesByPrefix.get(prefix);
-        // Try to get the entity.
-        return repository == null ? null : repository.get(entityId);
+
+        final List<PrimaryEntityManager> managers = getAvailableManagers();
+        return managers.isEmpty() ? null : performSearch(managers, prefix, entityId);
     }
 
     @Nullable
     @Override
     public PrimaryEntityManager getEntityManager(@Nullable final String managerType)
     {
-        return StringUtils.isNotBlank(managerType) ? this.repositoriesByType.get(managerType) : null;
+        return StringUtils.isNotBlank(managerType)
+            ? getAvailableManagers().stream()
+                .filter(manager -> managerType.equals(manager.getType()))
+                .findFirst()
+                .orElse(null)
+            : null;
     }
 
     @Override
     public boolean hasEntityManager(@Nullable final String managerType)
     {
-        return StringUtils.isNotBlank(managerType) && this.repositoriesByType.containsKey(managerType);
+        return getEntityManager(managerType) != null;
     }
 
     /**
-     * Tries to get the id prefix from the provided primary entity {@code manager}. Throws an exception if the prefix
-     * is blank.
+     * Tries to resolve the {@code entityId} to a {@link PrimaryEntity}.
      *
-     * @param manager the {@link PrimaryEntityManager} from which the id prefix will be retrieved; must not be null
-     * @return the id prefix for the specified {@code manager}
+     * @param managers a list of {@link PrimaryEntityManager}s to search for {@code entityId}
+     * @param prefix the {@code entityId} prefix, as retrieved from {@code entityId}
+     * @param entityId the identifier for the {@link PrimaryEntity} of interest
+     * @return the {@link PrimaryEntity} corresponding with the {@code entityId}, {@code null} if nothing found
      */
-    private String getIdPrefix(@Nonnull final PrimaryEntityManager manager)
+    @Nullable
+    private PrimaryEntity performSearch(
+        @Nonnull final List<PrimaryEntityManager> managers,
+        @Nonnull final String prefix,
+        @Nonnull final String entityId)
     {
-        final String prefix = manager.getIdPrefix();
-        if (StringUtils.isBlank(prefix)) {
-            throw new RuntimeException("No prefix specified for PrimaryEntityManager");
-        }
-        return prefix;
+        return managers.stream()
+            .filter(manager -> prefix.equals(manager.getIdPrefix()))
+            .map(manager -> manager.get(entityId))
+            .filter(Objects::nonNull)
+            .findFirst().orElseGet(
+                () -> this.performSecondarySearch(managers, prefix, entityId)
+            );
     }
 
     /**
-     * Tries to get the manager type from the provided primary entity {@code manager}. Throws an exception if the type
-     * is blank.
+     * Try to search all {@code managers} that do not match {@code prefix} for {@code entityId}. Should only be
+     * performed if search by prefix fails.
      *
-     * @param manager the {@link PrimaryEntityManager} from which the manager type will be retrieved; must not be null
-     * @return the manager type for the specified {@code manager}
+     * @param managers a list of {@link PrimaryEntityManager}
+     * @param entityId the identifier of {@link PrimaryEntity} of interest, as string
+     * @return the {@link PrimaryEntity} corresponding with the {@code entityId}, {@code null} if nothing found
      */
-    private String getManagerType(@Nonnull final PrimaryEntityManager manager)
+    @Nullable
+    private PrimaryEntity performSecondarySearch(
+        @Nonnull final List<PrimaryEntityManager> managers,
+        @Nonnull final String prefix,
+        @Nonnull final String entityId)
     {
-        final String type = manager.getType();
-        if (StringUtils.isBlank(type)) {
-            throw new RuntimeException("No type specified for PrimaryEntityManager");
-        }
-        return type;
+        return managers.stream()
+            .filter(manager -> !prefix.equals(manager.getIdPrefix()))
+            .map(manager -> manager.get(entityId))
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse(null);
     }
 
     /**
-     * Adds the manager to internal maps.
+     * Gets all the available {@link PrimaryEntityManager}s.
      *
-     * @param manager the {@link PrimaryEntityManager}
+     * @return all available {@link PrimaryEntityManager}s
      */
-    private void addToMaps(@Nonnull final PrimaryEntityManager manager)
+    @Nonnull
+    private List<PrimaryEntityManager> getAvailableManagers()
     {
-        final String idPrefix = this.getIdPrefix(manager);
-        if (this.repositoriesByPrefix.containsKey(idPrefix)) {
-            throw new RuntimeException("PrimaryEntityManager objects must not have the same ID prefix. Duplicate "
-                + "prefix detected: " + idPrefix);
+        try {
+            return this.cmProvider.get().getInstanceList(PrimaryEntityManager.class);
+        } catch (ComponentLookupException e) {
+            this.logger.debug("Unable to retrieve primary entity managers: [{}].", e.getMessage());
+            return Collections.emptyList();
         }
-        this.repositoriesByPrefix.put(idPrefix, manager);
-
-        final String managerType = this.getManagerType(manager);
-        if (this.repositoriesByType.containsKey(managerType)) {
-            throw new RuntimeException("PrimaryEntityManager objects must not have the same type. Duplicate type "
-                + "detected: " + managerType);
-        }
-        this.repositoriesByType.put(managerType, manager);
     }
 }
