@@ -22,6 +22,8 @@ import org.phenotips.data.permissions.Collaborator;
 
 import org.xwiki.model.reference.EntityReference;
 
+import java.util.Objects;
+
 /**
  * @version $Id$
  */
@@ -82,17 +84,21 @@ public class DefaultCollaborator implements Collaborator
     @Override
     public boolean equals(Object other)
     {
-        if (!(other instanceof Collaborator)) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        Collaborator otherCollaborator = (Collaborator) other;
-        return this.user.equals(otherCollaborator.getUser()) && this.access.equals(otherCollaborator.getAccessLevel());
+        final Collaborator otherCollaborator = (Collaborator) other;
+        return Objects.equals(this.user, otherCollaborator.getUser())
+            && Objects.equals(this.access, otherCollaborator.getAccessLevel());
     }
 
     @Override
     public int hashCode()
     {
-        return this.user.hashCode() + this.access.hashCode();
+        return Objects.hash(this.user, this.access);
     }
 
     @Override
