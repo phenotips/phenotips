@@ -268,6 +268,14 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
         return newDoc;
     }
 
+    @Override
+    public String getIdPrefix()
+    {
+        String name = getEntityXClassReference().getName();
+        name = StringUtils.removeEnd(name, "Class");
+        return name.replaceAll("\\p{Lower}++", "");
+    }
+
     protected long getLastUsedId()
     {
         long crtMaxID = 0;

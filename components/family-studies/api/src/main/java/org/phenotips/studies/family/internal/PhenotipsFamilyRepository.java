@@ -95,7 +95,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
     @Override
     public Family createFamily(User creator)
     {
-        return create(creator.getProfileDocument());
+        return create(creator != null ? creator.getProfileDocument() : null);
     }
 
     @Override
