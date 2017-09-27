@@ -205,7 +205,7 @@ public class PhenotipsFamilyExport
 
         // Process family query results
         for (String queryResult : queryResults) {
-            Family family = this.familyRepository.getFamilyById(queryResult);
+            Family family = this.familyRepository.get(queryResult);
             if (family == null) {
                 continue;
             }

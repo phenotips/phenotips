@@ -84,7 +84,7 @@ public class DenyAccessByDefaultAuthorizationModuleTest
         MockitoAnnotations.initMocks(this);
 
         this.repo = this.mocker.getInstance(FamilyRepository.class);
-        when(this.repo.getFamilyById("xwiki:Families.FAM01")).thenReturn(this.family);
+        when(this.repo.get("xwiki:Families.FAM01")).thenReturn(this.family);
         when(this.family.getDocumentReference()).thenReturn(this.doc);
         when(this.family.getMembers()).thenReturn(Arrays.asList(this.patient1, this.patient2));
         when(this.access1.getGrantedRight()).thenReturn(ManageRight.MANAGE);
@@ -134,7 +134,7 @@ public class DenyAccessByDefaultAuthorizationModuleTest
     @Test
     public void noActionWithNonFamily() throws ComponentLookupException
     {
-        when(this.repo.getFamilyById("xwiki:Families.FAM01")).thenReturn(null);
+        when(this.repo.get("xwiki:Families.FAM01")).thenReturn(null);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.VIEW, this.doc));
     }
 

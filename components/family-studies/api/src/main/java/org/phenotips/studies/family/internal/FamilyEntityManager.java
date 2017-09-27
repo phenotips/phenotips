@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data.internal;
+package org.phenotips.studies.family.internal;
 
-import org.phenotips.data.Patient;
 import org.phenotips.entities.internal.AbstractPrimaryEntityManager;
+import org.phenotips.studies.family.Family;
 
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -27,43 +27,43 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Implementation of patient data access service using XWiki as the storage backend, where patients in documents having
- * an object of type {@code PhenoTips.PatientClass}.
+ * Implementation of family data access service using XWiki as the storage backend, where families in documents having
+ * an object of type {@code PhenoTips.FamilyClass}.
  *
  * @version $Id$
- * @since 1.0M8
+ * @since 1.4
  */
-@Named("Patient")
+@Named("Family")
 @Singleton
-public class PatientEntityManager extends AbstractPrimaryEntityManager<Patient>
+public class FamilyEntityManager extends AbstractPrimaryEntityManager<Family>
 {
     @Override
     public EntityReference getDataSpace()
     {
-        return Patient.DEFAULT_DATA_SPACE;
+        return Family.DATA_SPACE;
     }
 
     @Override
-    protected Class<? extends Patient> getEntityClass()
+    protected Class<? extends Family> getEntityClass()
     {
-        return PhenoTipsPatient.class;
+        return PhenotipsFamily.class;
     }
 
     @Override
     protected DocumentReference getEntityXClassReference()
     {
-        return this.referenceResolver.resolve(Patient.CLASS_REFERENCE);
+        return this.referenceResolver.resolve(Family.CLASS_REFERENCE);
     }
 
     @Override
     public String getIdPrefix()
     {
-        return "P";
+        return "FAM";
     }
 
     @Override
     public String getType()
     {
-        return "patients";
+        return "families";
     }
 }

@@ -17,7 +17,6 @@
  */
 package org.phenotips.studies.family.internal;
 
-import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.Owner;
@@ -37,27 +36,23 @@ import org.phenotips.studies.family.exceptions.PTPatientNotInFamilyException;
 import org.phenotips.studies.family.exceptions.PTPedigreeContainesSamePatientMultipleTimesException;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
-import org.xwiki.query.QueryManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -73,20 +68,13 @@ import com.xpn.xwiki.objects.BaseObject;
  */
 @Component(roles = FamilyRepository.class)
 @Singleton
-public class PhenotipsFamilyRepository implements FamilyRepository
+public class PhenotipsFamilyRepository extends FamilyEntityManager implements FamilyRepository
 {
-    private static final String PREFIX = "FAM";
-
-    private static final EntityReference FAMILY_TEMPLATE =
-        new EntityReference("FamilyTemplate", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
     private static final String FAMILY_REFERENCE_FIELD = "reference";
 
-    @Inject
-    private Logger logger;
+    private static final String OWNER = "owner";
 
-    @Inject
-    private Provider<XWikiContext> provider;
+    private static final String IDENTIFIER = "identifier";
 
     @Inject
     private PatientRepository patientRepository;
@@ -97,41 +85,62 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     @Inject
     private PedigreeProcessor pedigreeConverter;
 
-    /** Runs queries for finding families. */
+    /** Used for obtaining the current user. */
     @Inject
-    private QueryManager qm;
+    private UserManager userManager;
 
     @Inject
-    @Named("current")
-    private DocumentReferenceResolver<String> referenceResolver;
-
-    /** Fills in missing reference fields with those from the current context document to create a full reference. */
-    @Inject
-    @Named("current")
-    private DocumentReferenceResolver<EntityReference> entityReferenceResolver;
+    private EntityReferenceSerializer<String> entitySerializer;
 
     @Override
     public Family createFamily(User creator)
     {
-        XWikiDocument newFamilyDocument = null;
+        return create(creator != null ? creator.getProfileDocument() : null);
+    }
+
+    @Override
+    public synchronized Family create(final DocumentReference creator)
+    {
         try {
-            newFamilyDocument = this.createFamilyDocument(creator);
-        } catch (Exception e) {
-            this.logger.error("Could not create a new family document: {}", e.getMessage());
-        }
-        if (newFamilyDocument == null) {
-            this.logger.debug("Could not create a family document");
+            final XWikiContext context = this.xcontextProvider.get();
+            final Family family = super.create(creator);
+            final XWikiDocument doc = family.getXDocument();
+
+            // Adding owner reference to family
+            doc.newXObject(Owner.CLASS_REFERENCE, context).set(OWNER,
+                creator == null ? StringUtils.EMPTY : this.entitySerializer.serialize(creator), context);
+            // Adding identifier to family
+            doc.getXObject(Family.CLASS_REFERENCE).setLongValue(IDENTIFIER,
+                Integer.parseInt(family.getId().replaceAll("\\D++", StringUtils.EMPTY)));
+            context.getWiki().saveDocument(doc, context);
+            return family;
+        } catch (Exception ex) {
+            this.logger.warn("Failed to create family: {}", ex.getMessage(), ex);
             return null;
         }
-        return new PhenotipsFamily(newFamilyDocument);
     }
 
     @Override
     public synchronized boolean deleteFamily(Family family, User updatingUser, boolean deleteAllMembers)
     {
-        if (!canDeleteFamily(family, updatingUser, deleteAllMembers, false)) {
+        return delete(family, deleteAllMembers);
+    }
+
+    @Override
+    public synchronized boolean delete(final Family family)
+    {
+        return delete(family, false);
+    }
+
+    @Override
+    public synchronized boolean delete(final Family family, boolean deleteAllMembers)
+    {
+        // TODO: Should there be a SecureFamilyRepository to perform these checks (similar to SecurePatientRepository)?
+        final User currentUser = this.userManager.getCurrentUser();
+        if (!canDeleteFamily(family, currentUser, deleteAllMembers, false)) {
             return false;
         }
+
         if (deleteAllMembers) {
             for (Patient patient : family.getMembers()) {
                 if (!this.patientRepository.delete(patient)) {
@@ -140,19 +149,11 @@ public class PhenotipsFamilyRepository implements FamilyRepository
                     return false;
                 }
             }
-        } else if (!this.forceRemoveAllMembers(family, updatingUser)) {
+        } else if (!this.forceRemoveAllMembers(family, currentUser)) {
             return false;
         }
 
-        try {
-            XWikiContext context = this.provider.get();
-            XWiki xwiki = context.getWiki();
-            xwiki.deleteDocument(xwiki.getDocument(family.getXDocument(), context), context);
-        } catch (XWikiException ex) {
-            this.logger.error("Failed to delete family document [{}]: {}", family.getId(), ex.getMessage());
-            return false;
-        }
-        return true;
+        return super.delete(family);
     }
 
     @Override
@@ -177,23 +178,9 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     @Override
     public Family getFamilyById(String id)
     {
-        if (StringUtils.isEmpty(id)) {
-            return null;
-        }
-        DocumentReference reference = this.referenceResolver.resolve(id, Family.DATA_SPACE);
-        XWikiContext context = this.provider.get();
-        try {
-            XWikiDocument familyDocument = context.getWiki().getDocument(reference, context);
-            if (familyDocument.getXObject(Family.CLASS_REFERENCE) != null) {
-                return new PhenotipsFamily(familyDocument);
-            }
-        } catch (XWikiException ex) {
-            this.logger.error("Failed to load document for family [{}]: {}", id, ex.getMessage(), ex);
-        }
-        return null;
+        return get(id);
     }
 
-    @Override
     /**
      * Returns a Family object for patient. If there's an XWiki family document but no PhenotipsFamily object associated
      * with it in the cache, a new PhenotipsFamily object will be created.
@@ -201,6 +188,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
      * @param patient for which to look for a family
      * @return Family if there's an XWiki family document, otherwise null
      */
+    @Override
     public Family getFamilyForPatient(Patient patient)
     {
         if (patient == null) {
@@ -252,7 +240,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
         }
 
         String patientId = patient.getId();
-        XWikiContext context = this.provider.get();
+        XWikiContext context = this.xcontextProvider.get();
         XWikiDocument patientDocument = patient.getXDocument();
         if (patientDocument == null) {
             throw new PTInvalidPatientIdException(patientId);
@@ -307,7 +295,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
         }
 
         String patientId = patient.getId();
-        XWikiContext context = this.provider.get();
+        XWikiContext context = this.xcontextProvider.get();
         XWikiDocument patientDocument = patient.getXDocument();
         if (patientDocument == null) {
             throw new PTInvalidPatientIdException(patientId);
@@ -462,7 +450,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
 
         this.checkValidity(family, patientsToAdd, updatingUser);
 
-        XWikiContext context = this.provider.get();
+        XWikiContext context = this.xcontextProvider.get();
         context.setUserReference(updatingUser == null ? null : updatingUser.getProfileDocument());
 
         // update patient data from pedigree's JSON
@@ -635,50 +623,9 @@ public class PhenotipsFamilyRepository implements FamilyRepository
             return null;
         }
 
-        DocumentReference familyReference = this.referenceResolver.resolve(familyDocName, Family.DATA_SPACE);
+        DocumentReference familyReference = this.stringResolver.resolve(familyDocName, Family.DATA_SPACE);
 
         return familyReference;
-    }
-
-    /*
-     * Creates a new document for the family. Only handles XWiki side and no PhenotipsFamily is created.
-     */
-    private synchronized XWikiDocument createFamilyDocument(User creator)
-        throws IllegalArgumentException, QueryException, XWikiException
-    {
-        XWikiContext context = this.provider.get();
-        XWiki wiki = context.getWiki();
-        long nextId = getLastUsedId();
-
-        DocumentReference newFamilyRef;
-        do {
-            newFamilyRef = this.entityReferenceResolver.resolve(new EntityReference(
-                String.format("%s%07d", PREFIX, ++nextId), EntityType.DOCUMENT, Family.DATA_SPACE));
-        } while (wiki.exists(newFamilyRef, context));
-
-        XWikiDocument newFamilyDoc = wiki.getDocument(newFamilyRef, context);
-
-        // Copying all objects from template to family
-        newFamilyDoc.readFromTemplate(
-            this.entityReferenceResolver.resolve(FAMILY_TEMPLATE), context);
-
-        // Adding additional values to family
-        BaseObject ownerObject = newFamilyDoc.newXObject(Owner.CLASS_REFERENCE, context);
-        ownerObject.set("owner", creator == null ? "" : creator.getId(), context);
-
-        BaseObject familyObject = newFamilyDoc.getXObject(Family.CLASS_REFERENCE);
-        familyObject.set("identifier", nextId, context);
-
-        if (creator != null) {
-            DocumentReference creatorRef = creator.getProfileDocument();
-            newFamilyDoc.setCreatorReference(creatorRef);
-            newFamilyDoc.setAuthorReference(creatorRef);
-            newFamilyDoc.setContentAuthorReference(creatorRef);
-        }
-
-        wiki.saveDocument(newFamilyDoc, context);
-
-        return newFamilyDoc;
     }
 
     /**
@@ -726,27 +673,32 @@ public class PhenotipsFamilyRepository implements FamilyRepository
     /*
      * Returns the largest family identifier id
      */
-    private long getLastUsedId() throws QueryException
+    @Override
+    protected long getLastUsedId()
     {
         this.logger.debug("getLastUsedId()");
 
         long crtMaxID = 0;
-        Query q = this.qm.createQuery("select family.identifier "
-            + "from     Document doc, "
-            + "         doc.object(PhenoTips.FamilyClass) as family "
-            + "where    family.identifier is not null "
-            + "order by family.identifier desc", Query.XWQL).setLimit(1);
-        List<Long> crtMaxIDList = q.execute();
-        if (crtMaxIDList.size() > 0 && crtMaxIDList.get(0) != null) {
-            crtMaxID = crtMaxIDList.get(0);
+        try {
+            Query q = this.qm.createQuery("select family.identifier "
+                + "from     Document doc, "
+                + "         doc.object(PhenoTips.FamilyClass) as family "
+                + "where    family.identifier is not null "
+                + "order by family.identifier desc", Query.XWQL).setLimit(1);
+            List<Long> crtMaxIDList = q.execute();
+            if (crtMaxIDList.size() > 0 && crtMaxIDList.get(0) != null) {
+                crtMaxID = crtMaxIDList.get(0);
+            }
+            crtMaxID = Math.max(crtMaxID, 0);
+        } catch (QueryException ex) {
+            this.logger.warn("Failed to get the last used identifier: {}", ex.getMessage());
         }
-        crtMaxID = Math.max(crtMaxID, 0);
         return crtMaxID;
     }
 
     private XWikiDocument getDocument(EntityReference docRef) throws XWikiException
     {
-        XWikiContext context = this.provider.get();
+        XWikiContext context = this.xcontextProvider.get();
         XWiki wiki = context.getWiki();
         return wiki.getDocument(docRef, context);
     }

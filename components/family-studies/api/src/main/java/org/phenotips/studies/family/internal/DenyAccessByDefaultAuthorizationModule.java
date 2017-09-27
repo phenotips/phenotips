@@ -62,7 +62,7 @@ public class DenyAccessByDefaultAuthorizationModule implements AuthorizationModu
             return null;
         }
 
-        Family family = this.familyRepository.getFamilyById(entity.toString());
+        Family family = this.familyRepository.get(entity.toString());
         if (family == null) {
             return null;
         }
