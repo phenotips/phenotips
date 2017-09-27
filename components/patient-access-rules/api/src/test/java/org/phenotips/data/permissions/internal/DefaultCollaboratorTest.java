@@ -167,6 +167,36 @@ public class DefaultCollaboratorTest
         Assert.assertFalse(c.equals("other"));
     }
 
+    /** Tests for {@link Collaborator#equals(Object)}, when collaborator user is null. */
+    @Test
+    public void equalsWithNullUserTest() throws ComponentLookupException
+    {
+        Collaborator c = new DefaultCollaborator(null, this.access, this.helper);
+        // Equals itself
+        Assert.assertTrue(c.equals(c));
+        // Doesn't equal null
+        Assert.assertFalse(c.equals(null));
+        // Equals an identical collaborator
+        Collaborator other = new DefaultCollaborator(null, this.access, this.helper);
+        Assert.assertTrue(c.equals(other));
+        Assert.assertTrue(other.equals(c));
+        // Doesn't equal a collaborator with same user but different access
+        AccessLevel otherAccess = mock(AccessLevel.class);
+        other = new DefaultCollaborator(null, otherAccess, this.helper);
+        Assert.assertFalse(c.equals(other));
+        Assert.assertFalse(other.equals(c));
+        // Doesn't equal a collaborator with same access but different user
+        other = new DefaultCollaborator(new DocumentReference("xwiki", "XWiki", "padams"), this.access, this.helper);
+        Assert.assertFalse(c.equals(other));
+        Assert.assertFalse(other.equals(c));
+        // Doesn't equal a collaborator with different user and different access
+        other = new DefaultCollaborator(new DocumentReference("xwiki", "XWiki", "padams"), otherAccess, this.helper);
+        Assert.assertFalse(c.equals(other));
+        Assert.assertFalse(other.equals(c));
+        // Doesn't equal different types of objects
+        Assert.assertFalse(c.equals("other"));
+    }
+
     /** Basic tests for {@link Collaborator#hashCode()}. */
     @Test
     public void hashCodeTest() throws ComponentLookupException
@@ -179,6 +209,25 @@ public class DefaultCollaboratorTest
         Assert.assertFalse(c.equals(null));
         // Different hashcodes for different coordinates
         other = new DefaultCollaborator(COLLABORATOR, otherAccess, this.helper);
+        Assert.assertNotEquals(c.hashCode(), other.hashCode());
+        other = new DefaultCollaborator(new DocumentReference("xwiki", "XWiki", "padams"), this.access, this.helper);
+        Assert.assertNotEquals(c.hashCode(), other.hashCode());
+        other = new DefaultCollaborator(new DocumentReference("xwiki", "XWiki", "padams"), otherAccess, this.helper);
+        Assert.assertNotEquals(c.hashCode(), other.hashCode());
+    }
+
+    /** Tests for {@link Collaborator#hashCode()}, when collaborator user is null. */
+    @Test
+    public void hashCodeWithNullUserTest() throws ComponentLookupException
+    {
+        Collaborator c = new DefaultCollaborator(null, this.access, this.helper);
+        Collaborator other = new DefaultCollaborator(null, this.access, this.helper);
+        // Equals a different collaborator with the same user and access
+        Assert.assertEquals(c.hashCode(), other.hashCode());
+        Assert.assertFalse(c.equals(null));
+        AccessLevel otherAccess = mock(AccessLevel.class);
+        // Different hashcodes for different coordinates
+        other = new DefaultCollaborator(null, otherAccess, this.helper);
         Assert.assertNotEquals(c.hashCode(), other.hashCode());
         other = new DefaultCollaborator(new DocumentReference("xwiki", "XWiki", "padams"), this.access, this.helper);
         Assert.assertNotEquals(c.hashCode(), other.hashCode());
