@@ -17,9 +17,11 @@
  */
 package org.phenotips.studies.family.internal;
 
+import org.phenotips.entities.PrimaryEntityManager;
 import org.phenotips.entities.internal.AbstractPrimaryEntityManager;
 import org.phenotips.studies.family.Family;
 
+import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
@@ -34,6 +36,7 @@ import javax.inject.Singleton;
  * @since 1.4
  */
 @Named("Family")
+@Component(roles = {PrimaryEntityManager.class})
 @Singleton
 public class FamilyEntityManager extends AbstractPrimaryEntityManager<Family>
 {
