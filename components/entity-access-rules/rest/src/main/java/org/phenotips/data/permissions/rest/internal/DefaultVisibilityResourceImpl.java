@@ -23,7 +23,7 @@ import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.VisibilityResource;
-import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
+import org.phenotips.data.permissions.rest.internal.utils.EntityAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.permissions.rest.model.VisibilityRepresentation;
 import org.phenotips.rest.Autolinker;
@@ -73,16 +73,16 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
     private Provider<Autolinker> autolinker;
 
     @Override
-    public VisibilityRepresentation getVisibility(String patientId)
+    public VisibilityRepresentation getVisibility(String entityId, String entityType)
     {
-        this.logger.debug("Retrieving patient record's visibility [{}] via REST", patientId);
-        // besides getting the patient, checks that the user has view access
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getReadContext(patientId);
+        this.logger.debug("Retrieving entity record's visibility [{}] via REST", entityId);
+        // besides getting the entity, checks that the user has view access
+        EntityAccessContext entityAccessContext = this.secureContextFactory.getReadContext(entityId, entityType);
 
         VisibilityRepresentation result =
-            this.factory.createVisibilityRepresentation(patientAccessContext.getPatient());
+            this.factory.createVisibilityRepresentation(entityAccessContext.getEntity());
 
-        AccessLevel accessLevel = patientAccessContext.getPatientAccess().getAccessLevel();
+        AccessLevel accessLevel = entityAccessContext.getEntityAccess().getAccessLevel();
         result.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo)
             .withGrantedRight(accessLevel.getGrantedRight())
             .build());
@@ -90,11 +90,11 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
     }
 
     @Override
-    public Response setVisibility(VisibilityRepresentation visibility, String patientId)
+    public Response setVisibility(VisibilityRepresentation visibility, String entityId, String entityType)
     {
         try {
             String level = visibility.getLevel();
-            return setVisibility(level, patientId);
+            return setVisibility(level, entityId, entityType);
         } catch (Exception ex) {
             this.logger.error("The json was not properly formatted", ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
@@ -104,17 +104,17 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
     }
 
     @Override
-    public Response setVisibility(String patientId)
+    public Response setVisibility(String entityId, String entityType)
     {
         String visibility = (String) this.container.getRequest().getProperty("visibility");
         if (StringUtils.isNotBlank(visibility)) {
-            return setVisibility(visibility, patientId);
+            return setVisibility(visibility, entityId, entityType);
         }
         this.logger.error("The visibility level was not provided or is invalid");
         throw new WebApplicationException(Response.Status.BAD_REQUEST);
     }
 
-    private Response setVisibility(String visibilityNameRaw, String patientId)
+    private Response setVisibility(String visibilityNameRaw, String entityId, String entityType)
     {
         if (StringUtils.isBlank(visibilityNameRaw)) {
             this.logger.error("The visibility level was not provided");
@@ -135,16 +135,16 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
         }
 
         this.logger.debug(
-            "Setting the visibility of the patient record [{}] to [{}] via REST", patientId, visibilityName);
-        // besides getting the patient, checks that the user has manage access
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
+            "Setting the visibility of the entity record [{}] to [{}] via REST", entityId, visibilityName);
+        // besides getting the entity, checks that the user has manage access
+        EntityAccessContext entityAccessContext = this.secureContextFactory.getWriteContext(entityId, entityType);
 
-        EntityAccess entityAccess = patientAccessContext.getPatientAccess();
+        EntityAccess entityAccess = entityAccessContext.getEntityAccess();
         if (!entityAccess.setVisibility(visibility)) {
             // todo. should this status be an internal server error, or a bad request?
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
-        this.manager.fireRightsUpdateEvent(patientId);
+        this.manager.fireRightsUpdateEvent(entityId);
         return Response.ok().build();
     }
 }

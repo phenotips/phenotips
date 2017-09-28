@@ -21,7 +21,7 @@ import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.OwnerResource;
-import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
+import org.phenotips.data.permissions.rest.internal.utils.EntityAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.permissions.rest.model.OwnerRepresentation;
 import org.phenotips.rest.Autolinker;
@@ -78,27 +78,27 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
     private EntityPermissionsManager manager;
 
     @Override
-    public OwnerRepresentation getOwner(String patientId)
+    public OwnerRepresentation getOwner(String entityId, String entityType)
     {
-        this.logger.debug("Retrieving patient record's owner [{}] via REST", patientId);
-        // besides getting the patient, checks that the user has view access
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getReadContext(patientId);
+        this.logger.debug("Retrieving entity record's owner [{}] via REST", entityId);
+        // besides getting the entity, checks that the user has view access
+        EntityAccessContext entityAccessContext = this.secureContextFactory.getReadContext(entityId, entityType);
 
-        OwnerRepresentation result = this.factory.createOwnerRepresentation(patientAccessContext.getPatient());
+        OwnerRepresentation result = this.factory.createOwnerRepresentation(entityAccessContext.getEntity());
 
         // adding links relative to this context
         result.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo)
-            .withGrantedRight(patientAccessContext.getPatientAccess().getAccessLevel().getGrantedRight())
+            .withGrantedRight(entityAccessContext.getEntityAccess().getAccessLevel().getGrantedRight())
             .build());
 
         return result;
     }
 
     @Override
-    public Response setOwner(OwnerRepresentation owner, String patientId)
+    public Response setOwner(OwnerRepresentation owner, String entityId, String entityType)
     {
         try {
-            return putOwner(owner.getId(), patientId);
+            return putOwner(owner.getId(), entityId, entityType);
         } catch (Exception ex) {
             this.logger.error("The json was not properly formatted", ex.getMessage());
             throw new WebApplicationException(Status.BAD_REQUEST);
@@ -106,25 +106,25 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
     }
 
     @Override
-    public Response setOwner(String patientId)
+    public Response setOwner(String entityId, String entityType)
     {
         String ownerId = (String) this.container.getRequest().getProperty("owner");
         if (StringUtils.isNotBlank(ownerId)) {
-            return putOwner(ownerId, patientId);
+            return putOwner(ownerId, entityId, entityType);
         }
         this.logger.error("The owner id was not provided or is invalid");
         throw new WebApplicationException(Status.BAD_REQUEST);
     }
 
-    private Response putOwner(String ownerId, String patientId)
+    private Response putOwner(String ownerId, String entityId, String entityType)
     {
         if (StringUtils.isBlank(ownerId)) {
             this.logger.error("The owner id was not provided");
             throw new WebApplicationException(Status.BAD_REQUEST);
         }
-        this.logger.debug("Setting owner of the patient record [{}] to [{}] via REST", patientId, ownerId);
-        // besides getting the patient, checks that the current user has manage access
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
+        this.logger.debug("Setting owner of the entity record [{}] to [{}] via REST", entityId, ownerId);
+        // besides getting the entity, checks that the current user has manage access
+        EntityAccessContext entityAccessContext = this.secureContextFactory.getWriteContext(entityId, entityType);
 
         EntityReference ownerReference = this.userOrGroupResolver.resolve(ownerId);
         if (ownerReference == null) {
@@ -139,13 +139,13 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
         // the helper in EntityAccess needs to use this.entitySerializer.serialize
         DocumentReference ownerDocRef = new DocumentReference(ownerReference);
 
-        EntityAccess entityAccess = patientAccessContext.getPatientAccess();
+        EntityAccess entityAccess = entityAccessContext.getEntityAccess();
         if (!entityAccess.setOwner(ownerDocRef)) {
             // todo. should this status be an internal server error, or a bad request?
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
 
-        this.manager.fireRightsUpdateEvent(patientId);
+        this.manager.fireRightsUpdateEvent(entityId);
         return Response.ok().build();
     }
 }

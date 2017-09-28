@@ -34,59 +34,65 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- * Resource for working with patient record's owners, visibility and collaborators. Patients are identified by patient
+ * Resource for working with entity record's owners, visibility and collaborators. Entities are identified by entity
  * record's internal PhenoTips identifier.
  *
  * @version $Id$
  * @since 1.3M2
  */
-@Path("/patients/{patient-id}/permissions")
+@Path("/{entity-type}/{entity-id}/permissions")
 @Relation("https://phenotips.org/rel/permissions")
 @ParentResource(PatientResource.class)
 public interface PermissionsResource
 {
     /**
-     * Retrieves all permissions: owner, collaborators, visibility. If the indicated patient record doesn't exist, or if
-     * the user sending the request doesn't have the right to view the target patient record, an error is returned.
+     * Retrieves all permissions: owner, collaborators, visibility. If the indicated entity record doesn't exist, or if
+     * the user sending the request doesn't have the right to view the target entity record, an error is returned.
      *
-     * @param patientId internal identifier of a patient record
-     * @return REST representation of the permissions of a patient record
+     * @param entityId internal identifier of an entity record
+     * @param entityType the type of entity
+     * @return REST representation of the permissions of an entity record
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RequiredAccess("view")
-    PermissionsRepresentation getPermissions(@PathParam("patient-id") String patientId);
+    PermissionsRepresentation getPermissions(@PathParam("entity-id") String entityId,
+        @PathParam("entity-type") String entityType);
 
     /**
      * Overwrites all permissions: owner, collaborators, visibility. All elements must be present in the input JSON. If
-     * the indicated patient record doesn't exist, or if the user sending the request doesn't have the right to edit the
-     * target patient record, or if either element is missing, no change is performed and an error is returned. To
+     * the indicated entity record doesn't exist, or if the user sending the request doesn't have the right to edit the
+     * target entity record, or if either element is missing, no change is performed and an error is returned. To
      * remove all collaborators, an empty {@code "collaborators": {"collaborators": []}} JSON fragment must be sent.
      *
      * @param permissions must contain owner and visibility representations, and a list of collaborator representations
-     * @param patientId identifier of the patient whose permissions should be changed
+     * @param entityId identifier of the entity whose permissions should be changed
+     * @param entityType the type of entity
      * @return a status message
      */
     @PUT
     @RequiredAccess("manage")
     @Consumes(MediaType.APPLICATION_JSON)
-    Response setPermissions(PermissionsRepresentation permissions, @PathParam("patient-id") String patientId);
+    Response setPermissions(PermissionsRepresentation permissions, @PathParam("entity-id") String entityId,
+        @PathParam("entity-type") String entityType);
 
     /**
      * Update permissions: owner, collaborators, visibility. Not all elements must be present in the input JSON, the
      * missing pieces will be left as-is. The submitted owner and visibility will be updated, but the submitted
      * collaborators will be added to the existing list of collaborators. To remove an individual collaborator, send a
      * {@code DELETE} request to the targeted {@link CollaboratorResource}, or {@code PUT} the full permissions without
-     * the collaborators to be removed. If the indicated patient record doesn't exist, or if the user sending the
-     * request doesn't have the right to edit the target patient record, no change is performed and an error is
+     * the collaborators to be removed. If the indicated entity record doesn't exist, or if the user sending the
+     * request doesn't have the right to edit the target entity record, no change is performed and an error is
      * returned.
      *
      * @param permissions may contain owner and visibility representations, and a list of collaborator representations
-     * @param patientId identifier of the patient whose permissions should be changed
+     * @param entityId identifier of the entity whose permissions should be changed
+     * @param entityType the type of entity
      * @return a status message
      */
     @PATCH
     @RequiredAccess("manage")
     @Consumes(MediaType.APPLICATION_JSON)
-    Response updatePermissions(PermissionsRepresentation permissions, @PathParam("patient-id") String patientId);
+    Response updatePermissions(PermissionsRepresentation permissions, @PathParam("entity-id") String entityId,
+        @PathParam("entity-type") String entityType);
 }
