@@ -46,7 +46,7 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class DefaultVocabularySourceRelocationService implements VocabularySourceRelocationService
 {
-    /** The Gene XClass reference. */
+    /** The document where vocabulary relocation sources are stored. */
     private static final EntityReference VOCABULARY_RELOCATION_CLASS = new EntityReference(
         "VocabularySourceRelocationClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 

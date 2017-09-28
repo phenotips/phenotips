@@ -61,46 +61,48 @@ $xwiki.ssx.use('PhenoTips.Widgets')##
 #if ($vocabularySource &amp;&amp; $vocabularySource != '')
 ## We can index this vocabulary
 &lt;form class="xform solr-admin" action='' method="post"&gt;
+  &lt;dt&gt;
+    &lt;label style="display:inline" for="vocabulary-${vocabularyId}-url"&gt;$vocabulary.name&lt;/label&gt;
+    #set ($citation = "$vocabulary.citation")
+    #set ($link = "$vocabulary.website")
+    &lt;span class="fa fa-info-circle xHelpButton" title='$citation, &lt;a href="$link" target="_blank"&gt;$link&lt;/a&gt;'&gt;&lt;/span&gt;
+    #set ($version = $vocabulary.version)
+    #if ($version)
+      #set ($versionText = $services.localization.render('phenotips.indexVocabulary.version',[$version]))
+      #set ($buttonText = $services.localization.render('phenotips.indexVocabulary.startReindex'))
+    #else
+      #set ($versionText = $services.localization.render('phenotips.indexVocabulary.noVersion'))
+      #set ($buttonText = $services.localization.render('phenotips.indexVocabulary.startIndex'))
+    #end
+    &lt;span class="xHint vocabulary-version"&gt;$versionText&lt;/span&gt;
+    #set($vocabularyHint = $services.localization.render("phenotips.indexVocabulary.hint.${vocabularyId}"))
+    #if ($vocabularyHint != "phenotips.indexVocabulary.hint.${vocabularyId}") ## a hint exists
+      &lt;span class="xHint vocabulary-hint"&gt;$vocabularyHint&lt;/span&gt;
+    #end
+  &lt;/dt&gt;
   &lt;dl&gt;
-    &lt;dt&gt;
-      &lt;label style="display:inline" for="vocabulary-${vocabularyId}-url"&gt;$vocabulary.name&lt;/label&gt;
-      #set ($citation = "$vocabulary.citation")
-      #set ($link = "$vocabulary.website")
-      &lt;span class="fa fa-info-circle xHelpButton" title='$citation, &lt;a href="$link" target="_blank"&gt;$link&lt;/a&gt;'&gt;&lt;/span&gt;
-      #set ($version = $vocabulary.version)
-      #if ($version)
-        #set ($versionText = $services.localization.render('phenotips.indexVocabulary.version',[$version]))
-        #set ($buttonText = $services.localization.render('phenotips.indexVocabulary.startReindex'))
-      #else
-        #set ($versionText = $services.localization.render('phenotips.indexVocabulary.noVersion'))
-        #set ($buttonText = $services.localization.render('phenotips.indexVocabulary.startIndex'))
-      #end
-      &lt;span class="xHint vocabulary-version"&gt;$versionText&lt;/span&gt;
-      #set($vocabularyHint = $services.localization.render("phenotips.indexVocabulary.hint.${vocabularyId}"))
-      #if ($vocabularyHint != "phenotips.indexVocabulary.hint.${vocabularyId}") ## a hint exists
-        &lt;span class="xHint vocabulary-hint"&gt;$vocabularyHint&lt;/span&gt;
-      #end
-    &lt;/dt&gt;
-    &lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="vocabulary-${vocabularyId}-url" value="$vocabularySource" disabled/&gt;
+      &lt;dt&gt;
+        &lt;label style="display:inline" for="vocabulary-${vocabularyId}-url"&gt;$services.localization.render('phenotips.indexVocabulary.ontology')&lt;/label&gt;
+      &lt;/dt&gt;
+    &lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="vocabulary-${vocabularyId}-url" value="$vocabularySource" onkeypress="return event.keyCode != 13;" disabled/&gt;
       &lt;input type="hidden" value="$vocabularyDefaultSource"/&gt;
       &lt;span class="buttonwrapper"&gt;&lt;a class="action-edit fa fa-pencil button secondary" href="#" title="$services.localization.render('phenotips.indexVocabulary.editButtons.edit')"&gt;&lt;/a&gt;
         &lt;a class="action-save fa fa-check button secondary" href="#" title="$services.localization.render('phenotips.indexVocabulary.editButtons.save')"&gt;&lt;/a&gt;
-        &lt;a class="action-restore fa fa-undo button secondary" href="#" title="$services.localization.render('phenotips.indexVocabulary.editButtons.restore')"&gt;&lt;/a&gt;&lt;/span&gt;
+        &lt;a class="action-restore fa fa-reply-all button secondary" href="#" title="$services.localization.render('phenotips.indexVocabulary.editButtons.restore')"&gt;&lt;/a&gt;&lt;/span&gt;
     &lt;/dd&gt;
   #if ($vocabulary.getExtensions().size() &gt; 0)
     #foreach ($extension in $vocabulary.getExtensions())
-      #if ($extension.isVocabularySupported($vocabulary) &amp;&amp; $extension.getName())
+      #if ($extension.getName())
         &lt;dt&gt;&lt;label&gt;$extension.getName()&lt;/label&gt;&lt;/dt&gt;
-        &lt;dd&gt;&lt;input type="text" value="$extension.getAnnotationSource()" disabled/&gt;
+        &lt;dd&gt;&lt;input type="text" value="$extension.getAnnotationSource()" onkeypress="return event.keyCode != 13;" disabled/&gt;
         &lt;input type="hidden" name="default-url" value=""/&gt;
         &lt;span class="buttonwrapper"&gt;&lt;a class="action-edit fa fa-pencil button secondary" href="#" title="$services.localization.render('phenotips.indexVocabulary.editButtons.edit')"&gt;&lt;/a&gt;
           &lt;a class="action-save fa fa-check button secondary" href="#" title="$services.localization.render('phenotips.indexVocabulary.editButtons.save')"&gt;&lt;/a&gt;
-          &lt;a class="action-restore fa fa-undo button secondary" href="#" title="$services.localization.render('phenotips.indexVocabulary.editButtons.restore')"&gt;&lt;/a&gt;&lt;/span&gt;&lt;/dd&gt;
+          &lt;a class="action-restore fa fa-reply-all button secondary" href="#" title="$services.localization.render('phenotips.indexVocabulary.editButtons.restore')"&gt;&lt;/a&gt;&lt;/span&gt;&lt;/dd&gt;
       #end
     #end
   #end
   &lt;/dl&gt;
-
   &lt;div&gt;
     &lt;input type="hidden" name="vocabulary" value="${vocabularyId}"/&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}"/&gt;
@@ -497,6 +499,8 @@ $xwiki.ssx.use('PhenoTips.Widgets')##
       el.up('.buttonwrapper').down('.action-restore').show();
       var inputEl = el.up('dd').down('input');
       inputEl.disabled = false;
+      //disable submit button
+      el.up('form').down('input[name="actionindex"]').disabled = true;
    });
 
    $$('.action-save').invoke('observe', 'click', function(event) {
@@ -507,6 +511,8 @@ $xwiki.ssx.use('PhenoTips.Widgets')##
       el.up('.buttonwrapper').down('.action-restore').hide();
       var inputEl = el.up('dd').down('input');
       inputEl.disabled = true;
+      //enable submit button
+      el.up('form').down('input[name="actionindex"]').disabled = false;
       saveURL(inputEl.next(), inputEl);
    });
 
@@ -690,7 +696,6 @@ form.solr-admin input[type="text"] {
   margin: .5em 0;
   width: 90%;
 }
-
 form.solr-admin .vocabulary-version {
   float: right;
 }
@@ -700,6 +705,9 @@ form.solr-admin .vocabulary-hint {
 form.solr-admin .xTooltip {
   font-style: normal;
   font-weight: 400;
+}
+form dl {
+  margin-left: 10px;
 }
 .two-thirds-width {
   width: 85%;

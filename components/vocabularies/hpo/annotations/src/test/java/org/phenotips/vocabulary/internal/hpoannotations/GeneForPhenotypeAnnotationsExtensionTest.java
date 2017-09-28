@@ -20,6 +20,7 @@ package org.phenotips.vocabulary.internal.hpoannotations;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyExtension;
 import org.phenotips.vocabulary.VocabularyInputTerm;
+import org.phenotips.vocabulary.internal.solr.DefaultVocabularySourceRelocationService;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -52,14 +53,16 @@ public class GeneForPhenotypeAnnotationsExtensionTest
 {
     private static final String HPO_LABEL = "hpo";
 
-    private static final String ANNOTATION_SOURCE = "http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/"
-        + "lastStableBuild/artifact/annotation/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt";
-
     private static final String GENES_LABEL = "associated_genes";
 
     @Rule
     public final MockitoComponentMockingRule<VocabularyExtension> mocker =
         new MockitoComponentMockingRule<VocabularyExtension>(GeneForPhenotypesAnnotationsExtension.class);
+
+    @Rule
+    public final MockitoComponentMockingRule<DefaultVocabularySourceRelocationService> mocker2 =
+        new MockitoComponentMockingRule<DefaultVocabularySourceRelocationService>(
+            DefaultVocabularySourceRelocationService.class);
 
     private GeneForPhenotypesAnnotationsExtension extension;
 
@@ -114,12 +117,6 @@ public class GeneForPhenotypeAnnotationsExtensionTest
         final List<String> targetedVocabs = new LinkedList<>();
         targetedVocabs.add(HPO_LABEL);
         Assert.assertEquals(targetedVocabs, this.extension.getTargetVocabularyIds());
-    }
-
-    @Test
-    public void getAnnotationSource()
-    {
-        // Assert.assertEquals(ANNOTATION_SOURCE, this.extension.getAnnotationSource());
     }
 
     @Test

@@ -254,7 +254,13 @@ public abstract class AbstractSolrVocabulary implements Vocabulary
     @Override
     public List<VocabularyExtension> getExtensions()
     {
-        return this.extensions.get();
+        List<VocabularyExtension> result = new LinkedList<>();
+        for (VocabularyExtension extension : this.extensions.get()) {
+            if (extension.isVocabularySupported(this)) {
+                result.add(extension);
+            }
+        }
+        return result;
     }
 
     /**
