@@ -221,7 +221,7 @@ define([
             this.type[nextId] = type;
 
             this.properties[nextId] = properties;
-            this.rawJSONProperties[nextId] = rawJSONProperties;
+            this.rawJSONProperties[nextId] = (rawJSONProperties == null) ? {"__ignore__": true} : rawJSONProperties;
 
             if (type != BaseGraph.TYPE.VIRTUALEDGE && nextId > this.maxRealVertexId)
                 this.maxRealVertexId = nextId;

@@ -273,12 +273,16 @@ define([
                 throw "Assertion failed: setPersonNodeDataFromPhenotipsJSON() is applied to a non-person";
             }
 
-            var pedigreeOnlyProperties = this.getNodePropertiesNotStoredInPatientProfile(id);
+            if (patientObject != null && !patientObject.hasOwnProperty("__ignore__")) {
+                var pedigreeOnlyProperties = this.getNodePropertiesNotStoredInPatientProfile(id);
 
-            if (patientObject === null) {
-                this.DG.GG.properties[id] = pedigreeOnlyProperties;
+                this.setProperties(id, PhenotipsJSON.phenotipsJSONToInternal(patientObject, pedigreeOnlyProperties));
             } else {
-                this.DG.GG.properties[id] = PhenotipsJSON.phenotipsJSONToInternal(patientObject, pedigreeOnlyProperties);
+                // else: keep properties as defined in the pedigree (e.g. via one of the old importers)
+                //       and replace null RAW properties with an empty object
+                // TODO: once converters ar eupdated to fill new format fields instead of internal fields,
+                //       setting RAW properties t onull will not be neded nay more
+                this.setRawJSONProperties(id, {});
             }
         },
 

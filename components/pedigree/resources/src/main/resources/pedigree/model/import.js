@@ -96,8 +96,7 @@ define([
             var nodeID = newG._addVertex( null, BaseGraph.TYPE.PERSON, properties, {} );
             memberIDToNodeID[nextPerson.id] = nodeID;
 
-            if (nextPerson.hasOwnProperty("properties") && typeof nextPerson.properties == 'object' &&
-                !nextPerson.hasOwnProperty("placeholder") ) {
+            if (nextPerson.hasOwnProperty("properties") && typeof nextPerson.properties == 'object') {
                 newG.rawJSONProperties[nodeID] = nextPerson.properties;
                 if (nextPerson.properties.hasOwnProperty(KEY_PROPERTIES_PHENOTIPSID)) {
                     newG.properties[nodeID]["phenotipsId"] = nextPerson.properties[KEY_PROPERTIES_PHENOTIPSID];
@@ -110,7 +109,7 @@ define([
                     newG.properties[nodeID]["gender"] = "U";
                 }
             } else {
-                newG.rawJSONProperties[nodeID] = {};
+                newG.rawJSONProperties[nodeID] = {"__ignore__": true};
             }
         }
 
@@ -184,11 +183,13 @@ define([
                         }
                         childToRelationship[child.id] = chhubID;
 
-                        newG.addEdge( chhubID, memberIDToNodeID[child.id] );
+                        var childNodeId = memberIDToNodeID[child.id];
+
+                        newG.addEdge( chhubID, childNodeId );
 
                         // process supported relationship properties (TODO: for now only adopted status)
                         if (child.hasOwnProperty("adopted") && child.adopted != "no") {
-                            newG.properties[child.id].adoptedStatus = (child.adopted == "out") ? "adoptedOut" : "adoptedIn";
+                            newG.properties[childNodeId].adoptedStatus = (child.adopted == "out") ? "adoptedOut" : "adoptedIn";
                         }
                     }
                 } else {
@@ -376,7 +377,7 @@ define([
 
                     if (!longedges || !longedges.hasOwnProperty(relationshipID)
                         || !longedges[relationshipID].hasOwnProperty("member")
-                        || longedges[relationshipID].member != longEdgeParent
+                        || memberIDToNodeID[longedges[relationshipID].member] != longEdgeParent
                         || !longedges[relationshipID].hasOwnProperty("path")) {
                         throw "There is a relationship connecting persons of different generations but the provided " +
                         "layout does not have enough data to draw this connection: discarding layout";
@@ -538,7 +539,7 @@ define([
                 useID = 0;
             }
 
-            var pedigreeID = newG._addVertex( useID, BaseGraph.TYPE.PERSON, properties, {} );
+            var pedigreeID = newG._addVertex( useID, BaseGraph.TYPE.PERSON, properties, null );
 
             nameToId[pedID] = pedigreeID;
 
@@ -620,7 +621,7 @@ define([
             // .PED supports specifying only mohter of father. Pedigree editor requires both (for now).
             // So create a virtual parent in case one of the parents is missing
             if (fatherID == 0) {
-               fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, {} );
+               fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, null );
             } else {
                 fatherID = nameToId[fatherID];
                 if (typeof fatherID === 'undefined') {
@@ -628,7 +629,7 @@ define([
                 }
             }
             if (motherID == 0) {
-                motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, {} );
+                motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, null );
             } else {
                 motherID = nameToId[motherID];
                 if (typeof motherID === 'undefined') {
@@ -835,7 +836,7 @@ define([
               useID = 0;
             }
 
-            var pedigreeID = newG._addVertex( useID, BaseGraph.TYPE.PERSON, properties, {} );
+            var pedigreeID = newG._addVertex( useID, BaseGraph.TYPE.PERSON, properties, null );
 
             nameToId[extID] = pedigreeID;
         }
@@ -863,12 +864,12 @@ define([
           // .PED supports specifying only mother or father. Pedigree editor requires both (for now).
           // So create a virtual parent in case one of the parents is missing
           if (fatherID == 0) {
-           fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, {} );
+           fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, null );
           } else {
             fatherID = nameToId[fatherID];
           }
           if (motherID == 0) {
-            motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, {} );
+            motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, null );
           } else {
             motherID = nameToId[motherID];
           }
@@ -1052,7 +1053,7 @@ define([
                throw "Unable to import pedigree: a node with no ID or name is found";
            }
 
-           var pedigreeID = newG._addVertex( newPersonIDs[personSeqNumber], BaseGraph.TYPE.PERSON, {}, {} );
+           var pedigreeID = newG._addVertex( newPersonIDs[personSeqNumber], BaseGraph.TYPE.PERSON, {}, null );
            personSeqNumber++;
 
            var properties = {};
@@ -1165,12 +1166,12 @@ define([
 
            // create a virtual parent in case one of the parents is missing
            if (fatherLink == null) {
-               var fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, {} );
+               var fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, null );
            } else {
                var fatherID = findReferencedPerson(fatherLink, "father");
            }
            if (motherLink == null) {
-               var motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, {} );
+               var motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, null );
            } else {
                var motherID = findReferencedPerson(motherLink, "mother");
            }
@@ -1210,7 +1211,7 @@ define([
 
            // if there are no children, create a placeholder child
            if (newG.getOutEdges(chhubID).length == 0) {
-               var placeholderID = newG._addVertex(null, BaseGraph.TYPE.PERSON, {"gender": "U", "placeholder":true}, {} );
+               var placeholderID = newG._addVertex(null, BaseGraph.TYPE.PERSON, {"gender": "U", "placeholder":true}, null );
                newG.addEdge( chhubID, placeholderID );
            }
 
@@ -1406,7 +1407,7 @@ define([
        for (var i = 0; i < gedcom.individuals.length; i++) {
            var nextPerson =  gedcom.individuals[i];
 
-           var pedigreeID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {}, {} );
+           var pedigreeID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {}, null );
 
            externalIDToID[nextPerson.id] = pedigreeID;
 
@@ -1570,12 +1571,12 @@ define([
 
            // create a virtual parent in case one of the parents is missing
            if (fatherLink == null) {
-               var fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, {} );
+               var fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, null );
            } else {
                var fatherID = externalIDToID[fatherLink];
            }
            if (motherLink == null) {
-               var motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, {} );
+               var motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, null );
            } else {
                var motherID = externalIDToID[motherLink];
            }
@@ -1590,7 +1591,7 @@ define([
 
            if (children == null) {
                // create a virtual child
-               var childID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "U", "placeholder": true}, {} );
+               var childID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "U", "placeholder": true}, null );
                externalIDToID[childID] = childID;
                children = [{"value": childID}];
                // TODO: add "infertile by choice" property to the relationship
