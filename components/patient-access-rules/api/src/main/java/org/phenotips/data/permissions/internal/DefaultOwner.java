@@ -21,6 +21,8 @@ import org.phenotips.data.permissions.Owner;
 
 import org.xwiki.model.reference.EntityReference;
 
+import java.util.Objects;
+
 /**
  * Default implementation of the {@link Owner} interface, making use of a {@link PatientAccessHelper} component for any
  * actual owner type detection.
@@ -75,11 +77,14 @@ public class DefaultOwner implements Owner
     @Override
     public boolean equals(Object other)
     {
-        if (other == null || !(other instanceof Owner)) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
             return false;
         }
         Owner otherCollaborator = (Owner) other;
-        return this.user.equals(otherCollaborator.getUser());
+        return Objects.equals(this.user, otherCollaborator.getUser());
     }
 
     @Override
