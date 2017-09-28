@@ -22,11 +22,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>patient-access-rules</artifactId>
+    <artifactId>entity-access-rules</artifactId>
     <version>1.4-SNAPSHOT</version>
   </parent>
-  <artifactId>patient-access-rules-rest</artifactId>
-  <name>PhenoTips - Patient access rules - REST services</name>
+  <artifactId>entity-access-rules-rest</artifactId>
+  <name>PhenoTips - Entity access rules - REST services</name>
 
   <properties>
     <!-- Fixme. Coverage. -->
