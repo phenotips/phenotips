@@ -3,11 +3,20 @@ define([
     ], function(
         Helpers
     ){
-    Ordering = function (order, vOrder) {
-        this.order  = order;        // 1D array of 1D arrays - for each rank list of vertices in order
-        this.vOrder = vOrder;       // 1D array - for each v vOrder[v] = order within rank
 
-        // TODO: verify validity?
+    // order:   1D array of 1D arrays: for each rank list of vertices in order
+    //
+    // _vOrder: (optional) 1D array: for each nodeID vOrder[nodeID] == order within the rank
+    //          _vOrder can be derived from the `order` above, and is provided optionally for performance reasons
+    Ordering = function (order, _vOrder) {
+        this.order = order;
+
+        if (_vOrder) {
+            this.vOrder = _vOrder;
+        } else {
+            this.vOrder = [];
+            this._updateVOrderArray();
+        }
     };
 
     Ordering.createOrdering = function(vOrder, ranks) {
@@ -34,7 +43,7 @@ define([
             order[r] = order[r].filter(function(v){return v !== undefined})
         }
 
-        return new Ordering(order, vOrder);
+        return new Ordering(order);
     };
 
     Ordering.fromJSON = function(json) {
