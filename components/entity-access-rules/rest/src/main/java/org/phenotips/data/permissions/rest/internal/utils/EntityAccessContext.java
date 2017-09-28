@@ -21,6 +21,7 @@ import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.entities.PrimaryEntity;
+import org.phenotips.entities.PrimaryEntityManager;
 import org.phenotips.entities.PrimaryEntityResolver;
 
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -61,6 +62,7 @@ public class EntityAccessContext
      * any of these conditions are not met, initialization fails.
      *
      * @param entityId by which to find an entity record
+     * @param entityType the type of entity
      * @param minimumAccessLevel that the current must have or exceed
      * @param resolver used to find the entity record
      * @param users used to get the current user
@@ -68,13 +70,18 @@ public class EntityAccessContext
      * @param userOrGroupResolver document reference resolver that can resolve an identifier to either a user or a group
      * @throws WebApplicationException if the entity could not be found, or the current user has insufficient rights
      */
-    public EntityAccessContext(String entityId, AccessLevel minimumAccessLevel,
+    public EntityAccessContext(String entityId, String entityType, AccessLevel minimumAccessLevel,
         PrimaryEntityResolver resolver, UserManager users, EntityPermissionsManager manager,
         DocumentReferenceResolver<String> userOrGroupResolver)
         throws WebApplicationException
     {
         this.manager = manager;
-        this.entity = resolver.resolveEntity(entityId);
+        final PrimaryEntityManager primaryEntityManager = resolver.getEntityManager(entityType);
+        if (primaryEntityManager == null) {
+            this.logger.debug("No such entity type: [{}]", entityType);
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+        this.entity = primaryEntityManager.get(entityId);
         if (this.entity == null) {
             this.logger.debug("No such entity record: [{}]", entityId);
             throw new WebApplicationException(Response.Status.NOT_FOUND);
