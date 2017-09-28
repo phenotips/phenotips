@@ -146,7 +146,7 @@ define([], function(){
 
         /** Returns true iff the minimum precision level is set, ie. the year. Useful for displaying the date. */
         isComplete: function() {
-            return (this.year !== null && (!this.range || this.range.years == 1));
+            return (this.year !== null);
         },
 
         onlyDecadeAvailable: function() {
@@ -212,7 +212,7 @@ define([], function(){
             if (this.month == null) {
                 return this.getBestPrecisionStringYear();
             }
-            var dateStr = this.getYear().toString();
+            var dateStr = this.year && this.getBestPrecisionStringYear() || '';
             if (this.getMonth() != null && dateFormat != "Y") {
                 dateStr = ("0" + this.getMonth()).slice(-2) + "-" + dateStr;
                 if (this.getDay() != null && dateFormat == "DMY") {
