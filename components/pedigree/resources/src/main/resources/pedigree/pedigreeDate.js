@@ -146,7 +146,7 @@ define([], function(){
 
         /** Returns true iff the minimum precision level is set, ie. the year. Useful for displaying the date. */
         isComplete: function() {
-            return (this.year !== null);
+            return (this.year !== null && (!this.range || this.range.years == 1));
         },
 
         onlyDecadeAvailable: function() {
