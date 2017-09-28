@@ -172,7 +172,7 @@ define([
             var lineAttr          = consangr ? PedigreeEditorParameters.attributes.consangrPartnershipLines : PedigreeEditorParameters.attributes.partnershipLines;
             var lineAttrNoContact = consangr ? PedigreeEditorParameters.attributes.noContactLinesConsangr   : PedigreeEditorParameters.attributes.noContactLines;
 
-            var partnerPaths = editor.getGraph().getPathToParents(id);  // partnerPaths = [ [virtual_node_11, ..., virtual_node_1n, parent1], [virtual_node_21, ..., virtual_node_2n, parent21] ]
+            var partnerPaths = editor.getGraph().getPathToParents(id);  // partnerPaths = { parent1: [virtual_node_11, ..., virtual_node_1n], parent2: [virtual_node_21, ..., virtual_node_2n] ]
 
             // TODO: a better curve algo for the entire curve at once?
             var smoothCorners = true;

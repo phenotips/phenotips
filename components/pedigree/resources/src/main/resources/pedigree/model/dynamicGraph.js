@@ -587,6 +587,7 @@ define([
             return this.DG.GG.getProducingRelationship(v);
         },
 
+        // returns a bottom-to-top path
         getPathToParents: function(v)
         {
             // returns an array with two elements: path to parent1 (excluding v) and path to parent2 (excluding v):
@@ -1384,12 +1385,13 @@ define([
                     // also add its long multi-rank edges
                     var pathToParents = this.getPathToParents(nodeList[i]);
                     for (var p = 0; p < pathToParents.length; p++) {
-                        for (var j = 0; j < pathToParents[p].path.length; j++)
+                        for (var j = 0; j < pathToParents[p].path.length; j++) {
                             if (!this.DG.GG.isVirtual(pathToParents[p].path[j])) {
                                 throw "Assertion failed: pathToParents has a non-virtual edge";
                             }
                             //console.log("adding " + pathToParents[p][j] + " to removal list (virtual of " + nodeList[i] + ")");
                             nodeList.push(pathToParents[p].path[j]);
+                        }
                     }
                 }
             }
@@ -1460,7 +1462,6 @@ define([
             return {"removed": removed, "changedIDSet": changedIDSet, "moved": moved };
         },
 
-        /*
         // Not used at the moment
         // TODO: may need to call this after manual modifications of the graph
         improvePosition: function ()
@@ -1481,7 +1482,6 @@ define([
 
             return {"moved": movedNodes};
         },
-        */
 
         updateYPositioning: function ()
         {
@@ -1713,10 +1713,12 @@ define([
                             var path   = pathToParents[p].path;
 
                             output.layout.longedges[i] = { "member": parent, "path": [] };
-                            for (var v = 0; v < path.length; v++) {
+
+                            // note: path is given in the is bottom-to-top order, but need top-to-bottom for output
+                            for (var v = path.length-1; v >= 0; v--) {
                                 var virtualVertexID = path[v];
                                 output.layout.longedges[i].path.push( { "order": this.DG.order.vOrder[virtualVertexID],
-                                                                       "x": this.DG.positions[virtualVertexID] } );
+                                                                        "x": this.DG.positions[virtualVertexID] } );
                             }
                         }
                     }

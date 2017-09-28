@@ -221,7 +221,7 @@ define([
                 this.rankY = this.computeRankY(ranksBefore, rankYBefore);
             } else {
                 // usually this branch is taken after a deletion. Make sure rankY legnth is correct
-                this.rankY.splice(this.maxRank);
+                this.rankY.splice(this.maxRank+1);
             }
             timer.printSinceLast("=== Vertical spacing runtime: ");
         },

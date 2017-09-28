@@ -123,14 +123,17 @@ define([
 
                         var weight = this.getEdgeWeight(sourceV, targetV);
 
-                        this.removeEdge(sourceV, targetV);
-
                         var prevV = sourceV;
                         for (var midRank = sourceRank+1; midRank <= targetRank - 1; midRank++) {
                             // sourceV -> targetV, segment number (midRank-sourceRank-1)
                             var nextV = this._addVertex( null, BaseGraph.TYPE.VIRTUALEDGE, {}, {} );
                             ranks[nextV] = midRank;
-                            this.addEdge( prevV, nextV, weight );
+
+                            if (prevV == sourceV) {
+                                this.replaceEdge( prevV, targetV, nextV);
+                            } else {
+                                this.addEdge( prevV, nextV, weight );
+                            }
                             prevV = nextV;
                         }
                         this.addEdge(prevV, targetV, weight);
@@ -159,11 +162,11 @@ define([
                             targetV = this.getOutEdges(targetV)[0];  // [0] since virtual edges have only one outedge
                         }
                         var relationshipV = targetV;
-                        // remove edges from real vertices to virtual edges and from virtual edges ot real vertices;
-                        // edges between virtual vertices do not mater as all will be removed together with vertices
-                        var weight = this.removeEdge(sourceV, path[0]);
+                        // replace edges from person to virtual and from virtual to relationship with a single
+                        // direct edge from person to relationship; note that edges between virtual nodes are left alone here,
+                        // that is OK as they will be removed together with virtual vertices themselves
+                        this.replaceEdge(sourceV, path[0], relationshipV);
                         this.removeEdge(path[path.length-1], relationshipV);
-                        this.addEdge( sourceV, relationshipV, weight );
                     }
                 }
             }
@@ -254,10 +257,24 @@ define([
             Helpers.removeFirstOccurrenceByValue(this.v[fromV], toV);
             Helpers.removeFirstOccurrenceByValue(this.inedges[toV], fromV);
 
-            var weight = this.weights[fromV][toV]
+            var weight = this.weights[fromV][toV];
             delete this.weights[fromV][toV];
 
             return weight;
+        },
+
+        // this is equivalent to removeEdge() + addEdge(), exept that the new edge occupies the same position in the v[fromV] array
+        replaceEdge: function(fromV, oldV, newV) {
+            if (!this.hasEdge(fromV, oldV))
+                throw "removeEdge: edge does not exist";
+
+            this.weights[fromV][newV] = this.weights[fromV][oldV];
+            delete this.weights[fromV][oldV];
+
+            Helpers.replaceInArray(this.v[fromV], oldV, newV);
+            Helpers.removeFirstOccurrenceByValue(this.inedges[oldV], fromV);
+
+            this.inedges[newV].push(fromV);
         },
 
         insertVertex: function(type, properties, edgeWeights, inedges, outedges) {
@@ -697,6 +714,7 @@ define([
             return [this.upTheChainUntilNonVirtual(inEdges[0]), this.upTheChainUntilNonVirtual(inEdges[1])];
         },
 
+        // returns a bottom-to-top path
         getPathToParents: function(v)
         {
             // returns an array with two elements: path to parent1 (excluding v) and path to parent2 (excluding v):
