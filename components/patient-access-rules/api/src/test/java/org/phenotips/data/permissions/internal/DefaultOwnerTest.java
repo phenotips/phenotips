@@ -135,6 +135,27 @@ public class DefaultOwnerTest
         Assert.assertFalse(o.equals("other"));
     }
 
+    /** Tests for {@link Owner#equals(Object)} with null user. */
+    @Test
+    public void equalsWithNullUserTest()
+    {
+        Owner o = new DefaultOwner(null, this.helper);
+        // Equals itself
+        Assert.assertTrue(o.equals(o));
+        // Doesn't equal null
+        Assert.assertFalse(o.equals(null));
+        // Equals an identical owner
+        Owner other = new DefaultOwner(null, this.helper);
+        Assert.assertTrue(o.equals(other));
+        Assert.assertTrue(other.equals(o));
+        // Doesn't equal an owner with different user
+        other = new DefaultOwner(new DocumentReference("xwiki", "XWiki", "padams"), this.helper);
+        Assert.assertFalse(o.equals(other));
+        Assert.assertFalse(other.equals(o));
+        // Doesn't equal different types of objects
+        Assert.assertFalse(o.equals("other"));
+    }
+
     /** Basic tests for {@link Owner#hashCode()}. */
     @Test
     public void hashCodeTest() throws ComponentLookupException
