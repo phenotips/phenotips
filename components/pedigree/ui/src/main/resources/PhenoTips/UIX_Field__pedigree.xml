@@ -121,6 +121,8 @@
 
 {{include reference="PhenoTips.PedigreeMacros" /}}
 
+{{include reference="PhenoTips.FormMacros" /}}
+
 {{velocity}}
 #if ($xcontext.action != 'export')
   #set ($family = $services.families.getFamilyForPatient($doc.name))
@@ -130,6 +132,13 @@
 
   #else
     #pedigreeThumbnail($family, $doc.name)
+    #set($displayMembers = "$!{config.getProperty('displayFamilyMembers').value}")##
+    #if($displayMembers != 0)
+{{html clean="false" wiki="false"}}&lt;div class="family-members"&gt;Family members:{{/html}}##
+
+#__displayFamilyMembers($family)
+{{html clean="false" wiki="false"}}&lt;/div&gt;{{/html}}##
+    #end
   #end
 #end
 {{/velocity}}</content>

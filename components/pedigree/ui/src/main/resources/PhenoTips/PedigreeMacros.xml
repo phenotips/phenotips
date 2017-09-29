@@ -601,6 +601,18 @@
 }
 .pedigree-edit-trigger {
   cursor: pointer;
+}
+.pedigree-wrapper, .family-members {
+  display: inline-block;
+}
+.family-members {
+  vertical-align: top;
+  margin-left: 3em;
+}
+.family-members ul {
+  list-style: none;
+  margin-top: 0.5em;
+  margin-left: 1em;
 }</code>
     </property>
     <property>
