@@ -44,18 +44,18 @@ define([], function() {
             var inputSourceClass = options.inputSourceClass || "";
             var spanElem = new Element('span');
             var optionsHTML = '<select name="' + this._dataName + '" class="'+inputSourceClass+'"><option value=""></option>';
-            majorStepSize && (optionsHTML += '<option value="before_' + from + '">before ' + from + '</option>');
+            majorStepSize && (optionsHTML += '<option value="<' + from + '">before ' + from + '</option>');
             var counter = 1;
             var startRange = from;
             for (var num = from; num <= to; num += step, counter++) {
                 if (majorStepSize && counter === majorStepSize) {
                     counter = 0;
-                    optionsHTML += '<option value="before_' + num + '">' + startRange + '-' + num + '</option>';
+                    optionsHTML += '<option value="' + startRange + '-' + num + '">' + startRange + '-' + num + '</option>';
                     startRange = num + step;
                 }
                 optionsHTML += '<option value="' + num + '">' + num + '</option>';
             }
-            majorStepSize && (optionsHTML += '<option value="after_' + to + '">after ' + to + '</option></select>');
+            majorStepSize && (optionsHTML += '<option value=">' + to + '">after ' + to + '</option></select>');
             spanElem.innerHTML = optionsHTML;
             spanElem._getValue = this._defaultGetSelectValueFx(spanElem);
             spanElem._setValue = this._setSelectValueFx(spanElem, options.storedToDisplayedMapper);

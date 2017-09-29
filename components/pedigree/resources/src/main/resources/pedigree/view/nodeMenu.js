@@ -871,6 +871,39 @@ define([
             var toStoredLateralityMap = {"Bilateral" : "bi", "Unilateral" : "u", "Right" : "r", "Left" : "l"};
             var toDisplayedLateralityMap = {"bi" : "Bilateral", "u" : "Unilateral", "r" : "Right", "l" : "Left"};
 
+            var toStoredAgeFx = function(value) {
+                if (isNaN(parseInt(value))) {
+                    if (value.indexOf('>') > -1) {
+                        return value.replace('>', 'after_');
+                    }
+                    if (value.indexOf('<') > -1) {
+                        return value.replace('<', 'before_');
+                    }
+                } else {
+                    var rangeIdx = value.indexOf('-');
+                    if (rangeIdx > -1) {
+                          return "before_" + value.substring(rangeIdx + 1);
+                    }
+                    return value;
+                }
+            };
+
+            var toDisplayedAgeFx = function(value) {
+                if (isNaN(parseInt(value))) {
+                    if (value.indexOf('after_') > -1) {
+                        return value.replace('after_', '>');
+                    }
+                    if (value.indexOf('before_1') > -1 && value.indexOf('before_10') === -1) {
+                        return value.replace('before_', '<');
+                    }
+                    var to = parseInt(value.substring(7));
+                    var from = to - 9;
+                    return from + "-" + to;
+                } else {
+                    return value;
+                }
+            };
+
             var toStoredLateralityFx = function(value) {
                 return toStoredLateralityMap[value] || "";
             };
@@ -897,7 +930,9 @@ define([
                     'defListItemClass': 'age_of_onset',
                     'inputSourceClass': 'cancer_age_select field-no-user-select',
                     'qualifierLabel': 'Age:',
-                    'qualifierName': 'ageAtDiagnosis'})
+                    'qualifierName': 'ageAtDiagnosis',
+                    'displayedToStoredMapper': toStoredAgeFx,
+                    'storedToDisplayedMapper': toDisplayedAgeFx})
                 .dialogsAddItemSelect({
                     'data': ['Unknown', 'Bilateral', 'Unilateral', 'Right', 'Left'],
                     'defListItemClass': 'laterality',

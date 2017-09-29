@@ -857,7 +857,7 @@ define([
                         if (cancerData[cancerId].hasOwnProperty("qualifiers") && cancerData[cancerId].qualifiers.length > 0) {
                             var dx = "";
                             cancerData[cancerId].qualifiers.forEach(function(qualifier) {
-                                if (qualifier.hasOwnProperty("ageAtDiagnosis") && qualifier.ageAtDiagnosis.length > 0) {
+                                if (qualifier.hasOwnProperty("ageAtDiagnosis") && qualifier.ageAtDiagnosis && qualifier.ageAtDiagnosis.length > 0) {
                                     var age = qualifier.ageAtDiagnosis;
                                     if (isNaN(parseInt(age))) {
                                         if (age === "before_1") {
