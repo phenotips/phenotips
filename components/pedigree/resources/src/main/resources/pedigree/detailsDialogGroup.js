@@ -1,29 +1,29 @@
 /**
- * DetailsDialogueGroup allows to create one or more instances of DetailsDialogue for some term.
+ * DetailsDialogGroup allows to create one or more instances of DetailsDialog for some term.
  *
- * @class DetailsDialogueGroup
+ * @class DetailsDialogGroup
  * @constructor
  */
 // TODO: Move and rename.
 define([
-        "pedigree/detailsDialogue"
+        "pedigree/detailsDialog"
     ], function(
-        DetailsDialogue
+        DetailsDialog
     ){
-    var DetailsDialogueGroup = Class.create({
+    var DetailsDialogGroup = Class.create({
         initialize: function (dataName, options) {
             this._dataName = dataName;
-            // If this._allowMultiDialogues is true, more than one qualifier dialogue can be added per term.
+            // If this._allowMultiDialogs is true, more than one qualifier dialog can be added per term.
             this._qualifierNo = 0;
 
             var groupOptions = options || {};
-            this._allowMultiDialogues = groupOptions.allowMultiDialogues || false;
+            this._allowMultiDialogs = groupOptions.allowMultiDialogs || false;
             this._disableTermDelete = groupOptions.disableTermDelete || false;
             this._doneTypingInterval = groupOptions.doneTypingInterval || 500;
 
-            this._dialogueOptions = [];
+            this._dialogOptions = [];
 
-            this._dialogueMap = {};
+            this._dialogMap = {};
 
             this._crtFocus = null;
 
@@ -31,8 +31,8 @@ define([
             this._buildEmptyContainer();
 
             // Attach listeners.
-            this._addDialogueDeletedListener();
-            this._addDialogueFocusManagers();
+            this._addDialogDeletedListener();
+            this._addDialogFocusManagers();
             this._attachKeyUpObserver();
         },
 
@@ -41,21 +41,21 @@ define([
         },
 
         /**
-         * Returns the constructed dialogue group element for the term.
+         * Returns the constructed dialog group element for the term.
          *
-         * @return {Element|*} the dialogue group element for the term
+         * @return {Element|*} the dialog group element for the term
          */
         get: function() {
             return this._qualifiersContainer;
         },
 
         /**
-         * Associates the dialogue group with some term.
+         * Associates the dialog group with some term.
          *
          * @param label {String} the label for the term; if null or empty, will be set to ID
          * @param termID {String} the ID for the term; must not be null or empty
          * @param tooltip the class name of the tooltip to be created; null/undefined if no tooltip should be attached
-         * @return {DetailsDialogueGroup} self
+         * @return {DetailsDialogGroup} self
          */
         withLabel: function(label, termID, tooltip) {
             var trimmedID = (termID && termID.strip()) || "";
@@ -77,56 +77,56 @@ define([
             return this;
         },
 
-        dialoguesAddNumericSelect: function(options) {
-            var addNumericSelect = function(currentDialogue) {
-                currentDialogue.withNumericSelect(options);
+        dialogsAddNumericSelect: function(options) {
+            var addNumericSelect = function(currentDialog) {
+                currentDialog.withNumericSelect(options);
             };
-            this._dialogueOptions.push(addNumericSelect);
+            this._dialogOptions.push(addNumericSelect);
             return this;
         },
 
-        dialoguesAddItemSelect: function(options) {
-            var addItemSelect = function(currentDialogue) {
-                currentDialogue.withItemSelect(options);
+        dialogsAddItemSelect: function(options) {
+            var addItemSelect = function(currentDialog) {
+                currentDialog.withItemSelect(options);
             };
-            this._dialogueOptions.push(addItemSelect);
+            this._dialogOptions.push(addItemSelect);
             return this;
         },
 
-        dialoguesAddRadioList: function(collapsible, options) {
-            var addRadioList = function(currentDialogue) {
-                currentDialogue.withRadioList(collapsible, options);
+        dialogsAddRadioList: function(collapsible, options) {
+            var addRadioList = function(currentDialog) {
+                currentDialog.withRadioList(collapsible, options);
             };
-            this._dialogueOptions.push(addRadioList);
+            this._dialogOptions.push(addRadioList);
             return this;
         },
 
-        dialoguesAddTextBox: function(collapsible, options) {
-            var addTextBox = function(currentDialogue) {
-                currentDialogue.withTextBox(collapsible, options);
+        dialogsAddTextBox: function(collapsible, options) {
+            var addTextBox = function(currentDialog) {
+                currentDialog.withTextBox(collapsible, options);
             };
-            this._dialogueOptions.push(addTextBox);
+            this._dialogOptions.push(addTextBox);
             return this;
         },
 
-        dialoguesAddCustomElement: function(element, collapsible, options) {
-            var addCustomElement = function(currentDialogue) {
-                currentDialogue.withQualifierElement(element, collapsible, options);
+        dialogsAddCustomElement: function(element, collapsible, options) {
+            var addCustomElement = function(currentDialog) {
+                currentDialog.withQualifierElement(element, collapsible, options);
             };
-            this._dialogueOptions.push(addCustomElement);
+            this._dialogOptions.push(addCustomElement);
             return this;
         },
 
-        dialoguesAddDeleteAction: function() {
-            var addDeleteAction = function(currentDialogue) {
-                currentDialogue.withDeleteAction();
+        dialogsAddDeleteAction: function() {
+            var addDeleteAction = function(currentDialog) {
+                currentDialog.withDeleteAction();
             };
-            this._dialogueOptions.push(addDeleteAction);
+            this._dialogOptions.push(addDeleteAction);
             return this;
         },
 
-        clearDialogueOptions: function() {
-            this._dialogueOptions = [];
+        clearDialogOptions: function() {
+            this._dialogOptions = [];
             return this;
         },
 
@@ -141,14 +141,14 @@ define([
         },
 
         /**
-         * Sets as affected and adds an empty qualifier dialogue.
+         * Sets as affected and adds an empty qualifier dialog.
          *
          * @param silent true iff this should be performed silently, with no events fired
          */
         initAffected: function(silent) {
             this.affected(true);
-            this.addDialogue(silent);
-            this._allowMultiDialogues && this._addDetailsClickListener();
+            this.addDialog(silent);
+            this._allowMultiDialogs && this._addDetailsClickListener();
         },
 
         /**
@@ -168,9 +168,9 @@ define([
          */
         getValues: function() {
             var qualifiers = [];
-            for (var key in this._dialogueMap) {
-                if (this._dialogueMap.hasOwnProperty(key)) {
-                    qualifiers.push(this._dialogueMap[key].getValues());
+            for (var key in this._dialogMap) {
+                if (this._dialogMap.hasOwnProperty(key)) {
+                    qualifiers.push(this._dialogMap[key].getValues());
                 }
             }
           return {
@@ -214,21 +214,21 @@ define([
         },
 
         /**
-         * Adds a qualifiers dialogue.
+         * Adds a qualifiers dialog.
          *
-         * @param silent true iff dialogue creation should be silent (that is, no event should be fired)
-         * @return {DetailsDialogue} the dialogue just created
+         * @param silent true iff dialog creation should be silent (that is, no event should be fired)
+         * @return {DetailsDialog} the dialog just created
          */
-        addDialogue: function(silent) {
-            var dialogue = this._addDialogue();
-            this._dialogueMap[dialogue.getID()] = dialogue;
-            this._applyDialogueOptions(dialogue);
-            !this._allowMultiDialogues && this._removeDetailsClickListener();
-            this._dialogueHolder.show();
+        addDialog: function(silent) {
+            var dialog = this._addDialog();
+            this._dialogMap[dialog.getID()] = dialog;
+            this._applyDialogOptions(dialog);
+            !this._allowMultiDialogs && this._removeDetailsClickListener();
+            this._dialogHolder.show();
             if (!silent) {
-                Event.fire(this._qualifiersContainer, this._dataName + ':dialogue:added', {'element': dialogue.getDialogue()});
+                Event.fire(this._qualifiersContainer, this._dataName + ':dialog:added', {'element': dialog.getDialog()});
             }
-            return dialogue;
+            return dialog;
         },
 
         /**
@@ -244,9 +244,9 @@ define([
         _setQualifiers: function(qualifiers) {
             var _this = this;
             qualifiers.forEach(function(qualifier) {
-                _this.addDialogue(true).setValues(qualifier).blur();
+                _this.addDialog(true).setValues(qualifier).blur();
             });
-            this._allowMultiDialogues && this._addDetailsClickListener();
+            this._allowMultiDialogs && this._addDetailsClickListener();
         },
 
         /**
@@ -255,25 +255,25 @@ define([
          */
         _clearDetails: function() {
             this._qualifierNo = 0;
-            this._dialogueHolder.descendants().forEach(function(elem) {
+            this._dialogHolder.descendants().forEach(function(elem) {
                 elem.stopObserving();
             });
-            this._dialogueMap = {};
-            this._dialogueHolder.update();
-            this._dialogueHolder.hide();
+            this._dialogMap = {};
+            this._dialogHolder.update();
+            this._dialogHolder.hide();
             this.affected(false);
             this._removeDetailsClickListener();
         },
 
         /**
-         * Builds an empty container that will hold qualifiers dialogues for a term.
+         * Builds an empty container that will hold qualifiers dialogs for a term.
          * @private
          */
         _buildEmptyContainer: function() {
             this._qualifiersContainer = new Element('table', {'class' : 'summary-group ' + this._dataName + "-summary-group"});
             this._qualifiersContainer.name = this._dataName;
 
-            this._dialogueHolder = new Element('td', {'class' : 'dialogue-holder'});
+            this._dialogHolder = new Element('td', {'class' : 'dialog-holder'});
 
             var tbody = new Element('tbody')
               .insert(new Element('tr', {'class' : 'term-holder'})
@@ -281,12 +281,12 @@ define([
                   .insert(new Element('span', {'class' : 'term-data'}))
                   .insert(new Element('span', {'class' : 'delete-button-holder'}))))
               .insert(new Element('tr')
-                .insert(this._dialogueHolder))
+                .insert(this._dialogHolder))
               .insert(new Element('tr')
                 .insert(new Element('td', {'class' : 'add-button-holder'})));
 
             this._qualifiersContainer.insert(tbody);
-            this._dialogueHolder.hide();
+            this._dialogHolder.hide();
         },
 
         _addTooltip: function(tooltip) {
@@ -325,27 +325,27 @@ define([
         },
 
         /**
-         * Applies the predefined dialogue options onto some {DetailsDialogue}.
-         * @param {DetailsDialogue} dialogue
-         * @return {DetailsDialogue} the updated dialogue
+         * Applies the predefined dialog options onto some {DetailsDialog}.
+         * @param {DetailsDialog} dialog
+         * @return {DetailsDialog} the updated dialog
          * @private
          */
-        _applyDialogueOptions: function(dialogue) {
-            this._dialogueOptions.forEach(function(applyOption) {
-                applyOption(dialogue);
+        _applyDialogOptions: function(dialog) {
+            this._dialogOptions.forEach(function(applyOption) {
+                applyOption(dialog);
             });
-            return dialogue;
+            return dialog;
         },
 
         /**
-         * Adds an empty dialogue and returns it.
+         * Adds an empty dialog and returns it.
          *
-         * @return {DetailsDialogue} the attached dialogue
+         * @return {DetailsDialog} the attached dialog
          * @private
          */
-        _addDialogue: function() {
+        _addDialog: function() {
             var qualifierID = this._termID + "_" + this._qualifierNo++;
-            return new DetailsDialogue(qualifierID, this._dataName, this._dialogueHolder).attach();
+            return new DetailsDialog(qualifierID, this._dataName, this._dialogHolder).attach();
         },
 
         /**
@@ -388,8 +388,8 @@ define([
             statusInput.observe('change', function(event) {
                 event.stop();
                 if (statusInput.checked) {
-                    _this._allowMultiDialogues && _this._addDetailsClickListener();
-                    _this.addDialogue(false);
+                    _this._allowMultiDialogs && _this._addDetailsClickListener();
+                    _this.addDialog(false);
                 } else {
                     _this._removeDetailsClickListener();
                     _this.clearDetails();
@@ -406,7 +406,7 @@ define([
             var _this = this;
             this._addDetailsButton.observe('click', function(event) {
                 event.stop();
-                _this.addDialogue(false)
+                _this.addDialog(false)
             });
             this._addButtonHolder.show();
         },
@@ -421,33 +421,33 @@ define([
         },
 
         /**
-         * Adds a listener for a dialogue being deleted.
+         * Adds a listener for a dialog being deleted.
          * @private
          */
-        _addDialogueDeletedListener: function() {
+        _addDialogDeletedListener: function() {
             var _this = this;
-            this._dialogueHolder.observe(_this._dataName + ':dialogue:deleted', function(event) {
+            this._dialogHolder.observe(_this._dataName + ':dialog:deleted', function(event) {
                 if (!this.down()) {
                     // Stop event propagation and clear everything.
                     event.stop();
                     _this.clearDetails();
                 } else {
-                    event.memo && event.memo.id && (delete _this._dialogueMap[event.memo.id]);
+                    event.memo && event.memo.id && (delete _this._dialogMap[event.memo.id]);
                 }
             });
         },
 
-        _addDialogueFocusManagers: function() {
+        _addDialogFocusManagers: function() {
             var _this = this;
-            // Observe adding of a new dialogue. Want to blur any focused dialogues and focus the added dialogue.
-            document.observe(this._dataName + ':dialogue:added', function(event) {
-                var addedDialogue = event.memo && event.memo.element;
-                if (!addedDialogue) { return; }
-                if (addedDialogue.up('td.dialogue-holder') === _this._dialogueHolder) {
+            // Observe adding of a new dialog. Want to blur any focused dialogs and focus the added dialog.
+            document.observe(this._dataName + ':dialog:added', function(event) {
+                var addedDialog = event.memo && event.memo.element;
+                if (!addedDialog) { return; }
+                if (addedDialog.up('td.dialog-holder') === _this._dialogHolder) {
                     if (_this._crtFocus) {
                         _this._blur(_this._crtFocus);
                     }
-                    _this._crtFocus = addedDialogue;
+                    _this._crtFocus = addedDialog;
                     _this._focus(_this._crtFocus);
                 } else {
                     if (_this._crtFocus) {
@@ -458,8 +458,8 @@ define([
             });
             // Observe clicks.
             document.observe('click', function (event) {
-                var clickedDialogueHolder = event.findElement('td.dialogue-holder');
-                if (clickedDialogueHolder === _this._dialogueHolder) {
+                var clickedDialogHolder = event.findElement('td.dialog-holder');
+                if (clickedDialogHolder === _this._dialogHolder) {
                     var summaryItem = event.findElement('div.summary-item');
                     if (_this._crtFocus) {
                         if (_this._crtFocus !== summaryItem) {
@@ -482,37 +482,37 @@ define([
         },
 
         /**
-         * Blurs a dialogue element.
+         * Blurs a dialog element.
          *
-         * @param elem a dialogue element
+         * @param elem a dialog element
          * @private
          */
         _blur: function(elem) {
             var elemID = elem.down('input').value;
-            var dialogue = this._dialogueMap[elemID];
-            if (dialogue) {
-                dialogue.blur();
-                Event.fire(this._qualifiersContainer, this._dataName + ':dialogue:blurred');
+            var dialog = this._dialogMap[elemID];
+            if (dialog) {
+                dialog.blur();
+                Event.fire(this._qualifiersContainer, this._dataName + ':dialog:blurred');
             }
         },
 
         /**
-         * Focuses a dialogue element.
+         * Focuses a dialog element.
          *
-         * @param elem a dialogue element
+         * @param elem a dialog element
          * @private
          */
         _focus: function(elem) {
             var elemID = elem.down('input').value;
-            var dialogue = this._dialogueMap[elemID];
-            if (dialogue) {
-                dialogue.focus();
-                Event.fire(this._qualifiersContainer, this._dataName + ':dialogue:focused');
+            var dialog = this._dialogMap[elemID];
+            if (dialog) {
+                dialog.focus();
+                Event.fire(this._qualifiersContainer, this._dataName + ':dialog:focused');
             }
         },
 
         /**
-         * Attaches an observer to the _dialogueHolder, that monitors any 'keyup' events on any object with
+         * Attaches an observer to the _dialogHolder, that monitors any 'keyup' events on any object with
          * class name 'qualifier-notes'. Fires a custom events when notes are updated.
          * Code adapted from https://stackoverflow.com/a/4220182
          *
@@ -521,12 +521,12 @@ define([
         _attachKeyUpObserver: function() {
             var _this = this;
             var typingTimer;
-            this._dialogueHolder.observe('keyup', function(event) {
+            this._dialogHolder.observe('keyup', function(event) {
                 clearTimeout(typingTimer);
                 typingTimer = setTimeout(doneTyping.bind(_this, event), _this._doneTypingInterval);
             });
 
-            this._dialogueHolder.observe('keydown', function() {
+            this._dialogHolder.observe('keydown', function() {
                 clearTimeout(typingTimer);
             });
 
@@ -537,5 +537,5 @@ define([
             };
         }
     });
-    return DetailsDialogueGroup;
+    return DetailsDialogGroup;
 });

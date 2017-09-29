@@ -1,18 +1,18 @@
 /**
- * DetailsDialogue allows to build a dialogue for collecting additional "qualifiers" data for some term.
+ * DetailsDialog allows to build a dialog for collecting additional "qualifiers" data for some term.
  *
- * @class DetailsDialogue
+ * @class DetailsDialog
  * @constructor
  */
 // TODO: Move and rename.
 define([], function() {
-    var DetailsDialogue = Class.create({
+    var DetailsDialog = Class.create({
         initialize: function (elementID, dataName, parentContainer) {
             this._container = parentContainer;
             this._dataName = dataName;
             this._elementID = elementID;
             this._qualifierMap = {};
-            this._buildEmptyDialogue();
+            this._buildEmptyDialog();
         },
 
         /**
@@ -22,13 +22,16 @@ define([], function() {
          *                         - "from" the starting value, as integer, for the numeric select
          *                         - "to" the final value, as integer, for the numeric select
          *                         - "step" the step size, as integer
+         *                         - "majorStepSize" the major step size after which to generate a numeric range
+         *                                           (e.g. majorStepSize = 10, means every 10th numeric element will be
+         *                                           a range); if not specified, no ranges will be generated
          *                         - "defListItemClass" the css class for the definition list item
          *                         - "qualifierLabel" the label for the qualifier definition list element
          *                         - "qualifierName" the name of the qualifier definition list element
          *                         - "inputSourceClass" the css class for the input source element
          *                         - "displayedToStoredMapper" custom function mapping displayed value to how it should be stored
          *                         - "storedToDisplayedMapper" custom function mapping stored value to how it should be displayed
-         * @return {*|DetailsDialogue}
+         * @return {*|DetailsDialog}
          */
         withNumericSelect: function(options) {
             // Define data ranges for the numeric select element.
@@ -37,17 +40,22 @@ define([], function() {
             var from = options.from;
             var to = options.to;
             var step = options.step || 1;
+            var majorStepSize = options.majorStepSize || null;
             var inputSourceClass = options.inputSourceClass || "";
             var spanElem = new Element('span');
             var optionsHTML = '<select name="' + this._dataName + '" class="'+inputSourceClass+'"><option value=""></option>';
-            optionsHTML += '<option value="before_' + from + '">before ' + from + '</option>';
-            for (var num = from; num <= to; num++) {
-                if (num % step === 0) {
-                    optionsHTML += '<option value="before_' + num + '">' + (num - step + 1) + '-' + num + '</option>';
+            majorStepSize && (optionsHTML += '<option value="before_' + from + '">before ' + from + '</option>');
+            var counter = 1;
+            var startRange = from;
+            for (var num = from; num <= to; num += step, counter++) {
+                if (majorStepSize && counter === majorStepSize) {
+                    counter = 0;
+                    optionsHTML += '<option value="before_' + num + '">' + startRange + '-' + num + '</option>';
+                    startRange = num + step;
                 }
                 optionsHTML += '<option value="' + num + '">' + num + '</option>';
             }
-            optionsHTML += '<option value="after_' + to + '">after ' + to + '</option></select>';
+            majorStepSize && (optionsHTML += '<option value="after_' + to + '">after ' + to + '</option></select>');
             spanElem.innerHTML = optionsHTML;
             spanElem._getValue = this._defaultGetSelectValueFx(spanElem);
             spanElem._setValue = this._setSelectValueFx(spanElem, options.storedToDisplayedMapper);
@@ -156,7 +164,7 @@ define([], function() {
          *                         - "qualifierLabel" the label for the qualifier definition list element
          *                         - "qualifierName" the name of the qualifier definition list element
          *                         - "inline" contains the inline class name iff element is inline, not specified otherwise
-         * @return {DetailsDialogue}
+         * @return {DetailsDialog}
          */
         withQualifierElement: function(element, collapsible, options) {
             var defListItemClass = options.defListItemClass || "";
@@ -192,12 +200,12 @@ define([], function() {
         },
 
         /**
-         * Adds a delete action element to the dialogue.
+         * Adds a delete action element to the dialog.
          *
-         * @return {DetailsDialogue} self
+         * @return {DetailsDialog} self
          */
         withDeleteAction: function() {
-            var deleteAction = new Element('span', {'id' : 'delete_' + this._elementID, 'class' : this._dataName + '-dialogue-delete action-done clickable'})
+            var deleteAction = new Element('span', {'id' : 'delete_' + this._elementID, 'class' : this._dataName + '-dialog-delete action-done clickable'})
               .update("✖");
             this._termDetails.insert({top: deleteAction});
             this._attachOnDeleteListener(deleteAction);
@@ -205,9 +213,9 @@ define([], function() {
         },
 
         /**
-         * Attaches the dialogue to the parent container (this._container).
+         * Attaches the dialog to the parent container (this._container).
          *
-         * @return {DetailsDialogue} self
+         * @return {DetailsDialog} self
          */
         attach: function() {
             this._container.insert(this._termDetails);
@@ -215,11 +223,11 @@ define([], function() {
         },
 
         /**
-         * Returns the constructed dialogue element.
+         * Returns the constructed dialog element.
          *
-         * @return {Element|*} the constructed dialogue element
+         * @return {Element|*} the constructed dialog element
          */
-        getDialogue: function() {
+        getDialog: function() {
             return this._termDetails;
         },
 
@@ -233,7 +241,7 @@ define([], function() {
         },
 
         /**
-         * Gets the values for all the input sources in the dialogue.
+         * Gets the values for all the input sources in the dialog.
          *
          * @return {Object} containing the custom element name to value mapping
          */
@@ -249,7 +257,7 @@ define([], function() {
         },
 
         /**
-         * Sets values for the dialogue.
+         * Sets values for the dialog.
          *
          * @param values {Object} the values are key-value pairs, where the keys should be the same as in _qualifierMap
          */
@@ -267,7 +275,7 @@ define([], function() {
         },
 
         /**
-         * Blurs the dialogue.
+         * Blurs the dialog.
          */
         blur: function() {
             if (this._termDetails.hasClassName('focused')) {
@@ -278,7 +286,7 @@ define([], function() {
         },
 
         /**
-         * Focuses the dialogue.
+         * Focuses the dialog.
          */
         focus: function() {
             if (!this._termDetails.hasClassName('focused')) {
@@ -507,7 +515,7 @@ define([], function() {
         },
 
         /**
-         * Toggles the summary/edit mode for the dialogue.
+         * Toggles the summary/edit mode for the dialog.
          * @private
          */
         _toggleSummarize: function() {
@@ -520,10 +528,10 @@ define([], function() {
         },
 
         /**
-         * Builds an empty dialogue where qualifiers will be added.
+         * Builds an empty dialog where qualifiers will be added.
          * @private
          */
-        _buildEmptyDialogue: function () {
+        _buildEmptyDialog: function () {
             this._termDetails = new Element('div', {'class' : 'summary-item focused'});
             this._termDetails.innerHTML = '<input type="hidden" value="' + this._elementID + '">' +
               '<div id="term_details_' + this._elementID + '" class="term-details">' +
@@ -537,7 +545,7 @@ define([], function() {
         },
 
         /**
-         * Attaches a listener for clicks on the dialogue delete button.
+         * Attaches a listener for clicks on the dialog delete button.
          * @param deleteAction
          * @private
          */
@@ -546,7 +554,7 @@ define([], function() {
             deleteAction.observe('click', function() {
                 _this._termDetails.remove();
                 _this._qualifierMap = {};
-                Event.fire(_this._container, _this._dataName + ':dialogue:deleted', {'id' : _this._elementID});
+                Event.fire(_this._container, _this._dataName + ':dialog:deleted', {'id' : _this._elementID});
             });
         },
 
@@ -635,5 +643,5 @@ define([], function() {
         }
     });
 
-    return DetailsDialogue;
+    return DetailsDialog;
 });

@@ -30,8 +30,8 @@ define([
         "pedigree/view/datepicker",
         "pedigree/view/graphicHelpers",
         "pedigree/view/ageCalc",
-        "pedigree/detailsDialogue",
-        "pedigree/detailsDialogueGroup"
+        "pedigree/detailsDialog",
+        "pedigree/detailsDialogGroup"
     ], function(
         Disorder,
         HPOTerm,
@@ -41,8 +41,8 @@ define([
         DatePicker,
         GraphicHelpers,
         AgeCalc,
-        DetailsDialogue,
-        DetailsDialogueGroup
+        DetailsDialog,
+        DetailsDialogGroup
     ){
     NodeMenu = Class.create({
         initialize : function(data, otherCSSClass) {
@@ -795,8 +795,8 @@ define([
                     var cancerName = cancerLegend.getCancer(cancerId).getName();
                     this._addNewCancerRow(cancerId, cancerName, table, true, [
                         data.name + ':term:cleared',
-                        data.name + ':dialogue:deleted',
-                        data.name + ':dialogue:added',
+                        data.name + ':dialog:deleted',
+                        data.name + ':dialog:added',
                         data.name + ':notes:updated',
                         'change'
                     ]);
@@ -815,8 +815,8 @@ define([
                             || _this._addNewCancerRow.bind(_this)(cancerId, event.memo.value, table, false, [
                                 data.name + ':term:deleted',
                                 data.name + ':term:cleared',
-                                data.name + ':dialogue:deleted',
-                                data.name + ':dialogue:added',
+                                data.name + ':dialog:deleted',
+                                data.name + ':dialog:added',
                                 data.name + ':notes:updated',
                                 'change'
                             ]);
@@ -828,7 +828,7 @@ define([
                     }
                 });
 
-                [data.name + ':dialogue:focused', data.name + ':dialogue:added'].each(function(eventName) {
+                [data.name + ':dialog:focused', data.name + ':dialog:added'].each(function(eventName) {
                     _this.form.observe(eventName, function() {
                         _this.reposition();
                     });
@@ -848,7 +848,7 @@ define([
             var dataName = "cancers";
             var tableRow = new Element('tr', {'class': 'cancer_field'} );
             var qualifiers = this._buildNewCancerElement(cancerId, label, dataName,
-              {'allowMultiDialogues': true, 'disableTermDelete': disableDelete});
+              {'allowMultiDialogs': true, 'disableTermDelete': disableDelete});
             this._setCancersValueFx(qualifiers);
             this._attachFieldEventListeners(qualifiers, toObserve);
             table.insert(tableRow.insert(qualifiers));
@@ -886,18 +886,19 @@ define([
             var toDisplayedTypeFx = function(value) {
                 return value ? "Primary" : "Mets";
             };
-            var qualifiersWidget = new DetailsDialogueGroup(dataName, optionsParam)
+            var qualifiersWidget = new DetailsDialogGroup(dataName, optionsParam)
                 .withLabel(cancerName, cancerId, 'phenotype-info')
-                .dialoguesAddDeleteAction()
-                .dialoguesAddNumericSelect({
+                .dialogsAddDeleteAction()
+                .dialogsAddNumericSelect({
                     'from': 1,
                     'to': 100,
-                    'step': 10,
+                    'majorStepSize' : 10,
+                    'step': 1,
                     'defListItemClass': 'age_of_onset',
                     'inputSourceClass': 'cancer_age_select field-no-user-select',
                     'qualifierLabel': 'Age:',
                     'qualifierName': 'ageAtDiagnosis'})
-                .dialoguesAddItemSelect({
+                .dialogsAddItemSelect({
                     'data': ['Unknown', 'Bilateral', 'Unilateral', 'Right', 'Left'],
                     'defListItemClass': 'laterality',
                     'inputSourceClass': 'cancer_laterality_select',
@@ -905,7 +906,7 @@ define([
                     'qualifierName': 'laterality',
                     'displayedToStoredMapper': toStoredLateralityFx,
                     'storedToDisplayedMapper': toDisplayedLateralityFx})
-                .dialoguesAddItemSelect({
+                .dialogsAddItemSelect({
                     'data': ['Primary', 'Mets'],
                     'defListItemClass': 'type',
                     'inputSourceClass': 'cancer_type_select',
@@ -913,7 +914,7 @@ define([
                     'qualifierName': 'primary',
                     'displayedToStoredMapper': toStoredTypeFx,
                     'storedToDisplayedMapper': toDisplayedTypeFx})
-                .dialoguesAddTextBox(false, {
+                .dialogsAddTextBox(false, {
                     'defListItemClass': 'comments',
                     'inputSourceClass': 'cancer_notes',
                     'qualifierLabel': 'Notes:',
@@ -1279,8 +1280,8 @@ define([
                                     qualifiers = this._addNewCancerRow(cancerID, cancerData.label, cancerContainer, false, [
                                         dataName + ':term:deleted',
                                         dataName + ':term:cleared',
-                                        dataName + ':dialogue:deleted',
-                                        dataName + ':dialogue:added',
+                                        dataName + ':dialog:deleted',
+                                        dataName + ':dialog:added',
                                         dataName + ':notes:updated',
                                         'change'
                                     ]);

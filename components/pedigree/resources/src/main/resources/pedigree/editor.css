@@ -1182,7 +1182,7 @@ table.summary-group div.summary-item.blurred {
 div.summary-item div.clearfloats {
   margin: 0;
 }
-table.summary-group div.summary-item span.cancers-dialogue-delete,
+table.summary-group div.summary-item span.cancers-dialog-delete,
 table.summary-group tr.term-holder span.patient-term-delete {
   color: $theme.notificationErrorColor;
 }
