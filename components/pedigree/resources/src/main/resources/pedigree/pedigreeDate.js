@@ -212,7 +212,7 @@ define([], function(){
             if (this.month == null) {
                 return this.getBestPrecisionStringYear();
             }
-            var dateStr = this.getYear().toString();
+            var dateStr = this.year && this.getBestPrecisionStringYear() || '';
             if (this.getMonth() != null && dateFormat != "Y") {
                 dateStr = ("0" + this.getMonth()).slice(-2) + "-" + dateStr;
                 if (this.getDay() != null && dateFormat == "DMY") {
