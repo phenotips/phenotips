@@ -1644,7 +1644,7 @@ define([
 
         //=============================================================
 
-        toJSONObject: function()
+        toJSONObject: function(options)
         {
             var timer = new Helpers.Timer();
 
@@ -1673,6 +1673,20 @@ define([
                     var phenotipsJSON = this.getPatientPhenotipsJSON(i);
                     if (!Helpers.isObjectEmpty(phenotipsJSON)) {
                         memberData["properties"] = phenotipsJSON;
+                    }
+                    if (options) {
+                        if (options.hasOwnProperty("includePatientLinks") && !options.includePatientLinks) {
+                            delete memberData["properties"].id;
+                        }
+                        if (options.hasOwnProperty("PII") && (options.PII == "nopersonal" || options.PII == "minimal")) {
+                            delete memberData["properties"].patient_name;
+                            delete memberData["properties"].date_of_birth;
+                            delete memberData["properties"].date_of_death;
+                            memberData.hasOwnProperty("pedigreeProperties") && delete memberData["pedigreeProperties"].lNameAtB;
+                        }
+                        if (options.hasOwnProperty("PII") && options.PII == "minimal") {
+                            memberData.hasOwnProperty("pedigreeProperties") && delete memberData["pedigreeProperties"].comments;
+                        }
                     }
                     output.members.push(memberData);
                     output.layout.members[i] = { "generation": this.DG.ranks[i],
