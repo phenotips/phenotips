@@ -39,6 +39,7 @@ define([
             typeListElement.insert(_addTypeOption(true,  "PED", "ped"));
             typeListElement.insert(_addTypeOption(false, "BOADICEA", "BOADICEA"));
             typeListElement.insert(_addTypeOption(false, "Simple JSON", "simpleJSON"));
+            typeListElement.insert(_addTypeOption(false, "PhenoTips JSON", "phenotipsJSON"));
             typeListElement.insert(_addTypeOption(false, "Image", "image"));
             //TODO: typeListElement.insert(_addTypeOption(false, "Phenotips Pedigree JSON", "phenotipsJSON"));
 
@@ -89,7 +90,7 @@ define([
             Event.observe(window, 'resize', GraphicHelpers.adjustPreviewWindowHeight.bind(_this, "pedigree-import-chooser", 'scrollable-container', this._minPreviewHeight, this._maxPreviewHeight));
         },
 
-        /*
+        /**
          * Disables unapplicable options on input type selection
          */
         disableEnableOptions: function() {
@@ -120,7 +121,7 @@ define([
                 pedOptionsTable.hide();
                 pedSpecialOptions.each( function(item) {item.hide();});
 
-                if (exportType == "simpleJSON") {
+                if (exportType == "simpleJSON" || exportType == "phenotipsJSON") {
                     jsonOptionsTable.show();
                     imageOptionsTable.hide();
                 } else {
@@ -199,6 +200,12 @@ define([
             } else if (exportType == "simpleJSON") {
                 var privacySetting = $$('input:checked[type=radio][name="export-options"]')[0].value;
                 var exportString = PedigreeExport.exportAsSimpleJSON(editor.getGraph().DG, privacySetting);
+                var fileName = patientDocument + "_simple.json";
+                var mimeType = "application/json";
+            } else if (exportType == "phenotipsJSON") {
+                var privacySetting = $$('input:checked[type=radio][name="export-options"]')[0].value;
+                var exportJSON = editor.getGraph().toJSONObject( { "includePatientLinks": false, "PII": privacySetting } );
+                var exportString = JSON.stringify(exportJSON);
                 var fileName = patientDocument + ".json";
                 var mimeType = "application/json";
             } else {
