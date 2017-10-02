@@ -1149,29 +1149,90 @@ li.abnormality:hover {
   left: 4px;
   margin: 1.4em 0 0;
 }
-.cancer_field td {
-  padding: .1em .2em .1em .2em;
+#cancers_data_table, table.summary-group {
+  width: 100%;
 }
-.cancer_textarea td {
-  padding: .3em 0 .2em .2em;
+.cancer_field td {
+  padding-top: .2em;
+}
+table.summary-group td.add-button-holder span.patient-details-add {
+  float: left;
+  margin-left: 2em;
+  margin-top: .2em;
+  font-size: 87.5%;
+}
+table.summary-group span.action-done {
+  float: right;
+}
+table.summary-group div.summary-item {
+  background-image: none;
+  background-color: #F9F9F9;
+  background-position: left center;
+  background-repeat: no-repeat;
+  border-radius: 0 .5em .5em .5em;
+  border: 1px solid #FFF;
+  font-size: 87.5%;
+  padding: .5em 10px;
+  margin: 0 0 0 2em;
+  position: relative;
+}
+table.summary-group div.summary-item.blurred {
+  cursor: pointer;
+}
+div.summary-item div.clearfloats {
+  margin: 0;
+}
+table.summary-group div.summary-item span.cancers-dialog-delete,
+table.summary-group tr.term-holder span.patient-term-delete {
+  color: $theme.notificationErrorColor;
+}
+table.summary-group tr.term-holder span.term-data span.xHelpButton {
+  margin-left: .5em;
+}
+table.summary-group div.summary-item dt {
+  float: left;
+  clear: left;
+}
+table.summary-group div.summary-item.focused dt {
+  margin-top: .5em;
+  min-width: 30%;
+}
+table.summary-group div.summary-item.blurred dt {
+  margin-top: .5em;
+}
+table.summary-group div.summary-item.focused dt.collapsible span.selected-value {
+  font-weight: normal;
+  margin-left: .5em;
+}
+table.summary-group div.summary-item.focused dt.collapsible span.collapse-button {
+  margin-right: .5em;
+}
+table.summary-group div.summary-item.focused dd span {
+  display: block;
+  clear: left;
+}
+table.summary-group div.summary-item.focused dd.comments textarea {
+  min-height: 50px;
+}
+table.summary-group div.summary-item.blurred dd,
+table.summary-group div.summary-item.focused dd.inline {
+  float: left;
+  margin-top: .5em;
+  margin-left: .5em;
+}
+table.summary-group div.summary-item.focused dd.inline select {
+  padding: 0;
+}
+table.summary-group div.summary-item ul {
+  list-style-type: none;
+  padding-left: 1em;
+  margin-left: 0;
 }
 .cancer-header td {
   padding-top: 0.65em;
 }
-.cancer-notes {
-  margin-left: 2px;
-}
-.cancer-notes-textarea {
-  margin-bottom: 4px;
-}
 .cancer-header {
   color: #888;
-}
-.cancer_status_select {
-  margin-right: 10px;
-}
-.cancer_age_select {
-  margin-right: 3px;
 }
 .cancer_field .clickable:hover {
   cursor: pointer;
@@ -1180,15 +1241,10 @@ li.abnormality:hover {
   color: #CCC;
   cursor: default;
 }
-.cancer_field textarea {
-  margin-top: 3px;
-}
-.menu-box .patient-no-cancers-button {
-  width: 88%;
-  max-width: 20em;
-  margin-top: 10px;
-  float: left !important;
-  text-align: center;
+
+/* Cancer picker */
+div.field-box.field-cancers_picker {
+  padding: 0 0 .4em 0;
 }
 
 /* Option types */
