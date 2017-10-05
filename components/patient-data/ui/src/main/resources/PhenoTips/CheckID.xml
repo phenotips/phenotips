@@ -44,11 +44,16 @@
 #if ($request.getParameter('eid') &amp;&amp; $request.getParameter('id'))
   #set ($externalIdentifier = "$!{request.eid}")
   #set ($identifier = "$!{request.id}")
-  #if ($externalIdentifier == $xwiki.getDocument($services.model.resolveDocument($identifier, $services.model.resolveSpace('data'))).getObject('PhenoTips.PatientClass').getProperty('external_id').value)
+  #set ($principal = "$!{request.principal}")
+  #set ($className = 'PhenoTips.PatientClass')
+  #if ($principal == 'family')
+    #set ($className = 'PhenoTips.FamilyClass')
+  #end
+  #if ($externalIdentifier == $xwiki.getDocument($services.model.resolveDocument($identifier, $services.model.resolveSpace('data'))).getObject($className).getProperty('external_id').value)
     Self
     #break
   #end
-  #set ($matchingDocuments = $xwiki.wrapDocs($services.query.xwql("where doc.object(PhenoTips.PatientClass).external_id = :eid").bindValue('eid', $externalIdentifier).execute()))
+  #set ($matchingDocuments = $xwiki.wrapDocs($services.query.xwql("where doc.object($className).external_id = :eid").bindValue('eid', $externalIdentifier).execute()))
   #if ($externalIdentifier == '')
     $response.setStatus(403)
     Empty

@@ -108,16 +108,10 @@
       </scope>
     </class>
     <property>
-      <content>{{include reference="PhenoTips.FormMacros" /}}
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-#if($xcontext.action == 'edit' || $doc.display('external_id') != '')
-  (% class="fieldset external_id" %)(((
-    #__form_label('external_id' 'section')
-
-    #__form_field('external_id')
-  )))
-#end
+#__displayFormatted('2-col' 'external_id' '' '' '')
 {{/velocity}}</content>
     </property>
     <property>
