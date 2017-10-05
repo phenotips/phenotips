@@ -1095,6 +1095,18 @@
             ).dialog.style.zIndex = 3001;
         }
 
+        //Exclude fields that associated with not-granted consents
+        var serverfields = this._lastLoginResponse.serverfields.slice();
+
+        for (var i = 0; i < this._lastLoginResponse.consents.length; i++) {
+          var nonGrantedFields = this._lastLoginResponse.consents[i].dataFields;
+          for (var j = 0; j < nonGrantedFields.length; j++) {
+            if (serverfields.indexOf(nonGrantedFields[j]) > 0) {
+              serverfields.splice(serverfields.indexOf(nonGrantedFields[j]), 1);
+            }
+          }
+        }
+
         if (_this._pushManyPatients) {
           //-------------- push multiple
           var exportTool = $('phenotips_export');
