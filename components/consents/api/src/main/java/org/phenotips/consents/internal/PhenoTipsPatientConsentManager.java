@@ -200,8 +200,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
         return null;
     }
 
-    private void fetchConsentFields(List<String> formFields, List<String> dataFields, BaseObject xwikiConsent)
-        throws QueryException
+    private void fetchConsentFields(List<String> formFields, List<String> dataFields) throws QueryException
     {
         // Data fields are found by finding the extension point based off the uix names from the form fields.
         for (String uixName : formFields) {
