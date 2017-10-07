@@ -28,7 +28,7 @@ define([
 
             this.familySearch = new XWiki.Document('FamilySearch', 'PhenoTips');
 
-            this.patientSuggestService = new XWiki.Document('SuggestPatientsService', 'PhenoTips');
+            this.patientSuggestService = XWiki.contextPath + "/rest/patients/suggest";
 
             this.vocabulariesService = XWiki.contextPath + "/rest/vocabularies";
 
@@ -108,7 +108,7 @@ define([
         },
 
         getPatientSuggestServiceURL: function() {
-            return this.patientSuggestService.getURL("get", 'outputSyntax=plain&rand='+ Math.random());
+            return this.patientSuggestService;
         },
 
         // contextaction is optional parameter
