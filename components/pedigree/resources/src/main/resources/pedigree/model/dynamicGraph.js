@@ -377,7 +377,7 @@ define([
             if (patientObject.hasOwnProperty("disorders")) {
                 // e.g.: "disorders":[{"id":"MIM:120970","label":"#120970 CONE-ROD DYSTROPHY 2; CORD2 ;;CONE-ROD DYSTROPHY; CORD;; CONE-ROD RETINAL DYSTROPHY; CRD; CRD2;; RETINAL CONE-ROD DYSTROPHY; RCRD2"},{"id":"MIM:190685","label":"#190685 DOWN SYNDROME TRISOMY 21, INCLUDED;; DOWN SYNDROME CHROMOSOME REGION, INCLUDED; DCR, INCLUDED;; DOWN SYNDROME CRITICAL REGION, INCLUDED; DSCR, INCLUDED;; TRANSIENT MYELOPROLIFERATIVE DISORDER OF DOWN SYNDROME, INCLUDED;; LEUKEMIA, MEGAKARYOBLASTIC, OF DOWN SYNDROME, INCLUDED"}]
                 for (var i = 0; i < patientObject.disorders.length; i++) {
-                    var disorderID = patientObject.disorders[i].id;
+                    var disorderID = patientObject.disorders[i].id || patientObject.disorders[i].label;
                     var match = disorderID.match(/^MIM:(\d+)$/);
                     match && (disorderID = match[1]);
                     disorders.push(disorderID);
