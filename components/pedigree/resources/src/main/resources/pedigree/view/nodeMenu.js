@@ -873,6 +873,9 @@ define([
 
             var toStoredAgeFx = function(value) {
                 if (isNaN(parseInt(value))) {
+                    if (!value) {
+                        return "";
+                    }
                     if (value.indexOf('>') > -1) {
                         return value.replace('>', 'after_');
                     }
@@ -889,7 +892,7 @@ define([
             };
 
             var toDisplayedAgeFx = function(value) {
-                if (isNaN(parseInt(value))) {
+                if (value && isNaN(parseInt(value))) {
                     if (value.indexOf('after_') > -1) {
                         return value.replace('after_', '>');
                     }
