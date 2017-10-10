@@ -16,7 +16,6 @@ define([
         "pedigree/familyData",
         "pedigree/patientDataLoader",
         "pedigree/saveLoadEngine",
-        "pedigree/versionUpdater",
         "pedigree/view",
         "pedigree/nodeMenuFields",
         "pedigree/model/dynamicGraph",
@@ -51,7 +50,6 @@ define([
         FamilyData,
         PatientDataLoader,
         SaveLoadEngine,
-        VersionUpdater,
         View,
         NodeMenuFields,
         DynamicPositionedGraph,
@@ -134,7 +132,6 @@ define([
 
             this._actionStack = new UndoRedoManager();
             this._saveLoadIndicator = new SaveLoadIndicator();
-            this._versionUpdater = new VersionUpdater();
             this._saveLoadEngine = new SaveLoadEngine();
             this._familyData = new FamilyData();
             this._patientDataLoader = new PatientDataLoader();
@@ -462,14 +459,6 @@ define([
          */
         getView: function() {
             return this._view;
-        },
-
-        /**
-         * @method getVersionUpdater
-         * @return {VersionUpdater}
-         */
-        getVersionUpdater: function() {
-            return this._versionUpdater;
         },
 
         /**
