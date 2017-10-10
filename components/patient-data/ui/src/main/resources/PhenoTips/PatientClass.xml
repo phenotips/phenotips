@@ -182,6 +182,9 @@
   &lt;div class="custom-display-data"&gt;
   #foreach ($val in $value)
     #set($entryName = "$!{services.vocabularies.ordo.getTerm($val).name}")
+    #if ($entryName == '')
+      #set($entryName = $val)
+    #end
     &lt;label class="term-entry" for="${prefix}${name}_${val}"&gt;
       &lt;input title="$entryName" type="checkbox" checked="checked" name="${prefix}${name}" id="${prefix}${name}_${val}" value="${val}"/&gt;$entryName
     &lt;/label&gt;
@@ -193,16 +196,21 @@
 #elseif ($value &amp;&amp; $value.size() &gt; 0 &amp;&amp; "${value.get(0)}" != '')
   #foreach ($val in $value)
     #set ($term = $!services.vocabularies.ordo.getTerm($val))
-    #set ($name = $term.name)
-    #if ("$!{name}" == '')
-      #set ($name = $val)
-    #end
-    #if ($term.id.indexOf(':') &gt;= 0)
-      #set ($termId = $stringtool.substringAfter($term.id, ':'))
-    #else
+    #if ($term)
+      #set ($name = $term.name)
       #set ($termId = $term.id)
+      #if ("$!{name}" == '')
+        #set ($name = $val)
+      #end
+      #if ($termId.indexOf(':') &gt;= 0)
+        #set ($termId = $stringtool.substringAfter($termId, ':'))
+      #end
+      (% class="vocabulary-term-list" %)((([[$termId&gt;&gt;http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=EN&Expert=${termId}||class="term-id"]] $!{services.rendering.escape($name, $doc.syntax)})))
+    #else
+      #set ($name = $val)
+      #set ($termId = $val)
+      (% class="vocabulary-term-list" %)((((% class="term-id" %)((({{icon name="fa fa-exclamation-triangle fa-fw" title="$services.localization.render('phenotips.patientSheetCode.termSuggest.nonStandardDisorder')"/}} $!{services.rendering.escape($name, $doc.syntax)}))))))
     #end
-    (% class="vocabulary-term-list" %)((([[$term.id&gt;&gt;http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=EN&amp;Expert=${termId}||class="term-id"]] $!{services.rendering.escape($name, $doc.syntax)})))
   #end
 #end
 {{/velocity}}</customDisplay>
@@ -951,6 +959,9 @@
   &lt;div class="custom-display-data"&gt;
   #foreach ($val in $value)
     #set($entryName = "$!{services.vocabularies.omim.getTerm($val).name}")
+    #if ($entryName == '')
+      #set($entryName = $val)
+    #end
     &lt;label class="term-entry" for="${prefix}${name}_${val}"&gt;
       &lt;input title="$entryName" type="checkbox" checked="checked" name="${prefix}${name}" id="${prefix}${name}_${val}" value="${val}"/&gt;$entryName
     &lt;/label&gt;
@@ -962,16 +973,21 @@
 #elseif ($value &amp;&amp; $value.size() &gt; 0 &amp;&amp; "${value.get(0)}" != '')
   #foreach ($val in $value)
     #set ($term = $!services.vocabularies.omim.getTerm($val))
-    #set ($name = $term.name)
-    #if ("$!{name}" == '')
-      #set ($name = $val)
-    #end
-    #if ($term.id.indexOf(':') &gt;= 0)
-      #set ($termId = $stringtool.substringAfter($term.id, ':'))
-    #else
+    #if ($term)
+      #set ($name = $term.name)
       #set ($termId = $term.id)
+      #if ("$!{name}" == '')
+        #set ($name = $val)
+      #end
+      #if ($termId.indexOf(':') &gt;= 0)
+        #set ($termId = $stringtool.substringAfter($termId, ':'))
+      #end
+      (% class="vocabulary-term-list" %)((([[~$!{stringtool.defaultString($!term.symbol, ' ')}${term.id}&gt;&gt;http://www.omim.org/entry/${termId}||class="term-id"]] $!{services.rendering.escape($name, $doc.syntax)})))
+    #else
+      #set ($name = $val)
+      #set ($termId = $val)
+      (% class="vocabulary-term-list" %)((((% class="term-id" %)((({{icon name="fa fa-exclamation-triangle fa-fw" title="$services.localization.render('phenotips.patientSheetCode.termSuggest.nonStandardDisorder')"/}} $!{services.rendering.escape($name, $doc.syntax)}))))))
     #end
-    (% class="vocabulary-term-list" %)((([[~$!{stringtool.defaultString($!term.symbol, ' ')}${term.id}&gt;&gt;http://www.omim.org/entry/${termId}||class="term-id"]] $!{services.rendering.escape($name, $doc.syntax)})))
   #end
 #end
 {{/velocity}}</customDisplay>
