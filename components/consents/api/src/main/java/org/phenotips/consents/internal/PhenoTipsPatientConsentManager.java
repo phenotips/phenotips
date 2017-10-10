@@ -191,7 +191,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
             if (affectsFields) {
                 dataFields = new LinkedList<>();
                 formFields = xwikiConsent.getListValue(FIELDS);
-                fetchConsentFields(formFields, dataFields, xwikiConsent);
+                fetchConsentFields(formFields, dataFields);
             }
             return new DefaultConsent(id, label, description, required, dataFields, formFields);
         } catch (Exception ex) {
