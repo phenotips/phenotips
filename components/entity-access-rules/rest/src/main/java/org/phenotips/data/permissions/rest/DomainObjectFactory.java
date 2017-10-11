@@ -17,13 +17,13 @@
  */
 package org.phenotips.data.permissions.rest;
 
-import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.rest.model.CollaboratorRepresentation;
 import org.phenotips.data.permissions.rest.model.CollaboratorsRepresentation;
 import org.phenotips.data.permissions.rest.model.OwnerRepresentation;
 import org.phenotips.data.permissions.rest.model.VisibilityRepresentation;
+import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
@@ -42,23 +42,23 @@ public interface DomainObjectFactory
 {
     /**
      * Create the REST representation for a {@link org.phenotips.data.permissions.Owner}'s summary, starting from a
-     * {@link Patient} instance.
+     * {@link PrimaryEntity} instance.
      *
-     * @param patient the owner of this patient will be serialized
-     * @return a summary of the patient record's owner, or {@code null} if the current user doesn't have access to the
-     *         patient or accessing the patient data fails
+     * @param entity the owner of this entity will be serialized
+     * @return a summary of the entity record's owner, or {@code null} if the current user doesn't have access to the
+     *         entity or accessing the entity data fails
      */
-    OwnerRepresentation createOwnerRepresentation(Patient patient);
+    OwnerRepresentation createOwnerRepresentation(PrimaryEntity entity);
 
     /**
      * Create the REST representation for a {@link org.phenotips.data.permissions.Visibility}'s summary, starting from a
-     * {@link Patient} instance.
+     * {@link PrimaryEntity} instance.
      *
-     * @param patient whose visibility is of interest
-     * @return a summary of the patient record's visibility, or {@code null} if the current user doesn't have access to
-     *         the patient or accessing the patient data fails
+     * @param entity whose visibility is of interest
+     * @return a summary of the entity record's visibility, or {@code null} if the current user doesn't have access to
+     *         the entity or accessing the entity data fails
      */
-    VisibilityRepresentation createVisibilityRepresentation(Patient patient);
+    VisibilityRepresentation createVisibilityRepresentation(PrimaryEntity entity);
 
     /**
      * Create the REST representation for a {@link org.phenotips.data.permissions.Visibility}'s summary, starting from a
@@ -70,23 +70,26 @@ public interface DomainObjectFactory
     VisibilityRepresentation createVisibilityRepresentation(Visibility visibility);
 
     /**
-     * Create the REST representation for a list of {@link Collaborator}s, starting from a {@link Patient} instance.
+     * Create the REST representation for a list of {@link Collaborator}s, starting from a {@link PrimaryEntity}
+     * instance.
      *
-     * @param patient the (list of) collaborators that are attached to this patient record
+     * @param entity the (list of) collaborators that are attached to this entity record
      * @param uriInfo the URI information for the rest system and the current request
-     * @return a summary of each collaborator on the patient record, or {@code null} if the current user doesn't have
-     *         access to the patient or accessing the patient data fails.
+     * @return a summary of each collaborator on the entity record, or {@code null} if the current user doesn't have
+     *         access to the entity or accessing the entity data fails.
      */
-    CollaboratorsRepresentation createCollaboratorsRepresentation(Patient patient, UriInfo uriInfo);
+    CollaboratorsRepresentation createCollaboratorsRepresentation(PrimaryEntity entity,
+        UriInfo uriInfo);
 
     /**
-     * Create the REST representation for summary of a {@link Collaborator} instance, starting from a {@link Patient}
-     * and {@link Collaborator} instances.
+     * Create the REST representation for summary of a {@link Collaborator} instance, starting from a
+     * {@link PrimaryEntity} and {@link Collaborator} instances.
      *
-     * @param patient to whom the collaborator is attached
+     * @param entity to whom the collaborator is attached
      * @param collaborator that is to be represented
-     * @return a summary of the collaborator, or {@code null} if the current user doesn't have access to the patient or
-     *         accessing the patient data fails.
+     * @return a summary of the collaborator, or {@code null} if the current user doesn't have access to the entity or
+     *         accessing the entity data fails.
      */
-    CollaboratorRepresentation createCollaboratorRepresentation(Patient patient, Collaborator collaborator);
+    CollaboratorRepresentation createCollaboratorRepresentation(PrimaryEntity entity,
+        Collaborator collaborator);
 }

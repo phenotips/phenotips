@@ -24,7 +24,7 @@ import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.OwnerResource;
 import org.phenotips.data.permissions.rest.PermissionsResource;
 import org.phenotips.data.permissions.rest.VisibilityResource;
-import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
+import org.phenotips.data.permissions.rest.internal.utils.EntityAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.permissions.rest.model.CollaboratorsRepresentation;
 import org.phenotips.data.permissions.rest.model.OwnerRepresentation;
@@ -81,20 +81,20 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
     private CollaboratorsResource collaboratorsResource;
 
     @Override
-    public PermissionsRepresentation getPermissions(String patientId)
+    public PermissionsRepresentation getPermissions(String entityId, String entityType)
     {
-        this.logger.debug("Retrieving patient record [{}] via REST", patientId);
+        this.logger.debug("Retrieving entity record [{}] via REST", entityId);
         // besides getting the patient, checks that the user has view access
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getReadContext(patientId);
+        EntityAccessContext entityAccessContext = this.secureContextFactory.getReadContext(entityId, entityType);
 
         PermissionsRepresentation result = new PermissionsRepresentation();
-        OwnerRepresentation owner = this.factory.createOwnerRepresentation(patientAccessContext.getPatient());
+        OwnerRepresentation owner = this.factory.createOwnerRepresentation(entityAccessContext.getEntity());
         VisibilityRepresentation visibility =
-            this.factory.createVisibilityRepresentation(patientAccessContext.getPatient());
+            this.factory.createVisibilityRepresentation(entityAccessContext.getEntity());
         CollaboratorsRepresentation collaborators =
-            this.factory.createCollaboratorsRepresentation(patientAccessContext.getPatient(), this.uriInfo);
+            this.factory.createCollaboratorsRepresentation(entityAccessContext.getEntity(), this.uriInfo);
 
-        AccessLevel accessLevel = patientAccessContext.getPatientAccess().getAccessLevel();
+        AccessLevel accessLevel = entityAccessContext.getEntityAccess().getAccessLevel();
         // adding links into sub-parts
         owner.withLinks(this.autolinker.get().forSecondaryResource(OwnerResource.class, this.uriInfo)
             .withGrantedRight(accessLevel.getGrantedRight())
@@ -119,9 +119,9 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
     }
 
     @Override
-    public Response setPermissions(PermissionsRepresentation permissions, String patientId)
+    public Response setPermissions(PermissionsRepresentation permissions, String entityId, String entityType)
     {
-        this.logger.debug("Setting permissions of patient record [{}] via REST", patientId);
+        this.logger.debug("Setting permissions of entity record [{}] via REST", entityId);
 
         if (permissions.getOwner() == null || permissions.getCollaborators() == null
             || permissions.getVisibility() == null) {
@@ -129,30 +129,30 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
         }
 
         // No permissions checks here, since this method is just a recombination of existing endpoints
-        this.ownerResource.setOwner(permissions.getOwner(), patientId);
-        this.visibilityResource.setVisibility(permissions.getVisibility(), patientId);
-        this.collaboratorsResource.setCollaborators(permissions.getCollaborators(), patientId);
+        this.ownerResource.setOwner(permissions.getOwner(), entityId, entityType);
+        this.visibilityResource.setVisibility(permissions.getVisibility(), entityId, entityType);
+        this.collaboratorsResource.setCollaborators(permissions.getCollaborators(), entityId, entityType);
 
-        this.manager.fireRightsUpdateEvent(patientId);
+        this.manager.fireRightsUpdateEvent(entityId);
         return Response.ok().build();
     }
 
     @Override
-    public Response updatePermissions(PermissionsRepresentation permissions, String patientId)
+    public Response updatePermissions(PermissionsRepresentation permissions, String entityId, String entityType)
     {
-        this.logger.debug("Updating permissions of patient record [{}] via REST", patientId);
+        this.logger.debug("Updating permissions of entity record [{}] via REST", entityId);
 
         // No permissions checks here, since this method is just a recombination of existing endpoints
         if (permissions.getOwner() != null) {
-            this.ownerResource.setOwner(permissions.getOwner(), patientId);
+            this.ownerResource.setOwner(permissions.getOwner(), entityId, entityType);
         }
         if (permissions.getCollaborators() != null && permissions.getCollaborators().getCollaborators() != null) {
-            this.collaboratorsResource.addCollaborators(permissions.getCollaborators(), patientId);
+            this.collaboratorsResource.addCollaborators(permissions.getCollaborators(), entityId, entityType);
         }
         if (permissions.getVisibility() != null) {
-            this.visibilityResource.setVisibility(permissions.getVisibility(), patientId);
+            this.visibilityResource.setVisibility(permissions.getVisibility(), entityId, entityType);
         }
-        this.manager.fireRightsUpdateEvent(patientId);
+        this.manager.fireRightsUpdateEvent(entityId);
         return Response.ok().build();
     }
 }

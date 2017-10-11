@@ -17,13 +17,15 @@
  */
 package org.phenotips.data.permissions.rest.internal.utils;
 
+import org.phenotips.entities.PrimaryEntity;
+
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
 import javax.ws.rs.WebApplicationException;
 
 /**
- * Allows to get the current user and patient record securely - the context returned must not allow further interaction
+ * Allows to get the current user and entity record securely - the context returned must not allow further interaction
  * if the minimum rights levels are not met.
  *
  * @version $Id$
@@ -34,37 +36,41 @@ import javax.ws.rs.WebApplicationException;
 public interface SecureContextFactory
 {
     /**
-     * Provides the patient, current user, and access context, making sure that the current user has high enough access
+     * Provides the entity, current user, and access context, making sure that the current user has high enough access
      * level.
      *
-     * @param patientId by which a patient is to be found
+     * @param entityId by which an entity is to be found
+     * @param entityType the type of entity
      * @param minimumAccessLevel that the current user must have, that maps to one of
      *            {@link org.phenotips.data.permissions.AccessLevel}
-     * @return context containing a {@link org.phenotips.data.Patient} instance and the current user
-     * @throws WebApplicationException if the patient could not be found, or the current user does not have high enough
+     * @return context containing a {@link PrimaryEntity} instance and the current user
+     * @throws WebApplicationException if the entity could not be found, or the current user does not have high enough
      *             access level
      */
-    PatientAccessContext getContext(String patientId, String minimumAccessLevel) throws WebApplicationException;
+    EntityAccessContext getContext(String entityId, String entityType, String minimumAccessLevel)
+        throws WebApplicationException;
 
     /**
-     * Provides the patient, current user, and access context, for a read operation, making sure that the current user
-     * has view access on the patient record.
+     * Provides the entity, current user, and access context, for a read operation, making sure that the current user
+     * has view access on the entity record.
      *
-     * @param patientId by which a patient is to be found
-     * @return context containing a {@link org.phenotips.data.Patient} instance and the current user
-     * @throws WebApplicationException if the patient could not be found, or the current user does not have high enough
+     * @param entityId by which an entity is to be found
+     * @param entityType the type of entity
+     * @return context containing a {@link PrimaryEntity} instance and the current user
+     * @throws WebApplicationException if the entity could not be found, or the current user does not have high enough
      *             access level
      */
-    PatientAccessContext getReadContext(String patientId) throws WebApplicationException;
+    EntityAccessContext getReadContext(String entityId, String entityType) throws WebApplicationException;
 
     /**
-     * Provides the patient, current user, and access context, for a read operation, making sure that the current user
-     * has manage access on the patient record.
+     * Provides the entity, current user, and access context, for a read operation, making sure that the current user
+     * has manage access on the entity record.
      *
-     * @param patientId by which a patient is to be found
-     * @return context containing a {@link org.phenotips.data.Patient} instance and the current user
-     * @throws WebApplicationException if the patient could not be found, or the current user does not have high enough
+     * @param entityId by which an entity is to be found
+     * @param entityType the type of entity
+     * @return context containing a {@link PrimaryEntity} instance and the current user
+     * @throws WebApplicationException if the entity could not be found, or the current user does not have high enough
      *             access level
      */
-    PatientAccessContext getWriteContext(String patientId) throws WebApplicationException;
+    EntityAccessContext getWriteContext(String entityId, String entityType) throws WebApplicationException;
 }

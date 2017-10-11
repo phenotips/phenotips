@@ -71,12 +71,12 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>patient-data-api</artifactId>
+      <artifactId>phenotips-constants</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>phenotips-constants</artifactId>
+      <artifactId>phenotips-entities-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

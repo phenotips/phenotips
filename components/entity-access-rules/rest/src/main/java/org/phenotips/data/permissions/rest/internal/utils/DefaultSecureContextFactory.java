@@ -17,9 +17,9 @@
  */
 package org.phenotips.data.permissions.rest.internal.utils;
 
-import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.EntityPermissionsManager;
+import org.phenotips.entities.PrimaryEntityResolver;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -42,7 +42,7 @@ import javax.ws.rs.WebApplicationException;
 public class DefaultSecureContextFactory implements SecureContextFactory
 {
     @Inject
-    private PatientRepository repository;
+    private PrimaryEntityResolver resolver;
 
     @Inject
     private UserManager users;
@@ -56,22 +56,23 @@ public class DefaultSecureContextFactory implements SecureContextFactory
     private DocumentReferenceResolver<String> userOrGroupResolver;
 
     @Override
-    public PatientAccessContext getContext(String patientId, String minimumAccessLevel) throws WebApplicationException
+    public EntityAccessContext getContext(String entityId, String entityType, String minimumAccessLevel)
+        throws WebApplicationException
     {
         AccessLevel level = this.entityPermissionsManager.resolveAccessLevel(minimumAccessLevel);
-        return new PatientAccessContext(patientId, level, this.repository, this.users, this.entityPermissionsManager,
+        return new EntityAccessContext(entityId, level, this.resolver, this.users, this.entityPermissionsManager,
             this.userOrGroupResolver);
     }
 
     @Override
-    public PatientAccessContext getReadContext(String patientId) throws WebApplicationException
+    public EntityAccessContext getReadContext(String entityId, String entityType) throws WebApplicationException
     {
-        return getContext(patientId, "view");
+        return getContext(entityId, entityType, "view");
     }
 
     @Override
-    public PatientAccessContext getWriteContext(String patientId) throws WebApplicationException
+    public EntityAccessContext getWriteContext(String entityId, String entityType) throws WebApplicationException
     {
-        return getContext(patientId, "manage");
+        return getContext(entityId, entityType, "manage");
     }
 }
