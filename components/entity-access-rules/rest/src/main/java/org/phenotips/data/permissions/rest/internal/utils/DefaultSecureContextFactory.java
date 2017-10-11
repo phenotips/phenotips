@@ -60,8 +60,8 @@ public class DefaultSecureContextFactory implements SecureContextFactory
         throws WebApplicationException
     {
         AccessLevel level = this.entityPermissionsManager.resolveAccessLevel(minimumAccessLevel);
-        return new EntityAccessContext(entityId, level, this.resolver, this.users, this.entityPermissionsManager,
-            this.userOrGroupResolver);
+        return new EntityAccessContext(entityId, entityType, level, this.resolver, this.users,
+            this.entityPermissionsManager, this.userOrGroupResolver);
     }
 
     @Override
