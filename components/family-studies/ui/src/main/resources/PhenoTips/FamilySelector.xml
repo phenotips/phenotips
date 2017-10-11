@@ -129,8 +129,7 @@
 
             var _this = this;
 
-            this.familySearch = new XWiki.Document('FamilySearch', 'PhenoTips');
-            this.familySearchUrl = this.familySearch.getURL('get', 'outputSyntax=plain&amp;rand='+ Math.random());
+            this.familySearchUrl = XWiki.contextPath + "/rest/families/suggest?permission=view";
 
             var mainDiv = new Element('div', {'class': 'family-selector'});
 
@@ -161,7 +160,7 @@
             });
 
             this.searchInput._suggest = new PhenoTips.widgets.Suggest(this.searchInput, {
-                script: this.familySearchUrl + "&amp;json=true&amp;",
+                script: this.familySearchUrl,
                 noresults: "$escapetool.javascript($services.localization.render('phenotips.UIXField.family_membership.noMatchingFamilies'))",
                 resultsParameter: "matchedFamilies",
                 resultValue: "textSummary",

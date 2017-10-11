@@ -26,8 +26,6 @@ define([
 
             this.familyPedigreeInterface = new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips');
 
-            this.familySearch = new XWiki.Document('FamilySearch', 'PhenoTips');
-
             this.patientSuggestService = XWiki.contextPath + "/rest/patients/suggest";
 
             this.vocabulariesService = XWiki.contextPath + "/rest/vocabularies";
@@ -61,10 +59,6 @@ define([
               pList += patientList[i];
             }
             return this.exportMultiplePatients.getURL('get', 'idlist='+pList) + "&rand=" + Math.random();
-        },
-
-        getFamilySearchURL: function() {
-            return this.familySearch.getURL('get', 'outputSyntax=plain&rand='+ Math.random());
         },
 
         getSavePedigreeURL: function() {

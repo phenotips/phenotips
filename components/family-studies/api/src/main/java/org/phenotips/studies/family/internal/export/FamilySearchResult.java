@@ -46,14 +46,14 @@ public class FamilySearchResult
      * Create a new search result from a family and permissions.
      *
      * @param family contains the details of the family found
-     * @param requiredPermissions permissions to extract the URL from
+     * @param requiredPermission permission to extract the URL from
      */
-    public FamilySearchResult(Family family, String requiredPermissions)
+    public FamilySearchResult(Family family, String requiredPermission)
     {
         this.externalId = family.getExternalId();
         this.id = family.getId();
         this.reference = family.getDocumentReference().toString();
-        this.url = family.getURL(requiredPermissions);
+        this.url = family.getURL(requiredPermission);
 
         setBasicDescription();
     }
@@ -64,11 +64,11 @@ public class FamilySearchResult
      * @param patient patient
      * @param usePatientName if true the patient name will appear in the description
      * @param family contains the details of the family found
-     * @param requiredPermissions permissions to extract the URL from
+     * @param requiredPermission permission to extract the URL from
      */
-    public FamilySearchResult(Patient patient, boolean usePatientName, Family family, String requiredPermissions)
+    public FamilySearchResult(Patient patient, boolean usePatientName, Family family, String requiredPermission)
     {
-        this(family, requiredPermissions);
+        this(family, requiredPermission);
         addPatientDescription(patient, usePatientName);
 
     }
