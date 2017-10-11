@@ -697,7 +697,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>patient-access-rules-rest</artifactId>
+      <artifactId>entity-access-rules-rest</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
