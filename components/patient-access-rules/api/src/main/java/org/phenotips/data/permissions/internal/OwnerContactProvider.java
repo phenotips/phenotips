@@ -20,9 +20,9 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.ContactInfo;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientContactProvider;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Owner;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
@@ -66,7 +66,7 @@ public class OwnerContactProvider implements PatientContactProvider
     protected Logger logger;
 
     @Inject
-    protected PermissionsManager permissionsManager;
+    protected EntityPermissionsManager entityPermissionsManager;
 
     @Inject
     private UserManager userManager;
@@ -89,7 +89,7 @@ public class OwnerContactProvider implements PatientContactProvider
     @Override
     public List<ContactInfo> getContacts(Patient patient)
     {
-        PatientAccess referenceAccess = this.permissionsManager.getPatientAccess(patient);
+        EntityAccess referenceAccess = this.entityPermissionsManager.getEntityAccess(patient);
         Owner owner = referenceAccess.getOwner();
         ContactInfo result = getContactInfo(owner);
         if (result == null) {

@@ -20,9 +20,9 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.ContactInfo;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientContactProvider;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Owner;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
@@ -92,9 +92,9 @@ public class OwnerContactProviderTest
     @Test
     public void loadWithUserOwner() throws ComponentLookupException
     {
-        PermissionsManager permissions = this.mocker.getInstance(PermissionsManager.class);
-        PatientAccess access = mock(PatientAccess.class);
-        when(permissions.getPatientAccess(this.patient)).thenReturn(access);
+        EntityPermissionsManager permissions = this.mocker.getInstance(EntityPermissionsManager.class);
+        EntityAccess access = mock(EntityAccess.class);
+        when(permissions.getEntityAccess(this.patient)).thenReturn(access);
         Owner owner = mock(Owner.class);
         when(access.getOwner()).thenReturn(owner);
         when(owner.isGroup()).thenReturn(false);
@@ -121,9 +121,9 @@ public class OwnerContactProviderTest
     @Test
     public void loadWithUserOwnerAndMissingFields() throws ComponentLookupException
     {
-        PermissionsManager permissions = this.mocker.getInstance(PermissionsManager.class);
-        PatientAccess access = mock(PatientAccess.class);
-        when(permissions.getPatientAccess(this.patient)).thenReturn(access);
+        EntityPermissionsManager permissions = this.mocker.getInstance(EntityPermissionsManager.class);
+        EntityAccess access = mock(EntityAccess.class);
+        when(permissions.getEntityAccess(this.patient)).thenReturn(access);
         Owner owner = mock(Owner.class);
         when(access.getOwner()).thenReturn(owner);
         when(owner.isGroup()).thenReturn(false);
@@ -150,9 +150,9 @@ public class OwnerContactProviderTest
     @Test
     public void loadWithInexistingUserOwner() throws ComponentLookupException
     {
-        PermissionsManager permissions = this.mocker.getInstance(PermissionsManager.class);
-        PatientAccess access = mock(PatientAccess.class);
-        when(permissions.getPatientAccess(this.patient)).thenReturn(access);
+        EntityPermissionsManager permissions = this.mocker.getInstance(EntityPermissionsManager.class);
+        EntityAccess access = mock(EntityAccess.class);
+        when(permissions.getEntityAccess(this.patient)).thenReturn(access);
         Owner owner = mock(Owner.class);
         when(access.getOwner()).thenReturn(owner);
         when(owner.isGroup()).thenReturn(false);
@@ -168,9 +168,9 @@ public class OwnerContactProviderTest
     @Test
     public void loadWithGroupOwner() throws Exception
     {
-        PermissionsManager permissions = this.mocker.getInstance(PermissionsManager.class);
-        PatientAccess access = mock(PatientAccess.class);
-        when(permissions.getPatientAccess(this.patient)).thenReturn(access);
+        EntityPermissionsManager permissions = this.mocker.getInstance(EntityPermissionsManager.class);
+        EntityAccess access = mock(EntityAccess.class);
+        when(permissions.getEntityAccess(this.patient)).thenReturn(access);
         Owner owner = mock(Owner.class);
         when(access.getOwner()).thenReturn(owner);
         when(owner.isGroup()).thenReturn(true);
@@ -198,9 +198,9 @@ public class OwnerContactProviderTest
     @Test
     public void loadWithGroupOwnerAndMissingFields() throws Exception
     {
-        PermissionsManager permissions = this.mocker.getInstance(PermissionsManager.class);
-        PatientAccess access = mock(PatientAccess.class);
-        when(permissions.getPatientAccess(this.patient)).thenReturn(access);
+        EntityPermissionsManager permissions = this.mocker.getInstance(EntityPermissionsManager.class);
+        EntityAccess access = mock(EntityAccess.class);
+        when(permissions.getEntityAccess(this.patient)).thenReturn(access);
         Owner owner = mock(Owner.class);
         when(access.getOwner()).thenReturn(owner);
         when(owner.isGroup()).thenReturn(true);
@@ -229,9 +229,9 @@ public class OwnerContactProviderTest
     @Test
     public void loadWithInexistingGroupOwner() throws Exception
     {
-        PermissionsManager permissions = this.mocker.getInstance(PermissionsManager.class);
-        PatientAccess access = mock(PatientAccess.class);
-        when(permissions.getPatientAccess(this.patient)).thenReturn(access);
+        EntityPermissionsManager permissions = this.mocker.getInstance(EntityPermissionsManager.class);
+        EntityAccess access = mock(EntityAccess.class);
+        when(permissions.getEntityAccess(this.patient)).thenReturn(access);
         Owner owner = mock(Owner.class);
         when(access.getOwner()).thenReturn(owner);
         when(owner.isGroup()).thenReturn(true);
@@ -247,9 +247,9 @@ public class OwnerContactProviderTest
     @Test
     public void loadWithNullOwner() throws Exception
     {
-        PermissionsManager permissions = this.mocker.getInstance(PermissionsManager.class);
-        PatientAccess access = mock(PatientAccess.class);
-        when(permissions.getPatientAccess(this.patient)).thenReturn(access);
+        EntityPermissionsManager permissions = this.mocker.getInstance(EntityPermissionsManager.class);
+        EntityAccess access = mock(EntityAccess.class);
+        when(permissions.getEntityAccess(this.patient)).thenReturn(access);
         when(access.getOwner()).thenReturn(null);
 
         List<ContactInfo> result = this.mocker.getComponentUnderTest().getContacts(this.patient);
@@ -260,9 +260,9 @@ public class OwnerContactProviderTest
     @Test
     public void loadWithGuestOwner() throws Exception
     {
-        PermissionsManager permissions = this.mocker.getInstance(PermissionsManager.class);
-        PatientAccess access = mock(PatientAccess.class);
-        when(permissions.getPatientAccess(this.patient)).thenReturn(access);
+        EntityPermissionsManager permissions = this.mocker.getInstance(EntityPermissionsManager.class);
+        EntityAccess access = mock(EntityAccess.class);
+        when(permissions.getEntityAccess(this.patient)).thenReturn(access);
         Owner owner = mock(Owner.class);
         when(access.getOwner()).thenReturn(owner);
         when(owner.getUser()).thenReturn(null);

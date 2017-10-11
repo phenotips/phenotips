@@ -19,8 +19,8 @@ package org.phenotips.data.permissions.rest.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.rest.CollaboratorResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
@@ -69,7 +69,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     private DomainObjectFactory factory;
 
     @Inject
-    private PermissionsManager manager;
+    private EntityPermissionsManager manager;
 
     @Inject
     private Provider<Autolinker> autolinker;
@@ -132,7 +132,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         // besides getting the patient, checks that the user has manage access
         PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
 
-        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
+        EntityAccess entityAccess = patientAccessContext.getPatientAccess();
         EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorId);
         if (collaboratorReference == null) {
             // what would be a better status to indicate that the user/group id is not valid?
@@ -140,7 +140,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
-        if (!patientAccess.removeCollaborator(collaboratorReference)) {
+        if (!entityAccess.removeCollaborator(collaboratorReference)) {
             this.logger.error("Could not remove collaborator [{}] from patient record [{}]", collaboratorId, patientId);
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
@@ -150,7 +150,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     }
 
     private CollaboratorRepresentation createCollaboratorRepresentation(Patient patient, String id,
-        PatientAccess patientAccess)
+        EntityAccess entityAccess)
     {
         String collaboratorId = id.trim();
         EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorId);
@@ -163,7 +163,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
                 .entity("Invalid collaborator").build());
         }
 
-        for (Collaborator collaborator : patientAccess.getCollaborators()) {
+        for (Collaborator collaborator : entityAccess.getCollaborators()) {
             if (collaboratorReference.equals(collaborator.getUser())) {
                 return this.factory.createCollaboratorRepresentation(patient, collaborator);
             }
@@ -179,9 +179,9 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     {
         PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
         patientAccessContext.checkCollaboratorInfo(collaboratorId, accessLevelName);
-        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
+        EntityAccess entityAccess = patientAccessContext.getPatientAccess();
         EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorId);
-        patientAccess.addCollaborator(collaboratorReference, this.manager.resolveAccessLevel(accessLevelName));
+        entityAccess.addCollaborator(collaboratorReference, this.manager.resolveAccessLevel(accessLevelName));
         this.manager.fireRightsUpdateEvent(patientId);
         return Response.ok().build();
     }

@@ -22,7 +22,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.indexing.PatientIndexer;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.vocabulary.SolrCoreContainerHandler;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
@@ -102,7 +102,7 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     private PatientRepository patientRepository;
 
     @Inject
-    private PermissionsManager permissions;
+    private EntityPermissionsManager permissions;
 
     /** Provides access to the HPO ontology. */
     @Inject
@@ -148,8 +148,8 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
             }
         }
 
-        input.setField("visibility", this.permissions.getPatientAccess(patient).getVisibility().getName());
-        input.setField("accessLevel", this.permissions.getPatientAccess(patient).getVisibility().getPermissiveness());
+        input.setField("visibility", this.permissions.getEntityAccess(patient).getVisibility().getName());
+        input.setField("accessLevel", this.permissions.getEntityAccess(patient).getVisibility().getPermissiveness());
 
         addGenes(input, patient);
 

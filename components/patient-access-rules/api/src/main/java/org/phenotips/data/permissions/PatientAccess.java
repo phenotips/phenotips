@@ -19,47 +19,23 @@ package org.phenotips.data.permissions;
 
 import org.phenotips.data.Patient;
 
-import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
-
-import java.util.Collection;
 
 /**
  * @version $Id$
  * @since 1.0M9
+ * @deprecated since 1.4; use {@link EntityAccess} instead
  */
 @Unstable
-public interface PatientAccess
+@Deprecated
+public interface PatientAccess extends EntityAccess
 {
+    /**
+     * Gets the {@link Patient} object.
+     *
+     * @return the {@link Patient} object
+     * @deprecated since 1.4; use {@link EntityAccess#getEntity()} instead
+     */
+    @Deprecated
     Patient getPatient();
-
-    Owner getOwner();
-
-    boolean isOwner();
-
-    boolean isOwner(EntityReference user);
-
-    boolean setOwner(EntityReference userOrGroup);
-
-    Visibility getVisibility();
-
-    boolean setVisibility(Visibility newVisibility);
-
-    Collection<Collaborator> getCollaborators();
-
-    boolean updateCollaborators(Collection<Collaborator> newCollaborators);
-
-    boolean addCollaborator(EntityReference user, AccessLevel access);
-
-    boolean removeCollaborator(EntityReference user);
-
-    boolean removeCollaborator(Collaborator collaborator);
-
-    AccessLevel getAccessLevel();
-
-    AccessLevel getAccessLevel(EntityReference user);
-
-    boolean hasAccessLevel(AccessLevel access);
-
-    boolean hasAccessLevel(EntityReference user, AccessLevel access);
 }

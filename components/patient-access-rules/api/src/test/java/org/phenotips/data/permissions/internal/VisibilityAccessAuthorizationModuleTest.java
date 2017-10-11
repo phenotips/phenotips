@@ -17,10 +17,10 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Visibility;
+import org.phenotips.entities.PrimaryEntity;
+import org.phenotips.entities.PrimaryEntityResolver;
 import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.manager.ComponentLookupException;
@@ -55,7 +55,7 @@ public class VisibilityAccessAuthorizationModuleTest
     private User user;
 
     @Mock
-    private Patient patient;
+    private PrimaryEntity primaryEntity;
 
     @Mock
     private AccessLevel noneAccessLevel;
@@ -75,9 +75,9 @@ public class VisibilityAccessAuthorizationModuleTest
     @Mock
     private Visibility privateVisibility;
 
-    private PatientAccessHelper helper;
+    private EntityAccessHelper helper;
 
-    private PatientRepository repo;
+    private PrimaryEntityResolver resolver;
 
     private DocumentReference doc = new DocumentReference("xwiki", "data", "P01");
 
@@ -86,9 +86,9 @@ public class VisibilityAccessAuthorizationModuleTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.helper = this.mocker.getInstance(PatientAccessHelper.class);
-        this.repo = this.mocker.getInstance(PatientRepository.class);
-        when(this.repo.get("xwiki:data.P01")).thenReturn(this.patient);
+        this.helper = this.mocker.getInstance(EntityAccessHelper.class);
+        this.resolver = this.mocker.getInstance(PrimaryEntityResolver.class);
+        when(this.resolver.resolveEntity("xwiki:data.P01")).thenReturn(this.primaryEntity);
 
         when(this.openVisibility.getName()).thenReturn("open");
         when(this.openVisibility.getDefaultAccessLevel()).thenReturn(this.editAccessLevel);
@@ -108,112 +108,112 @@ public class VisibilityAccessAuthorizationModuleTest
     @Test
     public void openVisibilityAllowsView() throws ComponentLookupException
     {
-        when(this.helper.getVisibility(this.patient)).thenReturn(this.openVisibility);
+        when(this.helper.getVisibility(this.primaryEntity)).thenReturn(this.openVisibility);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.VIEW, this.doc));
     }
 
     @Test
     public void openVisibilityAllowsEdit() throws ComponentLookupException
     {
-        when(this.helper.getVisibility(this.patient)).thenReturn(this.openVisibility);
+        when(this.helper.getVisibility(this.primaryEntity)).thenReturn(this.openVisibility);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.EDIT, this.doc));
     }
 
     @Test
     public void openVisibilityDoesntAllowComment() throws ComponentLookupException
     {
-        when(this.helper.getVisibility(this.patient)).thenReturn(this.openVisibility);
+        when(this.helper.getVisibility(this.primaryEntity)).thenReturn(this.openVisibility);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.COMMENT, this.doc));
     }
 
     @Test
     public void openVisibilityDoesntAllowDelete() throws ComponentLookupException
     {
-        when(this.helper.getVisibility(this.patient)).thenReturn(this.openVisibility);
+        when(this.helper.getVisibility(this.primaryEntity)).thenReturn(this.openVisibility);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.DELETE, this.doc));
     }
 
     @Test
     public void openVisibilityDoesntAllowGuestAccess() throws ComponentLookupException
     {
-        when(this.helper.getVisibility(this.patient)).thenReturn(this.openVisibility);
+        when(this.helper.getVisibility(this.primaryEntity)).thenReturn(this.openVisibility);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(null, Right.VIEW, this.doc));
     }
 
     @Test
     public void publicVisibilityAllowsView() throws ComponentLookupException
     {
-        when(this.helper.getVisibility(this.patient)).thenReturn(this.publicVisibility);
+        when(this.helper.getVisibility(this.primaryEntity)).thenReturn(this.publicVisibility);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.VIEW, this.doc));
     }
 
     @Test
     public void publicVisibilityDoesntAllowEdit() throws ComponentLookupException
     {
-        when(this.helper.getVisibility(this.patient)).thenReturn(this.publicVisibility);
+        when(this.helper.getVisibility(this.primaryEntity)).thenReturn(this.publicVisibility);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.EDIT, this.doc));
     }
 
     @Test
     public void publicVisibilityDoesntAllowComment() throws ComponentLookupException
     {
-        when(this.helper.getVisibility(this.patient)).thenReturn(this.publicVisibility);
+        when(this.helper.getVisibility(this.primaryEntity)).thenReturn(this.publicVisibility);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.COMMENT, this.doc));
     }
 
     @Test
     public void publicVisibilityDoesntAllowDelete() throws ComponentLookupException
     {
-        when(this.helper.getVisibility(this.patient)).thenReturn(this.publicVisibility);
+        when(this.helper.getVisibility(this.primaryEntity)).thenReturn(this.publicVisibility);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.DELETE, this.doc));
     }
 
     @Test
     public void publicVisibilityDoesntAllowGuestAccess() throws ComponentLookupException
     {
-        when(this.helper.getVisibility(this.patient)).thenReturn(this.publicVisibility);
+        when(this.helper.getVisibility(this.primaryEntity)).thenReturn(this.publicVisibility);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(null, Right.VIEW, this.doc));
     }
 
     @Test
     public void privateVisibilityDoesntAllowView() throws ComponentLookupException
     {
-        when(this.helper.getVisibility(this.patient)).thenReturn(this.privateVisibility);
+        when(this.helper.getVisibility(this.primaryEntity)).thenReturn(this.privateVisibility);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.VIEW, this.doc));
     }
 
     @Test
     public void privateVisibilityDoesntAllowEdit() throws ComponentLookupException
     {
-        when(this.helper.getVisibility(this.patient)).thenReturn(this.privateVisibility);
+        when(this.helper.getVisibility(this.primaryEntity)).thenReturn(this.privateVisibility);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.EDIT, this.doc));
     }
 
     @Test
     public void privateVisibilityDoesntAllowComment() throws ComponentLookupException
     {
-        when(this.helper.getVisibility(this.patient)).thenReturn(this.privateVisibility);
+        when(this.helper.getVisibility(this.primaryEntity)).thenReturn(this.privateVisibility);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.COMMENT, this.doc));
     }
 
     @Test
     public void privateVisibilityDoesntAllowDelete() throws ComponentLookupException
     {
-        when(this.helper.getVisibility(this.patient)).thenReturn(this.privateVisibility);
+        when(this.helper.getVisibility(this.primaryEntity)).thenReturn(this.privateVisibility);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.DELETE, this.doc));
     }
 
     @Test
     public void privateVisibilityDoesntAllowGuestAccess() throws ComponentLookupException
     {
-        when(this.helper.getVisibility(this.patient)).thenReturn(this.privateVisibility);
+        when(this.helper.getVisibility(this.primaryEntity)).thenReturn(this.privateVisibility);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(null, Right.VIEW, this.doc));
     }
 
     @Test
     public void noActionWithNonDocumentRight() throws ComponentLookupException
     {
-        when(this.helper.getVisibility(this.patient)).thenReturn(this.openVisibility);
+        when(this.helper.getVisibility(this.primaryEntity)).thenReturn(this.openVisibility);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.REGISTER, this.doc));
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.PROGRAM, this.doc));
     }
@@ -227,7 +227,7 @@ public class VisibilityAccessAuthorizationModuleTest
     @Test
     public void noActionWithNonPatient() throws ComponentLookupException
     {
-        when(this.repo.get("xwiki:data.P01")).thenReturn(null);
+        when(this.resolver.resolveEntity("xwiki:data.P01")).thenReturn(null);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.VIEW, this.doc));
     }
 

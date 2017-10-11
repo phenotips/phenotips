@@ -19,8 +19,8 @@ package org.phenotips.data.permissions.rest.internal;
 
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.rest.CollaboratorsResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
@@ -75,7 +75,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
     private DomainObjectFactory factory;
 
     @Inject
-    private PermissionsManager manager;
+    private EntityPermissionsManager manager;
 
     @Inject
     private Container container;
@@ -116,7 +116,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         List<Object> accessLevels = this.container.getRequest().getProperties("level");
 
         PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
-        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
+        EntityAccess entityAccess = patientAccessContext.getPatientAccess();
 
         if (collaborators.size() != accessLevels.size()) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
@@ -133,7 +133,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         }
 
         for (Map.Entry<EntityReference, AccessLevel> e : internalCollaborators.entrySet()) {
-            patientAccess.addCollaborator(e.getKey(), e.getValue());
+            entityAccess.addCollaborator(e.getKey(), e.getValue());
         }
         this.manager.fireRightsUpdateEvent(patientId);
         return Response.ok().build();
@@ -158,11 +158,11 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         boolean replace)
     {
         PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
-        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
+        EntityAccess entityAccess = patientAccessContext.getPatientAccess();
 
         Map<EntityReference, Collaborator> internalCollaborators = new LinkedHashMap<>();
         if (!replace) {
-            for (Collaborator c : patientAccess.getCollaborators()) {
+            for (Collaborator c : entityAccess.getCollaborators()) {
                 internalCollaborators.put(c.getUser(), c);
             }
         }
@@ -172,7 +172,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
             internalCollaborators.put(collaboratorReference,
                 new StubCollaborator(collaboratorReference, this.manager.resolveAccessLevel(collaborator.getLevel())));
         }
-        patientAccess.updateCollaborators(internalCollaborators.values());
+        entityAccess.updateCollaborators(internalCollaborators.values());
         this.manager.fireRightsUpdateEvent(patientId);
         return Response.ok().build();
     }

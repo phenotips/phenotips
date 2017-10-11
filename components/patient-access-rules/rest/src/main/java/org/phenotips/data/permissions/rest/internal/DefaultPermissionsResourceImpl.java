@@ -18,7 +18,7 @@
 package org.phenotips.data.permissions.rest.internal;
 
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.rest.CollaboratorsResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.OwnerResource;
@@ -66,7 +66,7 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
     private Provider<Autolinker> autolinker;
 
     @Inject
-    private PermissionsManager manager;
+    private EntityPermissionsManager manager;
 
     @Inject
     @Named("org.phenotips.data.permissions.rest.internal.DefaultOwnerResourceImpl")

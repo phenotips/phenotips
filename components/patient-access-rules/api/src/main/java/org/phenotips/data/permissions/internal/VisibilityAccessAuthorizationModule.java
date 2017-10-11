@@ -17,9 +17,9 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.Visibility;
+import org.phenotips.entities.PrimaryEntity;
+import org.phenotips.entities.PrimaryEntityResolver;
 import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.model.EntityType;
@@ -40,13 +40,13 @@ import org.apache.commons.lang3.ObjectUtils;
 public class VisibilityAccessAuthorizationModule implements AuthorizationModule
 {
     /**
-     * Checks to see if document is a patient (DocumentReference).
+     * Checks to see if document is an entity (DocumentReference).
      */
     @Inject
-    private PatientRepository patientRepository;
+    private PrimaryEntityResolver resolver;
 
     @Inject
-    private PatientAccessHelper helper;
+    private EntityAccessHelper helper;
 
     @Override
     public int getPriority()
@@ -62,13 +62,13 @@ public class VisibilityAccessAuthorizationModule implements AuthorizationModule
             return null;
         }
 
-        // This converts the document to a patient.
-        Patient patient = this.patientRepository.get(entity.toString());
-        if (patient == null) {
+        // This converts the document to an entity.
+        PrimaryEntity primaryEntity = this.resolver.resolveEntity(entity.toString());
+        if (primaryEntity == null) {
             return null;
         }
 
-        Visibility visibility = this.helper.getVisibility(patient);
+        Visibility visibility = this.helper.getVisibility(primaryEntity);
         if (visibility == null) {
             return null;
         }
