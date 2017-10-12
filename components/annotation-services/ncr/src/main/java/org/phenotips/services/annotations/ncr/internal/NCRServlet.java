@@ -118,8 +118,11 @@ public class NCRServlet extends HttpServlet
     /**
      * Translates the request parameters to the format expected by the NCR service located at {@link #SERVICE_URL}.
      *
-     * @param request the incoming request
-     * @return a list of name-value pairs, in format expected by the NCR service
+     * @param request the incoming request:
+     *     Content-Type: application/x-www-form-urlencoded
+     *     Form param: "content=text to annotate"
+     * @return a list of name-value pairs, as json string, in format expected by the NCR service, e.g.
+     *     {"text":"text to annotate"}
      * @throws JsonProcessingException if there was an error converting request data to json string
      */
     @Nonnull
@@ -127,15 +130,30 @@ public class NCRServlet extends HttpServlet
     {
         final String text = request.getParameter(CONTENT_LABEL);
         final Map<String, String> params = new HashMap<>();
-        params.put(TEXT_LABEL, StringUtils.isNotBlank(text) ? text : StringUtils.EMPTY);
+        params.put(TEXT_LABEL, StringUtils.defaultIfBlank(text, StringUtils.EMPTY));
         return MAPPER.writeValueAsString(params);
     }
 
     /**
      * Translates the response returned by service to the desired format.
      *
-     * @param response the response from the NCR service located at {@link #SERVICE_URL}, as string
-     * @return the adapted response, as string
+     * @param response the response from the NCR service located at {@link #SERVICE_URL}, as string; e.g.
+     *     {
+     *       "matches": [
+     *         {
+     *           "end":52,
+     *           "hp_id":"HP:0001627",
+     *           "names":["Abnormal heart morphology", ... ,"Congenital heart defects"],
+     *           "score":"0.696756",
+     *           "start":37
+     *         },
+     *         {
+     *           ...
+     *         }
+     *       ]
+     *     }
+     * @return the adapted response, as string; e.g.
+     *     [{"end":52,"token":{"id":"HP:0001627"},"start":37}, ...]
      * @throws IOException if {@code response} could not be adapted to the desired format
      */
     @Nonnull
@@ -148,11 +166,11 @@ public class NCRServlet extends HttpServlet
     /**
      * Forwards the {@code request} parameters to the {@link #SERVICE_URL}.
      *
-     * @param request the string containing request parameters
+     * @param request the {@link HttpServletRequest} containing request parameters
      * @return the response, as string
      * @throws JsonProcessingException if the provided matches cannot be written as string
      * @throws MalformedURLException if the {@link #SERVICE_URL} is malformed
-     * @throws URISyntaxException if the url cannot be converted to a URI
+     * @throws URISyntaxException if the uri syntax is invalid
      * @throws IOException if the forwarded post request cannot be executed, or if the json cannot be read into the
      *                     required object structure
      */
