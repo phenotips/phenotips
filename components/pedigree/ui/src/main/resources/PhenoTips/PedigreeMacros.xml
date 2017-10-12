@@ -607,12 +607,15 @@
 }
 .family-members {
   vertical-align: top;
-  margin-left: 3em;
+  margin-left: 1em;
 }
 .family-members ul {
-  list-style: none;
+  list-style: disc;
   margin-top: 0.5em;
   margin-left: 1em;
+}
+.family-info .pedigree-wrapper {
+  width: 33%;
 }</code>
     </property>
     <property>
