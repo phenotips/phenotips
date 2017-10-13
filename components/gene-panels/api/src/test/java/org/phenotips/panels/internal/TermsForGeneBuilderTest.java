@@ -59,7 +59,11 @@ public class TermsForGeneBuilderTest
 
     private static final String GENE_3_SYMBOL = "symbol3";
 
-    private static final List<String> EX_GENE_1_ALIASES = Arrays.asList(EX_GENE_1_ALIAS_A, EX_GENE_1_ALIAS_B);
+    private static final String GENE_1_ID = "ex_alias_1b";
+
+    private static final String GENE_2_ID = "gene2";
+
+    private static final String GENE_3_ID = "gene3";
 
     private static final String TERM_1_NAME = "term1";
 
@@ -69,9 +73,7 @@ public class TermsForGeneBuilderTest
 
     private static final String SYMBOL_LABEL = "symbol";
 
-    private static final String ENSEMBL_ID_LABEL = "ensembl_gene_id";
-
-    private static final String SYMBOL_ALIAS_LABEL = "symbol_alias";
+    private static final String ALT_ID_LABEL = "alt_id";
 
     @Mock
     private VocabularyTerm excludedGene1;
@@ -99,16 +101,15 @@ public class TermsForGeneBuilderTest
         MockitoAnnotations.initMocks(this);
 
         when(this.excludedGene1.get(SYMBOL_LABEL)).thenReturn(EX_GENE_1_SYMBOL);
-        when(this.excludedGene1.get(ENSEMBL_ID_LABEL)).thenReturn(Collections.singletonList(EX_GENE_1_ID));
-        when(this.excludedGene1.get(SYMBOL_ALIAS_LABEL)).thenReturn(EX_GENE_1_ALIASES);
+        when(this.excludedGene1.get(ALT_ID_LABEL)).thenReturn(
+            Arrays.asList(EX_GENE_1_ID, EX_GENE_1_ALIAS_A, EX_GENE_1_ALIAS_B));
 
         when(this.excludedGene2.get(SYMBOL_LABEL)).thenReturn(EX_GENE_2_SYMBOL);
-        when(this.excludedGene2.get(ENSEMBL_ID_LABEL)).thenReturn(null);
-        when(this.excludedGene2.get(SYMBOL_ALIAS_LABEL)).thenReturn(Collections.emptySet());
+        when(this.excludedGene2.get(ALT_ID_LABEL)).thenReturn(Collections.singletonList(null));
 
         when(this.excludedGene3.get(SYMBOL_LABEL)).thenReturn(EX_GENE_3_SYMBOL);
-        when(this.excludedGene3.get(ENSEMBL_ID_LABEL)).thenReturn(Collections.singletonList(EX_GENE_3_ID));
-        when(this.excludedGene3.get(SYMBOL_ALIAS_LABEL)).thenReturn(EX_GENE_1_ALIASES);
+        when(this.excludedGene3.get(ALT_ID_LABEL)).thenReturn(
+            Arrays.asList(EX_GENE_3_ID, EX_GENE_1_ALIAS_A, EX_GENE_1_ALIAS_B));
 
         when(this.term1.getName()).thenReturn(TERM_1_NAME);
         when(this.term2.getName()).thenReturn(TERM_2_NAME);
@@ -127,47 +128,47 @@ public class TermsForGeneBuilderTest
     @Test(expected = NullPointerException.class)
     public void updateTermIsNullThrowsException()
     {
-        this.builder.update(GENE_2_SYMBOL, null);
+        this.builder.update(GENE_2_ID, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void updateGeneSymbolNotYetStoredThrowsException()
     {
-        this.builder.update(GENE_2_SYMBOL, this.term1);
+        this.builder.update(GENE_2_ID, this.term1);
     }
 
     @Test
     public void updateAndAddTermIsAddedForSymbol()
     {
         // Test that add works as expected.
-        this.builder.add(GENE_2_SYMBOL, GENE_2_SYMBOL, this.term1);
+        this.builder.add(GENE_2_SYMBOL, GENE_2_ID, this.term1);
         Collection<TermsForGene> termsForGenes = this.builder.build();
         Assert.assertEquals(1, termsForGenes.size());
         TermsForGene firstItem = termsForGenes.iterator().next();
         Assert.assertEquals(1, firstItem.getCount());
-        Assert.assertEquals(GENE_2_SYMBOL, firstItem.getGeneId());
+        Assert.assertEquals(GENE_2_ID, firstItem.getGeneId());
         Assert.assertEquals(GENE_2_SYMBOL, firstItem.getGeneSymbol());
         Assert.assertEquals(1, firstItem.getTerms().size());
         Assert.assertTrue(firstItem.getTerms().contains(this.term1));
 
         // Test that duplicate terms are not added.
-        this.builder.update(GENE_2_SYMBOL, this.term1);
+        this.builder.update(GENE_2_ID, this.term1);
         termsForGenes = this.builder.build();
         Assert.assertEquals(1, termsForGenes.size());
         firstItem = termsForGenes.iterator().next();
         Assert.assertEquals(1, firstItem.getCount());
-        Assert.assertEquals(GENE_2_SYMBOL, firstItem.getGeneId());
+        Assert.assertEquals(GENE_2_ID, firstItem.getGeneId());
         Assert.assertEquals(GENE_2_SYMBOL, firstItem.getGeneSymbol());
         Assert.assertEquals(1, firstItem.getTerms().size());
         Assert.assertTrue(firstItem.getTerms().contains(this.term1));
 
         // Test that update works as expected for non-duplicate terms.
-        this.builder.update(GENE_2_SYMBOL, this.term2);
+        this.builder.update(GENE_2_ID, this.term2);
         termsForGenes = this.builder.build();
         Assert.assertEquals(1, termsForGenes.size());
         firstItem = termsForGenes.iterator().next();
         Assert.assertEquals(2, firstItem.getCount());
-        Assert.assertEquals(GENE_2_SYMBOL, firstItem.getGeneId());
+        Assert.assertEquals(GENE_2_ID, firstItem.getGeneId());
         Assert.assertEquals(GENE_2_SYMBOL, firstItem.getGeneSymbol());
         Assert.assertEquals(2, firstItem.getTerms().size());
         Assert.assertTrue(firstItem.getTerms().contains(this.term1));
@@ -183,36 +184,36 @@ public class TermsForGeneBuilderTest
     @Test(expected = NullPointerException.class)
     public void addGeneSymbolNullThrowsException()
     {
-        this.builder.add(null, GENE_2_SYMBOL, this.term2);
+        this.builder.add(null, GENE_2_ID, this.term2);
     }
 
     @Test(expected = NullPointerException.class)
     public void addTermNullThrowsException()
     {
-        this.builder.add(GENE_2_SYMBOL, GENE_2_SYMBOL, null);
+        this.builder.add(GENE_2_SYMBOL, GENE_2_ID, null);
     }
 
     @Test
     public void addIfGeneSymbolAlreadyStoredItGetsOverwritten()
     {
         // Add first item.
-        this.builder.add(GENE_2_SYMBOL, GENE_2_SYMBOL, this.term1);
+        this.builder.add(GENE_2_SYMBOL, GENE_2_ID, this.term1);
         Collection<TermsForGene> termsForGenes = this.builder.build();
         Assert.assertEquals(1, termsForGenes.size());
         TermsForGene firstItem = termsForGenes.iterator().next();
         Assert.assertEquals(1, firstItem.getCount());
-        Assert.assertEquals(GENE_2_SYMBOL, firstItem.getGeneId());
+        Assert.assertEquals(GENE_2_ID, firstItem.getGeneId());
         Assert.assertEquals(GENE_2_SYMBOL, firstItem.getGeneSymbol());
         Assert.assertEquals(1, firstItem.getTerms().size());
         Assert.assertTrue(firstItem.getTerms().contains(this.term1));
 
         // Add the same gene symbol.
-        this.builder.add(GENE_2_SYMBOL, GENE_2_SYMBOL, this.term2);
+        this.builder.add(GENE_2_SYMBOL, GENE_2_ID, this.term2);
         termsForGenes = this.builder.build();
         Assert.assertEquals(1, termsForGenes.size());
         firstItem = termsForGenes.iterator().next();
         Assert.assertEquals(1, firstItem.getCount());
-        Assert.assertEquals(GENE_2_SYMBOL, firstItem.getGeneId());
+        Assert.assertEquals(GENE_2_ID, firstItem.getGeneId());
         Assert.assertEquals(GENE_2_SYMBOL, firstItem.getGeneSymbol());
         Assert.assertEquals(1, firstItem.getTerms().size());
         Assert.assertTrue(firstItem.getTerms().contains(this.term2));
@@ -246,8 +247,8 @@ public class TermsForGeneBuilderTest
     @Test
     public void containsReturnsTrueIfGeneSymbolIsStored()
     {
-        this.builder.add(GENE_2_SYMBOL, GENE_2_SYMBOL, this.term1);
-        Assert.assertTrue(this.builder.contains(GENE_2_SYMBOL));
+        this.builder.add(GENE_2_SYMBOL, GENE_2_ID, this.term1);
+        Assert.assertTrue(this.builder.contains(GENE_2_ID));
     }
 
     @Test
@@ -261,17 +262,17 @@ public class TermsForGeneBuilderTest
     public void buildMakesExpectedList()
     {
         // GENE_1_SYMBOL won't be added since it's an exclusion.
-        this.builder.add(GENE_1_SYMBOL, GENE_1_SYMBOL, this.term1);
-        this.builder.add(GENE_2_SYMBOL, GENE_2_SYMBOL, this.term1);
-        this.builder.update(GENE_2_SYMBOL, this.term2);
-        this.builder.add(GENE_3_SYMBOL, GENE_3_SYMBOL, this.term3);
+        this.builder.add(GENE_1_SYMBOL, GENE_1_ID, this.term1);
+        this.builder.add(GENE_2_SYMBOL, GENE_2_ID, this.term1);
+        this.builder.update(GENE_2_ID, this.term2);
+        this.builder.add(GENE_3_SYMBOL, GENE_3_ID, this.term3);
         final List<TermsForGene> termsForGenes = this.builder.build();
         Assert.assertEquals(2, termsForGenes.size());
         final Iterator<TermsForGene> iterator = termsForGenes.iterator();
         final TermsForGene firstTerm = iterator.next();
         Assert.assertEquals(2, firstTerm.getCount());
         Assert.assertEquals(GENE_2_SYMBOL, firstTerm.getGeneSymbol());
-        Assert.assertEquals(GENE_2_SYMBOL, firstTerm.getGeneId());
+        Assert.assertEquals(GENE_2_ID, firstTerm.getGeneId());
         Assert.assertEquals(2, firstTerm.getTerms().size());
         Assert.assertTrue(firstTerm.getTerms().contains(this.term1));
         Assert.assertTrue(firstTerm.getTerms().contains(this.term2));
@@ -279,7 +280,7 @@ public class TermsForGeneBuilderTest
         final TermsForGene secondTerm = iterator.next();
         Assert.assertEquals(1, secondTerm.getCount());
         Assert.assertEquals(GENE_3_SYMBOL, secondTerm.getGeneSymbol());
-        Assert.assertEquals(GENE_3_SYMBOL, secondTerm.getGeneId());
+        Assert.assertEquals(GENE_3_ID, secondTerm.getGeneId());
         Assert.assertEquals(1, secondTerm.getTerms().size());
         Assert.assertTrue(secondTerm.getTerms().contains(this.term3));
     }
