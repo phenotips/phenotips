@@ -30,7 +30,7 @@
 
   <properties>
     <!-- More tests should be added when the Solr core becomes a component -->
-    <coverage.instructionRatio>0.32</coverage.instructionRatio>
+    <coverage.instructionRatio>0.31</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -193,6 +193,10 @@
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
     <!-- Test dependencies -->
     <dependency>

@@ -38,7 +38,8 @@ import org.apache.lucene.analysis.es.SpanishAnalyzer;
 @Component
 @Named("hpo-translation-spanish")
 @Singleton
-public class SpanishHPOTranslation extends AbstractXliffTranslatedSolrVocabularyExtension implements VocabularyExtension
+public class SpanishHPOTranslation extends AbstractXliffTranslatedSolrVocabularyExtension implements
+    VocabularyExtension
 {
     private static final Locale TARGET_LOCALE = Locale.forLanguageTag("es");
 
@@ -58,5 +59,11 @@ public class SpanishHPOTranslation extends AbstractXliffTranslatedSolrVocabulary
     protected String getTargetVocabularyId()
     {
         return "hpo";
+    }
+
+    @Override
+    public String getAnnotationSource()
+    {
+        return null;
     }
 }

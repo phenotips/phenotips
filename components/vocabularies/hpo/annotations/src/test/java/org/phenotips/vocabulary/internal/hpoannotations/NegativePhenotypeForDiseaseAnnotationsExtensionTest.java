@@ -22,6 +22,7 @@ import org.phenotips.vocabulary.VocabularyExtension;
 import org.phenotips.vocabulary.VocabularyInputTerm;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
+import org.phenotips.vocabulary.internal.solr.DefaultVocabularySourceRelocationService;
 
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -59,9 +60,6 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
  */
 public class NegativePhenotypeForDiseaseAnnotationsExtensionTest
 {
-    private static final String ANNOTATION_SOURCE = "http://compbio.charite.de/jenkins/job/hpo.annotations/"
-        + "lastStableBuild/artifact/misc/negative_phenotype_annotation.tab";
-
     private static final String DIRECT_PHENOTYPES_LABEL = "actual_not_symptom";
 
     private static final String ALL_ANCESTOR_PHENOTYPES_LABEL = "not_symptom";
@@ -74,6 +72,11 @@ public class NegativePhenotypeForDiseaseAnnotationsExtensionTest
     @Rule
     public final MockitoComponentMockingRule<VocabularyExtension> mocker =
         new MockitoComponentMockingRule<VocabularyExtension>(NegativePhenotypeForDiseaseAnnotationsExtension.class);
+
+    @Rule
+    public final MockitoComponentMockingRule<DefaultVocabularySourceRelocationService> mocker2 =
+        new MockitoComponentMockingRule<DefaultVocabularySourceRelocationService>(
+            DefaultVocabularySourceRelocationService.class);
 
     private NegativePhenotypeForDiseaseAnnotationsExtension extension;
 
@@ -117,12 +120,6 @@ public class NegativePhenotypeForDiseaseAnnotationsExtensionTest
     public void getTargetVocabularyIds() throws Exception
     {
         Assert.assertEquals(TARGETED_VOCABS, this.extension.getTargetVocabularyIds());
-    }
-
-    @Test
-    public void getAnnotationSource() throws Exception
-    {
-        Assert.assertEquals(ANNOTATION_SOURCE, this.extension.getAnnotationSource());
     }
 
     @Test

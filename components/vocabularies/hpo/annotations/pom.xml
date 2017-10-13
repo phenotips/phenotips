@@ -32,9 +32,15 @@
     <xwiki.extension.namespaces>{root}</xwiki.extension.namespaces>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Phenotype annotations for disease vocabularies</xwiki.extension.name>
+    <coverage.instructionRatio>0.93</coverage.instructionRatio>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-oldcore</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-component-api</artifactId>

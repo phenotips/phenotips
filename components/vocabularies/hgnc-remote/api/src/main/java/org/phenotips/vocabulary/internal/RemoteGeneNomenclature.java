@@ -18,6 +18,7 @@
 package org.phenotips.vocabulary.internal;
 
 import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyExtension;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.cache.Cache;
@@ -561,5 +562,11 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
             }
             return Collections.singleton(result);
         }
+    }
+
+    @Override
+    public List<VocabularyExtension> getExtensions()
+    {
+        return null;
     }
 }

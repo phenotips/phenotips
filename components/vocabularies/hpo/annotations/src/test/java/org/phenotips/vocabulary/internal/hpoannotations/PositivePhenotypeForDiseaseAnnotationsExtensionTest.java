@@ -22,6 +22,7 @@ import org.phenotips.vocabulary.VocabularyExtension;
 import org.phenotips.vocabulary.VocabularyInputTerm;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
+import org.phenotips.vocabulary.internal.solr.DefaultVocabularySourceRelocationService;
 
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -45,6 +46,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.xpn.xwiki.XWiki;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -59,9 +62,6 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
  */
 public class PositivePhenotypeForDiseaseAnnotationsExtensionTest
 {
-    private static final String ANNOTATION_SOURCE = "http://compbio.charite.de/jenkins/job/hpo.annotations/"
-        + "lastStableBuild/artifact/misc/phenotype_annotation.tab";
-
     private static final String DIRECT_PHENOTYPES_LABEL = "actual_symptom";
 
     private static final String ALL_ANCESTOR_PHENOTYPES_LABEL = "symptom";
@@ -75,6 +75,11 @@ public class PositivePhenotypeForDiseaseAnnotationsExtensionTest
     public final MockitoComponentMockingRule<VocabularyExtension> mocker =
         new MockitoComponentMockingRule<VocabularyExtension>(PositivePhenotypeForDiseaseAnnotationsExtension.class);
 
+    @Rule
+    public final MockitoComponentMockingRule<DefaultVocabularySourceRelocationService> mocker2 =
+        new MockitoComponentMockingRule<DefaultVocabularySourceRelocationService>(
+            DefaultVocabularySourceRelocationService.class);
+
     private PositivePhenotypeForDiseaseAnnotationsExtension extension;
 
     @Mock
@@ -82,6 +87,9 @@ public class PositivePhenotypeForDiseaseAnnotationsExtensionTest
 
     @Mock
     private Vocabulary vocabulary;
+
+    @Mock
+    private XWiki xwiki;
 
     @Before
     public void setUp() throws Exception
@@ -117,12 +125,6 @@ public class PositivePhenotypeForDiseaseAnnotationsExtensionTest
     public void getTargetVocabularyIds() throws Exception
     {
         Assert.assertEquals(TARGETED_VOCABS, this.extension.getTargetVocabularyIds());
-    }
-
-    @Test
-    public void getAnnotationSource() throws Exception
-    {
-        Assert.assertEquals(ANNOTATION_SOURCE, this.extension.getAnnotationSource());
     }
 
     @Test

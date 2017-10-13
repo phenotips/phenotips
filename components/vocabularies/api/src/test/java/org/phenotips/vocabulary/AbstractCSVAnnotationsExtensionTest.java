@@ -131,7 +131,7 @@ public class AbstractCSVAnnotationsExtensionTest
         }
 
         @Override
-        protected String getAnnotationSource()
+        public String getAnnotationSource()
         {
             return this.getClass().getClassLoader().getResource("annotations.tdf").toExternalForm();
         }

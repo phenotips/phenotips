@@ -38,7 +38,8 @@ import org.apache.lucene.analysis.it.ItalianAnalyzer;
 @Component
 @Named("hpo-translation-italian")
 @Singleton
-public class ItalianHPOTranslation extends AbstractXliffTranslatedSolrVocabularyExtension implements VocabularyExtension
+public class ItalianHPOTranslation extends AbstractXliffTranslatedSolrVocabularyExtension implements
+    VocabularyExtension
 {
     private static final Locale TARGET_LOCALE = Locale.forLanguageTag("it");
 
@@ -58,5 +59,11 @@ public class ItalianHPOTranslation extends AbstractXliffTranslatedSolrVocabulary
     protected String getTargetVocabularyId()
     {
         return "hpo";
+    }
+
+    @Override
+    public String getAnnotationSource()
+    {
+        return null;
     }
 }

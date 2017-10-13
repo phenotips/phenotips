@@ -57,8 +57,8 @@ public interface VocabularyExtension
 
     /**
      * Called for each term during vocabulary reindexing, this method modifies the parsed terms by changing, adding or
-     * removing fields. This method is called only for {@link #isVocabularySupported(Vocabulary) supported
-     * vocabularies}.
+     * removing fields. This method is called only for {@link #isVocabularySupported(Vocabulary) supported vocabularies}
+     * .
      *
      * @param term the parsed term which can be altered
      * @param vocabulary the the vocabulary being indexed
@@ -81,4 +81,22 @@ public interface VocabularyExtension
      * @param vocabulary the the vocabulary being queried
      */
     void extendQuery(SolrQuery query, Vocabulary vocabulary);
+
+    /**
+     * Specifies the annotation source URL. This can be either a web (http) link, a network file, a local
+     * {@code file:///} reference, a classpath resource, or any other URL format that can be read by the JVM.
+     *
+     * @return a valid annotation source URL
+     */
+    String getAnnotationSource();
+
+    /**
+     * The official name of the vocabulary extension.
+     *
+     * @return a string, for example {@code The Disease HPO negative annotations}
+     */
+    default String getName()
+    {
+        return null;
+    }
 }

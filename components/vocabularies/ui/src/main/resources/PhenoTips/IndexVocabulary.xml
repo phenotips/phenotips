@@ -37,14 +37,16 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{velocity}}
+  <content>{{include reference="PhenoTips.TabelarDataMacros"/}}
+
+{{velocity}}
 $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 $xwiki.jsx.use('PhenoTips.IndexVocabulary')##
 $xwiki.ssx.use('PhenoTips.IndexVocabulary')##
 $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.ssx.use('PhenoTips.Widgets')##
 == $services.localization.render('phenotips.indexVocabulary.heading') ==
-(% class="half" %)(((
+(% class="two-thirds-width" %)(((
 
 {{info}}$services.localization.render('phenotips.indexVocabulary.URLhint'){{/info}}
 
@@ -54,32 +56,52 @@ $xwiki.ssx.use('PhenoTips.Widgets')##
 #foreach ($vocabularyId in $services.vocabularies.getAvailableVocabularies())
 #set ($vocabulary = $services.vocabularies.get($vocabularyId))
 #try()
-#set ($vocabularySource = $vocabulary.DefaultSourceLocation)
-#if ($vocabularySource != '')
+#set ($vocabularySource = $vocabulary.getSourceLocation())
+#set ($vocabularyDefaultSource = $vocabulary.DefaultSourceLocation)
+#if ($vocabularySource &amp;&amp; $vocabularySource != '')
 ## We can index this vocabulary
 &lt;form class="xform solr-admin" action='' method="post"&gt;
+  &lt;dt&gt;
+    &lt;label style="display:inline" for="vocabulary-${vocabularyId}-url"&gt;$vocabulary.name&lt;/label&gt;
+    #set ($citation = "$vocabulary.citation")
+    #set ($link = "$vocabulary.website")
+    &lt;span class="fa fa-info-circle xHelpButton" title='$citation, &lt;a href="$link" target="_blank"&gt;$link&lt;/a&gt;'&gt;&lt;/span&gt;
+    #set ($version = $vocabulary.version)
+    #if ($version)
+      #set ($versionText = $services.localization.render('phenotips.indexVocabulary.version',[$version]))
+      #set ($buttonText = $services.localization.render('phenotips.indexVocabulary.startReindex'))
+    #else
+      #set ($versionText = $services.localization.render('phenotips.indexVocabulary.noVersion'))
+      #set ($buttonText = $services.localization.render('phenotips.indexVocabulary.startIndex'))
+    #end
+    &lt;span class="xHint vocabulary-version"&gt;$versionText&lt;/span&gt;
+    #set($vocabularyHint = $services.localization.render("phenotips.indexVocabulary.hint.${vocabularyId}"))
+    #if ($vocabularyHint != "phenotips.indexVocabulary.hint.${vocabularyId}") ## a hint exists
+      &lt;span class="xHint vocabulary-hint"&gt;$vocabularyHint&lt;/span&gt;
+    #end
+  &lt;/dt&gt;
   &lt;dl&gt;
-    &lt;dt&gt;
-      &lt;label style="display:inline" for="vocabulary-${vocabularyId}-url"&gt;$vocabulary.name&lt;/label&gt;
-      #set ($citation = "$vocabulary.citation")
-      #set ($link = "$vocabulary.website")
-      &lt;span class="fa fa-info-circle xHelpButton" title='$citation, &lt;a href="$link" target="_blank"&gt;$link&lt;/a&gt;'&gt;&lt;/span&gt;
-      #set ($version = $vocabulary.version)
-      #if ($version)
-        #set ($versionText = $services.localization.render('phenotips.indexVocabulary.version',[$version]))
-        #set ($buttonText = $services.localization.render('phenotips.indexVocabulary.startReindex'))
-      #else
-        #set ($versionText = $services.localization.render('phenotips.indexVocabulary.noVersion'))
-        #set ($buttonText = $services.localization.render('phenotips.indexVocabulary.startIndex'))
+      &lt;dt&gt;
+        &lt;label style="display:inline" for="vocabulary-${vocabularyId}-url"&gt;$services.localization.render('phenotips.indexVocabulary.ontology')&lt;/label&gt;
+      &lt;/dt&gt;
+    &lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="vocabulary-${vocabularyId}-url" value="$vocabularySource" onkeypress="return event.keyCode != 13;" disabled/&gt;
+      &lt;input type="hidden" value="$vocabularyDefaultSource"/&gt;
+      &lt;span class="buttonwrapper"&gt;&lt;a class="action-edit fa fa-pencil button secondary" href="#" title="$services.localization.render('phenotips.indexVocabulary.editButtons.edit')"&gt;&lt;/a&gt;
+        &lt;a class="action-save fa fa-check button secondary" href="#" title="$services.localization.render('phenotips.indexVocabulary.editButtons.save')"&gt;&lt;/a&gt;
+        &lt;a class="action-restore fa fa-reply-all button secondary" href="#" title="$services.localization.render('phenotips.indexVocabulary.editButtons.restore')"&gt;&lt;/a&gt;&lt;/span&gt;
+    &lt;/dd&gt;
+  #if ($vocabulary.getExtensions().size() &gt; 0)
+    #foreach ($extension in $vocabulary.getExtensions())
+      #if ($extension.getName())
+        &lt;dt&gt;&lt;label&gt;$extension.getName()&lt;/label&gt;&lt;/dt&gt;
+        &lt;dd&gt;&lt;input type="text" value="$extension.getAnnotationSource()" onkeypress="return event.keyCode != 13;" disabled/&gt;
+        &lt;input type="hidden" name="default-url" value=""/&gt;
+        &lt;span class="buttonwrapper"&gt;&lt;a class="action-edit fa fa-pencil button secondary" href="#" title="$services.localization.render('phenotips.indexVocabulary.editButtons.edit')"&gt;&lt;/a&gt;
+          &lt;a class="action-save fa fa-check button secondary" href="#" title="$services.localization.render('phenotips.indexVocabulary.editButtons.save')"&gt;&lt;/a&gt;
+          &lt;a class="action-restore fa fa-reply-all button secondary" href="#" title="$services.localization.render('phenotips.indexVocabulary.editButtons.restore')"&gt;&lt;/a&gt;&lt;/span&gt;&lt;/dd&gt;
       #end
-      &lt;span class="xHint vocabulary-version"&gt;$versionText&lt;/span&gt;
-
-      #set($vocabularyHint = $services.localization.render("phenotips.indexVocabulary.hint.${vocabularyId}"))
-      #if ($vocabularyHint != "phenotips.indexVocabulary.hint.${vocabularyId}") ## a hint exists
-        &lt;span class="xHint vocabulary-hint"&gt;$vocabularyHint&lt;/span&gt;
-      #end
-    &lt;/dt&gt;
-    &lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="vocabulary-${vocabularyId}-url" value="$vocabularySource"/&gt;&lt;/dd&gt;
+    #end
+  #end
   &lt;/dl&gt;
   &lt;div&gt;
     &lt;input type="hidden" name="vocabulary" value="${vocabularyId}"/&gt;
@@ -90,8 +112,24 @@ $xwiki.ssx.use('PhenoTips.Widgets')##
 #end
 #end
 #end
+#set ($displayDocumentName = 'PhenoTips.IndexVocabulary')
+#set ($vocabularySourceRelocationClassname = 'PhenoTips.VocabularySourceRelocationClass')
+&lt;form action="${preferencesDoc.getURL('save')}" method="post"&gt;
+&lt;div class="hidden"&gt;
+    &lt;input type="hidden" name="form_token" value="${escapetool.xml($services.csrf.token)}" /&gt;
+    &lt;input type="hidden" name="classname" value="${vocabularySourceRelocationClassname}" /&gt;
+    &lt;input type="hidden" name="xredirect" value="${escapetool.xml($doc.getURL($xcontext.action, $request.queryString))}" /&gt;
+  &lt;/div&gt;
+&lt;span class="hidden"&gt;
 {{/html}}
-
+  #__extradata_displayTable($vocabularySourceRelocationClassname, {'counter' : false, 'labels' : false, 'mode' : 'edit', 'addedDisplaySheet' : $displayDocumentName})
+{{html clean="false"}}
+  &lt;div class="buttons"&gt;
+    &lt;input id="relocation-save" class="button" type="submit" value="$services.localization.render('phenotips.sourceRelocationConfiguration.save')" /&gt;
+  &lt;/div&gt;
+&lt;/span&gt;
+&lt;/form&gt;
+{{/html}}
 )))
 {{/velocity}}</content>
   <object>
@@ -428,8 +466,120 @@ $xwiki.ssx.use('PhenoTips.Widgets')##
    });
    // Replace the title for the information buttons with something more relevant to the context.
    $$(".xHelpButton").each(function(elem) {
-     elem.title = "$!escapetool.javascript($services.localization.render('phenotips.indexVocabulary.helpButtons.vocabulary.hint'))";
+      elem.title = "$!escapetool.javascript($services.localization.render('phenotips.indexVocabulary.helpButtons.vocabulary.hint'))";
    });
+
+   // Hide save and restore default buttons
+   $$('.action-save', '.action-restore').each(function(elem) {
+      elem.hide();
+   });
+
+   // This change in URL is necessary for proper creation of new relocation records
+   $$('.add-data-button')[0].href = $$('.add-data-button')[0].href.replace('PhenoTips.IndexVocabulary', 'PhenoTips.VocabularyRelocationConfiguration');
+
+   // Populate default URLs in hidden inputs (so we can resote them on user demand if user with arbitrary change input and we wont be able to track it in the table)
+   $$('input[name="default-url"]').each(function(elem) {
+      if (elem.value == "") {
+         elem.value = elem.previous().value;
+         var element = elem;
+         // loop through the table relocation values, if there is match - we stash original in hidden input
+         $$('td.relocation input').each(function(inpt) {
+            if (inpt.value == element.previous().value) {
+               element.value = inpt.up('tr').down('.original input').value;
+            }
+         });
+      }
+   });
+
+   $$('.action-edit').invoke('observe', 'click', function(event) {
+      event.stop();
+      var el = event.element();
+      el.hide();
+      el.up('.buttonwrapper').down('.action-save').show();
+      el.up('.buttonwrapper').down('.action-restore').show();
+      var inputEl = el.up('dd').down('input');
+      inputEl.disabled = false;
+      //disable submit button
+      el.up('form').down('input[name="actionindex"]').disabled = true;
+   });
+
+   $$('.action-save').invoke('observe', 'click', function(event) {
+      event.stop();
+      var el = event.element();
+      el.hide();
+      el.up('.buttonwrapper').down('.action-edit').show();
+      el.up('.buttonwrapper').down('.action-restore').hide();
+      var inputEl = el.up('dd').down('input');
+      inputEl.disabled = true;
+      //enable submit button
+      el.up('form').down('input[name="actionindex"]').disabled = false;
+      saveURL(inputEl.next(), inputEl);
+   });
+
+   $$('.action-restore').invoke('observe', 'click', function(event) {
+      event.stop();
+      var el = event.element();
+      var inputEl = el.up('dd').down('input');
+      if (inputEl.next().value != "") {
+         inputEl.value = inputEl.next().value;
+      }
+   });
+
+   function saveURL(defaultInputEl, relocateInputEl) {
+      var updatingExisting = false;
+      // if the record with original URL already exists, either
+      // populate relocation URL to the table and save
+      // or delete record if we are restoring to default and saving, hence, if relocation and original URLs are equal
+      $$('td.original input').each(function(inpt) {
+         if (inpt.value == defaultInputEl.value) {
+            updatingExisting = true;
+            if (defaultInputEl.value == relocateInputEl.value) {
+               // delete record
+               var url = inpt.up('tr').down('a.delete').href;
+               new Ajax.Request(url, {
+                  onSuccess : function () {
+                     var dataRow = inpt.up('tr:not(.head-group)');
+                     if (dataRow) {
+                        dataRow.remove();
+                     }
+                  },
+                  onFailure : function(response) {
+                     // do nothing
+                  }
+               });
+            } else {
+               inpt.up('tr').down('.relocation input').value = relocateInputEl.value;
+               $('relocation-save').click();
+            }
+         }
+      });
+      // if no record exists, and we do not restoring to default, create a new record
+      if (!updatingExisting &amp;&amp; defaultInputEl.value != relocateInputEl.value) {
+         $$('.add-data-button')[0].click();
+         // adding class name to the input we trying to save to find it later for URL population after callback from creating a new table record
+         relocateInputEl.addClassName('saving');
+         $$('.action-save').each(function(elem) {
+            elem.disabled = true;
+         });
+      }
+   };
+
+   // After a new table record is created, populates original and relocation URLs into new row and invokes table save action
+   function populateURLs(event) {
+      var savingEl = $$('input.saving')[0];
+      if (event.memo &amp;&amp; event.memo.element &amp;&amp; this.originURLToAdd != '') {
+         var row = event.memo.element;
+         row.down('.original input').value = savingEl.next().value;
+         row.down('.relocation input').value = savingEl.value;
+         $('relocation-save').click();
+      }
+      savingEl.removeClassName('saving');
+      $$('.action-save').each(function(elem) {
+         elem.disabled = false;
+      });
+   };
+
+   document.observe('extradata:added', populateURLs.bind(this));
 });</code>
     </property>
     <property>
@@ -544,9 +694,8 @@ $xwiki.ssx.use('PhenoTips.Widgets')##
 form.solr-admin input[type="text"] {
   box-sizing: border-box;
   margin: .5em 0;
-  width: 100%;
+  width: 90%;
 }
-
 form.solr-admin .vocabulary-version {
   float: right;
 }
@@ -556,6 +705,12 @@ form.solr-admin .vocabulary-hint {
 form.solr-admin .xTooltip {
   font-style: normal;
   font-weight: 400;
+}
+form dl {
+  margin-left: 10px;
+}
+.two-thirds-width {
+  width: 85%;
 }</code>
     </property>
     <property>

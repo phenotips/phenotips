@@ -18,6 +18,7 @@
 package org.phenotips.vocabulary.internal.solr;
 
 import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularySourceRelocationService;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
@@ -146,6 +147,9 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
     @Inject
     @Named("hpo")
     private Vocabulary hpo;
+
+    @Inject
+    private VocabularySourceRelocationService relocationService;
 
     @Override
     public String getDefaultSourceLocation()
@@ -380,8 +384,10 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
 
     private void loadGenes()
     {
-        try (BufferedReader in = new BufferedReader(
-            new InputStreamReader(new URL(GENE_ANNOTATIONS_URL).openConnection().getInputStream(), ENCODING))) {
+        try (BufferedReader in =
+            new BufferedReader(
+                new InputStreamReader(new URL(this.relocationService.getRelocation(GENE_ANNOTATIONS_URL))
+                    .openConnection().getInputStream(), ENCODING))) {
             for (CSVRecord row : CSVFormat.TDF.withCommentMarker('#').parse(in)) {
                 SolrInputDocument term = this.data.get(row.get(0).trim());
                 if (term != null) {
@@ -405,8 +411,10 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
 
     private void loadGeneReviews()
     {
-        try (BufferedReader in = new BufferedReader(
-            new InputStreamReader(new URL(GENEREVIEWS_MAPPING_URL).openConnection().getInputStream(), ENCODING))) {
+        try (BufferedReader in =
+            new BufferedReader(
+                new InputStreamReader(new URL(this.relocationService.getRelocation(GENEREVIEWS_MAPPING_URL))
+                    .openConnection().getInputStream(), ENCODING))) {
             for (CSVRecord row : CSVFormat.TDF.withHeader().parse(in)) {
                 SolrInputDocument term = this.data.get(row.get(2));
                 if (term != null) {

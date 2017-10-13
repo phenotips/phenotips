@@ -21,6 +21,7 @@ import org.phenotips.vocabulary.SolrVocabularyResourceManager;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyExtension;
 import org.phenotips.vocabulary.VocabularyInputTerm;
+import org.phenotips.vocabulary.VocabularySourceRelocationService;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.phase.InitializationException;
@@ -77,6 +78,9 @@ public abstract class AbstractSolrVocabulary implements Vocabulary
     /** The extensions that apply to this vocabulary. */
     @Inject
     protected Provider<List<VocabularyExtension>> extensions;
+
+    @Inject
+    protected VocabularySourceRelocationService relocationService;
 
     // Dilemma:
     // In an ideal world there should be a getter methods for server and cache instances.
@@ -239,6 +243,24 @@ public abstract class AbstractSolrVocabulary implements Vocabulary
     public List<VocabularyTerm> search(String input, int maxResults, String sort, String customFilter)
     {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getSourceLocation()
+    {
+        return this.relocationService.getRelocation(this.getDefaultSourceLocation());
+    }
+
+    @Override
+    public List<VocabularyExtension> getExtensions()
+    {
+        List<VocabularyExtension> result = new LinkedList<>();
+        for (VocabularyExtension extension : this.extensions.get()) {
+            if (extension.isVocabularySupported(this)) {
+                result.add(extension);
+            }
+        }
+        return result;
     }
 
     /**
