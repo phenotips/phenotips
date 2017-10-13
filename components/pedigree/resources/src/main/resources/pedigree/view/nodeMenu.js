@@ -275,6 +275,8 @@ define([
                         noresults: "No matching terms",
                         resultsParameter : "rows",
                         resultValue : "symbol",
+                        resultId : "ensembl_gene_id",
+                        forceFirstId : true,
                         resultInfo : {},
                         tooltip : 'gene-info'
                     },
