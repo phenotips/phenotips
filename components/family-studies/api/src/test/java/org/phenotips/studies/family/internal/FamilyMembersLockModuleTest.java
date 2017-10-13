@@ -117,7 +117,7 @@ public class FamilyMembersLockModuleTest
         when(this.familyDoc.getDocumentReference()).thenReturn(this.currentDocumentReference);
 
         this.familyRepository = this.mocker.getInstance(FamilyRepository.class);
-        when(this.familyRepository.getFamilyById(this.currentDocumentReference.getName())).thenReturn(this.family);
+        when(this.familyRepository.get(this.currentDocumentReference.getName())).thenReturn(this.family);
 
         when(this.notLockedPatient.getXDocument()).thenReturn(this.notLockedPatientDoc);
         when(this.notLockedPatientDoc.getLock(this.context)).thenReturn(null);
@@ -185,7 +185,7 @@ public class FamilyMembersLockModuleTest
     @Test
     public void noLockForNonFamilyDocument() throws ComponentLookupException, XWikiException
     {
-        when(this.familyRepository.getFamilyById(this.currentDocumentReference.getName())).thenReturn(null);
+        when(this.familyRepository.get(this.currentDocumentReference.getName())).thenReturn(null);
 
         Assert.assertNull(this.mocker.getComponentUnderTest().getLock(this.currentDocumentReference));
     }

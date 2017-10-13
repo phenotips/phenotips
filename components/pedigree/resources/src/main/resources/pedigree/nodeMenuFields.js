@@ -296,6 +296,12 @@ define([
                 'function' : 'setCancers'
             },
             {
+                'name' : 'cancers_picker',
+                'type' : 'cancers-picker',
+                'tab': 'Cancers',
+                'function' : 'setCancers'
+            },
+            {
                 'name' : 'commentsCancers',
                 'label' : 'Comments',
                 'type' : 'textarea',

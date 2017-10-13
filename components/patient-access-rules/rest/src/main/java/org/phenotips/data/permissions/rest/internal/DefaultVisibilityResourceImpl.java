@@ -18,8 +18,8 @@
 package org.phenotips.data.permissions.rest.internal;
 
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.VisibilityResource;
@@ -64,7 +64,7 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
     private DomainObjectFactory factory;
 
     @Inject
-    private PermissionsManager manager;
+    private EntityPermissionsManager manager;
 
     @Inject
     private Container container;
@@ -139,8 +139,8 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
         // besides getting the patient, checks that the user has manage access
         PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
 
-        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
-        if (!patientAccess.setVisibility(visibility)) {
+        EntityAccess entityAccess = patientAccessContext.getPatientAccess();
+        if (!entityAccess.setVisibility(visibility)) {
             // todo. should this status be an internal server error, or a bad request?
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }

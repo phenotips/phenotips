@@ -115,4 +115,18 @@ public interface PrimaryEntityManager<E extends PrimaryEntity>
      */
     @Unstable("The type of the parameter will be replaced by Document, once the new model module is implemented")
     E load(DocumentModelBridge document) throws IllegalArgumentException;
+
+    /**
+     * Gets a prefix for all {@code #create() generated} documents.
+     *
+     * @return a short string
+     */
+    String getIdPrefix();
+
+    /**
+     * Gets the primary entity manager type (e.g. "patients").
+     *
+     * @return the {@link PrimaryEntityManager} type as string
+     */
+    String getType();
 }

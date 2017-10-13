@@ -20,7 +20,9 @@ package org.phenotips.studies.family.internal;
 import org.phenotips.studies.family.Pedigree;
 import org.phenotips.studies.family.PedigreeProcessor;
 import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyInputTerm;
 import org.phenotips.vocabulary.VocabularyTerm;
+import org.phenotips.vocabulary.internal.solr.SolrVocabularyInputTerm;
 
 import org.xwiki.component.annotation.Component;
 
@@ -31,6 +33,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrInputDocument;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -229,9 +232,14 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
         if (externalTerms != null) {
             for (Object termIdObj : externalTerms) {
                 try {
-                    VocabularyTerm term = omimService.getTerm(termIdObj.toString());
+                    final String termId = termIdObj.toString();
+                    final VocabularyTerm term = omimService.getTerm(termId);
                     if (term != null) {
                         internalTerms.put(term.toJSON());
+                    } else {
+                        final VocabularyInputTerm customTerm = new SolrVocabularyInputTerm(new SolrInputDocument(),
+                            omimService);
+                        internalTerms.put(customTerm.setId(termId).setName(termId).toJSON());
                     }
                 } catch (Exception ex) {
                     logger.error("Could not convert disorder {} from pedigree JSON to patient JSON", termIdObj);

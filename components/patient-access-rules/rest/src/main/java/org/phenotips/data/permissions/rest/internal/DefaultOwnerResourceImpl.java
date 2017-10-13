@@ -17,8 +17,8 @@
  */
 package org.phenotips.data.permissions.rest.internal;
 
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.OwnerResource;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
@@ -75,7 +75,7 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
     private Provider<Autolinker> autolinker;
 
     @Inject
-    private PermissionsManager manager;
+    private EntityPermissionsManager manager;
 
     @Override
     public OwnerRepresentation getOwner(String patientId)
@@ -136,11 +136,11 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
         // todo. ask Sergiu as to what the right thing to do is
         // the code in DefaultPatientAccessHelper needs to be changed
         // this is just a hack
-        // the helper in PatientAccess needs to use this.entitySerializer.serialize
+        // the helper in EntityAccess needs to use this.entitySerializer.serialize
         DocumentReference ownerDocRef = new DocumentReference(ownerReference);
 
-        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
-        if (!patientAccess.setOwner(ownerDocRef)) {
+        EntityAccess entityAccess = patientAccessContext.getPatientAccess();
+        if (!entityAccess.setOwner(ownerDocRef)) {
             // todo. should this status be an internal server error, or a bad request?
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }

@@ -86,6 +86,11 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     public PhenotipsFamily(XWikiDocument familyDocument)
     {
         super(familyDocument);
+
+        BaseObject data = familyDocument.getXObject(CLASS_REFERENCE);
+        if (data == null) {
+            throw new IllegalArgumentException("Not a family: " + familyDocument.getDocumentReference());
+        }
     }
 
     @Override

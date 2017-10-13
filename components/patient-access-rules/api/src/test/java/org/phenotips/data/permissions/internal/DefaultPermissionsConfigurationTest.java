@@ -18,8 +18,8 @@
 package org.phenotips.data.permissions.internal;
 
 import org.phenotips.Constants;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.PermissionsConfiguration;
-import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 
 import org.xwiki.bridge.DocumentAccessBridge;
@@ -49,7 +49,7 @@ import net.jcip.annotations.NotThreadSafe;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the default {@link PermissionsManager} implementation, {@link DefaultPermissionsManager}.
+ * Tests for the default {@link EntityPermissionsManager} implementation, {@link DefaultEntityPermissionsManager}.
  *
  * @version $Id$
  */

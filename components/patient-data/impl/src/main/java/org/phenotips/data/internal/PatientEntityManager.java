@@ -18,8 +18,10 @@
 package org.phenotips.data.internal;
 
 import org.phenotips.data.Patient;
+import org.phenotips.entities.PrimaryEntityManager;
 import org.phenotips.entities.internal.AbstractPrimaryEntityManager;
 
+import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
@@ -34,6 +36,7 @@ import javax.inject.Singleton;
  * @since 1.0M8
  */
 @Named("Patient")
+@Component(roles = {PrimaryEntityManager.class})
 @Singleton
 public class PatientEntityManager extends AbstractPrimaryEntityManager<Patient>
 {
@@ -53,5 +56,17 @@ public class PatientEntityManager extends AbstractPrimaryEntityManager<Patient>
     protected DocumentReference getEntityXClassReference()
     {
         return this.referenceResolver.resolve(Patient.CLASS_REFERENCE);
+    }
+
+    @Override
+    public String getIdPrefix()
+    {
+        return "P";
+    }
+
+    @Override
+    public String getType()
+    {
+        return "patients";
     }
 }

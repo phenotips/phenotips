@@ -20,8 +20,8 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.manager.ComponentLookupException;
@@ -59,12 +59,12 @@ public class OwnerAccessAuthorizationModuleTest
     @Mock
     private Patient patient;
 
-    private PermissionsManager pm;
+    private EntityPermissionsManager pm;
 
     private PatientRepository repo;
 
     @Mock
-    private PatientAccess patientAccess;
+    private EntityAccess entityAccess;
 
     @Mock
     private AccessLevel userAccess;
@@ -88,11 +88,11 @@ public class OwnerAccessAuthorizationModuleTest
         this.repo = this.mocker.getInstance(PatientRepository.class);
         when(this.repo.get("xwiki:data.P01")).thenReturn(this.patient);
 
-        this.pm = this.mocker.getInstance(PermissionsManager.class);
-        when(this.pm.getPatientAccess(this.patient)).thenReturn(this.patientAccess);
+        this.pm = this.mocker.getInstance(EntityPermissionsManager.class);
+        when(this.pm.getEntityAccess(this.patient)).thenReturn(this.entityAccess);
         this.mocker.registerComponent(AccessLevel.class, "owner", this.ownerAccess);
-        when(this.patientAccess.getAccessLevel(Matchers.any())).thenReturn(this.noAccess);
-        when(this.patientAccess.getAccessLevel(this.userProfile)).thenReturn(this.userAccess);
+        when(this.entityAccess.getAccessLevel(Matchers.any())).thenReturn(this.noAccess);
+        when(this.entityAccess.getAccessLevel(this.userProfile)).thenReturn(this.userAccess);
         when(this.ownerAccess.compareTo(this.noAccess)).thenReturn(1);
         when(this.ownerAccess.compareTo(this.userAccess)).thenReturn(0);
 
@@ -132,35 +132,35 @@ public class OwnerAccessAuthorizationModuleTest
     @Test
     public void viewAccessGrantedForGuestOwner() throws ComponentLookupException
     {
-        when(this.patientAccess.getAccessLevel(null)).thenReturn(this.userAccess);
+        when(this.entityAccess.getAccessLevel(null)).thenReturn(this.userAccess);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(null, Right.VIEW, this.doc));
     }
 
     @Test
     public void editAccessGrantedForGuestOwner() throws ComponentLookupException
     {
-        when(this.patientAccess.getAccessLevel(null)).thenReturn(this.userAccess);
+        when(this.entityAccess.getAccessLevel(null)).thenReturn(this.userAccess);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(null, Right.EDIT, this.doc));
     }
 
     @Test
     public void commentAccessGrantedForGuestOwner() throws ComponentLookupException
     {
-        when(this.patientAccess.getAccessLevel(null)).thenReturn(this.userAccess);
+        when(this.entityAccess.getAccessLevel(null)).thenReturn(this.userAccess);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(null, Right.COMMENT, this.doc));
     }
 
     @Test
     public void deleteAccessGrantedForGuestOwner() throws ComponentLookupException
     {
-        when(this.patientAccess.getAccessLevel(null)).thenReturn(this.userAccess);
+        when(this.entityAccess.getAccessLevel(null)).thenReturn(this.userAccess);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(null, Right.DELETE, this.doc));
     }
 
     @Test
     public void manageAccessGrantedForGuestOwner() throws ComponentLookupException
     {
-        when(this.patientAccess.getAccessLevel(null)).thenReturn(this.userAccess);
+        when(this.entityAccess.getAccessLevel(null)).thenReturn(this.userAccess);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(null, ManageRight.MANAGE, this.doc));
     }
 

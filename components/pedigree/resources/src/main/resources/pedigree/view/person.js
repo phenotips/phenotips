@@ -1034,16 +1034,17 @@ define([
         /**
          * Adds cancer to the list of this node's common cancers
          *
-         * @param cancerName String
-         * @param cancerDetails Object {affected: Boolean, numericAgeAtDiagnosis: Number, ageAtDiagnosis: String, comments: String}
+         * @param cancerID String
+         * @param cancerDetails Object {affected: Boolean, id: String, label: String, qualifiers: [{laterality: String, primary: Boolean, numericAgeAtDiagnosis: Number, ageAtDiagnosis: String, comments: String}]}
          * @method addCancer
          */
-        addCancer: function(cancerName, cancerDetails) {
-            if (!this.getCancers().hasOwnProperty(cancerName)) {
+        addCancer: function(cancerID, cancerDetails) {
+            if (!this.getCancers().hasOwnProperty(cancerID)) {
                 if (cancerDetails.hasOwnProperty("affected") && cancerDetails.affected) {
-                    editor.getCancerLegend().addCase(cancerName, cancerName, this.getID());
+                    var cancerName = cancerDetails.hasOwnProperty("label") ? cancerDetails.label : null;
+                    editor.getCancerLegend().addCase(cancerID, cancerName, this.getID());
                 }
-                this.getCancers()[cancerName] = cancerDetails;
+                this.getCancers()[cancerID] = cancerDetails;
             }
         },
 
@@ -1052,10 +1053,10 @@ define([
          *
          * @method removeCancer
          */
-        removeCancer: function(cancerName) {
-            if (this.getCancers().hasOwnProperty(cancerName)) {
-                editor.getCancerLegend().removeCase(cancerName, this.getID());
-                delete this._cancers[cancerName];
+        removeCancer: function(cancerID) {
+            if (this.getCancers().hasOwnProperty(cancerID)) {
+                editor.getCancerLegend().removeCase(cancerID, this.getID());
+                delete this._cancers[cancerID];
             }
         },
 
@@ -1063,17 +1064,21 @@ define([
          * Sets the set of common cancers affecting this person to the given set
          *
          * @method setCancers
-         * @param {Object} { Name: {affected: Boolean, numericAgeAtDiagnosis: Number, ageAtDiagnosis: String, comments: String} }
+         * @param {Array} cancers Array of cancers, each with the following format: Object {affected: Boolean, id:
+         *                        String, label: String, qualifiers: Object [{laterality: String, primary: Boolean,
+         *                        numericAgeAtDiagnosis: Number, ageAtDiagnosis: String, comments: String}]}
          */
         setCancers: function(cancers) {
-            for (var cancerName in this.getCancers()) {
-                if (this.getCancers().hasOwnProperty(cancerName)) {
-                    this.removeCancer(cancerName);
+            for (var cancerID in this.getCancers()) {
+                if (this.getCancers().hasOwnProperty(cancerID)) {
+                    this.removeCancer(cancerID);
                 }
             }
-            for (var cancerName in cancers) {
-                if (cancers.hasOwnProperty(cancerName)) {
-                    this.addCancer(cancerName, cancers[cancerName]);
+
+            for (var i = 0; i < cancers.length; i++) {
+                var cancer = cancers[i];
+                if (cancer.hasOwnProperty("id")) {
+                    this.addCancer(cancer.id, cancer);
                 }
             }
             this.getGraphics().updateDisorderShapes();
@@ -1140,6 +1145,22 @@ define([
                 this.getGraphics().getHoverBox().regenerateHandles();
             }
             return this.getChildlessStatus();
+        },
+
+       /**
+        * Returns cancers as an array of cancer objects.
+        *
+        * @return {Array} of cancer objects
+        */
+        getPhenotipsFormattedCancers: function() {
+            var formattedCancers = [];
+            var cancers = this.getCancers();
+            for (var cancerID in cancers) {
+                if (cancers.hasOwnProperty(cancerID)) {
+                    formattedCancers.push(cancers[cancerID]);
+                }
+            }
+            return formattedCancers;
         },
 
         /**
@@ -1311,7 +1332,7 @@ define([
             if (this.getDisorders().length > 0)
                 info['disorders'] = this.getDisordersForExport();
             if (!Helpers.isObjectEmpty(this.getCancers()))
-                info['cancers'] = this.getCancers();
+                info['cancers'] = this.getPhenotipsFormattedCancers();
 
             // convert HPO data to PhenoTips feature format
             // (which stores features and non-standard features separately)
@@ -1519,10 +1540,10 @@ define([
                     this.setDisorders([]);
                 }
                 if(info.cancers) {
-                    var cancersCopy = Helpers.cloneObject(info.cancers);
+                    var cancersCopy = info.cancers.slice();
                     this.setCancers(cancersCopy);
                 } else {
-                    this.setCancers({});
+                    this.setCancers([]);
                 }
 
                 // save original feature data

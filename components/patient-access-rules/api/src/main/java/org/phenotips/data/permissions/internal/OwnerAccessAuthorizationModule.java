@@ -20,7 +20,7 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.annotation.Component;
@@ -52,7 +52,7 @@ public class OwnerAccessAuthorizationModule implements AuthorizationModule
 
     /** Checks to see if the user is the owner. */
     @Inject
-    private PermissionsManager manager;
+    private EntityPermissionsManager manager;
 
     /** Minimal access level for granting access. */
     @Inject
@@ -80,7 +80,7 @@ public class OwnerAccessAuthorizationModule implements AuthorizationModule
         }
 
         AccessLevel grantedAccess =
-            this.manager.getPatientAccess(patient).getAccessLevel(user != null ? user.getProfileDocument() : null);
+            this.manager.getEntityAccess(patient).getAccessLevel(user != null ? user.getProfileDocument() : null);
 
         if (this.ownerAccess.compareTo(grantedAccess) <= 0) {
             return true;

@@ -20,7 +20,7 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.manager.ComponentLookupException;
@@ -58,7 +58,7 @@ public class CollaboratorAccessAuthorizationModuleTest
     private Patient patient;
 
     @Mock
-    private PatientAccess pAccess;
+    private EntityAccess pAccess;
 
     private DocumentReference doc = new DocumentReference("xwiki", "data", "P01");
 
@@ -77,10 +77,7 @@ public class CollaboratorAccessAuthorizationModuleTest
     @Mock
     private AccessLevel manageAccess;
 
-    @Mock
-    private AccessLevel requestedAccess;
-
-    private PatientAccessHelper helper;
+    private EntityAccessHelper helper;
 
     private PatientRepository repo;
 
@@ -88,7 +85,7 @@ public class CollaboratorAccessAuthorizationModuleTest
     public void setupMocks() throws ComponentLookupException
     {
         MockitoAnnotations.initMocks(this);
-        this.helper = this.mocker.getInstance(PatientAccessHelper.class);
+        this.helper = this.mocker.getInstance(EntityAccessHelper.class);
 
         when(this.noAccess.getGrantedRight()).thenReturn(Right.ILLEGAL);
         when(this.viewAccess.getGrantedRight()).thenReturn(Right.VIEW);
