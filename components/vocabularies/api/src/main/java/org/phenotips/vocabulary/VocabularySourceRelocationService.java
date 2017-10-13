@@ -32,9 +32,9 @@ import org.xwiki.stability.Unstable;
 public interface VocabularySourceRelocationService
 {
     /**
-     * get the XObject of type {@link PhenoTips.VocabularySourceRelocationClass} with the value for the {@link original}
+     * get the XObject of type PhenoTips.VocabularySourceRelocationClass with the value for the {@code original}
      * property equal to the value of the {@code original} argument, and if not {@code null}, return the value of the
-     * {@link relocation} property. If the relocation isn't defined, then just return {@code original}.
+     * relocation property. If the relocation isn't defined, then just return {@code original}.
      *
      * @param original the identifier of the target vocabulary
      * @return the value of the relocation property
