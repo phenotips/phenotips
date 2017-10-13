@@ -189,6 +189,8 @@
     insertBeforeSuggestions: null,
     // Should id be displayed or hidden
     displayId: false,
+    // If multiple ids are available will return only the first one iif set to true, all otherwise.
+    forceFirstId : false,
     // Should value be displayed as a hint
     displayValue: false,
     // Display value prefix text
@@ -560,7 +562,7 @@
     }
     var data = {
       'suggest' : this,
-      'id': _getResultFieldValue(result, source.resultId || this.options.resultId),
+      'id': this._processId(_getResultFieldValue(result, source.resultId || this.options.resultId), source.forceFirstId || this.options.forceFirstId),
       'value': _getResultFieldValue(result, source.resultValue || this.options.resultValue),
       'info'    : this.generateResultInfo(result, _getResultFieldValueAsArray),
       'icon': _getResultFieldValue(result, source.resultIcon || this.options.resultIcon),
@@ -784,7 +786,7 @@
       }
 
       aSuggestions.push({
-        'id': _getResultFieldValue(results[i], source.resultId || this.options.resultId),
+        'id': this._processId(_getResultFieldValue(results[i], source.resultId || this.options.resultId), source.forceFirstId || this.options.forceFirstId),
         'value': _getResultFieldValue(results[i], source.resultValue || this.options.resultValue),
         'icon': _getResultFieldValue(results[i], source.resultIcon || this.options.resultIcon),
         'altName': bestNameMatch,
@@ -793,6 +795,14 @@
       });
     }
     return aSuggestions;
+  },
+
+  _processId : function (identifier, forceFirstId) {
+      if (identifier.constructor === Array &amp;&amp; forceFirstId) {
+        return identifier.length &gt; 0 ? identifier[0] : '';
+      } else {
+        return identifier;
+      }
   },
 
   /**
