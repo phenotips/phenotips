@@ -17,17 +17,11 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.data.permissions.Owner;
-import org.phenotips.data.permissions.Visibility;
-import org.phenotips.entities.PrimaryEntity;
-
 import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
-import java.util.Collection;
+import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * @version $Id$
@@ -37,27 +31,10 @@ public interface EntityAccessHelper
 {
     DocumentReference getCurrentUser();
 
-    boolean isAdministrator(PrimaryEntity entity);
-
-    boolean isAdministrator(PrimaryEntity entity, DocumentReference user);
-
-    Owner getOwner(PrimaryEntity entity);
-
-    boolean setOwner(PrimaryEntity entity, EntityReference userOrGroup);
-
-    Visibility getVisibility(PrimaryEntity entity);
-
-    AccessLevel getAccessLevel(PrimaryEntity entity, EntityReference userOrGroup);
-
-    boolean setVisibility(PrimaryEntity entity, Visibility visibility);
-
-    Collection<Collaborator> getCollaborators(PrimaryEntity entity);
-
-    boolean setCollaborators(PrimaryEntity entity, Collection<Collaborator> newCollaborators);
-
-    boolean addCollaborator(PrimaryEntity entity, Collaborator collaborator);
-
-    boolean removeCollaborator(PrimaryEntity entity, Collaborator collaborator);
-
     String getType(EntityReference userOrGroup);
+
+    String getStringProperty(XWikiDocument doc, DocumentReference classReference, String propertyName);
+
+    void setProperty(XWikiDocument doc, DocumentReference classReference, String propertyName,
+        Object propertyValue);
 }

@@ -110,25 +110,10 @@ public class EntityPermissionsManagerScriptService implements ScriptService
     /**
      * Returns EntityAccess to the given entity for the given user.
      *
-     * @param targetEntity the entity
+     * @param entity the entity
      */
-    public EntityAccess getEntityAccess(PrimaryEntity targetEntity)
+    public EntityAccess getEntityAccess(PrimaryEntity entity)
     {
-        return this.getEntityAccess(targetEntity.getId());
-    }
-
-    public EntityAccess getEntityAccess(String targetEntityId)
-    {
-        // scripts have only access to a SecurePatient implementation of a Patient,
-        // which does not support all the functionality EntityAccess needs. So
-        // need to get the full Patient object here instead of taking it as an argument
-        //
-        // Since this is a script service, need to check access rights the same way SecurePatientReporistory does.
-        //
-        // TODO: rights management should be refactored so that less is done from velocity
-        //       and this method won't be needed any more
-
-        PrimaryEntity entity = this.resolver.resolveEntity(targetEntityId);
         if (entity == null) {
             return null;
         }
@@ -136,6 +121,12 @@ public class EntityPermissionsManagerScriptService implements ScriptService
             return null;
         }
         return this.manager.getEntityAccess(entity);
+    }
+
+    public EntityAccess getEntityAccess(String entityId)
+    {
+        PrimaryEntity entity = this.resolver.resolveEntity(entityId);
+        return getEntityAccess(entity);
     }
 
     public void fireRightsUpdateEvent(String targetEntityId)

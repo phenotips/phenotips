@@ -19,7 +19,7 @@ package org.phenotips.studies.family.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.internal.EntityAccessHelper;
+import org.phenotips.data.permissions.internal.EntityAccessManager;
 import org.phenotips.security.authorization.AuthorizationModule;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
@@ -53,7 +53,7 @@ public class AccessThroughFamilyMemberAuthorisationModule implements Authorizati
 
     /** Checks to see if the user has access. */
     @Inject
-    private EntityAccessHelper manager;
+    private EntityAccessManager manager;
 
     @Override
     public int getPriority()

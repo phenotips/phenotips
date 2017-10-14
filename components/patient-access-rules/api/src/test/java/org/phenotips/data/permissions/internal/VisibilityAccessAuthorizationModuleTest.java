@@ -75,7 +75,7 @@ public class VisibilityAccessAuthorizationModuleTest
     @Mock
     private Visibility privateVisibility;
 
-    private EntityAccessHelper helper;
+    private EntityVisibilityManager helper;
 
     private PrimaryEntityResolver resolver;
 
@@ -86,7 +86,7 @@ public class VisibilityAccessAuthorizationModuleTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.helper = this.mocker.getInstance(EntityAccessHelper.class);
+        this.helper = this.mocker.getInstance(EntityVisibilityManager.class);
         this.resolver = this.mocker.getInstance(PrimaryEntityResolver.class);
         when(this.resolver.resolveEntity("xwiki:data.P01")).thenReturn(this.primaryEntity);
 

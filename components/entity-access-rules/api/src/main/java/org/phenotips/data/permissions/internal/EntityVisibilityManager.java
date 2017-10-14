@@ -15,8 +15,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data.permissions;
+package org.phenotips.data.permissions.internal;
 
+import org.phenotips.data.permissions.Visibility;
 import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.component.annotation.Role;
@@ -29,18 +30,19 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
+ * Handles various operations that modify and/or retrieve visibility data for {@link PrimaryEntity} objects.
+ *
  * @version $Id$
- * @since 1.0M9
- * @since 1.4, under new name and moved from patient-access-rules
+ * @since 1.4
  */
 @Unstable
 @Role
-public interface EntityPermissionsManager
+public interface EntityVisibilityManager
 {
     /**
      * Get the visibility options available, excluding {@link Visibility#isDisabled() disabled} ones.
      *
-     * @return a collection of enabled visibilities, may be empty if none are enabled
+     * @return a collection of enabled {@link Visibility} visibilities; may be empty if none are enabled
      */
     @Nonnull
     Collection<Visibility> listVisibilityOptions();
@@ -48,39 +50,41 @@ public interface EntityPermissionsManager
     /**
      * Get all visibility options available in the platform, including {@link Visibility#isDisabled() disabled} ones.
      *
-     * @return a collection of visibilities, may be empty if none are available
+     * @return a collection of {@link Visibility} visibilities; may be empty if none are available
      */
     @Nonnull
     Collection<Visibility> listAllVisibilityOptions();
 
     /**
-     * Get the default visibility to set for new entity records.
+     * Get the default {@link Visibility} visibility to set for new patient records.
      *
-     * @return a visibility, or private if none is configured or the configured one isn't valid
+     * @return a configured {@link Visibility visibility} if valid, or default
+     *         {@link org.phenotips.data.permissions.internal.visibility.PrivateVisibility}
      */
     @Nonnull
     Visibility getDefaultVisibility();
 
+    /**
+     * Get the {@link Visibility} visibility from its {@code name}. Defaults to
+     * {@link org.phenotips.data.permissions.internal.visibility.PrivateVisibility} if {@code name} is invalid.
+     *
+     * @param name the desired visibility name, as string
+     * @return the {@link Visibility} associated with the provided {@code name}, will default to
+     *         {@link org.phenotips.data.permissions.internal.visibility.PrivateVisibility} if {@code name} is invalid
+     */
     @Nonnull
     Visibility resolveVisibility(@Nullable String name);
 
-    @Nonnull
-    Collection<AccessLevel> listAccessLevels();
+    boolean setVisibility(@Nullable PrimaryEntity entity, @Nullable Visibility visibility);
 
     @Nonnull
-    Collection<AccessLevel> listAllAccessLevels();
-
-    @Nonnull
-    AccessLevel resolveAccessLevel(@Nullable String name);
-
-    @Nonnull
-    EntityAccess getEntityAccess(@Nullable PrimaryEntity targetEntity);
+    Visibility getVisibility(@Nullable PrimaryEntity entity);
 
     /**
-     * Receives a collection of entities and returns a new collection containing only those with
+     * Receives a collection of {@link PrimaryEntity} and returns a new collection containing only those with
      * {@code visibility >= requiredVisibility}.
      *
-     * @param entities a collection of entities
+     * @param entities a collection of {@link PrimaryEntity}
      * @param requiredVisibility minimum level of visibility required for entities
      * @return a collection containing only those with {@code visibility >= requiredVisibility}; may be empty; preserves
      *         the order of the input collection; if the threshold visibility is {@code null}, the input collection is
@@ -92,7 +96,8 @@ public interface EntityPermissionsManager
         @Nullable Visibility requiredVisibility);
 
     /**
-     * Receives a collection of entities and returns a only those with {@code visibility >= requiredVisibility}.
+     * Receives a collection of {@link PrimaryEntity} and returns an iterator that will filter only those with
+     * {@code visibility >= requiredVisibility}.
      *
      * @param entities an iterator over a collection of entities
      * @param requiredVisibility minimum level of visibility required for entities
@@ -104,12 +109,4 @@ public interface EntityPermissionsManager
     Iterator<? extends PrimaryEntity> filterByVisibility(
         @Nullable Iterator<? extends PrimaryEntity> entities,
         @Nullable Visibility requiredVisibility);
-
-    /**
-     * Fires a right update event to notify interested parties that some permissions have changed. The idea is to fire
-     * only one event after a bunch of updates have been performed.
-     *
-     * @param entityId the {@link PrimaryEntity#getId() identifier} of the affected entity
-     */
-    void fireRightsUpdateEvent(@Nonnull String entityId);
 }

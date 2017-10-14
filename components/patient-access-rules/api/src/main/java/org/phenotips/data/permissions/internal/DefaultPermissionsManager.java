@@ -59,6 +59,12 @@ public class DefaultPermissionsManager implements PermissionsManager
     @Inject
     private EntityPermissionsManager entityPermissionsManager;
 
+    @Inject
+    private EntityAccessManager accessManager;
+
+    @Inject
+    private EntityVisibilityManager visibilityManager;
+
     @Override
     public Collection<Visibility> listVisibilityOptions()
     {
@@ -98,7 +104,7 @@ public class DefaultPermissionsManager implements PermissionsManager
     @Override
     public PatientAccess getPatientAccess(Patient targetPatient)
     {
-        return new DefaultPatientAccess(targetPatient, getHelper(), this.entityPermissionsManager);
+        return new DefaultPatientAccess(targetPatient, getHelper(), this.accessManager, this.visibilityManager);
     }
 
     @Override

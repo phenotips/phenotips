@@ -46,7 +46,7 @@ public class VisibilityAccessAuthorizationModule implements AuthorizationModule
     private PrimaryEntityResolver resolver;
 
     @Inject
-    private EntityAccessHelper helper;
+    private EntityVisibilityManager helper;
 
     @Override
     public int getPriority()

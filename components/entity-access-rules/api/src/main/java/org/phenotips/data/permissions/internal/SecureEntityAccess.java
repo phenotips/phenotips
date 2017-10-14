@@ -33,6 +33,8 @@ import java.util.Map;
 
 public class SecureEntityAccess implements EntityAccess
 {
+    private static final String MANAGE = "manage";
+
     private final EntityAccess internalService;
 
     private final EntityPermissionsManager manager;
@@ -70,7 +72,7 @@ public class SecureEntityAccess implements EntityAccess
     @Override
     public boolean setOwner(EntityReference userOrGroup)
     {
-        if (hasAccessLevel("manage")) {
+        if (hasAccessLevel(MANAGE)) {
             return this.internalService.setOwner(userOrGroup);
         }
         return false;
@@ -85,7 +87,7 @@ public class SecureEntityAccess implements EntityAccess
     @Override
     public boolean setVisibility(Visibility newVisibility)
     {
-        if (hasAccessLevel("manage")) {
+        if (hasAccessLevel(MANAGE)) {
             return this.internalService.setVisibility(newVisibility);
         }
         return false;
@@ -100,7 +102,7 @@ public class SecureEntityAccess implements EntityAccess
     @Override
     public boolean updateCollaborators(Collection<Collaborator> newCollaborators)
     {
-        if (hasAccessLevel("manage")) {
+        if (hasAccessLevel(MANAGE)) {
             return this.internalService.updateCollaborators(newCollaborators);
         }
         return false;
@@ -108,7 +110,7 @@ public class SecureEntityAccess implements EntityAccess
 
     public boolean updateCollaborators(Map<EntityReference, AccessLevel> newCollaborators)
     {
-        if (hasAccessLevel("manage")) {
+        if (hasAccessLevel(MANAGE)) {
             Collection<Collaborator> collaborators = new LinkedHashSet<Collaborator>();
             for (Map.Entry<EntityReference, AccessLevel> collaborator : newCollaborators.entrySet()) {
                 collaborators.add(new DefaultCollaborator(collaborator.getKey(), collaborator.getValue(), null));
@@ -121,7 +123,7 @@ public class SecureEntityAccess implements EntityAccess
     @Override
     public boolean addCollaborator(EntityReference user, AccessLevel access)
     {
-        if (hasAccessLevel("manage")) {
+        if (hasAccessLevel(MANAGE)) {
             return this.internalService.addCollaborator(user, access);
         }
         return false;
@@ -130,7 +132,7 @@ public class SecureEntityAccess implements EntityAccess
     @Override
     public boolean removeCollaborator(EntityReference user)
     {
-        if (hasAccessLevel("manage")) {
+        if (hasAccessLevel(MANAGE)) {
             return this.internalService.removeCollaborator(user);
         }
         return false;
@@ -139,7 +141,7 @@ public class SecureEntityAccess implements EntityAccess
     @Override
     public boolean removeCollaborator(Collaborator collaborator)
     {
-        if (hasAccessLevel("manage")) {
+        if (hasAccessLevel(MANAGE)) {
             return this.internalService.removeCollaborator(collaborator);
         }
         return false;
