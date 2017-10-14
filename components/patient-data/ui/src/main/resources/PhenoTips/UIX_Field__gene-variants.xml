@@ -302,6 +302,8 @@
             script: XWiki.contextPath + "/rest/vocabularies/hgnc/suggest?",
             noresults: "$services.localization.render('phenotips.UIXField.genes.noMatches')",
             resultsParameter : "rows",
+            resultId : "ensembl_gene_id",
+            forceFirstId : true,
             resultValue : 'symbol',
             resultAltName : "alias_symbol",
             tooltip : 'gene-info',
