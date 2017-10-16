@@ -53,9 +53,31 @@ public class FamilyScriptService implements ScriptService
      *
      * @return Family object corresponding to the newly created family.
      */
-    public Family createFamily()
+    public Family create()
     {
         return this.familyTools.createFamily();
+    }
+
+    /**
+     * Creates an empty family.
+     *
+     * @return Family object corresponding to the newly created family.
+     */
+    public Family createFamily()
+    {
+        return create();
+    }
+
+    /**
+     * Returns family object, or null if doesn't exist or current user has no rights.
+     *
+     * @param id a PhenotTips family ID
+     * @return Family object of the family with the given id, or null if familyId is not valid or current user does not
+     *         have permissions to view the family.
+     */
+    public Family get(String id)
+    {
+        return this.familyTools.getFamilyById(id);
     }
 
     /**
@@ -67,7 +89,7 @@ public class FamilyScriptService implements ScriptService
      */
     public Family getFamilyById(String familyId)
     {
-        return this.familyTools.getFamilyById(familyId);
+        return get(familyId);
     }
 
     /**
@@ -130,6 +152,19 @@ public class FamilyScriptService implements ScriptService
     public boolean removeMember(String patientId)
     {
         return this.familyTools.removeMember(patientId);
+    }
+
+    /**
+     * Deletes a family record, modifying all member patient records to reflect the change. No patient records are
+     * deleted.
+     *
+     * @param family the family record to delete
+     * @return {@code true} if successful; {@code false} if the user does not have the right to delete the family record
+     *         or the deletion fails
+     */
+    public boolean delete(Family family)
+    {
+        return deleteFamily(family.getId(), false);
     }
 
     /**

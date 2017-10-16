@@ -21,7 +21,11 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
+import java.util.Collections;
+import java.util.Iterator;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -49,6 +53,8 @@ public class PatientDataScriptServiceTest
 
     private PatientRepository repo;
 
+    private DocumentReference patientReference = new DocumentReference("genetics", "Patients", "P0000001");
+
     @Before
     public void setup() throws ComponentLookupException
     {
@@ -61,6 +67,13 @@ public class PatientDataScriptServiceTest
     {
         when(this.repo.get("P0123456")).thenReturn(this.patient);
         Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().get("P0123456"));
+    }
+
+    @Test
+    public void getWithReferenceForwardsCalls() throws ComponentLookupException
+    {
+        when(this.repo.get(this.patientReference)).thenReturn(this.patient);
+        Assert.assertSame(this.patient, this.mocker.getComponentUnderTest().get(this.patientReference));
     }
 
     @SuppressWarnings("deprecation")
@@ -76,6 +89,13 @@ public class PatientDataScriptServiceTest
     {
         when(this.repo.get("P0123456")).thenThrow(new SecurityException("Unauthorized"));
         Assert.assertNull(this.mocker.getComponentUnderTest().get("P0123456"));
+    }
+
+    @Test
+    public void getWithReferenceCatchesUnauthorizedException() throws ComponentLookupException
+    {
+        when(this.repo.get(this.patientReference)).thenThrow(new SecurityException("Unauthorized"));
+        Assert.assertNull(this.mocker.getComponentUnderTest().get(this.patientReference));
     }
 
     @SuppressWarnings("deprecation")
@@ -98,6 +118,14 @@ public class PatientDataScriptServiceTest
     {
         when(this.repo.getByName("Neuro123")).thenThrow(new SecurityException("Unauthorized"));
         Assert.assertNull(this.mocker.getComponentUnderTest().getPatientByExternalId("Neuro123"));
+    }
+
+    @Test
+    public void getAllForwardsCalls() throws ComponentLookupException
+    {
+        Iterator<Patient> it = Collections.singletonList(this.patient).iterator();
+        when(this.repo.getAll()).thenReturn(it);
+        Assert.assertSame(it, this.mocker.getComponentUnderTest().getAll());
     }
 
     @Test
@@ -128,5 +156,19 @@ public class PatientDataScriptServiceTest
     {
         when(this.repo.create()).thenThrow(new SecurityException("Unauthorized"));
         Assert.assertNull(this.mocker.getComponentUnderTest().createNewPatient());
+    }
+
+    @Test
+    public void deleteForwardsCalls() throws ComponentLookupException
+    {
+        when(this.repo.delete(this.patient)).thenReturn(true);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().delete(this.patient));
+    }
+
+    @Test
+    public void deleteCatchesUnauthorizedException() throws ComponentLookupException
+    {
+        when(this.repo.delete(this.patient)).thenThrow(new SecurityException("Unauthorized"));
+        Assert.assertFalse(this.mocker.getComponentUnderTest().delete(this.patient));
     }
 }
