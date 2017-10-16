@@ -21,8 +21,11 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.stability.Unstable;
+
+import java.util.Iterator;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -46,6 +49,23 @@ public class PatientDataScriptService implements ScriptService
     private PatientRepository internalService;
 
     /**
+     * Retrieves a {@link Patient patient record} from the specified document.
+     *
+     * @param reference reference of the {@link Patient#getDocumentReference() document where the patient record is
+     *            stored}
+     * @return the requested patient record, or {@code null} if the requested patient does not exist, is not a valid
+     *         patient, or is not accessible by the current user
+     */
+    public Patient get(DocumentReference reference)
+    {
+        try {
+            return this.internalService.get(reference);
+        } catch (SecurityException | IllegalArgumentException ex) {
+            return null;
+        }
+    }
+
+    /**
      * Retrieve a {@link Patient patient} by it's PhenoTips identifier.
      *
      * @param id the patient identifier, i.e. the serialized document reference
@@ -56,7 +76,7 @@ public class PatientDataScriptService implements ScriptService
     {
         try {
             return this.internalService.get(id);
-        } catch (SecurityException ex) {
+        } catch (SecurityException | IllegalArgumentException ex) {
             return null;
         }
     }
@@ -79,17 +99,40 @@ public class PatientDataScriptService implements ScriptService
      * Retrieve a {@link Patient patient} by it's clinical identifier. Only works if external identifiers are enabled
      * and used.
      *
+     * @param name the patient's clinical identifier, as set by the patient's reporter
+     * @return the patient data, or {@code null} if the requested patient does not exist, is not a valid patient, or is
+     *         not accessible by the current user
+     */
+    public Patient getByName(String name)
+    {
+        try {
+            return this.internalService.getByName(name);
+        } catch (SecurityException ex) {
+            return null;
+        }
+    }
+
+    /**
+     * Retrieve a {@link Patient patient} by it's clinical identifier. Only works if external identifiers are enabled
+     * and used.
+     *
      * @param externalId the patient's clinical identifier, as set by the patient's reporter
      * @return the patient data, or {@code null} if the requested patient does not exist, is not a valid patient, or is
      *         not accessible by the current user
      */
     public Patient getPatientByExternalId(String externalId)
     {
-        try {
-            return this.internalService.getByName(externalId);
-        } catch (SecurityException ex) {
-            return null;
-        }
+        return getByName(externalId);
+    }
+
+    /**
+     * Retrieves all accessible patient records, in a random order.
+     *
+     * @return an iterator over all patient records accessible by the current user, may be empty if no entities exist
+     */
+    public Iterator<Patient> getAll()
+    {
+        return this.internalService.getAll();
     }
 
     /**
@@ -106,7 +149,7 @@ public class PatientDataScriptService implements ScriptService
     }
 
     /**
-     * Create and return a new empty patient record.
+     * Creates and returns a new empty patient record, setting the currently logged in user as the creator.
      *
      * @return the created patient record, or {@code null} if the user does not have the right to create a new patient
      *         record or the creation fails
@@ -117,6 +160,22 @@ public class PatientDataScriptService implements ScriptService
             return this.internalService.create();
         } catch (SecurityException ex) {
             return null;
+        }
+    }
+
+    /**
+     * Deletes a patient record.
+     *
+     * @param patient the patient record to delete
+     * @return {@code true} if the patient record was successfully deleted, {@code false} if the user does not have the
+     *         right to delete the patient record or the deletion fails
+     */
+    public boolean delete(Patient patient)
+    {
+        try {
+            return this.internalService.delete(patient);
+        } catch (Exception ex) {
+            return false;
         }
     }
 }
