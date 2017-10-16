@@ -216,7 +216,9 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
             final JSONObject json = primaryEntity.toJSON();
             json.put("links", DefaultPatientsFetchResourceImpl.this.autolinker.get()
                 .forSecondaryResource(PatientResource.class, DefaultPatientsFetchResourceImpl.this.uriInfo)
-                .withExtraParameters("patient-id", primaryEntity.getId()).build());
+                .withExtraParameters("entity-id", primaryEntity.getId())
+                .withExtraParameters("entity-type", "patients")
+                .build());
             jgen.writeRawValue(json.toString());
         }
     }

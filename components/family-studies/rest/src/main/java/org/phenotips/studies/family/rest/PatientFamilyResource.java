@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
  * @version $Id$
  * @since 1.2M5
  */
-@Path("/patients/{id}/family")
+@Path("/patients/{entity-id}/family")
 public interface PatientFamilyResource
 {
     /**
@@ -40,5 +40,5 @@ public interface PatientFamilyResource
      * @return the JSON representation of the requested patient's family, or a status message in case of error
      */
     @GET
-    Response getFamily(@PathParam("id") String id);
+    Response getFamily(@PathParam("entity-id") String id);
 }

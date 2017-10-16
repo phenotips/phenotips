@@ -116,7 +116,8 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
 
         JSONObject json = patient.toJSON();
         json.put("links", this.autolinker.get().forResource(PatientResource.class, this.uriInfo)
-            .withExtraParameters("patient-id", patient.getId())
+            .withExtraParameters("entity-id", patient.getId())
+            .withExtraParameters("entity-type", "patients")
             .withGrantedRight(grantedRight)
             .build());
         return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();

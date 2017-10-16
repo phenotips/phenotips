@@ -40,7 +40,7 @@ import javax.ws.rs.core.Response;
  * @version $Id$
  * @since 1.2M5
  */
-@Path("/patients/{patient-id}")
+@Path("/patients/{entity-id}")
 @Relation("https://phenotips.org/rel/patientRecord")
 @ParentResource(PatientsResource.class)
 public interface PatientResource
@@ -56,7 +56,7 @@ public interface PatientResource
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RequiredAccess("view")
-    Response getPatient(@PathParam("patient-id") String id);
+    Response getPatient(@PathParam("entity-id") String id);
 
     /**
      * Update a patient record, identified by its internal PhenoTips identifier, from its JSON representation. If the
@@ -72,7 +72,7 @@ public interface PatientResource
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @RequiredAccess("edit")
-    Response updatePatient(String json, @PathParam("patient-id") String id,
+    Response updatePatient(String json, @PathParam("entity-id") String id,
         @QueryParam("policy") @DefaultValue("update") String policy);
 
     /**
@@ -89,7 +89,7 @@ public interface PatientResource
     @PATCH
     @Consumes(MediaType.APPLICATION_JSON)
     @RequiredAccess("edit")
-    Response patchPatient(String json, @PathParam("patient-id") String id);
+    Response patchPatient(String json, @PathParam("entity-id") String id);
 
     /**
      * Delete a patient record, identified by its internal PhenoTips identifier. If the indicated patient record doesn't
@@ -101,5 +101,5 @@ public interface PatientResource
      */
     @DELETE
     @RequiredAccess("edit")
-    Response deletePatient(@PathParam("patient-id") String id);
+    Response deletePatient(@PathParam("entity-id") String id);
 }
