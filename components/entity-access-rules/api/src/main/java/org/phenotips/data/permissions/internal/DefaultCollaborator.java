@@ -25,6 +25,9 @@ import org.xwiki.model.reference.EntityReference;
 import java.util.Objects;
 
 /**
+ * The default implementation of the {@link Collaborator} interface, making use of a {@link EntityAccessHelper}
+ * component for any actual collaborator type detection.
+ *
  * @version $Id$
  */
 public class DefaultCollaborator implements Collaborator
@@ -35,6 +38,13 @@ public class DefaultCollaborator implements Collaborator
 
     private final EntityAccessHelper helper;
 
+    /**
+     * The default constructor taking in the {@code user}, the {@code access} level, and a {@code helper} object.
+     *
+     * @param user the {@link EntityReference} for the collaborator user
+     * @param access the {@link AccessLevel} that the {@code user} has
+     * @param helper the {@link EntityAccessHelper} for {@code user} type detection
+     */
     public DefaultCollaborator(EntityReference user, AccessLevel access, EntityAccessHelper helper)
     {
         this.user = user;

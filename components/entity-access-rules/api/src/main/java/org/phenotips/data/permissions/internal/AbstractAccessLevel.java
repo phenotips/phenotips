@@ -33,6 +33,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class AbstractAccessLevel implements AccessLevel
 {
+    private static final String ACCESS_LEVELS_BASE = "phenotips.permissions.accessLevels.";
+
     /**
      * The level of permission this level grants to a user; lower values mean more restrictions, higher values mean more
      * permissions. Should be a number between 0 (no access) and 100 (full access).
@@ -64,7 +66,7 @@ public abstract class AbstractAccessLevel implements AccessLevel
     @Override
     public String getLabel()
     {
-        String key = "phenotips.permissions.accessLevels." + getName() + ".label";
+        String key = ACCESS_LEVELS_BASE + getName() + ".label";
         String translation = this.tm.translate(key);
         if (StringUtils.isBlank(translation)) {
             return getName();
@@ -75,7 +77,7 @@ public abstract class AbstractAccessLevel implements AccessLevel
     @Override
     public String getDescription()
     {
-        String key = "phenotips.permissions.accessLevels." + getName() + ".description";
+        String key = ACCESS_LEVELS_BASE + getName() + ".description";
         return this.tm.translate(key);
     }
 

@@ -92,25 +92,43 @@ public class EntityPermissionsManagerScriptService implements ScriptService
         return this.manager.getDefaultVisibility();
     }
 
+    /**
+     * Resolve the {@link Visibility} from the provided {@code name}.
+     *
+     * @param name the name of the {@link Visibility} of interest
+     * @return the {@link Visibility} associated with the provided {@code name}
+     */
     public Visibility resolveVisibility(String name)
     {
         return this.manager.resolveVisibility(name);
     }
 
+    /**
+     * Lists all {@link AccessLevel#isAssignable() assignable} access levels.
+     *
+     * @return a collection of all {@link AccessLevel#isAssignable() assignable} {@link AccessLevel} objects
+     */
     public Collection<AccessLevel> listAccessLevels()
     {
         return this.manager.listAccessLevels();
     }
 
+    /**
+     * Resolve the {@link AccessLevel} from the provided {@code name}.
+     *
+     * @param name the name of the {@link AccessLevel} of interest
+     * @return the {@link AccessLevel} associated with the provided {@code name}
+     */
     public AccessLevel resolveAccessLevel(String name)
     {
         return this.manager.resolveAccessLevel(name);
     }
 
     /**
-     * Returns EntityAccess to the given entity for the given user.
+     * Returns {@link EntityAccess} to the given {@code entity} for the current user.
      *
-     * @param entity the entity
+     * @param entity the {@link PrimaryEntity entity} of interest
+     * @return the {@link EntityAccess} to the given {@code entity}
      */
     public EntityAccess getEntityAccess(PrimaryEntity entity)
     {
@@ -123,12 +141,23 @@ public class EntityPermissionsManagerScriptService implements ScriptService
         return this.manager.getEntityAccess(entity);
     }
 
+    /**
+     * Returns {@link EntityAccess} to the entity with the given {@code entityId}, for the current user.
+     *
+     * @param entityId the ID, as string, for {@link PrimaryEntity entity} of interest
+     * @return the {@link EntityAccess} to the given {@code entity}
+     */
     public EntityAccess getEntityAccess(String entityId)
     {
         PrimaryEntity entity = this.resolver.resolveEntity(entityId);
         return getEntityAccess(entity);
     }
 
+    /**
+     * Fires a rights update event for the entity with {@code targetEntityId}.
+     *
+     * @param targetEntityId the ID for the {@link PrimaryEntity} of interest
+     */
     public void fireRightsUpdateEvent(String targetEntityId)
     {
         this.manager.fireRightsUpdateEvent(targetEntityId);

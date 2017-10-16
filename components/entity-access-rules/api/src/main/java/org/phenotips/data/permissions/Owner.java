@@ -40,10 +40,25 @@ public interface Owner
     /** The name of the property used to store the owner in the XClass. */
     String PROPERTY_NAME = "owner";
 
+    /**
+     * Returns the type of owner; either "user" or "group".
+     *
+     * @return the {@link Owner} type, as string
+     */
     String getType();
 
+    /**
+     * Returns true iff the owner is a user.
+     *
+     * @return true iff the {@link Owner} is a user, false otherwise
+     */
     boolean isUser();
 
+    /**
+     * Return true iff the owner is a group.
+     *
+     * @return true iff the {@link Owner} is a group, false otherwise
+     */
     boolean isGroup();
 
     /**

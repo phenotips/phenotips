@@ -29,6 +29,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
+ * A manager for entity permissions. Provides convenience methods for listing visibility options and access levels.
+ * Allows to retrieve and resolve visibilities, and access levels; provides methods for filtering entities.
+ *
  * @version $Id$
  * @since 1.0M9
  * @since 1.4, under new name and moved from patient-access-rules
@@ -61,18 +64,50 @@ public interface EntityPermissionsManager
     @Nonnull
     Visibility getDefaultVisibility();
 
+    /**
+     * Resolves the provided visibility {@code name} to its associated {@link Visibility} object. Will resolve to
+     * {@link org.phenotips.data.permissions.internal.visibility.PrivateVisibility} if provided {@code name} is not
+     * valid.
+     *
+     * @param name the name of the {@link Visibility} object of interest
+     * @return the {@link Visibility} object associated with the provided {@code name}
+     */
     @Nonnull
     Visibility resolveVisibility(@Nullable String name);
 
+    /**
+     * Lists all {@link AccessLevel#isAssignable() assignable} access levels.
+     *
+     * @return a collection of {@link AccessLevel#isAssignable() assignable} {@link AccessLevel} objects
+     */
     @Nonnull
     Collection<AccessLevel> listAccessLevels();
 
+    /**
+     * Lists all access levels.
+     *
+     * @return a collection of all {@link AccessLevel} objects, which may or may not be
+     *         {@link AccessLevel#isAssignable() assignable}
+     */
     @Nonnull
     Collection<AccessLevel> listAllAccessLevels();
 
+    /**
+     * Resolves the provided access {@code name} to the associated {@link AccessLevel} object; will resolve to
+     * {@link org.phenotips.data.permissions.internal.access.NoAccessLevel} if {@code name} is invalid.
+     *
+     * @param name the name of the {@link AccessLevel} of interest
+     * @return the {@link AccessLevel} object associated with the provided {@code name}
+     */
     @Nonnull
     AccessLevel resolveAccessLevel(@Nullable String name);
 
+    /**
+     * Returns the {@link EntityAccess} object for the {@code targetEntity}.
+     *
+     * @param targetEntity the {@link PrimaryEntity} of interest
+     * @return the {@link EntityAccess} for {@code targetEntity}
+     */
     @Nonnull
     EntityAccess getEntityAccess(@Nullable PrimaryEntity targetEntity);
 

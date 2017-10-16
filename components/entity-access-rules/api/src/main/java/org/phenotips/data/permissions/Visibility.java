@@ -25,6 +25,8 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
 /**
+ * The visibility level of the entity.
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -32,13 +34,29 @@ import org.xwiki.stability.Unstable;
 @Role
 public interface Visibility extends Comparable<Visibility>
 {
+    /** The VisibilityClass reference. */
     EntityReference CLASS_REFERENCE = new EntityReference("VisibilityClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
+    /**
+     * The name of the visibility level, e.g. "hidden".
+     *
+     * @return the name of the {@link Visibility}, as string
+     */
     String getName();
 
+    /**
+     * The translated label for the visibility.
+     *
+     * @return the translated label for the {@link Visibility}, as string
+     */
     String getLabel();
 
+    /**
+     * The translated description for the visibility level.
+     *
+     * @return the translated description for the {@link Visibility}, as string
+     */
     String getDescription();
 
     /**
@@ -52,6 +70,11 @@ public interface Visibility extends Comparable<Visibility>
      */
     int getPermissiveness();
 
+    /**
+     * Gets the default access level for any entity record.
+     *
+     * @return the default {@link AccessLevel} for any entity record
+     */
     AccessLevel getDefaultAccessLevel();
 
     /**

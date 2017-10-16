@@ -22,63 +22,78 @@ import org.xwiki.model.EntityType;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class ManageRight extends Right
+/**
+ * The "manage" {@link Right} implementation.
+ *
+ * @version $Id$
+ * @since 1.4, moved from patient-access-rules-api
+ */
+public final class ManageRight extends Right
 {
+    /**
+     * The {@link ManageRight} instance.
+     */
     public static final Right MANAGE = new ManageRight();
 
     private static final long serialVersionUID = 2197709133328931585L;
 
+    /**
+     * The private constructor.
+     */
     private ManageRight()
     {
-        super(new RightDescription()
-        {
-            @Override
-            public boolean isReadOnly()
-            {
-                return false;
-            }
-
-            @Override
-            public RuleState getTieResolutionPolicy()
-            {
-                return RuleState.ALLOW;
-            }
-
-            @Override
-            public Set<EntityType> getTargetedEntityType()
-            {
-                return EnumSet.of(EntityType.DOCUMENT);
-            }
-
-            @Override
-            public String getName()
-            {
-                return "manage";
-            }
-
-            @Override
-            public boolean getInheritanceOverridePolicy()
-            {
-                return true;
-            }
-
-            @Override
-            public Set<Right> getImpliedRights()
-            {
-                return new RightSet(Right.VIEW, Right.EDIT, Right.DELETE, Right.COMMENT);
-            }
-
-            @Override
-            public RuleState getDefaultState()
-            {
-                return RuleState.DENY;
-            }
-        });
+        super(new ManageRightDescription());
     }
 
     @Override
     public Set<EntityType> getTargetedEntityType()
     {
         return EnumSet.of(EntityType.DOCUMENT);
+    }
+
+    /** The description of the manage right. */
+    static class ManageRightDescription implements RightDescription
+    {
+        @Override
+        public boolean isReadOnly()
+        {
+            return false;
+        }
+
+        @Override
+        public RuleState getTieResolutionPolicy()
+        {
+            return RuleState.ALLOW;
+        }
+
+        @Override
+        public Set<EntityType> getTargetedEntityType()
+        {
+            return EnumSet.of(EntityType.DOCUMENT);
+        }
+
+        @Override
+        public String getName()
+        {
+            return "manage";
+        }
+
+        @Override
+        public boolean getInheritanceOverridePolicy()
+        {
+            return true;
+        }
+
+        @Override
+        public Set<Right> getImpliedRights()
+        {
+            return new RightSet(Right.VIEW, Right.EDIT, Right.DELETE, Right.COMMENT);
+        }
+
+        @Override
+        public RuleState getDefaultState()
+        {
+            return RuleState.DENY;
+        }
     }
 }

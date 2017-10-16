@@ -33,6 +33,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
+ * The default implementation of {@link EntityAccess}.
+ *
  * @version $Id$
  */
 public class DefaultEntityAccess implements EntityAccess
@@ -49,6 +51,15 @@ public class DefaultEntityAccess implements EntityAccess
 
     private final EntityVisibilityManager visibilityManager;
 
+    /**
+     * The default constructor taking in the {@code entity} of interest, a {@code helper} object, an
+     * {@code accessManager access manager}, and a {@code visibilityManager visibility manager}.
+     *
+     * @param entity the {@link PrimaryEntity} of interest
+     * @param helper the {@link EntityAccessHelper} object
+     * @param accessManager the {@link EntityAccessManager access manager}
+     * @param visibilityManager the {@link EntityVisibilityManager visibility manager}
+     */
     public DefaultEntityAccess(
         @Nullable final PrimaryEntity entity,
         @Nonnull final EntityAccessHelper helper,
@@ -61,12 +72,14 @@ public class DefaultEntityAccess implements EntityAccess
         this.visibilityManager = visibilityManager;
     }
 
+    @Nullable
     @Override
     public PrimaryEntity getEntity()
     {
         return this.entity;
     }
 
+    @Nullable
     @Override
     public Owner getOwner()
     {
@@ -80,7 +93,7 @@ public class DefaultEntityAccess implements EntityAccess
     }
 
     @Override
-    public boolean isOwner(EntityReference user)
+    public boolean isOwner(@Nullable final EntityReference user)
     {
         Owner owner = this.accessManager.getOwner(this.entity);
         if (owner == null) {
@@ -94,11 +107,12 @@ public class DefaultEntityAccess implements EntityAccess
     }
 
     @Override
-    public boolean setOwner(EntityReference userOrGroup)
+    public boolean setOwner(@Nullable EntityReference userOrGroup)
     {
         return this.accessManager.setOwner(this.entity, userOrGroup);
     }
 
+    @Nonnull
     @Override
     public Visibility getVisibility()
     {
@@ -106,11 +120,12 @@ public class DefaultEntityAccess implements EntityAccess
     }
 
     @Override
-    public boolean setVisibility(Visibility newVisibility)
+    public boolean setVisibility(@Nullable Visibility newVisibility)
     {
         return this.visibilityManager.setVisibility(this.entity, newVisibility);
     }
 
+    @Nonnull
     @Override
     public Collection<Collaborator> getCollaborators()
     {
@@ -118,42 +133,45 @@ public class DefaultEntityAccess implements EntityAccess
     }
 
     @Override
-    public boolean updateCollaborators(Collection<Collaborator> newCollaborators)
+    public boolean updateCollaborators(@Nullable Collection<Collaborator> newCollaborators)
     {
         return this.accessManager.setCollaborators(this.entity, newCollaborators);
     }
 
     @Override
-    public boolean addCollaborator(EntityReference user, AccessLevel access)
+    public boolean addCollaborator(@Nullable EntityReference user, @Nullable AccessLevel access)
     {
         Collaborator collaborator = new DefaultCollaborator(user, access, null);
         return this.accessManager.addCollaborator(this.entity, collaborator);
     }
 
     @Override
-    public boolean removeCollaborator(EntityReference user)
+    public boolean removeCollaborator(@Nullable EntityReference user)
     {
         Collaborator collaborator = new DefaultCollaborator(user, null, null);
         return removeCollaborator(collaborator);
     }
 
     @Override
-    public boolean removeCollaborator(Collaborator collaborator)
+    public boolean removeCollaborator(@Nullable Collaborator collaborator)
     {
         return this.accessManager.removeCollaborator(this.entity, collaborator);
     }
 
+    @Nonnull
     @Override
     public AccessLevel getAccessLevel()
     {
         return getAccessLevel(this.helper.getCurrentUser());
     }
 
+    @Nonnull
     @Override
-    public AccessLevel getAccessLevel(EntityReference user)
+    public AccessLevel getAccessLevel(@Nullable EntityReference user)
     {
         if (user == null) {
-            if (this.getOwner().getUser() == null) {
+            final Owner owner = this.getOwner();
+            if (owner == null || owner.getUser() == null) {
                 return this.accessManager.resolveAccessLevel(OWNER);
             }
             return this.accessManager.resolveAccessLevel(NONE);
@@ -170,16 +188,16 @@ public class DefaultEntityAccess implements EntityAccess
     }
 
     @Override
-    public boolean hasAccessLevel(AccessLevel access)
+    public boolean hasAccessLevel(@Nullable AccessLevel access)
     {
         return hasAccessLevel(this.helper.getCurrentUser(), access);
     }
 
     @Override
-    public boolean hasAccessLevel(EntityReference user, AccessLevel access)
+    public boolean hasAccessLevel(@Nullable EntityReference user, @Nullable AccessLevel access)
     {
         AccessLevel realAccess = getAccessLevel(user);
-        return realAccess.compareTo(access) >= 0;
+        return access != null && realAccess.compareTo(access) >= 0;
     }
 
     @Override

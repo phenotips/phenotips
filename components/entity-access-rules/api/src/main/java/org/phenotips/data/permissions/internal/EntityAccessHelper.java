@@ -21,6 +21,9 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
@@ -29,12 +32,48 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Role
 public interface EntityAccessHelper
 {
+    /**
+     * Gets the current {@link DocumentReference} user document.
+     *
+     * @return the {@link DocumentReference} for the current user
+     */
     DocumentReference getCurrentUser();
 
-    String getType(EntityReference userOrGroup);
+    /**
+     * Retrieves the entity type of {@code userOrGroup}.
+     *
+     * @param userOrGroup an {@link EntityReference} object representing a user or a group
+     * @return the type of entity (e.g. "user") that {@code userOrGroup} is
+     */
+    @Nonnull
+    String getType(@Nullable EntityReference userOrGroup);
 
-    String getStringProperty(XWikiDocument doc, DocumentReference classReference, String propertyName);
+    /**
+     * Gets the string property value given the xwiki {@code doc}, the {@code classReference}, and the
+     * {@code propertyName}.
+     *
+     * @param doc the {@link XWikiDocument}
+     * @param classReference {@link DocumentReference} for property
+     * @param propertyName the name of the property
+     * @return the property value, as string
+     */
+    @Nullable
+    String getStringProperty(
+        @Nonnull XWikiDocument doc,
+        @Nullable DocumentReference classReference,
+        @Nullable String propertyName);
 
-    void setProperty(XWikiDocument doc, DocumentReference classReference, String propertyName,
-        Object propertyValue);
+    /**
+     * Sets the {@code propertyName} and {@code propertyValue} with {@code classReference}, to the {@code doc}.
+     *
+     * @param doc the {@link XWikiDocument}
+     * @param classReference the {@link DocumentReference} for the property
+     * @param propertyName the name of the property
+     * @param propertyValue the property value
+     */
+    void setProperty(
+        @Nonnull XWikiDocument doc,
+        @Nullable DocumentReference classReference,
+        @Nullable String propertyName,
+        @Nullable Object propertyValue);
 }

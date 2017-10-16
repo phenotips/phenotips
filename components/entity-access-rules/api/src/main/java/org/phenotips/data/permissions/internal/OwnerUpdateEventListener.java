@@ -48,6 +48,8 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class OwnerUpdateEventListener extends AbstractEventListener
 {
+    private static final String OWNER = "owner";
+
     @Inject
     private Logger logger;
 
@@ -71,9 +73,9 @@ public class OwnerUpdateEventListener extends AbstractEventListener
             }
             BaseObject ownerObject = doc.newXObject(Owner.CLASS_REFERENCE, context);
             if (doc.getCreatorReference() != null) {
-                ownerObject.setStringValue("owner", doc.getCreatorReference().toString());
+                ownerObject.setStringValue(OWNER, doc.getCreatorReference().toString());
             } else {
-                ownerObject.setStringValue("owner", "");
+                ownerObject.setStringValue(OWNER, "");
             }
         } catch (XWikiException ex) {
             this.logger.error("Failed to set the initial owner for entity [{}]: {}", doc.getDocumentReference(),

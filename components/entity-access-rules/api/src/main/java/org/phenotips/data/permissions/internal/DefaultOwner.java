@@ -35,6 +35,12 @@ public class DefaultOwner implements Owner
 
     private final EntityAccessHelper helper;
 
+    /**
+     * The default constructor taking in the {@code user}, and a {@code helper} object.
+     *
+     * @param user the {@link EntityReference} for the owner user
+     * @param helper the {@link EntityAccessHelper} for {@code user} type detection
+     */
     public DefaultOwner(EntityReference user, EntityAccessHelper helper)
     {
         this.user = user;

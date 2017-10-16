@@ -83,6 +83,9 @@ public class FilteringIterator implements Iterator<PrimaryEntity>
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Sets the {@link #next} entity that has the desired {@link #thresholdVisibility}, if such an entity exists.
+     */
     private void findNext()
     {
         this.next = null;

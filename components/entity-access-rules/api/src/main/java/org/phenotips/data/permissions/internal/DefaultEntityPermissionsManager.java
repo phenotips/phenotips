@@ -128,6 +128,7 @@ public class DefaultEntityPermissionsManager implements EntityPermissionsManager
         return this.visibilityManager.filterByVisibility(entities, requiredVisibility);
     }
 
+    @Override
     public void fireRightsUpdateEvent(@Nonnull final String entityId)
     {
         this.observationManager.notify(new EntityRightsUpdatedEvent(entityId), null);

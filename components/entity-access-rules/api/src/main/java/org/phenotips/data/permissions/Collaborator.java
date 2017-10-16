@@ -37,10 +37,25 @@ public interface Collaborator
     EntityReference CLASS_REFERENCE = new EntityReference("CollaboratorClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
+    /**
+     * Returns the type of collaborator; either "user" or "group".
+     *
+     * @return the {@link Collaborator} type, as string
+     */
     String getType();
 
+    /**
+     * Returns true iff the collaborator is a user.
+     *
+     * @return true iff the {@link Collaborator} is a user, false otherwise
+     */
     boolean isUser();
 
+    /**
+     * Return true iff the collaborator is a group.
+     *
+     * @return true iff the {@link Collaborator} is a group, false otherwise
+     */
     boolean isGroup();
 
     /**

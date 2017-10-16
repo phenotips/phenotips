@@ -75,8 +75,21 @@ public interface EntityVisibilityManager
     @Nonnull
     Visibility resolveVisibility(@Nullable String name);
 
+    /**
+     * Sets the {@code visibility} for the {@code entity}. Returns true iff the operation was completed successfully.
+     *
+     * @param entity the {@link PrimaryEntity} for which the {@code visibility} will be set
+     * @param visibility the desired {@link Visibility} for the {@code entity}
+     * @return true iff the {@code visibility} was set successfully, false otherwise
+     */
     boolean setVisibility(@Nullable PrimaryEntity entity, @Nullable Visibility visibility);
 
+    /**
+     * Gets the {@link Visibility} for the {@code entity}.
+     *
+     * @param entity the {@link PrimaryEntity} of interest
+     * @return the currenty {@link Visibility} of the {@code entity}
+     */
     @Nonnull
     Visibility getVisibility(@Nullable PrimaryEntity entity);
 

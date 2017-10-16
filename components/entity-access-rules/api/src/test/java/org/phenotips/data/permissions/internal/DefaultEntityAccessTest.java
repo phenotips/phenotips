@@ -357,13 +357,13 @@ public class DefaultEntityAccessTest
 
     /** {@link EntityAccess#getAccessLevel()} returns the default visibility access for non-collaborators. */
     @Test
-    public void getAccessLevelWithOtherUser() throws ComponentLookupException
+    public void getAccessLevelWithOtherUser()
     {
         when(this.accessManager.isAdministrator(this.entity, OTHER_USER)).thenReturn(false);
         when(this.permissionsHelper.getCurrentUser()).thenReturn(OTHER_USER);
         when(this.accessManager.getAccessLevel(this.entity, OTHER_USER)).thenReturn(NO_ACCESS);
         when(this.visibilityManager.getVisibility(this.entity)).thenReturn(this.visibility);
-        when(visibility.getDefaultAccessLevel()).thenReturn(VIEW_ACCESS);
+        when(this.visibility.getDefaultAccessLevel()).thenReturn(VIEW_ACCESS);
         Assert.assertSame(VIEW_ACCESS, this.entityAccess.getAccessLevel());
     }
 
