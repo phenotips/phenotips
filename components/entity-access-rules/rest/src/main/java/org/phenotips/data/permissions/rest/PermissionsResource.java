@@ -50,7 +50,7 @@ public interface PermissionsResource
      * the user sending the request doesn't have the right to view the target entity record, an error is returned.
      *
      * @param entityId internal identifier of an entity record
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @return REST representation of the permissions of an entity record
      */
     @GET
@@ -67,7 +67,7 @@ public interface PermissionsResource
      *
      * @param permissions must contain owner and visibility representations, and a list of collaborator representations
      * @param entityId identifier of the entity whose permissions should be changed
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @return a status message
      */
     @PUT
@@ -87,7 +87,7 @@ public interface PermissionsResource
      *
      * @param permissions may contain owner and visibility representations, and a list of collaborator representations
      * @param entityId identifier of the entity whose permissions should be changed
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @return a status message
      */
     @PATCH

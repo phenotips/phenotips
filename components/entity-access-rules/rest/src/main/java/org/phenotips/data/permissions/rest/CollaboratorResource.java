@@ -53,7 +53,7 @@ public interface CollaboratorResource
      * target entity record, an error is returned.
      *
      * @param entityId internal identifier of an entity record
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @param collaboratorId internal id of a principal, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
      * @return REST representation of a single collaborator
      */
@@ -72,7 +72,7 @@ public interface CollaboratorResource
      * @param collaborator a collaborator representation, must contain the "level" property, with a value which is a
      *            valid access level; all other properties are ignored
      * @param entityId internal identifier of an entity record
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @param collaboratorId internal id of a principal, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
      * @return a status message
      */
@@ -90,7 +90,7 @@ public interface CollaboratorResource
      * value which is a valid access level.
      *
      * @param entityId internal identifier of an entity record
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @param collaboratorId internal id of a principal, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
      * @return a status message
      */
@@ -106,7 +106,7 @@ public interface CollaboratorResource
      * collaborator isn't actually a collaborator, no change is performed and an error is returned.
      *
      * @param entityId internal identifier of an entity record
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @param collaboratorId internal id of a principal, ideally fully qualified, (ex. {@code xwiki:XWiki.JohnDoe})
      * @return a status message
      */

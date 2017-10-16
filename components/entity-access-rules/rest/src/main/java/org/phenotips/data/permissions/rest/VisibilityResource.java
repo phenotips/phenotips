@@ -55,7 +55,7 @@ public interface VisibilityResource
      * target entity record, an error is returned.
      *
      * @param entityId identifier of the entity whose visibility to retrieve
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @return a representation of the visibility of the entity
      */
     @GET
@@ -71,7 +71,7 @@ public interface VisibilityResource
      *
      * @param visibility which must contain "level" parameter, with a valid visibility level name as the value
      * @param entityId identifier of the entity whose visibility should be changed
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @return a status message
      */
     @PUT
@@ -86,7 +86,7 @@ public interface VisibilityResource
      * returned. The request must contain a "visibility" parameter, with a valid visibility level name as the value.
      *
      * @param entityId identifier of the entity whose visibility should be changed
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @return a status message
      */
     @PUT

@@ -54,7 +54,7 @@ public interface OwnerResource
      * entity record, an error is returned.
      *
      * @param entityId internal identifier of an entity record
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @return REST representation of an owner of an entity record
      */
     @GET
@@ -70,7 +70,7 @@ public interface OwnerResource
      * @param owner an owner representation, only the {@code id} property is required, with a value of either a fully
      *            qualified username or a plain username (eg. {@code xwiki:XWiki.username} or {@code username})
      * @param entityId identifier of the entity whose owner should be changed
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @return a status message
      */
     @PUT
@@ -86,7 +86,7 @@ public interface OwnerResource
      * field.
      *
      * @param entityId identifier of the entity, whose owner should be changed
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @return a status message
      */
     @PUT

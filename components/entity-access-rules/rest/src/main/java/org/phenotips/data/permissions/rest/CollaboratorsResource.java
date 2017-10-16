@@ -56,7 +56,7 @@ public interface CollaboratorsResource
      * sending the request doesn't have the right to view the target entity record, an error is returned.
      *
      * @param entityId internal identifier of an entity record
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @return REST representation of a collection of collaborators
      */
     @GET
@@ -73,7 +73,7 @@ public interface CollaboratorsResource
      * @param collaborators a list of collaborators to modify, each of which must have {@code id} and {@code level}
      *            properties
      * @param entityId internal identifier of an entity record
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @return a status message
      */
     @PATCH
@@ -92,7 +92,7 @@ public interface CollaboratorsResource
      * then no change is performed and an error is returned.
      *
      * @param entityId internal identifier of an entity record
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @return a status message
      */
     @PATCH
@@ -107,7 +107,7 @@ public interface CollaboratorsResource
      *
      * @param collaborators a list of collaborators, each of which must have {@code id} and {@code level} properties
      * @param entityId internal identifier of an entity record
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @return a status message
      */
     @PUT
@@ -121,7 +121,7 @@ public interface CollaboratorsResource
      * doesn't have the right to manage the target entity record, no change is performed and an error is returned.
      *
      * @param entityId internal identifier of an entity record
-     * @param entityType the type of entity
+     * @param entityType the type of entity (either "patients" or "families")
      * @return a status message
      */
     @DELETE
