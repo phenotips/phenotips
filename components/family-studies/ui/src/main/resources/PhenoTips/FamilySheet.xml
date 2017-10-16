@@ -60,19 +60,29 @@ $xwiki.ssx.use('PhenoTips.PatientSheetCode', {'colorTheme' : "$xwiki.getSpacePre
 #end
 ##
 ## Extensions displayed before the content
-(% class="before-family-data" %)(((
-#foreach ($e in $services.uix.getExtensions('phenotips.familyRecord.before', {'sortByParameter' : 'order'}))
-  #set ($hasExtensionsBefore = true)
+(% class="before-entity-data" %)(((
+#foreach ($e in $services.uix.getExtensions('org.phenotips.entitySheet.before', {'sortByParameter' : 'order'}))
   #set ($extension_disabled = ($e.getParameters().get('enabled') == 'false'))
   #if (!$extension_disabled)
+    #set ($hasExtensionsBefore = true)
     {{html wiki=false clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
 
   #end
 #end
+)))
+(% class="before-family-data" %)(((
+#foreach ($e in $services.uix.getExtensions('phenotips.familyRecord.before', {'sortByParameter' : 'order'}))
+  #set ($extension_disabled = ($e.getParameters().get('enabled') == 'false'))
+  #if (!$extension_disabled)
+    #set ($hasExtensionsBefore = true)
+    {{html wiki=false clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
+
+  #end
+#end
+)))
 #if ($hasExtensionsBefore)
 ----
 #end
-)))
 ##
 ## Extensions making up the main content, the actual information about the patient
 #foreach ($s in $services.uix.getExtensions('phenotips.familyRecord.content', {'sortByParameter' : 'order'}))
