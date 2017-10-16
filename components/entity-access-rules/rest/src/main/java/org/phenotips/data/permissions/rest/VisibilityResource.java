@@ -36,56 +36,61 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- * Resource for working with visibility of patient records, where the patient record is identified by its internal
+ * Resource for working with visibility of entity records, where the entity record is identified by its internal
  * identifier.
  *
  * @version $Id$
  * @since 1.3M2
  */
 @Role
-@Path("/patients/{patient-id}/permissions/visibility")
+@Path("/{entity-type}/{entity-id}/permissions/visibility")
 @Relation("https://phenotips.org/rel/visibility")
 @ParentResource(PermissionsResource.class)
 @RelatedResources(PatientResource.class)
 public interface VisibilityResource
 {
     /**
-     * Retrieve the {@link org.phenotips.data.permissions.Visibility} of a patient identified by `patientId`. If the
-     * indicated patient record doesn't exist, or if the user sending the request doesn't have the right to view the
-     * target patient record, an error is returned.
+     * Retrieve the {@link org.phenotips.data.permissions.Visibility} of an entity identified by `entityId`. If the
+     * indicated entity record doesn't exist, or if the user sending the request doesn't have the right to view the
+     * target entity record, an error is returned.
      *
-     * @param patientId identifier of the patient whose visibility to retrieve
-     * @return a representation of the visibility of the patient
+     * @param entityId identifier of the entity whose visibility to retrieve
+     * @param entityType the type of entity (either "patients" or "families")
+     * @return a representation of the visibility of the entity
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RequiredAccess("view")
-    VisibilityRepresentation getVisibility(@PathParam("patient-id") String patientId);
+    VisibilityRepresentation getVisibility(@PathParam("entity-id") String entityId,
+        @PathParam("entity-type") String entityType);
 
     /**
-     * Update the visibility of a patient. If the indicated patient record doesn't exist, or if the user sending the
-     * request doesn't have the right to edit the target patient record, no change is performed and an error is
+     * Update the visibility of an entity. If the indicated entity record doesn't exist, or if the user sending the
+     * request doesn't have the right to edit the target entity record, no change is performed and an error is
      * returned.
      *
      * @param visibility which must contain "level" parameter, with a valid visibility level name as the value
-     * @param patientId identifier of the patient whose visibility should be changed
+     * @param entityId identifier of the entity whose visibility should be changed
+     * @param entityType the type of entity (either "patients" or "families")
      * @return a status message
      */
     @PUT
     @RequiredAccess("manage")
     @Consumes(MediaType.APPLICATION_JSON)
-    Response setVisibility(VisibilityRepresentation visibility, @PathParam("patient-id") String patientId);
+    Response setVisibility(VisibilityRepresentation visibility, @PathParam("entity-id") String entityId,
+        @PathParam("entity-type") String entityType);
 
     /**
-     * Update the visibility of a patient. If the indicated patient record doesn't exist, or if the user sending the
-     * request doesn't have the right to edit the target patient record, no change is performed and an error is
+     * Update the visibility of an entity. If the indicated entity record doesn't exist, or if the user sending the
+     * request doesn't have the right to edit the target entity record, no change is performed and an error is
      * returned. The request must contain a "visibility" parameter, with a valid visibility level name as the value.
      *
-     * @param patientId identifier of the patient whose visibility should be changed
+     * @param entityId identifier of the entity whose visibility should be changed
+     * @param entityType the type of entity (either "patients" or "families")
      * @return a status message
      */
     @PUT
     @RequiredAccess("manage")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    Response setVisibility(@PathParam("patient-id") String patientId);
+    Response setVisibility(@PathParam("entity-id") String entityId, @PathParam("entity-type") String entityType);
 }

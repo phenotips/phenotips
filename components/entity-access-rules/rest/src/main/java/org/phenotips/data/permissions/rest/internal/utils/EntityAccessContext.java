@@ -17,11 +17,12 @@
  */
 package org.phenotips.data.permissions.rest.internal.utils;
 
-import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
+import org.phenotips.entities.PrimaryEntity;
+import org.phenotips.entities.PrimaryEntityManager;
+import org.phenotips.entities.PrimaryEntityResolver;
 
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.users.User;
@@ -35,17 +36,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Default context that securely provides the current user, patient instance, and patient access. In case that the
+ * Default context that securely provides the current user, entity instance, and entity access. In case that the
  * current user does not have the minimum required rights, the context will fail to initialize.
  *
  * @version $Id$
  * @since 1.3M2
+ * @since 1.4; under a new name
  */
-public class PatientAccessContext
+public class EntityAccessContext
 {
-    private Logger logger = LoggerFactory.getLogger(PatientAccessContext.class);
+    private Logger logger = LoggerFactory.getLogger(EntityAccessContext.class);
 
-    private Patient patient;
+    private PrimaryEntity entity;
 
     private User currentUser;
 
@@ -56,29 +58,36 @@ public class PatientAccessContext
     private DocumentReferenceResolver<String> userOrGroupResolver;
 
     /**
-     * Initializes the context, making sure that the patient exists, and that the current user has sufficient rights. If
+     * Initializes the context, making sure that the entity exists, and that the current user has sufficient rights. If
      * any of these conditions are not met, initialization fails.
      *
-     * @param patientId by which to find a patient record
+     * @param entityId by which to find an entity record
+     * @param entityType the type of entity
      * @param minimumAccessLevel that the current must have or exceed
-     * @param repository used to find the patient record
+     * @param resolver used to find the entity record
      * @param users used to get the current user
      * @param manager used to initialize instance with access API
      * @param userOrGroupResolver document reference resolver that can resolve an identifier to either a user or a group
-     * @throws WebApplicationException if the patient could not be found, or the current user has insufficient rights
+     * @throws WebApplicationException if the entity could not be found, or the current user has insufficient rights
      */
-    public PatientAccessContext(String patientId, AccessLevel minimumAccessLevel, PatientRepository repository,
-        UserManager users, EntityPermissionsManager manager, DocumentReferenceResolver<String> userOrGroupResolver)
+    public EntityAccessContext(String entityId, String entityType, AccessLevel minimumAccessLevel,
+        PrimaryEntityResolver resolver, UserManager users, EntityPermissionsManager manager,
+        DocumentReferenceResolver<String> userOrGroupResolver)
         throws WebApplicationException
     {
         this.manager = manager;
-        this.patient = repository.get(patientId);
-        if (this.patient == null) {
-            this.logger.debug("No such patient record: [{}]", patientId);
+        final PrimaryEntityManager primaryEntityManager = resolver.getEntityManager(entityType);
+        if (primaryEntityManager == null) {
+            this.logger.debug("No such entity type: [{}]", entityType);
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+        this.entity = primaryEntityManager.get(entityId);
+        if (this.entity == null) {
+            this.logger.debug("No such entity record: [{}]", entityId);
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
         this.userOrGroupResolver = userOrGroupResolver;
-        this.entityAccess = this.manager.getEntityAccess(this.patient);
+        this.entityAccess = this.manager.getEntityAccess(this.entity);
         this.initializeUser(minimumAccessLevel, users, this.logger);
     }
 
@@ -87,8 +96,8 @@ public class PatientAccessContext
         this.currentUser = users.getCurrentUser();
         if (!this.entityAccess.hasAccessLevel(this.currentUser == null ? null : this.currentUser.getProfileDocument(),
             minimumAccessLevel)) {
-            logger.debug("{} access denied to user [{}] on patient record [{}]",
-                minimumAccessLevel.getName(), this.currentUser, this.patient.getId());
+            logger.debug("{} access denied to user [{}] on entity record [{}]",
+                minimumAccessLevel.getName(), this.currentUser, this.entity.getId());
             throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
     }
@@ -96,11 +105,11 @@ public class PatientAccessContext
     /**
      * The main use of the context is this method.
      *
-     * @return a patient that was either found by internal id, or was passed in during initialization
+     * @return an entity that was either found by internal id, or was passed in during initialization
      */
-    public Patient getPatient()
+    public PrimaryEntity getEntity()
     {
-        return this.patient;
+        return this.entity;
     }
 
     /**
@@ -118,7 +127,7 @@ public class PatientAccessContext
      *
      * @return an initialized instance of {@link EntityAccess}
      */
-    public EntityAccess getPatientAccess()
+    public EntityAccess getEntityAccess()
     {
         return this.entityAccess;
     }

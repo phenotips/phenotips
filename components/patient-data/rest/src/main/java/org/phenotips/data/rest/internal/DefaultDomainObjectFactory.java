@@ -96,7 +96,8 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         result.withCreatedOn(new DateTime(doc.getCreationDate()).withZone(DateTimeZone.UTC));
         result.withLastModifiedOn(new DateTime(doc.getDate()).withZone(DateTimeZone.UTC));
         result.withLinks(this.autolinker.get().forSecondaryResource(PatientResource.class, uriInfo)
-            .withExtraParameters("patient-id", patient.getId())
+            .withExtraParameters("entity-id", patient.getId())
+            .withExtraParameters("entity-type", "patients")
             .build());
         return result;
     }
@@ -123,7 +124,8 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         result.withCreatedOn(new DateTime(summaryData[3]).withZone(DateTimeZone.UTC));
         result.withLastModifiedOn(new DateTime(summaryData[6]).withZone(DateTimeZone.UTC));
         result.withLinks(this.autolinker.get().forSecondaryResource(PatientResource.class, uriInfo)
-            .withExtraParameters("patient-id", doc.getName())
+            .withExtraParameters("entity-id", doc.getName())
+            .withExtraParameters("entity-type", "patients")
             .build());
         return result;
     }
@@ -150,7 +152,8 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         Alternative result = new Alternative();
         result.withId(id);
         result.withLinks(this.autolinker.get().forSecondaryResource(PatientResource.class, uriInfo)
-            .withExtraParameters("patient-id", id)
+            .withExtraParameters("entity-id", id)
+            .withExtraParameters("entity-type", "patients")
             .build());
         return result;
     }

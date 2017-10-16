@@ -23,7 +23,7 @@ import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.rest.CollaboratorsResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
-import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
+import org.phenotips.data.permissions.rest.internal.utils.EntityAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.permissions.rest.model.CollaboratorRepresentation;
 import org.phenotips.data.permissions.rest.model.CollaboratorsRepresentation;
@@ -84,39 +84,39 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
     private Provider<Autolinker> autolinker;
 
     @Override
-    public CollaboratorsRepresentation getCollaborators(String patientId)
+    public CollaboratorsRepresentation getCollaborators(String entityId, String entityType)
     {
-        this.logger.debug("Retrieving collaborators of patient record [{}] via REST", patientId);
-        // Besides getting the patient, checks that the user has view access
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getReadContext(patientId);
+        this.logger.debug("Retrieving collaborators of entity record [{}] via REST", entityId);
+        // Besides getting the entity, checks that the user has view access
+        EntityAccessContext entityAccessContext = this.secureContextFactory.getReadContext(entityId, entityType);
 
         CollaboratorsRepresentation result =
-            this.factory.createCollaboratorsRepresentation(patientAccessContext.getPatient(), this.uriInfo);
+            this.factory.createCollaboratorsRepresentation(entityAccessContext.getEntity(), this.uriInfo);
 
         result.withLinks(this.autolinker.get().forResource(this.getClass(), this.uriInfo)
-            .withGrantedRight(patientAccessContext.getPatientAccess().getAccessLevel().getGrantedRight())
+            .withGrantedRight(entityAccessContext.getEntityAccess().getAccessLevel().getGrantedRight())
             .build());
 
         return result;
     }
 
     @Override
-    public Response addCollaborators(CollaboratorsRepresentation collaborators, String patientId)
+    public Response addCollaborators(CollaboratorsRepresentation collaborators, String entityId, String entityType)
     {
-        this.logger.debug("Adding {} collaborators to patient record [{}] via REST",
-            collaborators.getCollaborators().size(), patientId);
-        return this.setCollaborators(collaborators.getCollaborators(), patientId, false);
+        this.logger.debug("Adding {} collaborators to entity record [{}] via REST",
+            collaborators.getCollaborators().size(), entityId);
+        return this.setCollaborators(collaborators.getCollaborators(), entityId, entityType, false);
     }
 
     @Override
-    public Response addCollaborators(String patientId)
+    public Response addCollaborators(String entityId, String entityType)
     {
-        this.logger.debug("Adding new collaborators to patient record [{}] via REST", patientId);
+        this.logger.debug("Adding new collaborators to entity record [{}] via REST", entityId);
         List<Object> collaborators = this.container.getRequest().getProperties("collaborator");
         List<Object> accessLevels = this.container.getRequest().getProperties("level");
 
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
-        EntityAccess entityAccess = patientAccessContext.getPatientAccess();
+        EntityAccessContext entityAccessContext = this.secureContextFactory.getWriteContext(entityId, entityType);
+        EntityAccess entityAccess = entityAccessContext.getEntityAccess();
 
         if (collaborators.size() != accessLevels.size()) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
@@ -127,7 +127,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         for (int i = 0; i < collaborators.size(); ++i) {
             String collaboratorId = (String) collaborators.get(i);
             String accessLevelName = (String) accessLevels.get(i);
-            patientAccessContext.checkCollaboratorInfo(collaboratorId, accessLevelName);
+            entityAccessContext.checkCollaboratorInfo(collaboratorId, accessLevelName);
             internalCollaborators.put(this.userOrGroupResolver.resolve(collaboratorId),
                 this.manager.resolveAccessLevel(accessLevelName));
         }
@@ -135,30 +135,30 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         for (Map.Entry<EntityReference, AccessLevel> e : internalCollaborators.entrySet()) {
             entityAccess.addCollaborator(e.getKey(), e.getValue());
         }
-        this.manager.fireRightsUpdateEvent(patientId);
+        this.manager.fireRightsUpdateEvent(entityId);
         return Response.ok().build();
     }
 
     @Override
-    public Response deleteAllCollaborators(String patientId)
+    public Response deleteAllCollaborators(String entityId, String entityType)
     {
-        this.logger.debug("Deleting all collaborators from patient record [{}] via REST", patientId);
-        return setCollaborators(Collections.<CollaboratorRepresentation>emptyList(), patientId, true);
+        this.logger.debug("Deleting all collaborators from entity record [{}] via REST", entityId);
+        return setCollaborators(Collections.emptyList(), entityId, entityType, true);
     }
 
     @Override
-    public Response setCollaborators(CollaboratorsRepresentation collaborators, String patientId)
+    public Response setCollaborators(CollaboratorsRepresentation collaborators, String entityId, String entityType)
     {
-        this.logger.debug("Setting {} collaborators to patient record [{}] via REST",
-            collaborators.getCollaborators().size(), patientId);
-        return this.setCollaborators(collaborators.getCollaborators(), patientId, true);
+        this.logger.debug("Setting {} collaborators to entity record [{}] via REST",
+            collaborators.getCollaborators().size(), entityId);
+        return this.setCollaborators(collaborators.getCollaborators(), entityId, entityType, true);
     }
 
-    private Response setCollaborators(Collection<CollaboratorRepresentation> collaborators, String patientId,
-        boolean replace)
+    private Response setCollaborators(Collection<CollaboratorRepresentation> collaborators, String entityId,
+        String entityType, boolean replace)
     {
-        PatientAccessContext patientAccessContext = this.secureContextFactory.getWriteContext(patientId);
-        EntityAccess entityAccess = patientAccessContext.getPatientAccess();
+        EntityAccessContext entityAccessContext = this.secureContextFactory.getWriteContext(entityId, entityType);
+        EntityAccess entityAccess = entityAccessContext.getEntityAccess();
 
         Map<EntityReference, Collaborator> internalCollaborators = new LinkedHashMap<>();
         if (!replace) {
@@ -168,12 +168,12 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         }
         for (CollaboratorRepresentation collaborator : collaborators) {
             EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaborator.getId());
-            patientAccessContext.checkCollaboratorInfo(collaborator.getId(), collaborator.getLevel());
+            entityAccessContext.checkCollaboratorInfo(collaborator.getId(), collaborator.getLevel());
             internalCollaborators.put(collaboratorReference,
                 new StubCollaborator(collaboratorReference, this.manager.resolveAccessLevel(collaborator.getLevel())));
         }
         entityAccess.updateCollaborators(internalCollaborators.values());
-        this.manager.fireRightsUpdateEvent(patientId);
+        this.manager.fireRightsUpdateEvent(entityId);
         return Response.ok().build();
     }
 

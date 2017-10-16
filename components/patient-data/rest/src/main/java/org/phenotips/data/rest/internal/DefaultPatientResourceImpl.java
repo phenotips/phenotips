@@ -96,7 +96,9 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
         }
         JSONObject json = patient.toJSON();
         json.put("links",
-            this.autolinker.get().forResource(getClass(), this.uriInfo).withGrantedRight(grantedRight).build());
+            this.autolinker.get().forResource(getClass(), this.uriInfo)
+                .withExtraParameters("entity-type", "patients")
+                .withGrantedRight(grantedRight).build());
         return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
     }
 

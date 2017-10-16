@@ -31,7 +31,7 @@ import javax.ws.rs.core.Response;
  * @version $Id$
  * @since 1.4
  */
-@Path("/families/{id}")
+@Path("/families/{entity-id}")
 public interface FamilyResource
 {
     /**
@@ -43,7 +43,7 @@ public interface FamilyResource
      * @return the JSON representation of the requested family, or a status message in case of error
      */
     @GET
-    Response getFamily(@PathParam("id") String id);
+    Response getFamily(@PathParam("entity-id") String id);
 
     /**
      * Delete a family record, identified by its internal PhenoTips identifier. If the indicated family record doesn't
@@ -55,6 +55,6 @@ public interface FamilyResource
      * @return a status message
      */
     @DELETE
-    Response deleteFamily(@PathParam("id") String id,
+    Response deleteFamily(@PathParam("entity-id") String id,
         @QueryParam("delete_all_members") @DefaultValue("false") Boolean deleteMembers);
 }
