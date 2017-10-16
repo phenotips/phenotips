@@ -30,8 +30,10 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -57,6 +59,9 @@ public class DefaultGenePanelImpl implements GenePanel
 
     /** The "ensembl_gene_id" label. */
     private static final String ENSEMBL_ID_LABEL = "ensembl_gene_id";
+
+    /** The gene "symbol" label. */
+    private static final String SYMBOL_LABEL = "symbol";
 
     /** HGNC vocabulary label. */
     private static final String HGNC_LABEL = "hgnc";
@@ -84,7 +89,7 @@ public class DefaultGenePanelImpl implements GenePanel
     DefaultGenePanelImpl(@Nonnull final Collection<VocabularyTerm> presentTerms,
         @Nonnull final Collection<VocabularyTerm> absentTerms, @Nonnull final VocabularyManager vocabularyManager)
     {
-        this(presentTerms, absentTerms, Collections.<VocabularyTerm>emptySet(), vocabularyManager);
+        this(presentTerms, absentTerms, Collections.emptySet(), vocabularyManager);
     }
 
     /**
@@ -97,8 +102,11 @@ public class DefaultGenePanelImpl implements GenePanel
      * @param rejectedGenes a collection of genes that were tested to be negative
      * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
      */
-    DefaultGenePanelImpl(Collection<VocabularyTerm> presentTerms, Collection<VocabularyTerm> absentTerms,
-        Collection<VocabularyTerm> rejectedGenes, VocabularyManager vocabularyManager)
+    DefaultGenePanelImpl(
+        @Nonnull final Collection<VocabularyTerm> presentTerms,
+        @Nonnull final Collection<VocabularyTerm> absentTerms,
+        @Nonnull final Collection<VocabularyTerm> rejectedGenes,
+        @Nonnull final VocabularyManager vocabularyManager)
     {
         this.hgnc = vocabularyManager.getVocabulary(HGNC_LABEL);
 
@@ -139,32 +147,47 @@ public class DefaultGenePanelImpl implements GenePanel
     private void addTermForGenes(@Nonnull final VocabularyTerm term, @Nonnull final List<String> genes,
         @Nonnull final TermsForGeneBuilder termsForGeneBuilder)
     {
-        for (final String gene : genes) {
-            if (termsForGeneBuilder.contains(gene)) {
-                termsForGeneBuilder.update(gene, term);
+        for (final String enteredGene : genes) {
+            // Get the gene term. May be null if gene is not a valid symbol.
+            final VocabularyTerm geneTerm = this.hgnc.getTerm(enteredGene);
+            // Since entered gene may be an alias, get the current gene symbol and gene ID.
+            final String geneSymbol = getGeneSymbol(enteredGene, geneTerm);
+            final String geneId = getGeneId(geneSymbol, geneTerm);
+            if (termsForGeneBuilder.contains(geneId)) {
+                termsForGeneBuilder.update(geneId, term);
             } else {
-                final String geneId = getGeneId(gene);
-                termsForGeneBuilder.add(gene, geneId, term);
+                termsForGeneBuilder.add(geneSymbol, geneId, term);
             }
         }
     }
 
     /**
-     * Tries to obtain the preferred gene ID, given {@code geneSymbol}.
+     * Tries to obtain the preferred gene symbol, given entered {@code symbol}, and {@code geneTerm} vocabulary term.
      *
-     * @param geneSymbol the GeneCards gene symbol
-     * @return the preferred gene ID, or geneSymbol if no preferred ID is recorded
+     * @param symbol the provided gene symbol
+     * @param geneTerm the {@link VocabularyTerm} gene vocabulary term
+     * @return the preferred gene symbol, or entered {@code symbol} if no symbol is recorded
      */
-    private String getGeneId(@Nonnull final String geneSymbol)
+    private String getGeneSymbol(@Nonnull final String symbol, @Nullable final VocabularyTerm geneTerm)
     {
-        final VocabularyTerm geneTerm = this.hgnc.getTerm(geneSymbol);
+        return geneTerm != null ? StringUtils.defaultIfBlank((String) geneTerm.get(SYMBOL_LABEL), symbol) : symbol;
+    }
 
+    /**
+     * Tries to obtain the preferred gene ID, given {@code symbol}.
+     *
+     * @param symbol the GeneCards gene symbol
+     * @param geneTerm the {@link VocabularyTerm} gene vocabulary term
+     * @return the preferred gene ID, or {@code symbol} if no preferred ID is recorded
+     */
+    private String getGeneId(@Nonnull final String symbol, @Nullable final VocabularyTerm geneTerm)
+    {
         if (geneTerm != null) {
             @SuppressWarnings("unchecked")
             final List<String> geneIdList = (List<String>) geneTerm.get(ENSEMBL_ID_LABEL);
-            return CollectionUtils.isEmpty(geneIdList) ? geneSymbol : geneIdList.get(0);
+            return CollectionUtils.isEmpty(geneIdList) ? symbol : geneIdList.get(0);
         }
-        return geneSymbol;
+        return symbol;
     }
 
     /**
@@ -177,7 +200,7 @@ public class DefaultGenePanelImpl implements GenePanel
     {
         @SuppressWarnings("unchecked")
         final List<String> geneList = (List<String>) term.get(ASSOCIATED_GENES);
-        return CollectionUtils.isNotEmpty(geneList) ? geneList : Collections.<String>emptyList();
+        return CollectionUtils.isNotEmpty(geneList) ? geneList : Collections.emptyList();
     }
 
     @Override

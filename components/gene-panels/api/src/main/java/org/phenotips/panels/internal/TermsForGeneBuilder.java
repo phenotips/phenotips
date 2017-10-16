@@ -23,7 +23,6 @@ import org.phenotips.vocabulary.VocabularyTerm;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -46,8 +45,10 @@ import org.apache.commons.lang3.Validate;
  */
 class TermsForGeneBuilder
 {
+    /** Maps gene Ensembl ID to {@link TermsForGene} object for the given ID. */
     private final Map<String, DefaultTermsForGeneImpl> termsForGeneMap = new HashMap<>();
 
+    /** Genes to be excluded from the panel. */
     private final Set<String> exclusions;
 
     /**
@@ -80,11 +81,10 @@ class TermsForGeneBuilder
     {
         for (final VocabularyTerm gene : excludedGenes) {
             final String symbol = (String) gene.get("symbol");
-            final Collection<String> aliases = (Collection<String>) gene.get("symbol_alias");
-            final Collection<String> ensembl = (Collection<String>) gene.get("ensembl_gene_id");
+            // Contains alias_symbol, prev_symbol, entrez_id, ensembl_gene_id, refseq_accession, and ena
+            final Collection<String> aliases = (Collection<String>) gene.get("alt_id");
             CollectionUtils.addIgnoreNull(this.exclusions, symbol);
             addAllIgnoreNullAndEmpty(aliases);
-            addAllIgnoreNullAndEmpty(ensembl);
         }
     }
 
@@ -104,15 +104,15 @@ class TermsForGeneBuilder
      * Updates the {@link TermsForGene terms for gene} object stored under {@code geneSymbol} key, with the provided
      * vocabulary {@code term}.
      *
-     * @param geneSymbol the gene symbol, which will be used as the key
+     * @param geneId the gene id, which will be used as the key
      * @param term the {@link VocabularyTerm vocabulary term} with which to update the stored {@link TermsForGene}
      * @throws NullPointerException if key {@code geneSymbol} has not yet been added to the {@link TermsForGeneBuilder},
      *             or if {@code term} is null
      */
-    void update(@Nonnull final String geneSymbol, @Nonnull final VocabularyTerm term)
+    void update(@Nonnull final String geneId, @Nonnull final VocabularyTerm term)
     {
         Validate.notNull(term, "The vocabulary term must not be null.");
-        this.termsForGeneMap.get(geneSymbol).addTerm(term);
+        this.termsForGeneMap.get(geneId).addTerm(term);
     }
 
     /**
@@ -135,19 +135,19 @@ class TermsForGeneBuilder
             || (!this.exclusions.contains(geneSymbol) && !this.exclusions.contains(geneId))) {
             final DefaultTermsForGeneImpl termsForGene = new DefaultTermsForGeneImpl(geneSymbol, geneId);
             termsForGene.addTerm(term);
-            this.termsForGeneMap.put(geneSymbol, termsForGene);
+            this.termsForGeneMap.put(geneId, termsForGene);
         }
     }
 
     /**
      * Returns true iff the {@link TermsForGeneBuilder} object contains {@code geneSymbol}.
      *
-     * @param geneSymbol the gene symbol, that will be used as key
-     * @return true iff {@link TermsForGeneBuilder} contains {@code geneSymbol}, false otherwise
+     * @param geneId the gene id, that will be used as key
+     * @return true iff {@link TermsForGeneBuilder} contains {@code geneId}, false otherwise
      */
-    boolean contains(@Nullable final String geneSymbol)
+    boolean contains(@Nullable final String geneId)
     {
-        return this.termsForGeneMap.containsKey(geneSymbol);
+        return this.termsForGeneMap.containsKey(geneId);
     }
 
     /**
@@ -170,19 +170,14 @@ class TermsForGeneBuilder
     private List<TermsForGene> getSortedTermsForGeneList()
     {
         final List<TermsForGene> termsForGeneEntries = new ArrayList<>(this.termsForGeneMap.values());
-        Collections.sort(termsForGeneEntries, new Comparator<TermsForGene>()
-        {
-            @Override
-            public int compare(final TermsForGene o1, final TermsForGene o2)
-            {
-                // First compare by count, in descending order.
-                final int countComparison = new Integer(o2.getCount()).compareTo(o1.getCount());
-                // Second, if o1 and o2 have the same count, compare by natural order of phenotypes, and if necessary,
-                // by gene name.
-                return (countComparison != 0)
-                    ? countComparison
-                    : compareTermsForGene(o1, o2);
-            }
+        termsForGeneEntries.sort((o1, o2) -> {
+            // First compare by count, in descending order.
+            final int countComparison = Integer.compare(o2.getCount(), o1.getCount());
+            // Second, if o1 and o2 have the same count, compare by natural order of phenotypes, and if necessary,
+            // by gene name.
+            return (countComparison != 0)
+                ? countComparison
+                : compareTermsForGene(o1, o2);
         });
         return termsForGeneEntries;
     }

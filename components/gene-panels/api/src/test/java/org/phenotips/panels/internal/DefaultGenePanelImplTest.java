@@ -24,8 +24,6 @@ import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
-import org.xwiki.component.manager.ComponentLookupException;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -124,7 +122,7 @@ public class DefaultGenePanelImplTest
     private JSONObject termsForGeneJSON3;
 
     @Before
-    public void setUp() throws ComponentLookupException
+    public void setUp()
     {
         MockitoAnnotations.initMocks(this);
         when(this.vocabularyManager.getVocabulary(HGNC_LABEL)).thenReturn(this.hgnc);
