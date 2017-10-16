@@ -17,9 +17,9 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
+import org.phenotips.entities.PrimaryEntity;
+import org.phenotips.entities.PrimaryEntityResolver;
 import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.annotation.Component;
@@ -46,10 +46,10 @@ import org.apache.commons.lang3.ObjectUtils;
 public class CollaboratorAccessAuthorizationModule implements AuthorizationModule
 {
     /**
-     * Checks to see if document is a patient (DocumentReference).
+     * Checks to see if document is an entity (DocumentReference).
      */
     @Inject
-    private PatientRepository patientRepository;
+    private PrimaryEntityResolver resolver;
 
     @Inject
     private EntityAccessManager accessHelper;
@@ -68,13 +68,13 @@ public class CollaboratorAccessAuthorizationModule implements AuthorizationModul
             return null;
         }
 
-        // This converts the document to a patient.
-        Patient patient = this.patientRepository.get(entity.toString());
-        if (patient == null) {
+        // This converts the document to an entity.
+        PrimaryEntity primaryEntity = this.resolver.resolveEntity(entity.toString());
+        if (primaryEntity == null) {
             return null;
         }
-        // This retrieves the access level for the patient.
-        AccessLevel grantedAccess = this.accessHelper.getAccessLevel(patient, user.getProfileDocument());
+        // This retrieves the access level for the entity.
+        AccessLevel grantedAccess = this.accessHelper.getAccessLevel(primaryEntity, user.getProfileDocument());
         Right grantedRight = grantedAccess.getGrantedRight();
 
         if (grantedRight.equals(access)

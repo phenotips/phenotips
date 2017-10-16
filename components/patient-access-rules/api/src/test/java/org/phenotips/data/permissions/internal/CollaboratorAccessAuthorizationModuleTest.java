@@ -18,9 +18,9 @@
 package org.phenotips.data.permissions.internal;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.EntityAccess;
+import org.phenotips.entities.PrimaryEntityResolver;
 import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.manager.ComponentLookupException;
@@ -79,7 +79,7 @@ public class CollaboratorAccessAuthorizationModuleTest
 
     private EntityAccessManager helper;
 
-    private PatientRepository repo;
+    private PrimaryEntityResolver resolver;
 
     @Before
     public void setupMocks() throws ComponentLookupException
@@ -92,8 +92,8 @@ public class CollaboratorAccessAuthorizationModuleTest
         when(this.editAccess.getGrantedRight()).thenReturn(Right.EDIT);
         when(this.manageAccess.getGrantedRight()).thenReturn(ManageRight.MANAGE);
 
-        this.repo = this.mocker.getInstance(PatientRepository.class);
-        when(this.repo.get("xwiki:data.P01")).thenReturn(this.patient);
+        this.resolver = this.mocker.getInstance(PrimaryEntityResolver.class);
+        when(this.resolver.resolveEntity("xwiki:data.P01")).thenReturn(this.patient);
 
         when(this.user.getProfileDocument()).thenReturn(this.userProfile);
     }
@@ -145,7 +145,7 @@ public class CollaboratorAccessAuthorizationModuleTest
     @Test
     public void noActionWithNonPatient() throws ComponentLookupException
     {
-        when(this.repo.get("xwiki:data.P01")).thenReturn(null);
+        when(this.resolver.resolveEntity("xwiki:data.P01")).thenReturn(null);
         when(this.helper.getAccessLevel(this.patient, this.userProfile)).thenReturn(this.editAccess);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, Right.VIEW, this.doc));
     }
