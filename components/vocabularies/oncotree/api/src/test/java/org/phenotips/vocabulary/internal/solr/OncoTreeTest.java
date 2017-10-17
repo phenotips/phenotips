@@ -19,9 +19,7 @@ package org.phenotips.vocabulary.internal.solr;
 
 import org.phenotips.vocabulary.SolrVocabularyResourceManager;
 import org.phenotips.vocabulary.Vocabulary;
-import org.phenotips.vocabulary.VocabularyTerm;
 
-import org.xwiki.cache.Cache;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -47,9 +45,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 
@@ -162,16 +158,15 @@ public class OncoTreeTest
 
     private static final String SYNONYM = "synonym";
 
+    private static final String CANCER = "cancer";
+
+    private static final String DISEASE = "disease";
+
     @Rule
     public MockitoComponentMockingRule<Vocabulary> mocker = new MockitoComponentMockingRule<>(OncoTree.class);
 
     @Mock
-    private Cache<VocabularyTerm> cache;
-
-    @Mock
     private SolrClient server;
-
-    private int ontologyServiceResult;
 
     private Vocabulary component;
 
@@ -185,38 +180,28 @@ public class OncoTreeTest
     public void setUp() throws ComponentLookupException, IOException
     {
         MockitoAnnotations.initMocks(this);
+
         SolrVocabularyResourceManager externalServicesAccess =
             this.mocker.getInstance(SolrVocabularyResourceManager.class);
-        when(externalServicesAccess.getTermCache(ONCO_LOWER)).thenReturn(this.cache);
+
         when(externalServicesAccess.getSolrConnection(ONCO_LOWER)).thenReturn(this.server);
+
         this.component = this.mocker.getComponentUnderTest();
         this.oncoTree = spy((OncoTree) this.component);
 
         this.logger = this.mocker.getMockedLogger();
-        this.ontologyServiceResult = this.component.reindex(this.getClass().getResource("/test.txt").toString());
         this.url = new URL(this.component.getDefaultSourceLocation());
         final InputStream inputStream = getInputStream("src/test/resources/test.txt");
         doReturn(inputStream).when(this.oncoTree).getInputStream(any(URL.class));
     }
 
     @Test
-    public void reindexOncoTree() throws IOException, SolrServerException
-    {
-        Mockito.verify(this.server).deleteByQuery("*:*");
-        Mockito.verify(this.server).commit();
-        Mockito.verify(this.server).add(Matchers.anyCollectionOf(SolrInputDocument.class));
-        Mockito.verify(this.cache).removeAll();
-        Mockito.verifyNoMoreInteractions(this.cache, this.server);
-        Assert.assertTrue(this.ontologyServiceResult == 0);
-    }
-
-    @Test
     public void getVersionForOncoTree() throws IOException, SolrServerException
     {
-        final QueryResponse response = mock(QueryResponse.class);
-        when(this.server.query(any(SolrQuery.class))).thenReturn(response);
+        final QueryResponse queryResponse = mock(QueryResponse.class);
+        when(this.server.query(any(SolrQuery.class))).thenReturn(queryResponse);
         final SolrDocumentList results = mock(SolrDocumentList.class);
-        when(response.getResults()).thenReturn(results);
+        when(queryResponse.getResults()).thenReturn(results);
         when(results.isEmpty()).thenReturn(false);
         final SolrDocument versionDoc = mock(SolrDocument.class);
         when(results.get(0)).thenReturn(versionDoc);
@@ -428,6 +413,23 @@ public class OncoTreeTest
     {
         // FIXME: update this.
         Assert.assertEquals(StringUtils.EMPTY, this.component.getCitation());
+    }
+
+    @Test
+    public void getSupportedCategoriesReturnsExpectedCategories()
+    {
+        final Collection<String> categories = this.component.getSupportedCategories();
+        Assert.assertEquals(2, categories.size());
+        Assert.assertTrue(categories.contains(CANCER));
+        Assert.assertTrue(categories.contains(DISEASE));
+    }
+
+    @Test (expected = UnsupportedOperationException.class)
+    public void getSupportedCategoriesReturnsImmutableCollection()
+    {
+        final Collection<String> categories = this.component.getSupportedCategories();
+        categories.add("test");
+        categories.remove("aa");
     }
 
     /**

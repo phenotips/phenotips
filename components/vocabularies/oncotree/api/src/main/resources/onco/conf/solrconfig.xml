@@ -37,7 +37,7 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
   -->
-  <luceneMatchVersion>5.5.3</luceneMatchVersion>
+  <luceneMatchVersion>6.5.1</luceneMatchVersion>
 
   <!-- Data Directory
 
@@ -142,8 +142,7 @@
   <!-- The default high-performance update handler -->
   <updateHandler class="solr.DirectUpdateHandler2">
     <autoCommit>
-      <maxDocs>50000</maxDocs>
-      <maxTime>120000</maxTime>
+      <maxTime>${solr.autoCommit.maxTime:120000}</maxTime>
       <openSearcher>false</openSearcher>
     </autoCommit>
 
@@ -153,7 +152,7 @@
          faster and more near-realtime friendly than a hard commit.
       -->
     <autoSoftCommit>
-      <maxTime>20000</maxTime>
+      <maxTime>${solr.autoSoftCommit.maxTime:-1}</maxTime>
     </autoSoftCommit>
   </updateHandler>
 
@@ -239,11 +238,11 @@
 
     <!-- custom cache currently used by block join -->
     <cache name="perSegFilter"
-      class="solr.search.LRUCache"
-      size="10"
-      initialSize="0"
-      autowarmCount="10"
-      regenerator="solr.NoOpRegenerator" />
+           class="solr.search.LRUCache"
+           size="10"
+           initialSize="0"
+           autowarmCount="10"
+           regenerator="solr.NoOpRegenerator" />
 
     <!-- Lazy Field Loading
 

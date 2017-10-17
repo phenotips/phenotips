@@ -29,6 +29,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -56,8 +57,6 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.DisMaxParams;
 import org.apache.solr.common.params.SpellingParams;
-
-import com.google.common.annotations.VisibleForTesting;
 
 /**
  * Provides access to the OncoTree vocabulary. The vocabulary prefix is {@code ONCO}.
@@ -101,6 +100,14 @@ public class OncoTree extends AbstractCSVSolrVocabulary
 
     private static final String DATE_FORMAT = "yyyy-MM-dd";
 
+    private static final String DISEASE = "disease";
+
+    private static final String CANCER = "cancer";
+
+    /** The list of supported categories for this vocabulary. */
+    private static final Collection<String> SUPPORTED_CATEGORIES =
+        Collections.unmodifiableCollection(Arrays.asList(DISEASE, CANCER));
+
     private Map<Integer, String> header;
 
     private Map<String, SolrInputDocument> dataMap;
@@ -115,7 +122,7 @@ public class OncoTree extends AbstractCSVSolrVocabulary
     protected Collection<SolrInputDocument> load(@Nonnull final URL url)
     {
         this.dataMap = new HashMap<>();
-        try (final BufferedReader in = new BufferedReader(
+        try (BufferedReader in = new BufferedReader(
             new InputStreamReader(getInputStream(url), StandardCharsets.UTF_8))) {
             final CSVFormat parser = setupCSVParser();
             // Process each csv record row.
@@ -134,13 +141,13 @@ public class OncoTree extends AbstractCSVSolrVocabulary
     }
 
     /**
-     * Gets an input stream from the provided {@code url}.
+     * Gets an input stream from the provided {@code url}. Visible for testing purposes.
      *
      * @param url the {@link URL} for the cancers data
      * @return an {@link InputStream} with the data
      * @throws IOException if a connection cannot be opened
      */
-    @VisibleForTesting
+    @Nonnull
     InputStream getInputStream(@Nonnull final URL url) throws IOException
     {
         return url.openConnection().getInputStream();
@@ -199,6 +206,7 @@ public class OncoTree extends AbstractCSVSolrVocabulary
      * @param value the provided raw cancer name
      * @param tissue the tissue affected
      */
+    @Nullable
     private SolrInputDocument addNode(
         @Nullable final SolrInputDocument parent,
         @Nonnull final String value,
@@ -237,6 +245,7 @@ public class OncoTree extends AbstractCSVSolrVocabulary
      * @param cancerId the non-prefixed cancer ID
      * @return a {@link SolrInputDocument} associated with {@code cancerId}
      */
+    @Nonnull
     private SolrInputDocument getSolrInputDocForCancer(@Nonnull final String cancerId)
     {
         final String prefixedId = getTermPrefix() + SEPARATOR + cancerId;
@@ -275,6 +284,7 @@ public class OncoTree extends AbstractCSVSolrVocabulary
      * @param close the closing delimiter
      * @return the substring between {@code open} and {@code close}, if exists, empty string otherwise
      */
+    @Nonnull
     private String lastSubstringBetween(
         @Nonnull final String value,
         @Nonnull final String open,
@@ -330,6 +340,7 @@ public class OncoTree extends AbstractCSVSolrVocabulary
      *
      * @param value the provided tissue property value
      */
+    @Nonnull
     private String formatTissue(@Nullable final String value)
     {
         return StringUtils.isNotBlank(value) ? StringUtils.substringBefore(value, OPEN).trim() : StringUtils.EMPTY;
@@ -340,6 +351,7 @@ public class OncoTree extends AbstractCSVSolrVocabulary
      *
      * @return a {@link CSVRecord parser}
      */
+    @Nonnull
     private CSVFormat setupCSVParser()
     {
         return CSVFormat.TDF.withFirstRecordAsHeader();
@@ -350,6 +362,7 @@ public class OncoTree extends AbstractCSVSolrVocabulary
      *
      * @return a prefix for the OncoTree vocabulary terms
      */
+    @Nonnull
     private String getTermPrefix()
     {
         return "ONCO";
@@ -403,7 +416,10 @@ public class OncoTree extends AbstractCSVSolrVocabulary
     }
 
     @Override
-    public List<VocabularyTerm> search(@Nullable final String input, final int maxResults, @Nullable final String sort,
+    public List<VocabularyTerm> search(
+        @Nullable final String input,
+        final int maxResults,
+        @Nullable final String sort,
         @Nullable final String customFilter)
     {
         return StringUtils.isBlank(input)
@@ -420,8 +436,12 @@ public class OncoTree extends AbstractCSVSolrVocabulary
      * @param customFilter custom filter for results
      * @return a list of matching {@link VocabularyTerm} objects; empty if no suitable matches found
      */
-    private List<VocabularyTerm> searchMatches(@Nonnull final String input, final int maxResults,
-        @Nullable final String sort, @Nullable final String customFilter)
+    @Nonnull
+    private List<VocabularyTerm> searchMatches(
+        @Nonnull final String input,
+        final int maxResults,
+        @Nullable final String sort,
+        @Nullable final String customFilter)
     {
         final SolrQuery query = new SolrQuery();
         addGlobalQueryParam(query);
@@ -446,8 +466,13 @@ public class OncoTree extends AbstractCSVSolrVocabulary
      * @param query a {@link SolrQuery solr query} object
      * @return the updated {@link SolrQuery solr query} object
      */
-    private SolrQuery addDynamicQueryParam(@Nonnull final String rawQuery, final Integer rows,
-        @Nullable final String sort, @Nullable final String customFilter, @Nonnull SolrQuery query)
+    @Nonnull
+    private SolrQuery addDynamicQueryParam(
+        @Nonnull final String rawQuery,
+        @Nonnull final Integer rows,
+        @Nullable final String sort,
+        @Nullable final String customFilter,
+        @Nonnull SolrQuery query)
     {
         final String queryString = rawQuery.trim();
         final String escapedQuery = ClientUtils.escapeQueryChars(queryString);
@@ -505,6 +530,7 @@ public class OncoTree extends AbstractCSVSolrVocabulary
      * @param url the {@link URL} where data is stored
      * @return a {@link SolrInputDocument} containing version data
      */
+    @Nonnull
     private SolrInputDocument getVersionDoc(@Nonnull final URL url)
     {
         final String urlStr = url.toString();
@@ -518,5 +544,11 @@ public class OncoTree extends AbstractCSVSolrVocabulary
         doc.addField(ID_FIELD_NAME, HEADER_INFO_LABEL);
         doc.addField(VERSION_FIELD_NAME, datedVersion);
         return doc;
+    }
+
+    @Override
+    public Collection<String> getSupportedCategories()
+    {
+        return SUPPORTED_CATEGORIES;
     }
 }
