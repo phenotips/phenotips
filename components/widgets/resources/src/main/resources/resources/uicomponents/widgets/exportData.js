@@ -357,6 +357,8 @@ document.observe('xwiki:dom:loading', function() {
       document.observe('xwiki:multisuggestpicker:selectionchanged', updateMatchCounter);
       content.select('input[type=radio]').invoke('observe', 'click', updateMatchCounter);
       content.select('input[type=checkbox]').invoke('observe', 'click', updateMatchCounter);
+      content.select('input[name=external_id]').invoke('observe', 'input', updateMatchCounter);
+      // IE9 is buggy, and does not fire input on character delete.
       content.select('input[name=external_id]').invoke('observe', 'keyup', updateMatchCounter);
     }
   };
