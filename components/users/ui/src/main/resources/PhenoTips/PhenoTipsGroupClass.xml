@@ -840,6 +840,23 @@
     </class>
     <property>
       <code>{{velocity output="false"}}
+
+#macro (_isMemberOfGroup $groupDocName $userReference $result)
+  #set ($groupDocument = $xwiki.getDocument($groupDocName))
+  #if ($groupDocument.getObject('XWiki.XWikiGroups', 'member', $services.model.serialize($userReference, 'default')) ||
+       $groupDocument.getObject('XWiki.XWikiGroups', 'member', $services.model.serialize($userReference, 'compactwiki')) )
+    #set ($discard = $result.put('value', true))
+  #else
+    #set ($memberObjs = $groupDocument.getObjects('XWiki.XWikiGroups'))
+    #foreach ($memberObj in $memberObjs)
+      #_isMemberOfGroup($memberObj.getValue('member'), $userReference, $result)
+      #if ($result == true)
+        #break
+      #end
+    #end
+  #end
+#end
+
 #set ($groupClassName = 'PhenoTips.PhenoTipsGroupClass')
 #set ($groupTemplateName = 'PhenoTips.PhenoTipsGroupTemplate')
 #set ($groupsHome = 'Groups.WebHome')
@@ -863,13 +880,18 @@
   #set ($defaultLogo = "$groupTemplateName@$!{defaultLogo}")
 #end
 
+#set ($filterby = "$!{xcontext.macro.params.filterby}")
+#set ($filterval = "$!{xcontext.macro.params.filterval}")
+#set ($isFilterActive = ($filterby != ''))
+
 #foreach ($groupDoc in $groupDocs)
+  #if ($filterby == 'member')
+    #set ($isMember = {})
+    #_isMemberOfGroup($groupDoc.fullName, $services.model.resolveDocument($filterval), $isMember)
+  #end
   #set ($groupObj = $groupDoc.getObject($groupClassName))
-  #set ($filterby = "$!{xcontext.macro.params.filterby}")
   #set ($filterbyprop = $groupObj.getProperty($filterby))
-  #set ($filterval = "$!{xcontext.macro.params.filterval}")
-  #set ($isFilterActive = ($filterby != '' &amp;&amp; ("$!filterbyprop" != '' || $filterby == 'member')))
-  #if ($filterby == '' || "$!filterbyprop" != '' &amp;&amp; ($filterbyprop.value == $filterval || $filterbyprop.value.contains($filterval)) || $filterby == 'member' &amp;&amp; $groupDoc.getObjects('XWiki.XWikiGroups', 'member', $filterval))
+  #if ($filterby == '' || "$!filterbyprop" != '' &amp;&amp; ($filterbyprop.value == $filterval || $filterbyprop.value.contains($filterval)) || $filterby == 'member' &amp;&amp; $isMember.value)
     #set ($memberObjs = $groupDoc.getObjects('XWiki.XWikiGroups'))
     #set ($phantomMemberObjs = $groupDoc.getObjects('XWiki.XWikiGroups', 'member', ''))
     #set ($logo = "$!groupObj.getProperty('image').value")
