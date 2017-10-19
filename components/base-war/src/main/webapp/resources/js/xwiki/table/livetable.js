@@ -960,6 +960,8 @@ var LiveTableFilter = Class.create({
       var input = this.inputs[i];
       var events = ['xwiki:form:field-value-changed', 'change'];
       if (input.type == "text") {
+        events.push('input');
+        // IE9 is buggy, and input is not fired when deleting text
         events.push('keyup');
       } else {
         //IE is buggy on "change" events for checkboxes and radios
