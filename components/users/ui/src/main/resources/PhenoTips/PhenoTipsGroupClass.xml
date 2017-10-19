@@ -842,7 +842,11 @@
       <code>{{velocity output="false"}}
 
 #macro (_isMemberOfGroup $groupDocName $userReference $result)
+  #if ($processedGroups.contains($groupDocName))
+    #break($macro)
+  #end
   #set ($groupDocument = $xwiki.getDocument($groupDocName))
+  #set ($discard = $processedGroups.add($groupDocName))
   #if ($groupDocument.getObject('XWiki.XWikiGroups', 'member', $services.model.serialize($userReference, 'default')) ||
        $groupDocument.getObject('XWiki.XWikiGroups', 'member', $services.model.serialize($userReference, 'compactwiki')) )
     #set ($discard = $result.put('value', true))
@@ -887,6 +891,7 @@
 #foreach ($groupDoc in $groupDocs)
   #if ($filterby == 'member')
     #set ($isMember = {})
+    #set ($processedGroups = [])
     #_isMemberOfGroup($groupDoc.fullName, $services.model.resolveDocument($filterval), $isMember)
   #end
   #set ($groupObj = $groupDoc.getObject($groupClassName))
