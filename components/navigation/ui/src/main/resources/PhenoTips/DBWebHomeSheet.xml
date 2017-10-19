@@ -420,6 +420,10 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
   display: none;
 }
 
+.xwiki-livetable td.actions {
+  width: 1%;
+  white-space: nowrap;
+}
 .xwiki-livetable .actions a {
   color: $theme.textColor !important;
 }
