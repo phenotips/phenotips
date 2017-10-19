@@ -167,6 +167,8 @@ public class OwnerAccessAuthorizationModuleTest
     {
         when(this.dab.getProperty(this.doc, this.xclass, Owner.PROPERTY_NAME)).thenReturn("");
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(null, Right.VIEW, this.doc));
+        Assert.assertTrue(
+            this.mocker.getComponentUnderTest().hasAccess(new InvalidUser(null, null), Right.VIEW, this.doc));
     }
 
     @Test
@@ -174,6 +176,8 @@ public class OwnerAccessAuthorizationModuleTest
     {
         when(this.dab.getProperty(this.doc, this.xclass, Owner.PROPERTY_NAME)).thenReturn(null);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(null, Right.EDIT, this.doc));
+        Assert.assertTrue(
+            this.mocker.getComponentUnderTest().hasAccess(new InvalidUser(null, null), Right.EDIT, this.doc));
     }
 
     @Test
@@ -181,6 +185,9 @@ public class OwnerAccessAuthorizationModuleTest
     {
         when(this.dab.getProperty(this.doc, this.xclass, Owner.PROPERTY_NAME)).thenReturn("");
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(null, Right.COMMENT, this.doc));
+        Assert.assertTrue(
+            this.mocker.getComponentUnderTest().hasAccess(new InvalidUser(null, null), Right.COMMENT, this.doc));
+
     }
 
     @Test
@@ -188,6 +195,9 @@ public class OwnerAccessAuthorizationModuleTest
     {
         when(this.dab.getProperty(this.doc, this.xclass, Owner.PROPERTY_NAME)).thenReturn(null);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(null, Right.DELETE, this.doc));
+        Assert.assertTrue(
+            this.mocker.getComponentUnderTest().hasAccess(new InvalidUser(null, null), Right.DELETE, this.doc));
+
     }
 
     @Test
@@ -195,6 +205,9 @@ public class OwnerAccessAuthorizationModuleTest
     {
         when(this.dab.getProperty(this.doc, this.xclass, Owner.PROPERTY_NAME)).thenReturn("");
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(null, ManageRight.MANAGE, this.doc));
+        Assert.assertTrue(
+            this.mocker.getComponentUnderTest().hasAccess(new InvalidUser(null, null), ManageRight.MANAGE, this.doc));
+
     }
 
     @Test

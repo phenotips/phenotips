@@ -92,8 +92,7 @@ public class OwnerAccessAuthorizationModule implements AuthorizationModule
             this.resolver.resolve(Owner.CLASS_REFERENCE), Owner.PROPERTY_NAME);
         DocumentReference owner = this.strResolver.resolve(ownerStr);
 
-        if (StringUtils.isEmpty(ownerStr) && (user == null || user.getProfileDocument() == null)
-            || user != null && owner.equals(user.getProfileDocument())) {
+        if (isGuestOwner(ownerStr, user) || user != null && owner.equals(user.getProfileDocument())) {
             return true;
         }
         // Grant access to administrators
@@ -102,5 +101,10 @@ public class OwnerAccessAuthorizationModule implements AuthorizationModule
         }
 
         return null;
+    }
+
+    private boolean isGuestOwner(String owner, User user)
+    {
+        return StringUtils.isEmpty(owner) && (user == null || user.getProfileDocument() == null);
     }
 }
