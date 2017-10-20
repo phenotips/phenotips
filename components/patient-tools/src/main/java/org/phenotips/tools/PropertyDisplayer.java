@@ -41,6 +41,8 @@ import com.xpn.xwiki.api.Property;
 
 public class PropertyDisplayer
 {
+    private static final String ROOT_ID = "HP:0000001";
+
     private static final String TYPE_KEY = "type";
 
     private static final String GROUP_TYPE_KEY = "group_type";
@@ -110,12 +112,12 @@ public class PropertyDisplayer
     {
         for (String value : selectedTerms) {
             VocabularyTerm term = this.ontologyService.getTerm(value);
-            VocabularyTerm root = this.ontologyService.getTerm("HP:0000001");
+            VocabularyTerm root = this.ontologyService.getTerm(ROOT_ID);
             List<String> categories = new LinkedList<>();
             categories.addAll(this.getCategoriesFromOntology(value));
             categories.addAll(this.getCategoriesFromCustomMapping(value, customCategories));
             if (categories.isEmpty()) {
-                categories.add("HP:0000118");
+                categories.add(ROOT_ID);
             }
             FormSection mostSpecificSection = null;
             long bestDistance = Long.MAX_VALUE;
@@ -148,12 +150,12 @@ public class PropertyDisplayer
      *
      * @param categoryId the ID of a category of interest
      * @return a {@link VocabularyTerm} associated with the provided {@code categoryId} or {@link VocabularyTerm} for
-     *         "HP:0000118"
+     *         "HP:0000001"
      */
     private VocabularyTerm getCategoryTerm(final String categoryId)
     {
         final VocabularyTerm categoryTerm = this.ontologyService.getTerm(categoryId);
-        return categoryTerm != null ? categoryTerm : this.ontologyService.getTerm("HP:0000118");
+        return categoryTerm != null ? categoryTerm : this.ontologyService.getTerm(ROOT_ID);
     }
 
     public String display()
