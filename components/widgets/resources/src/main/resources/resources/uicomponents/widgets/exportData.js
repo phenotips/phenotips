@@ -33,6 +33,8 @@ document.observe('xwiki:dom:loading', function() {
             noresults: "$escapetool.javascript($services.localization.render('phenotips.UIXField.genes.noMatches'))",
             resultsParameter : "rows",
             resultValue : 'symbol',
+            resultId : "ensembl_gene_id",
+            forceFirstId : true,
             resultAltName : "alias_symbol",
             tooltip : 'gene-info',
             resultInfo : {}
