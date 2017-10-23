@@ -40,6 +40,12 @@ import javax.inject.Provider;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
+/**
+ * The abstract implementation of the {@link PrimaryEntityResolver} interface.
+ *
+ * @version $Id$
+ * @since 1.4
+ */
 public abstract class AbstractPrimaryEntityResolver implements PrimaryEntityResolver
 {
     @Inject

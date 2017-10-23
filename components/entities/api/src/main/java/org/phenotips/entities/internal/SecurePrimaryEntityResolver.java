@@ -27,21 +27,21 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Default implementation of the {@link PrimaryEntityResolver} component, which uses all the
- * {@link PrimaryEntityManager entity managers} registered in the component manager.
+ * Secure implementation of the {@link PrimaryEntityResolver} interface.
  *
  * @version $Id$
  * @since 1.4
  */
 @Component
+@Named("secure")
 @Singleton
-public class DefaultPrimaryEntityResolver extends AbstractPrimaryEntityResolver
+public class SecurePrimaryEntityResolver extends AbstractPrimaryEntityResolver
 {
     private static final String SECURE = "secure";
 
     @Override
     boolean isValidManager(@Nonnull final PrimaryEntityManager manager)
     {
-        return !manager.getClass().getAnnotation(Named.class).value().endsWith(SECURE);
+        return manager.getClass().getAnnotation(Named.class).value().endsWith(SECURE);
     }
 }

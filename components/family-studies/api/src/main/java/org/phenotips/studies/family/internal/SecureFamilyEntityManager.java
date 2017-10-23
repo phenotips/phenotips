@@ -15,33 +15,44 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.entities.internal;
+package org.phenotips.studies.family.internal;
 
 import org.phenotips.entities.PrimaryEntityManager;
-import org.phenotips.entities.PrimaryEntityResolver;
+import org.phenotips.entities.internal.AbstractPrimaryEntityManager;
+import org.phenotips.studies.family.Family;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.EntityReference;
 
-import javax.annotation.Nonnull;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Default implementation of the {@link PrimaryEntityResolver} component, which uses all the
- * {@link PrimaryEntityManager entity managers} registered in the component manager.
+ * Secure implementation of family data access service using XWiki as the storage backend.
  *
  * @version $Id$
  * @since 1.4
  */
-@Component
+@Named("Family/secure")
+@Component(roles = {PrimaryEntityManager.class})
 @Singleton
-public class DefaultPrimaryEntityResolver extends AbstractPrimaryEntityResolver
+public class SecureFamilyEntityManager extends AbstractPrimaryEntityManager<Family>
 {
-    private static final String SECURE = "secure";
+    @Override
+    protected Class<? extends Family> getEntityClass()
+    {
+        return PhenotipsFamily.class;
+    }
 
     @Override
-    boolean isValidManager(@Nonnull final PrimaryEntityManager manager)
+    public EntityReference getDataSpace()
     {
-        return !manager.getClass().getAnnotation(Named.class).value().endsWith(SECURE);
+        return Family.DATA_SPACE;
+    }
+
+    @Override
+    public String getType()
+    {
+        return "families";
     }
 }

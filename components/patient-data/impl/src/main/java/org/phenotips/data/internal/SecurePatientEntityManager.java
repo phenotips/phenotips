@@ -15,33 +15,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.entities.internal;
+package org.phenotips.data.internal;
 
 import org.phenotips.entities.PrimaryEntityManager;
-import org.phenotips.entities.PrimaryEntityResolver;
 
 import org.xwiki.component.annotation.Component;
 
-import javax.annotation.Nonnull;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Default implementation of the {@link PrimaryEntityResolver} component, which uses all the
- * {@link PrimaryEntityManager entity managers} registered in the component manager.
+ * Secure implementation of patient data access service using XWiki as the storage backend.
  *
  * @version $Id$
  * @since 1.4
  */
-@Component
+@Named("Patient/secure")
+@Component(roles = {PrimaryEntityManager.class})
 @Singleton
-public class DefaultPrimaryEntityResolver extends AbstractPrimaryEntityResolver
+public class SecurePatientEntityManager extends PatientEntityManager
 {
-    private static final String SECURE = "secure";
-
-    @Override
-    boolean isValidManager(@Nonnull final PrimaryEntityManager manager)
-    {
-        return !manager.getClass().getAnnotation(Named.class).value().endsWith(SECURE);
-    }
+    //A secure wrapper around PatientEntityManager. Used for the purpose of finding all managers.
 }

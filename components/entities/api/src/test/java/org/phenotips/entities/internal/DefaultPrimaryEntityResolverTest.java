@@ -37,7 +37,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -99,7 +101,7 @@ public class DefaultPrimaryEntityResolverTest
     @Mock
     private PrimaryEntity family1;
 
-    private PrimaryEntityResolver component;
+    private DefaultPrimaryEntityResolver component;
 
     private DocumentReferenceResolver<String> referenceResolver;
 
@@ -119,7 +121,10 @@ public class DefaultPrimaryEntityResolverTest
 
         this.referenceResolver = this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
 
-        this.component = this.mocker.getComponentUnderTest();
+        this.component = (DefaultPrimaryEntityResolver) spy(this.mocker.getComponentUnderTest());
+
+        doReturn(true).when(this.component).isValidManager(this.familyResolver);
+        doReturn(true).when(this.component).isValidManager(this.patientResolver);
 
         final ComponentManager componentManager = this.mocker.getInstance(ComponentManager.class, "context");
         when(componentManager.getInstanceList(PrimaryEntityManager.class))

@@ -18,19 +18,16 @@
 package org.phenotips.entities.script;
 
 import org.phenotips.entities.PrimaryEntity;
+import org.phenotips.entities.PrimaryEntityManager;
 import org.phenotips.entities.PrimaryEntityResolver;
-import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
-import org.xwiki.users.UserManager;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Allows users to resolve an entity based solely on its identifier.
@@ -45,15 +42,8 @@ public class PrimaryEntityResolverScriptService implements ScriptService
 {
     /** The resolver that will do the actual work. */
     @Inject
+    @Named("secure")
     private PrimaryEntityResolver resolver;
-
-    /** Used for obtaining the current user. */
-    @Inject
-    private UserManager userManager;
-
-    /** Used for checking access rights. */
-    @Inject
-    private AuthorizationService access;
 
     /**
      * Retrieve an entity based on its identifier. For this to work correctly, the {@code entityId} must contain a
@@ -67,10 +57,35 @@ public class PrimaryEntityResolverScriptService implements ScriptService
     @Nullable
     public PrimaryEntity resolve(@Nullable final String entityId)
     {
-        if (StringUtils.isBlank(entityId)) {
+        try {
+            // Blank checks performed by resolver.
+            return this.resolver.resolveEntity(entityId);
+        } catch (final SecurityException e) {
             return null;
         }
+    }
 
-        return null;
+    /**
+     * Retrieves the first {@link PrimaryEntityManager} that is associated with the provided {@code entityType}.
+     *
+     * @param entityType the entity type as string, for example {@code patients}
+     * @return the {@link PrimaryEntityManager} associated with {@code entityType}, or {@code null} if no matching
+     *         {@link PrimaryEntityManager} is available
+     */
+    @Nullable
+    public PrimaryEntityManager getEntityManager(@Nullable final String entityType)
+    {
+        return this.resolver.getEntityManager(entityType);
+    }
+
+    /**
+     * Returns true iff a {@link PrimaryEntityManager} exists for the provided {@code entityType}.
+     *
+     * @param entityType the entity type as string, for example {@code patients}
+     * @return true iff a {@link PrimaryEntityManager} exists for the provided {@code entityType}
+     */
+    public boolean hasEntityManager(@Nullable final String entityType)
+    {
+        return this.resolver.hasEntityManager(entityType);
     }
 }

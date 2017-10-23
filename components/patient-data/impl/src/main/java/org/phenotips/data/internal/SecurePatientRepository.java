@@ -52,7 +52,7 @@ import org.slf4j.Logger;
 @Component(roles = PatientRepository.class)
 @Named("secure")
 @Singleton
-public class SecurePatientRepository implements PatientRepository
+public class SecurePatientRepository extends SecurePatientEntityManager implements PatientRepository
 {
     /** Logging helper object. */
     @Inject
@@ -78,12 +78,6 @@ public class SecurePatientRepository implements PatientRepository
     /** Serializes references to strings. */
     @Inject
     private EntityReferenceSerializer<String> serializer;
-
-    @Override
-    public EntityReference getDataSpace()
-    {
-        return this.internalService.getDataSpace();
-    }
 
     @Override
     public Patient create()
@@ -173,18 +167,6 @@ public class SecurePatientRepository implements PatientRepository
     {
         // If the caller already has access to the document, then it's safe to proceed
         return createSecurePatient(this.internalService.load(document));
-    }
-
-    @Override
-    public String getIdPrefix()
-    {
-        return this.internalService.getIdPrefix();
-    }
-
-    @Override
-    public String getType()
-    {
-        return this.internalService.getType();
     }
 
     @Override

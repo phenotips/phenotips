@@ -6,6 +6,7 @@ org.phenotips.data.events.internal.PatientDeletedEventSource
 org.phenotips.data.events.internal.PatientDeletingEventSource
 org.phenotips.data.internal.GlobalPatientRecordConfigurationModule
 org.phenotips.data.internal.PatientEntityManager
+org.phenotips.data.internal.SecurePatientEntityManager
 org.phenotips.data.internal.PhenoTipsPatientRepository
 org.phenotips.data.internal.SecurePatientRepository
 org.phenotips.data.internal.controller.AdditionalDocumentsController
