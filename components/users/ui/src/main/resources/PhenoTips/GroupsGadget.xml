@@ -120,7 +120,7 @@
       <parameters>priority=50
 column=1
 title={{translation key="phenotips.homepage.groups.title"/}} [[{{translation key="phenotips.homepage.groups.moreGroups"/}}&gt;&gt;Groups.WebHome||class="extra"]]
-enabled=true</parameters>
+enabled=false</parameters>
     </property>
     <property>
       <scope>wiki</scope>
