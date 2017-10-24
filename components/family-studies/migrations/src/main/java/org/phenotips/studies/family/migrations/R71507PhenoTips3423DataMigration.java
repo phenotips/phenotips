@@ -77,6 +77,9 @@ public class R71507PhenoTips3423DataMigration extends AbstractHibernateDataMigra
 
     private static final String PEDIGREECLASS_JSONDATA_KEY = "data";
 
+    // the key used to identify pedigrees in SimpleJSON format, which this migrator can not handle
+    private static final String SIMPLE_JSON_DATA_KEY = "data";
+
     private static final String OLD_PEDIGREE_GRAPH_KEY = "GG";
 
     private static final String OLD_PEDIGREE_RANKS_KEY = "ranks";
@@ -258,15 +261,27 @@ public class R71507PhenoTips3423DataMigration extends AbstractHibernateDataMigra
         }
     }
 
-    private boolean updatePedigree(BaseObject pedigreeXObject, XWikiContext context, String documentName)
+    private boolean updatePedigree(BaseObject pedigreeXObject, XWikiContext context, String docName)
     {
         String oldPedigreeAsText = pedigreeXObject.getStringValue(PEDIGREECLASS_JSONDATA_KEY);
         if (!StringUtils.isEmpty(oldPedigreeAsText)) {
+
+            if (pedigreeIsInSimpleJSONFormat(oldPedigreeAsText)) {
+                this.logger.warn("Skipping conversion for family [{}] - pedigree is in SimpleJSON format", docName);
+                return false;
+            }
+
             String convertedPedigree = this.convertPedigreeData(oldPedigreeAsText);
             pedigreeXObject.set(PEDIGREECLASS_JSONDATA_KEY, convertedPedigree, context);
             return true;
         }
         return false;
+    }
+
+    private boolean pedigreeIsInSimpleJSONFormat(String pedigreeAsText)
+    {
+        JSONObject pedigreeJSON = new JSONObject(pedigreeAsText);
+        return (pedigreeJSON.optJSONArray(SIMPLE_JSON_DATA_KEY) != null);
     }
 
     private String convertPedigreeData(String oldFormatData)
@@ -275,7 +290,7 @@ public class R71507PhenoTips3423DataMigration extends AbstractHibernateDataMigra
 
         this.logger.debug("Old pedigree: [{}]", oldPedigreeData.toString());
 
-        // create  asceleton JSON with all data structures present but blank
+        // create a sceleton JSON with all data structures present but blank
         JSONObject newPedigree = this.createBlankNewPedigreeJSON();
 
         newPedigree.put(PEDIGREE_PROBAND_KEY, oldPedigreeData.optInt(OLD_PEDIGREE_PROBAND_KEY, 0));
