@@ -29,6 +29,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+
 /**
  * Allows users to resolve an entity based solely on its identifier.
  *
@@ -44,6 +46,9 @@ public class PrimaryEntityResolverScriptService implements ScriptService
     @Inject
     @Named("secure")
     private PrimaryEntityResolver resolver;
+
+    @Inject
+    private Logger logger;
 
     /**
      * Retrieve an entity based on its identifier. For this to work correctly, the {@code entityId} must contain a
@@ -61,6 +66,7 @@ public class PrimaryEntityResolverScriptService implements ScriptService
             // Blank checks performed by resolver.
             return this.resolver.resolveEntity(entityId);
         } catch (final SecurityException e) {
+            this.logger.error("Unauthorized access for [{}]", entityId);
             return null;
         }
     }
