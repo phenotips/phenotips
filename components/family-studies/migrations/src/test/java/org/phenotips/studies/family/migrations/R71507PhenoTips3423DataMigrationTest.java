@@ -67,6 +67,9 @@ public class R71507PhenoTips3423DataMigrationTest
 
     private static final String ERROR_UPDATING_DATA = "Error updating pedigree data format for document {}: [{}]";
 
+    private static final String WARNING_SIMPLE_JSON =
+            "Skipping conversion for family [{}] - pedigree is in SimpleJSON format";
+
     private static final String SERIALIZED_ENTITY = "serialized_entity";
 
     private static final String WIKI_ID = "wikiID";
@@ -116,6 +119,10 @@ public class R71507PhenoTips3423DataMigrationTest
         + "`:{},`cancers`:{},`candidateGenes`:{},`carrierGenes`:{}}}},`ranks`:[5,4,3,3,3,2,1,1,1,5,6,7,5,4,3,2,1],`pr"
         + "obandNodeID`:0,`JSON_version`:`1.0`,`positions`:[5,5,5,17,-7,17,17,43,5,20,20,20,31,31,31,31,31],`order`:["
         + "[],[8,6,16,7],[5,15],[4,2,3,14],[1,13],[0,9,12],[10],[11]]}").replace('`', '"');
+
+    private static final String PEDIGREE_SIMPLE_JSON_DATA = ("{`data`:[{`id`:2},{`id`:3},{`mother`:`3`,`phenotipsId`:"
+        + "`P0000001`,`sex`:`U`,`father`:`2`,`id`:1,`proband`:true},{`mother`:3,`phenotipsId`:`P0000003`,`father`:2,`"
+        + "id`:4},{`id`:5},{`mother`:5,`phenotipsId`:`P0000002`,`father`:1,`id`:6}]}").replace('`', '"');
 
     private static final String PEDIGREE_1_MIGRATED_DATA = ("{`layout`:{`relationships`:{`2`:{`x`:5,`order`:1}},`membe"
         + "rs`:{`0`:{`generation`:3,`x`:5,`order`:0},`3`:{`generation`:1,`x`:17,`order`:2},`4`:{`generation`:1,`x`:-7"
@@ -319,6 +326,23 @@ public class R71507PhenoTips3423DataMigrationTest
         verify(this.pedigreeBaseObject1, times(1)).getStringValue(PEDIGREECLASS_JSONDATA_KEY);
 
         verify(this.logger, times(1)).error(eq(ERROR_UPDATING_DATA), eq(FAMILY_1), any());
+        verifyNoMoreInteractions(this.xwiki, this.xDocument1, this.pedigreeBaseObject1);
+    }
+
+    @Test
+    public void doInHibernateDoesNothingWhenPedigreeIsInSimpleJSONFormat() throws XWikiException
+    {
+        when(this.query.list()).thenReturn(Collections.singletonList(FAMILY_1));
+        when(this.pedigreeBaseObject1.getStringValue(PEDIGREECLASS_JSONDATA_KEY))
+            .thenReturn(PEDIGREE_SIMPLE_JSON_DATA);
+
+        this.component.doInHibernate(this.session);
+
+        verify(this.xwiki, times(1)).getDocument(any(DocumentReference.class), any(XWikiContext.class));
+        verify(this.xDocument1, times(1)).getXObject(any(EntityReference.class));
+        verify(this.pedigreeBaseObject1, times(1)).getStringValue(PEDIGREECLASS_JSONDATA_KEY);
+
+        verify(this.logger, times(1)).warn(eq(WARNING_SIMPLE_JSON), eq(FAMILY_1));
         verifyNoMoreInteractions(this.xwiki, this.xDocument1, this.pedigreeBaseObject1);
     }
 
