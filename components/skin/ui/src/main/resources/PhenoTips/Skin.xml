@@ -909,6 +909,11 @@ input.button:disabled, .buttonwrapper button:disabled, input.button:disabled:hov
     background-image: none;
 }
 
+/* Buttons should never break on more than one line; extending a rule from colibri */
+input.button, .buttonwrapper button, .buttonwrapper a:visited, .buttonwrapper a:link, .buttonwrapper a:active {
+  white-space: nowrap;
+}
+
 .add-data-button,
 .buttonwrapper a.add-data-button:link,
 .buttonwrapper a.add-data-button:visited,
