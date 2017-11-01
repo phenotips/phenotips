@@ -39,7 +39,7 @@
   <hidden>false</hidden>
   <content>{{velocity output="false"}}
 #macro (__form_label $propName $cssClass $text)
-   #set($displayedText = "$!{text}")
+   #set($displayedText = "$!{text.trim()}")
    #if ($displayedText == '' &amp;&amp; "$!{propName}" != '')
      #set($displayedText = "$!{class.get($propName).translatedPrettyName}")
    #end
