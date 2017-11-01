@@ -507,31 +507,63 @@ define([
          }
          output += age + "\t" + yob + "\t";
 
-         // TODO: Contralateral breast cancer export/field?
-         var cancerSequence = [ "Breast", "", "Ovarian", "Prostate", "Pancreatic" ];
+         // breast (plus "breast bilateral" column, hardcoded) -> ovarian -> prostate -> pancreatic
+         var cancerSequence = [ "HP:0100013", "HP:0100615", "HP:0100787", "HP:0002894" ];
+
+         // index cancers by id
+         var cancerIndex = {};
+         if (pedigree.GG.properties[i].hasOwnProperty("cancers")) {
+             pedigree.GG.properties[i].cancers.forEach(function(cancer){
+                 cancerIndex[cancer.id] = cancer;
+               });
+         }
 
          var is_affected = false;
          for (var c = 0; c < cancerSequence.length; c++) {
-             cancer = cancerSequence[c];
-             if (cancer == "" || !pedigree.GG.properties[i].hasOwnProperty("cancers")) {
+             cancerID = cancerSequence[c];
+
+             if (!cancerIndex.hasOwnProperty(cancerID)) {
                  output += "0\t";
+                 if (cancerID == "HP:0100013") {
+                     output += "0\t";
+                 }
                  continue;
              }
 
-             if (pedigree.GG.properties[i].cancers.hasOwnProperty(cancer)) {
-                 var cancerData = pedigree.GG.properties[i].cancers[cancer];
-                 if (!cancerData.affected) {
-                     output += "0\t";
-                 } else {
-                     var ageAtDetection = cancerData.hasOwnProperty("numericAgeAtDiagnosis") && (cancerData.numericAgeAtDiagnosis > 0)
-                                          ? cancerData.numericAgeAtDiagnosis : "AU";
-                     output += ageAtDetection.toString() + "\t";
-                     is_affected = true;
-                 }
-             } else {
+             var cancerData = cancerIndex[cancerID];
+             if (!cancerData.affected) {
                  output += "0\t";
+             } else {
+                 is_affected = true;
+
+                 // TODO: in case of multiple occurences, should the first or the last be reported? Add this question as an export option?
+                 // find the earliest age the cancer was diagnosed
+                 var age = "AU";
+                 var minAge = Infinity;
+                 cancerData.qualifiers.forEach(function(qualifier){
+                     if (qualifier.numericAgeAtDiagnosis && qualifier.numericAgeAtDiagnosis < minAge) {
+                         minAge = qualifier.numericAgeAtDiagnosis;
+                     }
+                 });
+                 if (minAge != Infinity) {
+                     age = minAge;
+                 }
+
+                 output += age + "\t";
+
+                 // BOADICEA format has a special handling of breast cancer: an extra column for bilateral cancers
+                 if (cancerID == "HP:0100013") {
+                     var bilateralAge = "0";
+                     cancerData.qualifiers.forEach(function(qualifier){
+                         if (qualifier.laterality == "bi") {
+                             bilateralAge = qualifier.numericAgeAtDiagnosis ? qualifier.numericAgeAtDiagnosis : "AU";
+                         }
+                     });
+                     output += bilateralAge + "\t";
+                 }
              }
          }
+
          if (yob == "0") {
             warnAboutMissingDOB = warnAboutMissingDOB || is_affected;
             warnMissingDOBUnaff = warnMissingDOBUnaff || !is_affected;
@@ -750,20 +782,19 @@ define([
           if (!pedigree.GG.isPerson(i)) continue;
           if (pedigree.GG.isPlaceholder(i)) continue;
 
-          var id = nextUnusedID++;
+          var alternativeId = "";
           if (idGenerationPreference == "external" && pedigree.GG.properties[i].hasOwnProperty("externalID")) {
-              var modifiedExternalID = pedigree.GG.properties[i]["externalID"].replace(/\s/g, '_');
-              if (modifiedExternalID.length > 0) {
-                  nextUnusedID--;
-                  id = modifiedExternalID;
-              }
+              alternativeId = pedigree.GG.properties[i]["externalID"].replace(/\s/g, '');
           } else if (idGenerationPreference == "name" && pedigree.GG.properties[i].hasOwnProperty("fName")) {
-              nextUnusedID--;
-              id = pedigree.GG.properties[i]["fName"].replace(/\s/g, '_');
+              alternativeId = pedigree.GG.properties[i]["fName"].replace(/\s/g, '');
           }
-          id = String(id);
           if (forbidNonAlphaNum) {
-              id = id.replace(/[^A-Za-z0-9]/g, '');  // can't use \W since that allows "_"
+              alternativeId = alternativeId.replace(/[^A-Za-z0-9]/g, '');  // can't use \W since that allows "_"
+          }
+          if (alternativeId.length > 0) {
+              var id = alternativeId;
+          } else {
+              var id = String(nextUnusedID++);
           }
           if (maxLength && id.length > maxLength) {
               id = id.substring(0, maxLength);
