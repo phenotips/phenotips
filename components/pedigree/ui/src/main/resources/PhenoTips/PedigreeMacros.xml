@@ -99,7 +99,7 @@
         &lt;/div&gt;
         #if($patientId)
         &lt;div class="buttonwrapper pedigree-button p-delete"&gt;
-          &lt;a class="action-delete fa fa-remove delete-pedegree button secondary" href="" title="${pDelete}" id="pedigree-delete"&gt;&lt;/a&gt;
+          &lt;a class="action-delete fa fa-remove delete-pedegree button secondary" href="#" title="${pDelete}" id="pedigree-delete"&gt;&lt;/a&gt;
         &lt;/div&gt;
         #end
       #end
