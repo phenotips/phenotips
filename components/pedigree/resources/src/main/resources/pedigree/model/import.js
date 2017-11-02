@@ -451,8 +451,9 @@ define([
             }
 
             var extID = parts[3];
-            if (nameToId.hasOwnProperty(extID))
+            if (nameToId.hasOwnProperty(extID)) {
                 throw "Multiple persons with the same ID [" + extID + "]";
+            }
 
             var genderValue = parts[6];
             var gender = "M";
@@ -460,9 +461,9 @@ define([
               gender = "F";
             }
             var name = parts[1];
-            //if (Helpers.isInt(name)) {
-            //  name = "";
-            //}
+            if (Helpers.isInt(name)) {
+              name = "";
+            }
             var properties = {"gender": gender, "fName": name};
 
             if (saveIDAsExternalID) {
@@ -479,15 +480,6 @@ define([
               properties["dob"] = {"year": parseInt(yob)};
             }
 
-            var addCommentToProperties = function(properties, line) {
-                if (!line || line == "") return;
-                if (!properties.hasOwnProperty("comments")) {
-                    properties["comments"] = line;
-                } else {
-                    properties["comments"] += "\n" + line;
-                }
-            }
-
             // TODO: handle all the columns and proper cancer handling
             //
             // 11: 1BrCa: Age at first breast cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
@@ -495,39 +487,45 @@ define([
             // 13: OvCa:  Age at ovarian cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
             // 14: ProCa: Age at prostate cancer diagnosis 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
             // 15: PanCa: Age at pancreatic cancer diagnosis 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
-            var cancers = [ { "column": 11, "label": "Breast",     "comment": ""},
-                            { "column": 12, "label": "Breast",     "comment": "Contralateral breast cancer", "onlySetComment": true},
-                            { "column": 13, "label": "Ovarian",    "comment": ""},
-                            { "column": 14, "label": "Prostate",   "comment": ""},
-                            { "column": 15, "label": "Pancreatic", "comment": ""} ];
+            var cancers = [ { "column": 11, "cancer": {"id":"HP:0100013", "label":"Breast"} },
+                            { "column": 12, "addQualifierToPreviousCancer": true,
+                                            "qualifier": {"laterality":"bi", "primary":true, "notes": "Contralateral cancer (from BOADICEA)"} },
+                            { "column": 13, "cancer": {"id":"HP:0100615", "label":"Ovarian"} },
+                            { "column": 14, "cancer": {"id":"HP:0100787", "label":"Prostate"} },
+                            { "column": 15, "cancer": {"id":"HP:0002894", "label":"Pancreatic"} } ];
+
+            properties["cancers"] = [];
 
             for (var c = 0; c < cancers.length; c++) {
-                var cancer = cancers[c];
+                var nextCancer = cancers[c];
+                var age = parts[nextCancer["column"]];
 
-                if (!properties.hasOwnProperty("cancers")) {
-                  properties["cancers"] = {};
-                }
+                if (age != "0") {
 
-                var cancerData = {};
-                if (parts[cancer["column"]] == "0") {
-                  if (!cancer.hasOwnProperty("onlySetComment") || !cancer.onlySetComment) {
-                      cancerData["affected"] = false;
+                  if (nextCancer.addQualifierToPreviousCancer) {
+                      var cancerData = properties["cancers"].pop();
+                  } else {
+                      var cancerData = nextCancer["cancer"];
+                      cancerData.affected = true;
+                      cancerData.qualifiers = [];
                   }
-                } else {
-                  cancerData["affected"] = true;
-                  var age = parts[cancer["column"]];
+
+                  var qualifier = nextCancer.qualifier ? nextCancer.qualifier : { "laterality": "", "primary": true, "notes": "(from BOADICEA)" };
+
                   if (Helpers.isInt(age)) {
                       var numericAge = parseInt(age);
-                      cancerData["numericAgeAtDiagnosis"] = numericAge;
                       if (numericAge > 100) {
                           age = "after_100";
                       }
-                      cancerData["ageAtDiagnosis"] = age;
+                      qualifier["numericAgeAtDiagnosis"] = numericAge;
+                      qualifier["ageAtDiagnosis"] = age.toString();
+                  } else {
+                      qualifier["numericAgeAtDiagnosis"] = "";
+                      qualifier["ageAtDiagnosis"] = "";
                   }
-                  addCommentToProperties(properties, cancer["comment"]);
-                }
-                if (!cancer.onlySetComment) {
-                    properties["cancers"][cancer.label] = cancerData;
+
+                  cancerData.qualifiers.push(qualifier);
+                  properties["cancers"].push(cancerData);
                 }
             }
 
@@ -544,8 +542,6 @@ define([
             } else if (mutations == "N") {
                 properties["genes"].push({"gene": "BRCA1", "status": "rejected", "comment": "BOADICEA import"});
                 properties["genes"].push({"gene": "BRCA2", "status": "rejected", "comment": "BOADICEA import"});
-                // TODO: add comments?
-                //addCommentToProperties(properties, "BRCA tested: no mutations");
             }
 
             var ashkenazi = parts[18];

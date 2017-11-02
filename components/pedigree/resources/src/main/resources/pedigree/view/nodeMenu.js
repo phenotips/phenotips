@@ -863,7 +863,30 @@ define([
                 var data = [];
                 _this.form.select('table.cancers-summary-group').each(function(qualifier) {
                     var cancerWidget = qualifier._widget;
-                    cancerWidget.isAffected() && data.push(cancerWidget.getValues());
+                    if (cancerWidget.isAffected()) {
+
+                        var getBestNumericAgeApproximation = function(value) {
+                            if (!value) {
+                                return "";
+                            }
+                            if (isNaN(parseInt(value))) {
+                                if (value.indexOf('after_') > -1) {
+                                    return parseInt(value.replace('after_', '')) + 1;
+                                }
+                                if (value == "before_1") {
+                                    return 0;
+                                }
+                                return parseInt(value.replace('before_', '')) - 9;
+                            }
+                            return parseInt(value);
+                        }
+
+                        var cancerData = cancerWidget.getValues();
+                        cancerData.qualifiers.forEach(function(qualifier) {
+                            qualifier.numericAgeAtDiagnosis = getBestNumericAgeApproximation(qualifier.ageAtDiagnosis);
+                        });
+                        data.push(cancerData);
+                    }
                 });
                 return [ data ];
             };
@@ -898,7 +921,7 @@ define([
                     if (value.indexOf('after_') > -1) {
                         return value.replace('after_', '>');
                     }
-                    if (value.indexOf('before_1') > -1 && value.indexOf('before_10') === -1) {
+                    if (value == "before_1") {
                         return value.replace('before_', '<');
                     }
                     var to = parseInt(value.substring(7));
