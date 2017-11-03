@@ -1098,10 +1098,10 @@
         //Exclude fields that associated with not-granted consents
         var serverfields = this._lastLoginResponse.serverfields.slice();
 
-        for (var i = 0; i < this._lastLoginResponse.consents.length; i++) {
+        for (var i = 0; i &lt; this._lastLoginResponse.consents.length; i++) {
           var nonGrantedFields = this._lastLoginResponse.consents[i].dataFields;
-          for (var j = 0; j < nonGrantedFields.length; j++) {
-            if (serverfields.indexOf(nonGrantedFields[j]) > 0) {
+          for (var j = 0; j &lt; nonGrantedFields.length; j++) {
+            if (serverfields.indexOf(nonGrantedFields[j]) &gt; 0) {
               serverfields.splice(serverfields.indexOf(nonGrantedFields[j]), 1);
             }
           }
