@@ -1033,154 +1033,201 @@
         return url;
     },
 
+    _generateSecondPushDialog: function(parameters) {
+      var _this = this;
+      var pushMulti     = parameters.isMultyPush;
+      var enabledFields = parameters.enabledFields;
+      var url           = parameters.url;
+      var enabledFields = parameters.enabledFields;
+      var pushCallBack  = parameters.pushCallBack;
+      var pushFailCallBack = parameters.pushFailCallBack;
+      var title = parameters.title;
+      var extraClassName = parameters.extraClassName;
 
-    _pushSelectFieldsAndPatients: function() {
-        var _this = this;
+      // =================================================================================
+      // Generate the dialog content
+      new Ajax.Request(url, {
+          parameters : {"enabledFields": enabledFields},
+          onCreate   : function() {
+            _this._pushButton.insert({after: new Element('span', {'class' : "fa fa-lg fa-spinner fa-spin fa-fw"})});
+            _this._pushButton.addClassName('processing');
+            _this._pushButton.disable();
+          },
+          onSuccess  : function(transport) {
+            var dialog = new PhenoTips.widgets.ModalPopup(transport.responseText, false, {'title': title, 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': extraClassName});
+            dialog.showDialog();
+            var content = dialog.dialogBox._x_contentPlug;
+            content.__dialog = dialog;
+            document.fire('xwiki:dom:updated', {'elements': [content],
+                                               'pushPreferences': content,
+                                               'pushMulti': pushMulti,
+                                               'callbackOK': pushCallBack,
+                                               'callbackFail': pushFailCallBack});
+          },
+          onComplete : function() {
+            _this._pushButton.next('.fa-spinner').remove();
+            _this._pushButton.removeClassName('processing');
+            _this._pushButton.enable();
+          }
+      });
+    },
+
+    _preparePushDialogParameters: function(enabledFields) {
+      var _this = this;
+      var parameters = {};
+      parameters.enabledFields = enabledFields;
+
+      if (_this._pushManyPatients) {
+        //-------------- push multiple
+
+        var exportTool = $('phenotips_export');
+        if (!exportTool) return;
+
+        parameters.isMultyPush = true;
+        parameters.url = new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1] + '&amp;push=true&amp;multipatient=true&amp;remoteserver='+this._selectedServer);
+        parameters.title = "$!escapetool.javascript($services.localization.render('phenotips.pushPatient.selectFieldsAndPatientsTitle'))";
+        parameters.extraClassName = 'export-dialog';
+
+        parameters.pushFailCallBack = function() {
+          alert("Failed to get the list of patients to be pushed");
+        }
 
         var doMultiPush = function(patients, columns) {
-            //console &amp;&amp; console.log("Push with params: " + patients + " -&gt; " + columns + " -&gt; " + _this._selectedServer);
-            _this._checkBoxApprove.checked = false;
-            var pushResult = new Element("div", {"class": "multi-push-results infomessage"});
-            _this._pushResultSection.update(pushResult);
+          //console &amp;&amp; console.log("Push with params: " + patients + " -&gt; " + columns + " -&gt; " + _this._selectedServer);
+          _this._checkBoxApprove.checked = false;
+          var pushResult = new Element("div", {"class": "multi-push-results infomessage"});
+          _this._pushResultSection.update(pushResult);
 
-            var next = 0;
-            var pushSingleFunc = function(previousPushResult, prevPatientID) {
-               // display previous push status
-               if (previousPushResult &amp;&amp; prevPatientID) {
-                   if (previousPushResult.status != "success") {
-                       pushResult.className = "multi-push-results errormessage";
-                       if (previousPushResult.cantconnect) {
-                           pushResult.insert(" $!escapetool.javascript($services.localization.render('phenotips.PushPatient.pushFailedCantConnect'))");
-                           return;
-                       }
-                       var reason = "failed.";
-                       if (previousPushResult.invalidguid) {
-                           reason = "$!escapetool.javascript($services.localization.render('phenotips.PushPatient.incorrectGuid'))";
-                       } else if (previousPushResult.accessdeniedguid) {
-                           reason = "$!escapetool.javascript($services.localization.render('phenotips.PushPatient.accessDenied'))";
-                       } else if (previousPushResult.missingconsent) {
-                           reason = "$!escapetool.javascript($services.localization.render('phenotips.PushPatient.pushFailedMissingConsent'))";
-                       }
-                       pushResult.insert(' ' + reason + "&lt;br/&gt;");
-                   } else {
-                       pushResult.innerHTML = pushResult.innerHTML.replace(/Pushing (\w+?)\.\.\.$/, "");
-                       var newURL       = _this._remoteServers[_this._selectedServer].url + previousPushResult.patienturl;
-                       var linkToRemote = "&lt;a href='" + newURL + "' target='_blank'&gt;" + previousPushResult.patientid + "&lt;/a&gt;";
-                       pushResult.insert("&lt;div class='pushed-ok-message'&gt;" + "$!escapetool.javascript($services.localization.render('phenotips.PushPatient.successfulPushWithId'))".replace("__prevPatientID__", prevPatientID).replace("__linkToRemote__", linkToRemote) + "&lt;/div&gt;");
-                   }
-               }
-               // push next
-               if (next &lt; patients.length) {
-                   var nextPatientID = patients[next++];
-                   pushResult.insert("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.pushing'))".replace("__nextPatientID__", nextPatientID));
-                   _this._pushPatient(columns, nextPatientID, pushSingleFunc);
-               }
+          var next = 0;
+          var pushSingleFunc = function(previousPushResult, prevPatientID) {
+            // display previous push status
+            if (previousPushResult &amp;&amp; prevPatientID) {
+              if (previousPushResult.status != "success") {
+                pushResult.className = "multi-push-results errormessage";
+                if (previousPushResult.cantconnect) {
+                  pushResult.insert(" $!escapetool.javascript($services.localization.render('phenotips.PushPatient.pushFailedCantConnect'))");
+                  return;
+                }
+                var reason = "failed.";
+                if (previousPushResult.invalidguid) {
+                  reason = "$!escapetool.javascript($services.localization.render('phenotips.PushPatient.incorrectGuid'))";
+                } else if (previousPushResult.accessdeniedguid) {
+                  reason = "$!escapetool.javascript($services.localization.render('phenotips.PushPatient.accessDenied'))";
+                } else if (previousPushResult.missingconsent) {
+                  reason = "$!escapetool.javascript($services.localization.render('phenotips.PushPatient.pushFailedMissingConsent'))";
+                }
+                pushResult.insert(' ' + reason + "&lt;br/&gt;");
+              } else {
+                pushResult.innerHTML = pushResult.innerHTML.replace(/Pushing (\w+?)\.\.\.$/, "");
+                var newURL       = _this._remoteServers[_this._selectedServer].url + previousPushResult.patienturl;
+                var linkToRemote = "&lt;a href='" + newURL + "' target='_blank'&gt;" + previousPushResult.patientid + "&lt;/a&gt;";
+                pushResult.insert("&lt;div class='pushed-ok-message'&gt;" + "$!escapetool.javascript($services.localization.render('phenotips.PushPatient.successfulPushWithId'))".replace("__prevPatientID__", prevPatientID).replace("__linkToRemote__", linkToRemote) + "&lt;/div&gt;");
+              }
             }
-
-            pushSingleFunc();
-        }
-        var pushCallBack = function(patients, columns) {
-            if (patients.length == 0) {
-                return;
+            // push next
+            if (next &lt; patients.length) {
+              var nextPatientID = patients[next++];
+             pushResult.insert("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.pushing'))".replace("__nextPatientID__", nextPatientID));
+             _this._pushPatient(columns, nextPatientID, pushSingleFunc);
             }
-            var confirmMessage = "$!escapetool.javascript($services.localization.render('phenotips.PushPatient.confirmMessage'))".replace("__numPatients__", patients.length).replace("__selectServer__",  _this._selectedServer)+ "&lt;br/&gt;&lt;div class='plainmessage multi-push-patient-list'&gt;&lt;ol&gt;";
-            patients.each(function(item) {
-                confirmMessage += "&lt;li&gt;" + item + "&lt;/li&gt;";
-            });
-            confirmMessage += "&lt;/ol&gt;&lt;/div&gt;"
+          }
 
-            new XWiki.widgets.ConfirmationBox(
-              { onYes : function() { doMultiPush(patients, columns); }, },
-              { confirmationText: confirmMessage, showCancelButton: false }
-            ).dialog.style.zIndex = 3001;
+          pushSingleFunc();
         }
 
-        //Exclude fields that associated with not-granted consents
-        var serverfields = this._lastLoginResponse.serverfields.slice();
+        parameters.pushCallBack = function(patients, columns) {
+          if (patients.length == 0) {
+            return;
+          }
+          var confirmMessage = "$!escapetool.javascript($services.localization.render('phenotips.PushPatient.confirmMessage'))".replace("__numPatients__", patients.length).replace("__selectServer__",  _this._selectedServer)+ "&lt;br/&gt;&lt;div class='plainmessage multi-push-patient-list'&gt;&lt;ol&gt;";
+          patients.each(function(item) {
+            confirmMessage += "&lt;li&gt;" + item + "&lt;/li&gt;";
+          });
+          confirmMessage += "&lt;/ol&gt;&lt;/div&gt;"
 
-        for (var i = 0; i &lt; this._lastLoginResponse.consents.length; i++) {
-          var nonGrantedFields = this._lastLoginResponse.consents[i].dataFields;
+          new XWiki.widgets.ConfirmationBox(
+            { onYes : function() { doMultiPush(patients, columns); }, },
+            { confirmationText: confirmMessage, showCancelButton: false }
+          ).dialog.style.zIndex = 3001;
+        }
+      } else {
+        //-------------- push single
+
+        parameters.isMultyPush = false;
+        parameters.url = new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'push=true&amp;singlepatient=false&amp;remoteserver='+this._selectedServer);
+        parameters.title = "$!escapetool.javascript($services.localization.render('phenotips.pushPatient.selectFieldsTitle'))";
+        parameters.extraClassName = 'narrow-export-dialog export-dialog';
+
+        parameters.pushFailCallBack = function() {
+          alert("Failed to get the list of fields to be pushed");
+        }
+
+        parameters.pushCallBack = function(columns) {
+          _this._pushPatient(columns);
+        }
+      }
+
+      return parameters;
+    },
+
+    // 1. Exclude fields that associated with not-granted consents
+    // - Remote: whose corresponding checkboxes are un-checked
+    // - Local: If pushing single patient, exclude consents that were not granted by the user for that patient (from top of the patient form, consent section)
+    // 2. Prepare parameters for second push dialog and call dialog generator
+    _pushSelectFieldsAndPatients: function() {
+      var _this = this;
+
+      var enabledFields = this._lastLoginResponse.serverfields.slice();
+
+      // Exclude remote non-granted consent data fields
+      var grantedRemoteConcents = this._consentsModule.listGrantedConsentIDs();
+      for (var i = 0; i &lt; this._lastLoginResponse.consents.length; i++) {
+        // if remote concent granted - skip it, do not exclute its dataFields from push dialog
+        if (grantedRemoteConcents.indexOf(this._lastLoginResponse.consents[i].id) &gt; 0) {
+          continue;
+        }
+        var nonGrantedFields = this._lastLoginResponse.consents[i].dataFields;
+        if (nonGrantedFields &amp;&amp; nonGrantedFields.length &gt; 0) {
           for (var j = 0; j &lt; nonGrantedFields.length; j++) {
-            if (serverfields.indexOf(nonGrantedFields[j]) &gt; 0) {
-              serverfields.splice(serverfields.indexOf(nonGrantedFields[j]), 1);
+            if (enabledFields.indexOf(nonGrantedFields[j]) &gt; 0) {
+              enabledFields.splice(enabledFields.indexOf(nonGrantedFields[j]), 1);
             }
           }
         }
+      }
 
-        if (_this._pushManyPatients) {
-          //-------------- push multiple
-          var exportTool = $('phenotips_export');
-          if (!exportTool) return;
+      var pushParameters = _this._preparePushDialogParameters(enabledFields);
 
-          var pushPreferencesFail = function() {
-            alert("Failed to get the list of patients to be pushed");
-          }
+      if (_this._pushManyPatients) {
+        _this._generateSecondPushDialog(pushParameters);
+      } else {
+      //-------------- push single
 
-          // =================================================================================
-          // Generate the dialog content
-          new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1] + '&amp;push=true&amp;multipatient=true&amp;remoteserver='+this._selectedServer), {
-            parameters : {"enabledFields": this._lastLoginResponse.serverfields},
-            onCreate : function() {
-              _this._pushButton.insert({after: new Element('span', {'class' : "fa fa-lg fa-spinner fa-spin fa-fw"})});
-              _this._pushButton.addClassName('processing');
-              _this._pushButton.disable();
-            },
-            onSuccess: function(transport) {
-              var dialog = new PhenoTips.widgets.ModalPopup(transport.responseText, false, {'title': "$!escapetool.javascript($services.localization.render('phenotips.pushPatient.selectFieldsAndPatientsTitle'))", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
-              dialog.showDialog();
-              var content = dialog.dialogBox._x_contentPlug;
-              content.__dialog = dialog;
-              document.fire('xwiki:dom:updated', {'elements': [content],
-                                                  'pushPreferences': content,
-                                                  'pushMulti': true,
-                                                  'callbackOK': pushCallBack,
-                                                  'callbackFail': pushPreferencesFail});
-            },
-            onComplete : function() {
-              _this._pushButton.next('.fa-spinner').remove();
-              _this._pushButton.removeClassName('processing');
-              _this._pushButton.enable();
+        // Get local concents via REST and Exclude non-granted consent data fields
+        new Ajax.Request(XWiki.contextPath + "/rest/patients/" + _this._patientId + "/consents?method=get", {
+          onSuccess  : function(response) {
+            var consents = response.responseJSON;
+            if (!consents || consents.length == 0) {
+              return;
             }
-          });
-        } else {
-          //-------------- push single
-
-          var singlePushPreferencesFail = function() {
-            alert("Failed to get the list of fields to be pushed");
-          }
-
-          var singlePushCallBack = function(columns) {
-            _this._pushPatient(columns);
-          }
-
-          // =================================================================================
-          // Generate the dialog content
-          new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'push=true&amp;singlepatient=false&amp;remoteserver='+this._selectedServer), {
-            parameters : {"enabledFields": this._lastLoginResponse.serverfields},
-            onCreate : function() {
-              _this._pushButton.insert({after: new Element('span', {'class' : "fa fa-lg fa-spinner fa-spin fa-fw"})});
-              _this._pushButton.addClassName('processing');
-              _this._pushButton.disable();
-            },
-            onSuccess: function(transport) {
-              var dialog = new PhenoTips.widgets.ModalPopup(transport.responseText, false, {'title': "$!escapetool.javascript($services.localization.render('phenotips.pushPatient.selectFieldsTitle'))", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'narrow-export-dialog export-dialog'});
-              dialog.showDialog();
-              var content = dialog.dialogBox._x_contentPlug;
-              content.__dialog = dialog;
-              document.fire('xwiki:dom:updated', {'elements': [content],
-                                                  'pushPreferences': content,
-                                                  'pushMulti': false,
-                                                  'callbackOK': singlePushCallBack,
-                                                  'callbackFail': singlePushPreferencesFail});
-            },
-            onComplete : function() {
-              _this._pushButton.next('.fa-spinner').remove();
-              _this._pushButton.removeClassName('processing');
-              _this._pushButton.enable();
+            // if local consent not granted - exclude data fileds from showing in push dialog
+            for (var i = 0; i &lt; consents.length; i++) {
+              if (consents[i].status == "yes" || !consents[i].dataFields || consents[i].dataFields.length == 0) {
+                continue;
+              }
+              var nonGrantedFields = consents[i].dataFields;
+              for (var j = 0; j &lt; nonGrantedFields.length; j++) {
+                if (pushParameters.enabledFields.indexOf(nonGrantedFields[j]) &gt; 0) {
+                  pushParameters.enabledFields.splice(pushParameters.enabledFields.indexOf(nonGrantedFields[j]), 1);
+                }
+              }
             }
-          });
-
-        }
+          },
+          onComplete : function() {
+            _this._generateSecondPushDialog(pushParameters);
+          }.bind(_this)
+        });
+      }
     }
 
   });

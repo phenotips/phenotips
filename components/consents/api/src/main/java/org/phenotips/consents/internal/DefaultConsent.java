@@ -95,7 +95,7 @@ public class DefaultConsent implements Consent
         this.label = consentJSON.optString(JSON_KEY_LABEL);
         this.description = processDescription(consentJSON.optString(JSON_KEY_DESCRIPTION));
         this.required = consentJSON.optBoolean(JSON_KEY_ISREQUIRED);
-        setStatus(ConsentStatus.fromString(consentJSON.optString(JSON_KEY_ISREQUIRED)));
+        setStatus(ConsentStatus.fromString(consentJSON.optString(JSON_KEY_STATUS)));
         JSONArray dFields = consentJSON.optJSONArray(JSON_KEY_DATAFIELDS);
         JSONArray fields = consentJSON.optJSONArray(JSON_KEY_FIELDS);
         if (fields == null) {
@@ -118,7 +118,7 @@ public class DefaultConsent implements Consent
     }
 
     /**
-     * Converts empty descripton to null for consistency.
+     * Converts empty description to null for consistency.
      */
     private static String processDescription(String rawDescription)
     {
