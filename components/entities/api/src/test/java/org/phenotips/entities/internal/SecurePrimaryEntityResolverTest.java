@@ -45,9 +45,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link DefaultPrimaryEntityResolver}.
+ * Unit tests for {@link SecurePrimaryEntityResolver}.
  */
-public class DefaultPrimaryEntityResolverTest
+public class SecurePrimaryEntityResolverTest
 {
     private static final String XWIKI = "xwiki";
 
@@ -87,13 +87,13 @@ public class DefaultPrimaryEntityResolverTest
 
     @Rule
     public final MockitoComponentMockingRule<PrimaryEntityResolver> mocker =
-        new MockitoComponentMockingRule<>(DefaultPrimaryEntityResolver.class);
+        new MockitoComponentMockingRule<>(SecurePrimaryEntityResolver.class);
 
     @Mock
     private PrimaryEntityManager familyResolver;
 
     @Mock
-    private PrimaryEntityManager patientResolver;
+    private PrimaryEntityManager securePatientResolver;
 
     @Mock
     private PrimaryEntity patient1;
@@ -101,7 +101,7 @@ public class DefaultPrimaryEntityResolverTest
     @Mock
     private PrimaryEntity family1;
 
-    private DefaultPrimaryEntityResolver component;
+    private SecurePrimaryEntityResolver component;
 
     private DocumentReferenceResolver<String> referenceResolver;
 
@@ -111,24 +111,24 @@ public class DefaultPrimaryEntityResolverTest
         MockitoAnnotations.initMocks(this);
 
         when(this.familyResolver.getIdPrefix()).thenReturn(FAMILY_ID_PREFIX);
-        when(this.patientResolver.getIdPrefix()).thenReturn(PATIENT_ID_PREFIX);
+        when(this.securePatientResolver.getIdPrefix()).thenReturn(PATIENT_ID_PREFIX);
 
         when(this.familyResolver.getType()).thenReturn(FAMILIES);
-        when(this.patientResolver.getType()).thenReturn(PATIENTS);
+        when(this.securePatientResolver.getType()).thenReturn(PATIENTS);
 
         when(this.familyResolver.get(FAMILY_1_ID)).thenReturn(this.family1);
-        when(this.patientResolver.get(PATIENT_1_ID)).thenReturn(this.patient1);
+        when(this.securePatientResolver.get(PATIENT_1_ID)).thenReturn(this.patient1);
 
         this.referenceResolver = this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
 
-        this.component = (DefaultPrimaryEntityResolver) spy(this.mocker.getComponentUnderTest());
+        this.component = (SecurePrimaryEntityResolver) spy(this.mocker.getComponentUnderTest());
 
-        doReturn(true).when(this.component).isValidManager(this.familyResolver);
-        doReturn(true).when(this.component).isValidManager(this.patientResolver);
+        doReturn(false).when(this.component).isValidManager(this.familyResolver);
+        doReturn(true).when(this.component).isValidManager(this.securePatientResolver);
 
         final ComponentManager componentManager = this.mocker.getInstance(ComponentManager.class, "context");
         when(componentManager.getInstanceList(PrimaryEntityManager.class))
-            .thenReturn(Arrays.asList(this.familyResolver, this.patientResolver));
+            .thenReturn(Arrays.asList(this.familyResolver, this.securePatientResolver));
 
         when(this.referenceResolver.resolve(PATIENT_2_ID)).thenReturn(P002);
         when(this.referenceResolver.resolve(PATIENT_1_ID)).thenReturn(P001);
@@ -167,16 +167,16 @@ public class DefaultPrimaryEntityResolverTest
     {
         Assert.assertNull(this.component.resolveEntity(INVALID_ID));
         verify(this.familyResolver, never()).get(anyString());
-        verify(this.patientResolver, never()).get(anyString());
+        verify(this.securePatientResolver, never()).get(anyString());
         Assert.assertNull(this.component.resolveEntity(NUMERIC_ID));
         verify(this.familyResolver, never()).get(anyString());
-        verify(this.patientResolver, never()).get(anyString());
+        verify(this.securePatientResolver, never()).get(anyString());
         Assert.assertNull(this.component.resolveEntity(PATIENT_ID_PREFIX));
         verify(this.familyResolver, never()).get(anyString());
-        verify(this.patientResolver, never()).get(anyString());
+        verify(this.securePatientResolver, never()).get(anyString());
         Assert.assertNull(this.component.resolveEntity(FAMILY_ID_PREFIX));
         verify(this.familyResolver, never()).get(anyString());
-        verify(this.patientResolver, never()).get(anyString());
+        verify(this.securePatientResolver, never()).get(anyString());
     }
 
     @Test
@@ -184,25 +184,24 @@ public class DefaultPrimaryEntityResolverTest
     {
         Assert.assertNull(this.component.resolveEntity(NONEXISTENT_ID));
         verify(this.familyResolver, never()).get(anyString());
-        verify(this.patientResolver, never()).get(anyString());
+        verify(this.securePatientResolver, never()).get(anyString());
     }
 
     @Test
-    public void resolveEntityReturnsNullWhenNonSecurePrimaryEntityManagerDoesNotExistForRequestedEntityType()
+    public void resolveEntityReturnsNullWhenExistingPrimaryEntityManagerIsNotSecure()
     {
-        doReturn(false).when(this.component).isValidManager(this.patientResolver);
-        Assert.assertNull(this.component.resolveEntity(PATIENT_1_ID));
-        verify(this.patientResolver, never()).get(anyString());
-        // Called during second lookup attempt.
-        verify(this.familyResolver, times(1)).get(anyString());
+        Assert.assertNull(this.component.resolveEntity(FAMILY_1_ID));
+        verify(this.familyResolver, never()).get(anyString());
+        // Attempted during the second lookup.
+        verify(this.securePatientResolver, times(1)).get(anyString());
     }
 
     @Test
     public void resolveEntityReturnsNullWhenRepositoryDoesNotHaveEntity()
     {
         Assert.assertNull(this.component.resolveEntity(PATIENT_2_ID));
-        verify(this.familyResolver, times(1)).get(anyString());
-        verify(this.patientResolver, times(1)).get(PATIENT_2_ID);
+        verify(this.familyResolver, never()).get(anyString());
+        verify(this.securePatientResolver, times(1)).get(PATIENT_2_ID);
     }
 
     @Test
@@ -210,15 +209,7 @@ public class DefaultPrimaryEntityResolverTest
     {
         Assert.assertEquals(this.patient1, this.component.resolveEntity(PATIENT_1_ID));
         verify(this.familyResolver, never()).get(anyString());
-        verify(this.patientResolver, times(1)).get(PATIENT_1_ID);
-    }
-
-    @Test
-    public void resolveEntityReturnsCorrectEntityWhenFamilyIdIsValid()
-    {
-        Assert.assertEquals(this.family1, this.component.resolveEntity(FAMILY_1_ID));
-        verify(this.familyResolver, times(1)).get(FAMILY_1_ID);
-        verify(this.patientResolver, never()).get(anyString());
+        verify(this.securePatientResolver, times(1)).get(PATIENT_1_ID);
     }
 
     @Test
@@ -246,10 +237,14 @@ public class DefaultPrimaryEntityResolverTest
     }
 
     @Test
+    public void getEntityManagerReturnsNullWhenEntityTypeDoesNotHaveASecureManagerAssociatedWithIt()
+    {
+        Assert.assertNull(this.component.getEntityManager(FAMILIES));
+    }
+    @Test
     public void getEntityManagerReturnsCorrectManagerForEntityType()
     {
-        Assert.assertEquals(this.familyResolver, this.component.getEntityManager(FAMILIES));
-        Assert.assertEquals(this.patientResolver, this.component.getEntityManager(PATIENTS));
+        Assert.assertEquals(this.securePatientResolver, this.component.getEntityManager(PATIENTS));
     }
 
     @Test
@@ -271,6 +266,12 @@ public class DefaultPrimaryEntityResolverTest
     }
 
     @Test
+    public void hasEntityManagerReturnsFalseIfEntityTypeHasNoSecureManager()
+    {
+        Assert.assertFalse(this.component.hasEntityManager(FAMILIES));
+    }
+
+    @Test
     public void hasEntityManagerReturnsFalseIfEntityTypeIsInvalid()
     {
         Assert.assertFalse(this.component.hasEntityManager(WRONG));
@@ -279,7 +280,6 @@ public class DefaultPrimaryEntityResolverTest
     @Test
     public void hasEntityManagerReturnsTrueIfEntityTypeIsValid()
     {
-        Assert.assertTrue(this.component.hasEntityManager(FAMILIES));
         Assert.assertTrue(this.component.hasEntityManager(PATIENTS));
     }
 }

@@ -19,26 +19,13 @@ package org.phenotips.data.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
-import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.EntityReference;
-import org.xwiki.model.reference.EntityReferenceResolver;
-import org.xwiki.model.reference.EntityReferenceSerializer;
-import org.xwiki.security.authorization.Right;
-import org.xwiki.users.User;
-import org.xwiki.users.UserManager;
 
-import java.util.Iterator;
-
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import org.slf4j.Logger;
 
 /**
  * Secure implementation of patient data access service which checks the user's access rights before performing an
@@ -52,65 +39,12 @@ import org.slf4j.Logger;
 @Component(roles = PatientRepository.class)
 @Named("secure")
 @Singleton
-public class SecurePatientRepository implements PatientRepository
+public class SecurePatientRepository extends SecurePatientEntityManager implements PatientRepository
 {
-    /** Logging helper object. */
-    @Inject
-    private Logger logger;
-
-    /** Used for checking access rights. */
-    @Inject
-    private AuthorizationService access;
-
-    /** Used for obtaining the current user. */
-    @Inject
-    private UserManager userManager;
-
-    /** Wrapped trusted API, doing the actual work. */
-    @Inject
-    private PatientRepository internalService;
-
-    /** Fills in missing reference fields with those from the current context document to create a full reference. */
-    @Inject
-    @Named("current")
-    private EntityReferenceResolver<EntityReference> currentResolver;
-
-    /** Serializes references to strings. */
-    @Inject
-    private EntityReferenceSerializer<String> serializer;
-
-    @Override
-    public EntityReference getDataSpace()
-    {
-        return this.internalService.getDataSpace();
-    }
-
-    @Override
-    public Patient create()
-    {
-        return create(this.userManager.getCurrentUser());
-    }
-
     @Override
     public synchronized Patient createNewPatient()
     {
         return create();
-    }
-
-    @Override
-    public Patient create(DocumentReference creator)
-    {
-        return create(this.userManager.getUser(this.serializer.serialize(creator)));
-    }
-
-    private Patient create(User creator)
-    {
-        if (this.access.hasAccess(creator, Right.EDIT,
-            this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
-            Patient patient = this.internalService.create(creator != null ? creator.getProfileDocument() : null);
-            return createSecurePatient(patient);
-        }
-        throw new SecurityException("User not authorized to create new patients");
     }
 
     @Override
@@ -120,30 +54,9 @@ public class SecurePatientRepository implements PatientRepository
     }
 
     @Override
-    public Patient get(String id)
-    {
-        Patient patient = this.internalService.get(id);
-        return checkAccess(patient, this.userManager.getCurrentUser());
-    }
-
-    @Override
     public Patient getPatientById(String id)
     {
         return get(id);
-    }
-
-    @Override
-    public Patient get(DocumentReference reference)
-    {
-        Patient patient = this.internalService.get(reference);
-        return checkAccess(patient, this.userManager.getCurrentUser());
-    }
-
-    @Override
-    public Patient getByName(String name)
-    {
-        Patient patient = this.internalService.getByName(name);
-        return checkAccess(patient, this.userManager.getCurrentUser());
     }
 
     @Override
@@ -153,93 +66,15 @@ public class SecurePatientRepository implements PatientRepository
     }
 
     @Override
-    public Iterator<Patient> getAll()
-    {
-        Iterator<Patient> patientsIterator = this.internalService.getAll();
-        return new SecurePatientIterator(patientsIterator, this.access, this.userManager.getCurrentUser());
-    }
-
-    @Override
-    public boolean delete(Patient patient)
-    {
-        if (checkAccess(Right.DELETE, patient, this.userManager.getCurrentUser()) != null) {
-            this.internalService.delete(patient);
-        }
-        return false;
-    }
-
-    @Override
-    public Patient load(DocumentModelBridge document) throws IllegalArgumentException
-    {
-        // If the caller already has access to the document, then it's safe to proceed
-        return createSecurePatient(this.internalService.load(document));
-    }
-
-    @Override
-    public String getIdPrefix()
-    {
-        return this.internalService.getIdPrefix();
-    }
-
-    @Override
-    public String getType()
-    {
-        return this.internalService.getType();
-    }
-
-    @Override
     public Patient loadPatientFromDocument(DocumentModelBridge document)
     {
         return load(document);
     }
 
-    private Patient checkAccess(Patient patient, User user)
-    {
-        return checkAccess(Right.VIEW, patient, user);
-    }
-
-    private Patient checkAccess(Right right, Patient patient, User user)
-    {
-        if (patient != null && this.access.hasAccess(user, right, patient.getDocumentReference())) {
-            return createSecurePatient(patient);
-        } else if (patient != null) {
-            this.logger.warn("Illegal access requested for patient [{}] by user [{}]", patient.getId(), user);
-            throw new SecurityException("Unauthorized access");
-        }
-        return null;
-    }
-
     @Override
     public boolean deletePatient(String id)
     {
-        if (this.access.hasAccess(this.userManager.getCurrentUser(), Right.DELETE,
-            this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
-            return this.internalService.deletePatient(id);
-        }
-        this.logger.warn("Illegal delete action requested for patient [{}] by user [{}]", id,
-            this.userManager.getCurrentUser());
-        throw new SecurityException("User not authorized to delete a patient");
-    }
-
-    /**
-     * Returns a SecurePatient wrapper around a given patient.
-     *
-     * TODO: Modify testing/change this method? The method is added and is made protected
-     *       for the sole purpose of simplifying testing and mocking:
-     *       - it is hard to test what patient is returned by the iterator if
-     *         "new SecurePatient(patient)" is used directly, since constructor can't be mocked,
-     *         and correctly mocking all dependencies to actually mock patient creation is hard.
-     *       - another "correct" way is to use some kind of SecurePatient factory, but static methods
-     *         can't be mocked as well, and a non-static method does not make sense
-     *
-     * @param patient a patient object
-     * @return a SecurePatient wrapper around the given patient
-     */
-    protected SecurePatient createSecurePatient(Patient patient)
-    {
-        if (patient == null) {
-            return null;
-        }
-        return new SecurePatient(patient);
+        final Patient patient = get(id);
+        return delete(patient);
     }
 }
