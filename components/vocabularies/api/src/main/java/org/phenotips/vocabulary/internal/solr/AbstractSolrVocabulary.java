@@ -24,6 +24,7 @@ import org.phenotips.vocabulary.VocabularyInputTerm;
 import org.phenotips.vocabulary.VocabularySourceRelocationService;
 import org.phenotips.vocabulary.VocabularyTerm;
 
+import org.xwiki.cache.Cache;
 import org.xwiki.component.phase.InitializationException;
 
 import java.io.IOException;
@@ -120,6 +121,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary
     {
         Map<String, VocabularyTerm> rawResult = new HashMap<>();
         StringBuilder query = new StringBuilder("id:(");
+        Cache<VocabularyTerm> cache = this.externalServicesAccess.getTermCache(getCoreName());
         for (String id : ids) {
             VocabularyTerm cachedTerm = this.externalServicesAccess.getTermCache(getCoreName()).get(id);
             if (cachedTerm != null) {
@@ -136,7 +138,12 @@ public abstract class AbstractSolrVocabulary implements Vocabulary
         // There's at least one more term not found in the cache
         if (query.length() > 5) {
             for (SolrDocument doc : this.search(new SolrQuery(query.toString()))) {
-                VocabularyTerm term = new SolrVocabularyTerm(doc, this);
+                String id = (String) doc.getFieldValue(ID_FIELD_NAME);
+                VocabularyTerm term = cache.get(id);
+                if (term == null) {
+                    term = new SolrVocabularyTerm(doc, this);
+                    cache.set(id, term);
+                }
                 rawResult.put(term.getId(), term);
             }
         }
