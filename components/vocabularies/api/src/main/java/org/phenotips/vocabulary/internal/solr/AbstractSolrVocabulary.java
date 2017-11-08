@@ -302,7 +302,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary
         } catch (Exception ex) {
             this.logger.error("Failed to search: {}", ex.getMessage(), ex);
         }
-        return null;
+        return new SolrDocumentList();
     }
 
     /**
