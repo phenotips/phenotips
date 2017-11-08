@@ -23,7 +23,6 @@ import org.phenotips.vocabulary.VocabularyExtension;
 import org.phenotips.vocabulary.VocabularyInputTerm;
 import org.phenotips.vocabulary.VocabularyTerm;
 
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -222,7 +221,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary
             this.logger.debug("Extending query [{}] for vocabulary [{}]", query, getCoreName());
             for (VocabularyExtension extension : this.extensions.get()) {
                 if (extension.isVocabularySupported(this)) {
-                     try {
+                    try {
                         extension.extendQuery(query, this);
                     } catch (Exception e) {
                         this.logger.error("Failed to extend query with vocabulary: {}", extension.toString());
