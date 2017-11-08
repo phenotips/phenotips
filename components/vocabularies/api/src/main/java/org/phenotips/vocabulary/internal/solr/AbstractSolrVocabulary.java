@@ -277,7 +277,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary
             this.logger.debug("Extending query [{}] for vocabulary [{}]", query, getCoreName());
             for (VocabularyExtension extension : this.extensions.get()) {
                 if (extension.isVocabularySupported(this)) {
-                     try {
+                    try {
                         extension.extendQuery(query, this);
                     } catch (Exception e) {
                         this.logger.error("Failed to extend query with vocabulary: {}", extension.toString());
