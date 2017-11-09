@@ -91,6 +91,9 @@ define([
             var properties = {};
             if (nextPerson.hasOwnProperty("pedigreeProperties") && typeof nextPerson.pedigreeProperties == 'object') {
                 properties = nextPerson.pedigreeProperties;
+                if (!properties.gender) {
+                    properties.gender = "U";
+                }
             }
 
             var nodeID = newG._addVertex( null, BaseGraph.TYPE.PERSON, properties, {} );
