@@ -382,7 +382,7 @@
   {
     "type"       : "section",
     "title"      : "Complicaciones perinatales",
-    "categories" : ["HP:0000118"],
+    "categories" : ["HP:0000001"],
     "data"       : [
       {"id" : "HP:0002643"},
       {"id" : "HP:0006579"},
