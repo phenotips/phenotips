@@ -39,7 +39,11 @@ public class DefaultConsentTest
 
     private static final List<String> FORM_FIELDS = Arrays.asList("field1", "field2", "field3");
 
+    private static final List<String> DATA_FIELDS = Arrays.asList("field1", "field2", "field3");
+
     private static final List<String> FORM_FIELDS_ALL = new LinkedList<>();
+
+    private static final List<String> DATA_FIELDS_ALL = new LinkedList<>();
 
     private static final String EXCLUDED_FIELD = "field4";
 
@@ -47,17 +51,21 @@ public class DefaultConsentTest
     public void testNormalInitialization()
     {
         boolean required = true;
-        Consent consent = new DefaultConsent(ID_STRING, LABEL_STRING, DESCRIPTION_STRING, required, null);
+        Consent consent = new DefaultConsent(ID_STRING, LABEL_STRING, DESCRIPTION_STRING, required, null, null);
         Assert.assertSame(consent.getId(), ID_STRING);
         Assert.assertSame(consent.getLabel(), LABEL_STRING);
         Assert.assertSame(consent.getDescription(), DESCRIPTION_STRING);
         Assert.assertSame(consent.isRequired(), required);
         Assert.assertSame(consent.getStatus(), ConsentStatus.NOT_SET);
+        Assert.assertSame(consent.getDataFields(), null);
         Assert.assertSame(consent.getFields(), null);
 
         // test normal initialization with no long description and with some fields
-        Consent consent2 = new DefaultConsent(ID_STRING, LABEL_STRING, null, required, FORM_FIELDS);
+        Consent consent2 = new DefaultConsent(ID_STRING, LABEL_STRING, null, required, DATA_FIELDS, FORM_FIELDS);
         Assert.assertSame(consent2.getLabel(), LABEL_STRING);
+        for (int i = 0; i < DATA_FIELDS.size(); ++i) {
+            Assert.assertTrue(consent2.getDataFields().contains(DATA_FIELDS.get(i)));
+        }
         for (int i = 0; i < FORM_FIELDS.size(); ++i) {
             Assert.assertTrue(consent2.getFields().contains(FORM_FIELDS.get(i)));
         }
@@ -67,40 +75,42 @@ public class DefaultConsentTest
     @Test(expected = IllegalArgumentException.class)
     public void testImproperInitializationWhenIdIsNull()
     {
-        new DefaultConsent(null, LABEL_STRING, DESCRIPTION_STRING, true, null);
+        new DefaultConsent(null, LABEL_STRING, DESCRIPTION_STRING, true, null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testImproperInitializationWhenIdIsEmpty()
     {
-        new DefaultConsent("", LABEL_STRING, DESCRIPTION_STRING, true, null);
+        new DefaultConsent("", LABEL_STRING, DESCRIPTION_STRING, true, null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testImproperInitializationWhenLabelIsNull()
     {
-        new DefaultConsent(ID_STRING, null, DESCRIPTION_STRING, true, null);
+        new DefaultConsent(ID_STRING, null, DESCRIPTION_STRING, true, null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testImproperInitializationWhenLabelIsEmpty()
     {
-        new DefaultConsent(ID_STRING, "", DESCRIPTION_STRING, true, null);
+        new DefaultConsent(ID_STRING, "", DESCRIPTION_STRING, true, null, null);
     }
 
     @Test
     public void fieldFunctionsWork()
     {
         boolean required = false;
-        Consent consent1 = new DefaultConsent(ID_STRING, LABEL_STRING, DESCRIPTION_STRING, required, FORM_FIELDS);
+        Consent consent1 =
+            new DefaultConsent(ID_STRING, LABEL_STRING, DESCRIPTION_STRING, required, DATA_FIELDS, FORM_FIELDS);
         Assert.assertFalse(consent1.affectsAllFields());
         Assert.assertTrue(consent1.affectsSomeFields());
 
-        Consent consent2 = new DefaultConsent(ID_STRING, LABEL_STRING, DESCRIPTION_STRING, required, FORM_FIELDS_ALL);
+        Consent consent2 =
+            new DefaultConsent(ID_STRING, LABEL_STRING, DESCRIPTION_STRING, required, DATA_FIELDS_ALL, FORM_FIELDS_ALL);
         Assert.assertTrue(consent2.affectsAllFields());
         Assert.assertTrue(consent2.affectsSomeFields());
 
-        Consent consent3 = new DefaultConsent(ID_STRING, LABEL_STRING, DESCRIPTION_STRING, required, null);
+        Consent consent3 = new DefaultConsent(ID_STRING, LABEL_STRING, DESCRIPTION_STRING, required, null, null);
         Assert.assertFalse(consent3.affectsAllFields());
         Assert.assertFalse(consent3.affectsSomeFields());
     }
@@ -108,7 +118,7 @@ public class DefaultConsentTest
     @Test
     public void setStatusChangesStatus()
     {
-        Consent consent = new DefaultConsent(ID_STRING, LABEL_STRING, DESCRIPTION_STRING, false, null);
+        Consent consent = new DefaultConsent(ID_STRING, LABEL_STRING, DESCRIPTION_STRING, false, null, null);
         consent.setStatus(ConsentStatus.NO);
         Assert.assertSame(consent.getStatus(), ConsentStatus.NO);
         consent.setStatus(ConsentStatus.YES);
@@ -120,7 +130,8 @@ public class DefaultConsentTest
     {
         ConsentStatus status = ConsentStatus.NO;
         boolean required = false;
-        Consent original = new DefaultConsent(ID_STRING, LABEL_STRING, DESCRIPTION_STRING, required, FORM_FIELDS);
+        Consent original =
+            new DefaultConsent(ID_STRING, LABEL_STRING, DESCRIPTION_STRING, required, DATA_FIELDS, FORM_FIELDS);
         original.setStatus(status);
         Consent copy = original.copy(original.getStatus());
         Assert.assertSame(copy.getId(), ID_STRING);
@@ -130,6 +141,7 @@ public class DefaultConsentTest
         Assert.assertSame(copy.isRequired(), required);
         Consent copyYes = original.copy(ConsentStatus.YES);
         Assert.assertSame(copyYes.getStatus(), ConsentStatus.YES);
+        Assert.assertSame(copyYes.getDataFields().size(), DATA_FIELDS.size());
         Assert.assertSame(copyYes.getFields().size(), FORM_FIELDS.size());
     }
 
@@ -138,7 +150,8 @@ public class DefaultConsentTest
     {
         ConsentStatus status = ConsentStatus.NO;
         boolean required = false;
-        Consent consent = new DefaultConsent(ID_STRING, LABEL_STRING, DESCRIPTION_STRING, required, FORM_FIELDS);
+        Consent consent =
+            new DefaultConsent(ID_STRING, LABEL_STRING, DESCRIPTION_STRING, required, DATA_FIELDS, FORM_FIELDS);
         consent.setStatus(status);
 
         JSONObject json = consent.toJSON();
@@ -149,6 +162,7 @@ public class DefaultConsentTest
         Assert.assertSame(json.getString("description"), DESCRIPTION_STRING);
         Assert.assertSame(json.getString("status"), status.toString());
         Assert.assertSame(json.getBoolean("isRequired"), required);
+        Assert.assertSame(json.getJSONArray("dataFields").length(), DATA_FIELDS.size());
         Assert.assertSame(json.getJSONArray("formFields").length(), FORM_FIELDS.size());
     }
 
@@ -156,7 +170,8 @@ public class DefaultConsentTest
     public void initializesFromJsonCorrectly()
     {
         boolean required = true;
-        Consent consent = new DefaultConsent(ID_STRING, LABEL_STRING, DESCRIPTION_STRING, required, FORM_FIELDS);
+        Consent consent =
+            new DefaultConsent(ID_STRING, LABEL_STRING, DESCRIPTION_STRING, required, DATA_FIELDS, FORM_FIELDS);
         JSONObject json = consent.toJSON();
 
         Consent newConsent = new DefaultConsent(json);
@@ -166,6 +181,9 @@ public class DefaultConsentTest
         Assert.assertSame(newConsent.getStatus().toString(), ConsentStatus.NOT_SET.toString());
         Assert.assertSame(newConsent.isRequired(), required);
         Assert.assertSame(newConsent.getFields().size(), FORM_FIELDS.size());
+        for (int i = 0; i < DATA_FIELDS.size(); ++i) {
+            Assert.assertTrue(newConsent.getDataFields().contains(DATA_FIELDS.get(i)));
+        }
         for (int i = 0; i < FORM_FIELDS.size(); ++i) {
             Assert.assertTrue(newConsent.getFields().contains(FORM_FIELDS.get(i)));
         }

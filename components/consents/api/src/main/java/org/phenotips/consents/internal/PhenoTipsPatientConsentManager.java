@@ -33,13 +33,20 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.query.Query;
+import org.xwiki.query.QueryException;
+import org.xwiki.query.QueryManager;
+import org.xwiki.uiextension.UIExtension;
+import org.xwiki.uiextension.UIExtensionManager;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -71,18 +78,26 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
 
     private static final String RENDERING_MODE = "view";
 
-    /** Logging helper object. */
+    private static final String FIELDS = "fields";
+
+    /**
+     * Logging helper object.
+     */
     @Inject
     private Logger logger;
 
-    /** Provides access to the XWiki data. */
+    /**
+     * Provides access to the XWiki data.
+     */
     @Inject
     private DocumentAccessBridge bridge;
 
     @Inject
     private PatientRepository repository;
 
-    /** Fills in missing reference fields with those from the current context document to create a full reference. */
+    /**
+     * Fills in missing reference fields with those from the current context document to create a full reference.
+     */
     @Inject
     @Named("current")
     private DocumentReferenceResolver<EntityReference> referenceResolver;
@@ -92,6 +107,15 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
 
     @Inject
     private TranslationManager translationManager;
+
+    @Inject
+    private QueryManager qm;
+
+    /**
+     * Lists the patient form fields.
+     */
+    @Inject
+    private UIExtensionManager uixManager;
 
     private EntityReference consentReference =
         new EntityReference("PatientConsentConfiguration", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
@@ -163,14 +187,46 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
             boolean required = intToBool(xwikiConsent.getIntValue("required"));
             boolean affectsFields = intToBool(xwikiConsent.getIntValue("affectsFields"));
             List<String> formFields = null;
+            List<String> dataFields = null;
             if (affectsFields) {
-                formFields = xwikiConsent.getListValue("fields");
+                dataFields = new LinkedList<>();
+                formFields = xwikiConsent.getListValue(FIELDS);
+                fetchConsentFields(formFields, dataFields);
             }
-            return new DefaultConsent(id, label, description, required, formFields);
+            return new DefaultConsent(id, label, description, required, dataFields, formFields);
         } catch (Exception ex) {
             this.logger.error("A patient consent is improperly configured: {}", ex.getMessage());
         }
         return null;
+    }
+
+    private void fetchConsentFields(List<String> formFields, List<String> dataFields) throws QueryException
+    {
+        // Data fields are found by finding the extension point based off the uix names from the form fields.
+        for (String uixName : formFields) {
+            Query query = this.qm.createQuery("select distinct uix.extensionPointId from Document doc,"
+                + " doc.object(XWiki.UIExtensionClass) as uix where uix.name = :uixname", Query.XWQL);
+            query.bindValue("uixname", uixName);
+            List<String> results = query.execute();
+            if (results.size() != 1) {
+                this.logger.warn("There are {} extensions identified by {}", results.size(), uixName);
+                if (results.size() == 0) {
+                    continue;
+                }
+            }
+            String extensionPointId = results.get(0);
+            // Get the Id from the extension point
+            List<UIExtension> extensionObjects = this.uixManager.get(extensionPointId);
+            for (UIExtension uix : extensionObjects) {
+                Map<String, String> parameters = uix.getParameters();
+                // Finds the correct UIExtension from the name and extension point
+                if (uixName.equals(uix.getId()) && !"false".equals(parameters.get("enabled"))
+                    && parameters.containsKey(FIELDS)) {
+                    // Separate the fields and add in each string to dataFields
+                    dataFields.addAll(Arrays.asList(parameters.get(FIELDS).split("\\s*,\\s*")));
+                }
+            }
+        }
     }
 
     private static String cleanDescription(String toClean, boolean stripParagraphTags)
@@ -309,7 +365,9 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
         return true;
     }
 
-    /** @return consents that exist in the system and correspond to the given ids */
+    /**
+     * @return consents that exist in the system and correspond to the given ids
+     */
     private List<Consent> selectFromSystem(Iterable<String> ids)
     {
         List<Consent> existingConsents = new LinkedList<>();
@@ -373,7 +431,9 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
             this.contextProvider.get());
     }
 
-    /** Either gets the existing consents holder object, or creates a new one. */
+    /**
+     * Either gets the existing consents holder object, or creates a new one.
+     */
     private BaseObject getXWikiConsentHolder(XWikiDocument doc) throws XWikiException
     {
         BaseObject holder = doc.getXObject(this.consentIdsHolderReference);

@@ -29,7 +29,8 @@
   <name>PhenoTips - Consents - Java APIs</name>
 
   <properties>
-    <coverage.instructionRatio>0.80</coverage.instructionRatio>
+    <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
+    <coverage.instructionRatio>0.78</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -69,6 +70,11 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-model</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-query-manager</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
