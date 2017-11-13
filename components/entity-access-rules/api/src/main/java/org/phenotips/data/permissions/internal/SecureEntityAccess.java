@@ -133,7 +133,7 @@ public class SecureEntityAccess implements EntityAccess
      * Sets the collaborators and access levels for {@link #getEntity() entity}.
      *
      * @param newCollaborators a map containing new {@link EntityReference collaborators} and their {@link AccessLevel}
-     * @return true iff the collaborators were updated successfully, false otherwise
+     * @return {@code true} iff the collaborators were updated successfully, {@code false} otherwise
      */
     public boolean updateCollaborators(@Nullable Map<EntityReference, AccessLevel> newCollaborators)
     {
@@ -198,10 +198,10 @@ public class SecureEntityAccess implements EntityAccess
     }
 
     /**
-     * Returns true iff the current user has an access level above or equal to the provided {@code accessName}.
+     * Checks if the current user has an access level above or equal to the provided {@code accessName}.
      *
      * @param accessName the name of the {@link AccessLevel}
-     * @return true iff the current user has the required access level, false otherwise
+     * @return {@code true} iff the current user has the required access level, {@code false} otherwise
      */
     public boolean hasAccessLevel(@Nullable String accessName)
     {
@@ -215,11 +215,11 @@ public class SecureEntityAccess implements EntityAccess
     }
 
     /**
-     * Returns true iff the {@code user} has an access level above or equal to the provided {@code accessName}.
+     * Checks if the {@code user} has an access level above or equal to the provided {@code accessName}.
      *
      * @param user the {@link EntityReference} for the user of interest
      * @param accessName the name of the {@link AccessLevel}
-     * @return true iff the specified {@code user} has the required access level, false otherwise
+     * @return {@code true} iff the specified {@code user} has the required access level, {@code false} otherwise
      */
     public boolean hasAccessLevel(@Nullable EntityReference user, @Nullable String accessName)
     {

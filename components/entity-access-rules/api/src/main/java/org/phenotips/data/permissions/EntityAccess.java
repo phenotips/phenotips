@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 
 /**
  * An {@link EntityAccess} object provides convenience methods for accessing and/or modifying ownership, collaborators,
- * visibility, and access level for the {@link #getEntity() entity}.
+ * visibility, and access level for a specific {@link #getEntity() entity}.
  *
  * @version $Id$
  * @since 1.0M9
@@ -41,7 +41,7 @@ public interface EntityAccess
     /**
      * Returns the {@link PrimaryEntity} object.
      *
-     * @return the {@link PrimaryEntity} of interest; may be null
+     * @return the {@link PrimaryEntity} of interest; may be {@code null}
      */
     @Nullable
     PrimaryEntity getEntity();
@@ -49,32 +49,31 @@ public interface EntityAccess
     /**
      * Returns the {@link Owner} for the {@link #getEntity() entity}.
      *
-     * @return the {@link Owner} for the {@link #getEntity()}
+     * @return the {@link Owner}, may be {@code null}
      */
     @Nullable
     Owner getOwner();
 
     /**
-     * Returns true iff the current user is the owner of {@link #getEntity()}.
+     * Checks if the current user is the owner of {@link #getEntity()}.
      *
-     * @return true iff the current user is the owner of {@link #getEntity()}, false otherwise
+     * @return {@code true} iff the current user is the owner of {@link #getEntity()}, {@code false} otherwise
      */
     boolean isOwner();
 
     /**
-     * Returns true iff {@code user} is the owner of {@link #getEntity()}.
+     * Checks if {@code user} is the owner of {@link #getEntity()}.
      *
      * @param user the {@link EntityReference user}
-     * @return true iff {@code user} is the owner of {@link #getEntity()}, false otherwise
+     * @return {@code true} iff {@code user} is the owner of {@link #getEntity()}, {@code false} otherwise
      */
     boolean isOwner(@Nullable EntityReference user);
 
     /**
-     * Sets the owner for {@link #getEntity()} to provided {@code userOrGroup}. Returns true iff the operation was
-     * successful.
+     * Sets the owner for {@link #getEntity()} to the provided {@code userOrGroup}.
      *
      * @param userOrGroup the {@link EntityReference} for the user or group that is to be the new owner
-     * @return true iff the new {@code userOrGroup user or group} was set successfully, false otherwise
+     * @return {@code true} iff the new {@code userOrGroup user or group} was set successfully, {@code false} otherwise
      */
     boolean setOwner(@Nullable EntityReference userOrGroup);
 
@@ -87,37 +86,35 @@ public interface EntityAccess
     Visibility getVisibility();
 
     /**
-     * Sets the {@link #getEntity()} visibility to {@code newVisibility}. Returns true iff the operation was successful.
+     * Sets the {@link #getEntity()} visibility to {@code newVisibility}.
      *
-     * @param newVisibility the new visibility for {@link #getEntity()}; may be null
-     * @return true iff the {@code newVisibility} was set successfully, false otherwise
+     * @param newVisibility the new visibility for {@link #getEntity()}; may be {@code null}
+     * @return {@code true} iff the {@code newVisibility} was set successfully, {@code false} otherwise
      */
     boolean setVisibility(@Nullable Visibility newVisibility);
 
     /**
      * Retrieves the {@link Collaborator}s associated with the {@link #getEntity() entity}.
      *
-     * @return a list of {@link Collaborator} objects associated with {@link #getEntity()}
+     * @return a list of {@link Collaborator} objects, may be empty
      */
     @Nonnull
     Collection<Collaborator> getCollaborators();
 
     /**
-     * Sets {@code newCollaborators} as the collaborators for the {@link #getEntity() entity}. Returns true iff the
-     * operation was successful.
+     * Sets {@code newCollaborators} as the collaborators for the {@link #getEntity() entity}.
      *
      * @param newCollaborators a collection of new {@link Collaborator}s
-     * @return true iff {@code newCollaborators} were set successfully, false otherwise
+     * @return {@code true} iff all {@code newCollaborators} were set successfully, {@code false} otherwise
      */
     boolean updateCollaborators(@Nullable Collection<Collaborator> newCollaborators);
 
     /**
      * Sets the {@code user} as a collaborator for {@link #getEntity() entity}, with the specified {@code access} level.
-     * Returns true iff the operation was successful.
      *
      * @param user the {@link EntityReference} for the user that will be added as a new collaborator
      * @param access the {@link AccessLevel} for the newly added {@code user}
-     * @return true iff {@code user} was added successfully, false otherwise
+     * @return {@code true} iff {@code user} was added successfully, {@code false} otherwise
      */
     boolean addCollaborator(@Nullable EntityReference user, @Nullable AccessLevel access);
 
@@ -125,7 +122,8 @@ public interface EntityAccess
      * Removes the {@code user} from the list of collaborators for {@link #getEntity() entity}.
      *
      * @param user the {@link EntityReference} referring to a collaborator
-     * @return true iff the {@code user} was removed successfully, false otherwise
+     * @return {@code true} iff the {@code user} was removed successfully, {@code false} otherwise, including if the
+     *         specified user was already not a collaborator
      */
     boolean removeCollaborator(@Nullable EntityReference user);
 
@@ -133,7 +131,8 @@ public interface EntityAccess
      * Removes the {@code collaborator} from the list of collaborators for {@link #getEntity() entity}.
      *
      * @param collaborator the {@link Collaborator} object to be removed
-     * @return true iff the {@code collaborator} was removed successfully, false otherwise
+     * @return {@code true} iff the {@code collaborator} was removed successfully, {@code false} otherwise, including if
+     *         the specified user was already not a collaborator
      */
     boolean removeCollaborator(@Nullable Collaborator collaborator);
 
@@ -155,19 +154,19 @@ public interface EntityAccess
     AccessLevel getAccessLevel(@Nullable EntityReference user);
 
     /**
-     * Returns true iff the current user has the level of access that is above or equal to {@code access}.
+     * Checks if the current user has a level of access that is above or equal to {@code access}.
      *
      * @param access the desired {@link AccessLevel}
-     * @return true iff the current user has the desired {@code access} level, false otherwise
+     * @return {@code true} iff the current user has the desired {@code access} level, {@code false} otherwise
      */
     boolean hasAccessLevel(@Nullable AccessLevel access);
 
     /**
-     * Returns true iff the {@code user} has the level of access that is above or equal to {@code access}.
+     * Checks if the {@code user} has a level of access that is above or equal to {@code access}.
      *
      * @param user the {@link EntityReference} for the user whose access level we want to determine
      * @param access the desired {@link AccessLevel}
-     * @return true iff the specified {@code user} has the desired {@code access} level, false otherwise
+     * @return {@code true} iff the specified {@code user} has the desired {@code access} level, {@code false} otherwise
      */
     boolean hasAccessLevel(@Nullable EntityReference user, @Nullable AccessLevel access);
 }

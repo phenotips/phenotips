@@ -45,37 +45,37 @@ public interface Collaborator
     String getType();
 
     /**
-     * Returns true iff the collaborator is a user.
+     * Checks if the collaborator is a user.
      *
-     * @return true iff the {@link Collaborator} is a user, false otherwise
+     * @return {@code true} iff the {@link Collaborator} is a user, {@code false} otherwise
      */
     boolean isUser();
 
     /**
-     * Return true iff the collaborator is a group.
+     * Checks if the collaborator is a group.
      *
-     * @return true iff the {@link Collaborator} is a group, false otherwise
+     * @return {@code true} iff the {@link Collaborator} is a group, {@code false} otherwise
      */
     boolean isGroup();
 
     /**
-     * The user or group that has been set as collaborator.
+     * Returns the user or group that has been set as collaborator.
      *
      * @return a reference to the user's or group's profile
      */
     EntityReference getUser();
 
     /**
-     * The username or group name.
+     * Returns the username or group name.
      *
      * @return the name of the document holding the user or group (just the name without the space or instance name)
      */
     String getUsername();
 
     /**
-     * The access that has been granted to this collaborator.
+     * Returns the access that has been granted to this collaborator.
      *
-     * @return an access level, must not be null.
+     * @return an access level, must not be {@code null}
      */
     AccessLevel getAccessLevel();
 }
