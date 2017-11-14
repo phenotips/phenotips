@@ -23,6 +23,7 @@ define([
             document.observe("pedigree:node:remove",               this.handleRemove);
             document.observe("pedigree:node:setproperty",          this.handleSetProperty);
             document.observe("pedigree:node:modify",               this.handleModification);
+            document.observe("pedigree:patient:deleterequest",     this.handleDeletePatientRecords);
             document.observe("pedigree:person:drag:newparent",     this.handlePersonDragToNewParent);
             document.observe("pedigree:person:drag:newpartner",    this.handlePersonDragToNewPartner);
             document.observe("pedigree:person:drag:newsibling",    this.handlePersonDragToNewSibling);
@@ -147,6 +148,85 @@ define([
             editor.getSaveLoadEngine()._finalizeCreateGraph(changeSet, noUndoRedo, true);
 
             editor.getView().unmarkAll();
+        },
+
+        handleDeletePatientRecords: function(event)
+        {
+            console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
+            var callbackOnApprove = event.memo.callbackOnApprove;
+            var phenotipsIdListToRemove = event.memo.patientProfilesToBeRemoved;
+
+            var composePatientList = function(list, convertIdToLink) {
+                var result = null;
+                list.forEach(function(id){
+                    result = (result == null ? "" : (result + ", "));
+                    result += convertIdToLink ? editor.getExternalEndpoint().getPhenotipsPatientHTMLLink(id) : id;
+                });
+                return result;
+            }
+
+            var patientListString = composePatientList(phenotipsIdListToRemove, true);
+
+            var title       = "Delete patient record" + (phenotipsIdListToRemove.length > 1 ? "s" : "") + "?";
+            var buttonLabel = "Delete" + (phenotipsIdListToRemove.length > 1 ? " all listed records" : "");
+            var message     = "The deletion of " + (phenotipsIdListToRemove.length > 1 ? "patient records" : "a patient record") +
+                              " (" + patientListString + ") is not reversible. Are you sure you wish to continue?";
+
+            var deleteRecords = function() {
+
+                // perform the callback regardless of if deletion was successful
+                callbackOnApprove();
+
+                console.log("Deleting patient record(s) " + phenotipsIdListToRemove);
+
+                var failedDeletions = [];
+                var successfulDeletions = [];
+
+                var reportErrorsIfAny = function() {
+                    if (failedDeletions.length > 0) {
+                        if (phenotipsIdListToRemove.length == 1) {
+                            var id = phenotipsIdListToRemove[0];
+                            var title = "Error deleting patient record " + id;
+                            var message = "Failed to delete patient record " + id + ". You might not have permission to do so.";
+                        } else {
+                            var title = "Could not delete some of the patient records";
+                            var message = "Failed to delete the following patient records: " + composePatientList(failedDeletions, true)
+                            + ".<br><br>(note: the following patient records were successfully removed: "
+                            + composePatientList(successfulDeletions) + ")";
+                        }
+                        editor.getOkCancelDialogue().showError(message, title, "OK", null);
+                    }
+                }
+
+                var completed = 0;
+                phenotipsIdListToRemove.forEach(function(phenotipsPatientID) {
+                    new Ajax.Request(editor.getExternalEndpoint().getPatientDeleteURL(phenotipsPatientID), {
+                        method: 'POST',
+                        onCreate: function() {
+                            document.fire("pedigree:load:start", {"message": "Deleting patient " + phenotipsPatientID + "..."});
+                        },
+                        onSuccess: function() {
+                            successfulDeletions.push(phenotipsPatientID);
+                            var event = { "phenotipsPatientID": phenotipsPatientID };
+                            document.fire("pedigree:patient:deleted", event);
+                        },
+                        onFailure: function() {
+                            failedDeletions.push(phenotipsPatientID);
+                        },
+                        onComplete: function() {
+                            document.fire("pedigree:load:finish");
+
+                            // only report the summary of errors after the last deletion request is complete
+                            completed++;
+                            if (completed == phenotipsIdListToRemove.length) {
+                                reportErrorsIfAny();
+                            }
+                        }
+                    });
+                });
+            }
+
+            editor.getOkCancelDialogue().showCustomized(message, title, buttonLabel, deleteRecords, "Cancel");
         },
 
         handleRemove: function(event)
@@ -1016,12 +1096,24 @@ define([
             processLinkCallback(false);
         } else {
             if (linkID == "") {
+                var deletePatientRecord = function(clearParameter) {
+                    var onDeletePatientRecord = function() {
+                        callbackOnValid(clearParameter, true);
+                    }
+                    var event = { "patientProfilesToBeRemoved": [ editor.getGraph().getPhenotipsLinkID(nodeID) ],
+                                  "callbackOnApprove": onDeletePatientRecord };
+                    document.fire("pedigree:patient:deleterequest", event);
+                }
+
                 var oldLinkID = editor.getNode(nodeID).getPhenotipsPatientId();
                 editor.getOkCancelDialogue().showWithCheckbox("<br/><b>Do you want to remove the connection between this<br/>patient </b>(" + editor.getGraph().getPatientDescription(nodeID, true) +
                         ")<b> and this pedigree node?</b><br/><br/><br/>" +
                         "<div style='margin-left: 30px; margin-right: 30px; text-align: center'>" +
                         "Please note that if you do not assign this patient to another pedigree<br/>node this patient will be removed from this family</div><br/>",
-                        'Remove the connection?', 'Clear data from this pedigree node', true, "Remove link", processLinkCallback, "Cancel", onCancelAssignPatient );
+                        'Remove the connection?', 'Clear data from this pedigree node', true,
+                        "Remove link", processLinkCallback,
+                        "Cancel", onCancelAssignPatient,
+                        "Delete patient record", deletePatientRecord);
                 return;
             }
 

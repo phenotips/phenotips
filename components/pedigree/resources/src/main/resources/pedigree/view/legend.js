@@ -683,6 +683,7 @@ define([
             if (editor.isReadOnlyMode()) {
                 return;
             }
+            editor.getNodeMenu().hide();
             editor.getView().setCurrentDraggable(-1); // in drag mode but with no target
             var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
             var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);

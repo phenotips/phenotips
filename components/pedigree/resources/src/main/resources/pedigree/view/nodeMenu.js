@@ -649,6 +649,7 @@ define([
                         if (response.responseJSON && response.responseJSON.hasOwnProperty("newID")) {
                             console.log("Created new patient: " + Helpers.stringifyObject(response.responseJSON));
                             Event.fire(patientPicker, 'custom:selection:changed', { "useValue": response.responseJSON.newID, "eventDetails": {"loadPatientProperties": false, "skipConfirmDialogue" : true} });
+                            Event.fire(patientPicker, 'pedigree:patient:created', { "phenotipsPatientID": response.responseJSON.newID });
                             _this.reposition();
                         } else {
                             alert("Patient creation failed");
@@ -657,7 +658,7 @@ define([
 
                     var processCreatePatient = function() {
                         var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
-                        document.fire("pedigree:load:start");
+                        document.fire("pedigree:load:start", {"message": "Waiting for the patient record to be created..."});
                         new Ajax.Request(createPatientURL, {
                             method: "GET",
                             onSuccess: _onPatientCreated,

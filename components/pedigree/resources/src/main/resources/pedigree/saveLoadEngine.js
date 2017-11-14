@@ -205,7 +205,7 @@ define([
                     Helpers.disableMouseclicks(closeButton);
                     Helpers.disableMouseclicks(saveButton);
                     // disable user interaction while save is in progress
-                    document.fire("pedigree:load:start");
+                    document.fire("pedigree:load:start", {"message": "Saving pedigree..."});
                 },
                 onComplete: function() {
                     me._saveInProgress = false;
@@ -280,7 +280,7 @@ define([
             new Ajax.Request(familyJsonURL, {
                 method: "POST",
                 onCreate: function() {
-                    document.fire("pedigree:load:start");
+                    document.fire("pedigree:load:start", {"message": "Loading pedigree..."});
                 },
                 onSuccess: function(response) {
                     if (response.responseJSON) {

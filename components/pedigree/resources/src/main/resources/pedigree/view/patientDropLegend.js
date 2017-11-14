@@ -51,7 +51,7 @@ define([
                                                           onDrop:  this._onDropWrapper.bind(this),
                                                           onHover: this._onHoverWrapper.bind(this)});
 
-            //add patient to a legend on unlink patient from node event
+            // add patient to a legend on unlink patient from node event
             document.observe('pedigree:patient:unlinked', function (event) {
                 if ( event.memo.phenotipsID == this.assignNewPatientId) {
                     this.addCase(event.memo.phenotipsID, 'new', event.memo.gender, event.memo.firstName, event.memo.lastName, event.memo.externalID);
@@ -59,13 +59,18 @@ define([
                     this.addCase(event.memo.phenotipsID, 'unlinked', event.memo.gender, event.memo.firstName, event.memo.lastName, event.memo.externalID);
                 }
             }.bind(this));
-            //remove patient from a legend on link patient to node event
+
+            var removeCase = this.removeCase.bind(this);
+
+            // remove patient from a legend on link patient to node event
             document.observe('pedigree:patient:linked', function (event){
-                if (this._notLinkedPatients.hasOwnProperty(event.memo.phenotipsID)) {
-                    this._deletePatientElement(event.memo.phenotipsID, this._notLinkedPatients[event.memo.phenotipsID].type);
-                    delete this._notLinkedPatients[event.memo.phenotipsID];
-                }
-            }.bind(this));
+                removeCase(event.memo.phenotipsID);
+            });
+
+            // remove patient from a legen on patient record deleted event
+            document.observe('pedigree:patient:deleted', function (event){
+                removeCase(event.memo.phenotipsPatientID);
+            });
         },
 
         hideDragHint: function() {
@@ -83,17 +88,24 @@ define([
             }
         },
 
+        removeCase: function(phenotipsPatientID) {
+            if (this._notLinkedPatients.hasOwnProperty(phenotipsPatientID)) {
+                this._deletePatientElement(phenotipsPatientID);
+                delete this._notLinkedPatients[phenotipsPatientID];
+            }
+        },
+
         /**
          * Add patient to a legend
          *
          * @method addCase
          **/
-        addCase: function(patientID, type, gender, firstName, lastName, externalID) {
+        addCase: function(phenotipsPatientID, type, gender, firstName, lastName, externalID) {
 
-            if (!this._notLinkedPatients.hasOwnProperty(patientID)) {
+            if (!this._notLinkedPatients.hasOwnProperty(phenotipsPatientID)) {
                 // if data about this patient is not available need ot load it
                 if (gender === undefined) {
-                    this._loadPatientInfoAndAddToLegend(patientID, type);
+                    this._loadPatientInfoAndAddToLegend(phenotipsPatientID, type);
                     return;
                 }
 
@@ -103,11 +115,11 @@ define([
                     this._legendInfo && this._legendInfo.show();
                 }
 
-                this._notLinkedPatients[patientID] = {"type" : type, "phenotipsID": patientID, "gender": gender, "name":  name, "externalID": externalID};
-                var listElement = this._generateElement(this._notLinkedPatients[patientID]);
+                this._notLinkedPatients[phenotipsPatientID] = {"type" : type, "phenotipsID": phenotipsPatientID, "gender": gender, "name":  name, "externalID": externalID};
+                var listElement = this._generateElement(this._notLinkedPatients[phenotipsPatientID]);
                 if (type == 'new') {
                     this._list_new.insert(listElement);
-                    this.assignNewPatientId = patientID;
+                    this.assignNewPatientId = phenotipsPatientID;
                     $('list_new').show();
                 } else {
                     this._list_unlinked.insert(listElement);
@@ -119,21 +131,21 @@ define([
             this.legendContainer.show();
         },
 
-        _loadPatientInfoAndAddToLegend: function(patientID, type) {
+        _loadPatientInfoAndAddToLegend: function(phenotipsPatientID, type) {
             var _this = this;
 
-            var patientDataJsonURL = editor.getExternalEndpoint().getLoadPatientDataJSONURL([patientID]);
+            var patientDataJsonURL = editor.getExternalEndpoint().getLoadPatientDataJSONURL([phenotipsPatientID]);
 
             new Ajax.Request(patientDataJsonURL, {
                 method: "GET",
                 onSuccess: function (response) {
                     if (response.responseJSON) {
-                      var patient = response.responseJSON[patientID];
+                      var patient = response.responseJSON[phenotipsPatientID];
                       var firstName = patient.hasOwnProperty('patient_name') && patient.patient_name.hasOwnProperty("first_name")
                                       ? patient.patient_name.first_name.trim() : "";
                       var lastName  = patient.hasOwnProperty('patient_name') && patient.patient_name.hasOwnProperty("last_name")
                                       ? patient.patient_name.last_name.trim() : "";
-                      _this.addCase(patientID, type, patient.sex, firstName, lastName, patient.external_id);
+                      _this.addCase(phenotipsPatientID, type, patient.sex, firstName, lastName, patient.external_id);
                     }
                 }
             });
@@ -254,6 +266,7 @@ define([
             if (editor.isReadOnlyMode()) {
                 return;
             }
+            editor.getNodeMenu().hide();
             editor.getView().setCurrentDraggable(-1); // in drag mode but with no target
             var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
             var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
@@ -332,12 +345,11 @@ define([
          *
          * @method _deletePatientElement
          * @param {patientId} Person patient id
-         * @param {type} Person patient's type
          * @private
          */
-        _deletePatientElement: function(patientId, type) {
-            $(patientId).remove();
-            delete this._notLinkedPatients[patientId];
+        _deletePatientElement: function(phenotipsPatientID) {
+            $(phenotipsPatientID).remove();
+            delete this._notLinkedPatients[phenotipsPatientID];
             // hide legend if empty
             if (!this._hasPatients()) {
                 this.legendContainer.hide();
