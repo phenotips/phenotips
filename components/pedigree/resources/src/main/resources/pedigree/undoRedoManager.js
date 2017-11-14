@@ -15,6 +15,41 @@ define([
             this._stack        = [];
             this._MAXUNDOSIZE  = 100;
             this._savedState   = "";
+
+            // observe patient deletion events to remove all references to the deleted patient from all undo/redo states
+            document.observe("pedigree:patient:deleted", this.handlePatientDeleted.bind(this));
+        },
+
+        handlePatientDeleted: function(event)
+        {
+            var removedID = event.memo.phenotipsPatientID;
+
+            // Need to modify the undo/redo stack and remove all references to the deleted patient:
+            // 1) change all events to assign/unassign this PT patient to/from a node to a "no op" event
+            // 2) remove all links to this patient from all stored states
+            this._stack.forEach(function(state) {
+
+                // 1)
+                if (state.eventToGetToThisState
+                    && state.eventToGetToThisState.eventName == "pedigree:node:modify"
+                    && state.eventToGetToThisState.memo
+                    && state.eventToGetToThisState.memo.modifications
+                    && state.eventToGetToThisState.memo.modifications.trySetPhenotipsPatientId
+                    && state.eventToGetToThisState.memo.modifications.trySetPhenotipsPatientId == removedID) {
+                    state.eventToGetToThisState.eventName = "operationWithDeletedPatient";
+                    delete state.eventToGetToThisState.memo;
+                }
+
+                // 2)
+                var stateJSON = JSON.parse(state.serializedState);
+                stateJSON.GG.forEach(function(nodeInternalJSON) {
+                    if (nodeInternalJSON.prop && nodeInternalJSON.prop.phenotipsId
+                        && nodeInternalJSON.prop.phenotipsId == removedID) {
+                        delete nodeInternalJSON.prop.phenotipsId;
+                    }
+                });
+                state.serializedState = JSON.stringify(stateJSON);
+            });
         },
 
         hasUnsavedChanges: function() {
