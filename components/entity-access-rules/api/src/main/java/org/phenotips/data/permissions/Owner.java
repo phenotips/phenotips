@@ -40,21 +40,36 @@ public interface Owner
     /** The name of the property used to store the owner in the XClass. */
     String PROPERTY_NAME = "owner";
 
+    /**
+     * Returns the type of owner; either "user" or "group".
+     *
+     * @return the {@link Owner} type, as string
+     */
     String getType();
 
+    /**
+     * Checks if the owner is a user.
+     *
+     * @return {@code true} iff the {@link Owner} is a user, {@code false} otherwise
+     */
     boolean isUser();
 
+    /**
+     * Checks if the owner is a group.
+     *
+     * @return {@code true} iff the {@link Owner} is a group, {@code false} otherwise
+     */
     boolean isGroup();
 
     /**
-     * The user or group that has been set as collaborator.
+     * Retrieves the user or group that has been set as collaborator.
      *
      * @return a reference to the user's or group's profile
      */
     EntityReference getUser();
 
     /**
-     * The username or group name.
+     * Retrieves the username or group name.
      *
      * @return the name of the document holding the user or group (just the name without the space or instance name)
      */

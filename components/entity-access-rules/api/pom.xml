@@ -29,7 +29,6 @@
   <name>PhenoTips - Entity access rules - Java APIs</name>
 
   <properties>
-    <checkstyle.skip>true</checkstyle.skip>
     <coverage.instructionRatio>0.87</coverage.instructionRatio>
   </properties>
 
@@ -124,6 +123,10 @@
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
     </dependency>
     <dependency>
       <groupId>org.phenotips</groupId>

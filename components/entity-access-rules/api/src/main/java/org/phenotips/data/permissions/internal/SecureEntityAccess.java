@@ -19,9 +19,9 @@ package org.phenotips.data.permissions.internal;
 
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
+import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.entities.PrimaryEntity;
 
@@ -31,6 +31,17 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.apache.commons.collections4.MapUtils;
+
+/**
+ * A secure implementation of {@link EntityAccess}.
+ *
+ * @version $Id$
+ * @since 1.4
+ */
 public class SecureEntityAccess implements EntityAccess
 {
     private static final String MANAGE = "manage";
@@ -39,18 +50,26 @@ public class SecureEntityAccess implements EntityAccess
 
     private final EntityPermissionsManager manager;
 
-    public SecureEntityAccess(EntityAccess internalService, EntityPermissionsManager manager)
+    /**
+     * The default constructor taking in an {@code internalService} object, and the {@code manager} object.
+     *
+     * @param internalService an {@link EntityAccess} object
+     * @param manager the {@link EntityPermissionsManager}
+     */
+    public SecureEntityAccess(@Nonnull EntityAccess internalService, @Nonnull EntityPermissionsManager manager)
     {
         this.internalService = internalService;
         this.manager = manager;
     }
 
+    @Nullable
     @Override
     public PrimaryEntity getEntity()
     {
         return this.internalService.getEntity();
     }
 
+    @Nullable
     @Override
     public Owner getOwner()
     {
@@ -64,13 +83,13 @@ public class SecureEntityAccess implements EntityAccess
     }
 
     @Override
-    public boolean isOwner(EntityReference user)
+    public boolean isOwner(@Nullable EntityReference user)
     {
         return this.internalService.isOwner(user);
     }
 
     @Override
-    public boolean setOwner(EntityReference userOrGroup)
+    public boolean setOwner(@Nullable EntityReference userOrGroup)
     {
         if (hasAccessLevel(MANAGE)) {
             return this.internalService.setOwner(userOrGroup);
@@ -78,6 +97,7 @@ public class SecureEntityAccess implements EntityAccess
         return false;
     }
 
+    @Nonnull
     @Override
     public Visibility getVisibility()
     {
@@ -85,7 +105,7 @@ public class SecureEntityAccess implements EntityAccess
     }
 
     @Override
-    public boolean setVisibility(Visibility newVisibility)
+    public boolean setVisibility(@Nullable Visibility newVisibility)
     {
         if (hasAccessLevel(MANAGE)) {
             return this.internalService.setVisibility(newVisibility);
@@ -93,6 +113,7 @@ public class SecureEntityAccess implements EntityAccess
         return false;
     }
 
+    @Nonnull
     @Override
     public Collection<Collaborator> getCollaborators()
     {
@@ -100,7 +121,7 @@ public class SecureEntityAccess implements EntityAccess
     }
 
     @Override
-    public boolean updateCollaborators(Collection<Collaborator> newCollaborators)
+    public boolean updateCollaborators(@Nullable Collection<Collaborator> newCollaborators)
     {
         if (hasAccessLevel(MANAGE)) {
             return this.internalService.updateCollaborators(newCollaborators);
@@ -108,10 +129,19 @@ public class SecureEntityAccess implements EntityAccess
         return false;
     }
 
-    public boolean updateCollaborators(Map<EntityReference, AccessLevel> newCollaborators)
+    /**
+     * Sets the collaborators and access levels for {@link #getEntity() entity}.
+     *
+     * @param newCollaborators a map containing new {@link EntityReference collaborators} and their {@link AccessLevel}
+     * @return {@code true} iff the collaborators were updated successfully, {@code false} otherwise
+     */
+    public boolean updateCollaborators(@Nullable Map<EntityReference, AccessLevel> newCollaborators)
     {
         if (hasAccessLevel(MANAGE)) {
-            Collection<Collaborator> collaborators = new LinkedHashSet<Collaborator>();
+            Collection<Collaborator> collaborators = new LinkedHashSet<>();
+            if (MapUtils.isEmpty(newCollaborators)) {
+                return this.internalService.updateCollaborators(collaborators);
+            }
             for (Map.Entry<EntityReference, AccessLevel> collaborator : newCollaborators.entrySet()) {
                 collaborators.add(new DefaultCollaborator(collaborator.getKey(), collaborator.getValue(), null));
             }
@@ -121,7 +151,7 @@ public class SecureEntityAccess implements EntityAccess
     }
 
     @Override
-    public boolean addCollaborator(EntityReference user, AccessLevel access)
+    public boolean addCollaborator(@Nullable EntityReference user, @Nullable AccessLevel access)
     {
         if (hasAccessLevel(MANAGE)) {
             return this.internalService.addCollaborator(user, access);
@@ -130,7 +160,7 @@ public class SecureEntityAccess implements EntityAccess
     }
 
     @Override
-    public boolean removeCollaborator(EntityReference user)
+    public boolean removeCollaborator(@Nullable EntityReference user)
     {
         if (hasAccessLevel(MANAGE)) {
             return this.internalService.removeCollaborator(user);
@@ -139,7 +169,7 @@ public class SecureEntityAccess implements EntityAccess
     }
 
     @Override
-    public boolean removeCollaborator(Collaborator collaborator)
+    public boolean removeCollaborator(@Nullable Collaborator collaborator)
     {
         if (hasAccessLevel(MANAGE)) {
             return this.internalService.removeCollaborator(collaborator);
@@ -147,36 +177,51 @@ public class SecureEntityAccess implements EntityAccess
         return false;
     }
 
+    @Nonnull
     @Override
     public AccessLevel getAccessLevel()
     {
         return this.internalService.getAccessLevel();
     }
 
+    @Nonnull
     @Override
-    public AccessLevel getAccessLevel(EntityReference user)
+    public AccessLevel getAccessLevel(@Nullable EntityReference user)
     {
         return this.internalService.getAccessLevel(user);
     }
 
     @Override
-    public boolean hasAccessLevel(AccessLevel access)
+    public boolean hasAccessLevel(@Nullable AccessLevel access)
     {
         return this.internalService.hasAccessLevel(access);
     }
 
-    public boolean hasAccessLevel(String accessName)
+    /**
+     * Checks if the current user has an access level above or equal to the provided {@code accessName}.
+     *
+     * @param accessName the name of the {@link AccessLevel}
+     * @return {@code true} iff the current user has the required access level, {@code false} otherwise
+     */
+    public boolean hasAccessLevel(@Nullable String accessName)
     {
         return this.internalService.hasAccessLevel(this.manager.resolveAccessLevel(accessName));
     }
 
     @Override
-    public boolean hasAccessLevel(EntityReference user, AccessLevel access)
+    public boolean hasAccessLevel(@Nullable EntityReference user, @Nullable AccessLevel access)
     {
         return this.internalService.hasAccessLevel(user, access);
     }
 
-    public boolean hasAccessLevel(EntityReference user, String accessName)
+    /**
+     * Checks if the {@code user} has an access level above or equal to the provided {@code accessName}.
+     *
+     * @param user the {@link EntityReference} for the user of interest
+     * @param accessName the name of the {@link AccessLevel}
+     * @return {@code true} iff the specified {@code user} has the required access level, {@code false} otherwise
+     */
+    public boolean hasAccessLevel(@Nullable EntityReference user, @Nullable String accessName)
     {
         return this.internalService.hasAccessLevel(user, this.manager.resolveAccessLevel(accessName));
     }

@@ -48,6 +48,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -57,8 +58,6 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.user.api.XWikiGroupService;
-
-import groovy.lang.Singleton;
 
 /**
  * The default implementation of {@link EntityAccessManager}.
@@ -128,9 +127,7 @@ public class DefaultEntityAccessManager implements EntityAccessManager
     public Collection<AccessLevel> listAllAccessLevels()
     {
         try {
-            final Collection<AccessLevel> result = new TreeSet<>();
-            result.addAll(this.componentManager.get().getInstanceList(AccessLevel.class));
-            return result;
+            return new TreeSet<>(this.componentManager.get().getInstanceList(AccessLevel.class));
         } catch (final ComponentLookupException ex) {
             return Collections.emptyList();
         }
@@ -192,6 +189,14 @@ public class DefaultEntityAccessManager implements EntityAccessManager
         return result;
     }
 
+    /**
+     * Gets the access level for the {@code userOrGroup}.
+     *
+     * @param userOrGroup the {@link EntityReference} to the user or group of interest
+     * @param owner the {@link EntityReference} to the owner of the entity
+     * @param collaborators the {@link Collaborator}s associated with the entity
+     * @return the {@link AccessLevel} for the {@code userOrGroup}
+     */
     private AccessLevel getAccessLevel(
         @Nonnull final EntityReference userOrGroup,
         @Nullable final EntityReference owner,
@@ -258,7 +263,6 @@ public class DefaultEntityAccessManager implements EntityAccessManager
             return false;
         }
     }
-
 
     /**
      * Changes ownership from {@code previousOwner} to {@code newOwner}.
@@ -387,15 +391,22 @@ public class DefaultEntityAccessManager implements EntityAccessManager
         return false;
     }
 
-
+    /**
+     * Saves the {@code collaborator} data to the {@code entityDoc}.
+     *
+     * @param collaborator the {@link Collaborator} whose data will be saved
+     * @param entityDoc the {@link XWikiDocument} entity document
+     * @param classReference the collaborator {@link DocumentReference}
+     * @param context the {@link XWikiContext}
+     */
     private void saveCollaboratorData(
         @Nonnull final Collaborator collaborator,
-        @Nonnull final XWikiDocument patientDoc,
+        @Nonnull final XWikiDocument entityDoc,
         @Nonnull final DocumentReference classReference,
         @Nonnull final XWikiContext context)
     {
         try {
-            final BaseObject baseObject = patientDoc.newXObject(classReference, context);
+            final BaseObject baseObject = entityDoc.newXObject(classReference, context);
             baseObject.setStringValue(COLLABORATOR, this.entitySerializer.serialize(collaborator.getUser()));
             final AccessLevel accessLevel = collaborator.getAccessLevel();
             // If an access level is not provided, set the most restrictive one.
@@ -414,6 +425,14 @@ public class DefaultEntityAccessManager implements EntityAccessManager
         return addCollaborator(entity, collaborator, true);
     }
 
+    /**
+     * Adds a {@code collaborator} for the {@code entity}.
+     *
+     * @param entity the {@link PrimaryEntity} of interest
+     * @param collaborator the {@link Collaborator} to add
+     * @param saveDocument true iff the document should be saved, false otherwise
+     * @return true if the collaborator was added successfully, false otherwise
+     */
     private boolean addCollaborator(
         @Nullable final PrimaryEntity entity,
         @Nullable final Collaborator collaborator,
@@ -478,6 +497,14 @@ public class DefaultEntityAccessManager implements EntityAccessManager
         return removeCollaborator(entity, collaborator, true);
     }
 
+    /**
+     * Removes the {@code collaborator} from the {@code entity}.
+     *
+     * @param entity the {@link PrimaryEntity} of interest
+     * @param collaborator the {@link Collaborator} to be removed
+     * @param saveDocument true iff the document should be saved, false otherwise
+     * @return true iff the collaborator was removed successfully, false otherwise
+     */
     private boolean removeCollaborator(
         @Nullable final PrimaryEntity entity,
         @Nullable final Collaborator collaborator,

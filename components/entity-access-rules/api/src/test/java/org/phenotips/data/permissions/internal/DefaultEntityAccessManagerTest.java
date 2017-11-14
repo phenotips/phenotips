@@ -248,14 +248,14 @@ public class DefaultEntityAccessManagerTest
         when(this.entityDoc.getXObject(VISIBILITY_CLASS)).thenReturn(this.visibilityObject);
         when(this.entityDoc.getXObject(VISIBILITY_CLASS, true, this.context)).thenReturn(this.visibilityObject);
 
-        when(partialEntityResolver.resolve(Owner.CLASS_REFERENCE, PATIENT_REFERENCE)).thenReturn(
+        when(this.partialEntityResolver.resolve(Owner.CLASS_REFERENCE, PATIENT_REFERENCE)).thenReturn(
             OWNER_CLASS);
         when(this.helper.getStringProperty(this.entity.getXDocument(), OWNER_CLASS, OWNER_LABEL)).thenReturn(OWNER_STR);
 
         final DocumentReferenceResolver<String> stringEntityResolver =
             this.mocker.getInstance(this.stringResolverType, "currentmixed");
         when(stringEntityResolver.resolve(OWNER_STR, PATIENT_REFERENCE)).thenReturn(OWNER);
-        when(partialEntityResolver.resolve(OWNER)).thenReturn(OWNER);
+        when(this.partialEntityResolver.resolve(OWNER)).thenReturn(OWNER);
 
         final EntityReferenceSerializer<String> stringEntitySerializer =
             this.mocker.getInstance(this.stringSerializerType);
@@ -901,9 +901,9 @@ public class DefaultEntityAccessManagerTest
     @Test
     public void getAccessLevelWithOwner() throws Exception
     {
-        XWikiGroupService groupService = mock(XWikiGroupService.class);
-        when(this.xwiki.getGroupService(this.context)).thenReturn(groupService);
-        when(groupService.getAllGroupsReferencesForMember(COLLABORATOR, 0, 0, this.context))
+        XWikiGroupService grpService = mock(XWikiGroupService.class);
+        when(this.xwiki.getGroupService(this.context)).thenReturn(grpService);
+        when(grpService.getAllGroupsReferencesForMember(COLLABORATOR, 0, 0, this.context))
             .thenReturn(Collections.emptyList());
 
         Assert.assertSame(OWNER_ACCESS, this.component.getAccessLevel(this.entity, OWNER));
@@ -952,7 +952,7 @@ public class DefaultEntityAccessManagerTest
         objects.add(this.collaboratorObject2);
         when(this.entityDoc.getXObjects(COLLABORATOR_CLASS)).thenReturn(objects);
         when(this.xwiki.getGroupService(this.context)).thenReturn(this.groupService);
-        when(groupService.getAllGroupsReferencesForMember(COLLABORATOR, 0, 0, this.context))
+        when(this.groupService.getAllGroupsReferencesForMember(COLLABORATOR, 0, 0, this.context))
             .thenReturn(Collections.emptyList());
 
         Assert.assertSame(EDIT_ACCESS, this.component.getAccessLevel(this.entity, COLLABORATOR));
@@ -974,7 +974,7 @@ public class DefaultEntityAccessManagerTest
         objects.add(this.collaboratorObject2);
         when(this.entityDoc.getXObjects(COLLABORATOR_CLASS)).thenReturn(objects);
         when(this.xwiki.getGroupService(this.context)).thenReturn(this.groupService);
-        when(groupService.getAllGroupsReferencesForMember(COLLABORATOR, 0, 0, this.context))
+        when(this.groupService.getAllGroupsReferencesForMember(COLLABORATOR, 0, 0, this.context))
             .thenReturn(Collections.singletonList(GROUP));
 
         Assert.assertSame(EDIT_ACCESS, this.component.getAccessLevel(this.entity, COLLABORATOR));

@@ -23,6 +23,8 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
@@ -36,6 +38,9 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
+ * The default implementation of the {@link EntityAccessHelper} interface. Provides utility methods for getting entity
+ * type, as well as getting and setting properties.
+ *
  * @version $Id$
  */
 @Component
@@ -70,8 +75,9 @@ public class DefaultEntityAccessHelper implements EntityAccessHelper
         return this.bridge.getCurrentUserReference();
     }
 
+    @Nonnull
     @Override
-    public String getType(EntityReference userOrGroup)
+    public String getType(@Nullable EntityReference userOrGroup)
     {
         if (userOrGroup == null) {
             // Guest user
@@ -90,8 +96,12 @@ public class DefaultEntityAccessHelper implements EntityAccessHelper
         return UNKNOWN_LABEL;
     }
 
+    @Nullable
     @Override
-    public String getStringProperty(XWikiDocument doc, DocumentReference classReference, String propertyName)
+    public String getStringProperty(
+        @Nonnull final XWikiDocument doc,
+        @Nullable final DocumentReference classReference,
+        @Nullable final String propertyName)
     {
         try {
             BaseObject object = doc.getXObject(classReference);
@@ -108,8 +118,11 @@ public class DefaultEntityAccessHelper implements EntityAccessHelper
     }
 
     @Override
-    public void setProperty(XWikiDocument doc, DocumentReference classReference, String propertyName,
-        Object propertyValue)
+    public void setProperty(
+        @Nonnull final XWikiDocument doc,
+        @Nullable final DocumentReference classReference,
+        @Nullable final String propertyName,
+        @Nullable final Object propertyValue)
     {
         XWikiContext xcontext = this.xcontextProvider.get();
         BaseObject obj = doc.getXObject(classReference, true, xcontext);

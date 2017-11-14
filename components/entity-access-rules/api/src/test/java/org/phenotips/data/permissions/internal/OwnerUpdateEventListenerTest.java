@@ -50,7 +50,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the {@link OwnerUpdateEventListener}
+ * Tests for the {@link OwnerUpdateEventListener}.
  *
  * @version $Id$
  */

@@ -98,9 +98,7 @@ public class DefaultEntityVisibilityManager implements EntityVisibilityManager
     public Collection<Visibility> listAllVisibilityOptions()
     {
         try {
-            Collection<Visibility> result = new TreeSet<>();
-            result.addAll(this.componentManager.get().getInstanceList(Visibility.class));
-            return result;
+            return new TreeSet<>(this.componentManager.get().getInstanceList(Visibility.class));
         } catch (final ComponentLookupException ex) {
             return Collections.emptyList();
         }

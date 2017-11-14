@@ -29,10 +29,14 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 
 /**
+ * An implementation of common functionality for the various {@link Visibility} levels.
+ *
  * @version $Id$
  */
 public abstract class AbstractVisibility implements Visibility
 {
+    private static final String VISIBILITY_BASE = "phenotips.permissions.visibility.";
+
     /**
      * @see #getPermissiveness()
      */
@@ -49,6 +53,7 @@ public abstract class AbstractVisibility implements Visibility
     @Inject
     private PermissionsConfiguration configuration;
 
+    /** A simple constructor. */
     protected AbstractVisibility(int permissiveness)
     {
         this.permissiveness = permissiveness;
@@ -57,7 +62,7 @@ public abstract class AbstractVisibility implements Visibility
     @Override
     public String getLabel()
     {
-        String key = "phenotips.permissions.visibility." + getName() + ".label";
+        String key = VISIBILITY_BASE + getName() + ".label";
         String translation = this.tm.translate(key);
         if (StringUtils.isBlank(translation)) {
             return StringUtils.capitalize(getName());
@@ -68,7 +73,7 @@ public abstract class AbstractVisibility implements Visibility
     @Override
     public String getDescription()
     {
-        String key = "phenotips.permissions.visibility." + getName() + ".description";
+        String key = VISIBILITY_BASE + getName() + ".description";
         return this.tm.translate(key);
     }
 

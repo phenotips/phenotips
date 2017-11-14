@@ -63,11 +63,18 @@ public interface EntityAccessManager
      *
      * @param name the desired access level name, as string
      * @return the {@link AccessLevel} associated with the provided {@code name}, or null if the provided {@code name}
-     * is not valid
+     *         is not valid
      */
     @Nonnull
     AccessLevel resolveAccessLevel(@Nullable String name);
 
+    /**
+     * Gets the {@link AccessLevel} that {@code userOrGroup} has to the {@code entity}.
+     *
+     * @param entity the {@link PrimaryEntity} of interest
+     * @param userOrGroup the {@link EntityReference} to the user or group
+     * @return the {@link AccessLevel} that the {@code userOrGroup} has
+     */
     @Nonnull
     AccessLevel getAccessLevel(@Nullable PrimaryEntity entity, @Nullable EntityReference userOrGroup);
 
@@ -107,12 +114,39 @@ public interface EntityAccessManager
      */
     boolean setOwner(@Nullable PrimaryEntity entity, @Nullable EntityReference userOrGroup);
 
+    /**
+     * Gets the {@link Collaborator} objects associated with {@code entity}.
+     *
+     * @param entity the {@link PrimaryEntity} of interest
+     * @return the collection of {@link Collaborator}s for {@code entity}
+     */
     @Nonnull
     Collection<Collaborator> getCollaborators(@Nullable PrimaryEntity entity);
 
+    /**
+     * Sets the provided collection of {@code newCollaborators} for {@code entity}.
+     *
+     * @param entity the {@link PrimaryEntity} of interest
+     * @param newCollaborators a collection of new {@link Collaborator}s for {@code entity}
+     * @return true iff the collaborators were set successfully, false otherwise
+     */
     boolean setCollaborators(@Nullable PrimaryEntity entity, @Nullable Collection<Collaborator> newCollaborators);
 
+    /**
+     * Adds a {@code collaborator} to the {@code entity}.
+     *
+     * @param entity the {@link PrimaryEntity} of interest
+     * @param collaborator a {@link Collaborator} to add for {@code entity}
+     * @return true iff the collaborator was set successfully, false otherwise
+     */
     boolean addCollaborator(@Nullable PrimaryEntity entity, @Nullable Collaborator collaborator);
 
+    /**
+     * Removes a {@code collaborator} from the {@code entity}.
+     *
+     * @param entity the {@link PrimaryEntity} of interest
+     * @param collaborator a {@link Collaborator} to remove
+     * @return true iff the collaborator was removed successfully, false otherwise
+     */
     boolean removeCollaborator(@Nullable PrimaryEntity entity, @Nullable Collaborator collaborator);
 }

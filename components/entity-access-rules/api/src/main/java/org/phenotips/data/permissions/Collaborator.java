@@ -37,30 +37,45 @@ public interface Collaborator
     EntityReference CLASS_REFERENCE = new EntityReference("CollaboratorClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
+    /**
+     * Returns the type of collaborator; either "user" or "group".
+     *
+     * @return the {@link Collaborator} type, as string
+     */
     String getType();
 
+    /**
+     * Checks if the collaborator is a user.
+     *
+     * @return {@code true} iff the {@link Collaborator} is a user, {@code false} otherwise
+     */
     boolean isUser();
 
+    /**
+     * Checks if the collaborator is a group.
+     *
+     * @return {@code true} iff the {@link Collaborator} is a group, {@code false} otherwise
+     */
     boolean isGroup();
 
     /**
-     * The user or group that has been set as collaborator.
+     * Returns the user or group that has been set as collaborator.
      *
      * @return a reference to the user's or group's profile
      */
     EntityReference getUser();
 
     /**
-     * The username or group name.
+     * Returns the username or group name.
      *
      * @return the name of the document holding the user or group (just the name without the space or instance name)
      */
     String getUsername();
 
     /**
-     * The access that has been granted to this collaborator.
+     * Returns the access that has been granted to this collaborator.
      *
-     * @return an access level, must not be null.
+     * @return an access level, must not be {@code null}
      */
     AccessLevel getAccessLevel();
 }
