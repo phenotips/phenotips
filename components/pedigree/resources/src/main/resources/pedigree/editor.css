@@ -305,6 +305,9 @@
 .msdialog-box.multitab-selector-main {
   min-width: 760px !important;
 }
+.ok-cancel-body {
+  padding: 0 1em 0 1em;
+}
 .margin-bottom-10px {
   margin-bottom: 10px;
 }

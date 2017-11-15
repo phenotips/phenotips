@@ -322,7 +322,9 @@ define([
             }
             editor.getView().unmarkAll();
             var properties = { "setPhenotipsPatientId": patient.phenotipsID };
-            document.fire("pedigree:node:modify", {'nodeID': node.getID(), 'modifications': {'trySetPhenotipsPatientId': patient.phenotipsID}});
+            document.fire("pedigree:node:modify", { 'nodeID': node.getID(),
+                                                    'modifications': {'trySetPhenotipsPatientId': patient.phenotipsID},
+                                                    'details': {'skipConfirmDialogue': true} });
         },
 
         /**

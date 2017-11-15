@@ -159,7 +159,9 @@ define([
 
             this.generateMenuBtn();
 
-            if (editor.getPatientAccessPermissions(this.getNode().getPhenotipsPatientId()).hasEdit) {
+            var hasEditRights = editor.getPatientAccessPermissions(this.getNode().getPhenotipsPatientId()).hasEdit;
+
+            if (hasEditRights) {
                 if (this.getNode().getLifeStatus() == "alive" || this.getNode().getLifeStatus() == "deceased") {
                     this.generateAliveWell();
                 }
@@ -168,7 +170,10 @@ define([
             this._updateHoverBoxHeight();
 
             // proband can't be removed, and the only remaining node can't be removed
-            if (!this.getNode().isProband()
+            // TODO: nodes which the used has no edit rights for can not be removed: this should be improved in the future,
+            //       see discussion for PT-3442
+            if (hasEditRights
+                && !this.getNode().isProband()
                 && !editor.getGraph().getMaxNodeId() == 0
                 && this.getNode().getPhenotipsPatientId() != editor.getGraph().getCurrentPatientId()) {
                 this.generateDeleteBtn();
