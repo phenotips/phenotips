@@ -113,7 +113,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary
         StringBuilder query = new StringBuilder("id:(");
         Cache<VocabularyTerm> cache = this.externalServicesAccess.getTermCache(getCoreName());
         for (String id : ids) {
-            VocabularyTerm cachedTerm = this.externalServicesAccess.getTermCache(getCoreName()).get(id);
+            VocabularyTerm cachedTerm = cache.get(id);
             if (cachedTerm != null) {
                 if (cachedTerm != EMPTY_MARKER) {
                     rawResult.put(id, cachedTerm);
@@ -129,11 +129,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary
         if (query.length() > 5) {
             for (SolrDocument doc : this.search(new SolrQuery(query.toString()))) {
                 String id = (String) doc.getFieldValue(ID_FIELD_NAME);
-                VocabularyTerm term = cache.get(id);
-                if (term == null) {
-                    term = new SolrVocabularyTerm(doc, this);
-                    cache.set(id, term);
-                }
+                VocabularyTerm term = cacheTerm(id, doc);
                 rawResult.put(term.getId(), term);
             }
         }
@@ -159,7 +155,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary
         List<VocabularyTerm> result = new LinkedList<>();
         for (SolrDocument doc : this
             .search(SolrQueryUtils.generateQuery(new SolrQuery(generateLuceneQuery(fieldValues)), queryOptions))) {
-            result.add(new SolrVocabularyTerm(doc, this));
+            result.add(cacheTerm((String) doc.getFieldValue(ID_FIELD_NAME), doc));
         }
         return result;
     }
@@ -327,5 +323,16 @@ public abstract class AbstractSolrVocabulary implements Vocabulary
                 extension.extendTerm(term, this);
             }
         }
+    }
+
+    private VocabularyTerm cacheTerm(String id, SolrDocument doc)
+    {
+        Cache<VocabularyTerm> cache = this.externalServicesAccess.getTermCache(getCoreName());
+        VocabularyTerm term = cache.get(id);
+        if (term == null) {
+            term = new SolrVocabularyTerm(doc, this);
+            cache.set(id, term);
+        }
+        return term;
     }
 }
