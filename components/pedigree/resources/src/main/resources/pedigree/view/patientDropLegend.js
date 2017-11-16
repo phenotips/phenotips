@@ -67,7 +67,7 @@ define([
                 removeCase(event.memo.phenotipsID);
             });
 
-            // remove patient from a legen on patient record deleted event
+            // remove patient from a legend on patient record deleted event
             document.observe('pedigree:patient:deleted', function (event){
                 removeCase(event.memo.phenotipsPatientID);
             });

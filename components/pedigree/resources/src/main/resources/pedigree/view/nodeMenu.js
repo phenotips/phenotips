@@ -658,11 +658,11 @@ define([
 
                     var processCreatePatient = function() {
                         var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
-                        document.fire("pedigree:load:start", {"message": "Waiting for the patient record to be created..."});
+                        document.fire("pedigree:blockinteraction:start", {"message": "Waiting for the patient record to be created..."});
                         new Ajax.Request(createPatientURL, {
                             method: "GET",
                             onSuccess: _onPatientCreated,
-                            onComplete: function() { document.fire("pedigree:load:finish"); }
+                            onComplete: function() { document.fire("pedigree:blockinteraction:finish"); }
                         });
                     }
 

@@ -16,20 +16,15 @@ define([
             this._MAXUNDOSIZE  = 100;
             this._savedState   = "";
 
-            // set of patient records that have been deleted and are now completely unavailable
-            this._deletedPatients = {};
-            // observe pation deletion/creation events to update this._deletedPatients accordingly
+            // observe patient deletion events to remove all references to the deleted patient from all undo/redo states
             document.observe("pedigree:patient:deleted", this.handlePatientDeleted.bind(this));
-            document.observe("pedigree:patient:created", this.handlePatientCreated.bind(this));
         },
 
         handlePatientDeleted: function(event)
         {
             var removedID = event.memo.phenotipsPatientID;
 
-            this._deletedPatients[removedID] = true;
-
-            // Need to modify the undo/redo stack and remoe all references o the deleted patient:
+            // Need to modify the undo/redo stack and remove all references to the deleted patient:
             // 1) change all events to assign/unassign this PT patient to/from a node to a "no op" event
             // 2) remove all links to this patient from all stored states
             this._stack.forEach(function(state) {
@@ -55,11 +50,6 @@ define([
                 });
                 state.serializedState = JSON.stringify(stateJSON);
             });
-        },
-
-        handlePatientCreated: function(event)
-        {
-            delete this._deletedPatients[event.memo.phenotipsPatientID];
         },
 
         hasUnsavedChanges: function() {

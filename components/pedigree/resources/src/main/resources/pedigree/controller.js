@@ -175,14 +175,16 @@ define([
             var deleteRecords = function() {
 
                 // perform the callback regardless of if deletion was successful
-                callbackOnApprove();
+                callbackOnApprove && callbackOnApprove();
 
                 console.log("Deleting patient record(s) " + phenotipsIdListToRemove);
 
                 var failedDeletions = [];
                 var successfulDeletions = [];
 
-                var reportErrorsIfAny = function() {
+                var onDeletionsCompleted = function() {
+                    document.fire("pedigree:blockinteraction:finish");
+
                     if (failedDeletions.length > 0) {
                         if (phenotipsIdListToRemove.length == 1) {
                             var id = phenotipsIdListToRemove[0];
@@ -198,12 +200,15 @@ define([
                     }
                 }
 
+                document.fire("pedigree:blockinteraction:start", {"message": "Deleting patient"
+                                                                 + (phenotipsIdListToRemove.length > 1 ? "s " : " ")
+                                                                 + patientListString + "..."});
+
                 var completed = 0;
                 phenotipsIdListToRemove.forEach(function(phenotipsPatientID) {
                     new Ajax.Request(editor.getExternalEndpoint().getPatientDeleteURL(phenotipsPatientID), {
                         method: 'POST',
                         onCreate: function() {
-                            document.fire("pedigree:load:start", {"message": "Deleting patient " + phenotipsPatientID + "..."});
                         },
                         onSuccess: function() {
                             successfulDeletions.push(phenotipsPatientID);
@@ -214,12 +219,10 @@ define([
                             failedDeletions.push(phenotipsPatientID);
                         },
                         onComplete: function() {
-                            document.fire("pedigree:load:finish");
-
                             // only report the summary of errors after the last deletion request is complete
                             completed++;
                             if (completed == phenotipsIdListToRemove.length) {
-                                reportErrorsIfAny();
+                                onDeletionsCompleted();
                             }
                         }
                     });

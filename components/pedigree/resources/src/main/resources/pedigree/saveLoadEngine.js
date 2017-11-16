@@ -31,7 +31,7 @@ define([
 
         createGraphFromSerializedData: function(JSONString, noUndo, centerAroundProband, callbackWhenDataLoaded, dataSource) {
             console.log("---- load: parsing data ----");
-            document.fire("pedigree:load:start");
+            document.fire("pedigree:blockinteraction:start");
 
             try {
                 var jsonObject = JSON.parse(JSONString);
@@ -48,7 +48,7 @@ define([
             {
                 console.log("ERROR loading pedigree: " + err);
                 alert("Error loading pedigree");
-                document.fire("pedigree:load:finish");
+                document.fire("pedigree:blockinteraction:finish");
 
                 // if there is no pedigree and import was used to initialize a pedigree need to display the import dialogue again
                 if (!editor.pedigreeExists()) {
@@ -62,7 +62,7 @@ define([
 
         createGraphFromImportData: function(importString, importType, importOptions, noUndo, centerAroundProband, dataSource) {
             console.log("---- import: parsing data ----");
-            document.fire("pedigree:load:start");
+            document.fire("pedigree:blockinteraction:start");
 
             try {
                 var changeSet = editor.getGraph().fromImport(importString, importType, importOptions);
@@ -74,7 +74,7 @@ define([
             {
                 console.log("ERROR importing pedigree: " + err);
                 alert("Error importing pedigree: " + err);
-                document.fire("pedigree:load:finish");
+                document.fire("pedigree:blockinteraction:finish");
 
                 // if there is no pedigree and import was used to initialize a pedigree need to display the import dialogue again
                 if (!editor.pedigreeExists()) {
@@ -151,7 +151,7 @@ define([
                     editor.getWorkspace().centerAroundNode(editor.getGraph().getProbandId());
                 }
 
-                document.fire("pedigree:load:finish");
+                document.fire("pedigree:blockinteraction:finish");
             };
 
             if (!noUndo && !editor.isReadOnlyMode()) {
@@ -205,7 +205,7 @@ define([
                     Helpers.disableMouseclicks(closeButton);
                     Helpers.disableMouseclicks(saveButton);
                     // disable user interaction while save is in progress
-                    document.fire("pedigree:load:start", {"message": "Saving pedigree..."});
+                    document.fire("pedigree:blockinteraction:start", {"message": "Saving pedigree..."});
                 },
                 onComplete: function() {
                     me._saveInProgress = false;
@@ -222,7 +222,7 @@ define([
                     Helpers.enableMouseclicks(closeButton);
                     Helpers.enableMouseclicks(saveButton);
                     // Re-enable user-interaction
-                    document.fire("pedigree:load:finish");
+                    document.fire("pedigree:blockinteraction:finish");
                     if (me._notSaved) {
                         callAfterFailedSave && callAfterFailedSave();
                     } else {
@@ -260,7 +260,6 @@ define([
                             editor.getUndoRedoManager().addSaveEvent();
                             editor.getFamilyData().updateFromJSON(response.responseJSON.family);
                             savingNotification.replace(new XWiki.widgets.Notification("Successfully saved"));
-                            document.fire("pedigree:save:finish");
                         }
                     } else  {
                         savingNotification.replace(new XWiki.widgets.Notification("Save attempt failed: server reply is incorrect"));
@@ -280,7 +279,7 @@ define([
             new Ajax.Request(familyJsonURL, {
                 method: "POST",
                 onCreate: function() {
-                    document.fire("pedigree:load:start", {"message": "Loading pedigree..."});
+                    document.fire("pedigree:blockinteraction:start", {"message": "Loading pedigree..."});
                 },
                 onSuccess: function(response) {
                     if (response.responseJSON) {
@@ -353,7 +352,7 @@ define([
         },
 
         initializeNewPedigree: function(showImportTab) {
-            document.fire("pedigree:load:finish");
+            document.fire("pedigree:blockinteraction:finish");
             editor.getTemplateImportSelector().show(showImportTab ? 1 : 0, false,
                 "No pedigree is currently defined. Please select a template to start a pedigree, or import an existing pedigree",
                 "box infomessage"
