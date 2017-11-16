@@ -33,6 +33,7 @@ import org.xwiki.query.QueryManager;
 import org.xwiki.rest.XWikiResource;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.UserManager;
+import org.xwiki.xml.XMLUtils;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -42,7 +43,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
@@ -97,18 +97,26 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
     private Provider<XWikiContext> provider;
 
     @Override
-    public String suggest(String input, @DefaultValue("10") int maxResults,
-        @DefaultValue("view") String requiredPermission, @DefaultValue("false") boolean markFamilyAssociation,
-        @DefaultValue("id") String orderField, @DefaultValue("asc") String order)
+    public String suggest(String input, int maxResults, String requiredPermission, boolean markFamilyAssociation,
+        String orderField, String order, boolean returnAsJSON)
     {
         if (StringUtils.isEmpty(input)) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        JSONArray results = new JSONArray();
-        JSONObject jsonResult = new JSONObject();
+        JSONArray results = null;
+        StringBuilder xmlResult = null;
+        JSONObject jsonResult = null;
 
-        List<String> queryResults = queryPatients(input.toLowerCase(), orderField, order);
+        if (returnAsJSON) {
+            results = new JSONArray();
+            jsonResult = new JSONObject();
+        } else {
+            xmlResult = new StringBuilder();
+            xmlResult.append("<results>");
+        }
+
+        List<String> queryResults = queryPatients(input.toLowerCase(), orderField, order, maxResults);
 
         for (String queryResult : queryResults) {
             Patient patient = this.patientRepository.get(queryResult);
@@ -122,19 +130,23 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
                 continue;
             }
 
-            results.put(getPatientJSON(patient, markFamilyAssociation));
-
-            if (results.length() >= maxResults) {
-                break;
+            if (returnAsJSON) {
+                results.put(getPatientJSON(patient, markFamilyAssociation));
+            } else {
+                appentPatientXmlResult(patient, xmlResult, markFamilyAssociation);
             }
         }
 
-        jsonResult.put("matchedPatients", results);
-
-        return jsonResult.toString();
+        if (returnAsJSON) {
+            jsonResult.put("matchedPatients", results);
+            return jsonResult.toString();
+        } else {
+            xmlResult.append("</results>");
+            return xmlResult.toString();
+        }
     }
 
-    private List<String> queryPatients(String input, String orderField, String order)
+    private List<String> queryPatients(String input, String orderField, String order, int maxResults)
     {
         List<String> queryResults = new LinkedList<>();
 
@@ -162,6 +174,7 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
         querySb.append(" order by " + safeOrderField + safeOrder);
         try {
             Query query = this.qm.createQuery(querySb.toString(), Query.XWQL);
+            query.setLimit(maxResults);
             query.bindValue("t", "PatientTemplate");
             String formattedInput = String.format(INPUT_FORMAT, input);
             query.bindValue(INPUT_PARAMETER, formattedInput);
@@ -181,10 +194,58 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
         patientJSON.put("identifier", patient.getExternalId());
 
         // Add patient URL
-        XWikiContext context = this.provider.get();
-        String url = context.getWiki().getURL(patient.getDocumentReference(), "view", context);
-        patientJSON.put("url", url);
+        patientJSON.put("url", getURL(patient));
 
+        String description = getDescription(patient);
+
+        // Add family info
+        Family family = this.familyRepository.getFamilyForPatient(patient);
+        if (family != null) {
+            patientJSON.put("familyId", family.getId());
+            if (markFamilyAssociation) {
+                description.concat(", in family: ").concat(family.getId());
+            }
+        }
+
+        // Add description
+        patientJSON.put("textSummary", description);
+
+        return patientJSON;
+    }
+
+    private void appentPatientXmlResult(Patient patient, StringBuilder xmlResult, boolean markFamilyAssociation)
+    {
+        String escapedReference = XMLUtils.escapeXMLComment(patient.getDocumentReference().toString());
+
+        xmlResult.append("<rs id=\"").append(getURL(patient)).append("\" ");
+        xmlResult.append("info=\"").append(escapedReference).append("\">");
+
+        String description = getDescription(patient);
+
+        // Add family info
+        Family family = this.familyRepository.getFamilyForPatient(patient);
+        if (family != null) {
+            xmlResult.append("familyId=\"").append(family.getId()).append("\" ");
+            if (markFamilyAssociation) {
+                description.concat(", in family: ").concat(family.getId());
+            }
+        }
+
+        // Add description
+        String escapedDescription = XMLUtils.escapeXMLComment(description);
+        xmlResult.append(escapedDescription);
+
+        xmlResult.append("</rs>");
+    }
+
+    private String getURL(Patient patient)
+    {
+        XWikiContext context = this.provider.get();
+        return context.getWiki().getURL(patient.getDocumentReference(), "view", context);
+    }
+
+    private String getDescription(Patient patient)
+    {
         // Add description
         StringBuilder descriptionSb = new StringBuilder(patient.getId());
         String patientName = "";
@@ -200,17 +261,6 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
             descriptionSb.append(", identifier: ").append(patientExternalId);
         }
 
-        // Add family info
-        Family family = this.familyRepository.getFamilyForPatient(patient);
-        if (family != null) {
-            patientJSON.put("familyId", family.getId());
-            if (markFamilyAssociation) {
-                descriptionSb.append(", in family: ").append(family.getId());
-            }
-        }
-
-        patientJSON.put("textSummary", descriptionSb.toString());
-
-        return patientJSON;
+        return descriptionSb.toString();
     }
 }

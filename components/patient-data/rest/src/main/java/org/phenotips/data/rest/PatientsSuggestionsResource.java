@@ -19,16 +19,13 @@ package org.phenotips.data.rest;
 
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
-import org.phenotips.rest.RequiredAccess;
 
 import org.xwiki.rest.resources.RootResource;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 
 /**
  * Resource for working with multiple patient records, identified by their given "external" or "internal" identifiers.
@@ -52,16 +49,16 @@ public interface PatientsSuggestionsResource
      * @param markFamilyAssociation boolean indicator for adding family info into patient description
      * @param orderField field used for ordering the patients, can be one of {@code id} (default) or {@code eid}
      * @param order the sorting order, can be one of {@code asc} (default) or {@code desc}
+     * @param returnAsJSON if true, the result is returned as JSON, otherwise as XML
      * @return a list of patient records
      */
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @RequiredAccess("view")
     String suggest(
         @QueryParam("input") String input,
         @QueryParam("maxResults") @DefaultValue("10") int maxResults,
         @QueryParam("requiredPermission") @DefaultValue("view") String requiredPermission,
         @QueryParam("markFamilyAssociation") @DefaultValue("false") boolean markFamilyAssociation,
         @QueryParam("orderField") @DefaultValue("id") String orderField,
-        @QueryParam("order") @DefaultValue("asc") String order);
+        @QueryParam("order") @DefaultValue("asc") String order,
+        @QueryParam("returnAsJSON") @DefaultValue("true") boolean returnAsJSON);
 }
