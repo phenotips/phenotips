@@ -44,12 +44,14 @@
 #if ($request.getParameter('eid') &amp;&amp; $request.getParameter('id'))
   #set ($externalIdentifier = "$!{request.eid}")
   #set ($identifier = "$!{request.id}")
-  #set ($principal = "$!{request.principal}")
+  #set ($entity = "$!{request.entity}")
   #set ($className = 'PhenoTips.PatientClass')
-  #if ($principal == 'family')
+  #set ($space = 'data')
+  #if ($entity == 'families')
     #set ($className = 'PhenoTips.FamilyClass')
+    #set ($space = 'Families')
   #end
-  #if ($externalIdentifier == $xwiki.getDocument($services.model.resolveDocument($identifier, $services.model.resolveSpace('data'))).getObject($className).getProperty('external_id').value)
+  #if ($externalIdentifier == $xwiki.getDocument($services.model.resolveDocument($identifier, $services.model.resolveSpace($space))).getObject($className).getProperty('external_id').value)
     Self
     #break
   #end

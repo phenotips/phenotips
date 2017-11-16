@@ -5538,9 +5538,9 @@ document.observe("xwiki:dom:updated", init);
   var widgets = XWiki.widgets = XWiki.widgets || {};
 
   widgets.UniquenessValidator = Class.create({
-    initialize : function(input, type) {
+    initialize : function(input, entity) {
       this.input = input;
-      this.type = type;
+      this.entity = entity;
       this.valid = true;
       this.state = 'NEW';
       this.request = 0;
@@ -5556,7 +5556,7 @@ document.observe("xwiki:dom:updated", init);
         this.value = this.input.value;
         this.state = 'CHECKING';
         new Ajax.Request(this.serviceUrl, {
-          parameters : { outputSyntax: 'plain', eid: this.value, id: XWiki.Model.serialize(new XWiki.DocumentReference(XWiki.currentDocument.wiki, XWiki.currentDocument.space, XWiki.currentDocument.page)), principal : this.type},
+          parameters : { outputSyntax: 'plain', eid: this.value, id: XWiki.Model.serialize(new XWiki.DocumentReference(XWiki.currentDocument.wiki, XWiki.currentDocument.space, XWiki.currentDocument.page)), entity : this.entity},
           on200 : this.self.bindAsEventListener(this),
           on403 : this.empty.bindAsEventListener(this),
           on404 : this.available.bindAsEventListener(this),
@@ -5589,6 +5589,18 @@ document.observe("xwiki:dom:updated", init);
       this.input.__validation.validate();
     }
   });
+
+  var init = function(event) {
+    ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      element.select('input.check-unique, .external_id input').each(function(input) {
+        if (!input.__uniqueness_validator) {
+          var entity = $("entity-type") ? $("entity-type").value : "patients";
+          input.__uniqueness_validator = new XWiki.widgets.UniquenessValidator(input, entity);
+        }
+      });
+    });
+    return true;
+  };
 
   (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
   document.observe("xwiki:dom:updated", init);

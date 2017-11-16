@@ -160,15 +160,6 @@
       );
     }
   });
-
-  // Family External ID uniqueness check
-  ([$('body')]).each(function(element) {
-      element.select('.external_id input').each(function(input) {
-        if (!input.__uniqueness_validator) {
-          input.__uniqueness_validator = new XWiki.widgets.UniquenessValidator(input, "family");
-        }
-      });
-  });
 });</code>
     </property>
     <property>

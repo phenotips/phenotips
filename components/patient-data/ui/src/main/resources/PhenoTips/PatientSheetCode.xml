@@ -330,12 +330,6 @@ document.observe('xwiki:dom:loaded', function() {
         }
         element.__validation.add(Validate.Acceptance, {failureMessage: "$escapetool.javascript($services.localization.render('phenotips.PatientSheetCode.failureTickCheck'))"});
       });
-      // check uniqueness of patient external ID
-      element.select('input.check-unique, .external_id input').each(function(input) {
-        if (!input.__uniqueness_validator) {
-          input.__uniqueness_validator = new XWiki.widgets.UniquenessValidator(input, "patient");
-        }
-      });
     });
     return true;
   };
