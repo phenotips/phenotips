@@ -32,6 +32,7 @@ import org.xwiki.query.QueryManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
+import org.xwiki.xml.XMLUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -124,15 +125,16 @@ public class PhenotipsFamilyExport
      * @param requiredPermission permission a user has to have over each family in the result
      * @param orderField field used for ordering the families, can be one of {@code id} (default) or {@code eid}
      * @param order the sorting order, can be one of {@code asc} (default) or {@code desc}
+     * @param returnAsJSON if true, the result is returned as JSON, otherwise as XML
      * @return list of families
      */
     public String searchFamilies(String input, int resultsLimit, String requiredPermission, String orderField,
-        String order)
+        String order, boolean returnAsJSON)
     {
         Set<FamilySearchResult> results = new LinkedHashSet<>();
         queryFamilies(input, requiredPermission, resultsLimit, orderField, order, results);
         queryPatients(input, requiredPermission, resultsLimit, orderField, order, results);
-        return formatResults(results, resultsLimit);
+        return formatResults(results, resultsLimit, returnAsJSON);
     }
 
     /**
@@ -299,29 +301,52 @@ public class PhenotipsFamilyExport
         return queryResults;
     }
 
-    private String formatResults(Set<FamilySearchResult> results, int resultsLimit)
+    private String formatResults(Set<FamilySearchResult> results, int resultsLimit, boolean returnAsJSON)
     {
         JSONArray familyArray = null;
         JSONObject jsonResult = null;
+        StringBuilder xmlResult = null;
         int count = 0;
 
-        familyArray = new JSONArray();
-        jsonResult = new JSONObject();
+        if (returnAsJSON) {
+            familyArray = new JSONArray();
+            jsonResult = new JSONObject();
+        } else {
+            xmlResult = new StringBuilder();
+            xmlResult.append("<results>");
+        }
 
         for (FamilySearchResult searchResult : results) {
             if (count++ > resultsLimit) {
                 break;
             }
-            JSONObject familyJson = new JSONObject();
-            familyJson.put(ID, searchResult.getId());
-            familyJson.put(URL, searchResult.getUrl());
-            familyJson.put(IDENTIFIER, searchResult.getExternalId());
-            familyJson.put("textSummary", searchResult.getDescription());
-            familyArray.put(familyJson);
+            if (returnAsJSON) {
+                JSONObject familyJson = new JSONObject();
+                familyJson.put(ID, searchResult.getId());
+                familyJson.put(URL, searchResult.getUrl());
+                familyJson.put(IDENTIFIER, searchResult.getExternalId());
+                familyJson.put("textSummary", searchResult.getDescription());
+                familyArray.put(familyJson);
+            } else {
+                String escapedReference = XMLUtils.escapeXMLComment(searchResult.getReference());
+                String escapedDescription = XMLUtils.escapeXMLComment(searchResult.getDescription());
+
+                xmlResult.append("<rs id=\"").append(searchResult.getUrl()).append("\" ");
+                xmlResult.append("info=\"").append(escapedReference).append("\">");
+
+                xmlResult.append(escapedDescription);
+
+                xmlResult.append("</rs>");
+            }
         }
 
-        jsonResult.put("matchedFamilies", familyArray);
-        return jsonResult.toString();
+        if (returnAsJSON) {
+            jsonResult.put("matchedFamilies", familyArray);
+            return jsonResult.toString();
+        } else {
+            xmlResult.append("</results>");
+            return xmlResult.toString();
+        }
 
     }
 

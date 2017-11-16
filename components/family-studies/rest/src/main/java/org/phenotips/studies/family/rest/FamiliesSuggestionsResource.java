@@ -18,14 +18,11 @@
 package org.phenotips.studies.family.rest;
 
 import org.phenotips.rest.ParentResource;
-import org.phenotips.rest.RequiredAccess;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 
 /**
  * Resource for working with multiple family records, identified by their given "external" or "internal" identifiers.
@@ -47,15 +44,15 @@ public interface FamiliesSuggestionsResource
      * @param requiredPermission permission a user has to have over each family in the result
      * @param orderField field used for ordering the families, can be one of {@code id} (default) or {@code eid}
      * @param order the sorting order, can be one of {@code asc} (default) or {@code desc}
+     * @param returnAsJSON if true, the result is returned as JSON, otherwise as XML
      * @return a list of family records
      */
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @RequiredAccess("view")
     String suggest(
         @QueryParam("input") String input,
         @QueryParam("maxResults") @DefaultValue("10") int maxResults,
         @QueryParam("requiredPermission") @DefaultValue("view") String requiredPermission,
         @QueryParam("orderField") @DefaultValue("id") String orderField,
-        @QueryParam("order") @DefaultValue("asc") String order);
+        @QueryParam("order") @DefaultValue("asc") String order,
+        @QueryParam("returnAsJSON") @DefaultValue("true") boolean returnAsJSON);
 }

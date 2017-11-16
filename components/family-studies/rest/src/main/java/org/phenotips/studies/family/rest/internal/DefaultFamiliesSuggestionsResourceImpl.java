@@ -26,7 +26,6 @@ import org.xwiki.rest.XWikiResource;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.ws.rs.DefaultValue;
 
 /**
  * Default implementation for {@link FamiliesSuggestionsResource} using XWiki's support for REST resources.
@@ -35,7 +34,7 @@ import javax.ws.rs.DefaultValue;
  * @since 1.4M3
  */
 @Component
-@Named("org.phenotips.data.rest.internal.DefaultFamiliesSuggestionsResourceImpl")
+@Named("org.phenotips.studies.family.rest.internal.DefaultFamiliesSuggestionsResourceImpl")
 @Singleton
 public class DefaultFamiliesSuggestionsResourceImpl extends XWikiResource implements FamiliesSuggestionsResource
 {
@@ -43,11 +42,9 @@ public class DefaultFamiliesSuggestionsResourceImpl extends XWikiResource implem
     private PhenotipsFamilyExport familyExport;
 
     @Override
-    public String suggest(String input, @DefaultValue("10") int maxResults,
-        @DefaultValue("view") String requiredPermission, @DefaultValue("id") String orderField,
-        @DefaultValue("asc") String order)
+    public String suggest(String input, int maxResults, String requiredPermission, String orderField, String order,
+        boolean returnAsJSON)
     {
-        return this.familyExport.searchFamilies(input, maxResults, requiredPermission, orderField, order);
+        return this.familyExport.searchFamilies(input, maxResults, requiredPermission, orderField, order, returnAsJSON);
     }
-
 }
