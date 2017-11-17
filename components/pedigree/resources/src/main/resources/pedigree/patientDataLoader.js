@@ -15,7 +15,7 @@ define(["pedigree/model/helpers"], function(Helpers){
 
         load: function(patientList, dataProcessorWhenReady) {
             if (patientList.length == 0) {
-                dataProcessorWhenReady(this._patientData);
+                dataProcessorWhenReady({});
                 document.fire("pedigree:blockinteraction:finish");
                 return;
             }
