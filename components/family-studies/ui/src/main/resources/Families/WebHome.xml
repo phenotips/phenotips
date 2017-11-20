@@ -63,7 +63,6 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 
 #set ($familyClassName = 'PhenoTips.FamilyClass')
-#set ($columns = ['doc.name', 'external_id', 'doc.creator', 'doc.creationDate', 'doc.author', 'doc.date', 'proband_id'])
 #set ($columns = $collectionstool.arrayList)
 #set ($discard = $columns.addAll(['doc.name', 'external_id', 'doc.creator', 'doc.creationDate', 'doc.author', 'doc.date', 'proband_id']))
 #set ($columnsProperties = {
