@@ -178,6 +178,8 @@
     resultHint: "hint",
     // What kind of tooltip (if any) should be attached to each entry. Default: none.
     tooltip: false,
+    // If free text entries allowed, mark them as such. Default: false.
+    markFreeText: false,
     // The id of the element that will hold the suggest element
     //parentContainer : "body",
     // Should results fragments be highlighted when matching typed input
@@ -189,7 +191,7 @@
     insertBeforeSuggestions: null,
     // Should id be displayed or hidden
     displayId: false,
-    // If multiple ids are available will return only the first one iif set to true, all otherwise.
+    // If multiple ids are available will return only the first one iff set to true, all otherwise.
     forceFirstId : false,
     // Should value be displayed as a hint
     displayValue: false,
@@ -1220,6 +1222,7 @@
          id: this.fld.value,
          value: this.fld.value,
          category: customItemCategoriesElt,
+         custom: true,
          info: new Element('div', {'class' : 'hint'}).update('(your text, not a standard term)')
        }, 'custom-value', true));
     }
@@ -1252,6 +1255,7 @@
             .insert(new Element('span', {'class':'suggestId'}).update(data.id.escapeHTML()))
             .insert(new Element('span', {'class':'suggestValue'}).update(data.value.escapeHTML()))
             .insert(new Element('div', {'class':'suggestCategory'}).update(data.category));
+    data.custom &amp;&amp; valueNode.insert(new Element('div', {'class':'isCustom'}).update(data.custom));
     valueNode.store('itemData', data);
 
     var item = new PhenoTips.widgets.XListItem( displayNode , {
@@ -1458,7 +1462,8 @@
         value    : inputData.value || this.iHighlighted.down(".suggestValue").innerHTML,
         info     : inputData.info || this.iHighlighted.down(".suggestInfo").innerHTML,
         icon     : inputData.icon || (this.iHighlighted.down('img.icon') ? this.iHighlighted.down('img.icon').src : ''),
-        category : this.iHighlighted.down(".suggestCategory").innerHTML
+        category : this.iHighlighted.down(".suggestCategory").innerHTML,
+        custom   : inputData.custom || false
       };
       this.acceptEntry(data, selection, newFieldValue);
     }
@@ -1724,12 +1729,12 @@
   acceptSuggestion : function(obj) {
     this.input.value = this.input.defaultValue || "";
     if (this.acceptAddItem(obj.id || obj.value, obj.negative)) {
-      this.addItem(obj.id || obj.value, obj.value, obj.info, obj.category);
+      this.addItem(obj.id || obj.value, obj.value, obj.info, obj.category, obj.custom);
     }
     return false;
   },
 
-  addItem : function(key, value, info, category) {
+  addItem : function(key, value, info, category, custom) {
     if (!key) {
       return;
     }
@@ -1743,7 +1748,7 @@
     }
     displayedValue.insert({'bottom' : new Element("input", inputOptions)});
     // if the key should be displayed, insert it
-    if (this.options.showKey) {
+    if (this.options.showKey &amp;&amp; !custom) {
       displayedValue.insert({'bottom' : new Element("span", {"class": "key"}).update("[" + key.escapeHTML() + "]")});
       displayedValue.insert({'bottom' : new Element("span", {"class": "sep"}).update(" ")});
     }
@@ -1751,7 +1756,7 @@
     displayedValue.insert({'bottom' : new Element("span", {"class": "value"}).update(value.escapeHTML())});
     listItem.insert(displayedValue);
     if(this.suggest.options.tooltip) {
-      var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton ' + this.suggest.options.tooltip, title : key, 'data-source' : this.input &amp;&amp; this.input.id || ''});
+      var infoTool = this.suggest.options.markFreeText &amp;&amp; custom ? new Element('span', {'class' : 'fa fa-fw fa-exclamation-triangle', 'title' : this.suggest.options.freeTextTooltipHint || ''}) : new Element('span', {'class' : 'fa fa-info-circle xHelpButton ' + this.suggest.options.tooltip, title : key, 'data-source' : this.input &amp;&amp; this.input.id || ''});
       listItem.insert(infoTool);
     }
     if (category &amp;&amp; category != '') {

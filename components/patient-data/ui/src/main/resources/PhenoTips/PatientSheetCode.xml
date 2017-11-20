@@ -577,14 +577,18 @@ document.observe('xwiki:dom:loaded', function()
             resultsParameter : "rows",
             resultValue : "name",
             resultInfo : {},
-            tooltip: 'omim-disease-info'
+            tooltip: 'omim-disease-info',
+            markFreeText: true,
+            freeTextTooltipHint: "$!escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.nonStandardDisorder'))"
         },
         "ordo" : {
             script: XWiki.contextPath + "/rest/vocabularies/ordo/suggest?",
             noresults: "$escapetool.javascript($services.localization.render('phenotips.DBWebHomeSheet.noResults'))",
             resultsParameter : "rows",
             resultValue : "name",
-            tooltip: 'ordo-disease-info'
+            tooltip: 'ordo-disease-info',
+            markFreeText: true,
+            freeTextTooltipHint: "$!escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.nonStandardDisorder'))"
         }
     };
     var pickerSpecialClassOptions = {
@@ -1066,6 +1070,7 @@ document.observe('xwiki:dom:loaded', function()
                  var tmp = suggestPicker.silent;
                  suggestPicker.silent = true;
                  customFieldsContainer.select('.term-entry').each(function(entry) {
+                   var notMapped = entry.hasClassName('notmapped');
                    var negativeCheckbox = entry.down('.yes-no-picker .no input');
                    var value =  entry.down('input[type="checkbox"]').value;
                    var text = negativeCheckbox &amp;&amp; negativeCheckbox.title || entry.down('input[type="checkbox"]').title;
@@ -1074,7 +1079,7 @@ document.observe('xwiki:dom:loaded', function()
                      var negative = new Element('input', {type: 'hidden', name : 'fieldName', value : negativeCheckbox.name});
                      category &amp;&amp; category.insert(negative) || (category = negative);
                    }
-                   suggestPicker.addItem(value, text, '', category || '');
+                   suggestPicker.addItem(value, text, '', category || '', notMapped);
                  });
                  suggestPicker.silent = tmp;
               }
@@ -3875,7 +3880,8 @@ h1, h2, h3, h4 {
   margin-left: 2em !important;
 }
 
-.vocabulary-term-list .term-id {
+.vocabulary-term-list a.term-id,
+.vocabulary-term-list span.term-id {
   font-family: monospace;
   white-space: pre;
 }</code>
