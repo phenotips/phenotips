@@ -129,7 +129,7 @@
 
             var _this = this;
 
-            this.familySearchUrl = XWiki.contextPath + "/rest/families/suggest";
+            this.familySearchUrl = XWiki.contextPath + "/rest/families/suggest?";
 
             var mainDiv = new Element('div', {'class': 'family-selector'});
 
