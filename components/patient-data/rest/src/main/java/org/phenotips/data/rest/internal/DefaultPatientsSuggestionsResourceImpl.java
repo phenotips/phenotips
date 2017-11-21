@@ -225,7 +225,6 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
         // Add family info
         Family family = this.familyRepository.getFamilyForPatient(patient);
         if (family != null) {
-            xmlResult.append("familyId=\"").append(family.getId()).append("\" ");
             if (markFamilyAssociation) {
                 description.concat(", in family: ").concat(family.getId());
             }
