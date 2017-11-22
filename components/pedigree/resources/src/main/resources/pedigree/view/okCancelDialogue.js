@@ -42,26 +42,34 @@ define([], function(){
        *
        * @method show
        */
-      showWithCheckbox: function(message, title, checkboxText, defaultState, okButtonText, onOKFunction, cancelButtonText, onCancelFunction) {
+      showWithCheckbox: function(message, title, checkboxText, defaultState,
+                                 okButtonText, onOKFunction,
+                                 cancelButtonText, onCancelFunction,
+                                 optionalThirdButtonText, optionalThirdButtonFunction) {
           // add checkbox
           var message = message + '<br/><input ' + (defaultState ? 'checked ' : '') + 'type="checkbox" id ="okcancelcheckbox" value="checked">' +
                                   '<label class="field-no-user-select" for="okcancelcheckbox">' + checkboxText + '</label>';
-          var onOK = function() {
+
+          var getState = function() {
               // read checkbox state & clal original onOK with the state as the parameter
               var checkbox = $$('input[type=checkbox][id="okcancelcheckbox"]');
-              var state = checkbox ? checkbox[0].checked : defaultState;
-              onOKFunction(state);
+              return (checkbox ? checkbox[0].checked : defaultState);
+          }
+          var onOK = function() {
+              onOKFunction(getState());
           }
           var onCancel = function() {
-              var checkbox = $$('input[type=checkbox][id="okcancelcheckbox"]');
-              var state = checkbox ? checkbox[0].checked : defaultState;
-              onCancelFunction(state);
+              onCancelFunction(getState());
           }
-          this.showCustomized(message, title, okButtonText, onOK, cancelButtonText, onCancelFunction);
+          var onThirdButton = function() {
+              optionalThirdButtonFunction(getState());
+          }
+          this.showCustomized(message, title, okButtonText, onOK, cancelButtonText, onCancelFunction,
+                  optionalThirdButtonText, onThirdButton, true);
       },
 
       /**
-       * Displays the dialogue
+       * Displays the dialogue (vanilla OK\Cancel sytyle)
        *
        * @method show
        */

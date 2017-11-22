@@ -107,6 +107,10 @@ define([
             return this.vocabulariesService + "/omim";
         },
 
+        getPatientDeleteURL: function(patientId) {
+            return XWiki.contextPath + "/rest/patients/" + patientId + "?method=DELETE";
+        },
+
         getPatientSuggestServiceURL: function() {
             return this.patientSuggestService.getURL("get", 'outputSyntax=plain&rand='+ Math.random());
         },
@@ -114,6 +118,10 @@ define([
         // contextaction is optional parameter
         getPhenotipsPatientURL: function(patientId, contextaction) {
             return new XWiki.Document(patientId, 'data').getURL(contextaction);
+        },
+
+        getPhenotipsPatientHTMLLink: function(patientId) {
+            return "<a href='" + this.getPhenotipsPatientURL(patientId) + "'>" + patientId + "</a>";
         },
 
         // contextaction is optional parameter

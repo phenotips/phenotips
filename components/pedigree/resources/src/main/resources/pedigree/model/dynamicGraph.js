@@ -81,7 +81,7 @@ define([
             if (htmlPatientLink) {
                 var space = "&nbsp;";
                 if (phenotipsId != "") {
-                    phenotipsId = "<a href='" + editor.getExternalEndpoint().getPhenotipsPatientURL(phenotipsId) + "'>" + phenotipsId + "</a>";
+                    phenotipsId = editor.getExternalEndpoint().getPhenotipsPatientHTMLLink(phenotipsId);
                 }
             }
             var props = this.getProperties(id);

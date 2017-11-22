@@ -100,11 +100,16 @@ input[type="radio"] {
   margin: 0;
 }
 .loading-indicator {
-    background-image: url("$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')");
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 100px;
-    width: 200px;
+  background-image: url("$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')");
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 80px;
+}
+.busy-progressbar-container {
+  width: 100%;
+}
+.busy-indicator-text {
+  margin-top: 2em;
 }
 .editor-menu .menu-item:hover {
   box-shadow: #fff 0 0 5px 0;
