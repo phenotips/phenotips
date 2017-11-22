@@ -63,12 +63,22 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 
 #set ($familyClassName = 'PhenoTips.FamilyClass')
-#set ($columns = ['doc.name', 'external_id', 'doc.creator', 'doc.creationDate', 'doc.author', 'doc.date', 'proband_id'])
+#set ($columns = $collectionstool.arrayList)
+#set ($discard = $columns.addAll(['doc.name', 'external_id', 'doc.creator', 'doc.creationDate', 'doc.author', 'doc.date', 'proband_id']))
 #set ($columnsProperties = {
   '_actions' : {'actions': ['edit', 'delete']}
 })
+#set ($columnFilters ={})
+#if (!$xwiki.getDocument('PhenoTips.OwnerClass').isNew())
+  #set ($columns[2] = 'owner') ## replace creator with owner
+  #set ($discard = $columnFilters.put('owner/class', 'PhenoTips.OwnerClass'))
+#end
+#set ($columnFiltersContent = '')
+#foreach ($f in $columnFilters.keySet())
+  #set($columnFiltersContent = "${columnFiltersContent}&lt;input type='hidden' name='$escapetool.xml($f)' value='$escapetool.xml($columnFilters.get($f))'/&gt;")
+#end
 #foreach ($column in $columns)
-  #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0) &amp;&amp; ($column != 'doc.creator') &amp;&amp; ($column != 'doc.author'))
+  #set ($isFilterable = ($column == 'doc.name' || $column == 'external_id' || $column == 'proband_id' || $column.endsWith('name')))
   #set ($link = "#if ($column == 'doc.name' || $column == 'external_id')view#{else}field#end")
   #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : $link, 'size' : 7, 'filterable' : $isFilterable, 'sortable': true}))
 #end
@@ -80,7 +90,7 @@ $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
   'translationPrefix' : 'family.livetable.',
   'rowCount'          : 25,
   'maxPages'          : 10,
-  'topFilters'        : $topFilters,
+  'topFilters'        : "${topFilters}${columnFiltersContent}",
   'selectedColumn'    : 'doc.name',
   'defaultOrder'      : 'asc',
   'resultPage'        : 'PhenoTips.LiveTableResults'
