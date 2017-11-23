@@ -37,7 +37,6 @@ import com.xpn.xwiki.store.XWikiHibernateBaseStore.HibernateCallback;
 import com.xpn.xwiki.store.migration.DataMigrationException;
 import com.xpn.xwiki.store.migration.XWikiDBVersion;
 import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
-import com.xpn.xwiki.store.migration.hibernate.HibernateDataMigration;
 
 /**
  * Migration for PhenoTips issue PT-2592: Cannot easily query all studies using a specific field. Update all studies to
@@ -47,7 +46,7 @@ import com.xpn.xwiki.store.migration.hibernate.HibernateDataMigration;
  * @version $Id$
  * @since 1.3M2
  */
-@Component(roles = { HibernateDataMigration.class })
+@Component
 @Named("R71492-PT-2592")
 @Singleton
 public class R71492PhenoTips2592DataMigration extends AbstractHibernateDataMigration
