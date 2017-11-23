@@ -43,10 +43,10 @@ define([
 
                 // 2)
                 var stateJSON = JSON.parse(state.serializedState);
-                stateJSON.GG.forEach(function(nodeInternalJSON) {
-                    if (nodeInternalJSON.prop && nodeInternalJSON.prop.phenotipsId
-                        && nodeInternalJSON.prop.phenotipsId == removedID) {
-                        delete nodeInternalJSON.prop.phenotipsId;
+                stateJSON.baseGraph.properties.forEach(function(nodeInternalPropertyJSON) {
+                    if (nodeInternalPropertyJSON.phenotipsId
+                        && nodeInternalPropertyJSON.phenotipsId == removedID) {
+                        delete nodeInternalPropertyJSON.phenotipsId;
                     }
                 });
                 state.serializedState = JSON.stringify(stateJSON);
