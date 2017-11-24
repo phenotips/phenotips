@@ -97,26 +97,20 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
     private Provider<XWikiContext> provider;
 
     @Override
-    public String suggest(String input, int maxResults, String requiredPermission, boolean markFamilyAssociation,
-        String orderField, String order, boolean returnAsJSON)
+    public String suggestAsJSON(String input, int maxResults, String requiredPermission, boolean markFamilyAssociation,
+        String orderField, String order)
     {
         if (StringUtils.isEmpty(input)) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
+        List<String> queryResults = queryPatients(input.toLowerCase(), orderField, order, maxResults);
+
         JSONArray results = null;
-        StringBuilder xmlResult = null;
         JSONObject jsonResult = null;
 
-        if (returnAsJSON) {
-            results = new JSONArray();
-            jsonResult = new JSONObject();
-        } else {
-            xmlResult = new StringBuilder();
-            xmlResult.append("<results>");
-        }
-
-        List<String> queryResults = queryPatients(input.toLowerCase(), orderField, order, maxResults);
+        results = new JSONArray();
+        jsonResult = new JSONObject();
 
         for (String queryResult : queryResults) {
             Patient patient = this.patientRepository.get(queryResult);
@@ -130,20 +124,45 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
                 continue;
             }
 
-            if (returnAsJSON) {
-                results.put(getPatientJSON(patient, markFamilyAssociation));
-            } else {
-                appentPatientXmlResult(patient, xmlResult, markFamilyAssociation);
-            }
+            results.put(getPatientJSON(patient, markFamilyAssociation));
         }
 
-        if (returnAsJSON) {
-            jsonResult.put("matchedPatients", results);
-            return jsonResult.toString();
-        } else {
-            xmlResult.append("</results>");
-            return xmlResult.toString();
+        jsonResult.put("matchedPatients", results);
+        return jsonResult.toString();
+    }
+
+    @Override
+    public String suggestAsXML(String input, int maxResults, String requiredPermission, boolean markFamilyAssociation,
+        String orderField, String order)
+    {
+        if (StringUtils.isEmpty(input)) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
+
+        List<String> queryResults = queryPatients(input.toLowerCase(), orderField, order, maxResults);
+
+        StringBuilder xmlResult = null;
+
+        xmlResult = new StringBuilder();
+        xmlResult.append("<results>");
+
+        for (String queryResult : queryResults) {
+            Patient patient = this.patientRepository.get(queryResult);
+            if (patient == null) {
+                continue;
+            }
+
+            Right right = Right.toRight(requiredPermission);
+            if (!this.authorizationService.hasAccess(this.userManager.getCurrentUser(), right,
+                patient.getDocumentReference())) {
+                continue;
+            }
+
+            appentPatientXML(patient, xmlResult, markFamilyAssociation);
+        }
+
+        xmlResult.append("</results>");
+        return xmlResult.toString();
     }
 
     private List<String> queryPatients(String input, String orderField, String order, int maxResults)
@@ -213,7 +232,7 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
         return patientJSON;
     }
 
-    private void appentPatientXmlResult(Patient patient, StringBuilder xmlResult, boolean markFamilyAssociation)
+    private void appentPatientXML(Patient patient, StringBuilder xmlResult, boolean markFamilyAssociation)
     {
         String escapedReference = XMLUtils.escapeXMLComment(patient.getDocumentReference().toString());
 

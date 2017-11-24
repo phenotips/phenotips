@@ -23,7 +23,9 @@ import org.phenotips.rest.Relation;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 /**
  * Resource for working with multiple patient records, identified by their given "external" or "internal" identifiers.
@@ -36,27 +38,47 @@ import javax.ws.rs.QueryParam;
 @Relation("https://phenotips.org/rel/suggest")
 public interface PatientsSuggestionsResource
 {
-
     /**
-     * Provides term suggestions for the patient records, where id or external matching input. If no suggestions are
-     * found an empty list is returned.
+     * Provides patient suggestions, where the identifier, external identifier, or name match the input. If no
+     * suggestions are found, an empty list is returned.
      *
-     * @param input The string which will be used to generate suggestions
+     * @param input the string which will be used to generate suggestions
      * @param maxResults The maximum number of results to be returned
      * @param requiredPermission permission a user has to have over each patient record in the result
      * @param markFamilyAssociation boolean indicator for adding family info into patient description
      * @param orderField field used for ordering the patients, can be one of {@code id} (default) or {@code eid}
      * @param order the sorting order, can be one of {@code asc} (default) or {@code desc}
-     * @param returnAsJSON if true, the result is returned as JSON, otherwise as XML
      * @return a list of patient records
      */
     @GET
-    String suggest(
+    @Produces(MediaType.APPLICATION_JSON)
+    String suggestAsJSON(
         @QueryParam("input") String input,
         @QueryParam("maxResults") @DefaultValue("10") int maxResults,
         @QueryParam("requiredPermission") @DefaultValue("view") String requiredPermission,
         @QueryParam("markFamilyAssociation") @DefaultValue("false") boolean markFamilyAssociation,
         @QueryParam("orderField") @DefaultValue("id") String orderField,
-        @QueryParam("order") @DefaultValue("asc") String order,
-        @QueryParam("returnAsJSON") @DefaultValue("true") boolean returnAsJSON);
+        @QueryParam("order") @DefaultValue("asc") String order);
+
+    /**
+     * Provides patient suggestions as XML, where the identifier, external identifier, or name match the input. If no
+     * suggestions are found, an empty list is returned. The format is the one expected by XWiki's global search widget.
+     *
+     * @param input the string which will be used to generate suggestions
+     * @param maxResults The maximum number of results to be returned
+     * @param requiredPermission permission a user has to have over each patient record in the result
+     * @param markFamilyAssociation boolean indicator for adding family info into patient description
+     * @param orderField field used for ordering the patients, can be one of {@code id} (default) or {@code eid}
+     * @param order the sorting order, can be one of {@code asc} (default) or {@code desc}
+     * @return a list of patient records
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_XML)
+    String suggestAsXML(
+        @QueryParam("input") String input,
+        @QueryParam("maxResults") @DefaultValue("10") int maxResults,
+        @QueryParam("requiredPermission") @DefaultValue("view") String requiredPermission,
+        @QueryParam("markFamilyAssociation") @DefaultValue("false") boolean markFamilyAssociation,
+        @QueryParam("orderField") @DefaultValue("id") String orderField,
+        @QueryParam("order") @DefaultValue("asc") String order);
 }

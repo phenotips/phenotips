@@ -526,7 +526,7 @@
       <resultsNumber>5</resultsNumber>
     </property>
     <property>
-      <url>${request.contextPath}/rest/patients/suggest?returnAsJSON=false</url>
+      <url>${request.contextPath}/rest/patients/suggest</url>
     </property>
   </object>
   <object>
@@ -674,7 +674,7 @@
       <resultsNumber>5</resultsNumber>
     </property>
     <property>
-      <url>${request.contextPath}/rest/patients/suggest?returnAsJSON=false</url>
+      <url>${request.contextPath}/rest/patients/suggest</url>
     </property>
   </object>
   <object>
@@ -822,7 +822,7 @@
       <resultsNumber>5</resultsNumber>
     </property>
     <property>
-      <url>${request.contextPath}/rest/patients/suggest?returnAsJSON=false</url>
+      <url>${request.contextPath}/rest/patients/suggest</url>
     </property>
   </object>
   <object>
