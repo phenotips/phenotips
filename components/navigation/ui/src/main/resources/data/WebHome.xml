@@ -254,12 +254,90 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <valueField>doc.name</valueField>
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
       </phenotypeMapping>
+      <showInternalIdInPlaceOfExternal>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>showInternalIdInPlaceOfExternal</name>
+      <number>9</number>
+      <prettyName>Add ability to show external identifiers in place of internal ones in the Patient and Family record forms</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </showInternalIdInPlaceOfExternal>
+    <autogenerateInternalIdForFamilies>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>autogenerateInternalIdForFamilies</name>
+      <number>11</number>
+      <prettyName>Auto generate external ID for Families only</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </autogenerateInternalIdForFamilies>
+    <familyExternalIdFormat>
+      <customDisplay>{{velocity}}
+#if ($xcontext.action == 'edit' || $xcontext.action == 'admin')
+{{html wiki=false clean=false}}
+&lt;select name="$prefix$name" id="$prefix$name"&gt;
+#foreach ($val in ['XXXXXX', 'XX-XX-XX'])
+  &lt;option #if ($val == $value) selected="selected"#end value="$val"&gt;$val&lt;/option&gt;
+#end
+&lt;/select&gt;
+{{/html}}
+#else
+$!value
+#end
+{{/velocity}}</customDisplay>
+      <disabled>0</disabled>
+      <name>familyExternalIdFormat</name>
+      <number>12</number>
+      <picker>0</picker>
+      <prettyName>Family external ID format</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </familyExternalIdFormat>
+    <familyExternalIdPrefix>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>familyExternalIdPrefix</name>
+      <number>10</number>
+      <picker>0</picker>
+      <prettyName>Add a prefix to be displayed before/after the external ID for families</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </familyExternalIdPrefix>
     </class>
     <property>
       <dateOfBirthFormat>yyyy-MM-dd</dateOfBirthFormat>
     </property>
     <property>
       <enableImperialUnitSystem>0</enableImperialUnitSystem>
+    </property>
+    <property>
+      <showInternalIdInPlaceOfExternal>0</showInternalIdInPlaceOfExternal>
+    </property>
+    <property>
+      <autogenerateInternalIdForFamilies>0</autogenerateInternalIdForFamilies>
+    </property>
+    <property>
+      <familyExternalIdFormat>XXXXXX</familyExternalIdFormat>
+    </property>
+    <property>
+      <familyExternalIdPrefix>FAM</familyExternalIdPrefix>
     </property>
     <property>
       <livetableColumns>
@@ -1815,6 +1893,10 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##</codeToExecute>
         <value>dateOfBirthFormat</value>
         <value>enableImperialUnitSystem</value>
         <value>measurementUnitSystem</value>
+        <value>showInternalIdInPlaceOfExternal</value>
+        <value>autogenerateInternalIdForFamilies</value>
+        <value>familyExternalIdFormat</value>
+        <value>familyExternalIdPrefix</value>
       </propertiesToShow>
     </property>
     <property>
