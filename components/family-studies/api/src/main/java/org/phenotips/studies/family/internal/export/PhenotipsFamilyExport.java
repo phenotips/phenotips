@@ -118,20 +118,22 @@ public class PhenotipsFamilyExport
     private Provider<XWikiContext> provider;
 
     /**
-     * Returns a list of families by the input search criteria. The user has to have requiredPermissions on each family.
-     * The list is returned as JSON if returnAsJSON is true or as XML otherwise.
+     * Returns a list of families by the input search criteria. The user has to have requiredPermission on each family.
      *
      * @param input criterion to select families by
      * @param resultsLimit maximal number of results for each query
-     * @param requiredPermissions permissions a user has to have over each family in the result
+     * @param requiredPermission permission a user has to have over each family in the result
+     * @param orderField field used for ordering the families, can be one of {@code id} (default) or {@code eid}
+     * @param order the sorting order, can be one of {@code asc} (default) or {@code desc}
      * @param returnAsJSON if true, the result is returned as JSON, otherwise as XML
      * @return list of families
      */
-    public String searchFamilies(String input, int resultsLimit, String requiredPermissions, boolean returnAsJSON)
+    public String searchFamilies(String input, int resultsLimit, String requiredPermission, String orderField,
+        String order, boolean returnAsJSON)
     {
         Set<FamilySearchResult> results = new LinkedHashSet<>();
-        queryFamilies(input, requiredPermissions, resultsLimit, results);
-        queryPatients(input, requiredPermissions, resultsLimit, results);
+        queryFamilies(input, requiredPermission, resultsLimit, orderField, order, results);
+        queryPatients(input, requiredPermission, resultsLimit, orderField, order, results);
         return formatResults(results, resultsLimit, returnAsJSON);
     }
 
@@ -191,15 +193,25 @@ public class PhenotipsFamilyExport
         return patientJSON;
     }
 
-    private void queryFamilies(String input, String requiredPermissions, int resultsLimit,
-        Set<FamilySearchResult> results)
+    private void queryFamilies(String input, String requiredPermission, int resultsLimit, String orderField,
+        String order, Set<FamilySearchResult> results)
     {
+        String safeOrderField = "doc.name";
+        if ("eid".equals(orderField)) {
+            safeOrderField = "family.external_id";
+        }
+        String safeOrder = " asc";
+        if ("desc".equals(order)) {
+            safeOrder = " desc";
+        }
+
         StringBuilder querySb = new StringBuilder();
         querySb.append("select doc.name ");
         querySb.append(" from  Document doc, ");
         querySb.append("       doc.object(PhenoTips.FamilyClass) as family ");
         querySb.append(" where lower(doc.name) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
         querySb.append(" or lower(family.external_id) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
+        querySb.append(" order by " + safeOrderField + safeOrder);
 
         List<String> queryResults = runQuery(querySb.toString(), input, resultsLimit);
 
@@ -210,23 +222,32 @@ public class PhenotipsFamilyExport
                 continue;
             }
 
-            Right right = Right.toRight(requiredPermissions);
+            Right right = Right.toRight(requiredPermission);
             if (!this.authorizationService.hasAccess(
                 this.userManager.getCurrentUser(), right, family.getDocumentReference())) {
                 continue;
             }
 
-            results.add(new FamilySearchResult(family, requiredPermissions));
+            results.add(new FamilySearchResult(family, requiredPermission));
         }
     }
 
-    private void queryPatients(String input, String requiredPermissions, int resultsLimit,
-        Set<FamilySearchResult> results)
+    private void queryPatients(String input, String requiredPermission, int resultsLimit, String orderField,
+        String order, Set<FamilySearchResult> results)
     {
+        String safeOrderField = "doc.name";
+        if ("eid".equals(orderField)) {
+            safeOrderField = "patient.external_id";
+        }
+        String safeOrder = " asc";
+        if ("desc".equals(order)) {
+            safeOrder = " desc";
+        }
+
         StringBuilder querySb = new StringBuilder();
-        querySb.append("from doc.object(PhenoTips.PatientClass) as patient, ");
-        querySb.append(" doc.object(PhenoTips.FamilyReferenceClass) as familyref ");
-        querySb.append("  where lower(doc.name) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
+        querySb.append("from doc.object(PhenoTips.PatientClass) as patient,");
+        querySb.append(" doc.object(PhenoTips.FamilyReferenceClass) as familyref");
+        querySb.append(" where lower(doc.name) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
         querySb.append(" or lower(patient.external_id) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
 
         boolean usePatientName = this.configuration.getConfiguration(PATIENT_LABEL).getEnabledFieldNames()
@@ -235,6 +256,7 @@ public class PhenotipsFamilyExport
             querySb.append(" or lower(patient.first_name) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
             querySb.append(" or lower(patient.last_name) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
         }
+        querySb.append(" order by " + safeOrderField + safeOrder);
 
         List<String> queryResults = runQuery(querySb.toString(), input, resultsLimit);
 
@@ -245,7 +267,7 @@ public class PhenotipsFamilyExport
                 continue;
             }
 
-            Right right = Right.toRight(requiredPermissions);
+            Right right = Right.toRight(requiredPermission);
             if (!this.authorizationService.hasAccess(this.userManager.getCurrentUser(), right,
                 patient.getDocumentReference())) {
                 continue;
@@ -256,13 +278,13 @@ public class PhenotipsFamilyExport
                 continue;
             }
 
-            results.add(new FamilySearchResult(patient, usePatientName, family, requiredPermissions));
+            results.add(new FamilySearchResult(patient, usePatientName, family, requiredPermission));
         }
     }
 
     private List<String> runQuery(String queryString, String input, int resultsLimit)
     {
-        String formattedInput = String.format(PhenotipsFamilyExport.INPUT_FORMAT, input);
+        String formattedInput = String.format(PhenotipsFamilyExport.INPUT_FORMAT, input.toLowerCase());
 
         // Query patients
         Query query = null;
@@ -273,7 +295,7 @@ public class PhenotipsFamilyExport
             query.bindValue(PhenotipsFamilyExport.INPUT_PARAMETER, formattedInput);
             queryResults = query.execute();
         } catch (QueryException e) {
-            this.logger.error("Error while performing patiets query: [{}] ", e.getMessage());
+            this.logger.error("Error while performing patients/families query: [{}] ", e.getMessage());
             return Collections.emptyList();
         }
         return queryResults;
@@ -325,6 +347,7 @@ public class PhenotipsFamilyExport
             xmlResult.append("</results>");
             return xmlResult.toString();
         }
+
     }
 
     /**

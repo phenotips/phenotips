@@ -27,7 +27,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- * Root resource for working with patient records.
+ * Root resource for working with family records.
  *
  * @version $Id$
  * @since 1.4

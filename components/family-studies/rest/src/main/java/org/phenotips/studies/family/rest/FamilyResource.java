@@ -36,7 +36,7 @@ public interface FamilyResource
 {
     /**
      * Retrieve a family record, identified by its internal PhenoTips identifier, in its JSON representation. If the
-     * indicated familyt record doesn't exist, or if the user sending the request doesn't have the right to view the
+     * indicated family record doesn't exist, or if the user sending the request doesn't have the right to view the
      * target family record, an error is returned.
      *
      * @param id the family's internal identifier, see {@link org.phenotips.studies.family.Family#getId()}

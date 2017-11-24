@@ -65,8 +65,8 @@ public class ConsentsRecordConfigurationModule implements RecordConfigurationMod
     @Override
     public RecordConfiguration process(RecordConfiguration config)
     {
-        if (config == null) {
-            return null;
+        if (config == null || this.dab.getCurrentDocumentReference() == null) {
+            return config;
         }
 
         final Patient patient = this.patients.get(this.dab.getCurrentDocumentReference());
