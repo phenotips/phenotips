@@ -18,6 +18,7 @@
 package org.phenotips.studies.family.rest;
 
 import org.phenotips.rest.ParentResource;
+import org.phenotips.rest.Relation;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -34,6 +35,7 @@ import javax.ws.rs.core.MediaType;
  */
 @Path("/families/suggest")
 @ParentResource(FamiliesResource.class)
+@Relation("https://phenotips.org/rel/suggest")
 public interface FamiliesSuggestionsResource
 {
     /**

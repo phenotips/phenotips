@@ -20,8 +20,6 @@ package org.phenotips.data.rest;
 import org.phenotips.rest.ParentResource;
 import org.phenotips.rest.Relation;
 
-import org.xwiki.rest.resources.RootResource;
-
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -34,8 +32,8 @@ import javax.ws.rs.QueryParam;
  * @since 1.4M3
  */
 @Path("/patients/suggest")
-@Relation("https://phenotips.org/rel/patientRecords")
-@ParentResource(RootResource.class)
+@ParentResource(PatientsResource.class)
+@Relation("https://phenotips.org/rel/suggest")
 public interface PatientsSuggestionsResource
 {
 
