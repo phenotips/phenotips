@@ -104,13 +104,14 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        List<String> queryResults = queryPatients(input.toLowerCase(), orderField, order, maxResults);
+        List<String> queryResults = queryPatients(input.toLowerCase(), orderField, order);
 
         JSONArray results = null;
         JSONObject jsonResult = null;
 
         results = new JSONArray();
         jsonResult = new JSONObject();
+        int count = 0;
 
         for (String queryResult : queryResults) {
             Patient patient = this.patientRepository.get(queryResult);
@@ -125,6 +126,9 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
             }
 
             results.put(getPatientJSON(patient, markFamilyAssociation));
+            if (++count >= maxResults) {
+                break;
+            }
         }
 
         jsonResult.put("matchedPatients", results);
@@ -139,12 +143,13 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        List<String> queryResults = queryPatients(input.toLowerCase(), orderField, order, maxResults);
+        List<String> queryResults = queryPatients(input.toLowerCase(), orderField, order);
 
         StringBuilder xmlResult = null;
 
         xmlResult = new StringBuilder();
         xmlResult.append("<results>");
+        int count = 0;
 
         for (String queryResult : queryResults) {
             Patient patient = this.patientRepository.get(queryResult);
@@ -159,13 +164,16 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
             }
 
             appentPatientXML(patient, xmlResult, markFamilyAssociation);
+            if (++count >= maxResults) {
+                break;
+            }
         }
 
         xmlResult.append("</results>");
         return xmlResult.toString();
     }
 
-    private List<String> queryPatients(String input, String orderField, String order, int maxResults)
+    private List<String> queryPatients(String input, String orderField, String order)
     {
         List<String> queryResults = new LinkedList<>();
 
@@ -193,7 +201,6 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
         querySb.append(" order by " + safeOrderField + safeOrder);
         try {
             Query query = this.qm.createQuery(querySb.toString(), Query.XWQL);
-            query.setLimit(maxResults);
             query.bindValue("t", "PatientTemplate");
             String formattedInput = String.format(INPUT_FORMAT, input);
             query.bindValue(INPUT_PARAMETER, formattedInput);
