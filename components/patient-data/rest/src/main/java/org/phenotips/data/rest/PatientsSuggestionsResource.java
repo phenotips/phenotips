@@ -28,10 +28,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
- * Resource for working with multiple patient records, identified by their given "external" or "internal" identifiers.
+ * Resource for searching for patients matching an input (patient suggest).
  *
  * @version $Id$
- * @since 1.4M3
+ * @since 1.4
  */
 @Path("/patients/suggest")
 @ParentResource(PatientsResource.class)

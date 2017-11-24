@@ -57,7 +57,7 @@ import com.xpn.xwiki.XWikiContext;
  * Default implementation for {@link PatientsSuggestionsResource} using XWiki's support for REST resources.
  *
  * @version $Id$
- * @since 1.4M3
+ * @since 1.4
  */
 @Component
 @Named("org.phenotips.data.rest.internal.DefaultPatientsSuggestionsResourceImpl")
@@ -200,7 +200,7 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
 
             queryResults = query.execute();
         } catch (QueryException e) {
-            this.logger.error("Error while performing patiets query: [{}] ", e.getMessage());
+            this.logger.error("Error while performing patients query: [{}] ", e.getMessage());
             return Collections.emptyList();
         }
         return queryResults;
@@ -265,20 +265,20 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
     private String getDescription(Patient patient)
     {
         // Add description
-        StringBuilder descriptionSb = new StringBuilder(patient.getId());
+        StringBuilder description = new StringBuilder(patient.getId());
         String patientName = "";
         PatientData<String> patientNames = patient.getData("patientName");
         String firstName = StringUtils.defaultString(patientNames.get("first_name"));
         String lastName = StringUtils.defaultString(patientNames.get("last_name"));
         patientName = (firstName + " " + lastName).trim();
         if (StringUtils.isNotEmpty(patientName)) {
-            descriptionSb.append(", name: ").append(patientName);
+            description.append(", name: ").append(patientName);
         }
         String patientExternalId = patient.getExternalId();
         if (StringUtils.isNotEmpty(patientExternalId)) {
-            descriptionSb.append(", identifier: ").append(patientExternalId);
+            description.append(", identifier: ").append(patientExternalId);
         }
 
-        return descriptionSb.toString();
+        return description.toString();
     }
 }
