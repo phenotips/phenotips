@@ -25,10 +25,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
 /**
- * Resource for working with multiple family records, identified by their given "external" or "internal" identifiers.
+ * Resource for searching for families matching an input (family suggest).
  *
  * @version $Id$
- * @since 1.4M3
+ * @since 1.4
  */
 @Path("/families/suggest")
 @ParentResource(FamiliesResource.class)
@@ -36,11 +36,11 @@ public interface FamiliesSuggestionsResource
 {
 
     /**
-     * Provides term suggestions for the families, where id or external matching input. If no suggestions are found an
-     * empty list is returned.
+     * Provides family suggestions, where id or external match the input. If no suggestions are found, an empty
+     * list is returned.
      *
-     * @param input criterion to select families by
-     * @param maxResults maximal number of results for each query
+     * @param input the string which will be used to generate suggestions
+     * @param maxResults maximal number of results to be returned
      * @param requiredPermission permission a user has to have over each family in the result
      * @param orderField field used for ordering the families, can be one of {@code id} (default) or {@code eid}
      * @param order the sorting order, can be one of {@code asc} (default) or {@code desc}

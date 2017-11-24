@@ -31,7 +31,7 @@ import javax.inject.Singleton;
  * Default implementation for {@link FamiliesSuggestionsResource} using XWiki's support for REST resources.
  *
  * @version $Id$
- * @since 1.4M3
+ * @since 1.4
  */
 @Component
 @Named("org.phenotips.studies.family.rest.internal.DefaultFamiliesSuggestionsResourceImpl")
