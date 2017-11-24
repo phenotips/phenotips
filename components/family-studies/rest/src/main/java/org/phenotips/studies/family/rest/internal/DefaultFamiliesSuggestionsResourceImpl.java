@@ -42,9 +42,15 @@ public class DefaultFamiliesSuggestionsResourceImpl extends XWikiResource implem
     private PhenotipsFamilyExport familyExport;
 
     @Override
-    public String suggest(String input, int maxResults, String requiredPermission, String orderField, String order,
-        boolean returnAsJSON)
+    public String suggestAsJSON(String input, int maxResults, String requiredPermission, String orderField,
+        String order)
     {
-        return this.familyExport.searchFamilies(input, maxResults, requiredPermission, orderField, order, returnAsJSON);
+        return this.familyExport.searchFamilies(input, maxResults, requiredPermission, orderField, order, true);
+    }
+
+    @Override
+    public String suggestAsXML(String input, int maxResults, String requiredPermission, String orderField, String order)
+    {
+        return this.familyExport.searchFamilies(input, maxResults, requiredPermission, orderField, order, false);
     }
 }

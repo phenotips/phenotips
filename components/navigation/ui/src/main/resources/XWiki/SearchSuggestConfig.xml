@@ -970,7 +970,7 @@
       <resultsNumber>5</resultsNumber>
     </property>
     <property>
-      <url>${request.contextPath}/rest/families/suggest?returnAsJSON=false</url>
+      <url>${request.contextPath}/rest/families/suggest</url>
     </property>
   </object>
   <object>
@@ -1118,7 +1118,7 @@
       <resultsNumber>5</resultsNumber>
     </property>
     <property>
-      <url>${request.contextPath}/rest/families/suggest?returnAsJSON=false</url>
+      <url>${request.contextPath}/rest/families/suggest</url>
     </property>
   </object>
   <object>
@@ -1266,7 +1266,7 @@
       <resultsNumber>5</resultsNumber>
     </property>
     <property>
-      <url>${request.contextPath}/rest/families/suggest?returnAsJSON=false</url>
+      <url>${request.contextPath}/rest/families/suggest</url>
     </property>
   </object>
 </xwikidoc>
