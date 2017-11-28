@@ -2746,9 +2746,10 @@ Recursive title display detected!##
 ###
 ## Display external ID page title in case it is configured to be shown instead of internal ID
 ###
-#macro(pageExternalTitle $title)
+### @param defaultTitle The default page title to format for displaying
+#macro(pageExternalTitle $defaultTitle)
 #set($config = $xwiki.getDocument('data.WebHome').getObject('PhenoTips.DBConfigurationClass'))
-#set($pageExternalTitle = $title)
+#set($pageExternalTitle = $defaultTitle)
 #if($config && "$!{config.getProperty('hideInternalIds').value}" == '1' && "$!{doc.getValue('external_id')}" != '')
   #set($ext_id = "$!{doc.getValue('external_id')}")
   #if("$!{config.getProperty('externalIdFormat').value}" == 'XXX-XXX-XXX')
@@ -2759,5 +2760,5 @@ Recursive title display detected!##
   #end
   #set($pageExternalTitle = "$!{prefix}$ext_id")
 #end
-$pageExternalTitle
+${escapetool.xml($!pageExternalTitle)}
 #end
