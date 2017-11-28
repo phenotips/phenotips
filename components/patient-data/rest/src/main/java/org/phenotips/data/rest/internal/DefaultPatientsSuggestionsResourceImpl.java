@@ -104,33 +104,16 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        List<String> queryResults = queryPatients(input.toLowerCase(), orderField, order);
+        List<Patient> patients =
+            getMatchingPatients(input.toLowerCase(), orderField, order, maxResults, Right.toRight(requiredPermission));
 
-        JSONArray results = null;
-        JSONObject jsonResult = null;
+        JSONArray results = new JSONArray();
 
-        results = new JSONArray();
-        jsonResult = new JSONObject();
-        int count = 0;
-
-        for (String queryResult : queryResults) {
-            Patient patient = this.patientRepository.get(queryResult);
-            if (patient == null) {
-                continue;
-            }
-
-            Right right = Right.toRight(requiredPermission);
-            if (!this.authorizationService.hasAccess(this.userManager.getCurrentUser(), right,
-                patient.getDocumentReference())) {
-                continue;
-            }
-
+        for (Patient patient : patients) {
             results.put(getPatientJSON(patient, markFamilyAssociation));
-            if (++count >= maxResults) {
-                break;
-            }
         }
 
+        JSONObject jsonResult = new JSONObject();
         jsonResult.put("matchedPatients", results);
         return jsonResult.toString();
     }
@@ -143,34 +126,42 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
+        List<Patient> patients =
+            getMatchingPatients(input.toLowerCase(), orderField, order, maxResults, Right.toRight(requiredPermission));
+        StringBuilder xmlResult = new StringBuilder("<results>");
+
+        for (Patient patient : patients) {
+            appentPatientXML(patient, xmlResult, markFamilyAssociation);
+        }
+
+        xmlResult.append("</results>");
+        return xmlResult.toString();
+    }
+
+    private List<Patient> getMatchingPatients(String input, String orderField, String order, int maxResults,
+        Right requiredPermission)
+    {
         List<String> queryResults = queryPatients(input.toLowerCase(), orderField, order);
+        List<Patient> results = new LinkedList<>();
 
-        StringBuilder xmlResult = null;
-
-        xmlResult = new StringBuilder();
-        xmlResult.append("<results>");
         int count = 0;
-
         for (String queryResult : queryResults) {
             Patient patient = this.patientRepository.get(queryResult);
             if (patient == null) {
                 continue;
             }
 
-            Right right = Right.toRight(requiredPermission);
-            if (!this.authorizationService.hasAccess(this.userManager.getCurrentUser(), right,
+            if (!this.authorizationService.hasAccess(this.userManager.getCurrentUser(), requiredPermission,
                 patient.getDocumentReference())) {
                 continue;
             }
 
-            appentPatientXML(patient, xmlResult, markFamilyAssociation);
+            results.add(patient);
             if (++count >= maxResults) {
                 break;
             }
         }
-
-        xmlResult.append("</results>");
-        return xmlResult.toString();
+        return results;
     }
 
     private List<String> queryPatients(String input, String orderField, String order)
@@ -187,7 +178,7 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
         }
 
         StringBuilder querySb = new StringBuilder();
-        querySb.append("select doc.name from  Document doc, doc.object(PhenoTips.PatientClass) as patient");
+        querySb.append("select doc.name from Document doc, doc.object(PhenoTips.PatientClass) as patient");
         querySb.append(" where doc.name <> :t and lower(doc.name) like :").append(INPUT_PARAMETER);
         querySb.append(" or lower(patient.external_id) like :").append(INPUT_PARAMETER);
 
