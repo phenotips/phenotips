@@ -2742,3 +2742,22 @@ Recursive title display detected!##
   #set ($sentence3 = 'Click this box to get technical details.')
   #displayException("${sentence1} ${sentence2} ${sentence3}", $exception)
 #end
+
+###
+## Display external ID page title in case it is configured to be shown instead of internal ID
+###
+#macro(pageExternalTitle $title)
+#set($config = $xwiki.getDocument('data.WebHome').getObject('PhenoTips.DBConfigurationClass'))
+#set($pageExternalTitle = $title)
+#if($config && "$!{config.getProperty('hideInternalIds').value}" == '1' && "$!{doc.getValue('external_id')}" != '')
+  #set($ext_id = "$!{doc.getValue('external_id')}")
+  #if("$!{config.getProperty('externalIdFormat').value}" == 'XXX-XXX-XXX')
+    #set($ext_id = $ext_id.replaceAll("(.{3})(?!$)", "$1-"))
+  #end
+  #if ("$!{doc.space}" == 'Families' && "$!{config.getProperty('familyExternalIdPrefix').value}" != '')
+    #set($prefix = "$!{config.getProperty('familyExternalIdPrefix').value}")
+  #end
+  #set($pageExternalTitle = "$!{prefix}$ext_id")
+#end
+$pageExternalTitle
+#end

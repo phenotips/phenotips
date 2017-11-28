@@ -39,7 +39,7 @@
 ## ----------------------------
 ## Display the title
 ## ----------------------------
-<div id="document-title"><h1>$titleToDisplay</h1></div>
+<div id="document-title"><h1>#pageExternalTitle($titleToDisplay)</h1></div>
 ## --------------------------------------------------------------------------
 ## Document author(s)
 ##---------------------------------------------------------------------------

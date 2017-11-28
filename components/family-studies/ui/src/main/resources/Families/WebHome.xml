@@ -394,7 +394,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
     &lt;a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))" title="Home" rel="home"&gt;&lt;span class="fa fa-home fa-lg"&gt;&lt;/span&gt;&lt;/a&gt; &amp;raquo;
     &lt;a href="$!xwiki.getURL("${doc.space}.WebHome")" &gt;$!{doc.space}&lt;/a&gt;
     #if ($doc.name != 'WebHome')
-      &amp;raquo; &lt;a href="$doc.getURL()"&gt;$doc.displayTitle&lt;/a&gt;
+      &amp;raquo; &lt;a href="$doc.getURL()"&gt;#pageExternalTitle($doc.displayTitle)&lt;/a&gt;
     #end
   &lt;/div&gt;
 &lt;/div&gt;
