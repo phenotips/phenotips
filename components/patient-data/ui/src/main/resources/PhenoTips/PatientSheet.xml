@@ -68,6 +68,7 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
 {{/velocity}}
 
 {{velocity}}
+{{html clean="false" wiki="false"}}&lt;input type="hidden" name="entity-type" id="entity-type" value="patients"/&gt;{{/html}}
 #if ("$!{request.xaction}" == 'lastentry')
   #set ($entryClassName = $request.dataClassName)
   #set ($options = {})

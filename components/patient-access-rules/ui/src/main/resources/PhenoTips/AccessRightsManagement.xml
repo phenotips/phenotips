@@ -1267,10 +1267,8 @@ $xwiki.ssx.use($serviceDocName)
 {{velocity}}
 #if ($xcontext.action != 'export')
 #set ($record = $services.patients.get($doc.documentReference))
-#set ($entityType = 'patients')
 #if ("$!record.id" == '')
   #set ($record = $services.families.getFamilyById($doc.documentReference))
-  #set ($entityType = 'families')
 #end
 #if ("$!record.id" != '')
   #set ($_service = $services.permissions)
@@ -1278,7 +1276,6 @@ $xwiki.ssx.use($serviceDocName)
   ## ===========================================================
   ## Display access summary for this record and enable changing
   ## -----------------------------------------------------------
-  {{html clean=false}}&lt;input type="hidden" name="entity-type" id="entity-type" value="$entityType"/&gt;{{/html}}
   #set ($visibility =  $recordAccess.visibility)
   #if ("$!visibility" == '')
     #set ($visibility =  $_service.defaultVisibility)
