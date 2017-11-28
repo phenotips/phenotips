@@ -134,7 +134,7 @@ public class PhenotipsFamilyExport
         Set<FamilySearchResult> results = new LinkedHashSet<>();
         queryFamilies(input, requiredPermission, resultsLimit, orderField, order, results);
         queryPatients(input, requiredPermission, resultsLimit, orderField, order, results);
-        return formatResults(results, resultsLimit, returnAsJSON);
+        return formatResults(results, returnAsJSON);
     }
 
     /**
@@ -213,7 +213,7 @@ public class PhenotipsFamilyExport
         querySb.append(" or lower(family.external_id) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
         querySb.append(" order by " + safeOrderField + safeOrder);
 
-        List<String> queryResults = runQuery(querySb.toString(), input, resultsLimit);
+        List<String> queryResults = runQuery(querySb.toString(), input);
 
         // Process family query results
         for (String queryResult : queryResults) {
@@ -229,6 +229,9 @@ public class PhenotipsFamilyExport
             }
 
             results.add(new FamilySearchResult(family, requiredPermission));
+            if (results.size() >= resultsLimit) {
+                break;
+            }
         }
     }
 
@@ -258,7 +261,7 @@ public class PhenotipsFamilyExport
         }
         querySb.append(" order by " + safeOrderField + safeOrder);
 
-        List<String> queryResults = runQuery(querySb.toString(), input, resultsLimit);
+        List<String> queryResults = runQuery(querySb.toString(), input);
 
         // Process family query results
         for (String queryResult : queryResults) {
@@ -279,10 +282,13 @@ public class PhenotipsFamilyExport
             }
 
             results.add(new FamilySearchResult(patient, usePatientName, family, requiredPermission));
+            if (results.size() >= resultsLimit) {
+                break;
+            }
         }
     }
 
-    private List<String> runQuery(String queryString, String input, int resultsLimit)
+    private List<String> runQuery(String queryString, String input)
     {
         String formattedInput = String.format(PhenotipsFamilyExport.INPUT_FORMAT, input.toLowerCase());
 
@@ -291,7 +297,6 @@ public class PhenotipsFamilyExport
         List<String> queryResults = null;
         try {
             query = this.qm.createQuery(queryString, Query.XWQL);
-            query.setLimit(resultsLimit);
             query.bindValue(PhenotipsFamilyExport.INPUT_PARAMETER, formattedInput);
             queryResults = query.execute();
         } catch (QueryException e) {
@@ -301,12 +306,11 @@ public class PhenotipsFamilyExport
         return queryResults;
     }
 
-    private String formatResults(Set<FamilySearchResult> results, int resultsLimit, boolean returnAsJSON)
+    private String formatResults(Set<FamilySearchResult> results, boolean returnAsJSON)
     {
         JSONArray familyArray = null;
         JSONObject jsonResult = null;
         StringBuilder xmlResult = null;
-        int count = 0;
 
         if (returnAsJSON) {
             familyArray = new JSONArray();
@@ -317,9 +321,6 @@ public class PhenotipsFamilyExport
         }
 
         for (FamilySearchResult searchResult : results) {
-            if (count++ > resultsLimit) {
-                break;
-            }
             if (returnAsJSON) {
                 JSONObject familyJson = new JSONObject();
                 familyJson.put(ID, searchResult.getId());
