@@ -266,11 +266,13 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
         StringBuilder description = new StringBuilder(patient.getId());
         String patientName = "";
         PatientData<String> patientNames = patient.getData("patientName");
-        String firstName = StringUtils.defaultString(patientNames.get("first_name"));
-        String lastName = StringUtils.defaultString(patientNames.get("last_name"));
-        patientName = (firstName + " " + lastName).trim();
-        if (StringUtils.isNotEmpty(patientName)) {
-            description.append(", name: ").append(patientName);
+        if (patientNames != null) {
+            String firstName = StringUtils.defaultString(patientNames.get("first_name"));
+            String lastName = StringUtils.defaultString(patientNames.get("last_name"));
+            patientName = (firstName + " " + lastName).trim();
+            if (StringUtils.isNotEmpty(patientName)) {
+                description.append(", name: ").append(patientName);
+            }
         }
         String patientExternalId = patient.getExternalId();
         if (StringUtils.isNotEmpty(patientExternalId)) {
