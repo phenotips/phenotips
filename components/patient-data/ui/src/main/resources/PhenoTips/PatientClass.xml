@@ -181,11 +181,14 @@
   {{html wiki=false clean=false}}
   &lt;div class="custom-display-data"&gt;
   #foreach ($val in $value)
-    #set($entryName = "$!{services.vocabularies.ordo.getTerm($val).name}")
-    #if ($entryName == '')
-      #set($entryName = $val)
+    #set($notMapped = 'notmapped')
+    #set ($term = $!services.vocabularies.ordo.getTerm($val))
+    #set ($entryName = $val)
+    #if ($term)
+      #set ($notMapped = '')
+      #set ($entryName = $stringtool.defaultIfBlank("$!{term.name}", $val))
     #end
-    &lt;label class="term-entry" for="${prefix}${name}_${val}"&gt;
+    &lt;label class="term-entry $notMapped" for="${prefix}${name}_${val}"&gt;
       &lt;input title="$entryName" type="checkbox" checked="checked" name="${prefix}${name}" id="${prefix}${name}_${val}" value="${val}"/&gt;$entryName
     &lt;/label&gt;
   #end
@@ -958,11 +961,14 @@
   {{html wiki=false clean=false}}
   &lt;div class="custom-display-data"&gt;
   #foreach ($val in $value)
-    #set($entryName = "$!{services.vocabularies.omim.getTerm($val).name}")
-    #if ($entryName == '')
-      #set($entryName = $val)
+    #set($notMapped = 'notmapped')
+    #set ($term = $!services.vocabularies.omim.getTerm($val))
+    #set ($entryName = $val)
+    #if ($term)
+      #set ($notMapped = '')
+      #set ($entryName = $stringtool.defaultIfBlank("$!{term.name}", $val))
     #end
-    &lt;label class="term-entry" for="${prefix}${name}_${val}"&gt;
+    &lt;label class="term-entry $notMapped" for="${prefix}${name}_${val}"&gt;
       &lt;input title="$entryName" type="checkbox" checked="checked" name="${prefix}${name}" id="${prefix}${name}_${val}" value="${val}"/&gt;$entryName
     &lt;/label&gt;
   #end
