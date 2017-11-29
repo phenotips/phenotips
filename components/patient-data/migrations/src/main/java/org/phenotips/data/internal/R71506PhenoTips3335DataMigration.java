@@ -37,9 +37,9 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.IntegerProperty;
 import com.xpn.xwiki.store.XWikiHibernateBaseStore;
@@ -67,19 +67,19 @@ public class R71506PhenoTips3335DataMigration extends AbstractHibernateDataMigra
     private static final EntityReference PARENTAL_INFORMATION_CLASS = new EntityReference("ParentalInformationClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
-    private static final String BIRTHS= "pregnancy_history__births";
+    private static final String BIRTHS = "pregnancy_history__births";
 
-    private static final String GRAVIDA= "pregnancy_history__gravida";
+    private static final String GRAVIDA = "pregnancy_history__gravida";
 
-    private static final String PARA= "pregnancy_history__para";
+    private static final String PARA = "pregnancy_history__para";
 
-    private static final String PRETERM= "pregnancy_history__preterm";
+    private static final String PRETERM = "pregnancy_history__preterm";
 
-    private static final String SAB= "pregnancy_history__sab";
+    private static final String SAB = "pregnancy_history__sab";
 
-    private static final String TAB= "pregnancy_history__tab";
+    private static final String TAB = "pregnancy_history__tab";
 
-    private static final String TERM= "pregnancy_history__term";
+    private static final String TERM = "pregnancy_history__term";
 
     private DocumentReference parentalInformationClassReference;
 
@@ -103,11 +103,8 @@ public class R71506PhenoTips3335DataMigration extends AbstractHibernateDataMigra
     @Named("current")
     private DocumentReferenceResolver<EntityReference> entityResolver;
 
-
-    /**
-     * Searches all patients that contain the {@code ParentalInformationClass} and transfer Obstetric History to the {@code ObstetricHistoryClass}
-     */
-    @Override public Object doInHibernate(Session session) throws HibernateException, XWikiException
+    @Override
+    public Object doInHibernate(Session session) throws HibernateException, XWikiException
     {
         XWikiContext context = getXWikiContext();
         XWiki xwiki = context.getWiki();
@@ -126,7 +123,7 @@ public class R71506PhenoTips3335DataMigration extends AbstractHibernateDataMigra
         List<String> docs = q.list();
         for (String docName : docs) {
             final XWikiDocument doc = xwiki.getDocument(this.resolver.resolve(docName), context);
-            //Migrate the Obstetric History data from the ParentalInformationClass to the ObstetricHistoryClass
+            // Migrate the Obstetric History data from the ParentalInformationClass to the ObstetricHistoryClass
             migrateObstetricHistory(doc, context);
             doc.setComment(getDescription());
             doc.setMinorEdit(true);
@@ -143,17 +140,20 @@ public class R71506PhenoTips3335DataMigration extends AbstractHibernateDataMigra
         return null;
     }
 
-    @Override protected void hibernateMigrate() throws DataMigrationException, XWikiException
+    @Override
+    protected void hibernateMigrate() throws DataMigrationException, XWikiException
     {
         getStore().executeWrite(getXWikiContext(), this);
     }
 
-    @Override public String getDescription()
+    @Override
+    public String getDescription()
     {
-        return "Searches all patients that contain the ParentalInformationClass and transfer Obstetric History to the ObstetricHistoryClass";
+        return "Transfers obstetric history data from the ParentalInformationClass to the ObstetricHistoryClass";
     }
 
-    @Override public XWikiDBVersion getVersion()
+    @Override
+    public XWikiDBVersion getVersion()
     {
         return new XWikiDBVersion(71506);
     }
@@ -163,14 +163,15 @@ public class R71506PhenoTips3335DataMigration extends AbstractHibernateDataMigra
      *
      * @param doc XWiki document
      * @param context XWiki context
-     * XWikiException if property value cannot be set
+     * @throws XWikiException if property value cannot be set
      */
-    private void migrateObstetricHistory(XWikiDocument doc, XWikiContext context) throws HibernateException, XWikiException
+    private void migrateObstetricHistory(XWikiDocument doc, XWikiContext context)
+        throws HibernateException, XWikiException
     {
         BaseObject parentalInformation = doc.getXObject(this.parentalInformationClassReference);
         BaseObject obstetricHistory = doc.newXObject(this.obstetricHistoryClassReference, context);
 
-        for(String propName : new String[]{BIRTHS, GRAVIDA, PARA, PRETERM, SAB, TAB, TERM}) {
+        for (String propName : new String[] { BIRTHS, GRAVIDA, PARA, PRETERM, SAB, TAB, TERM }) {
             IntegerProperty oldProp = (IntegerProperty) parentalInformation.get(propName);
             if (oldProp != null) {
                 Integer propValue = (Integer) oldProp.getValue();
@@ -179,7 +180,8 @@ public class R71506PhenoTips3335DataMigration extends AbstractHibernateDataMigra
         }
     }
 
-    private void migrator(BaseObject parental, BaseObject obstetric, Integer value, String pregnancyHistory) throws XWikiException
+    private void migrator(BaseObject parental, BaseObject obstetric, Integer value, String pregnancyHistory)
+        throws XWikiException
     {
         if (value != null) {
             parental.removeField(pregnancyHistory);
