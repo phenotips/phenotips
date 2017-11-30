@@ -350,9 +350,7 @@ define([
                     try {
                         // note: supporting only new full JSON format
 
-                        // TODO: update version updater to support new pedigree format, move all existing updates into a migrator
                         // TODO: avoid unnecessary JSON -> string -> JSON conversions
-                        //var updatedJSONData = editor.getVersionUpdater().updateToCurrentVersion(JSON.stringify(responseJSON.pedigree));
                         var updatedJSONData = JSON.stringify(responseJSON.pedigree);
 
                         // if pedigree is misformatted createGraphFromStoredData() may throw as well
