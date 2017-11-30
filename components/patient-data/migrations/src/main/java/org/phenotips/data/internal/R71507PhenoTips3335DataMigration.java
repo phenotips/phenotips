@@ -56,9 +56,9 @@ import com.xpn.xwiki.store.migration.hibernate.HibernateDataMigration;
  * @since 1.4m2
  */
 @Component(roles = { HibernateDataMigration.class })
-@Named("71506-PT-3335")
+@Named("71507-PT-3335")
 @Singleton
-public class R71506PhenoTips3335DataMigration extends AbstractHibernateDataMigration implements
+public class R71507PhenoTips3335DataMigration extends AbstractHibernateDataMigration implements
     XWikiHibernateBaseStore.HibernateCallback<Object>
 {
     private static final EntityReference OBSTETRIC_HISTORY_CLASS = new EntityReference("ObstetricHistoryClass",
@@ -155,7 +155,7 @@ public class R71506PhenoTips3335DataMigration extends AbstractHibernateDataMigra
     @Override
     public XWikiDBVersion getVersion()
     {
-        return new XWikiDBVersion(71506);
+        return new XWikiDBVersion(71507);
     }
 
     /***
