@@ -120,8 +120,6 @@ define([], function(){
         childlessLength: 14,
         parnershipChildlessLength: 27,
         graphToCanvasScale: 12,
-        layoutRelativePersonWidth: 10,
-        layoutRelativeOtherWidth: 2,
         layoutScale: { xscale: 12.0, yscale: 8 },
         maxPrintPreviewPaneHeight: 600,
         minPrintPreviewPaneHeight: 250,

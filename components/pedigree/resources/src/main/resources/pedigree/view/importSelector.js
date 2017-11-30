@@ -34,7 +34,7 @@ define([
             typeListElement.insert(_addTypeOption(false, "GEDCOM", "gedcom"));
             typeListElement.insert(_addTypeOption(false, "BOADICEA", "BOADICEA"));
             typeListElement.insert(_addTypeOption(false, "Simple JSON", "simpleJSON"));
-            //TODO: typeListElement.insert(_addTypeOption(false, "Phenotips Pedigree JSON", "phenotipsJSON"));
+            typeListElement.insert(_addTypeOption(false, "PhenoTips JSON", "phenotipsJSON"));
 
             var promptType = new Element('div', {'class': 'import-section'}).update("Data format:");
             var dataSection2 = new Element('div', {'class': 'import-block'});
@@ -135,7 +135,7 @@ define([
             return "Import";
         },
 
-        /*
+        /**
          * Populates the text input box with the selected file content (asynchronously)
          */
         handleFileUpload: function(files) {
@@ -153,7 +153,7 @@ define([
             }
         },
 
-        /*
+        /**
          * Disables inapplicable options on input type selection
          */
         disableEnableOptions: function() {
@@ -175,7 +175,7 @@ define([
             }
 
             var saveExternalID = $$('input[type=checkbox][name="mark-external"]')[0];
-            if (importType == "simpleJSON") {
+            if (importType == "simpleJSON" || importType == "phenotipsJSON") {
                 saveExternalID.disabled = true;
             } else {
                 saveExternalID.disabled = false;
@@ -210,7 +210,10 @@ define([
             var optionSelected = $$('input:checked[type=radio][name="select-options"]')[0].value;
             var acceptUnknownPhenotypes = (optionSelected == "accept");
 
-            var importOptions = { "markEvaluated": importMark, "externalIdMark": externalIdMark, "acceptUnknownPhenotypes": acceptUnknownPhenotypes };
+            var importOptions = { "markEvaluated": importMark,
+                                  "externalIdMark": externalIdMark,
+                                  "acceptUnknownPhenotypes": acceptUnknownPhenotypes,
+                                  "doNotLinkPatients": true };
 
             editor.getSaveLoadEngine().createGraphFromImportData(importValue, importType, importOptions,
                                                                  false /* add to undo stack */, true /* center around proband */, "import" /* data source */);

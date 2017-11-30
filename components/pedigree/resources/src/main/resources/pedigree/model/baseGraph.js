@@ -12,7 +12,9 @@ define([
     ], function(
         Helpers
     ){
-    BaseGraph = function ( defaultPersonNodeWidth, defaultNonPersonNodeWidth )
+
+    // options: Object (optional), see this.options
+    BaseGraph = function (options)
     {
         this.v        = [];        // for each V lists (as unordered arrays of ids) vertices connected from V
         this.inedges  = [];        // for each V lists (as unordered arrays of ids) vertices connecting to V
@@ -22,156 +24,167 @@ define([
         this.weights  = [];        // for each V contains outgoing edge weights as {target1: weight1, t2: w2}
 
         this.type       = [];      // for each V node type (see BaseGraph.TYPE)
-        this.properties = [];      // for each V a set of type-specific properties {"gender": "M"/"F"/"O"/"U", etc.}
 
+        this.properties = [];      // for each V a set of type-specific properties (e.g. "gender", "name", etc.)
+                                   // some of the properties affect the layout algorithm (e.g. "gender" and "age")
+                                   // so those need to be in a known format independent of any external APIs
+
+        this.rawJSONProperties = []; // node properties in whatever JSON format is used to export/import the data;
+                                     // this is only supposed ot be used for exporting data back into the external format,
+                                     // which may support more data than this code can store/is aware of
+
+        // original algorithm supported nodes of different widths; in practice this functionality
+        // is not useful in a pedigree, so all external API references to this are removed, however
+        // internally the functionality is kept i ncas eit is needed in the future (it is hard
+        // to rip it away and even harder to plug back in later)
         this.vWidth = [];
-        this.defaultPersonNodeWidth    = defaultPersonNodeWidth    ? defaultPersonNodeWidth    : 10;
-        this.defaultNonPersonNodeWidth = defaultNonPersonNodeWidth ? defaultNonPersonNodeWidth : 2;
+
+        this.options = { "defaultPersonNodeWidth": 10,
+                         "defaultNonPersonNodeWidth": 2,
+                         "defaultEdgeWeight": 1 };
+
+        // use user provided options for all keys which match existing internal option keys
+        Helpers.setByTemplate(this.options, options);
     };
 
     BaseGraph.TYPE = {
       RELATIONSHIP: 1,
       CHILDHUB:     2,
       PERSON:       3,
-      VIRTUALEDGE:  4    // for nodes not present in the original graph used as intermediate steps in multi-rank edges
+      VIRTUALEDGE:  4    // for nodes not present in the original graph; used as intermediate steps in multi-rank edges
     };
+
+    BaseGraph.fromJSON = function(jsonObject)
+    {
+        var result = new BaseGraph();
+        for (var prop in result) {
+            if (result.hasOwnProperty(prop)) {
+                if (!jsonObject.hasOwnProperty(prop) || typeof result[prop] != typeof jsonObject[prop]) {
+                    throw "Can't initialize BaseGraph from provided JSON: [" + prop
+                        + "] is either missing or has invalid type";
+                }
+                result[prop] = jsonObject[prop];
+            }
+        }
+        result.validate();
+        return result;
+    },
 
     BaseGraph.prototype = {
 
-        serialize: function(saveWidth) {
-            var output = [];
-
-            for (var v = 0; v < this.v.length; v++) {
-                var data = {};
-
-                data["id"] = v;
-
-                if (saveWidth) // may not want this for compactness of output when all width are equal to default
-                    data["width"] = this.vWidth[v];
-
-                if (this.type[v] == BaseGraph.TYPE.PERSON) {
-                    //
-                }
-                else if (this.type[v] == BaseGraph.TYPE.RELATIONSHIP) {
-                    data["rel"] = true;
-                    data["hub"] = true;
-                }
-                else if (this.type[v] == BaseGraph.TYPE.CHILDHUB) {
-                    data["chhub"] = true;
-                }
-                else
-                    data["virt"] = true;
-
-                data["prop"] = this.properties[v];
-
-                out = [];
-                var outEdges = this.getOutEdges(v);
-                for (var i = 0; i < outEdges.length; i++) {
-                    var to     = outEdges[i];
-                    var weight = this.getEdgeWeight(v, to);
-                    if (weight == 1)
-                        out.push({"to": outEdges[i]});
-                    else
-                        out.push({"to": outEdges[i], "weight": weight});
-                }
-
-                if (out.length > 0)
-                    data["outedges"] = out;
-
-                output.push(data);
-            }
-
-            return output;
+        toJSONObject: function() {
+            return JSON.parse(JSON.stringify(this));
         },
 
-        //-[construction for ordering]--------------------------
+        //--------------------------[multi-rank edge handling]-
 
-        // After rank assignment, edges between nodes more than one rank apart are replaced by
+        // After ranks are known it is possible to detect if there are edges crossing multiple ranks
+        hasMultiRankEdges: function(ranks) {
+            for (var sourceV = 0; sourceV < this.v.length; sourceV++) {
+                var sourceRank = ranks[sourceV];
+                for (var i = 0; i < this.v[sourceV].length; i++) {
+                    var targetV = this.v[sourceV][i];
+                    var targetRank = ranks[targetV];
+                    if (targetRank < sourceRank) {
+                        throw "Assertion failed: only forward edges";
+                    }
+                    if (targetRank > sourceRank + 1) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        },
+
+        // Given rank assignment, edges between nodes more than one rank apart are replaced by
         // chains of unit length edges between temporary or ‘‘virtual’’ nodes. The virtual nodes are
         // placed on the intermediate ranks, converting the original graph into one whose edges connect
         // only nodes on adjacent ranks
         //
-        // Note: ranks is modified to contain ranks of virtual nodes as well
+        // Returns the modified ranks array which includes ranks of new virtual nodes (if any)
+        splitMultiRankEdges: function (initialRanks) {
+            var ranks = initialRanks.slice();
+            var numLongEdges = 0;
 
-        makeGWithSplitMultiRankEdges: function (ranks) {
-            var newG = new BaseGraph( this.defaultPersonNodeWidth, this.defaultNonPersonNodeWidth );
-
-            // add all original vertices
-            for (var i = 0; i < this.v.length; i++) {
-                newG._addVertex( i, this.type[i], this.properties[i], this.vWidth[i] );
-            }
-
-            // go over all original edges:
-            // - if edge conects vertices with adjacent ranks just add it
-            // - else create a series of virtual vertices and edges and add them together
+            // go over all vertices
             for (var sourceV = 0; sourceV < this.v.length; sourceV++) {
-
                 var sourceRank = ranks[sourceV];
-
                 for (var i = 0; i < this.v[sourceV].length; i++) {
                     var targetV = this.v[sourceV][i];
-
-                    var weight = this.getEdgeWeight(sourceV, targetV);
-
                     var targetRank = ranks[targetV];
 
                     if (targetRank < sourceRank)
                         throw "Assertion failed: only forward edges";
 
-                    if (targetRank == sourceRank + 1 || targetRank == sourceRank ) {
-                        newG.addEdge( sourceV, targetV, weight );
-                    }
-                    else {
-                        // create virtual vertices & edges
+                    if (targetRank > sourceRank + 1) {
+                        // virtual edge detected: remnove original edge and instead create
+                        // a series of virtual vertices and edges
+                        numLongEdges++;
+
+                        var weight = this.getEdgeWeight(sourceV, targetV);
+
                         var prevV = sourceV;
                         for (var midRank = sourceRank+1; midRank <= targetRank - 1; midRank++) {
-                            var nextV = newG._addVertex( null, BaseGraph.TYPE.VIRTUALEDGE, {"fName": "_" + sourceV + '->' + targetV + '_' + (midRank-sourceRank-1)}, this.defaultNonPersonNodeWidth);
+                            // sourceV -> targetV, segment number (midRank-sourceRank-1)
+                            var nextV = this._addVertex( null, BaseGraph.TYPE.VIRTUALEDGE, {}, {} );
                             ranks[nextV] = midRank;
-                            newG.addEdge( prevV, nextV, weight );
+
+                            if (prevV == sourceV) {
+                                this.replaceEdge( prevV, targetV, nextV);
+                            } else {
+                                this.addEdge( prevV, nextV, weight );
+                            }
                             prevV = nextV;
                         }
-                        newG.addEdge(prevV, targetV, weight);
+                        this.addEdge(prevV, targetV, weight);
                     }
                 }
             }
 
-            newG.validate();
-
-            return newG;
+            if (numLongEdges > 0) {
+                console.log("Detected and expanded " + numLongEdges + " mult-rank edges");
+                this.validate();    // just in case
+            }
+            return ranks;
         },
 
-        makeGWithCollapsedMultiRankEdges: function () {
-            // performs the opposite of what makeGWithSplitMultiRankEdges() does
-            var newG = new BaseGraph( this.defaultPersonNodeWidth, this.defaultNonPersonNodeWidth );
-
-            // add all original vertices
-            for (var i = 0; i <= this.maxRealVertexId; i++) {
-                newG._addVertex( i, this.type[i], this.properties[i], this.vWidth[i] );
+        collapseMultiRankEdges: function () {
+            if (this.getNumVertices() == this.maxRealVertexId + 1) {
+                return;
             }
-
-            // go over all original edges:
-            // - if edge conects two non-virtual vertices just add it
-            // - else add an edge to the first non-virtual edge at the end of the chain of virtual edges
             for (var sourceV = 0; sourceV <= this.maxRealVertexId; sourceV++) {
-
                 for (var i = 0; i < this.v[sourceV].length; i++) {
                     var targetV = this.v[sourceV][i];
-
-                    var weight = this.getEdgeWeight(sourceV, targetV);
-
-                    while (targetV > this.maxRealVertexId)
-                        targetV = this.getOutEdges(targetV)[0];
-
-                    newG.addEdge( sourceV, targetV, weight );
+                    if (targetV > this.maxRealVertexId) {
+                        var path = [];
+                        while (targetV > this.maxRealVertexId) {
+                            path.push(targetV);
+                            targetV = this.getOutEdges(targetV)[0];  // [0] since virtual edges have only one outedge
+                        }
+                        var relationshipV = targetV;
+                        // replace edges from person to virtual and from virtual to relationship with a single
+                        // direct edge from person to relationship; note that edges between virtual nodes are left alone here,
+                        // that is OK as they will be removed together with virtual vertices themselves
+                        this.replaceEdge(sourceV, path[0], relationshipV);
+                        this.removeEdge(path[path.length-1], relationshipV);
+                    }
                 }
             }
 
-            newG.validate();
+            // at this point there should be no more vertices left with ID > this.maxRealVertexId
+            this.v.splice(this.maxRealVertexId+1);
+            this.inedges.splice(this.maxRealVertexId+1);
+            this.weights.splice(this.maxRealVertexId+1);
+            this.vWidth.splice(this.maxRealVertexId+1);
+            this.type.splice(this.maxRealVertexId+1);
+            this.properties.splice(this.maxRealVertexId+1);
+            this.rawJSONProperties.splice(this.maxRealVertexId+1);
 
-            return newG;
+            // for debug only
+            this.validate();
         },
 
-        //--------------------------[construction for ordering]-
+        //--------------------------[end multi-rank edge handling]-
 
         getLeafAndParentlessNodes: function () {
             var result = { "parentlessNodes": [],
@@ -193,7 +206,7 @@ define([
 
         // id: optional. If not specified then next available is used.
         // note: unlike insertVetex() does not do any id shifting and should be used only for initialization of the graph
-        _addVertex: function(id, type, properties, width) {
+        _addVertex: function(id, type, properties, rawJSONProperties, width) {
             if (id && this.v[id]) throw "addVertex: vertex with id=" + id + " is already in G";
 
             var nextId = (id == null) ? this.v.length : id;
@@ -204,11 +217,14 @@ define([
 
             this.weights[nextId] = {};
 
+            var width = width ? width : ((type == BaseGraph.TYPE.PERSON) ? this.options.defaultPersonNodeWidth : this.options.defaultNonPersonNodeWidth);
+
             this.vWidth[nextId] = width;
 
             this.type[nextId] = type;
 
             this.properties[nextId] = properties;
+            this.rawJSONProperties[nextId] = (rawJSONProperties == null) ? {"__ignore__": true} : rawJSONProperties;
 
             if (type != BaseGraph.TYPE.VIRTUALEDGE && nextId > this.maxRealVertexId)
                 this.maxRealVertexId = nextId;
@@ -217,6 +233,9 @@ define([
         },
 
         addEdge: function(fromV, toV, weight) {
+            if (!weight) {
+                weight = this.options.defaultEdgeWeight;
+            }
             // adds an edge, but does not update all the internal structures for performance reasons.
             // shoudl be used for bulk updates where it makes sense to do one maintenance run for all the nodes
             if (this.v.length < Math.max(fromV, toV))
@@ -238,20 +257,28 @@ define([
             Helpers.removeFirstOccurrenceByValue(this.v[fromV], toV);
             Helpers.removeFirstOccurrenceByValue(this.inedges[toV], fromV);
 
-            var weight = this.weights[fromV][toV]
+            var weight = this.weights[fromV][toV];
             delete this.weights[fromV][toV];
 
             return weight;
         },
 
-        insertVertex: function(type, properties, edgeWeights, inedges, outedges, width) {
-            var width = width ? width : ((type == BaseGraph.TYPE.PERSON) ? this.defaultPersonNodeWidth : this.defaultNonPersonNodeWidth);
+        // this is equivalent to removeEdge() + addEdge(), exept that the new edge occupies the same position in the v[fromV] array
+        replaceEdge: function(fromV, oldV, newV) {
+            if (!this.hasEdge(fromV, oldV))
+                throw "removeEdge: edge does not exist";
 
-            //TODO: consider making placeholder nodes more narrow. Would require some
-            //      more advanced placement once the node is converted to a normal person
-            //if (properties.hasOwnProperty("placeholder") && properties["placeholder"]) {
-            //    width = this.defaultNonPersonNodeWidth;
-            //}
+            this.weights[fromV][newV] = this.weights[fromV][oldV];
+            delete this.weights[fromV][oldV];
+
+            Helpers.replaceInArray(this.v[fromV], oldV, newV);
+            Helpers.removeFirstOccurrenceByValue(this.inedges[oldV], fromV);
+
+            this.inedges[newV].push(fromV);
+        },
+
+        insertVertex: function(type, properties, edgeWeights, inedges, outedges) {
+            var width = (type == BaseGraph.TYPE.PERSON) ? this.options.defaultPersonNodeWidth : this.options.defaultNonPersonNodeWidth;
 
             if (type == BaseGraph.TYPE.PERSON && !properties.hasOwnProperty("gender"))
                 properties["gender"] = "U";
@@ -272,6 +299,7 @@ define([
             this.vWidth    .splice(newNodeId,0,width);
             this.type      .splice(newNodeId,0,type);
             this.properties.splice(newNodeId,0,properties);
+            this.rawJSONProperties.splice(newNodeId,0,{});
 
             if (type != BaseGraph.TYPE.VIRTUALEDGE)
                 this.maxRealVertexId++;
@@ -326,6 +354,7 @@ define([
             this.vWidth.splice(v,1);
             this.type.splice(v,1);
             this.properties.splice(v,1);
+            this.rawJSONProperties.splice(v,1);
             if (v <= this.maxRealVertexId)
                 this.maxRealVertexId--;
 
@@ -466,7 +495,7 @@ define([
 
         getVertexNameById: function(v) {
             var firstname = this.properties[v].hasOwnProperty("fName") ? this.properties[v]["fName"] : "";
-            var lastname  = this.properties[v].hasOwnProperty("lName")  ? this.properties[v]["lName"] : "";
+            var lastname  = this.properties[v].hasOwnProperty("lName") ? this.properties[v]["lName"] : "";
 
             if (firstname != "" && lastname != "" ) firstname += " ";
 
@@ -685,6 +714,7 @@ define([
             return [this.upTheChainUntilNonVirtual(inEdges[0]), this.upTheChainUntilNonVirtual(inEdges[1])];
         },
 
+        // returns a bottom-to-top path
         getPathToParents: function(v)
         {
             // returns an array with two elements: path to parent1 (excluding v) and path to parent2 (excluding v):
@@ -697,10 +727,52 @@ define([
 
             var inEdges = this.getInEdges(v);
 
-            result.push( this.getUpPathEndingInNonVirtual(inEdges[0]) );
-            result.push( this.getUpPathEndingInNonVirtual(inEdges[1]) );
+            result.push( this._getUpPathEndingInNonVirtual(inEdges[0]) );
+            result.push( this._getUpPathEndingInNonVirtual(inEdges[1]) );
 
             return result;
+        },
+
+        _getUpPathEndingInNonVirtual: function(v)
+        {
+            var path = [];
+
+            while (this.isVirtual(v))
+            {
+                path.push(v)
+                v = this.inedges[v][0];
+            }
+
+            return {"parent": v, "path": path};
+        },
+
+        getAllPersons: function(includePlaceholders)
+        {
+            var result = [];
+            for (var i = 0; i <= this.getMaxRealVertexId(); i++) {
+                if (this.isPerson(i)) {
+                    if (!this.isPlaceholder(i) || includePlaceholders) {
+                        result.push(i);
+                    }
+                }
+            }
+            return result;
+        },
+
+        getAllChildren: function( v )
+        {
+            if (!this.isPerson(v) && !this.isRelationship(v))
+                throw "Assertion failed: getAllChildren() is applied to a non-person non-relationship node";
+
+            var rels = this.isRelationship(v) ? [v] : this.getAllRelationships(v);
+
+            var allChildren = [];
+            for (var i = 0; i < rels.length; i++) {
+                var chhub    = this.getRelationshipChildhub(rels[i]);
+                var children = this.getOutEdges(chhub);
+                allChildren = allChildren.concat(children);
+            }
+            return allChildren;
         },
 
         getProducingRelationship: function(v) {
@@ -725,19 +797,6 @@ define([
             if (!this.isVirtual(v)) return v;
 
             return this.downTheChainUntilNonVirtual( this.v[v][0] );  // virtual nodes have only one in-edges, all the way up until a person node
-        },
-
-        getUpPathEndingInNonVirtual: function(v)
-        {
-            var path = [v];
-
-            while (this.isVirtual(v))
-            {
-                v = this.inedges[v][0];
-                path.push(v);
-            }
-
-            return path;
         },
 
         getUnusedTwinGroupId: function(v)

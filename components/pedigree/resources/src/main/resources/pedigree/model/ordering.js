@@ -3,35 +3,57 @@ define([
     ], function(
         Helpers
     ){
-    Ordering = function (order, vOrder) {
-        this.order  = order;        // 1D array of 1D arrays - for each rank list of vertices in order
-        this.vOrder = vOrder;       // 1D array - for each v vOrder[v] = order within rank
 
-        // TODO: verify validity?
+    // order:   1D array of 1D arrays: for each rank list of vertices in order
+    //
+    // _vOrder: (optional) 1D array: for each nodeID vOrder[nodeID] == order within the rank
+    //          _vOrder can be derived from the `order` above, and is provided optionally for performance reasons
+    Ordering = function (order, _vOrder) {
+        this.order = order;
+
+        if (_vOrder) {
+            this.vOrder = _vOrder;
+        } else {
+            this.vOrder = [];
+            this._updateVOrderArray();
+        }
     };
+
+    Ordering.createOrdering = function(vOrder, ranks) {
+        if (vOrder.length != ranks.length) {
+            throw "Can not create ordering since the number of positions and nodes does not match";
+        }
+
+        var maxRank = Math.max.apply(null, ranks)
+        var order = [];
+        for (var r = 0; r <= maxRank; r++) {
+            order[r] = [];
+        }
+
+        // fill in order 2d array which represents orders-per-rank based on given order-per-vertex 1D array
+        for (var i = 0; i < vOrder.length; i++) {
+            if (order[ranks[i]][vOrder[i]] !== undefined) {
+                throw "Some nodes have the same generation (" +  ranks[i] + ") and same order (" + vOrder[i] + ")";
+            }
+            order[ranks[i]][vOrder[i]] = i;
+        }
+
+        // remove gaps on each rank
+        for (var r = 0; r <= maxRank; r++) {
+            order[r] = order[r].filter(function(v){return v !== undefined})
+        }
+
+        return new Ordering(order);
+    };
+
+    Ordering.fromJSON = function(json) {
+        return new Ordering(json.order, json.vOrder);
+    },
 
     Ordering.prototype = {
 
-        serialize: function() {
-            return this.order;
-        },
-
-        deserialize: function(data) {
-            this.order  = data;
-            this.vOrder = [];
-            //console.log("Order deserialization: [" + Helpers.stringifyObject(this.order) + "]");
-
-            this._updateVOrderArray();
-        },
-
-        _updateVOrderArray: function() {
-            // recompute vOrders
-            for (var r = 0; r < this.order.length; r++) {
-                var ordersAtRank = this.order[r];
-                for (var i = 0; i < ordersAtRank.length; i++) {
-                    this.vOrder[ordersAtRank[i]] = i;
-                }
-            }
+        toJSONObject: function() {
+            return JSON.parse(JSON.stringify(this));
         },
 
         insert: function(rank, insertOrder, vertex) {
@@ -212,6 +234,16 @@ define([
                 this.order[r].reverse();
             }
             this._updateVOrderArray();
+        },
+
+        _updateVOrderArray: function() {
+            // recompute vOrders
+            for (var r = 0; r < this.order.length; r++) {
+                var ordersAtRank = this.order[r];
+                for (var i = 0; i < ordersAtRank.length; i++) {
+                    this.vOrder[ordersAtRank[i]] = i;
+                }
+            }
         }
     };
 

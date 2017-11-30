@@ -58,6 +58,9 @@ define ([], function(){
 
     // takes a parameter which is either an SVG or a DOM element and checks if it has the given classname
    Helpers.elementHasClassName = function(element, className) {
+       if (!element) {
+           return false;
+       }
        // hasClassName() may not be defined, classList is not implemented in some browsers and may be an array or a DOMTokenList,
        // so getAttribute() is the safest most compatible way to go
        var classList = element.getAttribute("class") ? element.getAttribute("class").split(" ") : [];
@@ -202,6 +205,9 @@ define ([], function(){
 
     // Returns true iff the object has no properties
     Helpers.isObjectEmpty = function(map) {
+        if (!map) {
+            return true;
+        }
         for(var key in map) {
            if (map.hasOwnProperty(key)) {
               return false;

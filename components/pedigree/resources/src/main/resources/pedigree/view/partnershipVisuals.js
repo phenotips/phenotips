@@ -172,19 +172,20 @@ define([
             var lineAttr          = consangr ? PedigreeEditorParameters.attributes.consangrPartnershipLines : PedigreeEditorParameters.attributes.partnershipLines;
             var lineAttrNoContact = consangr ? PedigreeEditorParameters.attributes.noContactLinesConsangr   : PedigreeEditorParameters.attributes.noContactLines;
 
-            var partnerPaths = editor.getGraph().getPathToParents(id);  // partnerPaths = [ [virtual_node_11, ..., virtual_node_1n, parent1], [virtual_node_21, ..., virtual_node_2n, parent21] ]
+            var partnerPaths = editor.getGraph().getPathToParents(id);  // partnerPaths = { parent1: [virtual_node_11, ..., virtual_node_1n], parent2: [virtual_node_21, ..., virtual_node_2n] ]
 
             // TODO: a better curve algo for the entire curve at once?
             var smoothCorners = true;
             var cornerRadius  = PedigreeEditorParameters.attributes.curvedLinesCornerRadius;
 
             for (var p = 0; p < partnerPaths.length; p++) {
-                var path = partnerPaths[p];
-
                 // for the last piece which attaches to the person:
                 // need to consider which attachment point to use, and may have to do a bended curve from current Y to the attachment point Y
-                var person           = path[path.length-1];
+                var person           = partnerPaths[p].parent;
                 var finalSegmentInfo = editor.getGraph().getRelationshipLineInfo(id, person);
+
+                var path = partnerPaths[p].path;
+                path.push(person);  // add person as the last item on the path
 
                 var nodePos       = editor.getGraph().getPosition(person);
                 var finalPosition = editor.convertGraphCoordToCanvasCoord( nodePos.x, nodePos.y );

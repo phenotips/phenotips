@@ -8,6 +8,7 @@ define([
         "pedigree/model/ordering",
         "pedigree/model/queues",
         "pedigree/model/xcoordclass",
+        "pedigree/model/layoutHeuristics",
         "pedigree/view/ageCalc"
     ], function(
         PedigreeDate,
@@ -16,140 +17,218 @@ define([
         Ordering,
         Queue,
         XCoord,
+        Heuristics,
         AgeCalc
     ){
 
-    PositionedGraph = function( baseG,                          // mandatory, BaseGraph
-                                probandNodeId,                  // mandatory, int
-                                horizontalPersonSeparationDist, // mandatory, int
-                                horizontalRelSeparationDist,    // mandatory, int
-                                maxInitOrderingBuckets,         // optional,  int
-                                maxOrderingIterations,          // optional,  int
-                                maxXcoordIterations,            // optional,  int
-                                performVerticalPositioning,     // optional,  bool  (DynamicGraph does its own vertical positioning, so can save some time)
-                                suggestedRanks )                // optional,  array[int] - ranks suggested for all nodes
+    PositionedGraph = function( baseG,             // mandatory, BaseGraph
+                                probandNodeId,     // optional, int (default: no proband)
+                                options,           // optional, object, see PositionedGraph.options
+                                suggestedLayout )  // optional, object
+                                                   //           { "ranks": array[int], "order": ..., "positons": ... }
     {
-        this.GG = undefined;         // graph without any positioning info (of type BaseGraph);
-                                     // same as baseG, but with multi-rank edges replaced by virtual vertices/edges
+        this.GG = undefined;         // BaseGraph: graph without any positioning info
+                                     //            (most algorithms here assume there are no multi-rank edges, so one
+                                     //            of the first steps once ranks are computed is to replaced multi-rank
+                                     //            edges by virtual vertices/edges each crossing just one rank, thus
+                                     //            baseG might be modified as a result)
 
-        this.ranks     = undefined;  // 1D array: index = vertex id, value = rank
-        this.maxRank   = undefined;  // integer:  max rank in the above array (maintained for performance reasons)
+        this.ranks     = undefined;  // 1D array: index = vertex id, value = (vertical) rank of the node
+                                     //           (for person nodes rank is logically similar to their "generation"
+                                     //           where parents have lower generation than their children; however
+                                     //           ranks are not equivalent to generations, since there are intermediate
+                                     //           ranks occupied by internal helper nodes)
 
-        this.order     = undefined;  // class: Ordering
+        this.maxRank   = undefined;  // integer: max rank in the above array (maintained for performance reasons)
+
+        this.order     = undefined;  // class: Ordering (data about horizontal order of nodes for each rank)
 
         this.positions = undefined;  // 1D array: index = vertex id, value = x-coordinate
 
-        this.vertLevel = undefined;  // class: VerticalLevels
-        this.rankY     = undefined;  // 1D aray: index = rank, value = y-coordinate
+        this.vertLevel = undefined;  // class: VerticalLevels (data about vertical positioning of various horizontal
+                                     //        lines such as relationship lines or child/sibling lines, there might be
+                                     //        a lot of such lines at any given rank, good positioning can minimize the
+                                     //        number of intersections between them)
+
+        this.rankY     = undefined;  // 1D aray: index = rank, value = y-coordinate of the "base level" of each rank
 
         this.ancestors = undefined;  // {}: for each node contains a set of all its ancestors and the closest relationship distance
         this.consangr  = undefined;  // {}: for each node a set of consanguineous relationship IDs
 
         this.probandId = undefined;  // int; need it at this level to order proband parents correctly; -1 means no proband
 
+        this.heuristics = undefined; // class: Heuristics. Provides layout optimization methods not absolutely
+                                     // necessary during the intitial layout, but which may be useful to apply after
+                                     // the basic layout algorithm (global optimization) or which allow specific
+                                     // localized layout modifications during interactive sessions (e.g. locally move
+                                     // some nodes around before/after a modificatoin request to minimize edge
+                                     // crossings without re-computing the entire layout from scratch)
+                                     // TODO: refactor
+
         this.initialize( baseG,
                          probandNodeId,
-                         horizontalPersonSeparationDist, horizontalRelSeparationDist,
-                         maxInitOrderingBuckets, maxOrderingIterations, maxXcoordIterations,
-                         performVerticalPositioning, suggestedRanks );
+                         options,
+                         suggestedLayout );
     };
 
     PositionedGraph.prototype = {
 
-        maxInitOrderingBuckets: 5,           // it may take up to ~factorial_of_this_number iterations to generate initial ordering
-        maxOrderingIterations:  24,          // up to so many iterations are spent optimizing initial ordering
-        maxXcoordIterations:    4,
-        xCoordEdgeWeightValue:  true,        // when optimizing edge length/curvature take
-                                             // edge weight into account or not
-        horizontalPersonSeparationDist: 10,
-        horizontalTwinSeparationDist:    8,
-        horizontalRelSeparationDist:     6,
-        yDistanceNodeToChildhub:      21.6,
-        yDistanceChildhubToNode:        14,
-        yExtraPerHorizontalLine:         4,
-        yAttachPortHeight:             1.5,
-        yCommentLineHeight:            2.8,
+        options: {
+            maxInitOrderingBuckets: 5,           // it may take up to ~factorial_of_this_number iterations to generate initial ordering
+            maxOrderingIterations:  24,          // up to so many iterations are spent optimizing initial ordering
+            maxXcoordIterations:    4,
+            xCoordEdgeWeightValue:  true,        // whether to take edge weight into account when optimizing edge length/curvature
+
+            horizontalPersonSeparationDist: 10,  // same relative units as in BaseGraph.width fields. Min distance between two person nodes
+            horizontalTwinSeparationDist:    8,  // same units; Min distance between two twins (overwrites horizontalPersonSeparationDist)
+            horizontalRelRelSeparationDist:  8,  // same units; Min distance between a two relationship nodes
+            horizontalRelSeparationDist:     6,  // same units; Min distance between a relationship node and other types of nodes
+
+            yDistanceNodeToChildhub:      21.6,  // unit value has no meaning (a scaling factor which looks ok on a specific medium
+            yDistanceChildhubToNode:        14,  // should be used when drawing, what matters is relative value of various y-distance values)
+            yExtraPerHorizontalLine:         4,
+            yAttachPortHeight:             1.5,
+            yCommentLineHeight:            2.8,
+        },
 
         initialize: function( baseG,
                               probandNodeId,
-                              horizontalPersonSeparationDist,
-                              horizontalRelSeparationDist,
-                              maxInitOrderingBuckets,
-                              maxOrderingIterations,
-                              maxXcoordIterations,
-                              performVerticalPositioning,
-                              suggestedRanks )
+                              options,
+                              suggestedLayout )
         {
-            if (horizontalPersonSeparationDist) this.horizontalPersonSeparationDist = horizontalPersonSeparationDist;
-            if (horizontalRelSeparationDist)    this.horizontalRelSeparationDist    = horizontalRelSeparationDist;
-            if (maxInitOrderingBuckets)         this.maxInitOrderingBuckets         = maxInitOrderingBuckets;
-            if (maxOrderingIterations)          this.maxOrderingIterations          = maxOrderingIterations;
-            if (maxXcoordIterations)            this.maxXcoordIterations            = maxXcoordIterations;
+            // use user provided values for all keys which match existing internal options keys
+            Helpers.setByTemplate(this.options, options);
+            if (this.options.maxInitOrderingBuckets > 8) {
+                throw "Too many ordering buckets: number of permutations ("
+                    + this.options.maxInitOrderingBuckets + "!) is too big";
+            }
+
+            this.GG = baseG;
+
+            this.heuristics = new Heuristics(this);
 
             this.probandId = Helpers.isInt(probandNodeId) ? probandNodeId : -1;
 
-            if (this.maxInitOrderingBuckets > 8)
-                throw "Too many ordering buckets: number of permutations (" + this.maxInitOrderingBuckets.toString() + "!) is too big";
+            // 0)
+            // input may include suggested layout, either complete or partial. Suported layouts may include:
+            //  a) ranks
+            //  b) ranks + orders
+            //  c) ranks + orders + positions
+            //
+            //  In case of a) only ranks for person nodes are used and the graph can have myulti-rank edges which will be
+            //  taken care of
+            //  In case of b) and c) the graph should have no multi-rank edges (they should already be split) and ranks
+            //  should include ranks for all nodes
+            //
+            //  It is assumed that the sugested layout has correct ranks and orders (of provided) and that calling code
+            //  did all the validations. The check is still performed below to validate suggested positions.
+            //  TODO: review this assumption. Maybe code will be cleaner if validation is also/instead performed here
+            if (suggestedLayout) {
+                this.ranks = suggestedLayout.ranks;
+                this.maxRank = Math.max.apply(null, this.ranks);
+
+                if (suggestedLayout.order) {
+                    this.order = suggestedLayout.order;
+                    this.GG = baseG;
+                }
+            }
 
             var timer = new Helpers.Timer();
 
-            // 1)
-            this.ranks = this.rank(baseG, suggestedRanks);
+            if (!this.ranks || !this.order) {
+                // 1)
+                var timer = new Helpers.Timer();
 
-            this.maxRank = Math.max.apply(null, this.ranks);
+                this.GG.collapseMultiRankEdges();
 
-            timer.printSinceLast("=== Ranking runtime: ");
+                this.ranks = this.rank(this.GG, (suggestedLayout ? suggestedLayout.ranks : null));
 
-            // 1.1)
-            // ordering algorithms needs all edges to connect nodes on neighbouring ranks only;
-            // to accomodate that multi-rank edges are split into a chain of edges between new
-            // "virtual" nodes on intermediate ranks, and the resulting graph is use in all
-            // further algorithms
-            this.GG = baseG.makeGWithSplitMultiRankEdges(this.ranks);
+                this.maxRank = Math.max.apply(null, this.ranks);
 
-            //Helpers.printObject( this.GG );
+                timer.printSinceLast("=== Ranking runtime: ");
 
-            // 1.2)
-            // twins should always be next to each other. The easiest and fastest way to accomodate that is by
-            // conbining all twins in each group into one node, connected to all the nodes all of the twins in
-            // the group connect to. This reduces the size of the graph and keeps twins together
-            var disconnectedTwins = this.disconnectTwins();
+                // 1.1)
+                // ordering algorithms need all edges to connect nodes on neighbouring ranks only;
+                // to accomodate that multi-rank edges are split into a chain of edges between new
+                // "virtual" nodes on intermediate ranks. The ranks array is modified to include ranks
+                // of the new virtual nodes
+                this.ranks = this.GG.splitMultiRankEdges(this.ranks);
 
-            // 2)
-            timer.restart();
+                timer.printSinceLast("=== Multi-rank edge conversion runtime: ");
 
-            this.order = this.ordering(this.maxInitOrderingBuckets, this.maxOrderingIterations, disconnectedTwins);
+                //Helpers.printObject( this.GG );
 
-            timer.printSinceLast("=== Ordering runtime: ");
+                // 2)
 
-            // 2.1)
-            // once ordering is known need to re-rank relationship nodes to be on the same level as the
-            // lower ranked parent. Attempt to place next to one of the parents; having ordering info
-            // helps to pick the parent in case parents are on the same level and not next to each other
-            this.reRankRelationships();
+                // 2.1
+                // twins should always be next to each other. The easiest and fastest way to accomodate that is by
+                // conbining all twins in each group into one node, connected to all the nodes all of the twins in
+                // the group connect to. This reduces the size of the graph and keeps twins together
+                var disconnectedTwins = this.disconnectTwins();
 
-            // once all ordering and ranking is done twins in each twin group need to be separated back into separate nodes
-            this.reconnectTwins(disconnectedTwins);
+                // 2.2)
+                this.order = this.ordering(this.options.maxInitOrderingBuckets, this.options.maxOrderingIterations, disconnectedTwins);
 
-            // 2.2)
+                // 2.3)
+                // once ordering is known need to re-rank relationship nodes to be on the same level as the
+                // lower ranked parent. Attempt to place next to one of the parents; having ordering info
+                // helps to pick the parent in case parents are on the same level and not next to each other
+                this.reRankRelationships();
+
+                // 2.4) (the reversal of what was done in 2.1)
+                // once all ordering and ranking is done twins in each twin group need to be separated back into separate nodes
+                this.reconnectTwins(disconnectedTwins);
+
+                timer.printSinceLast("=== Ordering runtime: ");
+
+                // if new ordering was computed need to discard any suggested positioning data
+                suggestedLayout && suggestedLayout.positions && (delete suggestedLayout.positions);
+            }
+
+            // 3.1)
+            if (suggestedLayout && suggestedLayout.positions) {
+                // validate positions, if they are provided. If positions are valid, set this.positions
+                if (this.validatePositions(suggestedLayout.positions)) {
+                    this.positions = suggestedLayout.positions;
+                }
+            }
+
+            // 3.2) if suggested layout did not specify positions or suggested positions were unuseable
+            if (!this.positions) {
+                this.positions = this.position();
+
+                timer.printSinceLast("=== Positioning runtime: ");
+
+                this.getHeuristics().improvePositioning();
+            }
+
+            // 4) update ancestors and vertical positioning of nodes and childhub edges
+            this.updateSecondaryStructures();
+        },
+
+        // ranksBefore, rankYBefore: optional, used to make sure nodes do not move around vertically when they dont have to
+        updateSecondaryStructures: function(ranksBefore, rankYBefore, keepSameRankY)
+        {
+            var timer = new Helpers.Timer();
+
             var ancestors = this.findAllAncestors();
-
             this.ancestors = ancestors.ancestors;
             this.consangr  = ancestors.consangr;
+            timer.printSinceLast("=== Ancestors runtime: ");
 
-            timer.printSinceLast("=== Ancestors + re-ranking runtime: ");
-
-            // 3)
-            this.positions = this.position();
-
-            timer.printSinceLast("=== Positioning runtime: ");
-
-            // 4)
-            if (performVerticalPositioning) {
-                this.vertLevel = this.positionVertically();
-                this.rankY     = this.computeRankY();
-                timer.printSinceLast("=== Vertical spacing runtime: ");
+            this.vertLevel = this.positionVertically();
+            if (!keepSameRankY) {
+                this.rankY = this.computeRankY(ranksBefore, rankYBefore);
+            } else {
+                // usually this branch is taken after a deletion. Make sure rankY legnth is correct
+                this.rankY.splice(this.maxRank+1);
             }
+            timer.printSinceLast("=== Vertical spacing runtime: ");
+        },
+
+        getHeuristics: function()
+        {
+            return this.heuristics;
         },
 
         //=[rank]============================================================================
@@ -201,17 +280,26 @@ define([
             var queue = new Queue();         // holds non-ranked nodes which have all their parents already ranked
 
             if (suggestedRanks) {
-                for (var i = 0; i < suggestedRanks.length; i++) {
-                    var nodesAtRank = suggestedRanks[i];
-                    for (var j = 0; j < nodesAtRank.length; j++) {
-                        ranks[nodesAtRank[j]] = (i*3) + 1;
-                    }
-                }
-
+                var minSuggestedRank = Math.min.apply(null, suggestedRanks);
                 for (var v = 0; v < baseG.getNumVertices(); v++) {
-                    if (baseG.isPerson(v) && ranks[v] == -1) {
-                        // a person node is without a rank => suggestedRanksa re bad
-                        return null;
+                    if (baseG.isPerson(v)) {
+                        if (suggestedRanks.length > v) {
+                            // since `suggestedRanks` supposedly contains ranks after the graph is "compressed" for final output,
+                            // any suggested rank should be converted to the rank which work at this stage in the algorithm
+                            // (the difference is that relationships occupy their own rank at this stage)
+                            //
+                            // Conversion logic:
+                            //  initial ranks: X, X+2, X+4, etc  (persons are ranked on every other rank, starting with some rank X)
+                            //  converted ranks: 1, 4, 7, etc    (persons are ranked on every 3rd rank, starting with rank 1)
+                            var convertedRank = suggestedRanks[v] - minSuggestedRank;
+                            if (convertedRank % 2 != 0) {
+                                return null;   // assumption failed: persons are ranked on every other rank
+                            }
+                            convertedRank = (convertedRank/2 * 3) + 1;  // top generation is ranked 1, next is 4, etc.
+                            ranks[v] = convertedRank;
+                        } else {
+                            return null;  // a person node is without a rank => suggestedRanks are bad
+                        }
                     }
                     if (baseG.isRelationship(v)) {
                         queue.push(v);
@@ -2940,18 +3028,19 @@ define([
             var rankY = [0, 0];  // rank 0 is virtual, rank 1 starts at relative 0
 
             for ( var r = 2; r <= this.maxRank; r++ ) {
-                var yDistance = (this.isChildhubRank(r)) ? this._computePersonRankHeight(r-1) : this.yDistanceChildhubToNode;
+                var yDistance = (this.isChildhubRank(r)) ? this._computePersonRankHeight(r-1) : this.options.yDistanceChildhubToNode;
 
                 // note: yExtraPerHorizontalLine * vertLevel.rankVerticalLevels[r] part comes from the idea that if there are many
                 //       horizontal lines (childlines & relationship lines) between two ranks it is good to separate those ranks vertically
                 //       more than ranks with less horizontal lines between them
-                rankY[r] = rankY[r-1] + yDistance + this.yExtraPerHorizontalLine*(Math.max(this.vertLevel.rankVerticalLevels[r-1],1) - 1);
+                rankY[r] = rankY[r-1] + yDistance + this.options.yExtraPerHorizontalLine*(Math.max(this.vertLevel.rankVerticalLevels[r-1],1) - 1);
             }
 
             if (oldRanks && oldRankY) {
-                // attempt to keep the old Y coordinate for the node with ID == 0 to minimize UI redraws
-                var oldRank = oldRanks[0];
-                var newRank = this.ranks[0];
+                // attempt to keep the old Y coordinate for the proband node to minimize UI redraws
+                var nodeID = (this.probandId == -1) ? 0 : this.probandId;
+                var oldRank = oldRanks[nodeID];
+                var newRank = this.ranks[nodeID];
                 var oldY = oldRankY[oldRank];
                 var newY = rankY[newRank];
                 var shiftAmount = newY - oldY;
@@ -2975,7 +3064,7 @@ define([
 
         _computePersonRankHeight: function(r)
         {
-            var height = this.yDistanceNodeToChildhub;
+            var height = this.options.yDistanceNodeToChildhub;
 
             var maxLabelLinesOnRank = 0;
             for (var i = 0; i < this.order.order[r].length; i++) {
@@ -3037,30 +3126,30 @@ define([
                 }
             }
             if (maxLabelLinesOnRank > 3) {
-                height += (maxLabelLinesOnRank - 3)*this.yCommentLineHeight;
+                height += (maxLabelLinesOnRank - 3)*this.options.yCommentLineHeight;
             }
             return height;
         },
 
         computeNodeY: function( rank, level )
         {
-            return this.rankY[rank] + (level - 1)*this.yExtraPerHorizontalLine;
+            return this.rankY[rank] + (level - 1)*this.options.yExtraPerHorizontalLine;
         },
 
         computeRelLineY: function( rank, attachLevel, verticalLevel )
         {
-            var attachY = this.rankY[rank] - (attachLevel)*this.yAttachPortHeight;
+            var attachY = this.rankY[rank] - (attachLevel)*this.options.yAttachPortHeight;
 
             var relLineY = this.rankY[rank];
 
             if (verticalLevel == 1) {
                 // going above another line
-                relLineY -= (attachLevel)*this.yAttachPortHeight;
+                relLineY -= (attachLevel)*this.options.yAttachPortHeight;
             } else if (verticalLevel == 2) {
                 // going above relationship node
-                relLineY -= this.yExtraPerHorizontalLine * 1.25;
+                relLineY -= this.options.yExtraPerHorizontalLine * 1.25;
             } else {
-                relLineY -= verticalLevel * this.yExtraPerHorizontalLine;
+                relLineY -= verticalLevel * this.options.yExtraPerHorizontalLine;
             }
 
             return {"attachY":  attachY, "relLineY": relLineY };
@@ -3106,7 +3195,7 @@ define([
             var xbest     = xcoord.copy();
             var bestScore = this.xcoord_score(xbest);
 
-            for ( var i = 0; i <= this.maxXcoordIterations; i++ )
+            for ( var i = 0; i <= this.options.maxXcoordIterations; i++ )
             {
                 this.try_shift_right(xcoord, true, true);
                 this.try_straighten_long_edges(longEdges, xcoord);
@@ -3197,7 +3286,7 @@ define([
                         // determine edge type: from real vertex to real, real to/from virtual or v. to v.
                         var coeff = this.edge_importance_to_straighten(v, u);
 
-                        var w = this.xCoordEdgeWeightValue ? this.GG.weights[v][u] : 1.0;
+                        var w = this.options.xCoordEdgeWeightValue ? this.GG.weights[v][u] : 1.0;
 
                         var dist = Math.abs(xcoord.xcoord[v] - xcoord.xcoord[u]);
 
@@ -3353,7 +3442,7 @@ define([
                                 this.edge_importance_to_straighten(v, u) :
                                 this.edge_importance_to_straighten(u, v);
 
-                    var w = this.xCoordEdgeWeightValue ? weight : 1.0;
+                    var w = this.options.xCoordEdgeWeightValue ? weight : 1.0;
 
                     var score = coeff * w;
 
@@ -3477,6 +3566,17 @@ define([
 
             return improved;
         },
+
+        validatePositions: function(positions)
+        {
+            try {
+                var xcoord = new XCoord(positions, this);
+            } catch(err) {
+                return false;
+            }
+            return true;
+        },
+
         //========================================================================[position]=
 
         find_long_edges: function()
@@ -3528,28 +3628,14 @@ define([
 
     function make_dynamic_positioned_graph( inputG, probandNodeId, debugOutput )
     {
-        var horizontalPersonSeparationDist = 10; // same relative units as in inputG.width fields. Min distance between two person nodes
-        var horizontalRelSeparationDist    = 6;  // same relative units as in inputG.width fields. Min distance between a relationship node and other nodes
-
-        var orderingInitBuckets = 5;             // default: 5. It may take up to ~factorial_of_this_number iterations. See ordering()
-
-        var orderingIterations  = 24;            // paper used: 24. Up to so many iterations are spent optimizing initial ordering
-
-        var xcoordIterations    = 4;             // default: 8
-
         var timer = new Helpers.Timer();
 
         if (debugOutput)
             DISPLAY_POSITIONING_DEBUG = true;
         else
             DISPLAY_POSITIONING_DEBUG = false;
-        var drawGraph = new PositionedGraph( inputG,
-                                             probandNodeId,
-                                             horizontalPersonSeparationDist,
-                                             horizontalRelSeparationDist,
-                                             orderingInitBuckets,
-                                             orderingIterations,
-                                             xcoordIterations );  // display debug
+
+        var drawGraph = new PositionedGraph( inputG, probandNodeId );
 
         console.log( "=== Running time: " + timer.report() + "ms ==========" );
 
