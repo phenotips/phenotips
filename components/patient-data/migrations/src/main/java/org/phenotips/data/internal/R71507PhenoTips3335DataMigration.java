@@ -21,7 +21,6 @@ import org.phenotips.Constants;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
@@ -50,10 +49,10 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 import com.xpn.xwiki.store.migration.hibernate.HibernateDataMigration;
 
 /**
- * Migration for PhenoTips issue #3335: Make Obstetric History exportable and pushable.
+ * Migration for PhenoTips issue PT-3335: Make Obstetric History exportable and pushable.
  *
  * @version $Id$
- * @since 1.4m2
+ * @since 1.4
  */
 @Component(roles = { HibernateDataMigration.class })
 @Named("71507-PT-3335")
@@ -81,11 +80,10 @@ public class R71507PhenoTips3335DataMigration extends AbstractHibernateDataMigra
 
     private static final String TERM = "pregnancy_history__term";
 
-    private DocumentReference parentalInformationClassReference;
+    private static final String[] PROPERTIES = new String[] { GRAVIDA, PARA, TERM, PRETERM, SAB, TAB, BIRTHS };
 
-    private DocumentReference obstetricHistoryClassReference;
     /**
-     * Serializes the rights name.
+     * Serializes the class reference.
      */
     @Inject
     @Named("compactwiki")
@@ -98,26 +96,15 @@ public class R71507PhenoTips3335DataMigration extends AbstractHibernateDataMigra
     @Named("current")
     private DocumentReferenceResolver<String> resolver;
 
-    /** Resolves class names to the current wiki. */
-    @Inject
-    @Named("current")
-    private DocumentReferenceResolver<EntityReference> entityResolver;
-
     @Override
     public Object doInHibernate(Session session) throws HibernateException, XWikiException
     {
         XWikiContext context = getXWikiContext();
         XWiki xwiki = context.getWiki();
 
-        this.parentalInformationClassReference = this.entityResolver.resolve(PARENTAL_INFORMATION_CLASS);
-        this.obstetricHistoryClassReference = this.entityResolver.resolve(OBSTETRIC_HISTORY_CLASS);
-
         Query q =
             session.createQuery("select distinct o.name from BaseObject o where o.className = '"
-                + this.serializer.serialize(this.parentalInformationClassReference)
-                + "' and exists(from StringProperty p where p.id.id = o.id and p.id.name in ('"
-                + BIRTHS + "', '" + GRAVIDA + "', '" + PARA + "', '" + PRETERM + "', '" + SAB + "', '" + TAB + "', '"
-                + TERM + "') and p.value IS NOT NULL)");
+                + this.serializer.serialize(PARENTAL_INFORMATION_CLASS) + "'");
 
         @SuppressWarnings("unchecked")
         List<String> docs = q.list();
@@ -158,34 +145,26 @@ public class R71507PhenoTips3335DataMigration extends AbstractHibernateDataMigra
         return new XWikiDBVersion(71507);
     }
 
-    /***
-     * For each Obstetric History field, remove the values from the parentalInformationClass , if provided.
-     *
-     * @param doc XWiki document
-     * @param context XWiki context
-     * @throws XWikiException if property value cannot be set
-     */
     private void migrateObstetricHistory(XWikiDocument doc, XWikiContext context)
         throws HibernateException, XWikiException
     {
-        BaseObject parentalInformation = doc.getXObject(this.parentalInformationClassReference);
-        BaseObject obstetricHistory = doc.newXObject(this.obstetricHistoryClassReference, context);
+        BaseObject parentalObject = doc.getXObject(PARENTAL_INFORMATION_CLASS);
+        BaseObject obstetricObject = doc.getXObject(OBSTETRIC_HISTORY_CLASS, true, context);
 
-        for (String propName : new String[] { BIRTHS, GRAVIDA, PARA, PRETERM, SAB, TAB, TERM }) {
-            IntegerProperty oldProp = (IntegerProperty) parentalInformation.get(propName);
+        for (String propName : PROPERTIES) {
+            IntegerProperty oldProp = (IntegerProperty) parentalObject.get(propName);
             if (oldProp != null) {
                 Integer propValue = (Integer) oldProp.getValue();
-                migrator(parentalInformation, obstetricHistory, propValue, propName);
+                migrateValue(parentalObject, obstetricObject, propValue, propName);
             }
         }
     }
 
-    private void migrator(BaseObject parental, BaseObject obstetric, Integer value, String pregnancyHistory)
-        throws XWikiException
+    private void migrateValue(BaseObject parentalObject, BaseObject obstetricObject, Integer propValue, String propName)
     {
-        if (value != null) {
-            parental.removeField(pregnancyHistory);
-            obstetric.setIntValue(pregnancyHistory, value);
+        parentalObject.removeField(propName);
+        if (propValue != null) {
+            obstetricObject.setIntValue(propName, propValue);
         }
     }
 }
