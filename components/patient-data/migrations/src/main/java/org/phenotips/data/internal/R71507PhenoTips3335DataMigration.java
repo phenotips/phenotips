@@ -66,19 +66,21 @@ public class R71507PhenoTips3335DataMigration extends AbstractHibernateDataMigra
     private static final EntityReference PARENTAL_INFORMATION_CLASS = new EntityReference("ParentalInformationClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
-    private static final String BIRTHS = "pregnancy_history__births";
+    private static final String OLD_PREFIX = "pregnancy_history__";
 
-    private static final String GRAVIDA = "pregnancy_history__gravida";
+    private static final String GRAVIDA = "gravida";
 
-    private static final String PARA = "pregnancy_history__para";
+    private static final String PARA = "para";
 
-    private static final String PRETERM = "pregnancy_history__preterm";
+    private static final String TERM = "term";
 
-    private static final String SAB = "pregnancy_history__sab";
+    private static final String PRETERM = "preterm";
 
-    private static final String TAB = "pregnancy_history__tab";
+    private static final String SAB = "sab";
 
-    private static final String TERM = "pregnancy_history__term";
+    private static final String TAB = "tab";
+
+    private static final String BIRTHS = "births";
 
     private static final String[] PROPERTIES = new String[] { GRAVIDA, PARA, TERM, PRETERM, SAB, TAB, BIRTHS };
 
@@ -152,7 +154,7 @@ public class R71507PhenoTips3335DataMigration extends AbstractHibernateDataMigra
         BaseObject obstetricObject = doc.getXObject(OBSTETRIC_HISTORY_CLASS, true, context);
 
         for (String propName : PROPERTIES) {
-            IntegerProperty oldProp = (IntegerProperty) parentalObject.get(propName);
+            IntegerProperty oldProp = (IntegerProperty) parentalObject.get(OLD_PREFIX + propName);
             if (oldProp != null) {
                 Integer propValue = (Integer) oldProp.getValue();
                 migrateValue(parentalObject, obstetricObject, propValue, propName);
@@ -162,7 +164,7 @@ public class R71507PhenoTips3335DataMigration extends AbstractHibernateDataMigra
 
     private void migrateValue(BaseObject parentalObject, BaseObject obstetricObject, Integer propValue, String propName)
     {
-        parentalObject.removeField(propName);
+        parentalObject.removeField(OLD_PREFIX + propName);
         if (propValue != null) {
             obstetricObject.setIntValue(propName, propValue);
         }

@@ -65,8 +65,6 @@ public class ObstetricHistoryController implements PatientDataController<Integer
     public static final EntityReference CLASS_REFERENCE =
         new EntityReference("ObstetricHistoryClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
-    private static final String PREFIX = "pregnancy_history__";
-
     private static final String GRAVIDA = "gravida";
 
     private static final String PARA = "para";
@@ -107,7 +105,7 @@ public class ObstetricHistoryController implements PatientDataController<Integer
             }
             Map<String, Integer> result = new LinkedHashMap<>();
             for (String property : getProperties()) {
-                int value = data.getIntValue(PREFIX + property, Integer.MIN_VALUE);
+                int value = data.getIntValue(property, Integer.MIN_VALUE);
                 if (value != Integer.MIN_VALUE) {
                     result.put(property, value);
                 }
@@ -136,7 +134,7 @@ public class ObstetricHistoryController implements PatientDataController<Integer
             final PatientData<Integer> data = patient.getData(getName());
             if (data == null) {
                 if (PatientWritePolicy.REPLACE.equals(policy)) {
-                    getProperties().forEach(propertyName -> dataHolder.set(PREFIX + propertyName, null, context));
+                    getProperties().forEach(propertyName -> dataHolder.set(propertyName, null, context));
                 }
             } else {
                 if (!data.isNamed()) {
@@ -170,8 +168,8 @@ public class ObstetricHistoryController implements PatientDataController<Integer
             : data::containsKey;
 
         getProperties().stream()
-                .filter(propertyFilter)
-                .forEach(propertyName -> dataHolder.set(PREFIX + propertyName, data.get(propertyName), context));
+            .filter(propertyFilter)
+            .forEach(propertyName -> dataHolder.set(propertyName, data.get(propertyName), context));
     }
 
     @Override

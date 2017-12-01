@@ -46,10 +46,10 @@
         <defaultEditSheet/>
         <defaultWeb/>
         <nameField/>
-        <pregnancy_history__births>
+        <births>
             <customDisplay/>
             <disabled>0</disabled>
-            <name>pregnancy_history__births</name>
+            <name>births</name>
             <number>9</number>
             <numberType>integer</numberType>
             <prettyName>Live births</prettyName>
@@ -58,11 +58,11 @@
             <validationMessage/>
             <validationRegExp/>
             <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-        </pregnancy_history__births>
-        <pregnancy_history__gravida>
+        </births>
+        <gravida>
             <customDisplay/>
             <disabled>0</disabled>
-            <name>pregnancy_history__gravida</name>
+            <name>gravida</name>
             <number>3</number>
             <numberType>integer</numberType>
             <prettyName>Gravida</prettyName>
@@ -71,11 +71,11 @@
             <validationMessage/>
             <validationRegExp/>
             <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-        </pregnancy_history__gravida>
-        <pregnancy_history__para>
+        </gravida>
+        <para>
             <customDisplay/>
             <disabled>0</disabled>
-            <name>pregnancy_history__para</name>
+            <name>para</name>
             <number>4</number>
             <numberType>integer</numberType>
             <prettyName>Para</prettyName>
@@ -84,11 +84,11 @@
             <validationMessage/>
             <validationRegExp/>
             <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-        </pregnancy_history__para>
-        <pregnancy_history__preterm>
+        </para>
+        <preterm>
             <customDisplay/>
             <disabled>0</disabled>
-            <name>pregnancy_history__preterm</name>
+            <name>preterm</name>
             <number>6</number>
             <numberType>integer</numberType>
             <prettyName>Pre-term</prettyName>
@@ -97,11 +97,11 @@
             <validationMessage/>
             <validationRegExp/>
             <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-        </pregnancy_history__preterm>
-        <pregnancy_history__sab>
+        </preterm>
+        <sab>
             <customDisplay/>
             <disabled>0</disabled>
-            <name>pregnancy_history__sab</name>
+            <name>sab</name>
             <number>7</number>
             <numberType>integer</numberType>
             <prettyName>SAB</prettyName>
@@ -110,11 +110,11 @@
             <validationMessage/>
             <validationRegExp/>
             <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-        </pregnancy_history__sab>
-        <pregnancy_history__tab>
+        </sab>
+        <tab>
             <customDisplay/>
             <disabled>0</disabled>
-            <name>pregnancy_history__tab</name>
+            <name>tab</name>
             <number>8</number>
             <numberType>integer</numberType>
             <prettyName>TAB</prettyName>
@@ -123,11 +123,11 @@
             <validationMessage/>
             <validationRegExp/>
             <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-        </pregnancy_history__tab>
-        <pregnancy_history__term>
+        </tab>
+        <term>
             <customDisplay/>
             <disabled>0</disabled>
-            <name>pregnancy_history__term</name>
+            <name>term</name>
             <number>5</number>
             <numberType>integer</numberType>
             <prettyName>Term</prettyName>
@@ -136,6 +136,6 @@
             <validationMessage/>
             <validationRegExp/>
             <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-        </pregnancy_history__term>
+        </term>
     </class>
 </xwikidoc>
