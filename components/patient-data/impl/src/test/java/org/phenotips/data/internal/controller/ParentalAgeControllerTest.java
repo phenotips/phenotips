@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.inject.Provider;
 
@@ -74,6 +73,8 @@ public class ParentalAgeControllerTest
     private static final Integer AGE_NON_ZERO = 25;
 
     private static final Integer AGE_ZERO = 0;
+
+    private static final Integer AGE_UNSET = Integer.MIN_VALUE;
 
     private static final String TEST_PATIENT_ID = "00000001";
 
@@ -124,6 +125,7 @@ public class ParentalAgeControllerTest
         doReturn(patientDocRef.getName()).when(this.patient).getId();
 
         when(this.doc.getXObject(CLASS_REFERENCE, true, this.xWikiContext)).thenReturn(this.dataHolder);
+        doReturn(AGE_UNSET).when(this.dataHolder).getIntValue(any(String.class), eq(AGE_UNSET));
     }
 
     @Test
@@ -141,14 +143,14 @@ public class ParentalAgeControllerTest
         BaseObject data = mock(BaseObject.class);
         doReturn(data).when(this.doc).getXObject(any(EntityReference.class));
 
-        doReturn(AGE_NON_ZERO).when(data).getIntValue(MATERNAL_AGE);
-        doReturn(AGE_NON_ZERO).when(data).getIntValue(PATERNAL_AGE);
+        doReturn(AGE_NON_ZERO).when(data).getIntValue(MATERNAL_AGE, AGE_UNSET);
+        doReturn(AGE_NON_ZERO).when(data).getIntValue(PATERNAL_AGE, AGE_UNSET);
 
         PatientData<Integer> testData = this.parentalAgeController.load(this.patient);
 
         Assert.assertEquals("parentalAge", testData.getName());
-        Assert.assertTrue(Objects.equals(testData.get(MATERNAL_AGE), AGE_NON_ZERO));
-        Assert.assertTrue(Objects.equals(testData.get(PATERNAL_AGE), AGE_NON_ZERO));
+        Assert.assertEquals(AGE_NON_ZERO, testData.get(MATERNAL_AGE));
+        Assert.assertEquals(AGE_NON_ZERO, testData.get(PATERNAL_AGE));
     }
 
     @Test
@@ -157,13 +159,13 @@ public class ParentalAgeControllerTest
         BaseObject data = mock(BaseObject.class);
         doReturn(data).when(this.doc).getXObject(any(EntityReference.class));
 
-        doReturn(AGE_NON_ZERO).when(data).getIntValue(MATERNAL_AGE);
-        doReturn(AGE_ZERO).when(data).getIntValue(PATERNAL_AGE);
+        doReturn(AGE_NON_ZERO).when(data).getIntValue(MATERNAL_AGE, AGE_UNSET);
+        doReturn(AGE_ZERO).when(data).getIntValue(PATERNAL_AGE, AGE_UNSET);
 
         PatientData<Integer> testData = this.parentalAgeController.load(this.patient);
 
         Assert.assertEquals("parentalAge", testData.getName());
-        Assert.assertTrue(Objects.equals(testData.get(MATERNAL_AGE), AGE_NON_ZERO));
+        Assert.assertEquals(AGE_NON_ZERO, testData.get(MATERNAL_AGE));
         Assert.assertEquals(AGE_ZERO, testData.get(PATERNAL_AGE));
     }
 
@@ -173,14 +175,14 @@ public class ParentalAgeControllerTest
         BaseObject data = mock(BaseObject.class);
         doReturn(data).when(this.doc).getXObject(any(EntityReference.class));
 
-        doReturn(AGE_ZERO).when(data).getIntValue(MATERNAL_AGE);
-        doReturn(AGE_NON_ZERO).when(data).getIntValue(PATERNAL_AGE);
+        doReturn(AGE_UNSET).when(data).getIntValue(MATERNAL_AGE, AGE_UNSET);
+        doReturn(AGE_NON_ZERO).when(data).getIntValue(PATERNAL_AGE, AGE_UNSET);
 
         PatientData<Integer> testData = this.parentalAgeController.load(this.patient);
 
         Assert.assertEquals("parentalAge", testData.getName());
-        Assert.assertEquals(AGE_ZERO, testData.get(MATERNAL_AGE));
-        Assert.assertTrue(Objects.equals(testData.get(PATERNAL_AGE), AGE_NON_ZERO));
+        Assert.assertNull(testData.get(MATERNAL_AGE));
+        Assert.assertEquals(AGE_NON_ZERO, testData.get(PATERNAL_AGE));
     }
 
     @Test
@@ -188,13 +190,24 @@ public class ParentalAgeControllerTest
     {
         BaseObject data = mock(BaseObject.class);
         doReturn(data).when(this.doc).getXObject(any(EntityReference.class));
-        doReturn(AGE_ZERO).when(data).getIntValue(MATERNAL_AGE);
-        doReturn(AGE_ZERO).when(data).getIntValue(PATERNAL_AGE);
+        doReturn(AGE_ZERO).when(data).getIntValue(MATERNAL_AGE, AGE_UNSET);
+        doReturn(AGE_ZERO).when(data).getIntValue(PATERNAL_AGE, AGE_UNSET);
 
         PatientData<Integer> testData = this.parentalAgeController.load(this.patient);
         Assert.assertEquals("parentalAge", testData.getName());
         Assert.assertEquals(AGE_ZERO, testData.get(MATERNAL_AGE));
         Assert.assertEquals(AGE_ZERO, testData.get(PATERNAL_AGE));
+    }
+
+    @Test
+    public void loadMaternalAndPaternalAgeUnset()
+    {
+        BaseObject data = mock(BaseObject.class);
+        doReturn(AGE_UNSET).when(data).getIntValue(MATERNAL_AGE, AGE_UNSET);
+        doReturn(AGE_UNSET).when(data).getIntValue(PATERNAL_AGE, AGE_UNSET);
+        doReturn(data).when(this.doc).getXObject(any(EntityReference.class));
+
+        Assert.assertNull(this.parentalAgeController.load(this.patient));
     }
 
     @Test

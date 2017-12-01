@@ -107,9 +107,9 @@ public class ObstetricHistoryController implements PatientDataController<Integer
             }
             Map<String, Integer> result = new LinkedHashMap<>();
             for (String property : getProperties()) {
-                int age = data.getIntValue(PREFIX + property);
-                if (age != 0) {
-                    result.put(property, age);
+                int value = data.getIntValue(PREFIX + property, Integer.MIN_VALUE);
+                if (value != Integer.MIN_VALUE) {
+                    result.put(property, value);
                 }
             }
             if (!result.isEmpty()) {

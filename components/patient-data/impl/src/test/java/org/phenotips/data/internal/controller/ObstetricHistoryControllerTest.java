@@ -40,6 +40,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
@@ -67,6 +68,8 @@ public class ObstetricHistoryControllerTest
     private static final Integer ZERO = 0;
 
     private static final String PREFIX = "pregnancy_history__";
+
+    private static final Integer UNSET = Integer.MIN_VALUE;
 
     private static final String GRAVIDA = "gravida";
 
@@ -129,6 +132,7 @@ public class ObstetricHistoryControllerTest
 
         when(this.doc.getXObject(this.obstetricHistoryController.getXClassReference(), true, this.xWikiContext))
             .thenReturn(this.data);
+        doReturn(UNSET).when(this.data).getIntValue(any(String.class), Matchers.eq(UNSET));
     }
 
     @Test
@@ -146,22 +150,25 @@ public class ObstetricHistoryControllerTest
     public void loadDefaultBehaviourTest()
     {
         doReturn(this.data).when(this.doc).getXObject(any(EntityReference.class));
-        doReturn(ZERO).when(this.data).getIntValue(PREFIX + GRAVIDA);
-        doReturn(ZERO).when(this.data).getIntValue(PREFIX + PARA);
-        doReturn(NON_ZERO).when(this.data).getIntValue(PREFIX + TERM);
-        doReturn(NON_ZERO).when(this.data).getIntValue(PREFIX + PRETERM);
-        doReturn(ZERO).when(this.data).getIntValue(PREFIX + SAB);
-        doReturn(NON_ZERO).when(this.data).getIntValue(PREFIX + TAB);
-        doReturn(NON_ZERO).when(this.data).getIntValue(PREFIX + LIVE_BIRTHS);
+        doReturn(NON_ZERO).when(this.data).getIntValue(PREFIX + GRAVIDA, UNSET);
+        doReturn(NON_ZERO).when(this.data).getIntValue(PREFIX + PARA, UNSET);
+        doReturn(NON_ZERO).when(this.data).getIntValue(PREFIX + TERM, UNSET);
+        doReturn(ZERO).when(this.data).getIntValue(PREFIX + PRETERM, UNSET);
+        doReturn(UNSET).when(this.data).getIntValue(PREFIX + SAB, UNSET);
+        doReturn(UNSET).when(this.data).getIntValue(PREFIX + TAB, UNSET);
+        doReturn(NON_ZERO).when(this.data).getIntValue(PREFIX + LIVE_BIRTHS, UNSET);
 
         PatientData<Integer> testPatientData = this.obstetricHistoryController.load(this.patient);
 
         Assert.assertEquals(testPatientData.getName(), "obstetric-history");
-        Assert.assertTrue(testPatientData.get(TERM) == 1);
-        Assert.assertTrue(testPatientData.get(PRETERM) == 1);
-        Assert.assertTrue(testPatientData.get(TAB) == 1);
-        Assert.assertTrue(testPatientData.get(LIVE_BIRTHS) == 1);
-        Assert.assertEquals(testPatientData.size(), 4);
+        Assert.assertEquals(NON_ZERO, testPatientData.get(GRAVIDA));
+        Assert.assertEquals(NON_ZERO, testPatientData.get(PARA));
+        Assert.assertEquals(NON_ZERO, testPatientData.get(TERM));
+        Assert.assertEquals(ZERO, testPatientData.get(PRETERM));
+        Assert.assertNull(testPatientData.get(SAB));
+        Assert.assertNull(testPatientData.get(TAB));
+        Assert.assertEquals(NON_ZERO, testPatientData.get(LIVE_BIRTHS));
+        Assert.assertEquals(testPatientData.size(), 5);
     }
 
     @Test
