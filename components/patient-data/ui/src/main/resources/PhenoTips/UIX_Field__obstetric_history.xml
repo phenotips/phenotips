@@ -148,7 +148,7 @@
 enabled=false
 required=
 order=3
-fields=obstetric-history
+fields=obstetricHistory
 pt_class=PhenoTips.ObstetricHistoryClass</parameters>
     </property>
     <property>

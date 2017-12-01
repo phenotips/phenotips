@@ -763,7 +763,7 @@ public class DataToCellConverter
         List<String> fields = new ArrayList<>(Arrays.asList("gestation", "prenatal_development", "parentalAge",
             "assistedReproduction_fertilityMeds", "assistedReproduction_iui", "ivf", "icsi",
             "assistedReproduction_surrogacy", "assistedReproduction_donoregg", "assistedReproduction_donorsperm",
-            "obstetric-history", "apgar1"));
+            "obstetricHistory", "apgar1"));
         fields.retainAll(enabledFields);
         Set<String> fieldSet = new HashSet<>(fields);
         this.enabledHeaderIdsBySection.put(sectionName, fieldSet);
@@ -782,7 +782,7 @@ public class DataToCellConverter
         int assistedReproductionOffset = assitedReproductionFields.size();
         int parentalOffset = fields.contains("parentalAge") ? parentalFields.size() : 0;
         int apgarOffset = fields.contains("apgar1") ? 2 : 0;
-        int obstetricOffset = fields.contains("obstetric-history") ? obstetricFields.size() : 0;
+        int obstetricOffset = fields.contains("obstetricHistory") ? obstetricFields.size() : 0;
         int bottomY =
             (apgarOffset > 0 || obstetricOffset > 0 || parentalOffset > 0 || assistedReproductionOffset > 0) ? 2 : 1;
         int hX = 0;
@@ -804,7 +804,7 @@ public class DataToCellConverter
                     headerSection.addCell(headerCell);
                     hX++;
                 }
-            } else if (fieldId.equals("obstetric-history")) {
+            } else if (fieldId.equals("obstetricHistory")) {
                 for (String field : obstetricFields) {
                     DataCell headerCell = new DataCell(this.translationManager
                         .translate("phenotips.export.excel.label.prenatalPerinatalHistory." + field),
@@ -912,7 +912,7 @@ public class DataToCellConverter
             x++;
         }
 
-        if (present.contains("obstetric-history")) {
+        if (present.contains("obstetricHistory")) {
             List<String> obstetricFields = Arrays.asList("gravida", "para", "term", "preterm", "sab", "tab", "births");
             for (String field : obstetricFields) {
                 Integer oData = obstetricHistory != null ? obstetricHistory.get(field) : null;
