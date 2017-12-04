@@ -98,6 +98,36 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
 
 #end
 ##
+## Tabs to be displayed after the patient tab
+#set ($tabs = [])
+(% class="hidden" %)(((
+#foreach ($e in $services.uix.getExtensions('org.phenotips.entitySheet.tab', {'sortByParameter' : 'order'}))
+  #set ($extension_disabled = ($e.getParameters().get('enabled') == 'false'))
+  #if (!$extension_disabled)
+    #set ($label = $!{e.getParameters().get('label')})
+    #set ($href = $!{e.getParameters().get('href')})
+    #set ($cssClass = $!{e.getParameters().get('cssClass')})
+    #set ($container = $!{e.getParameters().get('container')})
+    #set ($discard = $tabs.add({'label' : $label, 'href' : $href, 'cssClass' : $cssClass, 'container' : $container}))
+
+  #end
+#end
+#foreach ($e in $services.uix.getExtensions('org.phenotips.patientSheet.tab', {'sortByParameter' : 'order'}))
+  #set ($extension_disabled = ($e.getParameters().get('enabled') == 'false'))
+  #if (!$extension_disabled)
+    #set ($label = $!{e.getParameters().get('label')})
+    #set ($href = $!{e.getParameters().get('href')})
+    #set ($cssClass = $!{e.getParameters().get('cssClass')})
+    #set ($container = $!{e.getParameters().get('container')})
+    #set ($discard = $tabs.add({'label' : $label, 'href' : $href, 'cssClass' : $cssClass, 'container' : $container}))
+
+  #end
+#end
+{{html wiki=false clean=false}}
+  &lt;input id="added-title-tabs" type="hidden" value="$!{escapetool.xml($jsontool.serialize($tabs))}"&gt;
+{{/html}}
+)))
+##
 ## Extensions displayed before the content
 (% class="before-entity-data" %)(((
 #foreach ($e in $services.uix.getExtensions('org.phenotips.entitySheet.before', {'sortByParameter' : 'order'}))
