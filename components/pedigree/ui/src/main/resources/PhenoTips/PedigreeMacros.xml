@@ -608,6 +608,7 @@
 .family-members {
   vertical-align: top;
   margin-left: 1em;
+  margin-top: -1.9em;
 }
 .family-members ul {
   list-style: disc;
@@ -616,6 +617,10 @@
 }
 .family-info .pedigree-wrapper {
   width: 33%;
+}
+#family-label {
+  font-weight: bold;
+  display: inline;
 }</code>
     </property>
     <property>
