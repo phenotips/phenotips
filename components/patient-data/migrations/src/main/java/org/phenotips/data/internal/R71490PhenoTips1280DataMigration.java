@@ -217,6 +217,7 @@ public class R71490PhenoTips1280DataMigration extends AbstractHibernateDataMigra
         }
     }
 
+    @SuppressWarnings({ "NPathComplexity", "CyclomaticComplexity" })
     private void migrateGenes(XWikiDocument doc, XWikiContext context, List<String> geneList, String status)
         throws HibernateException, XWikiException
     {
