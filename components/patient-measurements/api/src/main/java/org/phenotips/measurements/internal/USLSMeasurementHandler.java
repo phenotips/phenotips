@@ -23,10 +23,10 @@ import org.xwiki.component.annotation.Component;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * US/LS (Upper-body-Segment : Lower-body-Segment) measurements, as a unitless ratio.
@@ -58,22 +58,15 @@ public class USLSMeasurementHandler extends AbstractMeasurementHandler implement
     }
 
     @Override
-    public double handleComputation(MultivaluedMap<String, String> params) throws IllegalArgumentException
+    public double handleComputation(Map<String, Number> params) throws IllegalArgumentException
     {
-        String upperSeg = params.getFirst("upperSeg");
-        String lowerSeg = params.getFirst("lowerSeg");
+        Number upperSeg = params.get("upperSeg");
+        Number lowerSeg = params.get("lowerSeg");
         if (upperSeg == null || lowerSeg == null) {
             throw new IllegalArgumentException("Computation arguments were not all provided");
         }
 
-        try {
-            double upperSegInCentimeters = Double.parseDouble(upperSeg);
-            double lowerSegInCentimeters = Double.parseDouble(lowerSeg);
-
-            return compute(upperSegInCentimeters, lowerSegInCentimeters);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Cannot parse computation arguments.");
-        }
+        return compute(upperSeg.doubleValue(), lowerSeg.doubleValue());
     }
 
     /**

@@ -19,9 +19,8 @@ package org.phenotips.data.rest;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 /**
  * Resource for working with computed measurement values.
@@ -29,16 +28,16 @@ import javax.ws.rs.core.UriInfo;
  * @version $Id$
  * @since 1.3M4
  */
-@Path("/measurements/computed")
+@Path("/measurements/computed/{measurement-id}")
 public interface ComputedMeasurementResource
 {
     /**
      * Get a computed measurement based on a number of inputs required for the computation. The parameters are extracted
      * manually by the implementation, since computed values vary in their numbers of parameters.
      *
-     * @param uriInfo the request's URI info
+     * @param measurement the type of measurement to process
      * @return the computed measurement value
      */
     @GET
-    Response getComputedMeasurement(@Context UriInfo uriInfo);
+    Response getComputedMeasurement(@PathParam("measurement-id") String measurement);
 }

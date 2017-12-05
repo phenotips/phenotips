@@ -23,10 +23,10 @@ import org.xwiki.component.annotation.Component;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * BMI (Body Mass Index) measurements, in kilograms per square meter.
@@ -58,22 +58,15 @@ public class BMIMeasurementHandler extends AbstractMeasurementHandler implements
     }
 
     @Override
-    public double handleComputation(MultivaluedMap<String, String> params) throws IllegalArgumentException
+    public double handleComputation(Map<String, Number> params) throws IllegalArgumentException
     {
-        String height = params.getFirst("height");
-        String weight = params.getFirst("weight");
+        Number height = params.get("height");
+        Number weight = params.get("weight");
         if (height == null || weight == null) {
             throw new IllegalArgumentException("Computation arguments were not all provided");
         }
 
-        try {
-            double heightInCentimeters = Double.parseDouble(height);
-            double weightInKilograms = Double.parseDouble(weight);
-
-            return compute(weightInKilograms, heightInCentimeters);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Cannot parse computation arguments.");
-        }
+        return compute(weight.doubleValue(), height.doubleValue());
     }
 
     /**

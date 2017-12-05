@@ -20,9 +20,7 @@ package org.phenotips.measurements;
 import org.xwiki.stability.Unstable;
 
 import java.util.Collection;
-
-import javax.ws.rs.core.MultivaluedMap;
-
+import java.util.Map;
 
 /**
  * Handles measurements that are computed, depending upon values entered by the user.
@@ -41,25 +39,24 @@ public interface ComputedMeasurementHandler
     Collection<String> getComputationDependencies();
 
     /**
-     * Handle computations for measurements by fetching the computational dependencies, parsing
-     * them, and passing them to the {@link #compute(double, double) compute} method.
+     * Handle computations for measurements by fetching the computational dependencies and passing them to the
+     * {@link #compute(double, double) compute} method.
      *
-     * @param params a map of available measurements entered by the user. It should include the
-     *            dependencies needed for the computation.
+     * @param parameters a map of available measurements entered by the user as part of the same measurements set. It
+     *            should include the dependencies needed for the computation.
      * @return computed value
-     * @throws IllegalArgumentException if dependencies are missing, or if they cannot be parsed.
+     * @throws IllegalArgumentException if dependencies are missing
      */
-    double handleComputation(MultivaluedMap<String, String> params) throws IllegalArgumentException;
+    double handleComputation(Map<String, Number> parameters) throws IllegalArgumentException;
 
     /**
-     * Compute the measurement given its computational dependencies. This method
-     * can be overloaded to allow for the computation of methods with various
-     * numbers of dependencies.
-     * The formula for computing each measurement is unique to that measurement.
+     * Compute the measurement given its computational dependencies. This method can be overloaded to allow for the
+     * computation of methods with various numbers of dependencies. The formula for computing each measurement is unique
+     * to that measurement.
      *
-     * @param dep1 the first computational dependency for the measurement
-     * @param dep2 the second computational dependency for the measurement
+     * @param dependencyValue1 the first computational dependency for the measurement
+     * @param dependencyValue2 the second computational dependency for the measurement
      * @return the computed measurement
      */
-    double compute(double dep1, double dep2);
+    double compute(double dependencyValue1, double dependencyValue2);
 }
