@@ -40,6 +40,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
@@ -66,7 +67,7 @@ public class ObstetricHistoryControllerTest
 
     private static final Integer ZERO = 0;
 
-    private static final String PREFIX = "pregnancy_history__";
+    private static final Integer UNSET = Integer.MIN_VALUE;
 
     private static final String GRAVIDA = "gravida";
 
@@ -129,6 +130,7 @@ public class ObstetricHistoryControllerTest
 
         when(this.doc.getXObject(this.obstetricHistoryController.getXClassReference(), true, this.xWikiContext))
             .thenReturn(this.data);
+        doReturn(UNSET).when(this.data).getIntValue(any(String.class), Matchers.eq(UNSET));
     }
 
     @Test
@@ -146,22 +148,25 @@ public class ObstetricHistoryControllerTest
     public void loadDefaultBehaviourTest()
     {
         doReturn(this.data).when(this.doc).getXObject(any(EntityReference.class));
-        doReturn(ZERO).when(this.data).getIntValue(PREFIX + GRAVIDA);
-        doReturn(ZERO).when(this.data).getIntValue(PREFIX + PARA);
-        doReturn(NON_ZERO).when(this.data).getIntValue(PREFIX + TERM);
-        doReturn(NON_ZERO).when(this.data).getIntValue(PREFIX + PRETERM);
-        doReturn(ZERO).when(this.data).getIntValue(PREFIX + SAB);
-        doReturn(NON_ZERO).when(this.data).getIntValue(PREFIX + TAB);
-        doReturn(NON_ZERO).when(this.data).getIntValue(PREFIX + LIVE_BIRTHS);
+        doReturn(NON_ZERO).when(this.data).getIntValue(GRAVIDA, UNSET);
+        doReturn(NON_ZERO).when(this.data).getIntValue(PARA, UNSET);
+        doReturn(NON_ZERO).when(this.data).getIntValue(TERM, UNSET);
+        doReturn(ZERO).when(this.data).getIntValue(PRETERM, UNSET);
+        doReturn(UNSET).when(this.data).getIntValue(SAB, UNSET);
+        doReturn(UNSET).when(this.data).getIntValue(TAB, UNSET);
+        doReturn(NON_ZERO).when(this.data).getIntValue(LIVE_BIRTHS, UNSET);
 
         PatientData<Integer> testPatientData = this.obstetricHistoryController.load(this.patient);
 
         Assert.assertEquals(testPatientData.getName(), "obstetric-history");
-        Assert.assertTrue(testPatientData.get(TERM) == 1);
-        Assert.assertTrue(testPatientData.get(PRETERM) == 1);
-        Assert.assertTrue(testPatientData.get(TAB) == 1);
-        Assert.assertTrue(testPatientData.get(LIVE_BIRTHS) == 1);
-        Assert.assertEquals(testPatientData.size(), 4);
+        Assert.assertEquals(NON_ZERO, testPatientData.get(GRAVIDA));
+        Assert.assertEquals(NON_ZERO, testPatientData.get(PARA));
+        Assert.assertEquals(NON_ZERO, testPatientData.get(TERM));
+        Assert.assertEquals(ZERO, testPatientData.get(PRETERM));
+        Assert.assertNull(testPatientData.get(SAB));
+        Assert.assertNull(testPatientData.get(TAB));
+        Assert.assertEquals(NON_ZERO, testPatientData.get(LIVE_BIRTHS));
+        Assert.assertEquals(testPatientData.size(), 5);
     }
 
     @Test
@@ -218,13 +223,13 @@ public class ObstetricHistoryControllerTest
 
         verify(this.doc, times(1)).getXObject(this.obstetricHistoryController.getXClassReference(), true,
             this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + GRAVIDA, null, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + PARA, null, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + TERM, null, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + PRETERM, null, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + SAB, null, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + TAB, null, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + LIVE_BIRTHS, null, this.xWikiContext);
+        verify(this.data, times(1)).set(GRAVIDA, null, this.xWikiContext);
+        verify(this.data, times(1)).set(PARA, null, this.xWikiContext);
+        verify(this.data, times(1)).set(TERM, null, this.xWikiContext);
+        verify(this.data, times(1)).set(PRETERM, null, this.xWikiContext);
+        verify(this.data, times(1)).set(SAB, null, this.xWikiContext);
+        verify(this.data, times(1)).set(TAB, null, this.xWikiContext);
+        verify(this.data, times(1)).set(LIVE_BIRTHS, null, this.xWikiContext);
 
         verifyNoMoreInteractions(this.doc);
         verifyNoMoreInteractions(this.data);
@@ -256,13 +261,13 @@ public class ObstetricHistoryControllerTest
 
         verify(this.doc, times(1)).getXObject(this.obstetricHistoryController.getXClassReference(), true,
             this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + GRAVIDA, NON_ZERO, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + PARA, NON_ZERO, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + TERM, ZERO, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + PRETERM, ZERO, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + SAB, NON_ZERO, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + TAB, NON_ZERO, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + LIVE_BIRTHS, ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(GRAVIDA, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(PARA, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(TERM, ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(PRETERM, ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(SAB, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(TAB, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(LIVE_BIRTHS, ZERO, this.xWikiContext);
 
         verifyNoMoreInteractions(this.doc);
         verifyNoMoreInteractions(this.data);
@@ -295,13 +300,13 @@ public class ObstetricHistoryControllerTest
 
         verify(this.doc, times(1)).getXObject(this.obstetricHistoryController.getXClassReference(), true,
             this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + GRAVIDA, NON_ZERO, this.xWikiContext);
-        verify(this.data, never()).set(eq(PREFIX + PARA), any(), eq(this.xWikiContext));
-        verify(this.data, times(1)).set(PREFIX + TERM, ZERO, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + PRETERM, ZERO, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + SAB, NON_ZERO, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + TAB, NON_ZERO, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + LIVE_BIRTHS, ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(GRAVIDA, NON_ZERO, this.xWikiContext);
+        verify(this.data, never()).set(eq(PARA), any(), eq(this.xWikiContext));
+        verify(this.data, times(1)).set(TERM, ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(PRETERM, ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(SAB, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(TAB, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(LIVE_BIRTHS, ZERO, this.xWikiContext);
 
         verify(spy, never()).load(this.patient);
         verifyNoMoreInteractions(this.doc);
@@ -327,13 +332,13 @@ public class ObstetricHistoryControllerTest
 
         verify(this.doc, times(1)).getXObject(this.obstetricHistoryController.getXClassReference(), true,
             this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + GRAVIDA, null, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + PARA, NON_ZERO, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + TERM, null, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + PRETERM, null, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + SAB, NON_ZERO, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + TAB, NON_ZERO, this.xWikiContext);
-        verify(this.data, times(1)).set(PREFIX + LIVE_BIRTHS, ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(GRAVIDA, null, this.xWikiContext);
+        verify(this.data, times(1)).set(PARA, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(TERM, null, this.xWikiContext);
+        verify(this.data, times(1)).set(PRETERM, null, this.xWikiContext);
+        verify(this.data, times(1)).set(SAB, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(TAB, NON_ZERO, this.xWikiContext);
+        verify(this.data, times(1)).set(LIVE_BIRTHS, ZERO, this.xWikiContext);
 
         verifyNoMoreInteractions(this.doc);
         verifyNoMoreInteractions(this.data);

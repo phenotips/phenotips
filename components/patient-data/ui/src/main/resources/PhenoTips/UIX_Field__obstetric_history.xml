@@ -112,24 +112,24 @@
 
 {{velocity}}
 #set ($origObj = $obj)
-#set ($obj = $doc.getObject('PhenoTips.ParentalInformationClass', true))
+#set ($obj = $doc.getObject('PhenoTips.ObstetricHistoryClass', true))
 #set ($origObjClass = $doc.getActiveClass())
 #set ($discard = $doc.use($obj))
 #set ($origClass = $class)
-#set ($class = $xwiki.getClass('PhenoTips.ParentalInformationClass'))
+#set ($class = $xwiki.getClass('PhenoTips.ObstetricHistoryClass'))
 ##
-#__hasDataToDisplay('pregnancy_history__gravida', $hasGravidaValue)
-#__hasDataToDisplay('pregnancy_history__para', $hasParaValue)
-#__hasDataToDisplay('pregnancy_history__term', $hasTermValue)
-#__hasDataToDisplay('pregnancy_history__preterm', $hasPretermValue)
-#__hasDataToDisplay('pregnancy_history__sab', $hasSabValue)
-#__hasDataToDisplay('pregnancy_history__tab', $hasTabValue)
-#__hasDataToDisplay('pregnancy_history__births', $hasBirthsValue)
+#__hasDataToDisplay('gravida', $hasGravidaValue)
+#__hasDataToDisplay('para', $hasParaValue)
+#__hasDataToDisplay('term', $hasTermValue)
+#__hasDataToDisplay('preterm', $hasPretermValue)
+#__hasDataToDisplay('sab', $hasSabValue)
+#__hasDataToDisplay('tab', $hasTabValue)
+#__hasDataToDisplay('births', $hasBirthsValue)
 #if ($hasGravidaValue || $hasParaValue || $hasTermValue || $hasPretermValue || $hasSabValue || $hasTabValue || $hasBirthsValue)
   === {{translation key='phenotips.UIXField.obstetricHistory' /}} ===
   (% style="width: 100%" %)
-  |=${class.pregnancy_history__gravida.translatedPrettyName}|=${class.pregnancy_history__para.translatedPrettyName}|=${class.pregnancy_history__term.translatedPrettyName}|=${class.pregnancy_history__preterm.translatedPrettyName}|=${class.pregnancy_history__sab.translatedPrettyName}|=${class.pregnancy_history__tab.translatedPrettyName}|=${class.pregnancy_history__births.translatedPrettyName}
-  |$doc.display('pregnancy_history__gravida')|$doc.display('pregnancy_history__para')|$doc.display('pregnancy_history__term')|$doc.display('pregnancy_history__preterm')|$doc.display('pregnancy_history__sab')|$doc.display('pregnancy_history__tab')|$doc.display('pregnancy_history__births')
+  |=${class.gravida.translatedPrettyName}|=${class.para.translatedPrettyName}|=${class.term.translatedPrettyName}|=${class.preterm.translatedPrettyName}|=${class.sab.translatedPrettyName}|=${class.tab.translatedPrettyName}|=${class.births.translatedPrettyName}
+  |$doc.display('gravida')|$doc.display('para')|$doc.display('term')|$doc.display('preterm')|$doc.display('sab')|$doc.display('tab')|$doc.display('births')
 #end
 ##
 #set ($class = $origClass)
@@ -148,8 +148,8 @@
 enabled=false
 required=
 order=3
-fields=pregnancy_history__gravida,pregnancy_history__para,pregnancy_history__term,pregnancy_history__preterm,pregnancy_history__sab,pregnancy_history__tab,pregnancy_history__births
-pt_class=PhenoTips.ParentalInformationClass</parameters>
+fields=obstetricHistory
+pt_class=PhenoTips.ObstetricHistoryClass</parameters>
     </property>
     <property>
       <scope>wiki</scope>

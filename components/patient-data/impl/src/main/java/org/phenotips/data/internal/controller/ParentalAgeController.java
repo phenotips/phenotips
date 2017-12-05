@@ -67,7 +67,7 @@ public class ParentalAgeController implements PatientDataController<Integer>
 
     private static final String PATERNAL_AGE = "paternal_age";
 
-    private static final String ENABLING_FIELD_NAME = "prenatal_phenotype";
+    private static final String ENABLING_FIELD_NAME = "parentalAge";
 
     /** Logging helper object. */
     @Inject
@@ -95,8 +95,10 @@ public class ParentalAgeController implements PatientDataController<Integer>
             }
             Map<String, Integer> result = new LinkedHashMap<>();
             for (String property : getProperties()) {
-                int age = data.getIntValue(property);
-                result.put(property, age);
+                int age = data.getIntValue(property, Integer.MIN_VALUE);
+                if (age != Integer.MIN_VALUE) {
+                    result.put(property, age);
+                }
             }
             if (!result.isEmpty()) {
                 return new DictionaryPatientData<>(getName(), result);
@@ -156,8 +158,8 @@ public class ParentalAgeController implements PatientDataController<Integer>
             : data::containsKey;
 
         getProperties().stream()
-                .filter(propertyFilter)
-                .forEach(property -> dataHolder.set(property, data.get(property), context));
+            .filter(propertyFilter)
+            .forEach(property -> dataHolder.set(property, data.get(property), context));
     }
 
     @Override
@@ -211,10 +213,8 @@ public class ParentalAgeController implements PatientDataController<Integer>
 
         for (String property : getProperties()) {
             if (data.has(property)) {
-                int age = data.optInt(property);
-                if (age == 0) {
-                    result.put(property, null);
-                } else {
+                int age = data.optInt(property, Integer.MIN_VALUE);
+                if (age != Integer.MIN_VALUE) {
                     result.put(property, age);
                 }
             }
