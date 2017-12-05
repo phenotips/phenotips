@@ -63,13 +63,6 @@ public class LowerSegTest
     }
 
     @Test
-    public void hasNoComputationalDependencies() throws ComponentLookupException
-    {
-        Assert.assertEquals(0, getComponent().getComputationDependencies().size());
-        Assert.assertTrue(getComponent().getComputationDependencies().isEmpty());
-    }
-
-    @Test
     public void isNotDoubleSided() throws ComponentLookupException
     {
         Assert.assertFalse(getComponent().isDoubleSided());

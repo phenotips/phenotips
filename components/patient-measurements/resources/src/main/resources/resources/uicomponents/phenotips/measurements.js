@@ -930,9 +930,7 @@ var PhenoTips = (function(PhenoTips) {
         return;
       }
       var canCalc = true;
-      var fetchParams = {
-        measurement: this.el.select('[name$=type]')[0].value,
-      };
+      var fetchParams = {};
       for (var i = 0; i < this._deps.length; i++) {
         fetchParams[this._deps[i]] = this._getDependentMeasurementField(this._deps[i]).value;
         canCalc &= fetchParams[this._deps[i]].length > 0;
@@ -941,7 +939,7 @@ var PhenoTips = (function(PhenoTips) {
       if (canCalc) {
         var event = e;
         var requestID = ++this.lastRequestID;
-        var ajx = new Ajax.Request(XWiki.contextPath+"/rest/measurements/computed", {
+        var ajx = new Ajax.Request(XWiki.contextPath+"/rest/measurements/computed/" + this.el.select('[name$=type]')[0].value, {
           method: 'get',
           parameters: fetchParams,
           requestHeaders: {Accept : "application/json"},

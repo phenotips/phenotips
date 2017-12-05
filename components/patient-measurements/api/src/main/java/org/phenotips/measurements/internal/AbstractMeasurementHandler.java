@@ -17,6 +17,7 @@
  */
 package org.phenotips.measurements.internal;
 
+import org.phenotips.measurements.ComputedMeasurementHandler;
 import org.phenotips.measurements.MeasurementHandler;
 import org.phenotips.measurements.MeasurementsChartConfiguration;
 import org.phenotips.measurements.MeasurementsChartConfigurationsFactory;
@@ -33,7 +34,6 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -169,13 +169,7 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     @Override
     public boolean isComputed()
     {
-        return false;
-    }
-
-    @Override
-    public Collection<String> getComputationDependencies()
-    {
-        return Collections.emptySet();
+        return this instanceof ComputedMeasurementHandler;
     }
 
     @Override

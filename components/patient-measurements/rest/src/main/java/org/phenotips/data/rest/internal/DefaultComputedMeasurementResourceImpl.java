@@ -18,18 +18,20 @@
 package org.phenotips.data.rest.internal;
 
 import org.phenotips.data.rest.ComputedMeasurementResource;
-import org.phenotips.measurements.internal.BMIMeasurementHandler;
-import org.phenotips.measurements.internal.USLSMeasurementHandler;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.container.Container;
+import org.xwiki.container.servlet.ServletRequest;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import org.json.JSONObject;
 
@@ -45,30 +47,22 @@ import org.json.JSONObject;
 public class DefaultComputedMeasurementResourceImpl extends AbstractMeasurementRestResource implements
     ComputedMeasurementResource
 {
-    /** BMI and US/LS short names. */
-    private static final String BMI = "bmi";
-    private static final String USLS = "usls";
+    @Inject
+    private Container container;
 
     @Override
-    public Response getComputedMeasurement(UriInfo uriInfo)
+    public Response getComputedMeasurement(String measurement)
     {
-        MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
-        String measurement = params.getFirst("measurement");
-        if (measurement == null) {
+        if (!this.computationHandlers.containsKey(measurement)) {
             throw new WebApplicationException(generateErrorResponse(Response.Status.BAD_REQUEST,
-                "Measurement not specified."));
+                "This measurement is not intended to be computed."));
         }
 
         double value;
-        if (BMI.equals(measurement)) {
-            String[] dependencies = {params.getFirst("weight"), params.getFirst("height")};
-            value = handleComputations(BMI, dependencies);
-        } else if (USLS.equals(measurement)) {
-            String[] dependencies = {params.getFirst("upperSeg"), params.getFirst("lowerSeg")};
-            value = handleComputations(USLS, dependencies);
-        } else {
-            throw new WebApplicationException(generateErrorResponse(Response.Status.NOT_FOUND,
-                "Specified measurement type not found."));
+        try {
+            value = this.computationHandlers.get(measurement).handleComputation(getParameters());
+        } catch (IllegalArgumentException ex) {
+            throw new WebApplicationException(generateErrorResponse(Response.Status.BAD_REQUEST, ex.getMessage()));
         }
 
         JSONObject resp = new JSONObject();
@@ -77,41 +71,22 @@ public class DefaultComputedMeasurementResourceImpl extends AbstractMeasurementR
         return Response.ok(resp, MediaType.APPLICATION_JSON_TYPE).build();
     }
 
-    /**
-     * Handle computations for measurements such as BMI and US:LS.
-     *
-     * @param measurement the measurement to be computed
-     * @param dependencies dependencies for the computed measurement (eg. weight, height, segment length)
-     * @return computed value
-     */
-    private double handleComputations(String measurement, String[] dependencies) throws IllegalArgumentException
+    private Map<String, Number> getParameters()
     {
-        for (String dep : dependencies) {
-            if (dep == null) {
-                throw new WebApplicationException(generateErrorResponse(Response.Status.BAD_REQUEST,
-                    "Computation arguments were not all provided."));
+        Map<String, String[]> requestParams =
+            ((ServletRequest) this.container.getRequest()).getHttpServletRequest().getParameterMap();
+
+        Map<String, Number> result = new HashMap<>();
+        for (Map.Entry<String, String[]> i : requestParams.entrySet()) {
+            try {
+                double value = Double.parseDouble(i.getValue()[0]);
+                if (Double.isFinite(value)) {
+                    result.put(i.getKey(), value);
+                }
+            } catch (Exception ex) {
+                // Invalid user-provided values, just ignore them
             }
         }
-
-        try {
-            double value;
-            if (BMI.equals(measurement)) {
-                // BMI is the measurement to be computed. Pass deps 0 and 1 as the respective height and weight
-                value = ((BMIMeasurementHandler) this.handlers.get(BMI))
-                .computeBMI(Double.parseDouble(dependencies[0]), Double.parseDouble(dependencies[1]));
-            } else if (USLS.equals(measurement)) {
-                // US/LS is the measurement to be computed. Pass deps 0 and 1 as the respective upperSeg and lowerSeg
-                value = ((USLSMeasurementHandler) this.handlers.get(USLS))
-                .computeUSLS(Double.parseDouble(dependencies[0]), Double.parseDouble(dependencies[1]));
-            } else {
-                // The measurement param passed to this method does not match any known computed measurement types
-                throw new IllegalArgumentException();
-            }
-
-            return value;
-        } catch (NumberFormatException e) {
-            throw new WebApplicationException(generateErrorResponse(Response.Status.BAD_REQUEST,
-                "Cannot parse computation arguments."));
-        }
+        return result;
     }
 }

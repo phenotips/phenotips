@@ -17,10 +17,13 @@
  */
 package org.phenotips.measurements.internal;
 
+import org.phenotips.measurements.ComputedMeasurementHandler;
+
 import org.xwiki.component.annotation.Component;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -34,7 +37,7 @@ import javax.inject.Singleton;
 @Component
 @Named("usls")
 @Singleton
-public class USLSMeasurementHandler extends AbstractMeasurementHandler
+public class USLSMeasurementHandler extends AbstractMeasurementHandler implements ComputedMeasurementHandler
 {
     @Override
     public String getName()
@@ -49,15 +52,21 @@ public class USLSMeasurementHandler extends AbstractMeasurementHandler
     }
 
     @Override
-    public boolean isComputed()
-    {
-        return true;
-    }
-
-    @Override
     public Collection<String> getComputationDependencies()
     {
         return Arrays.asList("upperSeg", "lowerSeg");
+    }
+
+    @Override
+    public double handleComputation(Map<String, Number> params) throws IllegalArgumentException
+    {
+        Number upperSeg = params.get("upperSeg");
+        Number lowerSeg = params.get("lowerSeg");
+        if (upperSeg == null || lowerSeg == null) {
+            throw new IllegalArgumentException("Computation arguments were not all provided");
+        }
+
+        return compute(upperSeg.doubleValue(), lowerSeg.doubleValue());
     }
 
     /**
@@ -68,7 +77,8 @@ public class USLSMeasurementHandler extends AbstractMeasurementHandler
      * @param lowerSegInCentimeters the measured lower-segment length, in centimeters
      * @return the US/LS value
      */
-    public double computeUSLS(double upperSegInCentimeters, double lowerSegInCentimeters)
+    @Override
+    public double compute(double upperSegInCentimeters, double lowerSegInCentimeters)
     {
         if (upperSegInCentimeters <= 0 || lowerSegInCentimeters <= 0) {
             return 0;

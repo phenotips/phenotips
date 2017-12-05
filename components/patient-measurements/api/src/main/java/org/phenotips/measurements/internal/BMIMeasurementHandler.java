@@ -17,10 +17,13 @@
  */
 package org.phenotips.measurements.internal;
 
+import org.phenotips.measurements.ComputedMeasurementHandler;
+
 import org.xwiki.component.annotation.Component;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -34,7 +37,7 @@ import javax.inject.Singleton;
 @Component
 @Named("bmi")
 @Singleton
-public class BMIMeasurementHandler extends AbstractMeasurementHandler
+public class BMIMeasurementHandler extends AbstractMeasurementHandler implements ComputedMeasurementHandler
 {
     @Override
     public String getName()
@@ -49,19 +52,25 @@ public class BMIMeasurementHandler extends AbstractMeasurementHandler
     }
 
     @Override
-    public boolean isComputed()
-    {
-        return true;
-    }
-
-    @Override
     public Collection<String> getComputationDependencies()
     {
         return Arrays.asList("weight", "height");
     }
 
+    @Override
+    public double handleComputation(Map<String, Number> params) throws IllegalArgumentException
+    {
+        Number height = params.get("height");
+        Number weight = params.get("weight");
+        if (height == null || weight == null) {
+            throw new IllegalArgumentException("Computation arguments were not all provided");
+        }
+
+        return compute(weight.doubleValue(), height.doubleValue());
+    }
+
     /**
-     * Compute the BMI (Body-Mass Index) for the given weigh and height. The formula is {@code weight / (height^2)}
+     * Compute the BMI (Body-Mass Index) for the given weight and height. The formula is {@code weight / (height^2)}
      * multiplied by 10000 (to convert centimeters into meters).
      *
      * @param weightInKilograms the measured weight, in kilograms
@@ -69,7 +78,8 @@ public class BMIMeasurementHandler extends AbstractMeasurementHandler
      *            children, in centimeters
      * @return the BMI value
      */
-    public double computeBMI(double weightInKilograms, double heightInCentimeters)
+    @Override
+    public double compute(double weightInKilograms, double heightInCentimeters)
     {
         if (heightInCentimeters <= 0 || weightInKilograms <= 0) {
             return 0;
@@ -89,7 +99,7 @@ public class BMIMeasurementHandler extends AbstractMeasurementHandler
      */
     public int valueToPercentile(boolean male, int ageInMonths, double weightInKilograms, double heightInCentimeters)
     {
-        return super.valueToPercentile(male, ageInMonths, computeBMI(weightInKilograms, heightInCentimeters));
+        return super.valueToPercentile(male, ageInMonths, compute(weightInKilograms, heightInCentimeters));
     }
 
     /**
@@ -105,6 +115,6 @@ public class BMIMeasurementHandler extends AbstractMeasurementHandler
     public double valueToStandardDeviation(boolean male, int ageInMonths, double weightInKilograms,
         double heightInCentimeters)
     {
-        return super.valueToStandardDeviation(male, ageInMonths, computeBMI(weightInKilograms, heightInCentimeters));
+        return super.valueToStandardDeviation(male, ageInMonths, compute(weightInKilograms, heightInCentimeters));
     }
 }
