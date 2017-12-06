@@ -108,7 +108,7 @@ public class UsersAndGroupsTest
 
     static {
         StringBuilder groupsQuerySb = new StringBuilder();
-        groupsQuerySb.append("from doc.object(PhenoTips.PhenoTipsGroupClass) as group");
+        groupsQuerySb.append("from doc.object(PhenoTips.PhenoTipsGroupClass) as groups");
         groupsQuerySb.append(" where lower(doc.name) like :input");
         groupsQuerySb.append(" and doc.fullName <> 'PhenoTips.PhenoTipsGroupTemplate'");
         groupsQuerySb.append(" order by doc.name");
