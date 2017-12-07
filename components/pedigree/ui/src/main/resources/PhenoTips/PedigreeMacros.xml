@@ -403,6 +403,7 @@
                   $('familyId').up().remove();
                   $('familyIdentifier').value='';
                   $('pedigree-buttons').remove();
+                  $$('.family-members').invoke('hide');
                 }
               }
             });
@@ -601,6 +602,26 @@
 }
 .pedigree-edit-trigger {
   cursor: pointer;
+}
+.pedigree-wrapper, .family-members {
+  display: inline-block;
+}
+.family-members {
+  vertical-align: top;
+  margin-left: 1em;
+  margin-top: -1.9em;
+}
+.family-members ul {
+  list-style: disc;
+  margin-top: 0.5em;
+  margin-left: 1em;
+}
+.family-info .pedigree-wrapper {
+  width: 33%;
+}
+#family-label {
+  font-weight: bold;
+  display: inline;
 }</code>
     </property>
     <property>

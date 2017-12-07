@@ -111,20 +111,7 @@
       <content>{{include reference="PhenoTips.FormMacros" /}}
 
 {{velocity}}
-#foreach ($member in $family.getMembers())
-  #if ($member)
-    #set ($id = "$!member.externalId")
-    #if ($id == '')
-      #set ($id = $member.id)
-    #end
-    #set ($name = "$!{member.getData('patientName').first_name} $!{member.getData('patientName').last_name}")
-    #set ($name = $name.trim())
-    #set ($dob = "$!{member.getData('dates').date_of_birth.toYYYYMMDDString()}")
-    #set ($meta = "$name#if($name != '' &amp;&amp; $dob != ''), #end$dob")
-    #set ($patientLabel = "$id#if ($meta != '') ($meta)#end")
-* [[$patientLabel&gt;&gt;$member.getDocumentReference()||rel="__blank"]]
-  #end
-#end
+#__displayFamilyMembers($family)
 {{/velocity}}</content>
     </property>
     <property>

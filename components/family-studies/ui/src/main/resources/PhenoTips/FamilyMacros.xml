@@ -20,7 +20,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>FormMacros</name>
+  <name>FamilyMacros</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -32,51 +32,12 @@
   <date>1468984230000</date>
   <contentUpdateDate>1468984230000</contentUpdateDate>
   <version>1.1</version>
-  <title>Form Macros</title>
+  <title>Family Macros</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content>{{velocity output="false"}}
-#macro (__form_label $propName $cssClass $text)
-   #set($displayedText = "$!{text.trim()}")
-   #if ($displayedText == '' &amp;&amp; "$!{propName}" != '')
-     #set($displayedText = "$!{class.get($propName).translatedPrettyName}")
-   #end
-   #if ($xcontext.action != 'edit')
-     (% class="label $!{cssClass}" %)${displayedText}(%%)##
-   #else
-     #set($for = '')
-     #if ("$!{propName}" != '')
-       #set($for = "for='$!{class.name}_$!{obj.number}_$!{propName}'")
-     #end
-     {{html clean="false" wiki="false"}}&lt;label class="$!{cssClass}" $!{for}&gt;${displayedText}&lt;/label&gt;{{/html}}##
-     #if ($services.localization.get("$!{class.name}_${propName}_hint"))
-       #* Empty comment needed for the whitespace trimmer to leave an empty space before the icon *# {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("PhenoTips.PatientClass_${propName}_hint").replace('"', '~~~"')"/}}##
-     #end
-   #end
-#end
-
-#macro(__form_field $propName)
-(% class="displayed-value"%)${doc.display($propName).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}##
-#end
-
-#macro (__form_entry $propName)
-(((
-#if ($class.get($propName).type == "BooleanClass")
-  #if ($xcontext.action == 'edit')
-    #__form_field($propName)
-  #end
-  #if ($obj.getValue($propName) == 1 || $xcontext.action == 'edit')
-    #__form_label($propName)
-  #end
-#else
-  #__form_label($propName)
-  #__form_field($propName)
-#end
-)))
-#end
-
 #macro (__displayFamilyMembers $family)
 #foreach ($member in $family.getMembers())
   #if ($member)

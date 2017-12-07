@@ -89,6 +89,20 @@
       <values>YMD=yyyy-mm-dd|DMY=dd-mm-yyyy|MY=mm-yyyy|Y=yyyy</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </dateInputFormat>
+    <displayFamilyMembers>
+      <customDisplay/>
+      <defaultValue>1</defaultValue>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>displayFamilyMembers</name>
+      <number>7</number>
+      <prettyName>Display family members</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </displayFamilyMembers>
     <lineStyle>
       <cache>0</cache>
       <customDisplay/>
