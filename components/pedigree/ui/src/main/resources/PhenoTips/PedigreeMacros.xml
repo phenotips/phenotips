@@ -403,6 +403,7 @@
                   $('familyId').up().remove();
                   $('familyIdentifier').value='';
                   $('pedigree-buttons').remove();
+                  $$('.family-members').invoke('hide');
                 }
               }
             });
