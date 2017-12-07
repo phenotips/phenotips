@@ -22,9 +22,8 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.rest.PatientsSuggestionsResource;
+import org.phenotips.entities.PrimaryEntityMetadataManager;
 import org.phenotips.security.authorization.AuthorizationService;
-import org.phenotips.studies.family.Family;
-import org.phenotips.studies.family.FamilyRepository;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.query.Query;
@@ -38,6 +37,7 @@ import org.xwiki.xml.XMLUtils;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -91,14 +91,14 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
     private PatientRepository patientRepository;
 
     @Inject
-    private FamilyRepository familyRepository;
+    private PrimaryEntityMetadataManager metadataManager;
 
     @Inject
     private Provider<XWikiContext> provider;
 
     @Override
-    public String suggestAsJSON(String input, int maxResults, String requiredPermission, boolean markFamilyAssociation,
-        String orderField, String order)
+    public String suggestAsJSON(String input, int maxResults, String requiredPermission, String orderField,
+        String order)
     {
         if (StringUtils.isEmpty(input)) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -110,7 +110,7 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
         JSONArray results = new JSONArray();
 
         for (Patient patient : patients) {
-            results.put(getPatientJSON(patient, markFamilyAssociation));
+            results.put(getPatientJSON(patient));
         }
 
         JSONObject jsonResult = new JSONObject();
@@ -119,8 +119,7 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
     }
 
     @Override
-    public String suggestAsXML(String input, int maxResults, String requiredPermission, boolean markFamilyAssociation,
-        String orderField, String order)
+    public String suggestAsXML(String input, int maxResults, String requiredPermission, String orderField, String order)
     {
         if (StringUtils.isEmpty(input)) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -131,7 +130,7 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
         StringBuilder xmlResult = new StringBuilder("<results>");
 
         for (Patient patient : patients) {
-            appentPatientXML(patient, xmlResult, markFamilyAssociation);
+            appentPatientXML(patient, xmlResult);
         }
 
         xmlResult.append("</results>");
@@ -204,7 +203,7 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
         return queryResults;
     }
 
-    private JSONObject getPatientJSON(Patient patient, boolean markFamilyAssociation)
+    private JSONObject getPatientJSON(Patient patient)
     {
         JSONObject patientJSON = new JSONObject();
         patientJSON.put("id", patient.getId());
@@ -215,14 +214,9 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
 
         String description = getDescription(patient);
 
-        // Add family info
-        Family family = this.familyRepository.getFamilyForPatient(patient);
-        if (family != null) {
-            patientJSON.put("familyId", family.getId());
-            if (markFamilyAssociation) {
-                description.concat(", in family: ").concat(family.getId());
-            }
-        }
+        // Add metadata
+        Map<String, Object> metadata = this.metadataManager.getMetadata(patient);
+        metadata.forEach((key, value) -> patientJSON.put(key, value));
 
         // Add description
         patientJSON.put("textSummary", description);
@@ -230,7 +224,7 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
         return patientJSON;
     }
 
-    private void appentPatientXML(Patient patient, StringBuilder xmlResult, boolean markFamilyAssociation)
+    private void appentPatientXML(Patient patient, StringBuilder xmlResult)
     {
         String escapedReference = XMLUtils.escapeAttributeValue(patient.getDocumentReference().toString());
 
@@ -238,14 +232,6 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
         xmlResult.append("info=\"").append(escapedReference).append("\">");
 
         String description = getDescription(patient);
-
-        // Add family info
-        Family family = this.familyRepository.getFamilyForPatient(patient);
-        if (family != null) {
-            if (markFamilyAssociation) {
-                description.concat(", in family: ").concat(family.getId());
-            }
-        }
 
         // Add description
         String escapedDescription = XMLUtils.escapeXMLComment(description);
@@ -267,7 +253,7 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
         String patientName = "";
         PatientData<String> patientNames = patient.getData("patientName");
         if (patientNames != null) {
-            String firstName = StringUtils.defaultString(patientNames.get("first_name"));
+            String firstName = StringUtils.defaultString(patientNames.get(FIRST_NAME));
             String lastName = StringUtils.defaultString(patientNames.get("last_name"));
             patientName = (firstName + " " + lastName).trim();
             if (StringUtils.isNotEmpty(patientName)) {

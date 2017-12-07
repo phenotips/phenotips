@@ -209,31 +209,31 @@ public class DefaultPatientsSuggestionsResourceImplTest
     @Test(expected = WebApplicationException.class)
     public void suggestAsJSONWithNullInputThrowsException()
     {
-        this.component.suggestAsJSON(null, 5, "view", true, ID, "asc");
+        this.component.suggestAsJSON(null, 5, "view", ID, "asc");
     }
 
     @Test(expected = WebApplicationException.class)
     public void suggestAsXMLWithNullInputThrowsException()
     {
-        this.component.suggestAsXML(null, 5, "view", true, ID, "asc");
+        this.component.suggestAsXML(null, 5, "view", ID, "asc");
     }
 
     @Test(expected = WebApplicationException.class)
     public void suggestAsJSONWithEmptyInputThrowsException()
     {
-        this.component.suggestAsJSON("", 5, "view", true, ID, "asc");
+        this.component.suggestAsJSON("", 5, "view", ID, "asc");
     }
 
     @Test(expected = WebApplicationException.class)
     public void suggestAsXMLWithEmptyInputThrowsException()
     {
-        this.component.suggestAsXML("", 5, "view", true, ID, "asc");
+        this.component.suggestAsXML("", 5, "view", ID, "asc");
     }
 
     @Test
     public void suggestAsJSONWithViewAccessAndSortById() throws QueryException
     {
-        JSONObject response = new JSONObject(this.component.suggestAsJSON("dOe", 2, "view", true, ID, "asc"));
+        JSONObject response = new JSONObject(this.component.suggestAsJSON("dOe", 2, "view", ID, "asc"));
         JSONArray suggestions = response.getJSONArray("matchedPatients");
         Mockito.verify(this.queryManager).createQuery(
             "select doc.name from Document doc, doc.object(PhenoTips.PatientClass) as patient"
@@ -252,7 +252,7 @@ public class DefaultPatientsSuggestionsResourceImplTest
     @Test
     public void suggestAsXMLWithViewAccessAndSortById() throws Exception
     {
-        Document response = parseXML(this.component.suggestAsXML("dOe", 2, "view", true, ID, "asc"));
+        Document response = parseXML(this.component.suggestAsXML("dOe", 2, "view", ID, "asc"));
         NodeList suggestions = response.getElementsByTagName("rs");
         Mockito.verify(this.queryManager).createQuery(
             "select doc.name from Document doc, doc.object(PhenoTips.PatientClass) as patient"
@@ -276,7 +276,7 @@ public class DefaultPatientsSuggestionsResourceImplTest
     @Test
     public void suggestAsJSONWithEditAccessAndSortByEid() throws QueryException
     {
-        JSONObject response = new JSONObject(this.component.suggestAsJSON("dOe", 4, "edit", true, EID, "desc"));
+        JSONObject response = new JSONObject(this.component.suggestAsJSON("dOe", 4, "edit", EID, "desc"));
         JSONArray suggestions = response.getJSONArray("matchedPatients");
         Mockito.verify(this.queryManager).createQuery(
             "select doc.name from Document doc, doc.object(PhenoTips.PatientClass) as patient"
@@ -300,7 +300,7 @@ public class DefaultPatientsSuggestionsResourceImplTest
     @Test
     public void suggestAsXMLWithEditAccessAndSortByEid() throws Exception
     {
-        Document response = parseXML(this.component.suggestAsXML("dOe", 4, "edit", true, EID, "desc"));
+        Document response = parseXML(this.component.suggestAsXML("dOe", 4, "edit", EID, "desc"));
         NodeList suggestions = response.getElementsByTagName("rs");
         Mockito.verify(this.queryManager).createQuery(
             "select doc.name from Document doc, doc.object(PhenoTips.PatientClass) as patient"
@@ -325,7 +325,7 @@ public class DefaultPatientsSuggestionsResourceImplTest
     public void suggestAsJSONWithNamesDisabled() throws QueryException
     {
         when(this.configuration.getEnabledFieldNames()).thenReturn(Arrays.asList("phenotypes"));
-        JSONObject response = new JSONObject(this.component.suggestAsJSON("dOe", 2, "view", true, ID, "asc"));
+        JSONObject response = new JSONObject(this.component.suggestAsJSON("dOe", 2, "view", ID, "asc"));
         JSONArray suggestions = response.getJSONArray("matchedPatients");
         Mockito.verify(this.queryManager).createQuery(
             "select doc.name from Document doc, doc.object(PhenoTips.PatientClass) as patient"
@@ -343,7 +343,7 @@ public class DefaultPatientsSuggestionsResourceImplTest
     @Test
     public void suggestAsJSONWithMorePatientsRequested() throws QueryException
     {
-        JSONObject response = new JSONObject(this.component.suggestAsJSON("dOe", 200, "view", true, ID, "asc"));
+        JSONObject response = new JSONObject(this.component.suggestAsJSON("dOe", 200, "view", ID, "asc"));
         JSONArray suggestions = response.getJSONArray("matchedPatients");
         Mockito.verify(this.queryManager).createQuery(
             "select doc.name from Document doc, doc.object(PhenoTips.PatientClass) as patient"
@@ -365,15 +365,14 @@ public class DefaultPatientsSuggestionsResourceImplTest
     public void suggestAsJSONReturnsEmptyListOnExceptions() throws QueryException
     {
         when(this.query.execute()).thenThrow(new QueryException("", this.query, null));
-        JSONObject response = new JSONObject(this.component.suggestAsJSON("dOe", 200, "view", true, ID, "asc"));
+        JSONObject response = new JSONObject(this.component.suggestAsJSON("dOe", 200, "view", ID, "asc"));
         JSONArray suggestions = response.getJSONArray("matchedPatients");
         Assert.assertEquals(0, suggestions.length());
     }
 
     @SuppressWarnings("ParameterNumber")
     private void setupPatient(Patient patient, String patientId, String patientExternalId,
-        DocumentReference patientReference, boolean canView,
-        boolean canEdit, String firstName, String lastName)
+        DocumentReference patientReference, boolean canView, boolean canEdit, String firstName, String lastName)
     {
         when(this.repository.get(patientId)).thenReturn(patient);
         when(patient.getExternalId()).thenReturn(patientExternalId);
