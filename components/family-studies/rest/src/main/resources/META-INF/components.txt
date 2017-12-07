@@ -1,3 +1,4 @@
 org.phenotips.studies.family.rest.internal.DefaultPatientFamilyResourceImpl
 org.phenotips.studies.family.rest.internal.DefaultFamilyResourceImpl
 org.phenotips.studies.family.rest.internal.DefaultFamiliesResourceImpl
+org.phenotips.studies.family.rest.internal.DefaultFamiliesSuggestionsResourceImpl

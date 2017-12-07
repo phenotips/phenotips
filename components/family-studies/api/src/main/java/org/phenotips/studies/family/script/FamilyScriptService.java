@@ -20,7 +20,6 @@ package org.phenotips.studies.family.script;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyTools;
 import org.phenotips.studies.family.Pedigree;
-import org.phenotips.studies.family.internal.export.PhenotipsFamilyExport;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
@@ -31,7 +30,7 @@ import javax.inject.Singleton;
 
 /**
  * Script service for working with families. All methods assume actions are performed by current user and do
- * corresponding permision checks.
+ * corresponding permission checks.
  *
  * @version $Id$
  * @since 1.4
@@ -44,9 +43,6 @@ public class FamilyScriptService implements ScriptService
     @Inject
     @Named("secure")
     private FamilyTools familyTools;
-
-    @Inject
-    private PhenotipsFamilyExport familyExport;
 
     /**
      * Creates an empty family.
@@ -129,25 +125,11 @@ public class FamilyScriptService implements ScriptService
     }
 
     /**
-     * return a JSON object with a list of families that fit the input search criterion.
-     *
-     * @param input beginning of string of family
-     * @param resultsLimit maximum number of results
-     * @param requiredPermissions only families on which the user has requiredPermissions will be returned
-     * @param returnAsJSON if true, the result is returned as JSON, otherwise as XML
-     * @return list of families
-     */
-    public String searchFamilies(String input, int resultsLimit, String requiredPermissions, boolean returnAsJSON)
-    {
-        return this.familyExport.searchFamilies(input, resultsLimit, requiredPermissions, returnAsJSON);
-    }
-
-    /**
      * Removes a patient from the family, modifying the both the family and patient records to reflect the change.
      *
      * @param patientId of the patient to delete
      * @return true if patient was removed. false if not, for example, if the patient is not associated with a family,
-     *         or if current use rhas no delete rights
+     *         or if current user has no delete rights
      */
     public boolean removeMember(String patientId)
     {
@@ -172,7 +154,7 @@ public class FamilyScriptService implements ScriptService
      *
      * @param familyId of the family to delete
      * @param deleteAllMembers indicator whether to delete all family member documents as well
-     * @return true if successful; false if deletion failed or curent user has not enough rights
+     * @return true if successful; false if deletion failed or current user has not enough rights
      */
     public boolean deleteFamily(String familyId, boolean deleteAllMembers)
     {
@@ -183,7 +165,7 @@ public class FamilyScriptService implements ScriptService
      * Checks if the current user can delete the family (or the family and all the members).
      *
      * @param familyId of the family to delete
-     * @param deleteAllMembers indicator whether to check delete permisions on all family member documents as well
+     * @param deleteAllMembers indicator whether to check delete permissions on all family member documents as well
      * @return true if successful
      */
     public boolean canDeleteFamily(String familyId, boolean deleteAllMembers)
