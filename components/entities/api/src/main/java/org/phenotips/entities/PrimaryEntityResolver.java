@@ -34,8 +34,8 @@ public interface PrimaryEntityResolver
      * Retrieve an entity from its {@link PrimaryEntityManager}. For this to work correctly, the {@code entityId} must
      * contain an known entity prefix (e.g. FAM0000007).
      *
-     * @param  entityId the entity identifier, in the format {@code <entity prefix><entity id>},
-     *         for example {@code P0000007}
+     * @param entityId the entity identifier, in the format {@code <entity prefix><entity id>}, for example
+     *            {@code P0000007}
      * @return the requested entity, or {@code null} if the {@link PrimaryEntityManager} cannot retrieve the entity or
      *         no matching {@link PrimaryEntityManager} is available
      */
@@ -50,7 +50,7 @@ public interface PrimaryEntityResolver
      *         {@link PrimaryEntityManager} is available
      */
     @Nullable
-    PrimaryEntityManager getEntityManager(@Nullable String entityType);
+    PrimaryEntityManager<?> getEntityManager(@Nullable String entityType);
 
     /**
      * Returns true iff a {@link PrimaryEntityManager} exists for the provided {@code entityType}.

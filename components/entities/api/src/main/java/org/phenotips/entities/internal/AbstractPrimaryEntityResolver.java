@@ -84,7 +84,7 @@ public abstract class AbstractPrimaryEntityResolver implements PrimaryEntityReso
 
     @Nullable
     @Override
-    public PrimaryEntityManager getEntityManager(@Nullable final String managerType)
+    public PrimaryEntityManager<?> getEntityManager(@Nullable final String managerType)
     {
         return StringUtils.isNotBlank(managerType)
             ? getAvailableManagers().stream()
@@ -172,5 +172,5 @@ public abstract class AbstractPrimaryEntityResolver implements PrimaryEntityReso
      *
      * @return true iff {@code manager} should be used to resolve entities, false otherwise
      */
-    abstract boolean isValidManager(@Nonnull PrimaryEntityManager manager);
+    abstract boolean isValidManager(@Nonnull PrimaryEntityManager<?> manager);
 }

@@ -40,7 +40,7 @@ public class SecurePrimaryEntityResolver extends AbstractPrimaryEntityResolver
     private static final String SECURE = "secure";
 
     @Override
-    boolean isValidManager(@Nonnull final PrimaryEntityManager manager)
+    boolean isValidManager(@Nonnull final PrimaryEntityManager<?> manager)
     {
         return manager.getClass().getAnnotation(Named.class).value().endsWith(SECURE);
     }

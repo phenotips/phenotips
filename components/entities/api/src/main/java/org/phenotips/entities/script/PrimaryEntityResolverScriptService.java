@@ -51,11 +51,11 @@ public class PrimaryEntityResolverScriptService implements ScriptService
     private Logger logger;
 
     /**
-     * Retrieve an entity based on its identifier. For this to work correctly, the {@code entityId} must contain a
-     * known entity prefix (e.g. FAM0000007).
+     * Retrieve an entity based on its identifier. For this to work correctly, the {@code entityId} must contain a known
+     * entity prefix (e.g. FAM0000007).
      *
-     * @param  entityId the entity identifier, in the format {@code <entity prefix><entity id>},
-     *         for example {@code P0000007}
+     * @param entityId the entity identifier, in the format {@code <entity prefix><entity id>}, for example
+     *            {@code P0000007}
      * @return the requested entity, or {@code null} if the entity cannot be retrieved, or the user does not have the
      *         required access rights
      */
@@ -79,7 +79,7 @@ public class PrimaryEntityResolverScriptService implements ScriptService
      *         {@link PrimaryEntityManager} is available
      */
     @Nullable
-    public PrimaryEntityManager getEntityManager(@Nullable final String entityType)
+    public PrimaryEntityManager<?> getEntityManager(@Nullable final String entityType)
     {
         return this.resolver.getEntityManager(entityType);
     }
