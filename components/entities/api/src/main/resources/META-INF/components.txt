@@ -1,3 +1,4 @@
+org.phenotips.entities.internal.DefaultPrimaryEntityMetadataManager
 org.phenotips.entities.internal.DefaultPrimaryEntityResolver
 org.phenotips.entities.internal.SecurePrimaryEntityResolver
 org.phenotips.entities.script.PrimaryEntityResolverScriptService
