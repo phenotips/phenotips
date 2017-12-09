@@ -45,7 +45,6 @@ public interface PatientsSuggestionsResource
      * @param input the string which will be used to generate suggestions
      * @param maxResults The maximum number of results to be returned
      * @param requiredPermission permission a user has to have over each patient record in the result
-     * @param markFamilyAssociation boolean indicator for adding family info into patient description
      * @param orderField field used for ordering the patients, can be one of {@code id} (default) or {@code eid}
      * @param order the sorting order, can be one of {@code asc} (default) or {@code desc}
      * @return a list of patient records
@@ -56,7 +55,6 @@ public interface PatientsSuggestionsResource
         @QueryParam("input") String input,
         @QueryParam("maxResults") @DefaultValue("10") int maxResults,
         @QueryParam("requiredPermission") @DefaultValue("view") String requiredPermission,
-        @QueryParam("markFamilyAssociation") @DefaultValue("false") boolean markFamilyAssociation,
         @QueryParam("orderField") @DefaultValue("id") String orderField,
         @QueryParam("order") @DefaultValue("asc") String order);
 
@@ -67,7 +65,6 @@ public interface PatientsSuggestionsResource
      * @param input the string which will be used to generate suggestions
      * @param maxResults The maximum number of results to be returned
      * @param requiredPermission permission a user has to have over each patient record in the result
-     * @param markFamilyAssociation boolean indicator for adding family info into patient description
      * @param orderField field used for ordering the patients, can be one of {@code id} (default) or {@code eid}
      * @param order the sorting order, can be one of {@code asc} (default) or {@code desc}
      * @return a list of patient records
@@ -78,7 +75,6 @@ public interface PatientsSuggestionsResource
         @QueryParam("input") String input,
         @QueryParam("maxResults") @DefaultValue("10") int maxResults,
         @QueryParam("requiredPermission") @DefaultValue("view") String requiredPermission,
-        @QueryParam("markFamilyAssociation") @DefaultValue("false") boolean markFamilyAssociation,
         @QueryParam("orderField") @DefaultValue("id") String orderField,
         @QueryParam("order") @DefaultValue("asc") String order);
 }

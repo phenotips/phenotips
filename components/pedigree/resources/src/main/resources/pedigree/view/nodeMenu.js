@@ -305,7 +305,7 @@ define([
                     },
                     'patients' : {
                         script: editor.getExternalEndpoint().getPatientSuggestServiceURL() +
-                        "?permission=edit&maxResults=12&markFamilyAssociation=true&",
+                        "?permission=edit&maxResults=12&",
                         noresults: "No matching patients",
                         width: 337,
                         resultsParameter: "matchedPatients",

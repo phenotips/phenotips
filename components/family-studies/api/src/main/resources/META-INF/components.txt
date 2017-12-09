@@ -11,6 +11,7 @@ org.phenotips.studies.family.internal.SecureFamilyTools
 org.phenotips.studies.family.internal.FamilyLockModule
 org.phenotips.studies.family.internal.FamilyMembersLockModule
 org.phenotips.studies.family.internal.PatientFamilyLockModule
+org.phenotips.studies.family.internal.PatientFamilyMetadataProvider
 org.phenotips.studies.family.internal.export.PhenotipsFamilyExport
 org.phenotips.studies.family.internal.GlobalFamilyConfigurationModule
 org.phenotips.studies.family.listener.FamilyDeletingListener
