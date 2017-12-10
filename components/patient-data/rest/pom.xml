@@ -29,7 +29,6 @@
   <name>PhenoTips - Patient Data - REST services</name>
 
   <properties>
-    <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
     <coverage.instructionRatio>0.88</coverage.instructionRatio>
   </properties>
 

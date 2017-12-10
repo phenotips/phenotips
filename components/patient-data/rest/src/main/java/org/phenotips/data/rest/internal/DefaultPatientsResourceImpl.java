@@ -38,7 +38,6 @@ import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
-import java.net.URI;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -146,10 +145,9 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
             }
             Patient patient = this.repository.create();
             patient.updateFromJSON(jsonObject);
-            final URI targetURI = UriBuilder.fromUri(this.uriInfo.getBaseUri())
+            createdPatientUri.put(UriBuilder.fromUri(this.uriInfo.getBaseUri())
                 .path(PatientResource.class)
-                .build(patient.getId());
-            createdPatientUri.put(targetURI);
+                .build(patient.getId()));
         }
         final ResponseBuilder response = Response.created(null);
         response.entity(createdPatientUri.toString());
@@ -185,11 +183,10 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
      */
     private Response buildCreatedResponse(final Patient patient)
     {
-        final URI targetURI = UriBuilder
+        final ResponseBuilder response = Response.created(UriBuilder
             .fromUri(this.uriInfo.getBaseUri())
             .path(PatientResource.class)
-            .build(patient.getId());
-        final ResponseBuilder response = Response.created(targetURI);
+            .build(patient.getId()));
         return response.build();
     }
 

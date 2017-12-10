@@ -130,10 +130,7 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
     private Response updatePatient(final String json, final String id, final PatientWritePolicy policy)
     {
         this.logger.debug("Updating patient record [{}] via REST with JSON: {}", id, json);
-        if (policy == null) {
-            throw new WebApplicationException(Status.BAD_REQUEST);
-        }
-        if (json == null) {
+        if (policy == null || json == null) {
             // json == null does not create an exception when initializing a JSONObject
             // need to handle it separately to give explicit BAD_REQUEST to the user
             throw new WebApplicationException(Status.BAD_REQUEST);
