@@ -62,6 +62,7 @@ import com.xpn.xwiki.objects.StringListProperty;
 import com.xpn.xwiki.objects.classes.BaseClass;
 import com.xpn.xwiki.objects.classes.StaticListClass;
 import com.xpn.xwiki.web.Utils;
+import net.jcip.annotations.NotThreadSafe;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -80,6 +81,7 @@ import static org.mockito.Mockito.when;
  * Test for the {@link GeneListController} Component, only the overridden methods from {@link AbstractComplexController}
  * are tested here.
  */
+@NotThreadSafe
 public class GeneListControllerTest
 {
     private static final String GENES_STRING = "genes";
