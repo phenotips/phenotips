@@ -45,57 +45,71 @@ import com.xpn.xwiki.objects.classes.StaticListClass;
  * Holds gene data for patient.
  *
  * @version $Id$
- * @since 1.3M4
+ * @since 1.4
  */
 public class PhenoTipsGene implements Gene
 {
-    protected static final String HGNC = "HGNC";
+    private static final String HGNC = "HGNC";
 
-    protected static final String ID = "id";
+    private static final String ID = "id";
 
-    protected static final String SYMBOL_KEY = "gene";
+    private static final String SYMBOL_KEY = "gene";
 
-    protected static final String STATUS_KEY = "status";
+    private static final String STATUS_KEY = "status";
 
-    protected static final String STRATEGY_KEY = "strategy";
+    private static final String STRATEGY_KEY = "strategy";
 
-    protected static final String COMMENTS_KEY = "comments";
+    private static final String COMMENTS_KEY = "comments";
 
-    protected static final String ENSEMBL_ID_PROPERTY_NAME = "ensembl_gene_id";
+    private static final String ENSEMBL_ID_PROPERTY_NAME = "ensembl_gene_id";
 
-    protected static final String SYMBOL_PROPERTY_NAME = "symbol";
+    private static final String SYMBOL_PROPERTY_NAME = "symbol";
 
-    protected static List<String> statusValues = new LinkedList<String>();
+    private static List<String> statusValues = new LinkedList<>();
 
-    protected static List<String> strategyValues = new LinkedList<String>();
+    private static List<String> strategyValues = new LinkedList<>();
 
     /** Logging helper object. */
-    protected final Logger logger = LoggerFactory.getLogger(PhenoTipsGene.class);
+    private final Logger logger = LoggerFactory.getLogger(PhenoTipsGene.class);
 
     /** The gene Ensembl ID. */
-    protected String id;
+    private String id;
 
-    /** The gene display name as HGNC vocabulary symbol @see #getName(). */
-    protected String name;
+    /**
+     * The gene display name as HGNC vocabulary symbol.
+     *
+     * @see #getName()
+     */
+    private String name;
 
-    /** The gene status, one of possible values: "candidate" (default value), "rejected", "solved" @see #getStatus(). */
-    protected String status;
+    /**
+     * The gene status, one of possible values: "candidate" (default value), "rejected", "solved".
+     *
+     * @see #getStatus()
+     */
+    private String status;
 
     /**
      * The gene strategy, one or more of possible values: "sequencing", "deletion", "familial_mutation",
-     * "common_mutations" @see #getStrategy().
+     * "common_mutations".
+     *
+     * @see #getStrategy()
      */
-    protected String strategy;
+    private String strategy;
 
-    /** The gene comment, user typed @see #getComment(). */
-    protected String comment;
+    /**
+     * The gene comment, free text entered by the user.
+     *
+     * @see #getComment()
+     */
+    private String comment;
 
     private Vocabulary hgnc;
 
     private XWikiContext context;
 
     /**
-     * Constructor that copies the data from an XProperty value.
+     * Constructor that receives all the needed data as parameters.
      *
      * @param id gene Ensembl ID
      * @param name gene HGNC vocabulary symbol
@@ -142,11 +156,7 @@ public class PhenoTipsGene implements Gene
         }
     }
 
-    /**
-     * Return gene Ensembl ID.
-     *
-     * @return id
-     */
+    @Override
     public String getId()
     {
         return this.id;
@@ -158,31 +168,19 @@ public class PhenoTipsGene implements Gene
         return this.name;
     }
 
-    /**
-     * Return gene status.
-     *
-     * @return status
-     */
+    @Override
     public String getStatus()
     {
         return this.status;
     }
 
-    /**
-     * Return gene strategy.
-     *
-     * @return strategy
-     */
+    @Override
     public String getStrategy()
     {
         return this.strategy;
     }
 
-    /**
-     * Return gene comment.
-     *
-     * @return comment
-     */
+    @Override
     public String getComment()
     {
         return this.comment;
@@ -276,11 +274,7 @@ public class PhenoTipsGene implements Gene
         }
     }
 
-    /**
-     * Convert gene to JSON.
-     *
-     * @return gene JSON
-     */
+    @Override
     public JSONObject toJSON()
     {
         JSONObject geneJson = new JSONObject();
@@ -332,7 +326,7 @@ public class PhenoTipsGene implements Gene
 
     private void getProperties()
     {
-        XWikiDocument doc = getGeneDoc();
+        XWikiDocument doc = getGeneXClassDoc();
         if (doc == null || doc.isNew()) {
             // Inaccessible or deleted document
             return;
@@ -351,12 +345,7 @@ public class PhenoTipsGene implements Gene
         }
     }
 
-    /**
-     * Get gene XClass document.
-     *
-     * @return gene XClass document
-     */
-    public XWikiDocument getGeneDoc()
+    private XWikiDocument getGeneXClassDoc()
     {
         Provider<XWikiContext> xcontextProvider = null;
         try {

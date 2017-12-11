@@ -26,10 +26,10 @@ import org.xwiki.stability.Unstable;
 import org.json.JSONObject;
 
 /**
- * Information about a specific gene recorded for a {@link Patient patient}.
+ * Information about a specific gene of interest recorded for a {@link Patient patient}.
  *
  * @version $Id$
- * @since 1.3M4
+ * @since 1.4
  */
 @Unstable
 public interface Gene extends VocabularyProperty
@@ -39,39 +39,40 @@ public interface Gene extends VocabularyProperty
         Constants.CODE_SPACE_REFERENCE);
 
     /**
-     * Return gene Ensembl ID.
+     * The Ensembl ID of this gene.
      *
-     * @return id
+     * @return Ensembl identifier in the format {@code ENSG00123456789}, or {@code null} if the gene doesn't have an
+     *         assigned Ensembl ID
      */
     @Override
     String getId();
 
     /**
-     * Return gene symbol.
+     * The HGNC symbol of this gene.
      *
-     * @return symbol
+     * @return symbol in the format {@code BRCA1}, or {@code null} if the gene doesn't have an HGNC official symbol
      */
     @Override
     String getName();
 
     /**
-     * Return gene status.
+     * The status of this gene for the described patient.
      *
-     * @return status
+     * @return one of {@code solved}, {@code candidate}, {@code carrier} or {@code rejected}
      */
     String getStatus();
 
     /**
-     * Return gene strategy.
+     * The strategy used for investigating the gene status.
      *
-     * @return strategy
+     * @return a short label, such as {@code sequencing}, or {@code null} if unknown
      */
     String getStrategy();
 
     /**
-     * Return gene comment.
+     * A short comment about the gene.
      *
-     * @return comment
+     * @return a short text, or blank or {@code null} if no comment was recorded
      */
     String getComment();
 

@@ -380,13 +380,13 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
     {
         try {
             final BaseObject xwikiObject = docX.newXObject(GENE_CLASS_REFERENCE, context);
-            setXwikiObjectProperty(INTERNAL_GENE_KEY, gene.getName(), xwikiObject, context);
+            setXWikiObjectProperty(INTERNAL_GENE_KEY, gene.getName(), xwikiObject, context);
             String status = gene.getStatus();
             // setting status to default 'candidate' if not defined yet
-            setXwikiObjectProperty(INTERNAL_STATUS_KEY,
+            setXWikiObjectProperty(INTERNAL_STATUS_KEY,
                 StringUtils.isNotBlank(status) ? status : INTERNAL_CANDIDATE_VALUE, xwikiObject, context);
-            setXwikiObjectProperty(INTERNAL_STRATEGY_KEY, gene.getStrategy(), xwikiObject, context);
-            setXwikiObjectProperty(INTERNAL_COMMENTS_KEY, gene.getComment(), xwikiObject, context);
+            setXWikiObjectProperty(INTERNAL_STRATEGY_KEY, gene.getStrategy(), xwikiObject, context);
+            setXWikiObjectProperty(INTERNAL_COMMENTS_KEY, gene.getComment(), xwikiObject, context);
         } catch (final XWikiException e) {
             this.logger.error("Failed to save a specific gene: [{}]", e.getMessage());
         }
@@ -411,7 +411,7 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
                 -> gene.getId(), Function.identity(), (v1, v2) -> v2, LinkedHashMap::new));
     }
 
-    private void setXwikiObjectProperty(String property, String value, BaseObject xwikiObject, XWikiContext context)
+    private void setXWikiObjectProperty(String property, Object value, BaseObject xwikiObject, XWikiContext context)
     {
         if (value != null) {
             xwikiObject.set(property, value, context);
@@ -422,6 +422,5 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
     public void writeJSON(Patient patient, JSONObject json)
     {
         writeJSON(patient, json, null);
-
     }
 }
