@@ -19,6 +19,7 @@ package org.phenotips.data.internal.controller;
 
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Gene;
+import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
@@ -122,8 +123,8 @@ public class GeneListControllerTest
         "common_mutations");
 
     @Rule
-    public MockitoComponentMockingRule<PatientDataController<List<PhenoTipsGene>>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<List<PhenoTipsGene>>>(GeneListController.class);
+    public MockitoComponentMockingRule<PatientDataController<Gene>> mocker =
+        new MockitoComponentMockingRule<>(GeneListController.class);
 
     @Mock
     private Patient patient;
@@ -151,7 +152,7 @@ public class GeneListControllerTest
 
     private List<BaseObject> geneXWikiObjects;
 
-    private PatientDataController<List<PhenoTipsGene>> component;
+    private PatientDataController<Gene> component;
 
     @Before
     public void setUp() throws Exception
@@ -225,12 +226,12 @@ public class GeneListControllerTest
             doReturn(Arrays.asList(geneString, statusString, commentString, strategyString)).when(gene).getFieldList();
         }
 
-        PatientData<List<PhenoTipsGene>> result = this.component.load(this.patient);
+        PatientData<Gene> result = this.component.load(this.patient);
 
         Assert.assertNotNull(result);
-        Assert.assertEquals(3, result.getValue().size());
+        Assert.assertEquals(3, result.size());
         for (int i = 0; i < 3; ++i) {
-            PhenoTipsGene item = result.getValue().get(i);
+            Gene item = result.get(i);
             Assert.assertEquals("gene" + i, item.getName());
             Assert.assertEquals(STATUS_VALUES.get(i), item.getStatus());
             Assert.assertEquals(STRATEGY_VALUES.get(i), item.getStrategy());
@@ -244,7 +245,7 @@ public class GeneListControllerTest
         Exception exception = new RuntimeException();
         doThrow(exception).when(this.patient).getXDocument();
 
-        PatientData<List<PhenoTipsGene>> result = this.component.load(this.patient);
+        PatientData<Gene> result = this.component.load(this.patient);
 
         Assert.assertNull(result);
         verify(this.mocker.getMockedLogger()).error(eq(PatientDataController.ERROR_MESSAGE_LOAD_FAILED), anyString());
@@ -255,7 +256,7 @@ public class GeneListControllerTest
     {
         doReturn(null).when(this.doc).getXObjects(any(EntityReference.class));
 
-        PatientData<List<PhenoTipsGene>> result = this.component.load(this.patient);
+        PatientData<Gene> result = this.component.load(this.patient);
 
         Assert.assertNull(result);
     }
@@ -265,7 +266,7 @@ public class GeneListControllerTest
     {
         doReturn(new LinkedList<BaseObject>()).when(this.doc).getXObjects(any(EntityReference.class));
 
-        PatientData<List<PhenoTipsGene>> result = this.component.load(this.patient);
+        PatientData<Gene> result = this.component.load(this.patient);
 
         Assert.assertNull(result);
     }
@@ -277,7 +278,7 @@ public class GeneListControllerTest
         doReturn(null).when(obj).getField(anyString());
         this.geneXWikiObjects.add(obj);
 
-        PatientData<List<PhenoTipsGene>> result = this.component.load(this.patient);
+        PatientData<Gene> result = this.component.load(this.patient);
 
         Assert.assertNull(result);
     }
@@ -288,9 +289,9 @@ public class GeneListControllerTest
         // Deleted objects appear as nulls in XWikiObjects list
         this.geneXWikiObjects.add(null);
         addGeneFields(GENE_KEY, new String[] { "SRCAP" });
-        PatientData<List<PhenoTipsGene>> result = this.component.load(this.patient);
+        PatientData<Gene> result = this.component.load(this.patient);
 
-        Assert.assertEquals(1, result.getValue().size());
+        Assert.assertEquals(1, result.size());
     }
 
     @Test
@@ -317,11 +318,11 @@ public class GeneListControllerTest
             doReturn(Arrays.asList(geneString, commentString)).when(gene).getFieldList();
         }
 
-        PatientData<List<PhenoTipsGene>> result = this.component.load(this.patient);
+        PatientData<Gene> result = this.component.load(this.patient);
 
         Assert.assertNotNull(result);
         for (int i = 0; i < comments.length; i++) {
-            PhenoTipsGene gene = result.getValue().get(i);
+            Gene gene = result.get(i);
             Assert.assertEquals(genes[i], gene.getName());
             Assert.assertEquals(comments[i], gene.getComment());
         }
@@ -344,8 +345,8 @@ public class GeneListControllerTest
     @Test
     public void writeJSONReturnsWhenDataIsEmpty() throws ComponentLookupException
     {
-        List<PhenoTipsGene> internalList = new LinkedList<>();
-        PatientData<List<PhenoTipsGene>> patientData = new SimpleValuePatientData<>(CONTROLLER_NAME, internalList);
+        List<Gene> internalList = new LinkedList<>();
+        PatientData<Gene> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
         doReturn(patientData).when(this.patient).getData(CONTROLLER_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -364,8 +365,8 @@ public class GeneListControllerTest
     @Test
     public void writeJSONReturnsWhenSelectedFieldsDoesNotContainGeneEnabler() throws ComponentLookupException
     {
-        List<PhenoTipsGene> internalList = new LinkedList<>();
-        PatientData<List<PhenoTipsGene>> patientData = new SimpleValuePatientData<>(CONTROLLER_NAME, internalList);
+        List<Gene> internalList = new LinkedList<>();
+        PatientData<Gene> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
         doReturn(patientData).when(this.patient).getData(CONTROLLER_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -380,10 +381,10 @@ public class GeneListControllerTest
     @Test(expected = IllegalArgumentException.class)
     public void writeJSONIgnoresItemsWhenGeneIsBlank() throws ComponentLookupException
     {
-        List<PhenoTipsGene> internalList = new LinkedList<>();
-        PhenoTipsGene gene = new PhenoTipsGene("", null, null, null, null);
+        List<Gene> internalList = new LinkedList<>();
+        Gene gene = new PhenoTipsGene("", null, null, null, null);
         internalList.add(gene);
-        PatientData<List<PhenoTipsGene>> patientData = new SimpleValuePatientData<>(CONTROLLER_NAME, internalList);
+        PatientData<Gene> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
         doReturn(patientData).when(this.patient).getData(CONTROLLER_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -399,12 +400,12 @@ public class GeneListControllerTest
     @Test
     public void writeJSONAddsContainerWithAllValuesWhenSelectedFieldsNull() throws ComponentLookupException
     {
-        List<PhenoTipsGene> internalList = new LinkedList<>();
+        List<Gene> internalList = new LinkedList<>();
 
-        PhenoTipsGene item = new PhenoTipsGene(null, "geneName", "", "", null);
+        Gene item = new PhenoTipsGene(null, "geneName", "", "", null);
         internalList.add(item);
 
-        PatientData<List<PhenoTipsGene>> patientData = new SimpleValuePatientData<>(CONTROLLER_NAME, internalList);
+        PatientData<Gene> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
         doReturn(patientData).when(this.patient).getData(CONTROLLER_NAME);
         JSONObject json = new JSONObject();
 
@@ -419,12 +420,12 @@ public class GeneListControllerTest
     @Test
     public void writeJSONWorksCorrectly() throws ComponentLookupException
     {
-        List<PhenoTipsGene> internalList = new LinkedList<>();
+        List<Gene> internalList = new LinkedList<>();
 
-        PhenoTipsGene item = new PhenoTipsGene(null, GENE_VALUE, "Status", "familial_mutation", "Comment");
+        Gene item = new PhenoTipsGene(null, GENE_VALUE, "Status", "familial_mutation", "Comment");
         internalList.add(item);
 
-        PatientData<List<PhenoTipsGene>> patientData = new SimpleValuePatientData<>(CONTROLLER_NAME, internalList);
+        PatientData<Gene> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
         doReturn(patientData).when(this.patient).getData(CONTROLLER_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -463,10 +464,10 @@ public class GeneListControllerTest
         JSONObject json = new JSONObject();
         json.put(CONTROLLER_NAME, "No");
 
-        PatientData<List<PhenoTipsGene>> result = this.component.readJSON(json);
+        PatientData<Gene> result = this.component.readJSON(json);
 
         Assert.assertNotNull(result);
-        Assert.assertEquals(0, result.getValue().size());
+        Assert.assertEquals(0, result.size());
     }
 
     @Test
@@ -475,10 +476,10 @@ public class GeneListControllerTest
         JSONObject json = new JSONObject();
         json.put(CONTROLLER_NAME, new JSONArray());
 
-        PatientData<List<PhenoTipsGene>> result = this.component.readJSON(json);
+        PatientData<Gene> result = this.component.readJSON(json);
 
         Assert.assertNotNull(result);
-        Assert.assertEquals(0, result.getValue().size());
+        Assert.assertEquals(0, result.size());
     }
 
     @Test
@@ -503,25 +504,25 @@ public class GeneListControllerTest
         JSONObject json = new JSONObject();
         json.put(CONTROLLER_NAME, data);
 
-        PatientData<List<PhenoTipsGene>> result = this.component.readJSON(json);
+        PatientData<Gene> result = this.component.readJSON(json);
 
         Assert.assertNotNull(result);
-        Assert.assertEquals(4, result.getValue().size());
-        PhenoTipsGene gene = result.getValue().get(0);
+        Assert.assertEquals(4, result.size());
+        Gene gene = result.get(0);
         Assert.assertEquals("GENE1", gene.getName());
         Assert.assertEquals("Notes1", gene.getComment());
         Assert.assertNull(gene.getStrategy());
-        gene = result.getValue().get(1);
+        gene = result.get(1);
         Assert.assertEquals("GENE2", gene.getName());
         Assert.assertEquals("rejected", gene.getStatus());
         Assert.assertNull(gene.getComment());
         Assert.assertNull(gene.getStrategy());
-        gene = result.getValue().get(2);
+        gene = result.get(2);
         Assert.assertEquals("ENSG00000123456", gene.getId());
         Assert.assertNull(gene.getStatus());
         Assert.assertNull(gene.getComment());
         Assert.assertNull(gene.getStrategy());
-        gene = result.getValue().get(3);
+        gene = result.get(3);
         Assert.assertEquals("ENSG00000098765", gene.getId());
         // any incorrect status should be replaced with "candidate"
         Assert.assertNull(gene.getStatus());
@@ -561,17 +562,17 @@ public class GeneListControllerTest
         item.put(JSON_GENE_SYMBOL, "GENE_TO_BECOME_SOLVED");
         json.put(JSON_OLD_SOLVED_GENE_KEY, item);
 
-        PatientData<List<PhenoTipsGene>> result = this.component.readJSON(json);
+        PatientData<Gene> result = this.component.readJSON(json);
 
         Assert.assertNotNull(result);
-        Assert.assertEquals(3, result.getValue().size());
-        PhenoTipsGene gene = result.getValue().get(0);
+        Assert.assertEquals(3, result.size());
+        Gene gene = result.get(0);
         Assert.assertEquals("GENE_1", gene.getName());
         Assert.assertEquals("candidate", gene.getStatus());
-        gene = result.getValue().get(1);
+        gene = result.get(1);
         Assert.assertEquals("GENE_TO_BECOME_REJECTED", gene.getName());
         Assert.assertEquals("rejected", gene.getStatus());
-        gene = result.getValue().get(2);
+        gene = result.get(2);
         Assert.assertEquals("GENE_TO_BECOME_SOLVED", gene.getName());
         Assert.assertEquals("solved", gene.getStatus());
     }
@@ -610,7 +611,7 @@ public class GeneListControllerTest
     public void saveWithEmptyDataClearsGenesWhenPolicyIsUpdate()
     {
         when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new SimpleValuePatientData<>(CONTROLLER_NAME, Collections.emptyList()));
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
         this.component.save(this.patient);
         verify(this.doc).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
@@ -622,7 +623,7 @@ public class GeneListControllerTest
     public void saveWithEmptyDataMergesWithStoredDataWhenPolicyIsMerge() throws XWikiException
     {
         when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new SimpleValuePatientData<>(CONTROLLER_NAME, Collections.emptyList()));
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
 
         final BaseObject geneObject = mock(BaseObject.class);
@@ -662,7 +663,7 @@ public class GeneListControllerTest
     public void saveWithEmptyDataClearsGenesWhenPolicyIsReplace()
     {
         when(this.patient.getData(CONTROLLER_NAME))
-            .thenReturn(new SimpleValuePatientData<>(CONTROLLER_NAME, Collections.emptyList()));
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
         this.component.save(this.patient, PatientWritePolicy.REPLACE);
         verify(this.doc).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
@@ -673,13 +674,13 @@ public class GeneListControllerTest
     @Test
     public void saveUpdatesGenesWhenPolicyIsUpdate() throws XWikiException
     {
-        List<PhenoTipsGene> data = new LinkedList<>();
-        PhenoTipsGene item = new PhenoTipsGene(null, "GENE1", null, null, "Notes1");
+        List<Gene> data = new LinkedList<>();
+        Gene item = new PhenoTipsGene(null, "GENE1", null, null, "Notes1");
         data.add(item);
         item = new PhenoTipsGene(null, "GENE2", null, null, null);
         data.add(item);
-        when(this.patient.<List<PhenoTipsGene>>getData(CONTROLLER_NAME))
-            .thenReturn(new SimpleValuePatientData<>(CONTROLLER_NAME, data));
+        when(this.patient.<Gene>getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, data));
 
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
 
@@ -699,13 +700,13 @@ public class GeneListControllerTest
     @Test
     public void saveReplacesGenesWhenPolicyIsReplace() throws XWikiException
     {
-        List<PhenoTipsGene> data = new LinkedList<>();
-        PhenoTipsGene gene = new PhenoTipsGene("GENE1", null, null, null, "Notes1");
-        PhenoTipsGene gene2 = new PhenoTipsGene("GENE2", null, null, null, null);
+        List<Gene> data = new LinkedList<>();
+        Gene gene = new PhenoTipsGene("GENE1", null, null, null, "Notes1");
+        Gene gene2 = new PhenoTipsGene("GENE2", null, null, null, null);
         data.add(gene);
         data.add(gene2);
-        when(this.patient.<List<PhenoTipsGene>>getData(CONTROLLER_NAME))
-            .thenReturn(new SimpleValuePatientData<>(CONTROLLER_NAME, data));
+        when(this.patient.<Gene>getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, data));
 
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
 
@@ -725,13 +726,13 @@ public class GeneListControllerTest
     @Test
     public void saveMergesGenesWhenPolicyIsMerge() throws XWikiException
     {
-        List<PhenoTipsGene> data = new LinkedList<>();
-        PhenoTipsGene gene = new PhenoTipsGene("GENE1", null, null, null, "Notes1");
-        PhenoTipsGene gene2 = new PhenoTipsGene("GENE2", null, null, null, null);
+        List<Gene> data = new LinkedList<>();
+        Gene gene = new PhenoTipsGene("GENE1", null, null, null, "Notes1");
+        Gene gene2 = new PhenoTipsGene("GENE2", null, null, null, null);
         data.add(gene);
         data.add(gene2);
-        when(this.patient.<List<PhenoTipsGene>>getData(CONTROLLER_NAME))
-            .thenReturn(new SimpleValuePatientData<>(CONTROLLER_NAME, data));
+        when(this.patient.<Gene>getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, data));
 
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
 

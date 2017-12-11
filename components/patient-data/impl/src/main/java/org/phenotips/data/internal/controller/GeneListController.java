@@ -18,11 +18,12 @@
 package org.phenotips.data.internal.controller;
 
 import org.phenotips.Constants;
+import org.phenotips.data.Gene;
+import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.PatientWritePolicy;
-import org.phenotips.data.SimpleValuePatientData;
 import org.phenotips.data.internal.PhenoTipsGene;
 
 import org.xwiki.component.annotation.Component;
@@ -70,7 +71,7 @@ import com.xpn.xwiki.objects.StringListProperty;
 @Component(roles = { PatientDataController.class })
 @Named("gene")
 @Singleton
-public class GeneListController implements PatientDataController<List<PhenoTipsGene>>
+public class GeneListController implements PatientDataController<Gene>
 {
     /** The XClass used for storing gene data. */
     protected static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("GeneClass",
@@ -120,7 +121,7 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
     }
 
     @Override
-    public SimpleValuePatientData<List<PhenoTipsGene>> load(Patient patient)
+    public PatientData<Gene> load(Patient patient)
     {
         try {
             XWikiDocument doc = patient.getXDocument();
@@ -129,7 +130,7 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
                 return null;
             }
 
-            List<PhenoTipsGene> allGenes = new LinkedList<>();
+            List<Gene> allGenes = new LinkedList<>();
             for (BaseObject geneObject : geneXWikiObjects) {
                 if (geneObject == null || geneObject.getFieldList().isEmpty()) {
                     continue;
@@ -140,14 +141,14 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
                 String strategy = getFieldValue(geneObject, INTERNAL_STRATEGY_KEY);
                 String comment = getFieldValue(geneObject, INTERNAL_COMMENTS_KEY);
 
-                PhenoTipsGene gene = new PhenoTipsGene(id, null, status, strategy, comment);
+                Gene gene = new PhenoTipsGene(id, null, status, strategy, comment);
 
                 allGenes.add(gene);
             }
             if (allGenes.isEmpty()) {
                 return null;
             } else {
-                return new SimpleValuePatientData<>(getName(), allGenes);
+                return new IndexedPatientData<>(getName(), allGenes);
             }
         } catch (Exception e) {
             this.logger.error(ERROR_MESSAGE_LOAD_FAILED, e.getMessage());
@@ -180,18 +181,17 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
             return;
         }
 
-        PatientData<List<PhenoTipsGene>> data = patient.getData(getName());
-        if (data == null || data.getValue() == null || data.getValue().isEmpty()) {
+        PatientData<Gene> data = patient.getData(getName());
+        if (data == null || data.size() == 0) {
             if (selectedFieldNames == null || selectedFieldNames.contains(GENES_ENABLING_FIELD_NAME)) {
                 json.put(GENES_STRING, new JSONArray());
             }
             return;
         }
 
-        List<PhenoTipsGene> genes = data.getValue();
         JSONArray geneArray = new JSONArray();
 
-        for (PhenoTipsGene gene : genes) {
+        for (Gene gene : data) {
             geneArray.put(gene.toJSON());
         }
 
@@ -199,7 +199,7 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
     }
 
     @Override
-    public PatientData<List<PhenoTipsGene>> readJSON(JSONObject json)
+    public PatientData<Gene> readJSON(JSONObject json)
     {
         if (json == null
             || !(json.has(GENES_STRING) || json.has(JSON_SOLVED_KEY) || json.has(JSON_REJECTEDGENES_KEY))) {
@@ -207,7 +207,7 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
         }
 
         try {
-            List<PhenoTipsGene> accumulatedGenes = new LinkedList<>();
+            List<Gene> accumulatedGenes = new LinkedList<>();
 
             parseGenesJson(json, accumulatedGenes);
 
@@ -215,7 +215,7 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
             parseRejectedGenes(json, accumulatedGenes);
             parseSolvedGene(json, accumulatedGenes);
 
-            return new SimpleValuePatientData<>(getName(), accumulatedGenes);
+            return new IndexedPatientData<>(getName(), accumulatedGenes);
         } catch (Exception e) {
             this.logger.error("Could not load genes from JSON: [{}]", e.getMessage(), e);
             return null;
@@ -226,7 +226,7 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
      * Supports both 1.3-m5 and older 1.3-xx format. 1.3-m5 and newer format: {"id": ENSEMBL_Id [[, "gene": HGNC_Symbol]
      * , ...] } 1.3-old format: {"gene": HGNC_Symbol [, ...] }
      */
-    private void parseGenesJson(JSONObject json, List<PhenoTipsGene> accumulatedGenes)
+    private void parseGenesJson(JSONObject json, List<Gene> accumulatedGenes)
     {
         JSONArray genesJson = json.optJSONArray(GENES_STRING);
 
@@ -243,7 +243,7 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
                     continue;
                 }
 
-                PhenoTipsGene gene = new PhenoTipsGene(geneJson);
+                Gene gene = new PhenoTipsGene(geneJson);
                 if (gene == null || alreadyCollectedGeneNames.contains(gene.getId())) {
                     continue;
                 }
@@ -254,7 +254,7 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
         }
     }
 
-    private void parseRejectedGenes(JSONObject json, List<PhenoTipsGene> accumulatedGenes)
+    private void parseRejectedGenes(JSONObject json, List<Gene> accumulatedGenes)
     {
         Set<String> rejectedGeneNames = new HashSet<>();
 
@@ -269,7 +269,7 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
                 }
 
                 PhenoTipsGene gene = new PhenoTipsGene(rejectedGeneJson);
-                if (gene == null || rejectedGeneNames.contains(gene.getId())) {
+                if (rejectedGeneNames.contains(gene.getId())) {
                     continue;
                 }
 
@@ -283,7 +283,7 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
         }
     }
 
-    private void parseSolvedGene(JSONObject json, List<PhenoTipsGene> accumulatedGenes)
+    private void parseSolvedGene(JSONObject json, List<Gene> accumulatedGenes)
     {
         JSONObject solvedGene = json.optJSONObject(JSON_SOLVED_KEY);
         if (solvedGene == null) {
@@ -303,7 +303,7 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
         addOrReplaceGene(accumulatedGenes, gene);
     }
 
-    private void addOrReplaceGene(List<PhenoTipsGene> allGenes, PhenoTipsGene gene)
+    private void addOrReplaceGene(List<Gene> allGenes, Gene gene)
     {
         // need index for replacement; performance is not critical since this code is only
         // used for old 1.2.x. patient JSONs
@@ -327,11 +327,13 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
     {
         try {
             final XWikiDocument docX = patient.getXDocument();
-            final PatientData<List<PhenoTipsGene>> genes = patient.getData(getName());
+            final PatientData<Gene> genes = patient.getData(getName());
             if (genes == null) {
                 if (PatientWritePolicy.REPLACE.equals(policy)) {
                     docX.removeXObjects(GENE_CLASS_REFERENCE);
                 }
+            } else if (!genes.isIndexed()) {
+                this.logger.info("Wrong data type for gene data");
             } else {
                 saveGenes(docX, patient, genes, policy, this.xcontextProvider.get());
             }
@@ -352,17 +354,16 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
     private void saveGenes(
         @Nonnull final XWikiDocument docX,
         @Nonnull final Patient patient,
-        @Nonnull final PatientData<List<PhenoTipsGene>> data,
+        @Nonnull final PatientData<Gene> data,
         @Nonnull final PatientWritePolicy policy,
         @Nonnull final XWikiContext context)
     {
-        List<PhenoTipsGene> genes = data.getValue();
         docX.removeXObjects(GENE_CLASS_REFERENCE);
         if (PatientWritePolicy.MERGE.equals(policy)) {
-            final Map<String, PhenoTipsGene> mergedGenes = getMergedGenes(genes, load(patient).getValue());
+            final Map<String, Gene> mergedGenes = getMergedGenes(data, load(patient));
             mergedGenes.forEach((id, gene) -> saveGene(docX, gene, context));
         } else {
-            genes.forEach(gene -> saveGene(docX, gene, context));
+            data.forEach(gene -> saveGene(docX, gene, context));
         }
     }
 
@@ -375,7 +376,7 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
      */
     private void saveGene(
         @Nonnull final XWikiDocument docX,
-        @Nonnull final PhenoTipsGene gene,
+        @Nonnull final Gene gene,
         @Nonnull final XWikiContext context)
     {
         try {
@@ -399,16 +400,15 @@ public class GeneListController implements PatientDataController<List<PhenoTipsG
      * @param storedGenes the gene data already stored in patient
      * @return a list of merged genes
      */
-    private Map<String, PhenoTipsGene> getMergedGenes(
-        @Nullable final List<PhenoTipsGene> genes,
-        @Nullable final List<PhenoTipsGene> storedGenes)
+    private Map<String, Gene> getMergedGenes(
+        @Nullable final Iterable<Gene> genes,
+        @Nullable final Iterable<Gene> storedGenes)
     {
         // If map keys collide, merge genes in favor of the new value
         return Stream.of(storedGenes, genes)
             .filter(Objects::nonNull)
             .flatMap(s -> StreamSupport.stream(s.spliterator(), false))
-            .collect(Collectors.toMap(gene
-                -> gene.getId(), Function.identity(), (v1, v2) -> v2, LinkedHashMap::new));
+            .collect(Collectors.toMap(gene -> gene.getId(), Function.identity(), (v1, v2) -> v2, LinkedHashMap::new));
     }
 
     private void setXWikiObjectProperty(String property, Object value, BaseObject xwikiObject, XWikiContext context)
