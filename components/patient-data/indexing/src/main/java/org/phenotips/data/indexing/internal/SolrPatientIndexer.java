@@ -18,11 +18,11 @@
 package org.phenotips.data.indexing.internal;
 
 import org.phenotips.data.Feature;
+import org.phenotips.data.Gene;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.indexing.PatientIndexer;
-import org.phenotips.data.internal.PhenoTipsGene;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.vocabulary.SolrCoreContainerHandler;
 import org.phenotips.vocabulary.Vocabulary;
@@ -182,16 +182,15 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
 
     private void addGenes(SolrInputDocument input, Patient patient)
     {
-        PatientData<List<PhenoTipsGene>> data = patient.getData(GENES_KEY);
+        PatientData<Gene> data = patient.getData(GENES_KEY);
         if (data == null) {
             return;
         }
 
-        List<PhenoTipsGene> genes = data.getValue();
-        if (genes == null || genes.isEmpty()) {
+        if (data == null || data.size() == 0) {
             return;
         }
-        for (PhenoTipsGene gene : genes) {
+        for (Gene gene : data) {
             String name = gene.getName();
             if (StringUtils.isBlank(name)) {
                 continue;

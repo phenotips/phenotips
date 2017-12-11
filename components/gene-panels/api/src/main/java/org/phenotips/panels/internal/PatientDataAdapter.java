@@ -18,9 +18,9 @@
 package org.phenotips.panels.internal;
 
 import org.phenotips.data.Feature;
+import org.phenotips.data.Gene;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
-import org.phenotips.data.internal.PhenoTipsGene;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
@@ -156,7 +156,7 @@ final class PatientDataAdapter
          */
         AdapterBuilder withRejectedGenes()
         {
-            final PatientData<List<PhenoTipsGene>> genes = this.patient.getData(GENES);
+            final PatientData<Gene> genes = this.patient.getData(GENES);
             this.rejectedGenes = extractRejectedGenes(genes);
             return this;
         }
@@ -190,14 +190,14 @@ final class PatientDataAdapter
          * @param genes a {@link PatientData} object containing gene data for the {@link #patient}
          * @return a set of rejected {@link VocabularyTerm genes}
          */
-        private Set<VocabularyTerm> extractRejectedGenes(@Nullable final PatientData<List<PhenoTipsGene>> genes)
+        private Set<VocabularyTerm> extractRejectedGenes(@Nullable final PatientData<Gene> genes)
         {
             if (genes == null) {
                 return Collections.emptySet();
             }
             final Set<VocabularyTerm> rejected = new HashSet<>();
             final Vocabulary hgnc = this.vocabularyManager.getVocabulary(HGNC);
-            for (final PhenoTipsGene gene : genes.getValue()) {
+            for (final Gene gene : genes) {
                 if (REJECTED.equals(gene.getStatus())) {
                     final String geneID = gene.getId();
                     final VocabularyTerm geneObj = hgnc.getTerm(geneID);

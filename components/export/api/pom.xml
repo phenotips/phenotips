@@ -80,11 +80,6 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>patient-data-default-impl</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>patient-tools</artifactId>
       <version>${project.version}</version>
     </dependency>

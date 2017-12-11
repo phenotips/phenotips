@@ -20,10 +20,10 @@ package org.phenotips.panels.internal;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Feature;
 import org.phenotips.data.Gene;
+import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.SimpleValuePatientData;
-import org.phenotips.data.internal.PhenoTipsGene;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
@@ -42,6 +42,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.XWiki;
@@ -136,7 +137,7 @@ public class PatientDataAdapterTest
     @Mock
     private Provider<ComponentManager> mockProvider;
 
-    private PatientData<Object> geneData;
+    private PatientData<Gene> geneData;
 
     private PatientData<Object> qualifierData;
 
@@ -174,12 +175,13 @@ public class PatientDataAdapterTest
         when(this.hgnc.getTerm(GENE_1_ID)).thenReturn(this.geneTerm1);
         when(this.hgnc.getTerm(GENE_2_ID)).thenReturn(null);
 
-        final PhenoTipsGene geneDatum1 = new PhenoTipsGene(GENE_1_ID, null, REJECTED_LABEL, null, null);
-        final PhenoTipsGene geneDatum2 = new PhenoTipsGene(GENE_2_ID, null, REJECTED_LABEL, null, null);
-        final PhenoTipsGene geneDatum3 = new PhenoTipsGene(GENE_3_ID, null, "aa", null, null);
+        final Gene geneDatum1 = mockGene(GENE_1_ID, REJECTED_LABEL);
+        final Gene geneDatum2 = mockGene(GENE_2_ID, REJECTED_LABEL);
+        final Gene geneDatum3 = mockGene(GENE_3_ID, "aa");
 
-        this.geneData = new SimpleValuePatientData<>(GENES, Arrays.asList((Object) geneDatum1, geneDatum2, geneDatum3));
-        when(this.patient.getData(GENES)).thenReturn(this.geneData);
+        this.geneData =
+            new IndexedPatientData<>(GENES, Arrays.asList(geneDatum1, geneDatum2, geneDatum3));
+        when(this.patient.<Gene>getData(GENES)).thenReturn(this.geneData);
 
         this.qualifierData = new SimpleValuePatientData<>(GLOBAL_QUALIFIERS, Arrays.asList(this.qualifierTerm1,
             this.qualifierTerm2));
@@ -198,7 +200,7 @@ public class PatientDataAdapterTest
         when(this.positiveFeature1.isPresent()).thenReturn(true);
         when(this.positiveFeature2.isPresent()).thenReturn(true);
         when(this.negativeFeature1.isPresent()).thenReturn(false);
-        when((Set<Feature>) this.patient.getFeatures()).thenReturn(this.features);
+        Mockito.doReturn(this.features).when(this.patient).getFeatures();
 
         this.adapterBuilder = new PatientDataAdapter.AdapterBuilder(this.patient, this.vocabularyManager);
     }
@@ -268,5 +270,13 @@ public class PatientDataAdapterTest
         final Set<VocabularyTerm> rejectedGenes = new HashSet<>();
         rejectedGenes.add(this.geneTerm1);
         Assert.assertEquals(rejectedGenes, dataAdapter.getRejectedGenes());
+    }
+
+    private Gene mockGene(String id, String status)
+    {
+        Gene result = mock(Gene.class);
+        when(result.getId()).thenReturn(id);
+        when(result.getStatus()).thenReturn(status);
+        return result;
     }
 }

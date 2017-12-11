@@ -20,12 +20,11 @@ package org.phenotips.data.indexing.internal;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Feature;
 import org.phenotips.data.Gene;
+import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
-import org.phenotips.data.SimpleValuePatientData;
 import org.phenotips.data.indexing.PatientIndexer;
-import org.phenotips.data.internal.PhenoTipsGene;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
@@ -96,7 +95,7 @@ public class SolrPatientIndexerTest
 
     @Rule
     public MockitoComponentMockingRule<PatientIndexer> mocker =
-        new MockitoComponentMockingRule<PatientIndexer>(SolrPatientIndexer.class);
+        new MockitoComponentMockingRule<>(SolrPatientIndexer.class);
 
     @Mock
     private Patient patient;
@@ -252,18 +251,14 @@ public class SolrPatientIndexerTest
 
         doReturn(Collections.EMPTY_SET).when(this.patient).getFeatures();
 
-        List<PhenoTipsGene> fakeGenes = new LinkedList<>();
-        PhenoTipsGene fakeGene = new PhenoTipsGene(null, "CANDIDATE1", "candidate", null, null);
-        fakeGenes.add(fakeGene);
-        fakeGene = new PhenoTipsGene(null, "REJECTED1", "rejected", null, null);
-        fakeGenes.add(fakeGene);
-        fakeGene = new PhenoTipsGene(null, "CARRIER1", "carrier", null, null);
-        fakeGenes.add(fakeGene);
-        fakeGene = new PhenoTipsGene(null, "SOLVED1", "solved", null, null);
-        fakeGenes.add(fakeGene);
+        List<Gene> fakeGenes = new LinkedList<>();
+        fakeGenes.add(mockGene("CANDIDATE1", "candidate"));
+        fakeGenes.add(mockGene("REJECTED1", "rejected"));
+        fakeGenes.add(mockGene("CARRIER1", "carrier"));
+        fakeGenes.add(mockGene("SOLVED1", "solved"));
 
-        PatientData<List<PhenoTipsGene>> fakeGeneData =
-            new SimpleValuePatientData<>("genes", fakeGenes);
+        PatientData<Gene> fakeGeneData =
+            new IndexedPatientData<>("genes", fakeGenes);
         doReturn(fakeGeneData).when(this.patient).getData("genes");
 
         doReturn(entityAccess).when(this.permissions).getEntityAccess(this.patient);
@@ -484,6 +479,13 @@ public class SolrPatientIndexerTest
         this.patientIndexer.reindex();
 
         verify(this.logger).warn("Failed to search patients for reindexing: {}", "createQuery failed");
+    }
 
+    private Gene mockGene(String name, String status)
+    {
+        Gene result = mock(Gene.class);
+        when(result.getName()).thenReturn(name);
+        when(result.getStatus()).thenReturn(status);
+        return result;
     }
 }

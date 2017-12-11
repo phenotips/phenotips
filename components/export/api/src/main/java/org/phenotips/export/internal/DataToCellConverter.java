@@ -21,10 +21,10 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Disorder;
 import org.phenotips.data.Feature;
 import org.phenotips.data.FeatureMetadatum;
+import org.phenotips.data.Gene;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PhenoTipsDate;
-import org.phenotips.data.internal.PhenoTipsGene;
 import org.phenotips.translation.TranslationManager;
 import org.phenotips.vocabulary.internal.solr.SolrVocabularyTerm;
 
@@ -251,7 +251,7 @@ public class DataToCellConverter
         DataSection section = new DataSection();
         int y = 0;
 
-        PatientData<List<PhenoTipsGene>> allGenes = patient.getData("genes");
+        PatientData<Gene> allGenes = patient.getData("genes");
 
         // empties should be created in the case that there are no genes to write
         if (allGenes == null || !allGenes.isIndexed()) {
@@ -264,7 +264,7 @@ public class DataToCellConverter
         List<String> strategyTranslates =
             Arrays.asList("sequencing", "deletion", "familial_mutation", "common_mutations");
 
-        for (PhenoTipsGene gene : allGenes.getValue()) {
+        for (Gene gene : allGenes) {
             int x = 0;
             for (String field : present) {
                 String value = "";
