@@ -23,6 +23,8 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
+import java.util.Collection;
+
 import org.json.JSONObject;
 
 /**
@@ -63,11 +65,11 @@ public interface Gene extends VocabularyProperty
     String getStatus();
 
     /**
-     * The strategy used for investigating the gene status.
+     * The strategies used for investigating the gene status.
      *
-     * @return a short label, such as {@code sequencing}, or {@code null} if unknown
+     * @return a collection of short labels, such as {@code sequencing}, or an empty collection if unknown
      */
-    String getStrategy();
+    Collection<String> getStrategy();
 
     /**
      * A short comment about the gene.

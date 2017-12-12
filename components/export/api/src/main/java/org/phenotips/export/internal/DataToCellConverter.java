@@ -274,7 +274,7 @@ public class DataToCellConverter
                         break;
                     case "strategy":
                         value =
-                            parseMultivalueField(gene.getStrategy(), strategyTranslates,
+                            getMultivalueField(gene.getStrategy(), strategyTranslates,
                                 "PhenoTips.GeneClass_strategy_");
                         break;
                     case "status":
@@ -1415,6 +1415,23 @@ public class DataToCellConverter
     private String parseMultivalueField(String value, List<String> valueTranslates, String className)
     {
         if (StringUtils.isBlank(value)) {
+            return "";
+        }
+        String field = "";
+        for (String property : valueTranslates) {
+            if (value.contains(property)) {
+                if (field.length() != 0) {
+                    field += "; ";
+                }
+                field += this.translationManager.translate(className + property);
+            }
+        }
+        return field;
+    }
+
+    private String getMultivalueField(Collection<String> value, List<String> valueTranslates, String className)
+    {
+        if (value == null || value.isEmpty()) {
             return "";
         }
         String field = "";

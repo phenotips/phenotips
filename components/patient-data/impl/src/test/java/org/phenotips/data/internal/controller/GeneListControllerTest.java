@@ -44,6 +44,7 @@ import java.util.List;
 
 import javax.inject.Provider;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -234,7 +235,8 @@ public class GeneListControllerTest
             Gene item = result.get(i);
             Assert.assertEquals("gene" + i, item.getName());
             Assert.assertEquals(STATUS_VALUES.get(i), item.getStatus());
-            Assert.assertEquals(STRATEGY_VALUES.get(i), item.getStrategy());
+            Assert.assertTrue(
+                CollectionUtils.isEqualCollection(Collections.singletonList("strategy" + i), item.getStrategy()));
             Assert.assertEquals("comment" + i, item.getComment());
         }
     }
@@ -402,7 +404,7 @@ public class GeneListControllerTest
     {
         List<Gene> internalList = new LinkedList<>();
 
-        Gene item = new PhenoTipsGene(null, "geneName", "", "", null);
+        Gene item = new PhenoTipsGene(null, "geneName", "", Collections.singleton(""), null);
         internalList.add(item);
 
         PatientData<Gene> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
@@ -422,7 +424,8 @@ public class GeneListControllerTest
     {
         List<Gene> internalList = new LinkedList<>();
 
-        Gene item = new PhenoTipsGene(null, GENE_VALUE, "Status", "familial_mutation", "Comment");
+        Gene item =
+            new PhenoTipsGene(null, GENE_VALUE, "Status", Collections.singleton("familial_mutation"), "Comment");
         internalList.add(item);
 
         PatientData<Gene> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
@@ -511,17 +514,17 @@ public class GeneListControllerTest
         Gene gene = result.get(0);
         Assert.assertEquals("GENE1", gene.getName());
         Assert.assertEquals("Notes1", gene.getComment());
-        Assert.assertNull(gene.getStrategy());
+        Assert.assertTrue(gene.getStrategy().isEmpty());
         gene = result.get(1);
         Assert.assertEquals("GENE2", gene.getName());
         Assert.assertEquals("rejected", gene.getStatus());
         Assert.assertNull(gene.getComment());
-        Assert.assertNull(gene.getStrategy());
+        Assert.assertTrue(gene.getStrategy().isEmpty());
         gene = result.get(2);
         Assert.assertEquals("ENSG00000123456", gene.getId());
         Assert.assertNull(gene.getStatus());
         Assert.assertNull(gene.getComment());
-        Assert.assertNull(gene.getStrategy());
+        Assert.assertTrue(gene.getStrategy().isEmpty());
         gene = result.get(3);
         Assert.assertEquals("ENSG00000098765", gene.getId());
         // any incorrect status should be replaced with "candidate"
@@ -652,7 +655,7 @@ public class GeneListControllerTest
         verify(this.doc, times(1)).getXObjects(GeneListController.GENE_CLASS_REFERENCE);
         verify(xwikiObject, times(1)).set(GENE_KEY, GENE_VALUE, this.context);
         verify(xwikiObject, times(1)).set(STATUS_KEY, JSON_OLD_SOLVED_GENE_KEY, this.context);
-        verify(xwikiObject, never()).set(eq(STRATEGY_KEY), any(), eq(this.context));
+        verify(xwikiObject, times(1)).set(eq(STRATEGY_KEY), eq(Collections.emptyList()), eq(this.context));
         verify(xwikiObject, never()).set(eq(COMMENTS_KEY), any(), eq(this.context));
 
         verifyNoMoreInteractions(this.doc);
@@ -763,7 +766,7 @@ public class GeneListControllerTest
         verify(o2, never()).set(eq(COMMENTS_KEY), anyString(), eq(this.context));
         verify(o3, times(1)).set(GENE_KEY, GENE_VALUE, this.context);
         verify(o3, times(1)).set(STATUS_KEY, JSON_OLD_CANDIDATE_GENE_KEY, this.context);
-        verify(o3, never()).set(eq(STRATEGY_KEY), any(), eq(this.context));
+        verify(o3, times(1)).set(eq(STRATEGY_KEY), eq(Collections.emptyList()), eq(this.context));
         verify(o3, never()).set(eq(COMMENTS_KEY), any(), eq(this.context));
         verify(o3, times(1)).getFieldList();
         verify(o3, times(4)).getField(anyString());

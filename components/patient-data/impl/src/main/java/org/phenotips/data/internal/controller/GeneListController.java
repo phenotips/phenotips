@@ -138,7 +138,7 @@ public class GeneListController implements PatientDataController<Gene>
 
                 String id = getFieldValue(geneObject, INTERNAL_GENE_KEY);
                 String status = getFieldValue(geneObject, INTERNAL_STATUS_KEY);
-                String strategy = getFieldValue(geneObject, INTERNAL_STRATEGY_KEY);
+                Collection<String> strategy = getFieldListValue(geneObject, INTERNAL_STRATEGY_KEY);
                 String comment = getFieldValue(geneObject, INTERNAL_COMMENTS_KEY);
 
                 Gene gene = new PhenoTipsGene(id, null, status, strategy, comment);
@@ -154,6 +154,15 @@ public class GeneListController implements PatientDataController<Gene>
             this.logger.error(ERROR_MESSAGE_LOAD_FAILED, e.getMessage());
         }
         return null;
+    }
+
+    private Collection<String> getFieldListValue(BaseObject geneObject, String property)
+    {
+        StringListProperty fields = (StringListProperty) geneObject.getField(property);
+        if (fields == null || fields.getList().size() == 0) {
+            return null;
+        }
+        return fields.getList();
     }
 
     private String getFieldValue(BaseObject geneObject, String property)
@@ -413,7 +422,9 @@ public class GeneListController implements PatientDataController<Gene>
 
     private void setXWikiObjectProperty(String property, Object value, BaseObject xwikiObject, XWikiContext context)
     {
-        if (value != null) {
+        if (value instanceof Collection) {
+            xwikiObject.set(property, new LinkedList<>((Collection<?>) value), context);
+        } else if (value != null) {
             xwikiObject.set(property, value, context);
         }
     }

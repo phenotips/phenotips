@@ -25,6 +25,8 @@ import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -95,7 +97,7 @@ public class PhenoTipsGene implements Gene
      *
      * @see #getStrategy()
      */
-    private String strategy;
+    private Collection<String> strategy = Collections.emptyList();
 
     /**
      * The gene comment, free text entered by the user.
@@ -117,7 +119,7 @@ public class PhenoTipsGene implements Gene
      * @param strategy gene strategy
      * @param comment gene user inputed comment
      */
-    public PhenoTipsGene(String id, String name, String status, String strategy, String comment)
+    public PhenoTipsGene(String id, String name, String status, Collection<String> strategy, String comment)
     {
         if (StringUtils.isBlank(id) && StringUtils.isBlank(name)) {
             throw new IllegalArgumentException();
@@ -146,13 +148,9 @@ public class PhenoTipsGene implements Gene
 
         JSONArray strategyArray = geneJson.optJSONArray(STRATEGY_KEY);
         if (strategyArray != null) {
-            String internalValue = "";
-            for (Object value : strategyArray) {
-                if (strategyValues.contains(value)) {
-                    internalValue += "|" + value;
-                }
-            }
-            this.setStrategy(internalValue);
+            List<String> strategies = new LinkedList<>();
+            strategyArray.forEach(item -> strategies.add(item.toString()));
+            this.setStrategy(strategies);
         }
     }
 
@@ -175,7 +173,7 @@ public class PhenoTipsGene implements Gene
     }
 
     @Override
-    public String getStrategy()
+    public Collection<String> getStrategy()
     {
         return this.strategy;
     }
@@ -253,13 +251,11 @@ public class PhenoTipsGene implements Gene
     /**
      * Set gene strategy.
      *
-     * @param strategy gene strategy
+     * @param strategies gene strategies
      */
-    public void setStrategy(String strategy)
+    public void setStrategy(Collection<String> strategies)
     {
-        if (StringUtils.isNotBlank(strategy) && strategyValues.contains(strategy.trim().toLowerCase())) {
-            this.strategy = strategy.trim().toLowerCase();
-        }
+        this.strategy = strategies == null ? Collections.emptyList() : Collections.unmodifiableCollection(strategies);
     }
 
     /**
@@ -293,10 +289,10 @@ public class PhenoTipsGene implements Gene
         }
     }
 
-    private void setArrayValueIfNotBlank(JSONObject object, String key, String listString)
+    private void setArrayValueIfNotBlank(JSONObject object, String key, Collection<String> values)
     {
-        if (!StringUtils.isBlank(listString)) {
-            object.put(key, new JSONArray(listString.split("\\|")));
+        if (!values.isEmpty()) {
+            object.put(key, new JSONArray(values));
         }
     }
 
