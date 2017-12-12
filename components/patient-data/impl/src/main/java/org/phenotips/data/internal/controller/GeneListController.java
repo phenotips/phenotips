@@ -390,7 +390,7 @@ public class GeneListController implements PatientDataController<Gene>
     {
         try {
             final BaseObject xwikiObject = docX.newXObject(GENE_CLASS_REFERENCE, context);
-            setXWikiObjectProperty(INTERNAL_GENE_KEY, gene.getName(), xwikiObject, context);
+            setXWikiObjectProperty(INTERNAL_GENE_KEY, gene.getId(), xwikiObject, context);
             String status = gene.getStatus();
             // setting status to default 'candidate' if not defined yet
             setXWikiObjectProperty(INTERNAL_STATUS_KEY,
