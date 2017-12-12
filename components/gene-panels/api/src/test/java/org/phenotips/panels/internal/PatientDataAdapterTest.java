@@ -17,28 +17,42 @@
  */
 package org.phenotips.panels.internal;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Feature;
+import org.phenotips.data.Gene;
 import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
+import org.phenotips.data.SimpleValuePatientData;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
+
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+
+import javax.inject.Provider;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.classes.BaseClass;
+import com.xpn.xwiki.objects.classes.StaticListClass;
+import com.xpn.xwiki.web.Utils;
+
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -56,10 +70,6 @@ public class PatientDataAdapterTest
 
     private static final String NEG_FEATURE_1_ID = "-HP:1";
 
-    private static final String GENE = "gene";
-
-    private static final String STATUS = "status";
-
     private static final String HGNC = "hgnc";
 
     private static final String GENE_1_ID = "gene1";
@@ -69,6 +79,15 @@ public class PatientDataAdapterTest
     private static final String GENE_3_ID = "gene3";
 
     private static final String REJECTED_LABEL = "rejected";
+
+    private static final String STATUS_KEY = "status";
+
+    private static final String STRATEGY_KEY = "strategy";
+
+    private static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "solved", "carrier");
+
+    private static final List<String> STRATEGY_VALUES = Arrays.asList("sequencing", "deletion", "familial_mutation",
+        "common_mutations");
 
     @Mock
     private Patient patient;
@@ -106,7 +125,19 @@ public class PatientDataAdapterTest
     @Mock
     private VocabularyTerm geneTerm1;
 
-    private PatientData<Object> geneData;
+    @Mock
+    private Provider<XWikiContext> provider;
+
+    @Mock
+    private XWikiContext context;
+
+    @Mock
+    private ComponentManager cm;
+
+    @Mock
+    private Provider<ComponentManager> mockProvider;
+
+    private PatientData<Gene> geneData;
 
     private PatientData<Object> qualifierData;
 
@@ -115,30 +146,45 @@ public class PatientDataAdapterTest
     private Set<Feature> features;
 
     @Before
-    public void setUp()
+    public void setUp() throws Exception
     {
         MockitoAnnotations.initMocks(this);
+
+        Utils.setComponentManager(this.cm);
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
+        when(this.mockProvider.get()).thenReturn(this.cm);
+        when(this.cm.getInstance(XWikiContext.TYPE_PROVIDER)).thenReturn(this.provider);
+        when(this.cm.getInstance(VocabularyManager.class)).thenReturn(this.vocabularyManager);
+        when(this.provider.get()).thenReturn(this.context);
+        XWiki x = mock(XWiki.class);
+        when(this.context.getWiki()).thenReturn(x);
+
+        XWikiDocument geneDoc = mock(XWikiDocument.class);
+        when(x.getDocument(Gene.GENE_CLASS, this.context)).thenReturn(geneDoc);
+        geneDoc.setNew(false);
+        BaseClass c = mock(BaseClass.class);
+        when(geneDoc.getXClass()).thenReturn(c);
+        StaticListClass lc1 = mock(StaticListClass.class);
+        StaticListClass lc2 = mock(StaticListClass.class);
+        when(c.get(STATUS_KEY)).thenReturn(lc1);
+        when(c.get(STRATEGY_KEY)).thenReturn(lc2);
+        when(lc1.getList(this.context)).thenReturn(STATUS_VALUES);
+        when(lc2.getList(this.context)).thenReturn(STRATEGY_VALUES);
 
         when(this.vocabularyManager.getVocabulary(HGNC)).thenReturn(this.hgnc);
         when(this.hgnc.getTerm(GENE_1_ID)).thenReturn(this.geneTerm1);
         when(this.hgnc.getTerm(GENE_2_ID)).thenReturn(null);
 
-        final Map<String, String> geneDatum1 = new HashMap<>();
-        geneDatum1.put(GENE, GENE_1_ID);
-        geneDatum1.put(STATUS, REJECTED_LABEL);
-        final Map<String, String> geneDatum2 = new HashMap<>();
-        geneDatum2.put(GENE, GENE_2_ID);
-        geneDatum2.put(STATUS, REJECTED_LABEL);
-        final Map<String, String> geneDatum3 = new HashMap<>();
-        geneDatum3.put(GENE, GENE_3_ID);
-        geneDatum3.put(STATUS, "aa");
-        this.geneData = new IndexedPatientData<>(GENES, Arrays.asList((Object) geneDatum1, geneDatum2, geneDatum3));
-        when(this.patient.getData(GENES)).thenReturn(this.geneData);
+        final Gene geneDatum1 = mockGene(GENE_1_ID, REJECTED_LABEL);
+        final Gene geneDatum2 = mockGene(GENE_2_ID, REJECTED_LABEL);
+        final Gene geneDatum3 = mockGene(GENE_3_ID, "aa");
 
-        final List<VocabularyTerm> qualifierDatum1 = Collections.singletonList(this.qualifierTerm1);
-        final List<VocabularyTerm> qualifierDatum2 = Collections.singletonList(this.qualifierTerm2);
-        this.qualifierData = new IndexedPatientData<>(GLOBAL_QUALIFIERS, Arrays.asList((Object) qualifierDatum1,
-            qualifierDatum2));
+        this.geneData =
+            new IndexedPatientData<>(GENES, Arrays.asList(geneDatum1, geneDatum2, geneDatum3));
+        when(this.patient.<Gene>getData(GENES)).thenReturn(this.geneData);
+
+        this.qualifierData = new SimpleValuePatientData<>(GLOBAL_QUALIFIERS, Arrays.asList(this.qualifierTerm1,
+            this.qualifierTerm2));
         when(this.patient.getData(GLOBAL_QUALIFIERS)).thenReturn(this.qualifierData);
 
         this.features = new HashSet<>();
@@ -154,7 +200,7 @@ public class PatientDataAdapterTest
         when(this.positiveFeature1.isPresent()).thenReturn(true);
         when(this.positiveFeature2.isPresent()).thenReturn(true);
         when(this.negativeFeature1.isPresent()).thenReturn(false);
-        when((Set<Feature>) this.patient.getFeatures()).thenReturn(this.features);
+        Mockito.doReturn(this.features).when(this.patient).getFeatures();
 
         this.adapterBuilder = new PatientDataAdapter.AdapterBuilder(this.patient, this.vocabularyManager);
     }
@@ -224,5 +270,13 @@ public class PatientDataAdapterTest
         final Set<VocabularyTerm> rejectedGenes = new HashSet<>();
         rejectedGenes.add(this.geneTerm1);
         Assert.assertEquals(rejectedGenes, dataAdapter.getRejectedGenes());
+    }
+
+    private Gene mockGene(String id, String status)
+    {
+        Gene result = mock(Gene.class);
+        when(result.getId()).thenReturn(id);
+        when(result.getStatus()).thenReturn(status);
+        return result;
     }
 }

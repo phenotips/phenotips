@@ -18,6 +18,7 @@
 package org.phenotips.data.indexing.internal;
 
 import org.phenotips.data.Feature;
+import org.phenotips.data.Gene;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
@@ -37,7 +38,6 @@ import org.xwiki.query.QueryManager;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -63,25 +63,9 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
 {
     private static final String GENES_KEY = "genes";
 
-    private static final String GENE_NAME_FIELD = "gene";
-
-    private static final String GENE_STATUS_FIELD = "status";
-
-    private static final String GENE_STATUS_SOLVED = "solved";
-
-    private static final String GENE_STATUS_CANDIDATE = "candidate";
-
-    private static final String GENE_STATUS_REJECTED = "rejected";
-
-    private static final String GENE_STATUS_CARRIER = "carrier";
-
-    private static final String SOLR_FIELD_SOLVED_GENES = "solved_genes";
-
     private static final String SOLR_FIELD_CANDIDATE_GENES = "candidate_genes";
 
-    private static final String SOLR_FIELD_REJECTED_GENES = "rejected_genes";
-
-    private static final String SOLR_FIELD_CARRIER_GENES = "carrier_genes";
+    private static final String SOLR_GENE_STATUS_FIELD_POSTFIX = "_genes";
 
     /** Logging helper object. */
     @Inject
@@ -198,32 +182,30 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
 
     private void addGenes(SolrInputDocument input, Patient patient)
     {
-        PatientData<Map<String, String>> allGenes = patient.getData(GENES_KEY);
-        if (allGenes != null && allGenes.isIndexed()) {
-            for (Map<String, String> gene : allGenes) {
-                String name = gene.get(GENE_NAME_FIELD);
-                if (StringUtils.isBlank(name)) {
-                    continue;
-                }
+        PatientData<Gene> data = patient.getData(GENES_KEY);
+        if (data == null) {
+            return;
+        }
 
-                String status = gene.get(GENE_STATUS_FIELD);
-                String field = null;
-                // Index genes with empty or null status as candidates
-                if (StringUtils.isBlank(status) || GENE_STATUS_CANDIDATE.equals(status)) {
-                    field = SOLR_FIELD_CANDIDATE_GENES;
-                } else if (GENE_STATUS_SOLVED.equals(status)) {
-                    field = SOLR_FIELD_SOLVED_GENES;
-                } else if (GENE_STATUS_REJECTED.equals(status)) {
-                    field = SOLR_FIELD_REJECTED_GENES;
-                } else if (GENE_STATUS_CARRIER.equals(status)) {
-                    field = SOLR_FIELD_CARRIER_GENES;
-                } else {
-                    this.logger.warn("Unexpected gene status: " + status);
-                    continue;
-                }
-
-                input.addField(field, name);
+        if (data == null || data.size() == 0) {
+            return;
+        }
+        for (Gene gene : data) {
+            String name = gene.getName();
+            if (StringUtils.isBlank(name)) {
+                continue;
             }
+
+            String status = gene.getStatus();
+            String field = null;
+            // Index genes with empty or null status as candidates
+            if (StringUtils.isBlank(status)) {
+                field = SOLR_FIELD_CANDIDATE_GENES;
+            } else {
+                field = status + SOLR_GENE_STATUS_FIELD_POSTFIX;
+            }
+
+            input.addField(field, name);
         }
     }
 }

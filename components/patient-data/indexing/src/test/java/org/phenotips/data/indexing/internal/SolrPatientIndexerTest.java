@@ -17,7 +17,9 @@
  */
 package org.phenotips.data.indexing.internal;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Feature;
+import org.phenotips.data.Gene;
 import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
@@ -30,9 +32,11 @@ import org.phenotips.data.permissions.internal.DefaultEntityAccess;
 import org.phenotips.data.permissions.internal.visibility.PublicVisibility;
 import org.phenotips.vocabulary.SolrCoreContainerHandler;
 import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
@@ -43,13 +47,15 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+
+import javax.inject.Provider;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -66,6 +72,13 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.internal.matchers.CapturingMatcher;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.classes.BaseClass;
+import com.xpn.xwiki.objects.classes.StaticListClass;
+import com.xpn.xwiki.web.Utils;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.doReturn;
@@ -76,16 +89,34 @@ import static org.mockito.Mockito.when;
 
 public class SolrPatientIndexerTest
 {
+    private static final String STATUS_KEY = "status";
+
+    private static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "solved", "carrier");
 
     @Rule
     public MockitoComponentMockingRule<PatientIndexer> mocker =
-        new MockitoComponentMockingRule<PatientIndexer>(SolrPatientIndexer.class);
+        new MockitoComponentMockingRule<>(SolrPatientIndexer.class);
 
     @Mock
     private Patient patient;
 
     @Mock
     private SolrClient server;
+
+    @Mock
+    private ComponentManager cm;
+
+    @Mock
+    private Provider<ComponentManager> mockProvider;
+
+    @Mock
+    private VocabularyManager vm;
+
+    @Mock
+    private Provider<XWikiContext> provider;
+
+    @Mock
+    private XWiki xwiki;
 
     private PatientIndexer patientIndexer;
 
@@ -100,7 +131,7 @@ public class SolrPatientIndexerTest
     private DocumentReference patientDocReference;
 
     @Before
-    public void setUp() throws ComponentLookupException
+    public void setUp() throws Exception
     {
 
         MockitoAnnotations.initMocks(this);
@@ -108,7 +139,28 @@ public class SolrPatientIndexerTest
         SolrCoreContainerHandler cores = this.mocker.getInstance(SolrCoreContainerHandler.class);
         doReturn(mock(CoreContainer.class)).when(cores).getContainer();
 
+        Utils.setComponentManager(this.cm);
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
+        when(this.mockProvider.get()).thenReturn(this.cm);
+        when(this.cm.getInstance(VocabularyManager.class)).thenReturn(this.vm);
+
         this.permissions = this.mocker.getInstance(EntityPermissionsManager.class);
+
+        when(this.cm.getInstance(XWikiContext.TYPE_PROVIDER)).thenReturn(this.provider);
+        XWikiContext context = mock(XWikiContext.class);
+        when(this.provider.get()).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+
+        XWikiDocument geneDoc = mock(XWikiDocument.class);
+        when(x.getDocument(Gene.GENE_CLASS, context)).thenReturn(geneDoc);
+        geneDoc.setNew(false);
+        BaseClass c = mock(BaseClass.class);
+        when(geneDoc.getXClass()).thenReturn(c);
+        StaticListClass lc1 = mock(StaticListClass.class);
+        when(c.get(STATUS_KEY)).thenReturn(lc1);
+        when(lc1.getList(context)).thenReturn(STATUS_VALUES);
+
         this.qm = this.mocker.getInstance(QueryManager.class);
         this.patientRepository = this.mocker.getInstance(PatientRepository.class);
         this.patientDocReference = new DocumentReference("wiki", "patient", "P0000001");
@@ -199,32 +251,13 @@ public class SolrPatientIndexerTest
 
         doReturn(Collections.EMPTY_SET).when(this.patient).getFeatures();
 
-        List<Map<String, String>> fakeGenes = new ArrayList<>();
-        Map<String, String> fakeGene = new HashMap<>();
-        fakeGene.put("gene", "CANDIDATE1");
-        fakeGenes.add(fakeGene);
-        fakeGene = new HashMap<>();
-        fakeGene.put("gene", "CANDIDATE2");
-        fakeGene.put("status", "candidate");
-        fakeGenes.add(fakeGene);
-        fakeGene = new HashMap<>();
-        fakeGene.put("gene", "REJECTED1");
-        fakeGene.put("status", "rejected");
-        fakeGenes.add(fakeGene);
-        fakeGene = new HashMap<>();
-        fakeGene.put("gene", "SOLVED1");
-        fakeGene.put("status", "solved");
-        fakeGenes.add(fakeGene);
-        fakeGene = new HashMap<>();
-        fakeGene.put("gene", "CARRIER1");
-        fakeGene.put("status", "carrier");
-        fakeGenes.add(fakeGene);
-        fakeGene = new HashMap<>();
-        fakeGene.put("gene", "");
-        fakeGene.put("status", "candidate");
-        fakeGenes.add(fakeGene);
+        List<Gene> fakeGenes = new LinkedList<>();
+        fakeGenes.add(mockGene("CANDIDATE1", "candidate"));
+        fakeGenes.add(mockGene("REJECTED1", "rejected"));
+        fakeGenes.add(mockGene("CARRIER1", "carrier"));
+        fakeGenes.add(mockGene("SOLVED1", "solved"));
 
-        PatientData<Map<String, String>> fakeGeneData =
+        PatientData<Gene> fakeGeneData =
             new IndexedPatientData<>("genes", fakeGenes);
         doReturn(fakeGeneData).when(this.patient).getData("genes");
 
@@ -237,10 +270,8 @@ public class SolrPatientIndexerTest
 
         Collection<Object> indexedGenes;
         indexedGenes = inputDoc.getFieldValues("candidate_genes");
-        Assert.assertEquals(2, indexedGenes.size());
-        for (Object s : indexedGenes) {
-            Assert.assertTrue(((String) s).startsWith("CANDIDATE"));
-        }
+        Assert.assertEquals(1, indexedGenes.size());
+        Assert.assertEquals("CANDIDATE1", indexedGenes.iterator().next());
 
         indexedGenes = inputDoc.getFieldValues("solved_genes");
         Assert.assertEquals(1, indexedGenes.size());
@@ -448,6 +479,13 @@ public class SolrPatientIndexerTest
         this.patientIndexer.reindex();
 
         verify(this.logger).warn("Failed to search patients for reindexing: {}", "createQuery failed");
+    }
 
+    private Gene mockGene(String name, String status)
+    {
+        Gene result = mock(Gene.class);
+        when(result.getName()).thenReturn(name);
+        when(result.getStatus()).thenReturn(status);
+        return result;
     }
 }

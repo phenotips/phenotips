@@ -21,6 +21,7 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Disorder;
 import org.phenotips.data.Feature;
 import org.phenotips.data.FeatureMetadatum;
+import org.phenotips.data.Gene;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PhenoTipsDate;
@@ -250,7 +251,7 @@ public class DataToCellConverter
         DataSection section = new DataSection();
         int y = 0;
 
-        PatientData<Map<String, String>> allGenes = patient.getData("genes");
+        PatientData<Gene> allGenes = patient.getData("genes");
 
         // empties should be created in the case that there are no genes to write
         if (allGenes == null || !allGenes.isIndexed()) {
@@ -260,18 +261,28 @@ public class DataToCellConverter
             }
             return section;
         }
-
         List<String> strategyTranslates =
             Arrays.asList("sequencing", "deletion", "familial_mutation", "common_mutations");
 
-        for (Map<String, String> gene : allGenes) {
+        for (Gene gene : allGenes) {
             int x = 0;
             for (String field : present) {
-                String value = gene.get(field);
-                if ("strategy".equals(field)) {
-                    value = parseMultivalueField(value, strategyTranslates, "PhenoTips.GeneClass_strategy_");
-                } else if ("status".equals(field)) {
-                    value = this.translationManager.translate("PhenoTips.GeneClass_status_" + value);
+                String value = "";
+                switch (field) {
+                    case "gene":
+                        value = gene.getName();
+                        break;
+                    case "strategy":
+                        value =
+                            getMultivalueField(gene.getStrategy(), strategyTranslates,
+                                "PhenoTips.GeneClass_strategy_");
+                        break;
+                    case "status":
+                        value = this.translationManager.translate("PhenoTips.GeneClass_status_" + gene.getStatus());
+                        break;
+                    case "comments":
+                        value = gene.getComment();
+                        break;
                 }
                 section.addCell(new DataCell(value, x++, y));
             }
@@ -649,7 +660,8 @@ public class DataToCellConverter
         int x = 0;
         for (String fieldId : fields) {
             DataCell headerCell =
-                new DataCell(this.translationManager.translate("phenotips.export.excel.label.familyHistory." + fieldId),
+                new DataCell(
+                    this.translationManager.translate("phenotips.export.excel.label.familyHistory." + fieldId),
                     x, bottomY,
                     StyleOption.HEADER);
             headerSection.addCell(headerCell);
@@ -1403,6 +1415,23 @@ public class DataToCellConverter
     private String parseMultivalueField(String value, List<String> valueTranslates, String className)
     {
         if (StringUtils.isBlank(value)) {
+            return "";
+        }
+        String field = "";
+        for (String property : valueTranslates) {
+            if (value.contains(property)) {
+                if (field.length() != 0) {
+                    field += "; ";
+                }
+                field += this.translationManager.translate(className + property);
+            }
+        }
+        return field;
+    }
+
+    private String getMultivalueField(Collection<String> value, List<String> valueTranslates, String className)
+    {
+        if (value == null || value.isEmpty()) {
             return "";
         }
         String field = "";
