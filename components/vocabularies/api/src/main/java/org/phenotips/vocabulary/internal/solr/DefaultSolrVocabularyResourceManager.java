@@ -196,8 +196,8 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
     public void replaceCore(String vocabularyId) throws InitializationException
     {
         String absPath = this.environment.getPermanentDirectory().getAbsolutePath();
-        File indexOrigin = new File(absPath, SOLR + vocabularyId + "/data/index");
-        File indexTemp = new File(absPath, SOLR + vocabularyId + TEMP + "/data/index");
+        File indexOrigin = new File(absPath, SOLR + vocabularyId + "/data");
+        File indexTemp = new File(absPath, SOLR + vocabularyId + TEMP + "/data");
         try {
             CoreContainer container = this.coreContainer.getContainer();
             SolrCore solrCore = container.getCore(vocabularyId);
