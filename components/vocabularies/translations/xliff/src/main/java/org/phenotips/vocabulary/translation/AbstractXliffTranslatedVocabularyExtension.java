@@ -141,32 +141,29 @@ public abstract class AbstractXliffTranslatedVocabularyExtension implements Voca
         if (!isCurrentLocaleTargeted()) {
             return;
         }
-        Locale currentLocale = this.localizationContext.getCurrentLocale();
-        if (currentLocale != null && isLocaleSupported(currentLocale)) {
-            Locale targetLocale = getTargetLocale();
-            if (StringUtils.isNotBlank(query.get(DisMaxParams.PF))) {
-                try (Formatter f = new Formatter()) {
-                    f.out().append(query.get(DisMaxParams.PF));
-                    f.format(" name_%1$s^60 synonym_%1$s^45 def_%1$s^12 ", targetLocale);
-                    query.set(DisMaxParams.PF, f.toString());
-                } catch (IOException ex) {
-                    // Shouldn't happen
-                    this.logger.warn(
-                        "Unexpected exception while formatting SolrQuery PF for vocabulary [{}] and locale [{}]: {}",
-                        vocabulary.getIdentifier(), targetLocale, ex.getMessage());
-                }
+        Locale targetLocale = getTargetLocale();
+        if (StringUtils.isNotBlank(query.get(DisMaxParams.PF))) {
+            try (Formatter f = new Formatter()) {
+                f.out().append(query.get(DisMaxParams.PF));
+                f.format(" name_%1$s^60 synonym_%1$s^45 def_%1$s^12 ", targetLocale);
+                query.set(DisMaxParams.PF, f.toString());
+            } catch (IOException ex) {
+                // Shouldn't happen
+                this.logger.warn(
+                    "Unexpected exception while formatting SolrQuery PF for vocabulary [{}] and locale [{}]: {}",
+                    vocabulary.getIdentifier(), targetLocale, ex.getMessage());
             }
-            if (StringUtils.isNotBlank(query.get(DisMaxParams.QF))) {
-                try (Formatter f = new Formatter()) {
-                    f.out().append(query.get(DisMaxParams.QF));
-                    f.format(" name_%1$s^30 synonym_%1$s^21 def_%1$s^6 ", targetLocale);
-                    query.set(DisMaxParams.QF, f.toString());
-                } catch (IOException ex) {
-                    // Shouldn't happen
-                    this.logger.warn(
-                        "Unexpected exception while formatting SolrQuery QF for vocabulary [{}] and locale [{}]: {}",
-                        vocabulary.getIdentifier(), targetLocale, ex.getMessage());
-                }
+        }
+        if (StringUtils.isNotBlank(query.get(DisMaxParams.QF))) {
+            try (Formatter f = new Formatter()) {
+                f.out().append(query.get(DisMaxParams.QF));
+                f.format(" name_%1$s^30 synonym_%1$s^21 def_%1$s^6 ", targetLocale);
+                query.set(DisMaxParams.QF, f.toString());
+            } catch (IOException ex) {
+                // Shouldn't happen
+                this.logger.warn(
+                    "Unexpected exception while formatting SolrQuery QF for vocabulary [{}] and locale [{}]: {}",
+                    vocabulary.getIdentifier(), targetLocale, ex.getMessage());
             }
         }
     }
@@ -221,7 +218,7 @@ public abstract class AbstractXliffTranslatedVocabularyExtension implements Voca
      */
     protected boolean isLocaleSupported(Locale locale)
     {
-        return locale.toLanguageTag().startsWith(getTargetLocale().toLanguageTag());
+        return locale != null && locale.toLanguageTag().startsWith(getTargetLocale().toLanguageTag());
     }
 
     /**
