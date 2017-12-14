@@ -61,7 +61,7 @@ public class AbstractXliffTranslatedVocabularyExtensionTest
     /** The mocker component manager. */
     @Rule
     public final MockitoComponentMockingRule<VocabularyExtension> mocker =
-        new MockitoComponentMockingRule<VocabularyExtension>(MockXLIFFTranslatedVocabularyExtension.class);
+        new MockitoComponentMockingRule<>(MockXLIFFTranslatedVocabularyExtension.class);
 
     /** The component under test. */
     private VocabularyExtension extension;
