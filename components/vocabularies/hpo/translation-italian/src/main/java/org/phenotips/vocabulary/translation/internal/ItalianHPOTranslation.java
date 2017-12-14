@@ -60,10 +60,4 @@ public class ItalianHPOTranslation extends AbstractXliffTranslatedSolrVocabulary
     {
         return "hpo";
     }
-
-    @Override
-    public String getAnnotationSource()
-    {
-        return null;
-    }
 }

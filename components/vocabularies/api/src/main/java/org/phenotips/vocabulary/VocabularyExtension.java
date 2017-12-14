@@ -88,7 +88,10 @@ public interface VocabularyExtension
      *
      * @return a valid annotation source URL
      */
-    String getAnnotationSource();
+    default String getAnnotationSource()
+    {
+        return null;
+    };
 
     /**
      * The official name of the vocabulary extension.

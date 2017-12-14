@@ -59,10 +59,4 @@ public class FrenchHPOTranslation extends AbstractXliffTranslatedSolrVocabularyE
     {
         return "hpo";
     }
-
-    @Override
-    public String getAnnotationSource()
-    {
-        return null;
-    }
 }

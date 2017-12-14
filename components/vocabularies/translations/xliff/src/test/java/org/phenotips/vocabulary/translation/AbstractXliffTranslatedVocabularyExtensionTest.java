@@ -226,11 +226,5 @@ public class AbstractXliffTranslatedVocabularyExtensionTest
         {
             return "hpo";
         }
-
-        @Override
-        public String getAnnotationSource()
-        {
-            return null;
-        }
     }
 }
