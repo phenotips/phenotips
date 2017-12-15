@@ -67,6 +67,7 @@ import org.apache.solr.common.params.SpellingParams;
 @Component
 @Named("onco")
 @Singleton
+@SuppressWarnings("ClassDataAbstractionCoupling")
 public class OncoTree extends AbstractCSVSolrVocabulary
 {
     /** The base url for the oncotree tumor types file. */
@@ -411,8 +412,7 @@ public class OncoTree extends AbstractCSVSolrVocabulary
     @Override
     public String getCitation()
     {
-        // FIXME: Citation needs to be added. How do they want to be credited?
-        return "";
+        return "OncoTree: CMO Tumor Type Tree";
     }
 
     @Override

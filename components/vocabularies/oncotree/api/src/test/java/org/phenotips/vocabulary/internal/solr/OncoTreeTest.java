@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -411,8 +410,7 @@ public class OncoTreeTest
     @Test
     public void getCitation()
     {
-        // FIXME: update this.
-        Assert.assertEquals(StringUtils.EMPTY, this.component.getCitation());
+        Assert.assertEquals("OncoTree: CMO Tumor Type Tree", this.component.getCitation());
     }
 
     @Test
