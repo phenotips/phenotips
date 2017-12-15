@@ -1,0 +1,8 @@
+primary	secondary	tertiary	quaternary	quinternary	metamaintype	metacolor	metanci	metaumls
+Adrenal Gland (ADRENAL_GLAND)	Adrenocortical Adenoma (ACA)				Adrenocortical Carcinoma	Purple	C9003	C0206667
+Esophagus/Stomach (STOMACH)	Esophagogastric Adenocarcinoma (EGC)				Esophagogastric Cancer	青い	C9296	C1332166
+Esophagus/Stomach (STOMACH)	Esophagogastric Adenocarcinoma (EGC)	Stomach Adenocarcinoma (STAD)			Esophagogastric Cancer	青い	C4004	C0278701
+Esophagus/Stomach (STOMACH)	Esophagogastric Adenocarcinoma (EGC)	Stomach Adenocarcinoma (STAD)	Diffuse Type Stomach Adenocarcinoma (DSTAD)		Esophagogastric Cancer	青い	C9159	C0279635
+Thymus (THYMUS)	Thymic Epithelial Tumor (TET)				Thymic Tumor	Purple	C6450	C1266101
+Thymus (THYMUS)	Thymic Epithelial Tumor (TET)	Thymic Carcinoma (THYC)			Thymic Tumor	Purple	C7569	C0205969
+Thymus (THYMUS)	Thymic Neuroendocrine Tumor (TNET)				Thymic Tumor	Purple		CL511204
