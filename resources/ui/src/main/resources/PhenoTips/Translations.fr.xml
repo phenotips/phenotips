@@ -37,8 +37,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
-  <content>admin.ontology=Index de l'ontologie
-admin.workgroups=Groupes de travail
+  <content>admin.workgroups=Groupes de travail
 admin.studies=Études
 
 saveandview=Enregistrer et afficher la vue Résumé
@@ -54,7 +53,7 @@ XWiki.XWikiUsers_comment=A propos
 core.widgets.confirmationBox.button.cancel=Annuler
 
 phenotips.globalHeader.allData=Parcourir tous les patients
-phenotips.globalHeader.search.placeholder=Rechercher un dossier de patient...
+phenotips.globalHeader.search.placeholder=Recherche ...
 
 phenotips.PatientPhenotyoeExportService.cantFindPatientError=Identifiant introuvable.
 phenotips.SuggestPatientService.serviceInfo=Ce service permet de récupérer les résultats de recherche pour le composant d’interface utilisateur suggéré. Exemple \: {0}
