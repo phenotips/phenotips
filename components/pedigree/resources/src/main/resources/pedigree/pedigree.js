@@ -118,15 +118,7 @@ define([
 
             //initialize the elements of the app
             this._workspace = new Workspace();
-            this._disorderLegend = new DisorderLegend();
-            this._candidateGeneLegend = new CandidateGeneLegend();
-            this._causalGeneLegend = new CausalGeneLegend();
-            this._rejectedGeneLegend = new RejectedGeneLegend();
-            this._rejectedCandidateGeneLegend = new RejectedCandidateGeneLegend();
-            this._carrierGeneLegend = new CarrierGeneLegend();
-            this._hpoLegend = new HPOLegend();
-            this._cancerLegend = new CancerLegend();
-            this._patientLegend = new PatientDropLegend();
+
             this._nodetypeSelectionBubble = new NodetypeSelectionBubble(false);
             this._siblingSelectionBubble  = new NodetypeSelectionBubble(true);
             this._okCancelDialogue = new OkCancelDialogue();
@@ -138,12 +130,6 @@ define([
             this._saveLoadEngine = new SaveLoadEngine();
             this._familyData = new FamilyData();
             this._patientDataLoader = new PatientDataLoader();
-
-            var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
-            if (newPatientId && newPatientId != ""){
-                this.getPatientLegend().addCase(newPatientId, 'new');
-                this._unsavedNewPatient = true;
-            }
 
             // load global pedigree preferences before a specific pedigree is loaded, since
             // preferences may affect the way it is rendered. Once preferences are loaded the
@@ -165,6 +151,22 @@ define([
                                                                       [_templateSelector, _importSelector]);
 
                     // generate various dialogues after preferences have been loaded
+                    this._disorderLegend = new DisorderLegend();
+                    this._candidateGeneLegend = new CandidateGeneLegend();
+                    this._causalGeneLegend = new CausalGeneLegend();
+                    this._rejectedGeneLegend = new RejectedGeneLegend();
+                    this._rejectedCandidateGeneLegend = new RejectedCandidateGeneLegend();
+                    this._carrierGeneLegend = new CarrierGeneLegend();
+                    this._hpoLegend = new HPOLegend();
+                    this._cancerLegend = new CancerLegend();
+                    this._patientLegend = new PatientDropLegend();
+
+                    var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
+                    if (newPatientId && newPatientId != ""){
+                        this.getPatientLegend().addCase(newPatientId, 'new');
+                        this._unsavedNewPatient = true;
+                    }
+
                     this._nodeMenu = this.generateNodeMenu();
                     this._deceasedMenu = this.generateDeceasedMenu();
                     this._nodeGroupMenu = this.generateNodeGroupMenu();

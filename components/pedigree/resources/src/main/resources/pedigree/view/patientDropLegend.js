@@ -5,8 +5,10 @@
  * @constructor
  */
 define([
+        "pedigree/pedigreeEditorParameters",
         "pedigree/model/helpers"
     ], function(
+        PedigreeEditorParameters,
         Helpers
     ){
     var PatientDropLegend = Class.create( {
@@ -16,36 +18,86 @@ define([
                 return;
             }
 
-            this.assignNewPatientId = null;
-
             this._notLinkedPatients  = {};
 
-            this._legendInfo = new Element('div', {'class' : 'legend-box legend-info', id: 'legend-info'}).insert(
+            this._dragInfo = new Element('div', {'class' : 'legend-box legend-info', id: 'legend-info'}).insert(
                     new Element('div', {'class' : 'infomessage no-word-wrap'}).insert(
                       "Drag and drop onto the pedigree")
                  );
-            this.closeButton = new Element('span', {'class' : 'close-button'}).update('x');
-            this.closeButton.observe('click', this.hideDragHint.bindAsEventListener(this));
-            this._legendInfo.insert({'top': this.closeButton});
-            this._legendInfo.hide();
+            var closeButton = new Element('span', {'class' : 'close-button'}).update('x');
+            closeButton.observe('click', this.hidePatientDragHint.bindAsEventListener(this));
+            this._dragInfo.insert({'top': closeButton});
+            if (editor.getPreferencesManager().getConfigurationOption("hidePatientDraggingHint")) {
+                this._dragInfo.addClassName("legend-hidden");
+            }
 
-            this.legendContainer = new Element('div', {'class' : 'patient-assign-legend', id: 'patient-assign'}).insert(this._legendInfo);
+            // only need this for 1.3.x
+            this._legendInfo = new Element('div', {'class' : 'legend-box legend-info', id: 'legend-info'}).insert(
+                    new Element('div', {'class' : 'warningmessage legend-warning'}).insert(
+                      "All patients listed here will be removed from the pedigree when pedigree is saved")
+                 );
+
+            this._legendBoxControls = new Element('div', {'class' : 'legend-box-controls-open', id: 'patient-legend-box-controls'});
+            var minimizedLegendTitle = new Element('div', {'class': 'legend-minimized-title field-no-user-select'}).update("Other Patients").hide();
+            minimizedLegendTitle.hide();
+            var minimizeButton = new Element('span', {'class': 'fa fa-angle-double-up legend-box-button-right legend-action-minimize', 'title': "minimize"});
+            this._legendBoxControls.update(minimizedLegendTitle).insert(minimizeButton);
+            var restoreLegend = function() {
+                minimizeButton.addClassName("legend-action-minimize");
+                minimizeButton.removeClassName("legend-action-restore");
+                minimizeButton.removeClassName("fa-angle-double-down");
+                minimizeButton.addClassName("fa-angle-double-up");
+                minimizedLegendTitle.hide();
+                minimizeButton.title = "minimize";
+                $$('.patient-assign-legend .legend-box').forEach(function(box) {
+                    box.show();
+                });
+                $('patient-legend-box-controls').removeClassName("legend-box-controls-closed");
+                $('patient-legend-box-controls').addClassName("legend-box-controls-open");
+                $('patient-assign').stopObserving("click", restoreLegend);
+                $('patient-assign').style.minWidth = PedigreeEditorParameters.attributes.legendMinWidthPixels + "px";
+            }
+            minimizeButton.observe("click", function(ev) {
+                ev.stop();
+                if (minimizeButton.hasClassName("legend-action-minimize")) {
+                    minimizeButton.removeClassName("legend-action-minimize");
+                    minimizeButton.addClassName("legend-action-restore");
+                    minimizeButton.removeClassName("fa-angle-double-up");
+                    minimizeButton.addClassName("fa-angle-double-down");
+                    minimizeButton.title = "restore";
+                    minimizedLegendTitle.show();
+                    $$('.patient-assign-legend .legend-box').forEach(function(box) {
+                        box.hide();
+                    });
+                    $('patient-legend-box-controls').removeClassName("legend-box-controls-open");
+                    $('patient-legend-box-controls').addClassName("legend-box-controls-closed");
+                    $('patient-assign').observe("click", restoreLegend);
+                    $('patient-assign').style.minWidth = PedigreeEditorParameters.attributes.legendMinimizedWidthPixels + "px";
+                } else {
+                    restoreLegend();
+                };
+            });
+
+            this.legendContainer = new Element('div', {'class' : 'patient-assign-legend generic-legend', id: 'patient-assign'})
+                                   .insert(this._legendBoxControls)
+                                   .insert(this._legendInfo)
+                                   .insert(this._dragInfo);
             this.legendContainer.hide();
 
-            this._list_new = new Element('ul', {'class' : 'patient-list new'});
+            this._list_current = new Element('ul', {'class' : 'patient-list new'});
             this._list_unlinked = new Element('ul', {'class' : 'patient-list unlinked'});
-            var l_box = new Element('div', {'class' : 'legend-box', 'id' : 'list_new'});
-            l_box.insert(new Element('h2', {'class' : 'legend-title'}).update("New patient: "));
-            l_box.insert(this._list_new);
+            var l_box = new Element('div', {'class' : 'legend-box', 'id' : 'list_current'});
+            l_box.insert(new Element('h2', {'class' : 'legend-title'}).update("Current patient: "));
+            l_box.insert(this._list_current);
             this.legendContainer.insert(l_box);
             var lg_box = new Element('div', {'class' : 'legend-box', 'id' : 'list_unlinked'});
-            lg_box.insert(new Element('h2', {'class' : 'legend-title'}).update("Unlinked patients: "));
+            lg_box.insert(new Element('h2', {'class' : 'legend-title'}).update("Other family members: "));
             lg_box.insert(this._list_unlinked);
             this.legendContainer.insert(lg_box);
 
-            editor.getWorkspace().getWorkArea().insert(this.legendContainer);
-            $('list_new').hide();
-            $('list_unlinked').hide();
+            editor.getWorkspace().getLegendContainer().insert(this.legendContainer);
+            $('list_current').addClassName("legend-hidden");
+            $('list_unlinked').addClassName("legend-hidden");
 
             Droppables.add(editor.getWorkspace().canvas, {accept:  'drop-patient',
                                                           onDrop:  this._onDropWrapper.bind(this),
@@ -53,11 +105,7 @@ define([
 
             // add patient to a legend on unlink patient from node event
             document.observe('pedigree:patient:unlinked', function (event) {
-                if ( event.memo.phenotipsID == this.assignNewPatientId) {
-                    this.addCase(event.memo.phenotipsID, 'new', event.memo.gender, event.memo.firstName, event.memo.lastName, event.memo.externalID);
-                } else {
-                    this.addCase(event.memo.phenotipsID, 'unlinked', event.memo.gender, event.memo.firstName, event.memo.lastName, event.memo.externalID);
-                }
+                    this.addCase(event.memo.phenotipsID, event.memo.type, event.memo.gender, event.memo.firstName, event.memo.lastName, event.memo.externalID);
             }.bind(this));
 
             var removeCase = this.removeCase.bind(this);
@@ -73,9 +121,9 @@ define([
             });
         },
 
-        hideDragHint: function() {
-            editor.getPreferencesManager().setConfigurationOption("user", "hideDraggingHint", true);
-            this._legendInfo.hide();
+        hidePatientDragHint: function() {
+            editor.getPreferencesManager().setConfigurationOption("user", "hidePatientDraggingHint", true);
+            this._dragInfo.addClassName("legend-hidden");
         },
 
         hide: function() {
@@ -100,10 +148,13 @@ define([
          *
          * @method addCase
          **/
-        addCase: function(phenotipsPatientID, type, gender, firstName, lastName, externalID) {
+        // TODO: replace pedigreeProperties with patientJSON and remove gender/name/extID parameters (since that data is
+        //       contained in PatientJSON.
+        //       For now this is left as is to simplify porting to 1.3.x where patientJSON is not available
+        addCase: function(phenotipsPatientID, type, gender, firstName, lastName, externalID, pedigreeProperties) {
 
             if (!this._notLinkedPatients.hasOwnProperty(phenotipsPatientID)) {
-                // if data about this patient is not available need ot load it
+                // if data about this patient is not available need to load it
                 if (gender === undefined) {
                     this._loadPatientInfoAndAddToLegend(phenotipsPatientID, type);
                     return;
@@ -111,19 +162,21 @@ define([
 
                 var name = firstName + " " + lastName;
 
-                if (!editor.getPreferencesManager().getConfigurationOption("hideDraggingHint")) {
-                    this._legendInfo && this._legendInfo.show();
-                }
+                this._notLinkedPatients[phenotipsPatientID] = {"type" : type,
+                                                               "phenotipsID": phenotipsPatientID,
+                                                               "gender": gender,
+                                                               "name":  name,
+                                                               "externalID": externalID,
+                                                               "pedigreeProperties": pedigreeProperties };
 
-                this._notLinkedPatients[phenotipsPatientID] = {"type" : type, "phenotipsID": phenotipsPatientID, "gender": gender, "name":  name, "externalID": externalID};
                 var listElement = this._generateElement(this._notLinkedPatients[phenotipsPatientID]);
-                if (type == 'new') {
-                    this._list_new.insert(listElement);
+                if (phenotipsPatientID == editor.getGraph().getCurrentPatientId()) {
+                    this._list_current.insert(listElement);
                     this.assignNewPatientId = phenotipsPatientID;
-                    $('list_new').show();
+                    $('list_current').removeClassName("legend-hidden");
                 } else {
                     this._list_unlinked.insert(listElement);
-                    $('list_unlinked').show();
+                    $('list_unlinked').removeClassName("legend-hidden");
                 }
             }
 
@@ -183,36 +236,38 @@ define([
                  shape = 'diamond';
             }
 
-            var p_label = patientElement.phenotipsID;
-            var hasName       = patientElement.name && patientElement.name != ' ';
-            var hasExternalID = patientElement.externalID && patientElement.externalID != ' ';
-            if (hasName || hasExternalID) {
-                p_label += " (";
-                if (hasName) {
-                    var displayName = patientElement.name;
-                    if (displayName.length > 25) {
-                        // to make sure patient legend is not too wide
-                        displayName = displayName.substring(0, 24) + "...";
-                    }
-                    p_label+= "name: " + displayName;
+            var hasName       = patientElement.name && /\S/.test(patientElement.name);
+            var hasExternalID = patientElement.externalID && /\S/.test(patientElement.externalID);
+
+            var createAnnotationDiv = function(label, value, fixedWidth) {
+                if (value.length > 20) {
+                    // to make sure patient legend is not too wide
+                    value = value.substring(0, 18) + "...";
                 }
-                if (hasExternalID) {
-                    p_label += (hasName ? ", " : "") + "identifier: " + patientElement.externalID;
-                }
-                p_label += ")";
+                var innerDiv = new Element('div', {'class' : 'patient-legend-details-label' + (fixedWidth ? ' min-column-width-45' : '')})
+                               .insert(label);
+                var outerDiv = new Element('div', {'class' : 'patient-legend-details'}).insert(innerDiv).insert(value);
+                return outerDiv;
+            };
+
+            var patientData = new Element('div', {'class': 'patient-legend-patient'}).update(patientElement.phenotipsID);
+            if (hasName) {
+                patientData.insert(createAnnotationDiv('name:', patientElement.name, hasExternalID));
+            }
+            if (hasExternalID) {
+                patientData.insert(createAnnotationDiv('id:', patientElement.externalID, hasName));
             }
 
-            var item = new Element('li', {'class' : 'abnormality drop-patient', 'id' : patientElement.phenotipsID}).insert(new Element('span', {'class' : shape})).insert(new Element('span', {'class' : 'patient-name no-word-wrap'}).update(p_label));
+            var item = new Element('li', {'class' : 'abnormality drop-patient', 'id' : patientElement.phenotipsID})
+                       .insert(new Element('span', {'class' : shape}))
+                       .insert(patientData);
+
             item.insert(new Element('input', {'type' : 'hidden', 'value' : patientElement.phenotipsID}));
             var _this = this;
             Element.observe(item, 'mouseover', function() {
-                item.down('.patient-name').setStyle({'background': '#DDD'});
-                // TODO: only highlight on start drag
                 _this._highlightDropTargets(patientElement, true);
             });
             Element.observe(item, 'mouseout', function() {
-                // item.setStyle({'text-decoration':'none'});
-                item.down('.patient-name').setStyle({'background':''});
                 _this._highlightDropTargets(patientElement, false);
             });
 
@@ -350,17 +405,17 @@ define([
         _deletePatientElement: function(phenotipsPatientID) {
             $(phenotipsPatientID).remove();
             delete this._notLinkedPatients[phenotipsPatientID];
-            // hide legend if empty
-            if (!this._hasPatients()) {
-                this.legendContainer.hide();
-            }
             // independently, hide new section, if empty
-            if (!this._list_new.down('li')) {
-              $('list_new').hide();
+            if (!this._list_current.down('li')) {
+              $('list_current').addClassName("legend-hidden");
             }
             // independently, hide unlinked section, if empty
             if (!this._list_unlinked.down('li')) {
-              $('list_unlinked').hide();
+              $('list_unlinked').addClassName("legend-hidden");
+            }
+            // hide legend if empty
+            if (!this._hasPatients()) {
+                this.legendContainer.hide();
             }
         },
 

@@ -1,5 +1,8 @@
 /**
- * Base class for various "legend" widgets
+ * Base class for various abnormality "legend" widgets
+ *
+ * TODO: rename to AbnormalityLegend (since PatientDropLegend is not a subclas sof this) and move common
+ *       functionality between PatientDropLegend and this into a new more generic Legend class
  *
  * @class Legend
  * @constructor
@@ -37,11 +40,12 @@ define([
             this._ENABLED_ONHOVER_ICON  = "fa-times-circle";
             this._HIGHLIGHTED_CSSCLASS  = "highlighted";
 
-            var legendContainer = $('legend-container');
+            var legendContainer = $('abnormalities-legend');
             if (legendContainer == undefined) {
-              var legendContainer = new Element('div', {'class': 'legend-container', 'id': 'legend-container'});
+              var legendContainer = new Element('div', {'class': 'abnormalities-legend generic-legend', 'id': 'abnormalities-legend'});
               legendContainer.style.maxWidth = PedigreeEditorParameters.attributes.legendMaxWidthPixels + "px";
               legendContainer.style.minWidth = PedigreeEditorParameters.attributes.legendMinWidthPixels + "px";
+              legendContainer.addClassName("legend-hidden");
 
               if (!editor.isReadOnlyMode()) {
                   this._legendInfo = new Element('div', {'class' : 'legend-box legend-info', id: 'legend-info'}).insert(
@@ -51,11 +55,12 @@ define([
                   this.closeButton = new Element('span', {'class' : 'close-button'}).update('x');
                   this.closeButton.observe('click', this.hideDragHint.bindAsEventListener(this));
                   this._legendInfo.insert({'top': this.closeButton});
-                  this._legendInfo.addClassName("legend-hidden");
+                  if (editor.getPreferencesManager().getConfigurationOption("hideDraggingHint")) {
+                      this._legendInfo.addClassName("legend-hidden");
+                  }
 
                   // add maximize/compact legend button
                   this._legendBoxControls = new Element('div', {'class' : 'legend-box-controls-open', id: 'legend-box-controls'});
-                  this._legendBoxControls.addClassName("legend-hidden");
                   var minimizedLegendTitle = new Element('div', {'class': 'legend-minimized-title field-no-user-select'}).update("Legend").hide();
                   minimizedLegendTitle.hide();
                   var minimizeButton = new Element('span', {'class': 'fa fa-angle-double-up legend-box-button-right legend-action-minimize', 'title': "minimize"});
@@ -70,7 +75,7 @@ define([
                       minimizedLegendTitle.hide();
                       maximizeButton.show();
                       minimizeButton.title = "minimize";
-                      $$('.legend-box').forEach(function(box) {
+                      $$('.abnormalities-legend .legend-box').forEach(function(box) {
                           box.show();
                       });
                       legendContainer.stopObserving("click", restoreLegend);
@@ -88,7 +93,7 @@ define([
                           minimizeButton.title = "restore";
                           minimizedLegendTitle.show();
                           maximizeButton.hide();
-                          $$('.legend-box').forEach(function(box) {
+                          $$('.abnormalities-legend .legend-box').forEach(function(box) {
                               box.hide();
                           });
                           legendContainer.observe("click", restoreLegend);
@@ -107,6 +112,7 @@ define([
                           maximizeButton.addClassName("fa-angle-double-right");
                           maximizeButton.title = "shrink";
                           legendContainer.style.maxWidth = "10000px"; // setting to none/empty does not work
+                          legendContainer.style.width = "auto";
                       } else {
                           maximizeButton.addClassName("legend-action-maximize");
                           maximizeButton.removeClassName("legend-action-shrink");
@@ -114,13 +120,14 @@ define([
                           maximizeButton.addClassName("fa-angle-double-left");
                           maximizeButton.title = "expand";
                           legendContainer.style.maxWidth = PedigreeEditorParameters.attributes.legendMaxWidthPixels + "px";
+                          legendContainer.style.width = "100%";
                       }
                   });
 
                   legendContainer.insert(this._legendBoxControls);
                   legendContainer.insert(this._legendInfo);
               }
-              editor.getWorkspace().getWorkArea().insert(legendContainer);
+              editor.getWorkspace().getLegendContainer().insert(legendContainer);
             } else {
               if (!editor.isReadOnlyMode()) {
                   this._legendInfo = legendContainer.down('#legend-info');
@@ -180,7 +187,7 @@ define([
         hideDragHint: function() {
             editor.getPreferencesManager().setConfigurationOption("user", "hideDraggingHint", true);
             this._legendInfo.addClassName("legend-hidden");
-            if ($('legend-container').offsetWidth < PedigreeEditorParameters.attributes.legendMaxWidthPixels) {
+            if ($('abnormalities-legend').offsetWidth < PedigreeEditorParameters.attributes.legendMaxWidthPixels) {
                 $('legend-maximize-button').addClassName("legend-hidden");
             }
         },
@@ -336,10 +343,8 @@ define([
             this._objectProperties[id] = this._preferredProperties[id];
 
             if(!this._invisible && Object.keys(this._affectedNodes).length == 0) {
-                this._legendBoxControls.removeClassName("legend-hidden");
+                $('abnormalities-legend').removeClassName("legend-hidden");
                 this._legendBox.removeClassName("legend-hidden");
-                !editor.getPreferencesManager().getConfigurationOption("hideDraggingHint") &&
-                    this._legendInfo && this._legendInfo.removeClassName("legend-hidden");
             }
             if(!this._hasAffectedNodes(id)) {
                 this._affectedNodes[id] = [nodeID];
@@ -396,8 +401,7 @@ define([
                     if(Object.keys(this._affectedNodes).length == 0) {
                         this._legendBox.addClassName("legend-hidden");
                         if (this._legendBox.up().select('.abnormality').size() == 0) {
-                            this._legendInfo && this._legendInfo.addClassName("legend-hidden");
-                            this._legendBoxControls && this._legendBoxControls.addClassName("legend-hidden");
+                            $('abnormalities-legend').addClassName("legend-hidden");
                         }
                     }
                 }
@@ -410,11 +414,19 @@ define([
         },
 
         _updateMinMaxButtons: function() {
-            if ($('legend-container').offsetWidth < PedigreeEditorParameters.attributes.legendMaxWidthPixels) {
+            // check if the legend would expand itself if given more space. If it does, add an "expand" button
+            var legendContainer = $('abnormalities-legend');
+            var currentMaxWidth = legendContainer.style.maxWidth;
+            var currentWidth = legendContainer.offsetWidth;
+
+            legendContainer.style.maxWidth = "10000px";
+            if (legendContainer.offsetWidth <= currentWidth) {
                 $('legend-maximize-button').addClassName("legend-hidden");
             } else {
                 $('legend-maximize-button').removeClassName("legend-hidden");
             }
+
+            legendContainer.style.maxWidth = currentMaxWidth;
         },
 
         _updateShowHideButtons: function() {

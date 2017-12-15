@@ -252,19 +252,37 @@ input[type="radio"] {
   padding-left: 10px;
   font-size: 1.1em;
 }
+.legend-warning {
+  padding: 6px 10px 6px 30px;
+  color: #B08020;
+}
+
+.all-legend-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10000;
+  max-width: 80%;
+}
+.abnormalities-legend span {
+  font-family: Arial,Verdana,sans-serif;
+}
+.abnormalities-legend {
+  margin-bottom: 10px;
+}
+.generic-legend {
+  min-width: 245px;
+  max-width: 270px;
+  width: 100%;
+  background: #FFF;
+}
+.patient-assign-legend {
+  float: right;
+}
 .legend-box {
   background: #FFF;
   border-radius: 0 0 0 4px;
   padding: .5em .5em .5em 1em;
-}
-.legend-container {
-  top: 0;
-  position: absolute;
-  right: 0;
-  z-index: 10000;
-}
-.legend-container span {
-  font-family: Arial,Verdana,sans-serif;
 }
 .legend-box-controls-open {
   background: #F4F4F4;
@@ -1333,7 +1351,7 @@ div.field-box.field-cancers_picker {
 
 .patient-list {
   list-style-type: none;
-  margin: 10px 0 10px 9px;
+  margin: 10px 0 0 5px;
 }
 .drop-patient span:first-child {
   border-color: #636B75;
@@ -1343,28 +1361,36 @@ div.field-box.field-cancers_picker {
 }
 .patient-list .drop-patient {
   display : inline-block;
-  margin-right: 20px;
+  margin-right: 10px;
 }
-.drop-patient .patient-name {
-  margin-left: 4px;
+.drop-patient .patient-legend-details {
+  color: #999999;
 }
+.drop-patient .patient-legend-details-label {
+  float: left;
+  margin-right: 5px;
+}
+.drop-patient .min-column-width-45 {
+  width: 45px;
+  margin-right: 0px !important;
+}
+.drop-patient .patient-legend-patient {
+  margin-left: 5px;
+  padding-left: 0px;
+  float: right;
+  display: block;
+}
+.legend-box#list_current {
+  padding-bottom: 0px;
+}
+
 .no-word-wrap {
   white-space: nowrap;
 }
 .abnormality.drop-patient {
   cursor: move;
-}
-#list_new, #list_unlinked {
-  padding-left: 8px;
-  padding-top: 10px;
-}
-.patient-assign-legend {
-  left: 100px;
-  top: 10px;
-  position: absolute;
-  z-index: 10000;
-  min-width: 200px;
-  max-width: 550px;
+  margin-bottom: 5px;
+  margin-right: 25px;
 }
 .at-age-input, .cause-input {
     margin-top: 3px;
