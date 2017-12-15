@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>Generic phenotype configuration</name>
+  <language>fr</language>
+  <defaultLanguage>en</defaultLanguage>
+  <translation>1</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1489693411000</creationDate>
+  <parent>data.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1489694719000</date>
+  <contentUpdateDate>1489694119000</contentUpdateDate>
+  <version>1.1</version>
+  <title>$services.localization.render('phenotips.genericPhenotypeConfig.title')</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{
+"phenotype"  :[
+  {
+    "type"       : "section",
+    "title"      : "Paramètres de croissance",
+    "categories" : ["HP:0001507", "HP:0000240"],
+    "data"       : [
+      {
+        "type"   : "subsection",
+        "id"     : "HP:0004323",
+        "group_type" : "single-select",
+        "title"  : "Poids pour l'âge",
+        "data"   : [
+          {"id"  : "HP:0004325", "title" : "Retard pondéral (&lt;-2SD)"},
+          {"id"  : "HP:0004324", "title" : "Avance pondérale (&gt;+2SD)"}
+        ]
+      },
+      {
+        "type"   : "subsection",
+        "id"     : "HP:0000002",
+        "group_type" : "single-select",
+        "title"  : "Taille pour l'âge",
+        "data"   : [
+          {"id"  : "HP:0004322", "title" : "Retard statural (&lt;-2SD)"},
+          {"id"  : "HP:0000098", "title" : "Avance staturale (&gt;+2SD)"}
+        ]
+      },
+      {
+        "type"   : "subsection",
+        "id"     : "HP:0000240",
+        "group_type" : "single-select",
+        "title"  : "Périmètre crânien pour l'âge",
+        "data"   : [
+          {"id"  : "HP:0000252", "title" : "Microcéphalie (&lt;-3SD)"},
+          {"id"  : "HP:0000256", "title" : "Macrocéphalie (&gt;+2SD)"}
+        ]
+      },
+      {"id" : "HP:0001508"},
+      {"id" : "HP:0001528"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Craniofacial",
+    "categories" : ["HP:0000152"],
+    "data"       : [
+        {"id" : "HP:0001363"},
+        {"id" : "HP:0000204"},
+        {"id" : "HP:0000175"},
+        {"id" : "HP:0001999"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Anomalie de l'oeil",
+    "categories" : ["HP:0000478"],
+    "data"       : [
+        {"id" : "HP:0000505"},
+        {"id" : "HP:0000481"},
+        {"id" : "HP:0000589"},
+        {"id" : "HP:0000593"},
+        {"id" : "HP:0000518"},
+        {"id" : "HP:0000479"},
+        {"id" : "HP:0000587"},
+        {"id" : "HP:0000568"},
+        {"id" : "HP:0000639"},
+        {"id" : "HP:0000486"},
+        {"id" : "HP:0000601"},
+        {"id" : "HP:0000316"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Anomalie de l'oreille",
+    "categories" : ["HP:0000598"],
+    "data"       : [
+        {
+           "type"  : "subsection",
+           "id"    : "HP:0000365",
+           "title" : "Surdité",
+           "data"  : [
+               {"id" : "HP:0000407", "title" : "Neuro-sensorielle"},
+               {"id" : "HP:0000405", "title" : "Conductive"}
+           ]
+        },
+        {"id" : "HP:0004467"},
+        {"id" : "HP:0000384"},
+        {"id" : "HP:0000356"},
+        {"id" : "HP:0000359"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Cutané(e)",
+    "categories" : ["HP:0001574"],
+    "data"       : [
+        {"id" : "HP:0000953"},
+        {"id" : "HP:0001010"},
+        {"id" : "HP:0005306"},
+        {"id" : "HP:0011276"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Cardiovasculaire",
+    "categories" : ["HP:0001626"],
+    "data"       : [
+        {"id" : "HP:0001631"},
+        {"id" : "HP:0001629"},
+        {"id" : "HP:0001674"},
+        {"id" : "HP:0001680"},
+        {"id" : "HP:0001636"},
+        {"id" : "HP:0001638"},
+        {"id" : "HP:0011675"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Respiratoire",
+    "categories" : ["HP:0002086", "HP:0000765"],
+    "data"       : [
+        {"id" : "HP:0000776"},
+        {"id" : "HP:0002088"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Musculo-squelettique",
+    "categories" : ["HP:0000924", "HP:0003011", "HP:0040064"],
+    "data"       : [
+        {"id" : "HP:0002652"},
+        {"id" : "HP:0002659"},
+        {"id" : "HP:0009816"},
+        {"id" : "HP:0009824"},
+
+        {
+           "type"  : "subsection",
+           "title" : "Camptodactylie",
+           "data"  : [
+               {"id" : "HP:0100490", "title" : "Doigt"},
+               {"id" : "HP:0001836", "title" : "Orteil"}
+           ]
+        },
+        {
+           "type"  : "subsection",
+           "title" : "Syndactylie",
+           "data"  : [
+               {"id" : "HP:0006101", "title" : "Doigt"},
+               {"id" : "HP:0001770", "title" : "Orteil"}
+           ]
+        },
+        {
+           "type"  : "subsection",
+           "title" : "Polydactylie",
+           "data"  : [
+               {"id" : "HP:0100258", "title" : "Préaxiale"},
+               {"id" : "HP:0100259", "title" : "Post-axiale"}
+           ]
+        },
+        {
+           "type"  : "subsection",
+           "title" : "Oligodactylie",
+           "data"  : [
+               {"id" : "HP:0001180", "title" : "Mains"},
+               {"id" : "HP:0001849", "title" : "Pieds"}
+           ]
+        },
+
+        {"id" : "HP:0002650"},
+        {"id" : "HP:0000925"},
+        {"id" : "HP:0001371"},
+        {"id" : "HP:0001762"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Gastro-intestinal",
+    "categories" : ["HP:0011024"],
+    "data"       : [
+        {"id" : "HP:0002032"},
+        {"id" : "HP:0002575"},
+        {"id" : "HP:0001543"},
+        {"id" : "HP:0001539"},
+        {"id" : "HP:0002251"},
+        {"id" : "HP:0001396"},
+        {"id" : "HP:0002910"},
+        {"id" : "HP:0001738"},
+        {"id" : "HP:0000819"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Génito-urinaire",
+    "categories" : ["HP:0000119"],
+    "data"       : [
+        {"id" : "HP:0000107"},
+        {"id" : "HP:0000085"},
+        {"id" : "HP:0000069"},
+        {"id" : "HP:0000795"},
+        {"id" : "HP:0000062"},
+        {"id" : "HP:0000047"},
+        {"id" : "HP:0000028"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Comportement, Cognition et Développement",
+    "categories" : ["HP:0011446"],
+    "data"       : [
+        {"id" : "HP:0001263"},
+        {"id" : "HP:0010862"},
+        {"id" : "HP:0002194"},
+        {"id" : "HP:0000750"},
+        {"id" : "HP:0001328"},
+        {
+           "type"  : "subsection",
+           "id"    : "HP:0001249",
+           "group_type" : "single-select",
+           "title" : "Déficience intellectuelle",
+           "data"  : [
+               {"id" : "HP:0001256", "title" : "Légère"},
+               {"id" : "HP:0002342", "title" : "Modérée"},
+               {"id" : "HP:0010864", "title" : "Sévère"}
+           ]
+        },
+        {"id" : "HP:0007018"},
+        {"id" : "HP:0000717"},
+        {"id" : "HP:0000708"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Neurologique",
+    "categories" : ["HP:0000707"],
+    "data"       : [
+        {"id" : "HP:0001290"},
+        {"id" : "HP:0001250"},
+        {"id" : "HP:0001251"},
+        {"id" : "HP:0001332"},
+        {"id" : "HP:0002072"},
+        {"id" : "HP:0001257"},
+        {"id" : "HP:0010301"},
+        {"id" : "HP:0002011"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Autre",
+    "categories" : ["HP:0000118"],
+    "data"       : []
+  }
+],
+
+"prenatal_phenotype": [
+  {
+    "type"       : "section",
+    "title"      : "Histoire de la grossesse",
+    "categories" : ["HP:0002686"],
+    "data"       : [
+      {"id"      : "HP:0012188", "title" : "Hyperemesis gravidarum (vomissements excessifs)"},
+      {"id"      : "HP:0008071"},
+      {"id"      : "HP:0009800"},
+      {"id"      : "HP:0030244"},
+      {"id"      : "HP:0100622"},
+      {"id"      : "HP:0011438"},
+      {"id"      : "HP:0100603"},
+      {"id"      : "HP:0011436"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Développement prénatal",
+    "categories" : ["HP:0001197", "HP:0001511"],
+    "data"       : [
+      {"id"      : "HP:0001511"},
+      {"id"      : "HP:0001562"},
+      {"id"      : "HP:0001561"},
+      {"id"      : "HP:0001558"},
+      {"id"      : "HP:0010519"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Accouchement",
+    "categories" : ["HP:0001787", "HP:0001622"],
+    "data"       : [
+      {
+        "type"  : "conditionalSubsection",
+        "id"    : "HP:0001787",
+        "group_type" : "multi-select",
+        "title" : "Accouchement anormal",
+        "data"  : [
+          {"id" : "HP:0030365"},
+          {"id" : "HP:0030369"},
+          {"id" : "HP:0001623"},
+          {"id" : "HP:0011410"},
+          {"id" : "HP:0011411"},
+          {"id" : "HP:0011412"},
+          {"id" : "HP:0030366"},
+          {"id" : "HP:0005268"}
+        ]
+      },
+      {"id" : "HP:0001622"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Paramètres de croissance néonataux",
+    "categories" : ["HP:0001507", "HP:0000240"],
+    "data"       : [
+      {
+        "type"   : "subsection",
+        "id"     : "HP:0004323",
+        "group_type" : "single-select",
+        "title"  : "Poids de naissance anormal",
+        "data"   : [
+          {"id"  : "HP:0001518", "title" : "Petit pour l’âge gestationnel (&lt;-2SD)"},
+          {"id"  : "HP:0001520", "title" : "Grand pour l’âge gestationnel (&gt;+2SD)"}
+        ]
+      },
+      {
+        "type"   : "subsection",
+        "id"     : "HP:0000002",
+        "group_type" : "single-select",
+        "title"  : "Taille de naissance anormale",
+        "data"   : [
+          {"id"  : "HP:0003561", "title" : "Petite taille pour l'âge gestationnel (&lt;-2SD)"},
+          {"id"  : "HP:0003517", "title" : "Grande taille pour l'âge gestationnel (&gt;+2SD)"}
+        ]
+      },
+      {
+        "type"   : "subsection",
+        "id"     : "HP:0000240",
+        "group_type" : "single-select",
+        "title"  : "Périmètre crânien de naissance anormal",
+        "data"   : [
+          {"id"  : "HP:0011451", "title" : "Microcéphalie congénitale (&lt;-3SD)"},
+          {"id"  : "HP:0004488", "title" : "Macrocéphalie congénitale (&gt;+2SD)"}
+        ]
+      }
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Complications périnatales",
+    "categories" : ["HP:0000001"],
+    "data"       : [
+      {"id" : "HP:0002643"},
+      {"id" : "HP:0006579"},
+      {"id" : "HP:0002033"},
+      {"id" : "HP:0001998"},
+      {"id" : "HP:0040187"}
+    ]
+  }
+]
+
+}</content>
+</xwikidoc>

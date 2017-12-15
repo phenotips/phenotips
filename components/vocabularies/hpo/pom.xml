@@ -34,7 +34,9 @@
     <module>ui</module>
     <module>annotations</module>
     <module>translation-french</module>
+    <module>translation-german</module>
     <module>translation-italian</module>
+    <module>translation-russian</module>
     <module>translation-spanish</module>
   </modules>
 </project>

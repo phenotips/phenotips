@@ -374,7 +374,7 @@
         "title"  : "Perímetro cefálico anormal al nacimiento",
         "data"   : [
           {"id"  : "HP:0011451", "title" : "Microcefalia congénita (&lt;-3DE)"},
-          {"id"  : "HP:0004488", "title" : "Macrocefalia congénita (&lt;+2DE)"}
+          {"id"  : "HP:0004488", "title" : "Macrocefalia congénita (&gt;+2DE)"}
         ]
       }
     ]
