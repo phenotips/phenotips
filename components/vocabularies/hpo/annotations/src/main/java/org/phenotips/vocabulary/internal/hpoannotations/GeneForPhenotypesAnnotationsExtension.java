@@ -20,14 +20,12 @@ package org.phenotips.vocabulary.internal.hpoannotations;
 import org.phenotips.vocabulary.AbstractCSVAnnotationsExtension;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyInputTerm;
-import org.phenotips.vocabulary.VocabularySourceRelocationService;
 
 import org.xwiki.component.annotation.Component;
 
 import java.util.Collection;
 import java.util.Collections;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -50,9 +48,6 @@ public class GeneForPhenotypesAnnotationsExtension extends AbstractCSVAnnotation
         + "lastStableBuild/artifact/annotation/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt";
 
     private static final Collection<String> TARGET_VOCABULARIES = Collections.singletonList("hpo");
-
-    @Inject
-    protected VocabularySourceRelocationService relocationService;
 
     @Override
     protected Collection<String> getTargetVocabularyIds()
