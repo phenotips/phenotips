@@ -18,7 +18,6 @@
 package org.phenotips.vocabulary.internal.solr;
 
 import org.phenotips.vocabulary.Vocabulary;
-import org.phenotips.vocabulary.VocabularySourceRelocationService;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
@@ -147,9 +146,6 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
     @Inject
     @Named("hpo")
     private Vocabulary hpo;
-
-    @Inject
-    private VocabularySourceRelocationService relocationService;
 
     @Override
     public String getDefaultSourceLocation()

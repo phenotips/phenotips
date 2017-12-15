@@ -18,11 +18,9 @@
 package org.phenotips.vocabulary.internal.hpoannotations;
 
 import org.phenotips.vocabulary.VocabularyInputTerm;
-import org.phenotips.vocabulary.VocabularySourceRelocationService;
 
 import org.xwiki.component.annotation.Component;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -47,9 +45,6 @@ public class NegativePhenotypeForDiseaseAnnotationsExtension extends AbstractPhe
     private static final String ACTUAL_NOT_SYMPTOM = "actual_not_symptom";
 
     private static final String NOT_SYMPTOM = "not_symptom";
-
-    @Inject
-    protected VocabularySourceRelocationService relocationService;
 
     @Override
     public String getAnnotationSource()

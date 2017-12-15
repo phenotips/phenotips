@@ -142,6 +142,9 @@ public abstract class AbstractCSVAnnotationsExtension implements VocabularyExten
     @Inject
     protected Logger logger;
 
+    @Inject
+    protected VocabularySourceRelocationService relocationService;
+
     private AtomicInteger operationsInProgress = new AtomicInteger(0);
 
     @Override
