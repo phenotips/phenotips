@@ -21,7 +21,7 @@
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>Generic phenotype configuration</name>
-  <language>es</language>
+  <language>fr</language>
   <defaultLanguage>en</defaultLanguage>
   <translation>1</translation>
   <creator>xwiki:XWiki.Admin</creator>
@@ -41,37 +41,37 @@
 "phenotype"  :[
   {
     "type"       : "section",
-    "title"      : "Parámetros de crecimiento",
+    "title"      : "Paramètres de croissance",
     "categories" : ["HP:0001507", "HP:0000240"],
     "data"       : [
       {
         "type"   : "subsection",
         "id"     : "HP:0004323",
         "group_type" : "single-select",
-        "title"  : "Peso para la edad",
+        "title"  : "Poids pour l'âge",
         "data"   : [
-          {"id"  : "HP:0004325", "title" : "Disminución del peso corporal (&lt;-2DE)"},
-          {"id"  : "HP:0004324", "title" : "Aumento del peso corporal (&gt;+2DE)"}
+          {"id"  : "HP:0004325", "title" : "Retard pondéral (&lt;-2SD)"},
+          {"id"  : "HP:0004324", "title" : "Avance pondérale (&gt;+2SD)"}
         ]
       },
       {
         "type"   : "subsection",
         "id"     : "HP:0000002",
         "group_type" : "single-select",
-        "title"  : "Estatura para la edad",
+        "title"  : "Taille pour l'âge",
         "data"   : [
-          {"id"  : "HP:0004322", "title" : "Estatura corta (&lt;-2DE)"},
-          {"id"  : "HP:0000098", "title" : "Estatura alta (&gt;+2DE)"}
+          {"id"  : "HP:0004322", "title" : "Retard statural (&lt;-2SD)"},
+          {"id"  : "HP:0000098", "title" : "Avance staturale (&gt;+2SD)"}
         ]
       },
       {
         "type"   : "subsection",
         "id"     : "HP:0000240",
         "group_type" : "single-select",
-        "title"  : "Perímetro cefálico para la edad",
+        "title"  : "Périmètre crânien pour l'âge",
         "data"   : [
-          {"id"  : "HP:0000252", "title" : "Microcefalia (&lt;-3DE)"},
-          {"id"  : "HP:0000256", "title" : "Macrocefalia (&gt;+2DE)"}
+          {"id"  : "HP:0000252", "title" : "Microcéphalie (&lt;-3SD)"},
+          {"id"  : "HP:0000256", "title" : "Macrocéphalie (&gt;+2SD)"}
         ]
       },
       {"id" : "HP:0001508"},
@@ -80,7 +80,7 @@
   },
   {
     "type"       : "section",
-    "title"      : "Craneofacial",
+    "title"      : "Craniofacial",
     "categories" : ["HP:0000152"],
     "data"       : [
         {"id" : "HP:0001363"},
@@ -91,7 +91,7 @@
   },
   {
     "type"       : "section",
-    "title"      : "Defectos del ojo",
+    "title"      : "Anomalie de l'oeil",
     "categories" : ["HP:0000478"],
     "data"       : [
         {"id" : "HP:0000505"},
@@ -110,16 +110,16 @@
   },
   {
     "type"       : "section",
-    "title"      : "Defectos de la oreja",
+    "title"      : "Anomalie de l'oreille",
     "categories" : ["HP:0000598"],
     "data"       : [
         {
            "type"  : "subsection",
            "id"    : "HP:0000365",
-           "title" : "Sordera",
+           "title" : "Surdité",
            "data"  : [
-               {"id" : "HP:0000407", "title" : "Neurosensorial"},
-               {"id" : "HP:0000405", "title" : "Conductiva"}
+               {"id" : "HP:0000407", "title" : "Neuro-sensorielle"},
+               {"id" : "HP:0000405", "title" : "Conductive"}
            ]
         },
         {"id" : "HP:0004467"},
@@ -130,7 +130,7 @@
   },
   {
     "type"       : "section",
-    "title"      : "Cutánea",
+    "title"      : "Cutané(e)",
     "categories" : ["HP:0001574"],
     "data"       : [
         {"id" : "HP:0000953"},
@@ -141,7 +141,7 @@
   },
   {
     "type"       : "section",
-    "title"      : "Cardiovascular",
+    "title"      : "Cardiovasculaire",
     "categories" : ["HP:0001626"],
     "data"       : [
         {"id" : "HP:0001631"},
@@ -155,7 +155,7 @@
   },
   {
     "type"       : "section",
-    "title"      : "Respiratorio",
+    "title"      : "Respiratoire",
     "categories" : ["HP:0002086", "HP:0000765"],
     "data"       : [
         {"id" : "HP:0000776"},
@@ -164,7 +164,7 @@
   },
   {
     "type"       : "section",
-    "title"      : "Músculo-esquelético",
+    "title"      : "Musculo-squelettique",
     "categories" : ["HP:0000924", "HP:0003011", "HP:0040064"],
     "data"       : [
         {"id" : "HP:0002652"},
@@ -174,34 +174,34 @@
 
         {
            "type"  : "subsection",
-           "title" : "Camptodactilia",
+           "title" : "Camptodactylie",
            "data"  : [
-               {"id" : "HP:0100490", "title" : "Dedo"},
-               {"id" : "HP:0001836", "title" : "Dedo del pie"}
+               {"id" : "HP:0100490", "title" : "Doigt"},
+               {"id" : "HP:0001836", "title" : "Orteil"}
            ]
         },
         {
            "type"  : "subsection",
-           "title" : "Sindactilia",
+           "title" : "Syndactylie",
            "data"  : [
-               {"id" : "HP:0006101", "title" : "Dedo"},
-               {"id" : "HP:0001770", "title" : "Dedo del pie"}
+               {"id" : "HP:0006101", "title" : "Doigt"},
+               {"id" : "HP:0001770", "title" : "Orteil"}
            ]
         },
         {
            "type"  : "subsection",
-           "title" : "Polidactilia",
+           "title" : "Polydactylie",
            "data"  : [
-               {"id" : "HP:0100258", "title" : "Preaxial"},
-               {"id" : "HP:0100259", "title" : "Postaxial"}
+               {"id" : "HP:0100258", "title" : "Préaxiale"},
+               {"id" : "HP:0100259", "title" : "Post-axiale"}
            ]
         },
         {
            "type"  : "subsection",
-           "title" : "Oligodactilia",
+           "title" : "Oligodactylie",
            "data"  : [
-               {"id" : "HP:0001180", "title" : "Manos"},
-               {"id" : "HP:0001849", "title" : "Pies"}
+               {"id" : "HP:0001180", "title" : "Mains"},
+               {"id" : "HP:0001849", "title" : "Pieds"}
            ]
         },
 
@@ -213,7 +213,7 @@
   },
   {
     "type"       : "section",
-    "title"      : "Gastrointestinal",
+    "title"      : "Gastro-intestinal",
     "categories" : ["HP:0011024"],
     "data"       : [
         {"id" : "HP:0002032"},
@@ -229,7 +229,7 @@
   },
   {
     "type"       : "section",
-    "title"      : "Génitourinario",
+    "title"      : "Génito-urinaire",
     "categories" : ["HP:0000119"],
     "data"       : [
         {"id" : "HP:0000107"},
@@ -243,7 +243,7 @@
   },
   {
     "type"       : "section",
-    "title"      : "Conducta, cognición y desarrollo",
+    "title"      : "Comportement, Cognition et Développement",
     "categories" : ["HP:0011446"],
     "data"       : [
         {"id" : "HP:0001263"},
@@ -255,11 +255,11 @@
            "type"  : "subsection",
            "id"    : "HP:0001249",
            "group_type" : "single-select",
-           "title" : "Discapacidad intelectual",
+           "title" : "Déficience intellectuelle",
            "data"  : [
-               {"id" : "HP:0001256", "title" : "Leve"},
-               {"id" : "HP:0002342", "title" : "Moderada"},
-               {"id" : "HP:0010864", "title" : "Severa"}
+               {"id" : "HP:0001256", "title" : "Légère"},
+               {"id" : "HP:0002342", "title" : "Modérée"},
+               {"id" : "HP:0010864", "title" : "Sévère"}
            ]
         },
         {"id" : "HP:0007018"},
@@ -269,7 +269,7 @@
   },
   {
     "type"       : "section",
-    "title"      : "Neurológica",
+    "title"      : "Neurologique",
     "categories" : ["HP:0000707"],
     "data"       : [
         {"id" : "HP:0001290"},
@@ -284,7 +284,7 @@
   },
   {
     "type"       : "section",
-    "title"      : "Otros",
+    "title"      : "Autre",
     "categories" : ["HP:0000118"],
     "data"       : []
   }
@@ -293,10 +293,10 @@
 "prenatal_phenotype": [
   {
     "type"       : "section",
-    "title"      : "Historia del embarazo",
+    "title"      : "Histoire de la grossesse",
     "categories" : ["HP:0002686"],
     "data"       : [
-      {"id"      : "HP:0012188", "title" : "Hiperemesis gravídica (vómito excesivo)"},
+      {"id"      : "HP:0012188", "title" : "Hyperemesis gravidarum (vomissements excessifs)"},
       {"id"      : "HP:0008071"},
       {"id"      : "HP:0009800"},
       {"id"      : "HP:0030244"},
@@ -308,7 +308,7 @@
   },
   {
     "type"       : "section",
-    "title"      : "Desarrollo prenatal",
+    "title"      : "Développement prénatal",
     "categories" : ["HP:0001197", "HP:0001511"],
     "data"       : [
       {"id"      : "HP:0001511"},
@@ -320,14 +320,14 @@
   },
   {
     "type"       : "section",
-    "title"      : "Parto",
+    "title"      : "Accouchement",
     "categories" : ["HP:0001787", "HP:0001622"],
     "data"       : [
       {
         "type"  : "conditionalSubsection",
         "id"    : "HP:0001787",
         "group_type" : "multi-select",
-        "title" : "Parto anormal (no-NSVD)",
+        "title" : "Accouchement anormal",
         "data"  : [
           {"id" : "HP:0030365"},
           {"id" : "HP:0030369"},
@@ -344,44 +344,44 @@
   },
   {
     "type"       : "section",
-    "title"      : "Parámetros de crecimiento neonatal",
+    "title"      : "Paramètres de croissance néonataux",
     "categories" : ["HP:0001507", "HP:0000240"],
     "data"       : [
       {
         "type"   : "subsection",
         "id"     : "HP:0004323",
         "group_type" : "single-select",
-        "title"  : "Peso anómalo al nacimiento",
+        "title"  : "Poids de naissance anormal",
         "data"   : [
-          {"id"  : "HP:0001518", "title" : "Pequeño para la edad gestacional (&lt;-2DE)"},
-          {"id"  : "HP:0001520", "title" : "Grande para la edad gestacional (&gt;+2DE)"}
+          {"id"  : "HP:0001518", "title" : "Petit pour l’âge gestationnel (&lt;-2SD)"},
+          {"id"  : "HP:0001520", "title" : "Grand pour l’âge gestationnel (&gt;+2SD)"}
         ]
       },
       {
         "type"   : "subsection",
         "id"     : "HP:0000002",
         "group_type" : "single-select",
-        "title"  : "Longitud anormal al nacimiento",
+        "title"  : "Taille de naissance anormale",
         "data"   : [
-          {"id"  : "HP:0003561", "title" : "Longitud corta al nacimiento (&lt;-2DE)"},
-          {"id"  : "HP:0003517", "title" : "Longitud grande al nacimiento (&gt;+2DE)"}
+          {"id"  : "HP:0003561", "title" : "Petite taille pour l'âge gestationnel (&lt;-2SD)"},
+          {"id"  : "HP:0003517", "title" : "Grande taille pour l'âge gestationnel (&gt;+2SD)"}
         ]
       },
       {
         "type"   : "subsection",
         "id"     : "HP:0000240",
         "group_type" : "single-select",
-        "title"  : "Perímetro cefálico anormal al nacimiento",
+        "title"  : "Périmètre crânien de naissance anormal",
         "data"   : [
-          {"id"  : "HP:0011451", "title" : "Microcefalia congénita (&lt;-3DE)"},
-          {"id"  : "HP:0004488", "title" : "Macrocefalia congénita (&gt;+2DE)"}
+          {"id"  : "HP:0011451", "title" : "Microcéphalie congénitale (&lt;-3SD)"},
+          {"id"  : "HP:0004488", "title" : "Macrocéphalie congénitale (&gt;+2SD)"}
         ]
       }
     ]
   },
   {
     "type"       : "section",
-    "title"      : "Complicaciones perinatales",
+    "title"      : "Complications périnatales",
     "categories" : ["HP:0000001"],
     "data"       : [
       {"id" : "HP:0002643"},
