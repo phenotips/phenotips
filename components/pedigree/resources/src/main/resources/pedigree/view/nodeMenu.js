@@ -29,9 +29,7 @@ define([
         "pedigree/model/helpers",
         "pedigree/view/datepicker",
         "pedigree/view/graphicHelpers",
-        "pedigree/view/ageCalc",
-        "pedigree/detailsDialog",
-        "pedigree/detailsDialogGroup"
+        "pedigree/view/ageCalc"
     ], function(
         Disorder,
         HPOTerm,
@@ -40,9 +38,7 @@ define([
         Helpers,
         DatePicker,
         GraphicHelpers,
-        AgeCalc,
-        DetailsDialog,
-        DetailsDialogGroup
+        AgeCalc
     ){
     NodeMenu = Class.create({
         initialize : function(data, otherCSSClass) {
@@ -948,7 +944,7 @@ define([
             var toDisplayedTypeFx = function(value) {
                 return value ? "Primary" : "Mets";
             };
-            var qualifiersWidget = new DetailsDialogGroup(dataName, optionsParam)
+            var qualifiersWidget = new PhenoTips.widgets.DetailsDialogGroup(dataName, optionsParam)
                 .withLabel(cancerName, cancerId, 'phenotype-info')
                 .dialogsAddDeleteAction()
                 .dialogsAddNumericSelect({

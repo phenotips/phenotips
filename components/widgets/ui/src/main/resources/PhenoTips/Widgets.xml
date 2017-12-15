@@ -6776,7 +6776,7 @@ document.observe("xwiki:dom:updated", init);
        */
       _addDialog: function() {
           var qualifierID = this._termID + "_" + this._qualifierNo++;
-          return new DetailsDialog(qualifierID, this._dataName, this._dialogHolder).attach();
+          return new PhenoTips.widgets.DetailsDialog(qualifierID, this._dataName, this._dialogHolder).attach();
       },
 
       /**
