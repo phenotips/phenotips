@@ -37,5 +37,14 @@
   <minorEdit>false</minorEdit>
   <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
-  <content></content>
+  <content>phenotips.specificityMeter.label=Wie informativ ist Ihre phänotypische Beschreibung\:
+phenotips.specificityMeter.level.0=Keine
+phenotips.specificityMeter.level.1=Schlecht
+phenotips.specificityMeter.level.2=Schwach
+phenotips.specificityMeter.level.3=Gut
+phenotips.specificityMeter.level.4=Sehr gut
+phenotips.specificityMeter.level.5=Hervorragend
+phenotips.specificityMeter.info.label=Was ist das?
+phenotips.specificityMeter.info.title=Über das phänotypische Spezifitätsmaß Monarch
+phenotips.specificityMeter.info=Dieses Messinstrument bewertet die Breite und Tiefe Ihres Phänotyp-Annotations-Profils für einen bestimmten Patienten im Zusammenhang mit allen kuratierten Phänotypen von Menschen und Modellorganismuen, welche im Monarch integriert sind. Das Ziel ist Ihr Annotation-Profil spezifisch genug zu gestalten um ähnliche Erkrankungen auszuschließen und Modellorganismen mit ähnlichen Phänotypen zu identifizieren, die möglicherweise Mutationen in relevante Gene oder Pathways aufweisen. Das Patienten-Annotation-Profil wird auch verwendet, um die Exom-Priorisierung mit der gleichen Technologie zu unterstützen.</content>
 </xwikidoc>

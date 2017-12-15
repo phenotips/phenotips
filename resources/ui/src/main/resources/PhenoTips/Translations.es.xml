@@ -54,7 +54,7 @@ XWiki.XWikiUsers_comment=Acerca de
 core.widgets.confirmationBox.button.cancel=Cancelar
 
 phenotips.globalHeader.allData=Ver todos los pacientes
-phenotips.globalHeader.search.placeholder=Buscar...
+phenotips.globalHeader.search.placeholder=Buscar…
 
 phenotips.PatientPhenotyoeExportService.cantFindPatientError=Identificador no encontrado.
 phenotips.SuggestPatientService.serviceInfo=Este servicio permite recuperar resultados de la búsqueda para el componente de UI sugerido. Ejemplo\: {0}
