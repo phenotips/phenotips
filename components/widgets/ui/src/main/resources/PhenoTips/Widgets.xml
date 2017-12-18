@@ -5724,11 +5724,14 @@ document.observe("xwiki:dom:updated", init);
       <code>var PhenoTips = (function (PhenoTips) {
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   widgets.DetailsDialog = Class.create({
-      initialize: function (elementID, dataName, parentContainer) {
+      initialize : function (termID, dataName, parentContainer, qualifierCount, qualifierDataClass) {
           this._container = parentContainer;
           this._dataName = dataName;
-          this._elementID = elementID;
+          this._termID = termID;
+          this._elementID = termID + "_" + qualifierCount;
           this._qualifierMap = {};
+          this._globalCount = qualifierCount;
+          this._qualifierDataClass = qualifierDataClass;
           this._buildEmptyDialog();
       },
 
@@ -5750,35 +5753,43 @@ document.observe("xwiki:dom:updated", init);
        *                         - "storedToDisplayedMapper" custom function mapping stored value to how it should be displayed
        * @return {*|DetailsDialog}
        */
-      withNumericSelect: function(options) {
-          // Define data ranges for the numeric select element.
-          options = options || {};
-          if (!options.from || !options.to) { return this; }
-          var from = options.from;
-          var to = options.to;
-          var step = options.step || 1;
-          var majorStepSize = options.majorStepSize || null;
-          var inputSourceClass = options.inputSourceClass || "";
-          var spanElem = new Element('span');
-          var optionsHTML = '&lt;select name="' + this._dataName + '" class="'+inputSourceClass+'"&gt;&lt;option value=""&gt;&lt;/option&gt;';
-          majorStepSize &amp;&amp; (optionsHTML += '&lt;option value="&lt;' + from + '"&gt;before ' + from + '&lt;/option&gt;');
-          var counter = 1;
-          var startRange = from;
-          for (var num = from; num &lt;= to; num += step, counter++) {
-              if (majorStepSize &amp;&amp; counter === majorStepSize) {
-                  counter = 0;
-                  optionsHTML += '&lt;option value="' + startRange + '-' + num + '"&gt;' + startRange + '-' + num + '&lt;/option&gt;';
-                  startRange = num + step;
-              }
-              optionsHTML += '&lt;option value="' + num + '"&gt;' + num + '&lt;/option&gt;';
-          }
-          majorStepSize &amp;&amp; (optionsHTML += '&lt;option value="&gt;' + to + '"&gt;after ' + to + '&lt;/option&gt;&lt;/select&gt;');
-          spanElem.innerHTML = optionsHTML;
-          spanElem._getValue = this._defaultGetSelectValueFx(spanElem);
-          spanElem._setValue = this._setSelectValueFx(spanElem, options.storedToDisplayedMapper);
-          spanElem._addValue = this._addSelectValueFx(spanElem, options.qualifierName, options.displayedToStoredMapper);
-          options.inline = 'inline';
-          return this.withQualifierElement(spanElem, false, options);
+      withNumericSelect : function (options) {
+        // Define data ranges for the numeric select element.
+        options = options || {};
+        if (!options.from || !options.to) {
+            return this;
+        }
+        var from = options.from;
+        var to = options.to;
+        var step = options.step || 1;
+        var majorStepSize = options.majorStepSize || null;
+        var inputSourceClass = options.inputSourceClass || "";
+        var spanElem = new Element('span');
+        var optionsHTML = '&lt;select name="' + this._dataName + '" class="' + inputSourceClass +
+            '"&gt;&lt;option value=""&gt;&lt;/option&gt;';
+        majorStepSize &amp;&amp; (optionsHTML += '&lt;option value="&lt;' + from + '"&gt;before ' + from + '&lt;/option&gt;');
+        var counter = 1;
+        var startRange = from;
+        for (var num = from; num &lt;= to; num += step, counter++) {
+            if (majorStepSize &amp;&amp; counter === majorStepSize) {
+                counter = 0;
+                optionsHTML += '&lt;option value="' + startRange + '-' + num + '"&gt;' + startRange + '-' + num + '&lt;/option&gt;';
+                startRange = num + step;
+            }
+            optionsHTML += '&lt;option value="' + num + '"&gt;' + num + '&lt;/option&gt;';
+        }
+        majorStepSize &amp;&amp; (optionsHTML += '&lt;option value="&gt;' + to + '"&gt;after ' + to + '&lt;/option&gt;');
+        optionsHTML += '&lt;/select&gt;'
+        spanElem.innerHTML = optionsHTML;
+        spanElem._getValue = this._defaultGetSelectValueFx(spanElem);
+        spanElem._getNumericValue = options.numericApproximation;
+        spanElem._setValue = this._setSelectValueFx(spanElem, options.storedToDisplayedMapper);
+        spanElem._addValue = this._addSelectValueFx(spanElem, options.qualifierName, options.displayedToStoredMapper);
+        options.inline = 'inline';
+        this._qualifierDataClass &amp;&amp; options.qualifierName
+            &amp;&amp; this._setPhenoTipsSelectFormData(spanElem, options.displayedToStoredMapper, this._qualifierDataClass + this._globalCount
+            + "_", options.qualifierName);
+        return this.withQualifierElement(spanElem, false, options);
       },
 
       /**
@@ -5793,13 +5804,13 @@ document.observe("xwiki:dom:updated", init);
        *                         - "displayedToStoredMapper" custom function mapping displayed value to how it should be stored
        *                         - "storedToDisplayedMapper" custom function mapping stored value to how it should be displayed
        */
-      withItemSelect: function(options) {
+      withItemSelect : function (options) {
           options = options || {};
           var inputSourceClass = options.inputSourceClass || "";
           var data = options.data || [""];
           var spanElem = new Element('span');
-          var optionsHTML = '&lt;select name="' + this._dataName + '" class="'+inputSourceClass+'"&gt;';
-          data.forEach(function(item) {
+          var optionsHTML = '&lt;select name="' + this._dataName + '" class="' + inputSourceClass + '"&gt;';
+          data.forEach(function (item) {
               optionsHTML += '&lt;option value="' + item + '"&gt;' + item + '&lt;/option&gt;';
           });
           optionsHTML += '&lt;/select&gt;';
@@ -5808,6 +5819,9 @@ document.observe("xwiki:dom:updated", init);
           spanElem._setValue = this._setSelectValueFx(spanElem, options.storedToDisplayedMapper);
           spanElem._addValue = this._addSelectValueFx(spanElem, options.qualifierName, options.displayedToStoredMapper);
           options.inline = 'inline';
+          this._qualifierDataClass &amp;&amp; options.qualifierName
+              &amp;&amp; this._setPhenoTipsSelectFormData(spanElem, options.displayedToStoredMapper, this._qualifierDataClass + this._globalCount
+              + "_", options.qualifierName);
           return this.withQualifierElement(spanElem, false, options);
       },
 
@@ -5824,27 +5838,31 @@ document.observe("xwiki:dom:updated", init);
        *                         - "displayedToStoredMapper" custom function mapping displayed value to how it should be stored
        *                         - "storedToDisplayedMapper" custom function mapping stored value to how it should be displayed
        */
-      withRadioList: function(collapsible, options) {
+      withRadioList : function (collapsible, options) {
           options = options || {};
           var _this = this;
           var inputSourceClass = options.inputSourceClass || "";
           var data = options.data || [];
           var spanElem = new Element('span');
           var radioHTML = '&lt;ul&gt;';
-          data.forEach(function(item) {
+          data.forEach(function (item) {
               var inputId = inputSourceClass + "_" + _this._elementID + "_" + item;
               radioHTML +=
                   '&lt;li class="term-entry"&gt;' +
-                    '&lt;input class="' + inputSourceClass + '" id="' + inputId + '" name="' + _this._dataName + '_' + _this._elementID + '_' + options.qualifierName + '" title="' + item + '" type="radio"&gt;' +
-                    '&lt;label for="' + inputId + '" title="' + item + '"&gt;' + item + '&lt;/label&gt;' +
+                  '&lt;input class="' + inputSourceClass + '" id="' + inputId + '" name="' + _this._dataName + '_' +
+                  _this._elementID + '_' + options.qualifierName + '" title="' + item + '" type="radio"&gt;' +
+                  '&lt;label for="' + inputId + '" title="' + item + '"&gt;' + item + '&lt;/label&gt;' +
                   '&lt;/li&gt;'
           });
           radioHTML += '&lt;/ul&gt;';
           spanElem.innerHTML = radioHTML;
-          spanElem.down("li.term-entry").down('input').checked=true;
+          spanElem.down("li.term-entry").down('input').checked = true;
           spanElem._getValue = this._getRadioValueFx(spanElem, options.qualifierName);
           spanElem._setValue = this._setRadioValueFx(spanElem, options.storedToDisplayedMapper, collapsible);
           spanElem._addValue = this._addRadioValueFx(spanElem, options.qualifierName, options.displayedToStoredMapper);
+          this._qualifierDataClass &amp;&amp; options.qualifierName
+              &amp;&amp; this._setPhenoTipsRadioFormData(spanElem, options.displayedToStoredMapper, this._qualifierDataClass + this._globalCount
+              + "_", options.qualifierName);
           return this.withQualifierElement(spanElem, collapsible, options);
       },
 
@@ -5860,11 +5878,14 @@ document.observe("xwiki:dom:updated", init);
        *                         - "displayedToStoredMapper" custom function mapping displayed value to how it should be stored
        *                         - "storedToDisplayedMapper" custom function mapping stored value to how it should be displayed
        */
-      withTextBox: function(collapsible, options) {
+      withTextBox : function (collapsible, options) {
           var inputSourceClass = options &amp;&amp; options.inputSourceClass || "";
           var spanElem = new Element('span');
-          spanElem.innerHTML = '&lt;textarea class="qualifier-notes '+inputSourceClass+'" name="' + this._dataName + '"&gt;'
-            + '&lt;/textarea&gt;';
+          var tbName = (this._qualifierDataClass &amp;&amp; options.qualifierName)
+              ? this._qualifierDataClass + this._globalCount + "_" + options.qualifierName
+              : this._dataName;
+          spanElem.innerHTML = '&lt;textarea class="qualifier-notes ' + inputSourceClass + '" name="' + tbName + '"&gt;'
+              + '&lt;/textarea&gt;';
           spanElem._getValue = this._getTextboxValueFx(spanElem);
           spanElem._setValue = this._setTextboxValueFx(spanElem, options.storedToDisplayedMapper, collapsible);
           spanElem._addValue = this._addTextboxValueFx(spanElem, options.qualifierName, options.displayedToStoredMapper);
@@ -5921,11 +5942,11 @@ document.observe("xwiki:dom:updated", init);
        *
        * @return {DetailsDialog} self
        */
-      withDeleteAction: function() {
-          var deleteAction = new Element('span', {'id' : 'delete_' + this._elementID, 'class' : this._dataName + '-dialog-delete action-done clickable'})
-            .update("✖");
-          this._termDetails.insert({top: deleteAction});
-          this._attachOnDeleteListener(deleteAction);
+      withDeleteAction : function (ajaxAction) {
+          this._deleteAction = new Element('span',
+              {'id' : 'delete_' + this._elementID, 'class' : this._dataName + '-dialog-delete action-done clickable'}).update("✖");
+          this._termDetails.insert({top : this._deleteAction});
+          this._attachOnDeleteListener(this._deleteAction, ajaxAction);
           return this;
       },
 
@@ -5978,7 +5999,7 @@ document.observe("xwiki:dom:updated", init);
        *
        * @param values {Object} the values are key-value pairs, where the keys should be the same as in _qualifierMap
        */
-      setValues: function(values) {
+      setValues : function (values) {
           if (!values) { return; }
           for (var key in values) {
               if (values.hasOwnProperty(key)) {
@@ -6014,6 +6035,46 @@ document.observe("xwiki:dom:updated", init);
 
       },
 
+    _setPhenoTipsSelectFormData : function(spanElem, toStored, qualifierClass, qualifierName) {
+        var inputStrElem = new Element('input', {'class': 'string-select-val', 'type': 'hidden'});
+        var inputNumElem;
+        if (spanElem._getNumericValue) {
+            inputNumElem = new Element('input', {'class': 'to-numeric-select-val', 'type': 'hidden'});
+            spanElem.insert(inputNumElem);
+        }
+        spanElem.insert(inputStrElem);
+        var selectElem = spanElem.down('select');
+        var formattedVal = function () { return toStored ? toStored(spanElem._getValue()) : spanElem._getValue(); };
+        var value = formattedVal();
+        this._setInput(inputStrElem, value, qualifierClass + qualifierName);
+        inputNumElem &amp;&amp; this._setInput(inputNumElem, spanElem._getNumericValue(value), qualifierClass + "numeric" + qualifierName.charAt(0).capitalize() + qualifierName.substr(1));
+        var _this = this;
+        selectElem.observe('change', function(event) {
+            var value = formattedVal();
+            _this._setInput(inputStrElem, value, null);
+            inputNumElem &amp;&amp; _this._setInput(inputNumElem, spanElem._getNumericValue(value), null);
+        });
+      },
+
+      _setPhenoTipsRadioFormData : function(spanElem, toStored, qualifierClass, qualifierName) {
+        var inputStrElem = new Element('input', {'class': 'string-radio-val', 'type': 'hidden'});
+        spanElem.insert(inputStrElem);
+        var ulElem = spanElem.down('ul');
+        var formattedVal = function () { return toStored ? toStored(spanElem._getValue()) : spanElem._getValue(); };
+        var value = formattedVal();
+        this._setInput(inputStrElem, value, qualifierClass + qualifierName);
+        var _this = this;
+        ulElem.observe('change', function(event) {
+            var value = formattedVal();
+            _this._setInput(inputStrElem, value, null);
+        });
+      },
+
+      _setInput : function(input, value, name) {
+          input.value = value;
+          name &amp;&amp; (input.name = name);
+      },
+
       /**
        * Attaches a function for creating a summary of the element.
        *
@@ -6022,9 +6083,9 @@ document.observe("xwiki:dom:updated", init);
        * @param ddElem the qualifier item value element
        * @private
        */
-      _attachSummaryFx: function(element, dtElem, ddElem) {
+      _attachSummaryFx : function (element, dtElem, ddElem) {
           var _this = this;
-          element._toggleSummarize = function() {
+          element._toggleSummarize = function () {
               var isCollapsed = ddElem.hasClassName('collapsed');
               if (ddElem.visible() || (dtElem.visible() &amp;&amp; isCollapsed)) {
                   _this._showSummary(dtElem, ddElem, element._getValue());
@@ -6042,7 +6103,8 @@ document.observe("xwiki:dom:updated", init);
        * @param val the value that was entered for the qualifier element
        * @private
        */
-      _showSummary: function(dtElem, ddElem, val) {
+      _showSummary : function (dtElem, ddElem, val) {
+          this._deleteAction &amp;&amp; this._deleteAction.hide();
           ddElem.hide();
           // If some value was entered for the qualifier, create the summary.
           if (val.length &gt; 0 &amp;&amp; val !== "Unknown") {
@@ -6051,10 +6113,10 @@ document.observe("xwiki:dom:updated", init);
               if (dtElem.hasClassName('collapsible')) {
                   dtElem.hide();
                   dtSummary = '&lt;dt class="' + dtElem.className + ' preview"&gt;' + dtElem.down('label').innerHTML + '&lt;/dt&gt;';
-                  dtElem.insert({'after': dtSummary});
+                  dtElem.insert({'after' : dtSummary});
               }
               ddSummary = '&lt;dd class="' + ddElem.className + ' preview"&gt;' + val + '&lt;/dd&gt;';
-              ddElem.insert({'after': ddSummary});
+              ddElem.insert({'after' : ddSummary});
           } else {
               dtElem.hide();
           }
@@ -6067,7 +6129,8 @@ document.observe("xwiki:dom:updated", init);
        * @param ddElem the qualifier item value element
        * @private
        */
-      _showEditable: function(dtElem, ddElem) {
+      _showEditable : function (dtElem, ddElem) {
+          this._deleteAction &amp;&amp; this._deleteAction.show();
           dtElem.show();
           // Show only if not collapsed.
           ddElem &amp;&amp; !ddElem.hasClassName('collapsed') &amp;&amp; ddElem.show();
@@ -6087,8 +6150,8 @@ document.observe("xwiki:dom:updated", init);
        * @return {Function} a function for retrieving the selected value from the select list element
        * @private
        */
-      _defaultGetSelectValueFx: function(element) {
-          return function() {
+      _defaultGetSelectValueFx : function (element) {
+          return function () {
               var select = element.down('select');
               return select.selectedIndex &gt;= 0 ? select.options[select.selectedIndex].value : "";
           };
@@ -6102,9 +6165,13 @@ document.observe("xwiki:dom:updated", init);
        * @return {Function} a function for selecting the provided value in the select list element
        * @private
        */
-      _setSelectValueFx: function(element, valueMapperFx) {
-          return function(value) {
+      _setSelectValueFx : function (element, valueMapperFx) {
+          return function (value) {
               element.down('select').value = valueMapperFx ? valueMapperFx(value) : value;
+              var hiddenInput = element.down('input[type="hidden"].string-select-val');
+              hiddenInput &amp;&amp; (hiddenInput.value = value);
+              var hiddenNumericInput = element.down('input[type="hidden"].to-numeric-select-val');
+              hiddenNumericInput &amp;&amp; (hiddenNumericInput.value = element._getNumericValue(value));
           };
       },
 
@@ -6117,11 +6184,11 @@ document.observe("xwiki:dom:updated", init);
        * @return {Function} a function for adding the selected select list value to the summary {Object}
        * @private
        */
-      _addSelectValueFx: function(element, qualifierName, valueMapperFx) {
-          return function(values) {
-              var fieldName = qualifierName || null;
-              if (fieldName) {
-                  values[fieldName] = valueMapperFx ? valueMapperFx(element._getValue()) : element._getValue();
+      _addSelectValueFx : function (element, qualifierName, valueMapperFx) {
+          return function (values) {
+              if (qualifierName) {
+                  values[qualifierName] = valueMapperFx ? valueMapperFx(element._getValue()) : element._getValue();
+                  element._getNumericValue &amp;&amp; (values["numeric" + qualifierName.charAt(0).capitalize() + qualifierName.substr(1)] = element._getNumericValue(element._getValue()));
               }
           };
       },
@@ -6151,12 +6218,16 @@ document.observe("xwiki:dom:updated", init);
        * @return {Function} a function for selecting the provided value in the radio list element
        * @private
        */
-      _setRadioValueFx: function(element, valueMapperFx, collapsible) {
+      _setRadioValueFx : function (element, valueMapperFx, collapsible) {
           var _this = this;
-          return function(value) {
+          return function (value) {
               var checkedTitle = valueMapperFx ? valueMapperFx(value) : value;
+              var toUncheck = element.down('input:checked');
+              toUncheck &amp;&amp; (toUncheck.checked = false);
               var selection = element.down('input[title="' + checkedTitle + '"]');
               if (!selection) { return; }
+              var hiddenInput = element.down('input[type="hidden"].string-radio-val');
+              hiddenInput &amp;&amp; (hiddenInput.value = value);
               selection.checked = true;
               var ddElem = selection.up('dd');
               var dtElem = ddElem &amp;&amp; ddElem.previous('dt');
@@ -6222,8 +6293,8 @@ document.observe("xwiki:dom:updated", init);
        * @return {Function} a function for adding the textarea value to the summary {Object}
        * @private
        */
-      _addTextboxValueFx: function(element, qualifierName, valueMapperFx) {
-          return function(values) {
+      _addTextboxValueFx : function (element, qualifierName, valueMapperFx) {
+          return function (values) {
               var fieldName = qualifierName || null;
               if (fieldName) {
                   values[fieldName] = valueMapperFx ? valueMapperFx(element.down('textarea').value) : element.down('textarea').value;
@@ -6248,13 +6319,17 @@ document.observe("xwiki:dom:updated", init);
        * Builds an empty dialog where qualifiers will be added.
        * @private
        */
-      _buildEmptyDialog: function () {
+      _buildEmptyDialog : function () {
           this._termDetails = new Element('div', {'class' : 'summary-item focused'});
-          this._termDetails.innerHTML = '&lt;input type="hidden" value="' + this._elementID + '"&gt;' +
-            '&lt;div id="term_details_' + this._elementID + '" class="term-details"&gt;' +
-                '&lt;dl&gt;&lt;/dl&gt;' +
-                '&lt;div class="clearfloats"&gt;&lt;/div&gt;' +
-            '&lt;/div&gt;';
+
+          var hiddenInput = this._qualifierDataClass
+              ? '&lt;input id="' + this._elementID + '" type="hidden" value="' + this._termID + '" name="' + this._qualifierDataClass + this._globalCount + '_' + this._dataName + '"&gt;'
+              : '&lt;input id="' + this._elementID + '" type="hidden" value="' + this._elementID + '"&gt;';
+          this._termDetails.innerHTML = hiddenInput +
+              '&lt;div id="term_details_' + this._elementID + '" class="term-details"&gt;' +
+                  '&lt;dl&gt;&lt;/dl&gt;' +
+                  '&lt;div class="clearfloats"&gt;&lt;/div&gt;' +
+              '&lt;/div&gt;';
 
           this._qualifierList = this._termDetails.down('dl');
           // Attach listeners for the collapse action.
@@ -6264,14 +6339,37 @@ document.observe("xwiki:dom:updated", init);
       /**
        * Attaches a listener for clicks on the dialog delete button.
        * @param deleteAction
+       * @param ajaxAction
        * @private
        */
-      _attachOnDeleteListener: function(deleteAction) {
+      _attachOnDeleteListener : function (deleteAction, ajaxDeleteAction) {
           var _this = this;
-          deleteAction.observe('click', function() {
+          var deleteElements = function() {
               _this._termDetails.remove();
               _this._qualifierMap = {};
               Event.fire(_this._container, _this._dataName + ':dialog:deleted', {'id' : _this._elementID});
+          };
+          deleteAction.observe('click', function () {
+              if (ajaxDeleteAction) {
+                  var url =  ajaxDeleteAction.replace(/([&amp;?]classid=)(xXx__COUNT_TEMPLATE__xXx)([&amp;$])/, "$1" + _this._globalCount + "$3");
+                  _this._sendRemoveRequest(deleteAction, url, deleteElements);
+              } else {
+                  deleteElements()
+              }
+          });
+      },
+
+      _sendRemoveRequest : function (deleteTrigger, ajaxDeleteAction, deleteElementsFx) {
+          if (deleteTrigger.disabled) {
+              return false;
+          }
+          new Ajax.Request(ajaxDeleteAction, {
+              onCreate : function() {
+                  deleteTrigger.disabled = true;
+              },
+              onSuccess : function () {
+                  deleteElementsFx();
+              }
           });
       },
 
@@ -6456,12 +6554,13 @@ document.observe("xwiki:dom:updated", init);
       <code>var PhenoTips = (function (PhenoTips) {
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   widgets.DetailsDialogGroup = Class.create({
-      initialize: function (dataName, options) {
+      initialize : function (dataName, options) {
           this._dataName = dataName;
           // If this._allowMultiDialogs is true, more than one qualifier dialog can be added per term.
           this._qualifierNo = 0;
 
           var groupOptions = options || {};
+          this._termDeleteAction = groupOptions.termDeleteAction;
           this._allowMultiDialogs = groupOptions.allowMultiDialogs || false;
           this._disableTermDelete = groupOptions.disableTermDelete || false;
           this._doneTypingInterval = groupOptions.doneTypingInterval || 500;
@@ -6481,7 +6580,7 @@ document.observe("xwiki:dom:updated", init);
           this._attachKeyUpObserver();
       },
 
-      getID: function() {
+      getID : function () {
           return this._termID;
       },
 
@@ -6490,7 +6589,7 @@ document.observe("xwiki:dom:updated", init);
        *
        * @return {Element|*} the dialog group element for the term
        */
-      get: function() {
+      get : function () {
           return this._qualifiersContainer;
       },
 
@@ -6500,13 +6599,15 @@ document.observe("xwiki:dom:updated", init);
        * @param label {String} the label for the term; if null or empty, will be set to ID
        * @param termID {String} the ID for the term; must not be null or empty
        * @param tooltip the class name of the tooltip to be created; null/undefined if no tooltip should be attached
+       * @param nonselectable {Boolean} set to true iff the label should not be selectable, and should only be present iff term can be applied to patient
        * @return {DetailsDialogGroup} self
        */
-      withLabel: function(label, termID, tooltip) {
+      withLabel : function (label, termID, tooltip, nonselectable) {
           var trimmedID = (termID &amp;&amp; termID.strip()) || "";
           var trimmedLabel = (label &amp;&amp; label.strip()) || "";
           this._termID = trimmedID;
           this._label = trimmedLabel || trimmedID;
+          this._nonselectable = nonselectable;
           if (this._termID === "") {
               return this;
           }
@@ -6514,57 +6615,80 @@ document.observe("xwiki:dom:updated", init);
           var termData = this._qualifiersContainer.down('span.term-data');
           var termDataHTML = '&lt;label class="label-field"&gt;';
           termDataHTML += '&lt;input id="status_' + this._termID + '" class="term-status" name="' + this._dataName +
-            '" type="checkbox"&gt; ';
-          termDataHTML += this._label + '&lt;/label&gt;&lt;input class="term-id" type="hidden" value="' + this._termID + '"&gt;';
+              '" type="checkbox"&gt; ';
+          var hiddenInputs = this._getHiddenTermInputs();
+          termDataHTML += this._label + '&lt;/label&gt;' + hiddenInputs;
           termData.innerHTML = termDataHTML;
+          nonselectable &amp;&amp; this._disableCheckBox(termData);
           this._addTooltip(tooltip);
           this._initButtons();
           return this;
       },
 
-      dialogsAddNumericSelect: function(options) {
-          var addNumericSelect = function(currentDialog) {
+      /**
+       * If a global qualifier count function is provided, then use it to count qualifiers instead of this._qualifierNo.
+       *
+       * @param getGlobalCountFx {Function} a function that retrieves the global qualifier count
+       */
+      withGlobalQualifierCount : function (getGlobalCountFx, setGlobalCountFx) {
+          this._globalQualifierCount = getGlobalCountFx;
+          this._setGlobalQualifierCount = setGlobalCountFx;
+          return this;
+      },
+
+      withTermDataMarker : function (termDataMarkerClass) {
+          this._termDataClass = termDataMarkerClass;
+          return this;
+      },
+
+      withQualifierDataMarker : function (qualifierDataMarkerClass) {
+          this._qualifierDataClass = qualifierDataMarkerClass;
+          return this;
+      },
+
+      dialogsAddNumericSelect : function(options) {
+          var addNumericSelect = function (currentDialog) {
               currentDialog.withNumericSelect(options);
           };
           this._dialogOptions.push(addNumericSelect);
           return this;
       },
 
-      dialogsAddItemSelect: function(options) {
-          var addItemSelect = function(currentDialog) {
+      dialogsAddItemSelect : function (options) {
+          var addItemSelect = function (currentDialog) {
               currentDialog.withItemSelect(options);
           };
           this._dialogOptions.push(addItemSelect);
           return this;
       },
 
-      dialogsAddRadioList: function(collapsible, options) {
-          var addRadioList = function(currentDialog) {
+      dialogsAddRadioList : function (collapsible, options) {
+          var addRadioList = function (currentDialog) {
               currentDialog.withRadioList(collapsible, options);
           };
           this._dialogOptions.push(addRadioList);
           return this;
       },
 
-      dialogsAddTextBox: function(collapsible, options) {
-          var addTextBox = function(currentDialog) {
+      dialogsAddTextBox : function (collapsible, options) {
+          var addTextBox = function (currentDialog) {
               currentDialog.withTextBox(collapsible, options);
           };
           this._dialogOptions.push(addTextBox);
           return this;
       },
 
-      dialogsAddCustomElement: function(element, collapsible, options) {
-          var addCustomElement = function(currentDialog) {
+      dialogsAddCustomElement : function (element, collapsible, options) {
+          var addCustomElement = function (currentDialog) {
               currentDialog.withQualifierElement(element, collapsible, options);
           };
           this._dialogOptions.push(addCustomElement);
           return this;
       },
 
-      dialogsAddDeleteAction: function() {
-          var addDeleteAction = function(currentDialog) {
-              currentDialog.withDeleteAction();
+      dialogsAddDeleteAction : function (ajaxAction) {
+          var addDeleteAction = function (currentDialog) {
+              currentDialog.withDeleteAction(ajaxAction);
           };
           this._dialogOptions.push(addDeleteAction);
           return this;
@@ -6580,9 +6704,10 @@ document.observe("xwiki:dom:updated", init);
        *
        * @return {Boolean}
        */
-      isAffected: function() {
+      isAffected : function () {
           var status = this._qualifiersContainer.down('input.term-status');
-          return status.checked;
+          // If status checkbox is not present, that means that term is assumed to be "affected" by default.
+          return !status || status.checked;
       },
 
       /**
@@ -6590,9 +6715,9 @@ document.observe("xwiki:dom:updated", init);
        *
        * @param silent true iff this should be performed silently, with no events fired
        */
-      initAffected: function(silent) {
+      initAffected : function (silent) {
           this.affected(true);
-          this.addDialog(silent);
+          this.addDialog(silent, this._globalQualifierCount &amp;&amp; this._globalQualifierCount());
           this._allowMultiDialogs &amp;&amp; this._addDetailsClickListener();
       },
 
@@ -6601,9 +6726,9 @@ document.observe("xwiki:dom:updated", init);
        *
        * @param status true iff affected, false otherwise
        */
-      affected: function(status) {
+      affected : function (status) {
           var statusElem = this._qualifiersContainer.down('input.term-status');
-          statusElem.checked = status;
+          statusElem &amp;&amp; (statusElem.checked = status);
       },
 
       /**
@@ -6630,8 +6755,9 @@ document.observe("xwiki:dom:updated", init);
        * Sets the qualifiers to the values provided.
        *
        * @param values the qualifier values to set
+       * @param fireEvents {Boolean} values are set silently by default; set to true if this should not be the case
        */
-      setValues: function(values) {
+      setValues : function (values, fireEvents) {
           // If no values provided, do nothing.
           if (!values) { return; }
           this._clearDetails();
@@ -6646,7 +6772,8 @@ document.observe("xwiki:dom:updated", init);
           // If affected and qualifiers are provided, set affected and add qualifiers.
           if (values.affected &amp;&amp; values.qualifiers &amp;&amp; values.qualifiers.length &gt; 0) {
               this.affected(values.affected);
-              this._setQualifiers(values.qualifiers);
+              var silent = !fireEvents;
+              this._setQualifiers(values.qualifiers, silent);
           }
       },
 
@@ -6664,14 +6791,16 @@ document.observe("xwiki:dom:updated", init);
        * @param silent true iff dialog creation should be silent (that is, no event should be fired)
        * @return {DetailsDialog} the dialog just created
        */
-      addDialog: function(silent) {
-          var dialog = this._addDialog();
+      addDialog : function (silent, count) {
+          var dialog = this._addDialog(count);
+          this._setGlobalQualifierCount &amp;&amp; count >= this._globalQualifierCount() &amp;&amp; this._setGlobalQualifierCount(++count);
           this._dialogMap[dialog.getID()] = dialog;
           this._applyDialogOptions(dialog);
           !this._allowMultiDialogs &amp;&amp; this._removeDetailsClickListener();
           this._dialogHolder.show();
           if (!silent) {
-              Event.fire(this._qualifiersContainer, this._dataName + ':dialog:added', {'element': dialog.getDialog()});
+              Event.fire(this._qualifiersContainer, this._dataName + ':dialog:added', {'element' : dialog.getDialog()});
+              Event.fire(document, this._dataName + ':dialog:added', {'element' : dialog.getDialog()});
           }
           return dialog;
       },
@@ -6686,10 +6815,29 @@ document.observe("xwiki:dom:updated", init);
           return summaryItems ? summaryItems.length : 0;
       },
 
-      _setQualifiers: function(qualifiers) {
+      _disableCheckBox : function (termData) {
+          termData.down('input.term-status').hide();
+          termData.down('label').observe('click', function(event) {
+              event.preventDefault();
+          });
+      },
+
+      _getHiddenTermInputs : function () {
+          if (this._termDataClass) {
+              var affected = this.isAffected();
+              var phenoTipsName = this._termDataClass + this._dataName;
+              var phenoTipsStatus = this._termDataClass + "affected";
+              return '&lt;input class="term-id" type="hidden" value="' + this._termID + '" name="' + phenoTipsName + '"&gt;'
+                  + '&lt;input class="affected-status" type="hidden" value="' + affected + '" name="' + phenoTipsStatus + '"&gt;';
+          } else {
+              return '&lt;input class="term-id" type="hidden" value="' + this._termID + '"&gt;'
+          }
+      },
+
+      _setQualifiers : function (qualifiers, silent) {
           var _this = this;
-          qualifiers.forEach(function(qualifier) {
-              _this.addDialog(true).setValues(qualifier).blur();
+          qualifiers.forEach(function (qualifier) {
+              _this.addDialog(silent, qualifier.count).setValues(qualifier).blur();
           });
           this._allowMultiDialogs &amp;&amp; this._addDetailsClickListener();
       },
@@ -6714,31 +6862,36 @@ document.observe("xwiki:dom:updated", init);
        * Builds an empty container that will hold qualifiers dialogs for a term.
        * @private
        */
-      _buildEmptyContainer: function() {
+      _buildEmptyContainer : function () {
           this._qualifiersContainer = new Element('table', {'class' : 'summary-group ' + this._dataName + "-summary-group"});
           this._qualifiersContainer.name = this._dataName;
 
           this._dialogHolder = new Element('td', {'class' : 'dialog-holder'});
 
           var tbody = new Element('tbody')
-            .insert(new Element('tr', {'class' : 'term-holder'})
-              .insert(new Element('td')
-                .insert(new Element('span', {'class' : 'term-data'}))
-                .insert(new Element('span', {'class' : 'delete-button-holder'}))))
-            .insert(new Element('tr')
-              .insert(this._dialogHolder))
-            .insert(new Element('tr')
-              .insert(new Element('td', {'class' : 'add-button-holder'})));
+              .insert(new Element('tr', {'class' : 'term-holder'})
+                  .insert(new Element('td')
+                      .insert(new Element('span', {'class' : 'term-data'}))
+                      .insert(new Element('span', {'class' : 'delete-button-holder'}))))
+              .insert(new Element('tr')
+                  .insert(this._dialogHolder))
+              .insert(new Element('tr')
+                  .insert(new Element('td', {'class' : 'add-button-holder'})));
 
           this._qualifiersContainer.insert(tbody);
           this._dialogHolder.hide();
       },
 
-      _addTooltip: function(tooltip) {
+      _addTooltip : function (tooltip) {
           if (!tooltip) { return; }
-          var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton ' + tooltip, 'title' : this.getID()});
-          new PhenoTips.widgets.HelpButton(infoTool);
+          var infoTool = "";
           var termData = this._qualifiersContainer.down('span.term-data');
+          if ("notmapped" === tooltip) {
+              infoTool = new Element('span', {'class' : 'fa fa-exclamation-triangle'});
+          } else {
+              infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton ' + tooltip, 'title' : this.getID()});
+              new PhenoTips.widgets.HelpButton(infoTool);
+          }
           termData.insert(infoTool);
       },
 
@@ -6747,10 +6900,12 @@ document.observe("xwiki:dom:updated", init);
        *
        * @private
        */
-      _initButtons: function() {
+      _initButtons : function () {
           this._addButtonHolder = this._qualifiersContainer.down('td.add-button-holder');
-          this._addDetailsButton = new Element('span', {'id' : 'add_details_' + this._termID,
-            'class' : 'patient-menu-button patient-details-add'}).update('&lt;i class="fa fa-plus"&gt;&lt;/i&gt; ...');
+          this._addDetailsButton = new Element('span', {
+              'id' : 'add_details_' + this._termID,
+              'class' : 'patient-menu-button patient-details-add'
+          }).update('&lt;i class="fa fa-plus"&gt;&lt;/i&gt; ...');
 
           this._addButtonHolder.insert(this._addDetailsButton);
 
@@ -6759,8 +6914,10 @@ document.observe("xwiki:dom:updated", init);
           if (this._disableTermDelete) {
               this._deleteButtonHolder.hide();
           } else {
-              this._deleteButton = new Element('span', {'id' : 'delete_term_' + this._termID,
-                'class' : 'action-done patient-term-delete clickable'}).update('✖');
+              this._deleteButton = new Element('span', {
+                  'id' : 'delete_term_' + this._termID,
+                  'class' : 'action-done patient-term-delete clickable'
+              }).update('✖');
               this._deleteButtonHolder.insert(this._deleteButton);
               this._addTermDeleteListener();
           }
@@ -6788,33 +6945,59 @@ document.observe("xwiki:dom:updated", init);
        * @return {DetailsDialog} the attached dialog
        * @private
        */
-      _addDialog: function() {
-          var qualifierID = this._termID + "_" + this._qualifierNo++;
-          return new PhenoTips.widgets.DetailsDialog(qualifierID, this._dataName, this._dialogHolder).attach();
+      _addDialog : function (count) {
+          var qualifierCount = (count != null &amp;&amp; count != undefined) ? count : this._qualifierNo;
+          var dialog = new PhenoTips.widgets.DetailsDialog(this._termID, this._dataName, this._dialogHolder, qualifierCount, this._qualifierDataClass).attach();
+          // Count the number of qualifiers for current term, regardless.
+          this._qualifierNo++
+          return dialog;
       },
 
       /**
        * Listens for click on the delete button.
        * @private
        */
-      _addTermDeleteListener: function() {
+      _addTermDeleteListener : function () {
           var _this = this;
-          this._deleteButton.observe('click', function() {
+          var deleteFx = function() {
               var idInput = _this._qualifiersContainer.down('input.term-id');
               var id = idInput &amp;&amp; idInput.value;
               _this._clearDetails();
               _this._removeTermDeleteListener();
               _this._qualifiersContainer.remove();
               Event.fire(_this._qualifiersContainer, _this._dataName + ':term:deleted', {'id' : id});
+          };
+          this._deleteButton.observe('click', function () {
+              if (_this._termDeleteAction) {
+                  _this._sendRemoveRequest(_this._deleteButton, _this._termDeleteAction, deleteFx, _this._qualifierNo);
+              } else {
+                  deleteFx();
+              }
           });
           this._deleteButtonHolder.show();
+      },
+
+      _sendRemoveRequest : function (deleteTrigger, ajaxDeleteAction, deleteElementsFx, confirmed) {
+          var requestHandlers = {
+              onCreate : function() {
+                  deleteTrigger.disabled = true;
+              },
+              onSuccess : function () {
+                  deleteElementsFx();
+              }
+          };
+          return confirmed
+              ? new XWiki.widgets.ConfirmedAjaxRequest(ajaxDeleteAction, requestHandlers, {
+                    confirmationText : "$!escapetool.javascript($services.localization.render('phenotips.widgets.detailsDialogGroup.termDeleteConfirmation'))"
+                })
+              : new Ajax.Request(ajaxDeleteAction, requestHandlers);
       },
 
       /**
        * Removes the click listener for delete button.
        * @private
        */
-      _removeTermDeleteListener: function() {
+      _removeTermDeleteListener : function () {
           this._deleteButton.stopObserving('click');
           this._deleteButtonHolder.hide();
       },
@@ -6823,18 +7006,18 @@ document.observe("xwiki:dom:updated", init);
        * Listens for term being selected.
        * @private
        */
-      _addOnTermSelectListener: function() {
+      _addOnTermSelectListener : function () {
           var _this = this;
           var statusInput = this._qualifiersContainer.down('input.term-status');
           // IE fix.
-          statusInput.observe('click', function(event) {
+          statusInput.observe('click', function (event) {
               event.stopPropagation();
           });
-          statusInput.observe('change', function(event) {
+          statusInput.observe('change', function (event) {
               event.stop();
               if (statusInput.checked) {
                   _this._allowMultiDialogs &amp;&amp; _this._addDetailsClickListener();
-                  _this.addDialog(false);
+                  _this.addDialog(false, _this._globalQualifierCount &amp;&amp; _this._globalQualifierCount());
               } else {
                   _this._removeDetailsClickListener();
                   _this.clearDetails();
@@ -6847,11 +7030,11 @@ document.observe("xwiki:dom:updated", init);
        * Adds a listener for the add details button.
        * @private
        */
-      _addDetailsClickListener: function() {
+      _addDetailsClickListener : function () {
           var _this = this;
-          this._addDetailsButton.observe('click', function(event) {
+          this._addDetailsButton.observe('click', function (event) {
               event.stop();
-              _this.addDialog(false)
+              _this.addDialog(false, _this._globalQualifierCount &amp;&amp; _this._globalQualifierCount())
           });
           this._addButtonHolder.show();
       },
@@ -6869,23 +7052,24 @@ document.observe("xwiki:dom:updated", init);
        * Adds a listener for a dialog being deleted.
        * @private
        */
-      _addDialogDeletedListener: function() {
+      _addDialogDeletedListener : function () {
           var _this = this;
-          this._dialogHolder.observe(_this._dataName + ':dialog:deleted', function(event) {
+          this._dialogHolder.observe(_this._dataName + ':dialog:deleted', function (event) {
               if (!this.down()) {
                   // Stop event propagation and clear everything.
                   event.stop();
                   _this.clearDetails();
+                  _this._nonselectable &amp;&amp; _this._deleteButton.click();
               } else {
                   event.memo &amp;&amp; event.memo.id &amp;&amp; (delete _this._dialogMap[event.memo.id]);
               }
           });
       },
 
-      _addDialogFocusManagers: function() {
+      _addDialogFocusManagers : function () {
           var _this = this;
           // Observe adding of a new dialog. Want to blur any focused dialogs and focus the added dialog.
-          document.observe(this._dataName + ':dialog:added', function(event) {
+          document.observe(this._dataName + ':dialog:added', function (event) {
               var addedDialog = event.memo &amp;&amp; event.memo.element;
               if (!addedDialog) { return; }
               if (addedDialog.up('td.dialog-holder') === _this._dialogHolder) {
@@ -6932,8 +7116,8 @@ document.observe("xwiki:dom:updated", init);
        * @param elem a dialog element
        * @private
        */
-      _blur: function(elem) {
-          var elemID = elem.down('input').value;
+      _blur : function (elem) {
+          var elemID = elem.down('input').id;
           var dialog = this._dialogMap[elemID];
           if (dialog) {
               dialog.blur();
@@ -6947,12 +7131,12 @@ document.observe("xwiki:dom:updated", init);
        * @param elem a dialog element
        * @private
        */
-      _focus: function(elem) {
-          var elemID = elem.down('input').value;
+      _focus : function (elem) {
+          var elemID = elem.down('input').id;
           var dialog = this._dialogMap[elemID];
           if (dialog) {
-              dialog.focus();
-              Event.fire(this._qualifiersContainer, this._dataName + ':dialog:focused');
+            dialog.focus();
+            Event.fire(this._qualifiersContainer, this._dataName + ':dialog:focused');
           }
       },
 
