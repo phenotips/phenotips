@@ -236,6 +236,20 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
       <valueField>doc.name</valueField>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </phenotypeMapping>
+    <hideInternalIds>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>hideInternalIds</name>
+      <number>9</number>
+      <prettyName>Add ability to show external identifiers in place of internal ones in the Patient and Family record forms</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </hideInternalIds>
   </class>
   <object>
     <name>PhenoTips.DBConfigurationClass</name>

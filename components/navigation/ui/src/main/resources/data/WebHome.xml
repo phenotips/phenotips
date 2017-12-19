@@ -254,12 +254,29 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <valueField>doc.name</valueField>
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
       </phenotypeMapping>
+      <hideInternalIds>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>hideInternalIds</name>
+        <number>9</number>
+        <prettyName>Add ability to show external identifiers in place of internal ones in the Patient and Family record forms</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </hideInternalIds>
     </class>
     <property>
       <dateOfBirthFormat>yyyy-MM-dd</dateOfBirthFormat>
     </property>
     <property>
       <enableImperialUnitSystem>0</enableImperialUnitSystem>
+    </property>
+    <property>
+      <hideInternalIds>0</hideInternalIds>
     </property>
     <property>
       <livetableColumns>
@@ -1815,6 +1832,7 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##</codeToExecute>
         <value>dateOfBirthFormat</value>
         <value>enableImperialUnitSystem</value>
         <value>measurementUnitSystem</value>
+        <value>hideInternalIds</value>
       </propertiesToShow>
     </property>
     <property>
@@ -2301,7 +2319,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
     &lt;a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))" title="Home" rel="home"&gt;&lt;span class="fa fa-home fa-lg"&gt;&lt;/span&gt;&lt;/a&gt; &amp;raquo;
     &lt;a href="$!xwiki.getURL("${doc.space}.WebHome")" &gt;$!{doc.space}&lt;/a&gt;
     #if ($doc.name != 'WebHome')
-      &amp;raquo; &lt;a href="$doc.getURL()"&gt;$doc.displayTitle&lt;/a&gt;
+      &amp;raquo; &lt;a href="$doc.getURL()"&gt;#pageExternalTitle($doc.displayTitle)&lt;/a&gt;
     #end
   &lt;/div&gt;
 &lt;/div&gt;
