@@ -108,7 +108,9 @@
       </scope>
     </class>
     <property>
-      <content>{{velocity}}
+      <content>(% class="hidden" %)((({{include reference="PhenoTips.CreatePatientRecordForm" /}})))
+
+{{velocity}}
 #if ($isGuest)
 #set ($availableData = $services.query.xwql("from doc.object(PhenoTips.PatientClass) as pat, doc.object(PhenoTips.OwnerClass) as owner where doc.fullName &lt;&gt; 'PhenoTips.PatientTemplate' and (owner.owner = '' or owner.owner is null) and pat.identifier &gt;= 0").addFilter('unique').count())
 #else
