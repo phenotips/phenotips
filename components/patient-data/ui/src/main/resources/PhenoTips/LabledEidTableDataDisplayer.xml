@@ -159,7 +159,7 @@
 
       var idx = this._eidTable.select('td.labeled-eid').size() + 1;
       var eidIndex = 0;
-      if (idx > 1) {
+      if (idx &gt; 1) {
         eidIndex = parseInt(this._eidTable.select('td.labeled-eid')[idx - 2].down('input.eid-index').value, 10) + 1;
       }
 
@@ -325,10 +325,10 @@ document.observe('xwiki:dom:loaded', function() {
 td.labeled-eid {
   border: none;
 }
-table.extradata-list.labeled-eid-list tr > td {
+table.extradata-list.labeled-eid-list tr &gt; td {
   padding-bottom: 1em;
 }
-table.extradata-list.labeled-eid-list tr:last-child > td {
+table.extradata-list.labeled-eid-list tr:last-child &gt; td {
   padding-bottom: 0.5em;
 }
 td.labeled-eid.label {
