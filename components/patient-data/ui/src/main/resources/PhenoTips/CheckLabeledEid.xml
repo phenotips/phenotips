@@ -49,7 +49,7 @@
   #set ($identifier = "$!{request.id}")
   #set ($identifierClassName = 'PhenoTips.LabeledIdentifierClass')
   #set ($patientDoc = $xwiki.getDocument($services.model.resolveDocument($identifier, $services.model.resolveSpace('data'))))
-  #set ($matchingDocuments = $xwiki.wrapDocs($services.query.xwql("from doc.object(PhenoTips.LabeledIdentifierClass) lid where lid.value = :value and doc.fullName &lt;&gt; :selfName").bindValue('value', $eidValue).bindValue('selfName', $services.model.serialize($services.model.resolveDocument($identifier), 'compactwiki')).execute()))
+  #set ($matchingDocuments = $xwiki.wrapDocs($services.query.xwql("from doc.object(PhenoTips.LabeledIdentifierClass) lid where lid.value = :value and lid.label = :label and doc.fullName &lt;&gt; :selfName").bindValue('value', $eidValue).bindValue('label', $eidLabel).bindValue('selfName', $services.model.serialize($services.model.resolveDocument($identifier), 'compactwiki')).execute()))
   #if ($eidLabel == '' || $eidValue == '')
     $response.setStatus(403)
     Empty
