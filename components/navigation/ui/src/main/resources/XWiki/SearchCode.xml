@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>XWiki</web>
+  <name>SearchCode</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1272532474000</creationDate>
+  <parent>Main.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1513738589000</date>
+  <contentUpdateDate>1513738575000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity output="false"}}
+#set ($searchConfigDoc = $xwiki.getDocument('XWiki.SearchConfig'))
+#set ($searchConfigClass = $xwiki.getDocument('XWiki.SearchConfigClass').xWikiClass)
+
+## Get or create the configuration object
+#set ($searchConfigObj = $searchConfigDoc.getObject($searchConfigClass.name, true))
+#set ($searchEngine = "$!{searchConfigObj.getProperty('engine').value}")
+
+## Default search engine to use in case the configured one is not found:
+## - 'solr' is the preferred default
+## - 'database' is the fall-back default
+#set ($searchExtensions = $services.uix.getExtensions('org.xwiki.platform.search', {'sortByCustomOrder' : "${searchEngine}, solr, database"}))
+#if (!$searchExtensions.isEmpty())
+  #set ($searchExtension = $searchExtensions[0])
+
+  ## Update the configuration if it is out of synch with the reality (installed extensions).
+  #set ($needsUpdate = $searchEngine != $searchExtension.id)
+  #set ($searchEngine = $searchExtension.id)
+  #if ($needsUpdate &amp;&amp; $searchConfigDoc.hasAccessLevel('edit'))
+    #if ($searchConfigDoc.parent == '')
+      $searchConfigDoc.setParent('XWiki.SearchAdmin')
+    #end
+    ## Save the updated configuration. Make sure to set it hidden as it's a technical document.
+    $searchConfigObj.set('engine', $searchEngine)
+    $searchConfigDoc.setHidden(true)
+    $searchConfigDoc.save()
+  #end
+
+  #set ($searchPage = $searchExtension.parameters.search)
+  #set ($searchAdminPage = $searchExtension.parameters.admin)
+#else
+  ## No Search UI Extension was found!
+  #set ($searchPage = '')
+  #set ($searchAdminPage = '')
+#end
+{{/velocity}}</content>
+  <object>
+    <name>XWiki.SearchCode</name>
+    <number>0</number>
+    <className>XWiki.XWikiRights</className>
+    <guid>766ff45a-2086-444f-a4bf-8343bfb8e33b</guid>
+    <class>
+      <name>XWiki.XWikiRights</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <allow>
+        <defaultValue>1</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>allow</displayType>
+        <name>allow</name>
+        <number>4</number>
+        <prettyName>Allow/Deny</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </allow>
+      <groups>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>groups</name>
+        <number>1</number>
+        <picker>1</picker>
+        <prettyName>Groups</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.GroupsClass</classType>
+      </groups>
+      <levels>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>1</multiSelect>
+        <name>levels</name>
+        <number>2</number>
+        <prettyName>Levels</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>3</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.LevelsClass</classType>
+      </levels>
+      <users>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>users</name>
+        <number>3</number>
+        <picker>1</picker>
+        <prettyName>Users</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
+      </users>
+    </class>
+    <property>
+      <allow>1</allow>
+    </property>
+    <property>
+      <groups>XWiki.XWikiAllGroup</groups>
+    </property>
+    <property>
+      <levels>view</levels>
+    </property>
+    <property>
+      <users>XWiki.XWikiGuest</users>
+    </property>
+  </object>
+</xwikidoc>
