@@ -129,7 +129,7 @@
         this.eidClassName = 'PhenoTips.LabeledIdentifierClass';
 
         // Edit mode
-        if($('inline')) {
+        if($('inline') &amp;&amp; $$('.labeled-eid.label.eid-ZZEID_NUMBER_PLACEHOLDERZZ')[0]) {
           this.getNewEidRowTemplate();
           $$('a.button.add-labeled-eid.add-data-button').invoke('observe', 'click', this.ajaxAddEidData.bindAsEventListener(this));
           $$('a.action.delete-eid.button.secondary').invoke('observe', 'click', this.ajaxDeleteEidData.bindAsEventListener(this));
