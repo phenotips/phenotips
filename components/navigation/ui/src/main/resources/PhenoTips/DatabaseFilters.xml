@@ -71,7 +71,7 @@
 #end
 ##
 #macro (__filters_LabeledEidValue $label $field_name $eidClass)
-{{html clean="false"}}&lt;label&gt;$label &lt;input type="text" value="" name="${field_name}" /&gt;&lt;/label&gt;&lt;input type="hidden" value="$eidClass" name="${field_name}/class" /&gt;&lt;input type="hidden" value="label" name="${field_name}/dependsOn" /&gt;{{/html}}
+{{html clean="false"}}&lt;label&gt;$label &lt;input type="text" value="" name="${field_name}" /&gt;&lt;/label&gt;&lt;input type="hidden" value="$eidClass" name="${field_name}/class" /&gt;{{/html}}
 #end
 ##
 #macro (__filters_LabeledEidOptions)
