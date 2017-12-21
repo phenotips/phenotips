@@ -1361,9 +1361,9 @@ $xwiki.ssx.use($serviceDocName)
         #foreach ($l in $_service.listVisibilityOptions())
           &lt;input type="hidden" name="visibility" value="${l.name}" alt="$!{l.label}" title="$!{l.description}" /&gt;{{icon name="${l.name}" /}}
         #end
-        &lt;input type="text" class="suggestUsersAndGroups" value="" placeholder="$services.localization.render('phenotips.accessRightsManagement.newCollaborator')" id="new-collaborator-input" /&gt;
+        &lt;input type="text" class="suggestUsersAndGroups" value="" placeholder="$services.localization.render('phenotips.accessRightsManagement.newUserOrGroup')" id="new-collaborator-input" /&gt;
         #if ($canTransfer)
-          &lt;input type="text" id="new-owner-input" class="suggestUsersAndGroups" value="" placeholder="$services.localization.render('phenotips.accessRightsManagement.newOwner')" /&gt;
+          &lt;input type="text" id="new-owner-input" class="suggestUsersAndGroups" value="" placeholder="$services.localization.render('phenotips.accessRightsManagement.newUserOrGroup')" /&gt;
         #end
       {{/html}})))
     #end
