@@ -26,6 +26,10 @@ import org.xwiki.rest.XWikiResource;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Default implementation for {@link FamiliesSuggestionsResource} using XWiki's support for REST resources.
@@ -45,12 +49,20 @@ public class DefaultFamiliesSuggestionsResourceImpl extends XWikiResource implem
     public String suggestAsJSON(String input, int maxResults, String requiredPermission, String orderField,
         String order)
     {
+        if (StringUtils.isEmpty(input)) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+
         return this.familyExport.searchFamilies(input, maxResults, requiredPermission, orderField, order, true);
     }
 
     @Override
     public String suggestAsXML(String input, int maxResults, String requiredPermission, String orderField, String order)
     {
+        if (StringUtils.isEmpty(input)) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+
         return this.familyExport.searchFamilies(input, maxResults, requiredPermission, orderField, order, false);
     }
 }
