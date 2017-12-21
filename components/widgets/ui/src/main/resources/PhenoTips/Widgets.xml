@@ -5143,17 +5143,12 @@ document.observe("xwiki:dom:updated", init);
   var init = function(event) {
     var containers = (event &amp;&amp; event.memo.elements) || [$('body')];
     containers.each(function(container) {
-      container.select('input.suggestWorkgroups').each(function(input) {
+      container.select('input.suggestUsersAndGroups').each(function(input) {
         if (!input.hasClassName('initialized')) {
           var options = {
-            script: new XWiki.Document('SuggestWorkgroupsService', 'PhenoTips').getURL('get', 'outputSyntax=plain&amp;'),
-            noresults: "$services.localization.render('phenotips.widgets.workgroupPicker.noResults')"
+            script : XWiki.contextPath + "/rest/principals/suggest",
+            noresults: "$services.localization.render('phenotips.widgets.usersAndGroupsPicker.noResults')"
           };
-          // The picker suggests by default local workgroups.
-          if (input.hasClassName('global')) {
-            // Suggest global users or groups.
-            options.script = options.script + 'wiki=global&amp;';
-          }
           new XWiki.widgets.UserPicker(input, options);
           input.addClassName('initialized');
         }
