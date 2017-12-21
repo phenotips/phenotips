@@ -29,7 +29,7 @@
   <name>PhenoTips - Users and Groups - Java APIs</name>
 
   <properties>
-    <coverage.instructionRatio>0.86</coverage.instructionRatio>
+    <coverage.instructionRatio>0.93</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -101,6 +101,12 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <!-- Test dependencies -->
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      <version>1.4.01</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-tool-test-component</artifactId>

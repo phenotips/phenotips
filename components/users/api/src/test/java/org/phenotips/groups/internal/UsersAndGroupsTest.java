@@ -50,6 +50,13 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSInput;
+import org.w3c.dom.ls.LSParser;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -364,5 +371,61 @@ public class UsersAndGroupsTest
         when(bridge.getDocument(mock)).thenThrow(new Exception("Failed"));
         org.junit.Assert.assertEquals(false, usersAndGroups.isUser(mock));
         org.junit.Assert.assertEquals(false, usersAndGroups.isGroup(mock));
+    }
+
+    @Test
+    public void suggestUserAsXML() throws Exception
+    {
+        String input = "a";
+
+        String userName = "Admin";
+        String userFullName = "XWiki:XWiki.Admin";
+
+        JSONArray resultsArray = new JSONArray();
+        List<String> usersList = new LinkedList<String>();
+        usersList.add(userFullName);
+
+        JSONObject resultItem = new JSONObject();
+        resultItem.put("id", userFullName);
+        resultItem.put("value", userName);
+        resultItem.put("description", userFullName);
+        resultItem.put("info", userName);
+        resultsArray.put(resultItem);
+
+        Query q = mock(Query.class);
+        when(q.bindValue("input", "%%" + input + "%%")).thenReturn(q);
+        when(q.<String>execute()).thenReturn(usersList);
+
+        QueryManager qm = this.mocker.getInstance(QueryManager.class);
+        when(qm.createQuery(usersQueryString, Query.XWQL)).thenReturn(q);
+
+        User u = mock(User.class);
+        when(u.getName()).thenReturn(userName);
+        when(u.getUsername()).thenReturn(userFullName);
+
+        UserManager um = this.mocker.getInstance(UserManager.class);
+        when(um.getUser(userFullName)).thenReturn(u);
+
+        String searchResult = this.mocker.getComponentUnderTest().search(input, 10, true, false, false);
+
+        Document response = parseXML(searchResult);
+        NodeList suggestions = response.getElementsByTagName("rs");
+
+        Assert.assertEquals(1, suggestions.getLength());
+        Assert.assertEquals("XWiki:XWiki.Admin", ((Element) suggestions.item(0)).getAttribute("id"));
+        Assert.assertEquals("Admin", ((Element) suggestions.item(0)).getAttribute("info"));
+        Assert.assertEquals("Admin", ((Element) suggestions.item(0)).getAttribute("value"));
+        Assert.assertEquals("XWiki:XWiki.Admin", ((Element) suggestions.item(0)).getTextContent());
+    }
+
+    private Document parseXML(String input) throws Exception
+    {
+        DOMImplementationLS implementation =
+            (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS 3.0");
+        LSInput in = implementation.createLSInput();
+        in.setStringData(input);
+        LSParser parser = implementation.createLSParser(DOMImplementationLS.MODE_SYNCHRONOUS, null);
+        Document doc = parser.parse(in);
+        return doc;
     }
 }
