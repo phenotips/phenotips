@@ -28,7 +28,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 /**
  * Root resource for working with users and groups of users.
@@ -49,11 +48,28 @@ public interface PrincipalsSuggestResource
      * @param maxResults The maximum number of results to be returned
      * @param searchUsers if true, includes users in result
      * @param searchGroups if true, includes groups in result
-     * @return a json object containing all results found
+     * @return a JSON object containing all results found
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    Response searchUsersAndGroups(
+    String searchUsersAndGroupsAsJSON(
+        @QueryParam("input") String input,
+        @QueryParam("maxResults") @DefaultValue("10") int maxResults,
+        @QueryParam("searchUsers") @DefaultValue("true") boolean searchUsers,
+        @QueryParam("searchGroups") @DefaultValue("true") boolean searchGroups);
+
+    /**
+     * Searches for users and/or groups matching the input parameter. Result is returned as XML
+     *
+     * @param input string to look for
+     * @param maxResults The maximum number of results to be returned
+     * @param searchUsers if true, includes users in result
+     * @param searchGroups if true, includes groups in result
+     * @return an XML object containing all results found
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_XML)
+    String searchUsersAndGroupsAsXML(
         @QueryParam("input") String input,
         @QueryParam("maxResults") @DefaultValue("10") int maxResults,
         @QueryParam("searchUsers") @DefaultValue("true") boolean searchUsers,

@@ -29,7 +29,7 @@
   <name>PhenoTips - Users and Groups - Java APIs</name>
 
   <properties>
-    <coverage.instructionRatio>0.93</coverage.instructionRatio>
+    <coverage.instructionRatio>0.86</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -51,6 +51,11 @@
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-observation-api</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-xml</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>

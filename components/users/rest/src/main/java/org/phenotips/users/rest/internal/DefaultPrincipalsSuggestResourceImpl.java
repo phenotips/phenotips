@@ -28,12 +28,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
-import org.slf4j.Logger;
 
 /**
  * Default implementation for {@link PrincipalsResource} using XWiki's support for REST resources.
@@ -46,33 +44,28 @@ import org.slf4j.Logger;
 @Singleton
 public class DefaultPrincipalsSuggestResourceImpl extends XWikiResource implements PrincipalsSuggestResource
 {
-    /** The logging object. */
-    @Inject
-    private Logger logger;
-
     @Inject
     private UsersAndGroups usersAndGroups;
 
-    /**
-     * Searches for users and/or groups matching the input parameter. Result is returned as JSON
-     *
-     * @param input string to look for
-     * @param maxResults The maximum number of results to be returned
-     * @param searchUsers if true, includes users in result
-     * @param searchGroups if true, includes groups in result
-     * @return a json object containing all results found
-     */
     @Override
-    public Response searchUsersAndGroups(String input, @DefaultValue("10") int maxResults, boolean searchUsers,
+    public String searchUsersAndGroupsAsJSON(String input, @DefaultValue("10") int maxResults, boolean searchUsers,
         boolean searchGroups)
     {
-        // Check if patient ID is provided.
-        if (StringUtils.isBlank(input)) {
-            this.logger.error("No search input is provided.");
-            return Response.status(Response.Status.BAD_REQUEST).build();
+        if (StringUtils.isEmpty(input)) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        JSONObject json = this.usersAndGroups.search(input, maxResults, searchUsers, searchGroups);
-        return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
+        return this.usersAndGroups.search(input, maxResults, searchUsers, searchGroups, true);
+    }
+
+    @Override
+    public String searchUsersAndGroupsAsXML(String input, @DefaultValue("10") int maxResults, boolean searchUsers,
+        boolean searchGroups)
+    {
+        if (StringUtils.isEmpty(input)) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+
+        return this.usersAndGroups.search(input, maxResults, searchUsers, searchGroups, false);
     }
 }
