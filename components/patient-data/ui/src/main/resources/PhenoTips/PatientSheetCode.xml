@@ -1812,7 +1812,7 @@ document.observe('xwiki:dom:loaded', function()
         if (addedItem) {
           addedItem.up('label').insert({before : new Element('span', {
                                                                'class' : 'fa fa-bolt',
-                                                               'title' : 'This phenotype was automatically added based on abnormal measurement values'
+                                                               'title' : "$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.autoselectedPhenotype'))"
           }).update(' ')});
         }
       }
