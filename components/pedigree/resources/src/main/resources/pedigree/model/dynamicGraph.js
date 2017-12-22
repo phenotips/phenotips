@@ -286,12 +286,29 @@ define([
             }
         },
 
+        _isDisplayedAsConsanguinous: function( v ) {
+            var consangr = editor.getGraph().isConsangrRelationship(v);
+            var nodeConsangrPreference = editor.getView().getNode(v).getConsanguinity();
+            if (nodeConsangrPreference == "N")
+                consangr = false;
+            if (nodeConsangrPreference == "Y")
+                consangr = true;
+            return consangr;
+        },
+
         getPatientPhenotipsJSON: function( v )
         {
             if (!this.isPerson(v)) {
                 throw "Assertion failed: getPatientPhenotipsJSON() is applied to a non-person";
             }
-            return PhenotipsJSON.internalToPhenotipsJSON(this.getProperties(v), this.getRawJSONProperties(v));
+
+            var consangr = "N";
+            var parentPartnershipNode = editor.getGraph().getParentRelationship(v);
+            if (parentPartnershipNode && parentPartnershipNode !== null && this._isDisplayedAsConsanguinous(parentPartnershipNode)) {
+                consangr = "Y";
+            }
+
+            return PhenotipsJSON.internalToPhenotipsJSON(this.getProperties(v), this.getRawJSONProperties(v), consangr);
         },
 
         getRelationshipExternalJSON: function( v )

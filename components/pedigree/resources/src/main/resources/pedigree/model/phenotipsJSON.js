@@ -21,7 +21,7 @@ define([
      * Since some of the properties in Phenotips JSON are not stored internally, need to use the original JSON
      * as a base and only update those fields which have equivalents in internal format
      */
-    PhenotipsJSON.internalToPhenotipsJSON = function(internalProperties, initialPatientJSON)
+    PhenotipsJSON.internalToPhenotipsJSON = function(internalProperties, initialPatientJSON, consangr)
     {
         // To be more functional could have used Helpers.cloneObject(initialPatientJSON), but
         // that is inefficient (multiplied by the number of patient in a family) and in practice
@@ -90,6 +90,14 @@ define([
             }
         }
         initialPatientJSON["disorders"] = outputDisorders;
+
+        if (consangr && consangr === "Y") {
+            var familyHistory = internalProperties.hasOwnProperty("family_history")
+            ? internalProperties["family_history"]
+            : {};
+            familyHistory["consanguinity"] = true;
+            internalProperties["family_history"] = familyHistory;
+        }
 
         // TODO: convert Alive&Well into "clinicalStatus"?
 
