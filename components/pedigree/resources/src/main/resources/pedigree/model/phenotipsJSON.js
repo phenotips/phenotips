@@ -38,7 +38,7 @@ define([
 
         initialPatientJSON.sex = internalProperties.gender;
         if (initialPatientJSON.sex != "M" && initialPatientJSON.sex != "F" && initialPatientJSON.sex != "U") {
-            initialPatientJSON.sex = "U";  // pedigree suports more genders than PhenoTips as of right now
+            initialPatientJSON.sex = "U";  // pedigree supports more genders than PhenoTips as of right now
         }
 
         // ethnicities: not touched, since the meaning is different
@@ -82,7 +82,7 @@ define([
             // TODO: review logic here
             var match = disorderID.match(/^(\d+)$/);
             if (disorderName != disorderID && match) {
-                // must be  astandard term
+                // must be a standard term
                 disorderID = "MIM:" + match[1];
                 outputDisorders.push( {"id": disorderID, "label": disorderName} );
             } else {
@@ -96,7 +96,7 @@ define([
             ? internalProperties["family_history"]
             : {};
             familyHistory["consanguinity"] = true;
-            internalProperties["family_history"] = familyHistory;
+            initialPatientJSON["family_history"] = familyHistory;
         }
 
         // TODO: convert Alive&Well into "clinicalStatus"?

@@ -280,8 +280,8 @@ define([
             } else {
                 // else: keep properties as defined in the pedigree (e.g. via one of the old importers)
                 //       and replace null RAW properties with an empty object
-                // TODO: once converters ar eupdated to fill new format fields instead of internal fields,
-                //       setting RAW properties t onull will not be neded nay more
+                // TODO: once converters are updated to fill new format fields instead of internal fields,
+                //       setting RAW properties to null will not be needed any more
                 this.setRawJSONProperties(id, {});
             }
         },
