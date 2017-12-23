@@ -518,16 +518,14 @@
       this._ownerInfo = new Element('div', {id : 'owner', 'class' : 'intro xHint'});
       this._ownershipManager.update(this._ownerInfo);
 
-      // HACK: 'new-owner-input' control had to be put into the document from the start
+      // HACK: 'new-owner-input' suggest input had to be put into the document from the start
       //       to make suggest picker attach to it correctly; it now has to be moved into
       //       the `owner` section of this "access rights" dialog/popup
-      var newOwnerInput = $('new-owner-input') || '';
-
       this._defaultOwnerOption   = undefined;
       this._removeSelectedUser   = undefined;
-      this._canTransferOwnership = newOwnerInput;
+      this._newOwnerSelector = $('new-owner-div');
 
-      if (this._canTransferOwnership) {
+      if (this._newOwnerSelector) {
         var transfer = new Element('table', {id : 'transfer'});
         this._removeSelectedUser = function() {  // removes previously selected user displayed by the suggest user picker
             transfer.select('.delete-tool').each(function (item) {
@@ -558,8 +556,8 @@
         this._defaultOwnerOption = _getTransferOption("check", "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipKeepOwnership'))", "");
         transfer.insert(this._defaultOwnerOption);
         //this._checkKeepOwnershipOption();
-        if (newOwnerInput) {
-          transfer.insert(_getTransferOption("user", "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipTransferUser'))", newOwnerInput));
+        if (this._newOwnerSelector) {
+          transfer.insert(_getTransferOption("group", "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipTransferUser'))", this._newOwnerSelector));
         }
         transfer.select('.controlled-element input, .controlled-element select').each(function (item) {
           item.disable();
@@ -645,7 +643,10 @@
 
         // adding owner if owner was changed
         if (_this._ownershipManager.down('[name="transfer-to"]') &amp;&amp; !_this._ownershipManager.down('[name="transfer-to"]').checked) {
-          var newOwner = $('new-owner-input') ? $('new-owner-input').value : "";
+          var newOwner;
+          if (_this._newOwnerSelector &amp;&amp; _this._newOwnerSelector.down('.accepted-suggestions input')) {
+            newOwner = _this._newOwnerSelector.down('.accepted-suggestions input').value;
+          }
           if (newOwner != "") {
             dataObj.owner = {"id" : newOwner};
           }
@@ -903,7 +904,7 @@
 
       // if can not transfer ownership - remove Ownership section from dialog
       if (!canTransfer) {
-        this._canTransferOwnership = '';
+        this._newOwnerSelector = '';
         this._ownershipManager.down('#transfer').remove();
         this._updateOwnershipManager(data.owner);
       }
@@ -1363,7 +1364,7 @@ $xwiki.ssx.use($serviceDocName)
         #end
         &lt;input type="text" class="suggestUsersAndGroups" value="" placeholder="$services.localization.render('phenotips.accessRightsManagement.newUserOrGroup')" id="new-collaborator-input" /&gt;
         #if ($canTransfer)
-          &lt;input type="text" id="new-owner-input" class="suggestUsersAndGroups" value="" placeholder="$services.localization.render('phenotips.accessRightsManagement.newUserOrGroup')" /&gt;
+          &lt;div id="new-owner-div"&gt;&lt;input type="text" id="new-owner-input" class="suggestUsersAndGroups" value="" placeholder="$services.localization.render('phenotips.accessRightsManagement.newUserOrGroup')" /&gt;&lt;/div&gt;
         #end
       {{/html}})))
     #end
