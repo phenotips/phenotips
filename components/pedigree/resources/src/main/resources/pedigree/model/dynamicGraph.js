@@ -308,7 +308,10 @@ define([
                 consangr = "Y";
             }
 
-            return PhenotipsJSON.internalToPhenotipsJSON(this.getProperties(v), this.getRawJSONProperties(v), consangr);
+            var relationshipProperties = {};
+            relationshipProperties.consangr = consangr;
+
+            return PhenotipsJSON.internalToPhenotipsJSON(this.getProperties(v), this.getRawJSONProperties(v), relationshipProperties);
         },
 
         getRelationshipExternalJSON: function( v )
