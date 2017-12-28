@@ -95,7 +95,7 @@ public class DefaultSVGUtils implements SVGUtils
     public TemporaryResourceReference rasterizeToTemporaryResource(String content, int width, int height,
         DocumentReference targetContext) throws IOException
     {
-        File out = getContextTempFile(content.hashCode(), targetContext);
+        File out = getContextTempFile((content + "w" + width + "h" + height).hashCode(), targetContext);
         rasterizeToFile(content, out, width, height);
         return new TemporaryResourceReference(TEMP_DIR_NAME, out.getName(), targetContext);
     }
