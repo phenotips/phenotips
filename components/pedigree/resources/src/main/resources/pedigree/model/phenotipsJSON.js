@@ -91,11 +91,11 @@ define([
         }
         initialPatientJSON["disorders"] = outputDisorders;
 
-        if (relationshipProperties && relationshipProperties.consangr && relationshipProperties.consangr === "Y") {
+        if (relationshipProperties && relationshipProperties.consangr) {
             var familyHistory = internalProperties.hasOwnProperty("family_history")
             ? internalProperties["family_history"]
             : {};
-            familyHistory["consanguinity"] = true;
+            familyHistory["consanguinity"] = (relationshipProperties.consangr === "Y") ? true : false;
             initialPatientJSON["family_history"] = familyHistory;
         }
 
