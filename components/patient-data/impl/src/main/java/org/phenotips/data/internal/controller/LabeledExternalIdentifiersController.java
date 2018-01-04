@@ -28,15 +28,12 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -51,6 +48,7 @@ import javax.inject.Singleton;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -59,7 +57,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.BaseStringProperty;
 
 /**
  * Handles the patient's external identifiers.
@@ -70,7 +67,7 @@ import com.xpn.xwiki.objects.BaseStringProperty;
 @Component(roles = { PatientDataController.class })
 @Named("labeled_eids")
 @Singleton
-public class LabeledExternalIdentifiersController extends AbstractComplexController<Map<String, String>>
+public class LabeledExternalIdentifiersController implements PatientDataController<Pair<String, String>>
 {
     /** The XClass used for storing identifier data. */
     static final EntityReference IDENTIFIER_CLASS_REFERENCE = new EntityReference("LabeledIdentifierClass",
@@ -83,8 +80,6 @@ public class LabeledExternalIdentifiersController extends AbstractComplexControl
     private static final String INTERNAL_LABEL_KEY = "label";
 
     private static final String INTERNAL_VALUE_KEY = "value";
-
-    private static final List<String> INTERNAL_PROPERTIES_KEYS = Arrays.asList(INTERNAL_LABEL_KEY, INTERNAL_VALUE_KEY);
 
     @Inject
     private Logger logger;
@@ -100,31 +95,7 @@ public class LabeledExternalIdentifiersController extends AbstractComplexControl
     }
 
     @Override
-    protected List<String> getBooleanFields()
-    {
-        return Collections.emptyList();
-    }
-
-    @Override
-    protected List<String> getCodeFields()
-    {
-        return Collections.emptyList();
-    }
-
-    @Override
-    protected List<String> getProperties()
-    {
-        return INTERNAL_PROPERTIES_KEYS;
-    }
-
-    @Override
-    protected String getJsonPropertyName()
-    {
-        return IDENTIFIERS_STRING;
-    }
-
-    @Override
-    public PatientData<Map<String, String>> load(final Patient patient)
+    public PatientData<Pair<String, String>> load(final Patient patient)
     {
         try {
             final XWikiDocument doc = patient.getXDocument();
@@ -134,9 +105,9 @@ public class LabeledExternalIdentifiersController extends AbstractComplexControl
                 return null;
             }
             // Get data for all identifiers.
-            final List<Map<String, String>> allIdentifiers = collectIdentifiers(eidXWikiObjects);
+            final List<Pair<String, String>> allIdentifiers = toIdentifiers(eidXWikiObjects);
             // Return as a patient data class, or null if no identifiers are recorded.
-            return allIdentifiers.isEmpty() ? null : new IndexedPatientData<>(IDENTIFIERS_STRING, allIdentifiers);
+            return allIdentifiers.isEmpty() ? null : new IndexedPatientData<>(CONTROLLER_NAME, allIdentifiers);
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen "
                 + "error has occurred during controller loading ", e.getMessage());
@@ -145,75 +116,40 @@ public class LabeledExternalIdentifiersController extends AbstractComplexControl
     }
 
     /**
-     * Takes a list of {@link BaseObject} of {@code LabeledIdentifierClass} and returns a list of {@link Map}, where
-     * each map contains properties for a {@code LabeledIdentifierClass}.
+     * Takes a list of {@link BaseObject} of {@code LabeledIdentifierClass} and returns a list of {@link Pair}, where
+     * each pair connects a label and its corresponding value.
      *
      * @param identifierClassXWikiObjects the XWiki {@link BaseObject} of {@code LabeledIdentifierClass}
-     * @return a list of {@link Map} of properties for each {@link BaseObject} of {@code LabeledIdentifierClass}
+     * @return a list of {@link Pair}s of identifiers for each non-empty {@link BaseObject} of
+     *         {@code LabeledIdentifierClass}
      */
-    private List<Map<String, String>> collectIdentifiers(@Nonnull final List<BaseObject> identifierClassXWikiObjects)
+    private List<Pair<String, String>> toIdentifiers(@Nonnull final List<BaseObject> identifierClassXWikiObjects)
     {
-        final List<Map<String, String>> allIdentifiers = identifierClassXWikiObjects.stream()
-                .filter(identifierObject -> !identifierIsEmpty(identifierObject))
-                .map(this::collectIdentifierProperties).collect(Collectors.toList());
+        final List<Pair<String, String>> allIdentifiers = identifierClassXWikiObjects
+            .stream()
+            .filter(Objects::nonNull)
+            .map(this::toIdentifier)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
         return Collections.unmodifiableList(allIdentifiers);
     }
 
     /**
-     * Takes a {@link BaseObject} of {@code LabeledIdentifierClass} and returns a {@link Map} of properties for the
-     * given {@link BaseObject}.
+     * Takes a {@link BaseObject} of {@code LabeledIdentifierClass} and returns a {@link Pair} connecting a label and
+     * its corresponding value.
      *
      * @param identifierObject the XWiki {@link BaseObject} of {@code LabeledIdentifierClass}
+     * @return a {@link Pair} with the label on the left (key) and the value on the right (value), either of which may
+     *         be blank, but not both; if both the label and the value are empty, {@code null} is returned
      */
-    private Map<String, String> collectIdentifierProperties(@Nonnull final BaseObject identifierObject)
+    private Pair<String, String> toIdentifier(@Nonnull final BaseObject identifierObject)
     {
-        final Map<String, String> identifierProperties = INTERNAL_PROPERTIES_KEYS.stream()
-            .collect(HashMap::new, (map, property) -> putIfNotBlank(map, property, identifierObject), HashMap::putAll);
-        return Collections.unmodifiableMap(identifierProperties);
-    }
-
-    /**
-     * Retrieves a value for {@code property}, and adds the {@code property} key and calculated value pair to
-     * {@code dataMap} iff the calculated value is not blank.
-     *
-     * @param dataMap the map where the key-value pairs will be added
-     * @param property the property of interest
-     * @param identifierObject the {@link BaseObject} for the identifier
-     */
-    private void putIfNotBlank(
-        @Nonnull final Map<String, String> dataMap,
-        @Nonnull final String property,
-        @Nonnull final BaseObject identifierObject)
-    {
-        final String value = getFieldValue(identifierObject, property);
-        if (StringUtils.isNotBlank(value)) {
-            dataMap.put(property, value);
+        String label = identifierObject.getStringValue(INTERNAL_LABEL_KEY);
+        String value = identifierObject.getStringValue(INTERNAL_VALUE_KEY);
+        if (StringUtils.isAllBlank(label, value)) {
+            return null;
         }
-    }
-
-    /**
-     * Takes a {@link BaseObject} of {@code LabeledIdentifierClass} and the name of some property of interest, and
-     * returns the value for the provided property as string, or null if no such property exists.
-     *
-     * @param identifierObject the XWiki {@link BaseObject} of {@code LabeledIdentifierClass}
-     * @param property the name of property of interest as string
-     * @return the stored value for the given property, as string, null if no such property exists
-     */
-    private String getFieldValue(@Nonnull final BaseObject identifierObject, @Nonnull final String property)
-    {
-        final BaseStringProperty field = (BaseStringProperty) identifierObject.getField(property);
-        return field == null ? null : field.getValue();
-    }
-
-    /**
-     * Takes a {@link BaseObject} of {@code LabeledIdentifierClass} and returns true iff this object contains no data.
-     *
-     * @param identifierObject the XWiki {@link BaseObject} of {@code LabeledIdentifierClass}
-     * @return true iff the {@link BaseObject} contains no data, false otherwise.
-     */
-    private boolean identifierIsEmpty(@Nullable final BaseObject identifierObject)
-    {
-        return identifierObject == null || identifierObject.getFieldList().isEmpty();
+        return Pair.of(label, value);
     }
 
     @Override
@@ -228,102 +164,103 @@ public class LabeledExternalIdentifiersController extends AbstractComplexControl
     @Override
     public void writeJSON(@Nonnull final Patient patient, @Nonnull final JSONObject json)
     {
-        final PatientData<Map<String, String>> identifiers = patient.getData(IDENTIFIERS_STRING);
+        final PatientData<Pair<String, String>> identifiers = patient.getData(IDENTIFIERS_STRING);
         final JSONArray eidsJSON = (identifiers != null && identifiers.isIndexed() && identifiers.size() > 0)
-            ? getIdentifiersAsJSONArray(identifiers)
-            : new JSONArray();
-        json.put(getJsonPropertyName(), eidsJSON);
+            ? toJSON(identifiers)
+            : null;
+        json.putOpt(IDENTIFIERS_STRING, eidsJSON);
     }
 
     /**
-     * Takes a {@link PatientData} object containing a collection of {@link Map} for each identifier object stored in
+     * Takes a {@link PatientData} object containing a list of {@link Pair}s for each identifier object stored in
      * patient and returns a {@link JSONArray} of the stored data.
      *
      * @param identifiers a {@link PatientData} object defining existing external identifiers for the patient
-     * @return external identifiers data as {@link JSONArray}
+     * @return external identifiers data as a {@link JSONArray}
      */
-    private JSONArray getIdentifiersAsJSONArray(@Nonnull final PatientData<Map<String, String>> identifiers)
+    private JSONArray toJSON(@Nonnull final PatientData<Pair<String, String>> identifiers)
     {
         final JSONArray identifiersJSON = new JSONArray();
-        for (final Map<String, String> identifier : identifiers) {
-            // If the labeled identifier has no label, then it is invalid. Do not add.
-            if (StringUtils.isNotBlank(identifier.get(INTERNAL_LABEL_KEY))) {
-                final JSONObject identifierJSON = getIdentifierJSON(identifier);
+        for (final Pair<String, String> identifier : identifiers) {
+            final JSONObject identifierJSON = toJSON(identifier);
+            if (identifierJSON != null) {
                 identifiersJSON.put(identifierJSON);
             }
+        }
+        if (identifiersJSON.length() == 0) {
+            return null;
         }
         return identifiersJSON;
     }
 
     /**
-     * Takes a {@link Map} containing identifier data, and returns this data as {@link JSONObject}.
+     * Takes a {@link Pair} containing identifier data, and returns this data as a {@link JSONObject}.
      *
-     * @param identifier a {@link Map} containing information for an external identifier
+     * @param identifier a {@link Pair} containing information for an external identifier
      * @return external identifier data as {@link JSONObject}
      */
-    private JSONObject getIdentifierJSON(@Nonnull final Map<String, String> identifier)
+    private JSONObject toJSON(@Nonnull final Pair<String, String> identifier)
     {
+        if (StringUtils.isAllBlank(identifier.getKey(), identifier.getValue())) {
+            return null;
+        }
         final JSONObject identifierJSON = new JSONObject();
-        // Retrieve data for properties that we want to store in json format.
-        getProperties().forEach(property -> identifierJSON.putOpt(property, identifier.get(property)));
+        identifierJSON.put(INTERNAL_LABEL_KEY, identifier.getKey());
+        identifierJSON.put(INTERNAL_VALUE_KEY, identifier.getValue());
         return identifierJSON;
     }
 
     @Override
-    public PatientData<Map<String, String>> readJSON(@Nullable final JSONObject json)
+    public PatientData<Pair<String, String>> readJSON(@Nullable final JSONObject json)
     {
-        return json == null || !json.has(getJsonPropertyName())
-            ? null
-            : buildIdentifiersData(json.optJSONArray(getJsonPropertyName()));
+        if (json == null || !json.has(IDENTIFIERS_STRING)) {
+            return null;
+        }
+        List<Pair<String, String>> identifiers = toIdentifiers(json.optJSONArray(IDENTIFIERS_STRING));
+        if (identifiers == null || identifiers.isEmpty()) {
+            return null;
+        }
+        return new IndexedPatientData<>(CONTROLLER_NAME, identifiers);
     }
 
     /**
-     * Given a {@link JSONArray} containing all external identifiers for a patient, returns a {@link PatientData} class
-     * with this data.
+     * Given a {@link JSONArray} containing all external identifiers for a patient, returns a list of {@link Pair}s,
+     * where each pair connects a label and its corresponding value.
      *
      * @param identifiersJSON the {@link JSONArray} containing identifiers information
-     * @return a {@link PatientData} class containing identifiers information
+     * @return a list of {@link Pair}s of identifiers for each non-empty {@link JSONObject}
      */
-    private PatientData<Map<String, String>> buildIdentifiersData(@Nullable final JSONArray identifiersJSON)
+    private List<Pair<String, String>> toIdentifiers(@Nullable final JSONArray identifiersJSON)
     {
         if (identifiersJSON == null) {
-            return new IndexedPatientData<>(IDENTIFIERS_STRING, Collections.<Map<String, String>>emptyList());
+            return null;
         }
 
-        final List<Map<String, String>> identifiers =
+        final List<Pair<String, String>> identifiers =
             IntStream.range(0, identifiersJSON.length())
                 .mapToObj(identifiersJSON::optJSONObject)
-                .filter(this::isValidIdentifier)
-                .map(this::parseIdentifierProperties)
+                .map(this::toIdentifier)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        return new IndexedPatientData<>(IDENTIFIERS_STRING, Collections.unmodifiableList(identifiers));
+        return Collections.unmodifiableList(identifiers);
     }
 
     /**
-     * Given a {@link JSONObject} containing data for an external identifier, returns a {@link Map} with properties for
-     * this external identifier.
+     * Given a {@link JSONObject} containing data for an external identifier, returns a {@link Pair} connecting a label
+     * and its corresponding value.
      *
      * @param identifierJSON the {@link JSONObject} containing identifier information
-     * @return a {@link Map} containing external identifier properties
+     * @return a {@link Pair} with the label on the left (key) and the value on the right (value), either of which may
+     *         be blank, but not both; if both the label and the value are empty, {@code null} is returned
      */
-    private Map<String, String> parseIdentifierProperties(@Nonnull final JSONObject identifierJSON)
+    private Pair<String, String> toIdentifier(@Nonnull final JSONObject identifierJSON)
     {
-        final Map<String, String> identifier = getProperties().stream()
-            .filter(property -> identifierJSON.has(property) && identifierJSON.getString(property) != null)
-            .collect(Collectors.toMap(Function.identity(), identifierJSON::getString, (a, b) -> b));
-        return Collections.unmodifiableMap(identifier);
-    }
-
-    /**
-     * Returns true iff the {@link JSONObject} representation of the identifier is valid.
-     *
-     * @param identifierJSON the {@link JSONObject} containing identifier information
-     * @return true iff the {@link JSONObject} representation of the identifier is valid
-     */
-    private boolean isValidIdentifier(@Nonnull final JSONObject identifierJSON)
-    {
-        // The identifier is valid if it has a non-empty label.
-        return StringUtils.isNotBlank(identifierJSON.optString(INTERNAL_LABEL_KEY));
+        String label = identifierJSON.optString(INTERNAL_LABEL_KEY);
+        String value = identifierJSON.optString(INTERNAL_VALUE_KEY);
+        if (StringUtils.isAllBlank(label, value)) {
+            return null;
+        }
+        return Pair.of(label, value);
     }
 
     @Override
@@ -337,7 +274,7 @@ public class LabeledExternalIdentifiersController extends AbstractComplexControl
     {
         try {
             final XWikiDocument doc = patient.getXDocument();
-            final PatientData<Map<String, String>> identifiers = patient.getData(IDENTIFIERS_STRING);
+            final PatientData<Pair<String, String>> identifiers = patient.getData(IDENTIFIERS_STRING);
             if (identifiers == null) {
                 if (PatientWritePolicy.REPLACE.equals(policy)) {
                     doc.removeXObjects(IDENTIFIER_CLASS_REFERENCE);
@@ -358,19 +295,21 @@ public class LabeledExternalIdentifiersController extends AbstractComplexControl
     /**
      * Saves the identifiers data specified in the {@link PatientData} class.
      *
+     * @param doc the XWiki document for the patient
+     * @param patient the patient object with data to be saved
      * @param identifiers a {@link PatientData} object defining existing external identifiers for the patient
-     * @param doc the xWiki document for the patient
+     * @param doc the XWiki document for the patient
      */
     private void saveIdentifiers(
         @Nonnull final XWikiDocument doc,
         @Nonnull final Patient patient,
-        @Nonnull final PatientData<Map<String, String>> identifiers,
+        @Nonnull final PatientData<Pair<String, String>> identifiers,
         @Nonnull final PatientWritePolicy policy)
     {
         if (PatientWritePolicy.MERGE.equals(policy)) {
-            final Map<String, Map<String, String>> mergedEids = getMergedLabeledEids(load(patient), identifiers);
+            final List<Pair<String, String>> mergedEids = getMergedIdentifiers(load(patient), identifiers);
             doc.removeXObjects(IDENTIFIER_CLASS_REFERENCE);
-            mergedEids.forEach((label, identifier) -> saveIdentifier(identifier, doc));
+            mergedEids.forEach(identifier -> saveIdentifier(identifier, doc));
         } else {
             doc.removeXObjects(IDENTIFIER_CLASS_REFERENCE);
             identifiers.forEach(identifier -> saveIdentifier(identifier, doc));
@@ -378,56 +317,56 @@ public class LabeledExternalIdentifiersController extends AbstractComplexControl
     }
 
     /**
-     * Create a map of labeled external identifier name to labeled external identifier properties that merges existing
-     * and updated external identifier data.
+     * Create a list of labeled external identifiers that merges existing and updated external identifier data.
      *
      * @param storedEids the external labeled identifiers stored in patient
      * @param eids the external labeled identifiers to add to patient
-     * @return a map of labeled external identifier name to labeled external identifier properties
+     * @return a list of {@link Pair}s of identifiers
      */
-    private Map<String, Map<String, String>> getMergedLabeledEids(
-        @Nullable final PatientData<Map<String, String>> storedEids,
-        @Nonnull final PatientData<Map<String, String>> eids)
+    private List<Pair<String, String>> getMergedIdentifiers(
+        @Nullable final PatientData<Pair<String, String>> storedEids,
+        @Nonnull final PatientData<Pair<String, String>> eids)
     {
-        return Stream.of(storedEids, eids)
+        return new ArrayList<>(Stream.of(storedEids, eids)
             .filter(Objects::nonNull)
             .flatMap(s -> StreamSupport.stream(s.spliterator(), false))
-            .collect(Collectors.toMap(eid
-                -> eid.get(INTERNAL_LABEL_KEY), Function.identity(), (v1, v2) -> v2, LinkedHashMap::new));
+            .collect(Collectors.toCollection(LinkedHashSet::new)));
     }
 
     /**
-     * Saves the identifier data as specified in the {@link Map} of identifier properties.
+     * Saves the identifier data as specified in the {@link Pair} of identifier properties.
      *
-     * @param identifier a {@link Map} containing external identifier properties
-     * @param doc the xWiki document for the patient
+     * @param identifier a {@link Pair} containing information for an external identifier
+     * @param doc the XWiki document for the patient
      */
-    private void saveIdentifier(@Nonnull final Map<String, String> identifier, @Nonnull final XWikiDocument doc)
+    private void saveIdentifier(@Nonnull final Pair<String, String> identifier, @Nonnull final XWikiDocument doc)
     {
         final XWikiContext context = this.xcontextProvider.get();
         try {
-            final BaseObject xWikiObject = doc.newXObject(IDENTIFIER_CLASS_REFERENCE, context);
-            saveIdentifierProperties(identifier, xWikiObject, context);
+            final BaseObject xobject = doc.newXObject(IDENTIFIER_CLASS_REFERENCE, context);
+            saveIdentifierProperties(identifier, xobject, context);
         } catch (final XWikiException ex) {
             this.logger.error("Failed to save a specific identifier: [{}]", ex.getMessage());
         }
     }
 
     /**
-     * Saves the identifier properties specified in the {@link Map} to the provided {@link BaseObject}.
+     * Saves the identifier properties specified in the {@link Pair} to the provided {@link BaseObject}.
      *
-     * @param identifier a {@link Map} containing external identifier properties
-     * @param xWikiObject an xWiki {@link BaseObject} of {@code LabeledIdentifierClass} type
-     * @param context the xWiki context
+     * @param identifier a {@link Pair} containing information for an external identifier
+     * @param xobject an XWiki {@link BaseObject} of {@code LabeledIdentifierClass} type
+     * @param context the XWiki context
      */
-    private void saveIdentifierProperties(@Nonnull final Map<String, String> identifier,
-        @Nonnull final BaseObject xWikiObject, @Nonnull final XWikiContext context)
+    private void saveIdentifierProperties(@Nonnull final Pair<String, String> identifier,
+        @Nonnull final BaseObject xobject, @Nonnull final XWikiContext context)
     {
-        for (final String property : getProperties()) {
-            final String value = identifier.get(property);
-            if (value != null) {
-                xWikiObject.set(property, value, context);
-            }
+        final String label = identifier.getKey();
+        if (label != null) {
+            xobject.set(INTERNAL_LABEL_KEY, label, context);
+        }
+        final String value = identifier.getValue();
+        if (value != null) {
+            xobject.set(INTERNAL_VALUE_KEY, value, context);
         }
     }
 }
