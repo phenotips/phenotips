@@ -499,13 +499,14 @@
   #if ($isAdvancedUser &amp;&amp; $xcontext.action != 'view' || $viewer != 'history')
 ** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.history')&gt;&gt;path:$doc.getURL('view', 'viewer=history')|| target="_blank" title="$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.history.title')"]]
 #end
-  #if ($xwiki.getDocument($xwiki.getSpacePreference('colorTheme')).getObject('XWiki.PDFClass'))
-    #set ($pdfTemplate = $xwiki.getSpacePreference('colorTheme'))
-  #else
-    #set ($pdfTemplate = 'PhenoTips.PatientSheetCode')
-  #end
+#if ($xwiki.getDocument($xwiki.getSpacePreference('colorTheme')).getObject('XWiki.PDFClass'))
+  #set ($pdfTemplate = $xwiki.getSpacePreference('colorTheme'))
+#else
+  #set ($pdfTemplate = 'PhenoTips.PatientSheetCode')
+#end
 #if ($hasAdmin)
   ** (% class="empty" %)----
+** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.exportPDF')&gt;&gt;path:$doc.getURL('export', "format=pdf&amp;pdfcover=0&amp;pdftoc=0&amp;pdftemplate=${pdfTemplate}")|| class="export-link"]]
 ** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.exportXAR')&gt;&gt;path:$doc.getURL('export', "format=xar&amp;name=${doc.fullName}&amp;pages=${doc.fullName}")|| class="export-link"]]
 #end
 #foreach ($e in $services.uix.getExtensions("org.phenotips.familyRecordMenu.moreActions"))
