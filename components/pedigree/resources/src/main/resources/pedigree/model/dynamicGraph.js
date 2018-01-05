@@ -280,10 +280,20 @@ define([
             } else {
                 // else: keep properties as defined in the pedigree (e.g. via one of the old importers)
                 //       and replace null RAW properties with an empty object
-                // TODO: once converters ar eupdated to fill new format fields instead of internal fields,
-                //       setting RAW properties t onull will not be neded nay more
+                // TODO: once converters are updated to fill new format fields instead of internal fields,
+                //       setting RAW properties to null will not be needed any more
                 this.setRawJSONProperties(id, {});
             }
+        },
+
+        _isDisplayedAsConsanguinous: function( v ) {
+            var consangr = editor.getGraph().isConsangrRelationship(v);
+            var nodeConsangrPreference = editor.getView().getNode(v).getConsanguinity();
+            if (nodeConsangrPreference == "N")
+                consangr = false;
+            if (nodeConsangrPreference == "Y")
+                consangr = true;
+            return consangr;
         },
 
         getPatientPhenotipsJSON: function( v )
@@ -291,7 +301,17 @@ define([
             if (!this.isPerson(v)) {
                 throw "Assertion failed: getPatientPhenotipsJSON() is applied to a non-person";
             }
-            return PhenotipsJSON.internalToPhenotipsJSON(this.getProperties(v), this.getRawJSONProperties(v));
+
+            var consangr = "N";
+            var parentPartnershipNode = editor.getGraph().getParentRelationship(v);
+            if (parentPartnershipNode && parentPartnershipNode !== null && this._isDisplayedAsConsanguinous(parentPartnershipNode)) {
+                consangr = "Y";
+            }
+
+            var relationshipProperties = {};
+            relationshipProperties.consangr = consangr;
+
+            return PhenotipsJSON.internalToPhenotipsJSON(this.getProperties(v), this.getRawJSONProperties(v), relationshipProperties);
         },
 
         getRelationshipExternalJSON: function( v )

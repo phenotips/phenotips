@@ -21,7 +21,7 @@ define([
      * Since some of the properties in Phenotips JSON are not stored internally, need to use the original JSON
      * as a base and only update those fields which have equivalents in internal format
      */
-    PhenotipsJSON.internalToPhenotipsJSON = function(internalProperties, initialPatientJSON)
+    PhenotipsJSON.internalToPhenotipsJSON = function(internalProperties, initialPatientJSON, relationshipProperties)
     {
         // To be more functional could have used Helpers.cloneObject(initialPatientJSON), but
         // that is inefficient (multiplied by the number of patient in a family) and in practice
@@ -38,7 +38,7 @@ define([
 
         initialPatientJSON.sex = internalProperties.gender;
         if (initialPatientJSON.sex != "M" && initialPatientJSON.sex != "F" && initialPatientJSON.sex != "U") {
-            initialPatientJSON.sex = "U";  // pedigree suports more genders than PhenoTips as of right now
+            initialPatientJSON.sex = "U";  // pedigree supports more genders than PhenoTips as of right now
         }
 
         // ethnicities: not touched, since the meaning is different
@@ -82,7 +82,7 @@ define([
             // TODO: review logic here
             var match = disorderID.match(/^(\d+)$/);
             if (disorderName != disorderID && match) {
-                // must be  astandard term
+                // must be a standard term
                 disorderID = "MIM:" + match[1];
                 outputDisorders.push( {"id": disorderID, "label": disorderName} );
             } else {
@@ -90,6 +90,14 @@ define([
             }
         }
         initialPatientJSON["disorders"] = outputDisorders;
+
+        if (relationshipProperties && relationshipProperties.consangr) {
+            var familyHistory = internalProperties.hasOwnProperty("family_history")
+            ? internalProperties["family_history"]
+            : {};
+            familyHistory["consanguinity"] = (relationshipProperties.consangr === "Y") ? true : false;
+            initialPatientJSON["family_history"] = familyHistory;
+        }
 
         // TODO: convert Alive&Well into "clinicalStatus"?
 
