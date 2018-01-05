@@ -90,21 +90,22 @@ $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 #foreach ($s in $services.uix.getExtensions('phenotips.familyRecord.content', {'sortByParameter' : 'order'}))
   #set ($section_disabled = ($e.getParameters().get('enabled') == 'false'))
   #if (!$section_disabled)
-  #set ($sectionContent = '')
-  #foreach ($f in $services.uix.getExtensions($s.id, {'sortByParameter' : 'order'}))
-    #set ($extension_disabled = ($f.getParameters().get('enabled') == 'false'))
-    #if (!$extension_disabled)
-      #set ($extension_required = ($f.getParameters().get('required') == 'true'))
-      #set ($itemContent = $services.rendering.render($f.execute(), 'xhtml/1.0').trim())
-      #set ($sectionContent = $sectionContent.concat($itemContent))
+    #set ($sectionContent = '')
+    #foreach ($f in $services.uix.getExtensions($s.id, {'sortByParameter' : 'order'}))
+      #set ($extension_disabled = ($f.getParameters().get('enabled') == 'false'))
+      #if (!$extension_disabled)
+        #set ($extension_required = ($f.getParameters().get('required') == 'true'))
+        #set ($itemContent = $services.rendering.render($f.execute(), 'xhtml/1.0').trim())
+        #set ($sectionContent = $sectionContent.concat($itemContent))
+      #end
     #end
-  #end
-  #if ($sectionContent.trim() != '')
-    (% class="clear clinical-info $stringtool.substringAfterLast($s.id, '.') chapter" %)(((
-      == $s.getParameters().title ==
+    #if ($sectionContent.trim() != '')
+      (% class="clear clinical-info $stringtool.substringAfterLast($s.id, '.') chapter" %)(((
+        == $s.getParameters().title ==
 
-      {{html clean="false" wiki="false"}}$sectionContent.trim(){{/html}}
-    )))
+        {{html clean="false" wiki="false"}}$sectionContent.trim(){{/html}}
+      )))
+    #end
   #end
 #end
 ##
@@ -115,7 +116,6 @@ $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 
     {{html clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
   #end
-#end
 #end
 {{/velocity}}</content>
 </xwikidoc>
