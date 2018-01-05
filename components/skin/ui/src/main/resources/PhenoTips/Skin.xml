@@ -1028,10 +1028,15 @@ h1:target, h2:target, h3:target {
 .main {
   padding-bottom: 0;
 }
+.panels .gadget .gadget-title * {
+  line-height: 1em !important;
+}
 .gadget label[for=create-patient-record], .gadget .extra {
   color: $theme.linkColor;
   cursor: pointer;
   float: right;
+  margin-left: 1em;
+  text-decoration: none;
 }
 #xdocFooter {
   display: none;
