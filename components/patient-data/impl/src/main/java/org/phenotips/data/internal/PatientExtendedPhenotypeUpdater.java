@@ -70,6 +70,7 @@ public class PatientExtendedPhenotypeUpdater extends AbstractEventListener
         updateField("phenotype", "extended_phenotype", patientRecordObj);
         updateField("prenatal_phenotype", "extended_prenatal_phenotype", patientRecordObj);
         updateField("negative_phenotype", "extended_negative_phenotype", patientRecordObj);
+        updateField("negative_prenatal_phenotype", "extended_negative_prenatal_phenotype", patientRecordObj);
     }
 
     /**
