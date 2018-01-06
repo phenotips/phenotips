@@ -142,4 +142,106 @@ order=10</parameters>
       <scope>wiki</scope>
     </property>
   </object>
+  <object>
+    <name>PhenoTips.UIX_Field__pedigree-exported</name>
+    <number>1</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>040418a8-c0b4-4ea6-b6e2-5a81ddaeb2c2</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content>{{include reference="PhenoTips.PedigreeMacros" /}}
+
+{{velocity}}
+#if ($xcontext.action == 'export')
+  #set ($pedigreeObj = $services.families.getPedigreeForFamily($doc.getName()))
+  #if ($pedigreeObj)
+    #set ($image = $pedigreeObj.getImage($doc.getName()))
+    #set ($data = $pedigreeObj.getData())
+    #if ("$!image" != '')
+      (% class="pedigree-wrapper" %)((({{html clean="false"}}$!image{{/html}})))
+      (% class="pedigree-wrapper" %)((({{html clean="false"}}#pedigreeLegend($data, "Legend:"){{/html}})))
+    #end## pedigree obj exists
+  #end
+#end
+{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>phenotips.familyRecord.after</extensionPointId>
+    </property>
+    <property>
+      <name>phenotips.familyRecord.field.pedigree-exported</name>
+    </property>
+    <property>
+      <parameters>title=$services.localization.render('phenotips.UIXField.pedigreeExported')
+enabled=true
+required=
+order=10</parameters>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
 </xwikidoc>
