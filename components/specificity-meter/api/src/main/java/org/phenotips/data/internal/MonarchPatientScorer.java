@@ -150,7 +150,7 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
             method.setEntity(new StringEntity("annotation_profile=" + URLEncoder.encode(data.toString(), "UTF-8"),
                 ContentType.create("application/x-www-form-urlencoded", Consts.UTF_8)));
 
-            RequestConfig config = RequestConfig.custom().setSocketTimeout(2000).build();
+            RequestConfig config = RequestConfig.custom().setSocketTimeout(2000).setConnectTimeout(1000).build();
             method.setConfig(config);
             response = this.client.execute(method);
             JSONObject score =
