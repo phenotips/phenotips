@@ -57,7 +57,8 @@
     #set ($owner = $recordAccess.getOwner())
     #if ($owner.isGroup())
       #set ($adminGroup = $xcontext.getDatabase() + ":Groups." + $owner.getUsername() + " Administrators")
-      #if (!$xwiki.getUser().isUserInGroup($adminGroup))
+      #set ($managerGroup = $xcontext.getDatabase() + ":Groups." + $owner.getUsername() + " Managers")
+      #if (!$xwiki.getUser().isUserInGroup($adminGroup) || !$xwiki.getUser().isUserInGroup($managerGroup))
         #set ($canTransfer = false)
       #end
     #end
@@ -1342,7 +1343,8 @@ $xwiki.ssx.use($serviceDocName)
   #set ($canTransfer = $recordAccess.hasAccessLevel('owner'))
   #if ($owner.isGroup())
     #set ($adminGroup = $xcontext.getDatabase() + ":Groups." + $owner.getUsername() + " Administrators")
-    #if (!$xwiki.getUser().isUserInGroup($adminGroup))
+    #set ($managerGroup = $xcontext.getDatabase() + ":Groups." + $owner.getUsername() + " Managers")
+    #if (!$xwiki.getUser().isUserInGroup($adminGroup) || !$xwiki.getUser().isUserInGroup($managerGroup))
       #set ($canTransfer = false)
     #end
   #end
@@ -1393,6 +1395,10 @@ $xwiki.ssx.use($serviceDocName)
                 #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
                 #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Administrators'))
                   #set ($group = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)))
+                  #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
+                #end
+                #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Managers'))
+                  #set ($group = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Managers'), $group.documentReference.parent)))
                   #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
                 #end
                 #if ($groupObj &amp;&amp; !$groups.containsKey($group.documentReference))

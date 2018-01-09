@@ -41,7 +41,8 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Event listener that also deletes the corresponding "Group Administrators" group when deleting a PhenoTips group.
+ * Event listener that also deletes the corresponding "Group Administrators" or "Group Managers" group when deleting a
+ * PhenoTips group.
  *
  * @version $Id$
  */
@@ -80,13 +81,19 @@ public class GroupCleanupEventListener implements EventListener
         DocumentReference docReference = doc.getDocumentReference();
         DocumentReference adminsReference =
             new DocumentReference(docReference.getName() + " Administrators", docReference.getLastSpaceReference());
+        DocumentReference managersReference =
+            new DocumentReference(docReference.getName() + " Managers", docReference.getLastSpaceReference());
         XWiki xwiki = context.getWiki();
         try {
             // Delete the administrative group
             XWikiDocument adminsDoc = xwiki.getDocument(adminsReference, context);
             xwiki.deleteDocument(adminsDoc, context);
+            // Delete the managers group
+            XWikiDocument managersDoc = xwiki.getDocument(managersReference, context);
+            xwiki.deleteDocument(managersDoc, context);
         } catch (XWikiException ex) {
-            this.logger.error("Failed to delete administrative group for [{}]: {}", docReference, ex.getMessage(), ex);
+            this.logger.error("Failed to delete administrative or managers group for [{}]: {}", docReference,
+                ex.getMessage(), ex);
         }
     }
 }

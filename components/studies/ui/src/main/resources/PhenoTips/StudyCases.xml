@@ -110,6 +110,10 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
         #set ($group = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)))
         #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
       #end
+      #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Managers'))
+        #set ($group = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Managers'), $group.documentReference.parent)))
+        #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
+      #end
       #if ($groupObj &amp;&amp; !$groups.contains($group.documentReference.toString()))
         #set ($discard = $toProcess.add($group.documentReference.toString()))
         #set ($discard = $groups.add($escapetool.sql($group.documentReference.toString())))

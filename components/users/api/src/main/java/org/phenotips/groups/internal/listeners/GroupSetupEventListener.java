@@ -45,7 +45,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
- * Event listener that sets up newly created PhenoTips groups, by also creating the corresponding "Group Administrators"
+ * Event listener that sets up newly created PhenoTips groups, by also creating the corresponding "Group Managers"
  * group, and setting up access rights.
  *
  * @version $Id$
@@ -103,15 +103,15 @@ public class GroupSetupEventListener implements EventListener
         }
         XWikiContext context = this.xcontextProvider.get();
         DocumentReference adminsReference =
-            new DocumentReference(docReference.getName() + " Administrators", docReference.getLastSpaceReference());
+            new DocumentReference(docReference.getName() + " Managers", docReference.getLastSpaceReference());
         XWiki xwiki = context.getWiki();
         try {
-            // Create the administrative group
+            // Create the managers group
             XWikiDocument adminsDoc = xwiki.getDocument(adminsReference, context);
             setMembers(this.dab.getCurrentUserReference(), adminsDoc, context);
             setRights(adminsReference, adminsDoc, context);
             adminsDoc.setParentReference(new EntityReference(docReference));
-            xwiki.saveDocument(adminsDoc, "Automatically created administrative group", true, context);
+            xwiki.saveDocument(adminsDoc, "Automatically created managers group", true, context);
 
             // Setup the new group
             setMembers(adminsReference, doc, context);

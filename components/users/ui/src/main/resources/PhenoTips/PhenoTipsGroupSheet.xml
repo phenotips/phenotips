@@ -72,7 +72,12 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 (% class="xform" %)(((
 == $services.localization.render('phenotips.groups.manageMembers') ==
 
-(% class="buttonwrapper" %)[[{{icon name="wrench" /}} $services.localization.render('phenotips.groups.manageAdmins')&gt;&gt;path:$xwiki.getURL("${doc.fullName} Administrators", 'edit')||rel="__blank" class="button" style="float: right" id="manage-administrators"]]
+#set ($adminGroup = $xwiki.getDocument("${doc.fullName} Administrators"))
+#set ($postfix = " Managers")
+#if (!$adminGroup.isNew())
+  #set ($postfix = " Administrators")
+#end
+(% class="buttonwrapper" %)[[{{icon name="wrench" /}} $services.localization.render('phenotips.groups.manageAdmins')&gt;&gt;path:$xwiki.getURL("${doc.fullName}${postfix}", 'edit')||rel="__blank" class="button" style="float: right" id="manage-managers"]]
 
 {{include reference='XWiki.XWikiGroupSheet'/}}
 
@@ -80,7 +85,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 #else
 (% class="group-logo" %)(((#if ("$!{doc.getObject('PhenoTips.PhenoTipsGroupClass').getProperty('image').value}" != '')$doc.display('image')#{else}$xwiki.getDocument('PhenoTips.PhenoTipsGroupTemplate').display('image')#{end})))$doc.display('description')
 
-#set ($isMyGroup = $xwiki.user.isUserInGroup($doc.fullName) || $xwiki.user.isUserInGroup("${doc.fullName} Administrators"))
+#set ($isMyGroup = $xwiki.user.isUserInGroup($doc.fullName) || $xwiki.user.isUserInGroup("${doc.fullName}${postfix}"))
 #if ($isMyGroup){{info}}{{translation key="phenotips.groups.selfMembership"/}}{{/info}}#end
 (% class="clearfloats" %)((()))
 #end
@@ -88,14 +93,14 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 #if ($xcontext.action == 'view')
 #set ($obj = $doc.getObject('PhenoTips.PhenoTipsGroupClass'))
 #set ($sections = [
-  {'id' : 'members', 'name' : "$services.localization.render('phenotips.groups.menu.groupMembers')", 'icon' : 'users',       'content' : '{{include reference="XWiki.XWikiGroupSheet"/}}'},
+  {'id' : 'members', 'name' : "$services.localization.render('phenotips.groups.menu.groupMembers')", 'icon' : 'users', 'content' : '{{include reference="XWiki.XWikiGroupSheet"/}}'},
   {'id' : 'cases',   'name' : "$services.localization.render('phenotips.groups.menu.cases')",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.GroupCases"/}}'}
 ])
 #if ($xwiki.exists('PhenoTips.CollaboratorClass'))
   #set ($discard = $sections.add({'id' : 'sharedCases', 'name' : "$services.localization.render('phenotips.groups.menu.sharedCases')", 'icon' : 'share-square', 'content' : '{{include reference="PhenoTips.GroupSharedCases"/}}'}))
 #end
 #if ($xwiki.exists('PhenoTips.StudyClass'))
-  #set ($discard = $sections.add({'id' : 'studies' ,   'name' : "$services.localization.render('phenotips.groups.menu.studies')",  'icon' : 'copy',        'content' : "((({{phenotips-studies filterby='group' filterval='${services.rendering.escape($doc.fullName, $doc.syntax)}' /}})))"}))
+  #set ($discard = $sections.add({'id' : 'studies' ,   'name' : "$services.localization.render('phenotips.groups.menu.studies')",  'icon' : 'copy', 'content' : "((({{phenotips-studies filterby='group' filterval='${services.rendering.escape($doc.fullName, $doc.syntax)}' /}})))"}))
 #end
 #set ($menu = [])
 #set ($contents = {})
@@ -209,7 +214,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
       <cache>long</cache>
     </property>
     <property>
-      <code>$("manage-administrators") &amp;&amp; $("manage-administrators").observe("click", function(e) {
+      <code>$("manage-administrators") &amp;&amp; $("manage-managers").observe("click", function(e) {
   var link = this.href;
   document.observe("xwiki:document:saved", function() {
     window.location.href = link;
