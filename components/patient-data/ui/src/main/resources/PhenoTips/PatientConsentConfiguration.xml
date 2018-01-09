@@ -511,7 +511,24 @@ $xwiki.jsx.use($displayDocName)##
     }
   };
 
+  var __consent_enableRequired = function(trigger, toggleTarget) {
+    if (trigger.selectedIndex &gt;= 0 &amp;&amp; trigger.options[trigger.selectedIndex].value == '1') {
+      toggleTarget.disabled = false;
+    } else {
+      toggleTarget.disabled = true;
+    }
+  };
+
   var init = function() {
+    $$('select[name$="required"]').each(function(elt) {
+      var toggleTarget = elt.up('tr') &amp;&amp; elt.up('tr').down('td.affectsFields select');
+      if (!toggleTarget) return;
+      elt.observe('change', function(event) {
+        __consent_enableRequired(elt, toggleTarget);
+      })
+      __consent_enableRequired(elt, toggleTarget);
+    })
+
     $$('select[name$="affectsFields"]:not(.initialized)').each(function(elt) {
       var toggleTarget = elt.up('tr') &amp;&amp; elt.up('tr').down('td.fields');
       if (!toggleTarget) return;
