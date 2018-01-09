@@ -478,6 +478,11 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
   transform-origin: 0 0;
 }
 
+.entity-directory .tipfilters .toggle-filters {
+  /* This overrides the general rule for buttons, since "white-space: pre-wrap" causes the expand-marker/collapse-marker to be pushed under the title bar. */
+  white-space: normal;
+}
+
 /* Collapse and expand markers */
 .toggle-filters .collapse-marker, .collapsed .toggle-filters .expand-marker {
   display: inline-block;
