@@ -511,22 +511,27 @@ $xwiki.jsx.use($displayDocName)##
     }
   };
 
-  var __consent_enableRequired = function(trigger, toggleTarget) {
-    if (trigger.selectedIndex &gt;= 0 &amp;&amp; trigger.options[trigger.selectedIndex].value == '1') {
-      toggleTarget.disabled = false;
+  var __consent_enableRequired = function(trigger, toggleSelectTarget, toggleFieldsTarget) {
+    if (trigger.options[trigger.selectedIndex].value == '1') {
+      toggleSelectTarget.addClassName('hidden');
+      toggleFieldsTarget.addClassName('hidden');
     } else {
-      toggleTarget.disabled = true;
+      toggleSelectTarget.removeClassName('hidden');
+      toggleFieldsTarget.removeClassName('hidden');
     }
   };
 
   var init = function() {
     $$('select[name$="required"]').each(function(elt) {
-      var toggleTarget = elt.up('tr') &amp;&amp; elt.up('tr').down('td.affectsFields select');
-      if (!toggleTarget) return;
+      var toggleSelectTarget = elt.up('tr') &amp;&amp; elt.up('tr').down('td.affectsFields');
+      var toggleFieldsTarget = elt.up('tr') &amp;&amp; elt.up('tr').down('td.fields');
+      if (!toggleSelectTarget || !toggleFieldsTarget) {
+        return;
+      }
       elt.observe('change', function(event) {
-        __consent_enableRequired(elt, toggleTarget);
+        __consent_enableRequired(elt, toggleSelectTarget, toggleFieldsTarget);
       })
-      __consent_enableRequired(elt, toggleTarget);
+      __consent_enableRequired(elt, toggleSelectTarget, toggleFieldsTarget);
     })
 
     $$('select[name$="affectsFields"]:not(.initialized)').each(function(elt) {
@@ -702,7 +707,9 @@ table.extradata-list.withLabel td.collapsed * {
   height: 1px;
   overflow: hidden;
 }
-
+table input[type=text] {
+  min-width: 40em;
+}
 form .buttons {
   margin-top: 1em;
   padding-top: 1em;
