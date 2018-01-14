@@ -707,7 +707,7 @@ table.extradata-list.withLabel td.collapsed * {
   height: 1px;
   overflow: hidden;
 }
-table input[type=text] {
+table.extradata-list.withLabel input[type=text] {
   min-width: 40em;
 }
 form .buttons {
