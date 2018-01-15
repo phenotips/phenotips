@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>LabeledEidTableDataDisplayer</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1484842010000</creationDate>
+  <parent>PhenoTips.PatientClass</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1484842094000</date>
+  <contentUpdateDate>1484842083000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <object>
+    <name>PhenoTips.LabeledEidTableDataDisplayer</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>4bd1cdd1-c79f-4513-8249-491cded99fca</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function (PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+
+  widgets.LabeledEidTableDataDisplayer = Class.create({
+    initialize : function () {
+      var eidTable = $$('.extradata-list.labeled-eid-list')[0];
+      if (eidTable) {
+        this._eidTable = eidTable;
+        this.eidClassName = 'PhenoTips.LabeledIdentifierClass';
+
+        // Edit mode
+        if($('inline') &amp;&amp; $$('.labeled-eid.label.eid-ZZEID_NUMBER_PLACEHOLDERZZ')[0]) {
+          this.getNewEidRowTemplate();
+          $$('a.button.add-labeled-eid.add-data-button').invoke('observe', 'click', this.ajaxAddEidData.bindAsEventListener(this));
+          $$('a.action.delete-eid.button.secondary').invoke('observe', 'click', this.ajaxDeleteEidData.bindAsEventListener(this));
+        }
+      }
+    },
+
+    getNewEidRowTemplate : function () {
+      var eidlRowTemplateEl = $$('.labeled-eid.label.eid-ZZEID_NUMBER_PLACEHOLDERZZ')[0].up();
+      $$('.labeled-eid.label.eid-ZZEID_NUMBER_PLACEHOLDERZZ')[0].up().remove();
+
+      var syntax = /(^|.|\r|\n)(ZZ(\w+)ZZ)/;
+      this.eidRowTemplate = new Template(eidlRowTemplateEl.innerHTML, syntax);
+    },
+
+    ajaxAddEidData : function (event) {
+      event.stop();
+
+      var addTrigger = event.element();
+      if (addTrigger.disabled) {
+        return;
+      }
+
+      if (!this._eidTable) {
+        new XWiki.widgets.Notification("$escapetool.javascript($services.localization.render('phenotips.tableMacros.listNotFound'))", 'error');
+      }
+
+      var idx = this._eidTable.select('td.labeled-eid').size() + 1;
+      var eidIndex = 0;
+      if (idx &gt; 1) {
+        eidIndex = parseInt(this._eidTable.select('td.labeled-eid')[idx - 2].down('input.eid-index').value, 10) + 1;
+      }
+
+      var newEidRow = new Element('tr');
+
+      var data = {EID_NUMBER_PLACEHOLDER : eidIndex};
+      var eidRowInner = this.eidRowTemplate.evaluate(data);
+      newEidRow.insert(eidRowInner);
+
+      this._eidTable.down('tbody').insert(newEidRow);
+
+      newEidRow.down('a.delete-eid').observe('click', this.ajaxDeleteEidData.bindAsEventListener(this));
+
+      Event.fire(document, 'xwiki:dom:updated', {elements : [newEidRow]})
+    },
+
+    ajaxDeleteEidData : function (event) {
+      event.stop();
+
+      var deleteTrigger = event.element();
+      if (deleteTrigger.disabled) {
+        return;
+      }
+      new XWiki.widgets.ConfirmedAjaxRequest(deleteTrigger.href, {
+        onCreate : function() {
+          deleteTrigger.disabled = true;
+        },
+        onSuccess : function() {
+          var dataRow = deleteTrigger.up('tr');
+          if (dataRow) {
+            var eidValueInput = dataRow.down('input.eid-value');
+            var eidLabelInput = dataRow.down('input.eid-label');
+            eidValueInput.__validation.destroy();
+            eidLabelInput &amp;&amp; eidLabelInput.__validation.destroy();
+            dataRow.remove();
+          }
+        },
+        onComplete : function() {
+          deleteTrigger.disabled = false;
+        }
+      },
+        {
+          confirmationText : "$escapetool.javascript($services.localization.render('phenotips.tableMacros.rowDeleteConfirmation'))"
+        });
+    }
+  });
+
+  return PhenoTips;
+}(PhenoTips || {}));
+
+document.observe('xwiki:dom:loaded', function() {
+  new PhenoTips.widgets.LabeledEidTableDataDisplayer();
+});
+</code>
+    </property>
+    <property>
+      <name>Labeled external ID table behaviour</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.LabeledEidTableDataDisplayer</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>1d43d008-c19e-4f6e-a97b-78749616486a</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+td.labeled-eid {
+  border: none;
+}
+table.extradata-list.labeled-eid-list tr &gt; td {
+  padding-bottom: 1em;
+}
+table.extradata-list.labeled-eid-list tr:last-child &gt; td {
+  padding-bottom: 0.5em;
+}
+td.labeled-eid.label {
+  width: 48.5%;
+  padding-left: 0;
+}
+td.labeled-eid.value {
+  padding-left: 3%;
+  padding-right: 0;
+}
+td.labeled-eid.value+td.actions {
+  width: 2%;
+  border: none;
+}
+input.eid-value {
+  margin-left: 0;
+}
+</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name>Patient sheet UI</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+</xwikidoc>

@@ -96,7 +96,7 @@
         <displayType>select</displayType>
         <multiSelect>0</multiSelect>
         <name>scope</name>
-        <number>5</number>
+        <number>8</number>
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>

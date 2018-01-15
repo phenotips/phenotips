@@ -50,7 +50,10 @@ $xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
 $xwiki.ssx.use('PhenoTips.Widgets', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.ssx.use('PhenoTips.PatientSheetCode', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.ssx.use('PhenoTips.LabeledEidTableDataDisplayer', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.jsx.use('PhenoTips.PatientSheetCode')##
+$xwiki.jsx.use('PhenoTips.LabeledEidTableDataDisplayer')##
+$xwiki.jsx.use('PhenoTips.LabeledEidValidator')##
 $xwiki.jsfx.use('js/xwiki/actionbuttons/actionButtons.js', true)##
 $xwiki.jsfx.use('js/xwiki/editors/autosave.js')##
 $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##

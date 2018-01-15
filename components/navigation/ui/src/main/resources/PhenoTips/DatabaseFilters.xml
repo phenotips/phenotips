@@ -53,6 +53,36 @@
 #macro (__filters_dateField $label $field_name $value)
 {{html clean="false"}}&lt;label&gt;$label &lt;input class="xwiki-date" type="text" alt="#if($value)#formatdateISO($value)#end" value="$!xwiki.formatDate($value, $definedFormat)" name="${field_name}" title="${dateFormat}" /&gt;&lt;/label&gt;{{/html}}
 #end
+##
+#macro (__filters_labeledIdentifiers)
+#set ($eidClass = "PhenoTips.LabeledIdentifierClass")
+#set ($labelParam = 'label')
+#set ($valueParam = 'value')
+(% class="labeled-eids" %)(((
+#__filters_LabeledEidLabel ("$services.localization.render('phenotips.databaseFilters.label.label') " $labelParam $eidClass)
+#__filters_LabeledEidValue ("$services.localization.render('phenotips.databaseFilters.value.label') " $valueParam $eidClass)
+)))
+#end
+##
+#macro (__filters_LabeledEidLabel $label $field_name $eidClass)
+{{html clean="false"}}&lt;label&gt;$label &lt;select name="${field_name}"&gt;&lt;option&gt;&lt;/option&gt;{{/html}}##
+    #__filters_LabeledEidOptions()
+{{html clean="false"}}&lt;/select&gt;&lt;/label&gt;&lt;input type="hidden" value="$eidClass" name="${field_name}/class" /&gt;&lt;input type="hidden" value="ci" name="${field_name}/match" /&gt;{{/html}}##
+#end
+##
+#macro (__filters_LabeledEidValue $label $field_name $eidClass)
+{{html clean="false"}}&lt;label&gt;$label &lt;input type="text" value="" name="${field_name}" /&gt;&lt;/label&gt;&lt;input type="hidden" value="$eidClass" name="${field_name}/class" /&gt;{{/html}}
+#end
+##
+#macro (__filters_LabeledEidOptions)
+#set ($labelParam = 'label')
+#set ($existingLabels = $services.query.xwql("select distinct labeled_eid.${labelParam} from Document doc, doc.object(PhenoTips.LabeledIdentifierClass) as labeled_eid").execute())
+#foreach ($label in $existingLabels)
+{{html clean="false"}}
+&lt;option&gt;$label&lt;/option&gt;
+{{/html}}##
+#end
+#end
 
 #macro(__filters_display $cssClass $showHideButton)
 #if ($showHideButton)
@@ -67,6 +97,9 @@
 #if ($studies.size() &gt; 0)
 * $services.localization.render('phenotips.databaseFilters.study') {{html clean=false}}#foreach($sName in $studies)#set ($s = $xwiki.getDocument($sName))&lt;br/&gt;&lt;label&gt;&lt;input type="checkbox" name="studyReference" value="$escapetool.xml($services.model.serialize($s.documentReference, 'default'))"/&gt;#if ("$!{s.plainTitle}" != '')${s.plainTitle}#else${s.name}#end&lt;/label&gt;#end&lt;input type="hidden" name="studyReference/class" value="PhenoTips.StudyBindingClass"/&gt;&lt;input type="hidden" name="studyReference/match" value="fullReference"/&gt;&lt;input type='hidden' name='studyReference/join_mode' value='OR'/&gt;{{/html}}
 #end
+#end
+#if ($activeFields.contains('labeled_eids'))
+* $services.localization.render('phenotips.databaseFilters.labeledExternalID') #__filters_labeledIdentifiers()
 #end
 #if (!$xwiki.getDocument('PhenoTips.VisibilityClass').isNew())
   * $services.localization.render('phenotips.databaseFilters.visibility') {{html clean=false}}#foreach ($visibility in $services.permissions.listVisibilityOptions())&lt;br /&gt;&lt;label&gt;&lt;input type="checkbox" class="multipleSelection privacyExport" name="visibility" value="$visibility.name"#if ($visibility.name != 'hidden') checked="checked"#end /&gt; $visibility.label&lt;/label&gt;#end&lt;input type="hidden" name="visibility/class" value="PhenoTips.VisibilityClass"/&gt;{{/html}}

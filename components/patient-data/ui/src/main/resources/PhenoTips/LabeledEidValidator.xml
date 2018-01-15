@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>LabeledEidValidator</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1484841975000</creationDate>
+  <parent>PhenoTips.PatientClass</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1484842140000</date>
+  <contentUpdateDate>1484842132000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <object>
+    <name>PhenoTips.LabeledEidValidator</name>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>b2dfc83e-d24d-41cc-85bb-494a8bb8e6bd</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function(PhenoTips) {
+  // Start XWiki augmentation
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+
+  widgets.LabeledEidValidator = Class.create({
+    initialize : function(input, selector, format, message) {
+      this.input = input;
+      this.valid = true;
+      this.state = 'NEW';
+      this.value = input.value;
+      this.selector = selector;
+      this.message = message;
+      this.format = format;
+      this.serviceUrl = new XWiki.Document('CheckLabeledEid', 'PhenoTips').getURL('get');
+
+      if (!this.input.__validation &amp;&amp; this.input.type !== "hidden") {
+        try {
+          this.input.__validation = new LiveValidation(this.input, {validMessage: '', wait : 500});
+          this.input.hasClassName('eid-label') &amp;&amp; this.input.__validation.add(Validate.Presence, {failureMessage: "$escapetool.javascript($services.localization.render('phenotips.PatientSheetCode.failureEnterValue'))"});
+        }
+        catch(err) {
+          //console.log(err);
+        }
+      }
+      this.input.__validation &amp;&amp; this.input.__validation.add(this.validate.bind(this));
+    },
+
+    check : function() {
+      if (this.input.value !== this.value) {
+        if (this.input.hasClassName('eid-label')) {
+          this.checkLabel();
+        } else {
+          this.checkValue();
+        }
+      }
+    },
+
+    checkLabel : function() {
+      this.value = this.input.value;
+      this.state = 'CHECKING';
+      var el = this.input;
+      var allItems = [];
+      $$(this.selector).each(function (item) {
+        if (item !== el) {
+          if (item.nodeName === 'LABEL') {
+            allItems.push(item.innerHTML.strip());
+          } else {
+            allItems.push(item.value.strip());
+          }
+        }
+      });
+      if (allItems.indexOf(el.value.strip()) &gt; -1) {
+        this.invalid();
+      } else {
+        this.available();
+      }
+      this.responded();
+    },
+
+    checkValue : function() {
+      if (this.input.value !== this.value) {
+        this.value = this.input.value;
+        this.state = 'CHECKING';
+        if (!this.format || !this.format.strip()) {
+          this.message = "$escapetool.javascript($services.localization.render('PhenoTips.LabeledIdentifierClass.valueAlreadyExists'))";
+          this.compareWithExistingValues();
+        } else {
+          var re = new RegExp(this.format);
+          if (re.test(this.value)) {
+            this.message = "$escapetool.javascript($services.localization.render('PhenoTips.LabeledIdentifierClass.valueAlreadyExists'))";
+            this.compareWithExistingValues();
+          } else {
+            this.message = "$escapetool.javascript($services.localization.render('PhenoTips.LabeledIdentifierClass.valueWrongFormat'))";
+            this.invalid();
+            this.responded();
+          }
+        }
+      }
+    },
+
+    compareWithExistingValues : function() {
+      var _this = this;
+      if (this.input.hasClassName('unique-value')) {
+        new Ajax.Request(this.serviceUrl, {
+          parameters : {outputSyntax: 'plain', eid_label: _this.getLabel(_this.input.up('tr').down('.eid-label')),
+            eid_value: _this.value, id: XWiki.Model.serialize(new XWiki.DocumentReference(XWiki.currentDocument.wiki,
+              XWiki.currentDocument.space, XWiki.currentDocument.page))},
+          on200 : this.available.bindAsEventListener(this),
+          on403 : this.invalid.bindAsEventListener(this),
+          on404 : this.available.bindAsEventListener(this),
+          on409 : this.invalid.bindAsEventListener(this),
+          onComplete: this.responded.bindAsEventListener(this)
+        });
+      } else {
+        this.available();
+        this.responded();
+      }
+    },
+
+    validate : function(value) {
+      if (value.blank()) {
+        return true;
+      }
+      if (this.state === 'DONE' &amp;&amp;
+          this.value === value &amp;&amp;
+          !this.valid) {
+        Validate.fail(this.message);
+      }
+      this.check();
+      return true;
+    },
+
+    available : function() {
+      this.valid = true;
+    },
+    invalid : function() {
+      this.valid = false;
+    },
+    responded : function() {
+      this.state = 'DONE';
+      this.input.__validation.validate();
+    },
+
+    getLabel : function(labelElem) {
+      if (labelElem.nodeName === 'LABEL') {
+        return labelElem.innerHTML.strip();
+      } else {
+        return labelElem.value;
+      }
+    }
+  });
+
+  var init = function(event) {
+    ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      element.select('input.eid-label').each(function(input) {
+        if (!input.__LabeledEid_validator) {
+          input.__LabeledEid_validator = new PhenoTips.widgets.LabeledEidValidator(input, '.eid-label', null,
+            "$escapetool.javascript($services.localization.render('PhenoTips.LabeledIdentifierClass.labelAlreadyExists'))");
+        }
+      });
+      element.select('td.labeled-eid.value').each(function(eidValue) {
+        var input = eidValue.down('input.eid-value');
+        var formatElem = eidValue.down('input.eid-format');
+        var format = formatElem &amp;&amp; formatElem.value;
+        if (!input.__Eid_validator) {
+          input.__LabeledEid_validator = new PhenoTips.widgets.LabeledEidValidator(input, 'input.eid-value', format,
+            "$escapetool.javascript($services.localization.render('PhenoTips.LabeledIdentifierClass.valueAlreadyExists'))");
+        }
+      });
+    });
+    return true;
+  };
+
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+  document.observe('xwiki:dom:updated', init);
+
+  // End XWiki augmentation.
+  return PhenoTips;
+}(PhenoTips || {}));</code>
+    </property>
+    <property>
+      <name>Labeled external ID validation</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+</xwikidoc>

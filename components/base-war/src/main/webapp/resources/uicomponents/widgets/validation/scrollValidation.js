@@ -3,8 +3,9 @@ require(['jquery'], function ($)
     $(document).ready(function ()
     {
         var _mandatoryFields = $(".mandatory input:not([type='hidden'])");
+        var _checkedFields = $(".checked input:not([type='hidden'])");
         var externalId = $("#PhenoTips\\.PatientClass_0_external_id");
-        var mandatoryFields = _mandatoryFields.add(externalId);
+        var mandatoryFields = _mandatoryFields.add(_checkedFields).add(externalId);
         var saveButtons = $("input[name='action_save']");
 
         //This will happen if the page is not in edit mode
@@ -79,19 +80,26 @@ require(['jquery'], function ($)
             }
         });
 
+        var addNewElement = function(field) {
+            var jField = $(field);
+            var position = jField.offset().top;
+            var parent = $(jField.parents('.chapter')[0]);
+            //Position could be 0, so in that case take the position of the parent section
+            if (position == 0) {
+                position = parent.offset().top;
+            }
+            var positionObject = {'field': jField, 'position': position, 'parent': parent};
+            fieldsByPosition.push(positionObject);
+        };
+
         document.observe('xwiki:dom:updated', function (event) {
             ((event && event.memo.elements) || [$('body')]).each(function(element) {
                 element.select(".mandatory input:not([type='hidden'])").each(function(field) {
-                    var jField = $(field);
-                    var position = jField.offset().top;
-                    var parent = $(jField.parents('.chapter')[0]);
-                    //Position could be 0, so in that case take the position of the parent section
-                    if (position == 0) {
-                        position = parent.offset().top;
-                    }
-                    var positionObject = {'field': jField, 'position': position, 'parent': parent};
-                    fieldsByPosition.push(positionObject);
-               });
+                    addNewElement(field);
+                });
+                element.select(".checked input:not([type='hidden'])").each(function(field) {
+                    addNewElement(field);
+                });
             });
         });
     });
