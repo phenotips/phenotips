@@ -73,7 +73,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 == $services.localization.render('phenotips.groups.manageMembers') ==
 
 #set ($postfix = " Managers")
-#if ($xwiki.exists("${doc.fullName} Administrators"))
+#if (!$xwiki.exists("${doc.fullName} Managers") &amp;&amp; $xwiki.exists("${doc.fullName} Administrators"))
   #set ($postfix = " Administrators")
 #end
 (% class="buttonwrapper" %)[[{{icon name="wrench" /}} $services.localization.render('phenotips.groups.manageAdmins')&gt;&gt;path:$xwiki.getURL("${doc.fullName}${postfix}", 'edit')||rel="__blank" class="button" style="float: right" id="manage-managers"]]
