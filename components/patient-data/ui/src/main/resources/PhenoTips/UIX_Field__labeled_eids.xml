@@ -130,6 +130,7 @@
 enabled=true
 required=
 order=3
+pt_class=PhenoTips.LabeledIdentifierClass
 fields=labeled_eids</parameters>
     </property>
     <property>
