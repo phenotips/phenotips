@@ -72,9 +72,8 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 (% class="xform" %)(((
 == $services.localization.render('phenotips.groups.manageMembers') ==
 
-#set ($adminGroup = $xwiki.getDocument("${doc.fullName} Administrators"))
 #set ($postfix = " Managers")
-#if (!$adminGroup.isNew())
+#if ($xwiki.exists("${doc.fullName} Administrators"))
   #set ($postfix = " Administrators")
 #end
 (% class="buttonwrapper" %)[[{{icon name="wrench" /}} $services.localization.render('phenotips.groups.manageAdmins')&gt;&gt;path:$xwiki.getURL("${doc.fullName}${postfix}", 'edit')||rel="__blank" class="button" style="float: right" id="manage-managers"]]
@@ -214,7 +213,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
       <cache>long</cache>
     </property>
     <property>
-      <code>$("manage-administrators") &amp;&amp; $("manage-managers").observe("click", function(e) {
+      <code>$("manage-managers") &amp;&amp; $("manage-managers").observe("click", function(e) {
   var link = this.href;
   document.observe("xwiki:document:saved", function() {
     window.location.href = link;
