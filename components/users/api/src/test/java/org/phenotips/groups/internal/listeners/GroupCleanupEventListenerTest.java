@@ -99,7 +99,34 @@ public class GroupCleanupEventListenerTest
 
         Mockito.verify(xwiki).getDocument(adminsDocReference, context);
         Mockito.verify(xwiki).deleteDocument(adminsDoc, context);
-        Mockito.verifyNoMoreInteractions(xwiki);
+    }
+
+    @Test
+    public void onEventManagersGroup() throws ComponentLookupException, XWikiException
+    {
+        Utils.setComponentManager(this.mocker);
+
+        DocumentReference docReference = new DocumentReference("xwiki", "Groups", "Group1");
+        Provider<XWikiContext> contextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
+        XWikiContext context = mock(XWikiContext.class);
+        when(contextProvider.get()).thenReturn(context);
+        XWiki xwiki = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(xwiki);
+
+        XWikiDocument doc = mock(XWikiDocument.class);
+        when(doc.getDocumentReference()).thenReturn(docReference);
+        when(doc.getXObject(Group.CLASS_REFERENCE)).thenReturn(mock(BaseObject.class));
+        XWikiDocument newDoc = mock(XWikiDocument.class);
+        when(newDoc.getOriginalDocument()).thenReturn(doc);
+
+        DocumentReference adminsDocReference = new DocumentReference("xwiki", "Groups", "Group1 Managers");
+        XWikiDocument adminsDoc = mock(XWikiDocument.class);
+        when(xwiki.getDocument(eq(adminsDocReference), eq(context))).thenReturn(adminsDoc);
+
+        this.mocker.getComponentUnderTest().onEvent(new DocumentDeletingEvent(docReference), newDoc, context);
+
+        Mockito.verify(xwiki).getDocument(adminsDocReference, context);
+        Mockito.verify(xwiki).deleteDocument(adminsDoc, context);
     }
 
     @Test

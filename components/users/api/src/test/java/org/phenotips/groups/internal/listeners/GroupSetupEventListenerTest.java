@@ -123,7 +123,7 @@ public class GroupSetupEventListenerTest
             .thenReturn(rightsObject);
         when(doc.getXObject(Group.CLASS_REFERENCE)).thenReturn(mock(BaseObject.class));
 
-        DocumentReference adminsDocReference = new DocumentReference("xwiki", "Groups", "Group1 Administrators");
+        DocumentReference adminsDocReference = new DocumentReference("xwiki", "Groups", "Group1 Managers");
         XWikiDocument adminsDoc = mock(XWikiDocument.class);
         BaseObject adminsGroupObject = new BaseObject();
         BaseObject adminsRightsObject = new BaseObject();
@@ -146,15 +146,15 @@ public class GroupSetupEventListenerTest
 
         Assert.assertEquals(1, rightsObject.getIntValue("allow"));
         Assert.assertEquals("edit", rightsObject.getStringValue("levels"));
-        Assert.assertEquals("xwiki:Groups.Group1 Administrators", rightsObject.getLargeStringValue("groups"));
+        Assert.assertEquals("xwiki:Groups.Group1 Managers", rightsObject.getLargeStringValue("groups"));
         Assert.assertEquals("", rightsObject.getLargeStringValue("users"));
 
         Assert.assertEquals(1, adminsRightsObject.getIntValue("allow"));
         Assert.assertEquals("edit", adminsRightsObject.getStringValue("levels"));
-        Assert.assertEquals("xwiki:Groups.Group1 Administrators", adminsRightsObject.getLargeStringValue("groups"));
+        Assert.assertEquals("xwiki:Groups.Group1 Managers", adminsRightsObject.getLargeStringValue("groups"));
         Assert.assertEquals("", adminsRightsObject.getLargeStringValue("users"));
 
-        Assert.assertEquals("xwiki:Groups.Group1 Administrators", groupObject.getStringValue("member"));
+        Assert.assertEquals("xwiki:Groups.Group1 Managers", groupObject.getStringValue("member"));
         Assert.assertEquals("xwiki:XWiki.User", adminsGroupObject.getStringValue("member"));
     }
 
@@ -214,7 +214,7 @@ public class GroupSetupEventListenerTest
         when(doc.getDocumentReference()).thenReturn(docReference);
         when(doc.getXObject(Group.CLASS_REFERENCE)).thenReturn(mock(BaseObject.class));
 
-        DocumentReference adminsDocReference = new DocumentReference("xwiki", "Groups", "Group1 Administrators");
+        DocumentReference adminsDocReference = new DocumentReference("xwiki", "Groups", "Group1 Managers");
         when(xwiki.getDocument(eq(adminsDocReference), eq(context))).thenThrow(new XWikiException(0, 0, "DB Error"));
 
         DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
