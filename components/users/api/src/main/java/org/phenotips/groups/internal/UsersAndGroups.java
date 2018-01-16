@@ -34,6 +34,7 @@ import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
+import org.xwiki.xml.XMLUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -64,10 +65,6 @@ public class UsersAndGroups implements Initializable
     private static final EntityReference GROUP_CLASS = new EntityReference("PhenoTipsGroupClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
-    private static final String USER = "user";
-
-    private static final String GROUP = "group";
-
     private static final String INPUT_PARAMETER = "input";
 
     private static final String INPUT_FORMAT = "%%%s%%";
@@ -77,6 +74,10 @@ public class UsersAndGroups implements Initializable
     private static final String VALUE_KEY = "value";
 
     private static final String ICON_KEY = "icon";
+
+    private static final String INFO_KEY = "info";
+
+    private static final String DESC_KEY = "description";
 
     private static String usersQueryString;
 
@@ -175,9 +176,11 @@ public class UsersAndGroups implements Initializable
      * @param maxResults the maximum number of results to be returned
      * @param searchUsers if true, includes users in result
      * @param searchGroups if true, includes groups in result
-     * @return a json object containing all results found
+     * @param returnAsJSON if true, the result is returned as JSON, otherwise as XML
+     * @return a JSON or XML object containing all results found
      */
-    public JSONObject search(String input, int maxResults, boolean searchUsers, boolean searchGroups)
+    public String search(String input, int maxResults, boolean searchUsers, boolean searchGroups,
+        boolean returnAsJSON)
     {
         String formattedInput = input.toLowerCase();
         formattedInput = String.format(UsersAndGroups.INPUT_FORMAT, input);
@@ -196,9 +199,32 @@ public class UsersAndGroups implements Initializable
             this.logger.error("Error in search ({})", input, ex.getMessage());
         }
 
-        JSONObject result = new JSONObject();
-        result.put("matched", resultArray);
-        return result;
+        if (returnAsJSON) {
+            JSONObject result = new JSONObject();
+            result.put("matched", resultArray);
+            return result.toString();
+        } else {
+            StringBuilder xmlResult = new StringBuilder();
+            xmlResult.append("<results>");
+            for (Object object : resultArray) {
+                JSONObject entityJson = (JSONObject) object;
+                String escapedId = XMLUtils.escapeXMLComment(entityJson.optString(UsersAndGroups.ID_KEY));
+                String escapedInfo = XMLUtils.escapeXMLComment(entityJson.optString(UsersAndGroups.INFO_KEY));
+                String escapedValue = XMLUtils.escapeXMLComment(entityJson.optString(UsersAndGroups.VALUE_KEY));
+                String escapedDescription = XMLUtils.escapeXMLComment(entityJson.optString(UsersAndGroups.DESC_KEY));
+
+                xmlResult.append("<rs id=\"").append(escapedId).append("\" ");
+                xmlResult.append("icon=\"").append(entityJson.optString(UsersAndGroups.ICON_KEY)).append("\" ");
+                xmlResult.append("value=\"").append(escapedValue).append("\" ");
+                xmlResult.append("info=\"").append(escapedInfo).append("\">");
+
+                xmlResult.append(escapedDescription);
+
+                xmlResult.append("</rs>");
+            }
+            xmlResult.append("</results>");
+            return xmlResult.toString();
+        }
     }
 
     /**
@@ -242,7 +268,7 @@ public class UsersAndGroups implements Initializable
             if (StringUtils.isBlank(name)) {
                 name = user.getUsername();
             }
-            JSONObject o = createObject(user.getProfileDocument().toString(), name, avatarURL, USER);
+            JSONObject o = createObject(user.getUsername(), name, avatarURL, name, userName);
             resultArray.put(o);
             if (resultArray.length() == maxResults) {
                 break;
@@ -266,7 +292,9 @@ public class UsersAndGroups implements Initializable
                 XWiki xwiki = xcontext.getWiki();
                 avatarURL = xwiki.getSkinFile("icons/xwiki/noavatargroup.png", xcontext);
             }
-            JSONObject o = createObject(groupName, group.getReference().getName(), avatarURL, GROUP);
+            JSONObject o =
+                createObject(group.getReference().getName(), groupName, avatarURL, group.getReference().getName(),
+                    groupName);
             resultArray.put(o);
         }
     }
@@ -292,16 +320,14 @@ public class UsersAndGroups implements Initializable
         return queryResults;
     }
 
-    private JSONObject createObject(String id, String value, String avatar, String type)
+    private JSONObject createObject(String id, String value, String avatar, String info, String desc)
     {
         JSONObject o = new JSONObject();
-
-        StringBuilder idWithType = new StringBuilder();
-        idWithType.append(id);
-        o.put(UsersAndGroups.ID_KEY, idWithType.toString());
+        o.put(UsersAndGroups.ID_KEY, id);
         o.put(UsersAndGroups.VALUE_KEY, value);
         o.put(UsersAndGroups.ICON_KEY, avatar);
-
+        o.put(UsersAndGroups.INFO_KEY, info);
+        o.put(UsersAndGroups.DESC_KEY, desc);
         return o;
     }
 }

@@ -106,10 +106,10 @@
 #end
 * $services.localization.render('phenotips.databaseFilters.referrer') {{html clean=false}}&lt;input type="text" class="suggestUsers multipleSelection" name="doc.creator" value=""/&gt;{{/html}}
 #if (!$xwiki.getDocument('PhenoTips.OwnerClass').isNew())
-  * $services.localization.render('phenotips.databaseFilters.owner') {{html clean=false}}&lt;input type="hidden" name="owner/class" value="PhenoTips.OwnerClass"/&gt;&lt;input type="hidden" name="owner/match" value="fullReference"/&gt;&lt;input type="text" class="suggestUsers multipleSelection" name="owner" value=""/&gt;{{/html}}
+  * $services.localization.render('phenotips.databaseFilters.owner') {{html clean=false}}&lt;input type="hidden" name="owner/class" value="PhenoTips.OwnerClass"/&gt;&lt;input type="hidden" name="owner/match" value="fullReference"/&gt;&lt;input type="text" class="suggestUsersAndGroups multipleSelection" name="owner" value=""/&gt;{{/html}}
 #end
 #if (!$xwiki.getDocument('PhenoTips.CollaboratorClass').isNew())
-  * $services.localization.render('phenotips.databaseFilters.collaborator') {{html clean=false}}&lt;input type="hidden" name="collaborator/class" value="PhenoTips.CollaboratorClass"/&gt;&lt;input type="hidden" name="collaborator/match" value="fullReference"/&gt;&lt;input type="text" class="suggestUsers multipleSelection" name="collaborator" value=""/&gt;&lt;input type='hidden' name='collaborator/join_mode' value='OR'/&gt;{{/html}}
+  * $services.localization.render('phenotips.databaseFilters.collaborator') {{html clean=false}}&lt;input type="hidden" name="collaborator/class" value="PhenoTips.CollaboratorClass"/&gt;&lt;input type="hidden" name="collaborator/match" value="fullReference"/&gt;&lt;input type="text" class="suggestUsersAndGroups multipleSelection" name="collaborator" value=""/&gt;&lt;input type='hidden' name='collaborator/join_mode' value='OR'/&gt;{{/html}}
 #end
 * $services.localization.render('phenotips.databaseFilters.author') {{html clean=false}}&lt;input type="text" class="suggestUsers multipleSelection" name="doc.author" value=""/&gt;{{/html}}
 * $services.localization.render('phenotips.databaseFilters.creationDate') #__filters_dateRange("doc.creationDate")

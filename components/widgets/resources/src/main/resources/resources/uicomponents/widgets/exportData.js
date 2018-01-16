@@ -83,9 +83,9 @@ document.observe('xwiki:dom:loading', function() {
       });
     }
     // =============================================================================
-    // Copy entries from users suggest
+    // Copy entries from users and groups accepted suggestions
     if (tableFilters) {
-      content.select('input.suggestUsers').each(function(input) {
+      content.select('input.suggestUsers', 'input.suggestUsersAndGroups').each(function(input) {
         var source = tableFilters.down('input[type="text"][name="' + input.name + '"]');
         var selectionContainer = source && source.previous('ul.accepted-suggestions')
         if (selectionContainer) {
@@ -101,7 +101,6 @@ document.observe('xwiki:dom:loading', function() {
           });
         } // done with selected entries
       });
-      // TODO: Groups
     }
     // =============================================================================
     // Phenotype suggest: create suggest and copy existing entries
