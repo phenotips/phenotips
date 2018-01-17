@@ -29,7 +29,7 @@
   <name>PhenoTips - Entity access rules - Java APIs</name>
 
   <properties>
-    <coverage.instructionRatio>0.87</coverage.instructionRatio>
+    <coverage.instructionRatio>0.86</coverage.instructionRatio>
   </properties>
 
   <dependencies>

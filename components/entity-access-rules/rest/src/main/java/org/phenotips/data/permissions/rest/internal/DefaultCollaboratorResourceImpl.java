@@ -166,7 +166,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
 
         for (Collaborator collaborator : entityAccess.getCollaborators()) {
             if (collaboratorReference.equals(collaborator.getUser())) {
-                return this.factory.createCollaboratorRepresentation(entity, collaborator);
+                return this.factory.createCollaboratorRepresentation(collaborator);
             }
         }
         // same here

@@ -24,6 +24,7 @@ import org.xwiki.model.reference.EntityReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.xpn.xwiki.api.Document;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
@@ -47,6 +48,15 @@ public interface EntityAccessHelper
      */
     @Nonnull
     String getType(@Nullable EntityReference userOrGroup);
+
+    /**
+     * Retrieves the entity document of {@code userOrGroup}.
+     *
+     * @param userOrGroup an {@link EntityReference} object representing a user or a group
+     * @return the {@link Document} of entity
+     */
+    @Nonnull
+    Document getDocument(EntityReference userOrGroup);
 
     /**
      * Gets the string property value given the xwiki {@code doc}, the {@code classReference}, and the

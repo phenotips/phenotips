@@ -421,11 +421,28 @@
         return;
       }
       this.permissionsURL   = XWiki.contextPath + "/rest/" + this.entityType + "/" + recordId + "/permissions";
+      this.perincipalsURL   = XWiki.contextPath + "/rest/" + this.entityType + "/" + recordId + "/permissions/principals";
       this.collaboratorsURL = this.permissionsURL + "/collaborators";
 
       this.visibilityValue = "";
       this.recordId = recordId;
       this._OWNER_INFO_TEMPLATE = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipInfo'))";
+      this._PRINCIPAL_INFO_TEMPLATE = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.principalDetails'))";
+      this._PRINCIPAL_INFO_GROUP_TEMPLATE = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.principalGroupMemberDetails'))";
+      this.translationStrings = {
+        "view"   : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.viewAccess'))",
+        "edit"   : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.editAccess'))",
+        "manage" : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.manageAccess'))",
+        "owner"         : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.ownerRole'))",
+        "admin" : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.adminRole'))",
+        "collaborator"  : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorRole'))",
+        "user"          : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.userType'))",
+        "group"         : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.groupType'))",
+        "private"       : "$escapetool.javascript($services.localization.render('phenotips.permissions.visibility.private.label'))",
+        "hidden"       : "$escapetool.javascript($services.localization.render('phenotips.permissions.visibility.hidden.label'))",
+        "family-member-owner" : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.famMemOwnerRole'))",
+        "family-member-collaborator" : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.famMemCollabRole'))"
+      };
 
       // keep track whether delete collaborators happened to know if the we need to reset collaborators
       this.collaboratorRemoved = false;
@@ -454,6 +471,17 @@
         event.stop();
         event.findElement().blur();
         _this._populateEditorData(false, true);
+      });
+
+      this._initInfoDialogUI();
+      // ---------------------------------------------------------------------
+      // Attach permissions info dialog launcher behavior:
+      // ---------------------------------------------------------------------
+      this._infoDialogLauncher = this._element.down('.info-dialog');
+      this._infoDialogLauncher &amp;&amp; this._infoDialogLauncher.observe('click', function(event) {
+        event.stop();
+        event.findElement().blur();
+        _this._populateInfoDialogData();
       });
       // ---------------------------------------------------------------------
       // Initialization done
@@ -487,6 +515,11 @@
       this._initManagerActions();
       this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.heading'))".replace("{0}", this.recordId), 'verticalPosition': 'top', 'removeOnClose': false});
       document.fire('phenotips:permissions-manager:loaded', {'permissionsManager' : this});
+    },
+
+    _initInfoDialogUI : function() {
+      this._infoContainer = new Element('div', {'id' : 'info-container', 'class' : 'xform'});
+      this._infoDialog = new PhenoTips.widgets.ModalPopup(this._infoContainer, false, {'title': "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.heading'))".replace("{0}", this.recordId), 'verticalPosition': 'top', 'removeOnClose': false});
     },
 
     _generateSection : function(id, title, intro) {
@@ -764,6 +797,81 @@
       });
     },
 
+    _populateInfoDialogData : function () {
+      this._infoContainer.update();
+      var recordVisibilityEl = this._element.down('input[name="record-visibility"]');
+      if (recordVisibilityEl) {
+        var recordVisibility = recordVisibilityEl.value;
+        if ($('isGuestOwner')) {
+          var title = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.guestRecordInfo'))";
+          this._infoContainer.insert(new Element('div').update(title));
+        } else if (recordVisibility == "public") {
+          var title = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.publicRecordInfo'))";
+          this._infoContainer.insert(new Element('div').update(title));
+        } else if (recordVisibility == "open") {
+          var title = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.openRecordInfo'))";
+          this._infoContainer.insert(new Element('div').update(title));
+        } else {
+          var adminInfo = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.adminInfo'))";
+          this._infoContainer.insert(new Element('p', {'class' : "intro xHint"}).update(adminInfo));
+          var title = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.otherRecordInfo'))".replace("_VISIBILITY_", this.translationStrings[recordVisibility]);
+          this._infoContainer.insert(new Element('div').update(title));
+          this._infoContainer.insert('&lt;div class="table-filters"&gt;&lt;input type="checkbox" id="toggle-groups" name="principal-row-group" checked="true"&gt;$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.groups'))&lt;input type="checkbox" id="toggle-users" name="principal-row-user" checked="true"&gt;$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.users'))&lt;/div&gt;');
+          var generateTable = true;
+        }
+        (generateTable) ? this._fetchUsersAccessData() : this._infoDialog.showDialog();
+      }
+    },
+
+    _fetchUsersAccessData : function () {
+      var _this = this;
+      new Ajax.Request(_this.perincipalsURL + "?method=GET", {
+          onCreate : function() {
+            _this._infoDialog.showDialog();
+          },
+          onSuccess : function(response) {
+            var data = response.responseJSON;
+            if (data.principals &amp;&amp; data.principals.size() &gt; 0) {
+                var table = $('users-access-rights-table').cloneNode(true);
+                _this._infoContainer.insert(table);
+                var templateRow = table.down('.template-row');
+                data.principals.each(function (item) {
+                    _this._generateTableRow(templateRow, item);
+                });
+                $('toggle-groups', 'toggle-users').invoke('observe', 'click', function (event) {
+                    var elem = event.element();
+                    $$("." + elem.name).each(function (el) {
+                        el.toggleClassName('hidden');
+                    });
+                });
+            }
+          }
+        }
+      );
+    },
+
+    _generateTableRow : function (template, item) {
+      var checkIcon = '&lt;span class="fa fa-check"&gt;&lt;/span&gt;';
+      var row = template.cloneNode(true);
+      var typeIcon = '&lt;span class="fa fa-'+ item.type +'"&gt; &lt;/span&gt;'
+      row.down('.username a').insert({"before" : typeIcon});
+      row.down('.username a').update(item.name);
+      row.down('.username a').href = item.url;
+      row.down('.' + item.level).update(checkIcon);
+      if (item.level == "edit") { row.down('.view').update(checkIcon); }
+      if (item.level == "manage") { row.down('.view').update(checkIcon); row.down('.edit').update(checkIcon); }
+
+      var info = this._PRINCIPAL_INFO_TEMPLATE.replace('_TYPE_', this.translationStrings[item.type]).replace('_LEVEL_', this.translationStrings[item.level]).replace('_ROLE_', this.translationStrings[item.role]);
+      if (item.group != "") {
+        var info = info + this._PRINCIPAL_INFO_GROUP_TEMPLATE.replace('_TYPE_', this.translationStrings[item.type]).replace('_NAME_', item.group);
+      }
+      row.down('.info span').title = info;
+      var icon_helpController = new PhenoTips.widgets.HelpButton(row.down('.info span'));
+      row.removeClassName('hidden template-row');
+      row.addClassName('principal-row-' + item.type);
+      template.insert({"before" : row});
+    },
+
     // boolean parameter `doUpdate` is 'true' if we just made any permission updates
     // and need to update the permissions form accordingly after making a GET request after those updates
     // boolean parameter `leaveDialogOpen' is 'true' if we either open dialog first time and populate it with data,
@@ -899,6 +1007,7 @@
           visibilityEl.title = this.VISIBILITY[i].title;
           visibilityEl.update(Element.clone(this.VISIBILITY[i].icon, true));
           visibilityEl.insert(this.VISIBILITY[i].name);
+          this._element.down('input[name="record-visibility"]').value = this.VISIBILITY[i].id;
         }
       }
 
@@ -1109,9 +1218,11 @@ document.observe("xwiki:dom:loaded", function() {
 #access-rights-summary {
   float: right;
 }
+
 .access-rights-info a {
   color: inherit;
 }
+
 #access-rights-summary .access-rights-info {
   border: 1px solid #fff;
   box-shadow: inset 1px 1px 1px $theme.borderColor, 1px 1px 1px $theme.borderColor;
@@ -1137,23 +1248,29 @@ document.observe("xwiki:dom:loaded", function() {
   text-align: left;
   vertical-align: top;
 }
+
 #access-levels-manager .accepted-suggestions {
   margin: 0 !important;
 }
+
 #access-levels-manager .accepted-suggestions li .delete-tool {
   background: transparent;
 }
+
 #collaborators tbody td {
   border-bottom: 1px solid $theme.borderColor;
   vertical-align: middle;
 }
+
 #collaborators tfoot td {
   border-top: 3px solid $theme.borderColor;
 }
+
 #collaborators .tool.delete {
   color: $theme.notificationErrorColor;
   cursor: pointer;
 }
+
 #collaborators .highlight {
   background-color: $theme.highlightColor !important;
   color: $theme.notificationErrorColor;
@@ -1161,6 +1278,52 @@ document.observe("xwiki:dom:loaded", function() {
 
 #collaborators .new {
   background-color: $theme.highlightColor;
+}
+
+.info-dialog {
+  cursor: pointer;
+  margin-left: 3px;
+  margin-right: 5px;
+  font-size: medium;
+  vertical-align: middle;
+}
+
+#users-access-rights-table {
+  width: 80%;
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+  background: white;
+}
+
+#users-access-rights-table thead{
+  text-transform: capitalize;
+}
+
+#users-access-rights-table th {
+  background: white;
+}
+
+#users-access-rights-table td.username {
+  text-align: left;
+}
+
+#users-access-rights-table .xTooltip {
+  text-align: left;
+}
+
+.table-filters {
+  margin-top : 10px;
+}
+
+.xTooltip {
+  width: 30%;
+  white-space: normal;
+  text-align: left;
+}
+
+.fa.fa-user {
+  margin-right: 2px;
+  margin-left: 2px;
 }</code>
     </property>
     <property>
@@ -1253,6 +1416,8 @@ $xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)
 $xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)
 $xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)
 $xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)
+$xwiki.ssfx.use('js/xwiki/usersandgroups/usersandgroups.css', true)
+$xwiki.ssfx.use('js/xwiki/table/livetable.css', true)
 $xwiki.jsx.use($serviceDocName)
 $xwiki.ssx.use($serviceDocName)
 {{/velocity}}
@@ -1349,10 +1514,10 @@ $xwiki.ssx.use($serviceDocName)
   #else
     #set ($ownerElement = "{{html wiki='true' clean='false'}}&lt;span class='owner'&gt;{{icon name='user'/}}$ownerName&lt;/span&gt;{{/html}}")
   #end
-  (% id="access-rights-summary" %)((({{html wiki='true' clean='false'}}&lt;input type="hidden" name="currentUser" value="$!escapetool.xml($xcontext.userReference)"/&gt;{{/html}}##
+  (% id="access-rights-summary" %)((({{html wiki='true' clean='false'}}&lt;input type="hidden" name="currentUser" value="$!escapetool.xml($xcontext.userReference)"/&gt;&lt;input type="hidden" name="record-visibility" value="$!{visibility.name}" title="$!{visibility.label}"/&gt;{{/html}}##
     $services.localization.render("phenotips.accessRightsManagement.recordOwnerandVisibility",["(% class='access-rights-info' %)$ownerElement(%%)","(% class='access-rights-info visibility' title='$!{visibility.description}' %){{icon name='$visibility'/}}$!{visibility.label}(%%)"])##
     #if ($canManage) ##
-      {{html wiki='true' clean='false'}}&lt;span id="collaborator-access-rights-info" title="$collaboratorTooltipStr"&gt;$collaboratorString&lt;/span&gt;{{/html}}##
+      {{html wiki='true' clean='false'}}&lt;span id="collaborator-access-rights-info" title="$collaboratorTooltipStr"&gt;$collaboratorString&lt;/span&gt;#if(!$isGuest)&lt;span class="fa fa-info-circle info-dialog"&gt;&lt;/span&gt;#end#if(!$ownerReference)&lt;input type="hidden" id="isGuestOwner" value="true"/&gt;#end{{/html}}##
       (% class="buttonwrapper tool edit" %)[[ {{icon name="wrench" title="$services.localization.render('phenotips.accessRightsManagement.modifyButtonTitle')" /}} $services.localization.render("phenotips.accessRightsManagement.modifyButton")&gt;&gt;path:#||class="button"]]##
       (% class="hidden" %)((({{html wiki="true" clean="false"}}
         &lt;input type="hidden" name="serviceURL" value="$serviceDoc.getURL('get', 'outputSyntax=plain')"/&gt;
@@ -1370,6 +1535,29 @@ $xwiki.ssx.use($serviceDocName)
     #end
   )))
 #end## Record exists
+##generate empty users access rights table
+(% class="hidden" %)((({{html wiki="true" clean="false"}}
+  &lt;table id="users-access-rights-table" class="xwiki-livetable rights"&gt;
+  &lt;thead&gt;
+   &lt;tr class="userorgroups-header"&gt;
+     &lt;th scope="col"&gt;$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.usersorgroups'))&lt;/th&gt;
+     &lt;th scope="col" class="rights"&gt;$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.viewAccess'))&lt;/th&gt;
+     &lt;th scope="col" class="rights"&gt;$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.editAccess'))&lt;/th&gt;
+     &lt;th scope="col" class="rights"&gt;$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.manageAccess'))&lt;/th&gt;
+     &lt;th scope="col" class="rights"&gt;$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.details'))&lt;/th&gt;
+   &lt;/tr&gt;
+   &lt;/thead&gt;
+   &lt;tbody&gt;
+     &lt;tr class="hidden template-row"&gt;
+       &lt;td class="username"&gt;&lt;a href="" target="_blank"&gt;&lt;/a&gt;&lt;/td&gt;
+       &lt;td class="view"&gt;&lt;/td&gt;
+       &lt;td class="edit"&gt;&lt;/td&gt;
+       &lt;td class="manage"&gt;&lt;/td&gt;
+       &lt;td class="info"&gt;&lt;span class="fa fa-info-circle xHelpButton" title=''&gt;&lt;/span&gt;&lt;/td&gt;
+     &lt;/tr&gt;
+   &lt;/tbody&gt;
+&lt;/table&gt;
+{{/html}})))
 #end## xcontext.action
 {{/velocity}}</content>
     </property>
