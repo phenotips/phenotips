@@ -30,8 +30,9 @@
 #set($count = 'ZZVARIANT_COUNT_PLACEHOLDERZZ')
 #set($geneObjNumber = 'ZZGENE_INDEX_PLACEHOLDERZZ')
 #set($geneName = 'ZZGENE_NAME_PLACEHOLDERZZ')
+#set($colspan = $!{options.defaultProperties.size()} + 1)
 |(%class="pseudoindent"%)##
-|=(% colspan="4" class="variant variant-title gene-$geneObjNumber" %)$services.localization.render("${classname}.variantTable.title", [$geneName, $count]) \\
+|=(% colspan="$colspan" class="variant variant-title gene-$geneObjNumber" %)$services.localization.render("${classname}.variantTable.title", [$geneName, $count]) \\
 (%class="variant-gene-$geneObjNumber variant-title-row variant-hide-heading-$geneObjNumber"%)##
 |(%class="pseudoindent"%)##
 |=(% class="variant var-row-number" %)(%%)##
@@ -49,8 +50,9 @@
 #else
   #set ($geneSymbol = $gene.id)
 #end
+#set($colspan = $!{options.defaultProperties.size()} + 1)
 |(%class="pseudoindent"%)##
-|=(% colspan="4" class="variant variant-title gene-$geneObjNumber" %)$services.localization.render("${classname}.variantTable.title", [$!{services.rendering.escape($geneSymbol, $doc.syntax)}, $count]) \\
+|=(% colspan="$colspan" class="variant variant-title gene-$geneObjNumber" %)$services.localization.render("${classname}.variantTable.title", [$!{services.rendering.escape($geneSymbol, $doc.syntax)}, $count]) \\
 (%class="variant-gene-$geneObjNumber variant-title-row variant-hide-heading-$geneObjNumber"%)##
 |(%class="pseudoindent"%)##
 |=(% class="variant var-row-number"  %) #(%%)##
@@ -73,11 +75,12 @@
 #foreach($propName in $options.defaultProperties)
 |(% class="variant variant-default-input $propName #if ($propName == 'cdna')mandatory#end variant-$variantIndex" %)$doc.display($propName, $options.mode, $fakeObj)##
 #end
+#set($colspan = $!{options.defaultProperties.size()})
 #__variant__deleteTool($variantObj)\\
 (% class="variant-gene-$geneObjNumber variant-moreinfo-row v-collapsed variant-hide-heading-$geneObjNumber" %)##
 |(% class="pseudoindent" %)##
 |(% class = "variant" %)##
-|(% colspan="3" class="variant moreinfo" %)(% class="variant-moreinfo-editbutton-row variant-$variantIndex" %)(((##
+|(% colspan="$colspan" class="variant moreinfo" %)(% class="variant-moreinfo-editbutton-row variant-$variantIndex" %)(((##
 #foreach ($prop in $fakeObj.xWikiClass.properties)
 #if ($prop.getName() != 'gene' && !$options.defaultProperties.contains($prop.getName()))
 
@@ -107,9 +110,10 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 #set ($isInputString = $options.inputStrings.contains($propName))
 |(% class="variant variant-default-input $propName #if ($propName == 'cdna')mandatory#end variant-$variantIndex" %)#if ($xcontext.action == 'edit')$doc.display($propName, 'edit', $variantObj)#elseif($isInputString)$!{services.rendering.escape($variantObj.getValue($propName), $doc.syntax)}#else$doc.display($propName, 'view', $variantObj)#end##
 #end
+#set($colspan = $!{options.defaultProperties.size()})
 #if ($options.mode == 'edit')#__variant__deleteTool($variantObj)#end\\
 (% class="variant-gene-$geneObjNumber variant-moreinfo-row v-collapsed variant-hide-heading-$geneObjNumber" %)##
-|(% class="pseudoindent" %)|(% class = "variant" %)|(% colspan="3" class="variant moreinfo" %)##
+|(% class="pseudoindent" %)|(% class = "variant" %)|(% colspan="$colspan" class="variant moreinfo" %)##
 #if ($options.mode == 'edit')(% class="variant-moreinfo-editbutton-row variant-$variantIndex" %)#end(((##
 #foreach ($prop in $variantObj.xWikiClass.properties)
 #if ($prop.getName() != 'gene' && !$options.defaultProperties.contains($prop.getName()))
@@ -130,9 +134,16 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 ##
 ##
 #macro(__variant_table $variantObjects $geneNumber $geneObjNumber $options $genename $variantClassName)##
-#if ($variantObjects.size() > 0)##
+#set($variantFilters = $options.variantFilters)##
+#if ($variantFilters)##
+#set($filteredVariants = [])##
+#__apply_variant_filters($variantObjects $variantFilters $variantFilters.size() $filteredVariants)##
+#else##
+#set($filteredVariants = $variantObjects)##
+#end##
+#if ($filteredVariants.size() > 0)##
 (%class="variant-gene-$geneObjNumber variant-title-row"%)#__variant_head($variantObjects.size() $geneObjNumber $genename $variantClassName $options)
-#foreach ($o in $variantObjects)
+#foreach ($o in $filteredVariants)
 #set ($variantIndex = $o.number)
 #set ($variantCount = $foreach.count)
 (%class="variant-gene-$geneObjNumber variant-hide-heading-$geneObjNumber"%)#__variant_row($o "${geneNumber}.${variantCount}" $variantIndex $geneObjNumber $options)
@@ -145,9 +156,10 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 ##
 ##
 #macro(__variant_foot $options $geneObjNumber $genename $variantClassName)##
+#set($colspan = $!{options.defaultProperties.size()} + 1)
 #if ($options.mode == 'edit')
 |(%class="pseudoindent"%)##
-|(% colspan="4" class="variant variant-footer-$geneObjNumber" style="background : inherit;" %) #__variant_addTool($variantClassName $genename)##
+|(% colspan="$colspan" class="variant variant-footer-$geneObjNumber" style="background : inherit;" %) #__variant_addTool($variantClassName $genename)##
 #end\\
 #end
 ##
@@ -189,26 +201,67 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 #macro (__gene_table $geneClassName $variantClassName $options)##
 #set($geneClass = $xwiki.getDocument($geneClassName).xWikiClass)
 #set($variantClass = $xwiki.getDocument($variantClassName).xWikiClass)
-(% id="extradata-list-${geneClassName}_${variantClassName}" class="gene-table extradata-list withCounter" %)
+(% id="$!{options.tableIdPrefix}extradata-list-${geneClassName}_${variantClassName}" class="gene-table $!{options.tableClass} extradata-list withCounter" %)
 |= #foreach($prop in $geneClass.properties)##
 |=(% class="gene-t-header-$prop.getName() col-label"##
 #if ($foreach.index == 0 || $foreach.index == 3) colspan="2" #end %)$prop.translatedPrettyName#end
 #set($geneObjects = $doc.getObjects($geneClass.name))#if ($options.mode == 'edit')|=#end
+#set($geneFilters = $options.geneFilters)##
+#set ($geneNumber = 1)##
 
 #foreach ($o in $geneObjects)
-#set ($geneNumber = $foreach.count)
+#set ($includeObj = true)##
+#if ($geneFilters)##
+#__apply_property_filters($o $geneFilters $geneFilters.size() 0)##
+#end##
+#if ($includeObj)##
 #__gene_row($o $geneNumber $variantClass $options)
+#set ($geneNumber = $geneNumber + 1)##
+#end
 #end
 #if ($options.mode == 'edit')
 #set($geneIndexPlaceholder = 'ZZGENE_INDEX_PLACEHOLDERZZ')
 #__gene_row_empty($geneClassName $variantClassName $options)
 (%class="variant-gene-$geneIndexPlaceholder variant-title-row"%)#__variant_head_empty($variantClassName $options)
-(%class="variant-gene-$geneIndexPlaceholder variant-hide-heading-$geneIndexPlaceholder"%)#__variant_row_empty($variantClassName $options)##
+(%class="variant-gene-$geneIndexPlaceholder variant-hide-heading-$geneIndexPlaceholder"%)#__variant_row_empty($variantClassName $geneNumber $options)##
 #end
 
 
 #if ($options.mode == 'edit')(% class="list-actions" %)(((#__gene_addTool($geneClassName))))#end\\
 #end
+##
+##
+##
+#macro(__apply_property_filters $obj $filters $numFilters $count)##
+#set($filter = $filters.get($count))##
+#set($propName = $filter.propName)##
+#set($propValue = $filter.propValue)##
+#set($count = $count + 1)##
+#set($property = $obj.getProperty($propName))##
+#if (!$property)##
+#set($includeObj = false)##
+#else##
+#set($storedValue = "$!{property.value}")##
+#if ($storedValue != $propValue)##
+#set($includeObj = false)##
+#end##
+#end##
+#if ($count < $numFilters && $includeObj)##
+#__apply_property_filters($obj $filters $numFilters $count)##
+#end##
+#end##
+##
+##
+##
+#macro(__apply_variant_filters $objs $filters $numFilters $filteredResults)##
+#foreach($obj in $objs)##
+#set($includeObj = true)##
+#__apply_property_filters($obj $filters $numFilters 0)##
+#if ($includeObj)##
+#set($discard = $filteredResults.add($obj))##
+#end##
+#end##
+#end##
 ##
 ##
 
