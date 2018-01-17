@@ -3358,36 +3358,6 @@ hr {
 .space-Families #document-head {
   margin: -2.9em -11px 0;
 }
-.space-data #document-head #document-title,
-.space-Families #document-head #document-title {
-  display: inline-block;
-  line-height: 0;
-  vertical-align: bottom;
-}
-
-.space-data #document-head h1,
-.space-Families #document-head h1 {
-  border: 0 none;
-  border-bottom: 0 none;
-  background-color: $theme.menuBackgroundColor;
-  #css3_backgroundLinearGradient({
-    'to': 'bottom',
-    'colors': [
-      {'color': $theme.menuBackgroundColor, 'position': '0%'},
-      {'color': $theme.menuGradientColor, 'position': '50%'}
-    ]
-  })
-  border-radius: 8px 8px 0 0;
-  box-shadow: 0 -3px 3px rgba(0, 0, 0, 0.15);
-  color: $theme.menuLinkColor;
-  display: inline-block;
-  font-size: 1.2em;
-  letter-spacing: 2px;
-  margin: 0;
-  padding: 0.4em 11px;
-  text-shadow: 0 0 1px $theme.buttonPrimaryTextColor;
-  text-transform: uppercase;
-}
 
 .space-data #document-head #document-authors,
 .space-Families #document-head #document-authors {

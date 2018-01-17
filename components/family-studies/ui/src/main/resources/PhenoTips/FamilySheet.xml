@@ -41,8 +41,6 @@
 
 {{velocity}}
 $xwiki.ssx.use('PhenoTips.PatientSheetCode', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-$xwiki.ssx.use('PhenoTips.Entities', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-$xwiki.jsx.use('PhenoTips.Entities')##
 $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 #set ($displayDocExtra = true)
 #set ($family = $services.families.getFamilyById($doc.fullName))
