@@ -2,18 +2,18 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
   var tools = ExtraGeneVariantData.tools = ExtraGeneVariantData.tools || {};
   tools.Editor = Class.create({
 
-    initialize : function () {
-      var geneTable = $$('.gene-table.extradata-list')[0];
+    initialize : function (geneTable, options) {
+      var localOpts = options || {};
+      this.options = localOpts.global || {'geneIndex' : 0, 'variantIndex' : 0};
       if (geneTable) {
         this._geneTable = geneTable;
-        var geneTableId = geneTable.id;
-        this.geneClassName = geneTableId.substring(geneTableId.lastIndexOf('-') + 1);
-        this.geneVariantClassName = 'PhenoTips.GeneVariantClass';
+        this.geneClassName = localOpts.geneClassName || 'PhenoTips.GeneClass';
+        this.geneVariantClassName = localOpts.geneVariantClassName || 'PhenoTips.GeneVariantClass';
 
         //if edit mode
         if ($('inline')) {
           // getting rid of 'for' attributes in labels and 'id' in inputs
-          $$('.gene-table label.xwiki-form-listclass').each (function (label) {
+          this._geneTable.select('label.xwiki-form-listclass').each (function (label) {
             label.removeAttribute("for");
             label.down('input').removeAttribute("id");
           });
@@ -24,24 +24,24 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
           this.createEditButtons('.variant-moreinfo-editbutton-row');
           this.createEditDoneButtons('.variant-moreinfo-editdonebutton-row');
           this.restrictNumericInput();
-          $$('.gene-table a.variant-edit').invoke('observe', 'click', this.editData.bindAsEventListener(this));
-          $$('.gene-table a.variant-edit-done').invoke('observe', 'click', this.editDoneData.bindAsEventListener(this));
-          $$('.variant.moreinfo').invoke('observe', 'click', this.areaEditData.bindAsEventListener(this));
-          $$('.gene a.delete-gene').invoke('observe', 'click', this.ajaxDeleteGeneData.bindAsEventListener(this));
+          this._geneTable.select('a.variant-edit').invoke('observe', 'click', this.editData.bindAsEventListener(this));
+          this._geneTable.select('a.variant-edit-done').invoke('observe', 'click', this.editDoneData.bindAsEventListener(this));
+          this._geneTable.select('.variant.moreinfo').invoke('observe', 'click', this.areaEditData.bindAsEventListener(this));
+          this._geneTable.select('.gene a.delete-gene').invoke('observe', 'click', this.ajaxDeleteGeneData.bindAsEventListener(this));
           $$('a.button.add-gene.add-data-button').invoke('observe', 'click', this.ajaxAddGeneData.bindAsEventListener(this));
-          $$('.variant a.delete-variant').invoke('observe', 'click', this.ajaxDeleteVariantData.bindAsEventListener(this));
-          $$('a.button.add-variant.add-data-button').invoke('observe', 'click', this.ajaxAddVariantData.bindAsEventListener(this));
+          this._geneTable.select('.variant a.delete-variant').invoke('observe', 'click', this.ajaxDeleteVariantData.bindAsEventListener(this));
+          this._geneTable.select('a.button.add-variant.add-data-button').invoke('observe', 'click', this.ajaxAddVariantData.bindAsEventListener(this));
           //invoking click event to hide rows with empty inputs in 'more info' section
-          $$('.gene-table a.variant-edit-done').invoke('click');
+          this._geneTable.select('a.variant-edit-done').invoke('click');
           this.lockGeneInput();
         }
 
-        $$('.gene-table tr tr').each( function(item) {
+        this._geneTable.select('tr tr').each( function(item) {
           item.toggleClassName('moreinfo-view', true);
         });
         this.createShowMoreinfoButtons('td.variant-row-count.variant');
         this.createHideShowButtons('.variant.variant-title');
-        $$('.gene-table tr th')[0].width = '1em';
+        this._geneTable.select('tr th')[0].width = '1em';
       }
     },
 
@@ -57,24 +57,25 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       event.stopPropagation();
       if ( this.areaEditDataListenerArray.indexOf(varIndex) < 0 ) {
         this.areaEditDataListenerArray.push(varIndex);
+        var _this = this;
         document.observe('click', function (event) {
           if (!event.element().up('.variant-' + varIndex)){
-            $$('.variant-' + varIndex + ' a.variant-edit-done').invoke('click');
+            _this._geneTable.select('.variant-' + varIndex + ' a.variant-edit-done').invoke('click');
           }
         });
       }
     },
 
     getNewRowsTemplates : function () {
-      var sizep = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ').size();
-      var geneRowTemplateEl = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[0].previous();
-      var buttonRowTemplateEl = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 5];
-      var varHeader_0_TemplateEl = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 4];
-      var varHeader_1_TemplateEl = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 3];
-      var varRowTemplateEl = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 2];
-      var varMoreInfoTemplateEl = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 1];
-      $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[0].previous().remove();
-      $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ').each(function(item) {
+      var sizep = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ').size();
+      var geneRowTemplateEl = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[0].previous();
+      var buttonRowTemplateEl = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 5];
+      var varHeader_0_TemplateEl = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 4];
+      var varHeader_1_TemplateEl = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 3];
+      var varRowTemplateEl = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 2];
+      var varMoreInfoTemplateEl = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 1];
+      this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[0].previous().remove();
+      this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ').each(function(item) {
         item.remove();
       });
       //making templates
@@ -93,8 +94,9 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       var deleteTrigger = event.element();
       var className = deleteTrigger.up('td').className;
       var geneIndex = parseInt(className.substring(className.lastIndexOf('-') + 1), 10);
-      var geneId = $$('[name="' + this.geneClassName + '_' + geneIndex + '_gene"]')[0].value;
+      var geneId = this._geneTable.select('[name="' + this.geneClassName + '_' + geneIndex + '_gene"]')[0].value;
 
+      var _this = this;
       new XWiki.widgets.ConfirmedAjaxRequest(deleteTrigger.href + geneId, {
 
         onCreate : function() {
@@ -108,17 +110,17 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
             geneIdInput.remove();
             var geneNameInput = dataRow.down('input.gene-name');
             geneNameInput.__validation.destroy();
-            $$('.variant-gene-' + geneIndex).each(function(item) {
+            _this._geneTable.select('.variant-gene-' + geneIndex).each(function(item) {
               item.remove();
             });
             dataRow.remove();
           }
-          if (this._geneTable) {
+          if (_this._geneTable) {
             var i = 1;
-            this._geneTable.select('td.row-count').each(function(item) {
+            _this._geneTable.select('td.row-count').each(function(item) {
               var geneRowIndex = item.next().className.substring(item.next().className.lastIndexOf('-') + 1);
               var y = 1;
-              $$('.variant-hide-heading-' + geneRowIndex + ' .variant-row-count').each(function(vitem) {
+              _this._geneTable.select('.variant-hide-heading-' + geneRowIndex + ' .variant-row-count').each(function(vitem) {
                 vitem.childNodes[1].textContent = i + '.' + (y++);
               });
               item.update(i++);
@@ -140,6 +142,9 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       event.stop();
 
       var addTrigger = event.element();
+      var listActions = addTrigger.up('div.list-actions');
+      var targetTable = listActions && listActions.previous('table.gene-table');
+      if (this._geneTable !== targetTable) { return; }
       if (addTrigger.disabled) {
         return;
       }
@@ -149,11 +154,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       }
 
       var idx = this._geneTable.select('td.row-count').size() + 1;
-      var geneIndex = 0;
-      if (this._geneTable.select('td.row-count').size() > 0) {
-        var className = this._geneTable.select('td.row-count')[idx - 2].next().className;
-        geneIndex = parseInt(className.substring(className.lastIndexOf('-') + 1), 10) + 1;
-      }
+      var geneIndex = this.options.geneIndex++;
 
       var newGeneRow = new Element('tr');
       var newButtonRow = new Element('tr', {class :'variant-gene-' + geneIndex + ' variant-footer v-collapsed'});
@@ -179,9 +180,9 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       this._geneTable.down('tbody').insert(newButtonRow);
 
       newGeneRow.down('a.delete-gene').observe('click', this.ajaxDeleteGeneData.bindAsEventListener(this));
-      $$('tr.variant-gene-' + geneIndex + ' a.add-variant')[0].observe('click', this.ajaxAddVariantData.bindAsEventListener(this));
+      this._geneTable.select('tr.variant-gene-' + geneIndex + ' a.add-variant')[0].observe('click', this.ajaxAddVariantData.bindAsEventListener(this));
 
-      $('PhenoTips.GeneClass_' + geneIndex + '_status').value = "candidate";
+      $(this.geneClassName + '_' + geneIndex + '_status').value = "candidate";
 
       var geneLabel = new Element('p', {class :' gene col-label gene-' + geneIndex + ' gene-input-label v-collapsed'});
       newGeneRow.down('.suggested.suggest-gene.gene-name').insert({before: geneLabel});
@@ -199,6 +200,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       if (deleteTrigger.disabled) {
          return;
       }
+      var _this = this;
       new XWiki.widgets.ConfirmedAjaxRequest(deleteTrigger.href, {
 
         onCreate : function() {
@@ -215,11 +217,11 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
             //we are deleting the only variant in the gene: remove variant table header,
             //  unlock the genesymbol input field
             if (dataRow.previous().hasClassName('variant-title-row') && dataRow.next(1).hasClassName('variant-footer')) {
-              $$('.variant-gene-' + geneIndex + '.variant-title-row').each(function(item) {
+              _this._geneTable.select('.variant-gene-' + geneIndex + '.variant-title-row').each(function(item) {
                 item.remove();
               });
-              $$('[name="' + geneClass + '_' + geneIndex + '_symbol"]')[0].toggleClassName('v-collapsed', false);
-              $$('.gene.col-label.gene-' + geneIndex + '.gene-input-label')[0].toggleClassName('v-collapsed', true);
+              _this._geneTable.select('[name="' + geneClass + '_' + geneIndex + '_symbol"]')[0].toggleClassName('v-collapsed', false);
+              _this._geneTable.select('.gene.col-label.gene-' + geneIndex + '.gene-input-label')[0].toggleClassName('v-collapsed', true);
               dataRow.next().remove();
               dataRow.remove();
             } else {
@@ -231,11 +233,11 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
               var innerText = element.textContent || element.innerText;
               var geneCount = innerText.substring(0, innerText.indexOf('.'));
               var i = 1;
-              $$('.variant-hide-heading-' + geneIndex + ' .variant-row-count').each(function(item) {
+              _this._geneTable.select('.variant-hide-heading-' + geneIndex + ' .variant-row-count').each(function(item) {
                 item.childNodes[1].textContent = geneCount + '.' + (i++);
               });
               //-update variant table header count
-              var header = $$('.variant.variant-title.gene-' + geneIndex)[0].firstChild;
+              var header = _this._geneTable.select('.variant.variant-title.gene-' + geneIndex)[0].firstChild;
               var newHeaderText = header.textContent.replace(/(\().+?(\))/g, "$1" + (--i) + "$2");
               header.textContent = newHeaderText;
             }
@@ -270,12 +272,12 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
 
       var className = addTrigger.up('td.variant').className;
       var geneIndex = className.substring(className.lastIndexOf('-') + 1);
-      var geneId = $$('[name="' + this.geneClassName + '_' + geneIndex + '_gene"]')[0].value;
-      var geneSymbol = $$('.gene.col-label.gene-' + geneIndex)[0].innerHTML;
+      var geneId = this._geneTable.select('[name="' + this.geneClassName + '_' + geneIndex + '_gene"]')[0].value;
+      var geneSymbol = this._geneTable.select('.gene.col-label.gene-' + geneIndex)[0].innerHTML;
 
       //lock the genesymbol input field
-      $$('[name="' + this.geneClassName + '_' + geneIndex + '_symbol"]')[0].toggleClassName('v-collapsed', true);
-      $$('.gene.col-label.gene-' + geneIndex + '.gene-input-label')[0].toggleClassName('v-collapsed', false);
+      this._geneTable.select('[name="' + this.geneClassName + '_' + geneIndex + '_symbol"]')[0].toggleClassName('v-collapsed', true);
+      this._geneTable.select('.gene.col-label.gene-' + geneIndex + '.gene-input-label')[0].toggleClassName('v-collapsed', false);
 
       var variantFooter = addTrigger.up('tr.variant-footer');
       if (!variantFooter) {
@@ -283,13 +285,8 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       }
 
       var varCount = 1;
-      var geneCount = parseInt($$('td.gene.gene-' + geneIndex)[0].up('tr').down('td').innerHTML, 10);
-      var varIndex = 0;
-      $$('.variant-moreinfo-editbutton-row').each( function(item) {
-        var indx = parseInt(item.className.substring(item.className.lastIndexOf('-') + 1), 10);
-        varIndex = Math.max(indx, varIndex);
-      });
-      varIndex++;
+      var geneCount = parseInt(this._geneTable.select('td.gene.gene-' + geneIndex)[0].up('tr').down('td').innerHTML, 10);
+      var varIndex = this.options.variantIndex++;
 
       var data = {
           GENE_SYMBOL_PLACEHOLDER: geneSymbol,
@@ -313,8 +310,8 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
         this.createHideShowButtons('.variant.variant-title.gene-' + geneIndex);
       } else {
         //update variant table header count
-        varCount = $$('.variant-hide-heading-' + geneIndex + ' .variant-row-count').size() + 1;
-        var header = $$('.variant.variant-title.gene-' + geneIndex)[0].firstChild;
+        varCount = this._geneTable.select('.variant-hide-heading-' + geneIndex + ' .variant-row-count').size() + 1;
+        var header = this._geneTable.select('.variant.variant-title.gene-' + geneIndex)[0].firstChild;
         var newHeaderText = header.textContent.replace(/(\().+?(\))/g, "$1" + varCount + "$2");
         header.textContent = newHeaderText;
         data.VARIANT_COUNT_PLACEHOLDER = varCount;
@@ -388,7 +385,8 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
 
     createHideShowButtons : function (className) {
       //creating hide/Show variant section buttons
-      $$(className).each( function(item){
+      var _this = this;
+      this._geneTable.select(className).each( function(item){
         var geneIndex = item.className.substring(item.className.lastIndexOf('-') + 1);
         var showIcon = new Element('span', {class :'fa fa-plus-square-o fa-lg'});
         var variantShow = new Element('button', {class :'tool button secondary v-collapsed', type :'button'})
@@ -407,11 +405,11 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
         [variantShow, variantHide].invoke('observe', 'click', function (event) {
           variantShow.toggleClassName('v-collapsed');
           variantHide.toggleClassName('v-collapsed');
-          $$('.variant-hide-heading-' + geneIndex).each( function(item) {
+          _this._geneTable.select('.variant-hide-heading-' + geneIndex).each( function(item) {
               if (variantShow.hasClassName('v-collapsed')) {
                 item.toggleClassName('v-collapsed', false);
                 //collapse all more info for variants
-                $$('.variant-hide-heading-' + geneIndex + '.variant-moreinfo-row').each( function(item) {
+                _this._geneTable.select('.variant-hide-heading-' + geneIndex + '.variant-moreinfo-row').each( function(item) {
                   item.toggleClassName('v-collapsed', true);
                   item.previous().down('.show-moreinfo-button').toggleClassName('triRight', true);
                   item.previous().down('.show-moreinfo-button').toggleClassName('triDown', false);
@@ -425,13 +423,14 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
     },
 
     createEditDoneButtons : function (className) {
-      $$(className).each(function(row) {
+      var _this = this;
+      this._geneTable.select(className).each(function(row) {
         var variantIndex = row.className.substring(row.className.lastIndexOf('-') + 1);
         var editVariantLink = new Element('a',
           {
             class : 'action-edit variant-edit-done v-collapsed',
             href : '#',
-            id : 'PhenoTips.GeneVariantClass_' + variantIndex + '_editDone'
+            id : _this.geneVariantClassName + '_' + variantIndex + '_editDone'
           });
         row.insert(editVariantLink);
       });
@@ -440,7 +439,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
     // restrict only numerical input for start_position and end_position variant fiellds
     restrictNumericInput : function (container) {
       if (!container) {
-        var container = this._geneTable;
+        container = this._geneTable;
       }
       container.select('input[id$="_start_position"]', 'input[id$="_end_position"]').each( function(input) {
         input.observe('input', function(event) {
@@ -450,14 +449,15 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
     },
 
     createEditButtons : function (className) {
-      $$(className).each(function(row) {
+      var _this = this;
+      this._geneTable.select(className).each(function(row) {
         var variantIndex = row.className.substring(row.className.lastIndexOf('-') + 1);
         var editVariantLink = new Element('a',
           {
             class : 'action-edit button secondary variant-edit fa fa-pencil',
             href : '#',
             title : "$services.localization.render('PhenoTips.GeneVariantClass.edit.hint')",
-            id : 'PhenoTips.GeneVariantClass_' + variantIndex + '_edit', style :'font-size: 90%'
+            id : _this.geneVariantClassName + '_' + variantIndex + '_edit', style :'font-size: 90%'
           });
         var editVarientWrapper = new Element('span',
           {
@@ -468,13 +468,14 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
     },
 
     createShowMoreinfoButtons : function (className, newVariant) {
-      $$(className).each(function(td) {
+      var _this = this;
+      this._geneTable.select(className).each(function(td) {
         var variantIndex = td.className.substring(td.className.lastIndexOf('-') + 1);
         var showMoreinfoWrapper = new Element('div',
           {
             class :'show-moreinfo-button',
             title : "$services.localization.render('PhenoTips.GeneVariantClass.showMoreinfo.hint')",
-            id : 'PhenoTips.GeneVariantClass_' + variantIndex + '_showMoreinfo'
+            id : _this.geneVariantClassName + '_' + variantIndex + '_showMoreinfo'
           });
         showMoreinfoWrapper.addClassName((newVariant) ? 'triDown' : 'triRight');
         showMoreinfoWrapper.observe('click', function (event) {
@@ -494,14 +495,15 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
 
     lockGeneInput : function () {
       //lock genesymbol inputs if there are variants
-      $$('.suggested.suggest-gene.gene-name').each( function(item) {
+      var _this = this;
+      this._geneTable.select('.suggested.suggest-gene.gene-name').each( function(item) {
         var className = item.up().className;
         var geneIndex = className.substring(className.lastIndexOf('-') + 1);
         //generate label
         var geneLabel = new Element('p', {class :' gene col-label gene-' + geneIndex + ' gene-input-label'});
         geneLabel.update(item.value);
         item.insert({before: geneLabel});
-        if ($$('.variant-hide-heading-' + geneIndex).length > 0) {
+        if (_this._geneTable.select('.variant-hide-heading-' + geneIndex).length > 0) {
           item.toggleClassName('v-collapsed', true);
         } else {
           geneLabel.toggleClassName('v-collapsed', true);
@@ -515,15 +517,15 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       var id = event.element().id;
       var variantIndex = id.substring(id.indexOf('_') + 1, id.lastIndexOf('_'));
 
-      $$('.gene-table tr .variant-' + variantIndex + ' tr').each( function(item) {
+      this._geneTable.select('tr .variant-' + variantIndex + ' tr').each( function(item) {
         item.toggleClassName('moreinfo-view', false);
       });
 
       event.element().toggleClassName('v-collapsed', true);
       $(this.geneVariantClassName + '_' + variantIndex + '_editDone').toggleClassName('v-collapsed', false);
 
-      var labels = $$('.variant-label-' + variantIndex);
-      $$('.variant-input-' + variantIndex).each ( function(item, index) {
+      var labels = this._geneTable.select('.variant-label-' + variantIndex);
+      this._geneTable.select('.variant-input-' + variantIndex).each ( function(item, index) {
         item.toggleClassName('v-collapsed', false);
         labels[index].toggleClassName('v-collapsed', true);
         labels[index].up('tr').toggleClassName('v-collapsed', false);
@@ -540,15 +542,15 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       var id = event.element().id;
       var variantIndex = id.substring(id.indexOf('_') + 1, id.lastIndexOf('_'));
 
-      $$('.gene-table tr .variant-' + variantIndex + ' tr').each( function(item) {
+      this._geneTable.select('tr .variant-' + variantIndex + ' tr').each( function(item) {
         item.toggleClassName('moreinfo-view', true);
       });
 
       event.element().toggleClassName('v-collapsed', true);
       $(this.geneVariantClassName + '_' + variantIndex + '_edit').toggleClassName('v-collapsed', false);
 
-      var inputs = $$('.variant-input-' + variantIndex);
-      var labels = $$('.variant-label-' + variantIndex);
+      var inputs = this._geneTable.select('.variant-input-' + variantIndex);
+      var labels = this._geneTable.select('.variant-label-' + variantIndex);
 
       for (var i = 0; i < inputs.length; i++) {
 
@@ -593,5 +595,49 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
 }(ExtraGeneVariantData || {}));
 
 document.observe('xwiki:dom:loaded', function() {
-  new ExtraGeneVariantData.tools.Editor();
+  // All gene tables should share this class name.
+  var geneTables = $$('.gene-table.extradata-list');
+  var tableCategories = {};
+  geneTables.each(function(geneTable) {
+    // If tables are displayed separately, but they share the same object, they should have a global count. These groups
+    // have an additional class name that they share (e.g. "gene-table some-class-shared-by-group extradata-list").
+    var className = geneTable.className;
+    var byCategory = tableCategories[className];
+    if (!byCategory) {
+      byCategory = [];
+      tableCategories[className] = byCategory;
+    }
+    byCategory.push(geneTable);
+  });
+  // Each group shares a global geneIndex and variantIndex.
+  $H(tableCategories).each(function(pair) {
+    var group = pair.value;
+    var globalOptions = {'geneIndex' : 0, 'variantIndex' : -1};
+    group.each(function(tableEl) {
+      // Look at any retrieved genes for the table element, take the largest for the group.
+      var rows = tableEl.select('td.row-count');
+      var idx = rows.size();
+      if (idx > 1) {
+        var className = rows[idx - 2].next().className;
+        globalOptions.geneIndex = Math.max(globalOptions.geneIndex, parseInt(className.substring(className.lastIndexOf('-') + 1), 10) + 1);
+      }
+
+      // Look at any retrieved variants for the table element, take the largest for the group.
+      tableEl.select('.variant-moreinfo-editbutton-row').each( function(item) {
+        var strIdx = item.className.substring(item.className.lastIndexOf('-') + 1);
+        var indx = parseInt(strIdx, 10);
+        indx = isNaN(indx) ? -1 : indx;
+        globalOptions.variantIndex = Math.max(indx, globalOptions.variantIndex);
+      });
+
+      var options = {'global' : globalOptions};
+      var geneTableId = tableEl.id;
+      var classesStr = geneTableId && geneTableId.substring(geneTableId.lastIndexOf('-') + 1);
+      // Get the gene variant class and gene class names.
+      options.geneClassName = classesStr && classesStr.substring(0, classesStr.lastIndexOf('_'));
+      options.geneVariantClassName = classesStr && classesStr.substring(classesStr.lastIndexOf('_') + 1);
+      new ExtraGeneVariantData.tools.Editor(tableEl, options);
+    });
+    globalOptions.variantIndex++;
+  });
 });
