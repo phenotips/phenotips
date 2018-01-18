@@ -39,7 +39,7 @@
 ## ----------------------------
 ## Display the title
 ## ----------------------------
-<div id="document-title"><h1>$titleToDisplay</h1></div>
+<div id="document-title" class="#if ($doc.getObject('PhenoTips.PatientClass') || $doc.getObject('PhenoTips.FamilyClass'))title-tab active#{end}"><h1>$titleToDisplay</h1></div>
 ## --------------------------------------------------------------------------
 ## Document author(s)
 ##---------------------------------------------------------------------------

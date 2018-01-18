@@ -37,8 +37,30 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{velocity}}{{html clean=false wiki=false}}
+  <content>{{velocity output=false}}
+#macro (__buildTabs $extName)
+  #foreach ($e in $services.uix.getExtensions($extName, {'sortByParameter' : 'order'}))
+    #set ($parameters = $e.getParameters())
+    #if ($parameters.get('enabled') != 'false')
+      #set ($label = "$!{parameters.get('label')}")
+      #set ($href = "$!{parameters.get('href')}")
+      #set ($cssId = "$!{parameters.get('cssId')}")
+      #if ($label != "" &amp;&amp; $href != "" &amp;&amp; $cssId != "")
+        &lt;div class="title-tab" id="$!{cssId}"&gt;
+          &lt;a href="$href"&gt;$label&lt;/a&gt;
+          &lt;h1 class="hidden"&gt;$label&lt;/h1&gt;
+        &lt;/div&gt;
+      #end
+    #end
+  #end
+#end
+{{/velocity}}
+
+{{velocity}}{{html clean=false wiki=false}}
 #if ($doc.getObject('PhenoTips.PatientClass') || $doc.getObject('PhenoTips.FamilyClass'))
+  #__buildTabs('org.phenotips.entitySheet.tab')
+  #set($ext = "#if($doc.getObject('PhenoTips.PatientClass'))org.phenotips.patientSheet.tab#{else}org.phenotips.familyRecord.tab#{end}")
+  #__buildTabs($ext)
   &lt;div id="document-authors"&gt;##
     &lt;span class="document-meta document-creation"&gt;## Creation
     ##Sets the creator text to a link iff the creator was not a guest. Guests are displayed in span elements

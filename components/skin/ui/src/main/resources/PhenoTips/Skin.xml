@@ -656,6 +656,133 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   </object>
   <object>
     <name>PhenoTips.Skin</name>
+    <number>4</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>c9bfd28f-b354-470e-a67a-d1e5d390b9bc</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var disableTitleTab = function(tab) {
+  tab.removeClassName('active');
+  tab.update(new Element('a', {'href' : XWiki.currentDocument.getURL($$('input[name="returnTo"]')[0].value)}).insert(XWiki.currentDocument.page));
+};
+
+var hideElement = function(id) {
+  var elem = $(id);
+  elem &amp;&amp; elem.hide();
+};
+
+var cleanupUI = function(tab) {
+  ['document-authors', 'patient-record-actions', $$('.bottombuttons')[0]].each(hideElement);
+};
+
+var enableCurrentTab = function(tab, cleanUI) {
+  var tabHeading = tab.down('h1');
+  var tabLink = tab.down('a');
+  tab.addClassName('active');
+  tabLink &amp;&amp; tabLink.addClassName('hidden');
+  tabHeading &amp;&amp; tabHeading.removeClassName('hidden');
+  cleanUI &amp;&amp; cleanupUI(tab);
+};
+
+document.observe('xwiki:dom:loaded', function() {
+  var currentTabIdEl = $('current-tab-id');
+  var currentTabId = currentTabIdEl &amp;&amp; currentTabIdEl.value;
+  if (currentTabId) {
+    var currentTab = $(currentTabId);
+
+    // Disable the title tab.
+    var documentTitle = $('document-title');
+    // It should always be there, but check.
+    documentTitle &amp;&amp; disableTitleTab(documentTitle);
+    enableCurrentTab(currentTab, currentTab.identify() !== 'document-title');
+  }
+});</code>
+    </property>
+    <property>
+      <name>Define tab behavior</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>always</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
     <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
     <guid>8dda95b8-cd05-43f6-9f5b-c60c9566d28d</guid>
@@ -1479,6 +1606,162 @@ h1:target, h2:target, h3:target {
     </property>
     <property>
       <name>Page content menu</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>always</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
+    <number>3</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>bfda5000-2b5e-4bf3-9892-41d00dbf14c4</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+
+#document-head .title-tab.active h1 {
+  border-radius: inherit;
+  box-shadow: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  text-shadow: inherit;
+  color: $theme.menuLinkColor;
+  background-color: $theme.menuBackgroundColor;
+  background-image: linear-gradient(to bottom, $theme.menuBackgroundColor 0%, $theme.menuGradientColor 50%);
+  border: 0 none;
+  border-bottom: 0 none;
+  margin: 0;
+  padding: 0.4em 11px;
+}
+
+#document-head .title-tab {
+  display: inline-block;
+  vertical-align: top;
+  line-height: 0;
+  cursor: default;
+  font-size: 1.2em;
+  letter-spacing: 2px;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 -3px 3px rgba(0, 0, 0, 0.15);
+  text-transform: none;
+  text-shadow: 0 0 1px $theme.buttonPrimaryTextColor;
+}
+
+#document-head .title-tab:not(.active) {
+  background-color: #EEE;
+  background-image: linear-gradient(to bottom, #EEE 0%, #DDD 50%);
+  font-weight: bold;
+  margin: 0;
+  padding: 0.4em 11px;
+}
+
+#document-head .title-tab a {
+  color: $theme.textColor;
+}
+
+#document-head .title-tab a:hover {
+  color: $theme.linkColor;
+  text-decoration: none;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name>PhenoTips tabs</name>
     </property>
     <property>
       <parse>1</parse>
