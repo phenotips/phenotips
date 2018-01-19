@@ -2,8 +2,8 @@ require(['jquery'], function ($)
 {
     $(document).ready(function ()
     {
-        var _mandatoryFields = $(".mandatory input:not([type='hidden'])");
-        var _checkedFields = $(".checked input:not([type='hidden'])");
+        var _mandatoryFields = $(".mandatory :input:not([type='hidden'])");
+        var _checkedFields = $(".checked :input:not([type='hidden'])");
         var externalId = $("#PhenoTips\\.PatientClass_0_external_id");
         var mandatoryFields = _mandatoryFields.add(_checkedFields).add(externalId);
         var saveButtons = $("input[name='action_save']");
