@@ -70,7 +70,7 @@ $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 })
 #set ($columnFilters ={})
 #if (!$xwiki.getDocument('PhenoTips.OwnerClass').isNew())
-  #set ($columns[2] = 'owner') ## replace creator with owner
+  #set ($columns[2] = 'owner')## replace creator with owner
   #set ($discard = $columnFilters.put('owner/class', 'PhenoTips.OwnerClass'))
 #end
 #set ($columnFiltersContent = '')
