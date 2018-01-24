@@ -29,7 +29,6 @@ import org.junit.Test;
 
 public class DefaultPushServerConfigurationResponseTest
 {
-
     private DefaultPushServerConfigurationResponse defaultPushServerConfigurationResponse;
 
     private JSONObject serverResponse;
@@ -39,10 +38,9 @@ public class DefaultPushServerConfigurationResponseTest
     @Before
     public void setUp()
     {
-        serverResponse = new JSONObject();
-        defaultPushServerConfigurationResponse = new
-            DefaultPushServerConfigurationResponse(serverResponse);
-        expected = new TreeSet<String>();
+        this.serverResponse = new JSONObject();
+        this.defaultPushServerConfigurationResponse = new DefaultPushServerConfigurationResponse(this.serverResponse);
+        this.expected = new TreeSet<>();
     }
 
     @Test
@@ -50,17 +48,17 @@ public class DefaultPushServerConfigurationResponseTest
     {
         // populate a JSONObject
         for (int i = 0; i < 10; i++) {
-            serverResponse.accumulate("user_groups", i);
-            expected.add(String.valueOf(i));
+            this.serverResponse.accumulate("user_groups", i);
+            this.expected.add(String.valueOf(i));
         }
 
-        Assert.assertEquals(expected, defaultPushServerConfigurationResponse.getRemoteUserGroups());
+        Assert.assertEquals(this.expected, this.defaultPushServerConfigurationResponse.getRemoteUserGroups());
     }
 
     @Test
     public void getRemoteUserGroupsNullTest()
     {
-        Assert.assertNull(defaultPushServerConfigurationResponse.getRemoteUserGroups());
+        Assert.assertNull(this.defaultPushServerConfigurationResponse.getRemoteUserGroups());
     }
 
     @Test
@@ -68,19 +66,21 @@ public class DefaultPushServerConfigurationResponseTest
     {
         // populate a JSONObject
         for (int i = 0; i < 10; i++) {
-            serverResponse.accumulate("accepted_fields", i);
-            expected.add(String.valueOf(i));
+            this.serverResponse.accumulate("accepted_fields", i);
+            this.expected.add(String.valueOf(i));
         }
 
-        Assert.assertEquals(expected, defaultPushServerConfigurationResponse.getRemoteAcceptedPatientFields());
-        Assert.assertEquals(expected, defaultPushServerConfigurationResponse.getRemoteAcceptedPatientFields("string"));
+        Assert.assertEquals(this.expected,
+            this.defaultPushServerConfigurationResponse.getRemoteAcceptedPatientFields());
+        Assert.assertEquals(this.expected,
+            this.defaultPushServerConfigurationResponse.getRemoteAcceptedPatientFields("string"));
     }
 
     @Test
     public void getRemoteAcceptedPatientFieldsNullTest()
     {
-        Assert.assertNull(defaultPushServerConfigurationResponse.getRemoteAcceptedPatientFields());
-        Assert.assertNull(defaultPushServerConfigurationResponse.getRemoteAcceptedPatientFields("string"));
+        Assert.assertNull(this.defaultPushServerConfigurationResponse.getRemoteAcceptedPatientFields());
+        Assert.assertNull(this.defaultPushServerConfigurationResponse.getRemoteAcceptedPatientFields("string"));
     }
 
     @Test
@@ -88,51 +88,50 @@ public class DefaultPushServerConfigurationResponseTest
     {
         // populate a JSONObject
         for (int i = 0; i < 10; i++) {
-            serverResponse.accumulate("accepted_fields", i);
-            expected.add(String.valueOf(i));
+            this.serverResponse.accumulate("accepted_fields", i);
+            this.expected.add(String.valueOf(i));
         }
 
-        Assert.assertTrue(defaultPushServerConfigurationResponse.getPushableFields().isEmpty());
-        Assert.assertTrue(defaultPushServerConfigurationResponse.getPushableFields("string").isEmpty());
+        Assert.assertTrue(this.defaultPushServerConfigurationResponse.getPushableFields().isEmpty());
+        Assert.assertTrue(this.defaultPushServerConfigurationResponse.getPushableFields("string").isEmpty());
     }
 
     @Test
     public void getPushableFieldsNullTest()
     {
-        Assert.assertTrue(defaultPushServerConfigurationResponse.getPushableFields().isEmpty());
-        Assert.assertTrue(defaultPushServerConfigurationResponse.getPushableFields("string").isEmpty());
+        Assert.assertTrue(this.defaultPushServerConfigurationResponse.getPushableFields().isEmpty());
+        Assert.assertTrue(this.defaultPushServerConfigurationResponse.getPushableFields("string").isEmpty());
     }
 
     @Test
     public void getPushableFieldsExceptionTest()
     {
-        serverResponse = null;
-        Assert.assertTrue(defaultPushServerConfigurationResponse.getPushableFields().isEmpty());
+        this.serverResponse = null;
+        Assert.assertTrue(this.defaultPushServerConfigurationResponse.getPushableFields().isEmpty());
     }
 
     @Test
     public void remoteUpdatesAvailableTest()
     {
-        serverResponse.accumulate("updates_enabled", true);
-        Assert.assertTrue(defaultPushServerConfigurationResponse.remoteUpdatesEnabled());
+        this.serverResponse.accumulate("updates_enabled", true);
+        Assert.assertTrue(this.defaultPushServerConfigurationResponse.remoteUpdatesEnabled());
     }
 
     @Test
     public void remoteUpdatesNotAvailableTest()
     {
         // check before anything has been set
-        Assert.assertFalse(defaultPushServerConfigurationResponse.remoteUpdatesEnabled());
-        serverResponse.accumulate("updates_enabled", false);
+        Assert.assertFalse(this.defaultPushServerConfigurationResponse.remoteUpdatesEnabled());
+        this.serverResponse.accumulate("updates_enabled", false);
         // check after it has been set false
-        Assert.assertFalse(defaultPushServerConfigurationResponse.remoteUpdatesEnabled());
+        Assert.assertFalse(this.defaultPushServerConfigurationResponse.remoteUpdatesEnabled());
     }
 
     @Test
     public void getRemoteUserTokenTest()
     {
-        Assert.assertNull(defaultPushServerConfigurationResponse.getRemoteUserToken());
-        serverResponse.accumulate("user_login_token", "yes");
-        Assert.assertEquals("yes", defaultPushServerConfigurationResponse.getRemoteUserToken());
+        Assert.assertNull(this.defaultPushServerConfigurationResponse.getRemoteUserToken());
+        this.serverResponse.accumulate("user_login_token", "yes");
+        Assert.assertEquals("yes", this.defaultPushServerConfigurationResponse.getRemoteUserToken());
     }
-
 }
