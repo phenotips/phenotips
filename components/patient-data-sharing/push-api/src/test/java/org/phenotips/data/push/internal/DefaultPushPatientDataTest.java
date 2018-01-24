@@ -17,25 +17,39 @@
  */
 package org.phenotips.data.push.internal;
 
+import org.phenotips.Constants;
 import org.phenotips.data.push.PushPatientData;
+import org.phenotips.data.shareprotocol.ShareProtocol;
 
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.context.Execution;
-import org.xwiki.context.ExecutionContext;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.io.IOException;
 import java.util.List;
 
+import javax.inject.Provider;
+
+import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.message.BasicStatusLine;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.XWiki;
@@ -44,15 +58,13 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class DefaultPushPatientDataTest
 {
-
     @Rule
     public final MockitoComponentMockingRule<PushPatientData> mocker =
-        new MockitoComponentMockingRule<PushPatientData>(DefaultPushPatientData.class);
+        new MockitoComponentMockingRule<>(DefaultPushPatientData.class);
 
     @Mock
     private BaseObject serverConfiguration;
@@ -70,92 +82,118 @@ public class DefaultPushPatientDataTest
     private XWikiDocument xWikiDocument;
 
     @Mock
-    private ExecutionContext executionContext;
+    private BaseObject configObject;
 
-    private Execution execution;
+    @Mock
+    private CloseableHttpClient client;
 
-    private PushPatientData patientData;
+    @Captor
+    private ArgumentCaptor<HttpPost> post;
+
+    @Mock
+    private CloseableHttpResponse response;
 
     @Before
-    public void setUp() throws ComponentLookupException
+    public void setUp() throws ComponentLookupException, XWikiException, ClientProtocolException, IOException
     {
         MockitoAnnotations.initMocks(this);
-        this.patientData = (DefaultPushPatientData) this.mocker.getComponentUnderTest();
-        this.execution = this.mocker.getInstance(Execution.class);
-    }
+        Provider<XWikiContext> xcp = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
+        when(xcp.get()).thenReturn(this.xWikiContext);
 
-    @Test
-    public void getBaseUrlReturnsCorrectString() throws ComponentLookupException, NoSuchMethodException,
-        IllegalAccessException,
-        InvocationTargetException
-    {
-        // set up access for the private method
-        Method method = DefaultPushPatientData.class.getDeclaredMethod("getBaseURL", BaseObject.class);
-        method.setAccessible(true);
-        // test null case
-        Assert.assertNull(method.invoke(this.mocker.getComponentUnderTest(), serverConfiguration));
-
-        // test case when serverConfiguration gives http string
-        when(serverConfiguration.getStringValue("url")).thenReturn("http://");
-        Assert.assertEquals(method.invoke(this.mocker.getComponentUnderTest(), serverConfiguration),
-            "http:/bin/receivePatientData");
-
-        when(serverConfiguration.getStringValue(("url"))).thenReturn("apples");
-        Assert.assertEquals(method.invoke(this.mocker.getComponentUnderTest(), serverConfiguration),
-            "http://apples/bin/receivePatientData");
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void generateRequestDataTest() throws ComponentLookupException, NoSuchMethodException,
-        IllegalAccessException, InvocationTargetException
-    {
-        // set up access for the private method
-        Method method = DefaultPushPatientData.class.getDeclaredMethod("generateRequestData",
-            String.class, String.class, String.class, String.class, String.class);
-        method.setAccessible(true);
-
-        List<NameValuePair> result = (List<NameValuePair>) method.invoke(this.mocker.getComponentUnderTest(),
-            "actionName", "userName", "passWord", "userToken", "1.2");
-        Assert.assertEquals("xpage", result.get(0).getName());
-        Assert.assertEquals("plain", result.get(0).getValue());
-        Assert.assertEquals("push_protocol_version", result.get(1).getName());
-        Assert.assertEquals("1.2", result.get(1).getValue());
-        Assert.assertEquals("action", result.get(2).getName());
-        Assert.assertEquals("actionName", result.get(2).getValue());
-        Assert.assertEquals("username", result.get(3).getName());
-        Assert.assertEquals("userName", result.get(3).getValue());
-        Assert.assertEquals("user_login_token", result.get(4).getName());
-        Assert.assertEquals("userToken", result.get(4).getValue());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void generateRequestDataNoTokenTest() throws ComponentLookupException, NoSuchMethodException,
-        IllegalAccessException, InvocationTargetException
-    {
-        // set up access for the private method
-        Method method = DefaultPushPatientData.class.getDeclaredMethod("generateRequestData",
-            String.class, String.class, String.class, String.class, String.class);
-        method.setAccessible(true);
-
-        // check that the last
-        List<NameValuePair> result = (List<NameValuePair>) method.invoke(this.mocker.getComponentUnderTest(),
-            "actionName", "userName", "passWord", "", "");
-        Assert.assertEquals("password", result.get(4).getName());
-        Assert.assertEquals("passWord", result.get(4).getValue());
-    }
-
-    @Test
-    public void getRemoteConfigurationPerformsCorrectly() throws ComponentLookupException, XWikiException
-    {
-        when(this.execution.getContext()).thenReturn(this.executionContext);
-        when(this.executionContext.getProperty(Matchers.anyString())).thenReturn(this.xWikiContext);
         when(this.xWikiContext.getWiki()).thenReturn(this.xWiki);
         when(this.xWikiContext.getWikiId()).thenReturn("xwiki");
-        when(this.xWiki.getDocument(Matchers.any(DocumentReference.class), Matchers.any(XWikiContext.class)))
+        when(this.xWiki.getDocument(new DocumentReference("xwiki", "XWiki", "XWikiPreferences"), this.xWikiContext))
             .thenReturn(this.xWikiDocument);
-        this.mocker.getComponentUnderTest().getRemoteConfiguration("id", "name", "pass", "token");
-        verify(this.execution).getContext();
+        when(this.xWikiDocument.getXObject(new DocumentReference("xwiki", Constants.CODE_SPACE,
+            "PushPatientServer"), "name", "RemoteServer1")).thenReturn(this.configObject);
+        when(this.configObject.getStringValue("url")).thenReturn("http://localhost:8080/");
+
+        ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "client", this.client);
+        when(this.client.execute(this.post.capture())).thenReturn(this.response);
+    }
+
+    @Test
+    public void getRemoteConfigurationSendsTokenInsteadOfPass()
+        throws ComponentLookupException, ClientProtocolException, IOException
+    {
+        when(this.response.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, 200, "OK"));
+        when(this.response.getEntity()).thenReturn(new ByteArrayEntity("{}".getBytes()));
+        Assert.assertNotNull(
+            this.mocker.getComponentUnderTest().getRemoteConfiguration("RemoteServer1", "name", "pass", "token"));
+        Mockito.verify(this.client).execute(Matchers.any(HttpPost.class));
+        HttpPost request = this.post.getValue();
+        Assert.assertEquals("http://localhost:8080/bin/receivePatientData", request.getURI().toString());
+        List<NameValuePair> requestData = URLEncodedUtils.parse(request.getEntity());
+        Assert.assertTrue(
+            requestData.contains(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_ACTION,
+                ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_INFO)));
+        Assert.assertTrue(
+            requestData.contains(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_USERNAME, "name")));
+        Assert.assertFalse(
+            requestData.contains(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_PASSWORD, "pass")));
+        Assert.assertTrue(
+            requestData.contains(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_USER_TOKEN, "token")));
+        Assert.assertTrue(
+            requestData.contains(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_PROTOCOLVER,
+                ShareProtocol.CURRENT_PUSH_PROTOCOL_VERSION)));
+    }
+
+    @Test
+    public void getRemoteConfigurationFixesPartialBaseURL()
+        throws ComponentLookupException, ClientProtocolException, IOException
+    {
+        when(this.configObject.getStringValue("url")).thenReturn("localhost:8080");
+        when(this.response.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, 200, "OK"));
+        when(this.response.getEntity())
+            .thenReturn(new ByteArrayEntity("{\"response_protocol_version\":\"1.2\"}".getBytes()));
+        Assert.assertNotNull(
+            this.mocker.getComponentUnderTest().getRemoteConfiguration("RemoteServer1", "name", "pass", "token"));
+        Mockito.verify(this.client).execute(Matchers.any(HttpPost.class));
+        HttpPost request = this.post.getValue();
+        Assert.assertEquals("http://localhost:8080/bin/receivePatientData", request.getURI().toString());
+    }
+
+    @Test
+    public void getRemoteConfigurationSendsPassWhenTokenUnavailable()
+        throws ComponentLookupException, ClientProtocolException, IOException
+    {
+        when(this.response.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, 200, "OK"));
+        when(this.response.getEntity()).thenReturn(new ByteArrayEntity("{}".getBytes()));
+        Assert.assertNotNull(
+            this.mocker.getComponentUnderTest().getRemoteConfiguration("RemoteServer1", "name", "pass", ""));
+        Mockito.verify(this.client).execute(Matchers.any(HttpPost.class));
+        HttpPost request = this.post.getValue();
+        List<NameValuePair> requestData = URLEncodedUtils.parse(request.getEntity());
+        Assert.assertTrue(
+            requestData.contains(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_ACTION,
+                ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_INFO)));
+        Assert.assertTrue(
+            requestData.contains(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_USERNAME, "name")));
+        Assert.assertTrue(
+            requestData.contains(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_PASSWORD, "pass")));
+        Assert.assertFalse(
+            requestData.contains(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_USER_TOKEN, "")));
+        Assert.assertTrue(
+            requestData.contains(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_PROTOCOLVER,
+                ShareProtocol.CURRENT_PUSH_PROTOCOL_VERSION)));
+    }
+
+    @Test
+    public void getRemoteConfigurationReturnsNullWhenServerNotConfigured()
+        throws ComponentLookupException, ClientProtocolException, IOException
+    {
+        Assert.assertNull(
+            this.mocker.getComponentUnderTest().getRemoteConfiguration("UnknownRemoteServer", "name", "pass", ""));
+        Mockito.verify(this.client, Mockito.never()).execute(Matchers.any(HttpPost.class));
+    }
+
+    @Test
+    public void getRemoteConfigurationReturnsNullWhenServerConfiguredWithBlankBaseURL()
+        throws ComponentLookupException, ClientProtocolException, IOException
+    {
+        when(this.configObject.getStringValue("url")).thenReturn("");
+        Assert.assertNull(
+            this.mocker.getComponentUnderTest().getRemoteConfiguration("RemoteServer1", "name", "pass", ""));
+        Mockito.verify(this.client, Mockito.never()).execute(Matchers.any(HttpPost.class));
     }
 }
