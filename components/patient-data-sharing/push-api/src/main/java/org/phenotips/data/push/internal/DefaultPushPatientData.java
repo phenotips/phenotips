@@ -28,7 +28,6 @@ import org.phenotips.data.shareprotocol.ShareProtocol;
 import org.phenotips.data.shareprotocol.ShareProtocol.Incompatibility;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 
 import java.net.URLEncoder;
@@ -39,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.io.IOUtils;
@@ -97,25 +97,14 @@ public class DefaultPushPatientData implements PushPatientData
     @Inject
     private Logger logger;
 
-    /** Provides access to the current request context. */
     @Inject
-    private Execution execution;
+    private Provider<XWikiContext> xcontextProvider;
 
     /** HTTP client used for communicating with the remote server. */
     private final CloseableHttpClient client = HttpClients.createSystem();
 
     /** A cache of known protocol versions for various server */
     private Map<String, String> protocolVersionsCache = new HashMap<>();
-
-    /**
-     * Helper method for obtaining a valid xcontext from the execution context.
-     *
-     * @return the current request context
-     */
-    private XWikiContext getXContext()
-    {
-        return (XWikiContext) this.execution.getContext().getProperty(XWikiContext.EXECUTIONCONTEXT_KEY);
-    }
 
     /**
      * Return the the URL of the specified remote PhenoTips instance.
@@ -182,7 +171,7 @@ public class DefaultPushPatientData implements PushPatientData
     private BaseObject getPushServerConfiguration(String serverName)
     {
         try {
-            XWikiContext context = getXContext();
+            XWikiContext context = this.xcontextProvider.get();
             XWiki xwiki = context.getWiki();
             XWikiDocument prefsDoc =
                 xwiki.getDocument(new DocumentReference(context.getWikiId(), "XWiki", "XWikiPreferences"), context);
