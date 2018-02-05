@@ -1,3 +1,20 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+ */
 package org.phenotips.data.rest;
 
 import org.phenotips.rest.PATCH;
@@ -30,7 +47,7 @@ public interface PatientByLabeledExternalIdentifierResource
      * Retrieve a patient record, identified by an arbitrary label and its corresponding identifier value, in its JSON
      * representation. If the indicated label doesn't exist, if the indicated patient record doesn't exist, or if the
      * user sending the request doesn't have the right to view the target patient record, an error is returned. If
-     * multiple records exist with  with the same given identifier for tshe given label, a list of links to each such
+     * multiple records exist with  with the same given identifier for the given label, a list of links to each such
      * record is returned.
      *
      * @param label an arbitrary label, either exists in all patients, or exists in at least one patient
@@ -83,7 +100,7 @@ public interface PatientByLabeledExternalIdentifierResource
 
     /**
      * Delete a patient record, identified by an arbitrary label and its corresponding identifier value. If the
-     * indicated patient record doesn't exist, or if the user sending the request doesn't have the right to edit the
+     * indicated patient record doesn't exist, or if the user sending the request doesn't have the right to delete the
      * target patient record, no change is performed and an error is returned. If multiple records exist with the same
      * given identifier for the given label, no change is performed, and a list of links to each such record is
      * returned.
