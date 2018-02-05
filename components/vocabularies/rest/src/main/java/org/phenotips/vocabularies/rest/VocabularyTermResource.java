@@ -45,7 +45,7 @@ public interface VocabularyTermResource
      * Retrieves a JSON representation of the {@link org.phenotips.vocabulary.VocabularyTerm} by searching the specified
      * vocabulary.
      *
-     * @param vocabularyId the vocabulary identifier, whic  h is also used as a prefix in every term identifier from that
+     * @param vocabularyId the vocabulary identifier, which is also used as a prefix in every term identifier from that
      *            vocabulary, for example {@code HP} or {@code MIM}
      * @param termId the term identifier, in the format {@code <vocabulary prefix>:<term id>}, for example
      *            {@code HP:0002066}
