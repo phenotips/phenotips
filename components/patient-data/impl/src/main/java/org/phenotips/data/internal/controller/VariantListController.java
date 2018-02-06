@@ -385,11 +385,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
                 variantSymbols.add(variantJson.getString(INTERNAL_VARIANT_KEY));
             }
 
-            if (allVariants.isEmpty()) {
-                return null;
-            } else {
-                return new IndexedPatientData<>(getName(), allVariants);
-            }
+            return new IndexedPatientData<>(getName(), allVariants);
         } catch (Exception e) {
             this.logger.error("Could not load variants from JSON", e.getMessage());
         }
