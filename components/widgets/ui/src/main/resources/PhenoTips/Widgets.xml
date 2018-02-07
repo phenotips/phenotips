@@ -295,11 +295,11 @@
   },
 
   addInputObservers: function() {
-    $(document).observe("ms:suggest:containerCreated", this.onSuggestCreated.bindAsEventListener(this));
+    this.fld.observe("ms:suggest:containerCreated", this.onSuggestCreated.bindAsEventListener(this));
 
-    $(document).observe("ms:suggest:selected", this.onDataSubmitted.bindAsEventListener(this));
+    this.fld.observe("ms:suggest:selected", this.onDataSubmitted.bindAsEventListener(this));
 
-    this.fld.observe("blur", this.onInputBlurred.bindAsEventListener(this));
+    this.fld.observe("change", this.onInputChanged.bindAsEventListener(this));
   },
 
   /**
@@ -399,7 +399,7 @@
   onSuggestCreated : function (event) {
     this.suggestionSelected = false;
     var _this = this;
-    // A mousedown event occurred in the suggest. Don't want onInputBlurred to perform a search on this loss of focus
+    // A mousedown event occurred in the suggest. Don't want onInputChanged to perform a search on this loss of focus
     event.memo.container &amp;&amp; $(event.memo.container).observe("mousedown", function(event) {
       _this.suggestionSelected = true;
     });
@@ -411,7 +411,7 @@
    * @param event the event being observed
    */
   onDataSubmitted : function (event) {
-    // Prevents the onInputBlurred performing searches unnecessarily, as an item was just selected from dropdown.
+    // Prevents the onInputChanged performing searches unnecessarily, as an item was just selected from dropdown.
     this.suggestionSelected = true;
     this.lastSubmitted = event.memo.value || this.fld.value.strip();
   },
@@ -422,7 +422,7 @@
    *
    * @param event the event being observed
    */
-  onInputBlurred : function (event) {
+  onInputChanged : function (event) {
     if (this.suggestionSelected || this.fld.value.length &lt; this.options.minchars) {
       this.suggestionSelected = false;
       return;
@@ -436,6 +436,7 @@
     // If no match found in suggest widget, perform a server-side search for the exact match.
     // This will most likely never happen.
     if (!matchSubmitted) {
+      var event = Event.fire(this.fld, "ms:suggest:not-selected");
       // Our input didn't change. No need to search again.
       if (query == this.lastSubmitted &amp;&amp; query.length &gt; 1) {
         return;
@@ -1030,7 +1031,7 @@
         this.resultContainer.insert(this.options.insertBeforeSuggestions);
       }
 
-      document.fire("ms:suggest:containerCreated", {
+      this.fld.fire("ms:suggest:containerCreated", {
         'container' : this.container,
         'suggest' : this
       });
@@ -1522,6 +1523,15 @@
     var ele = $(this.container);
     var pointer = this;
     if (ele &amp;&amp; ele.parentNode) {
+
+      // if clearSuggestions() was called not from inside widget
+      // when user clicked outside suggestion container - no suggestion was explicitly selected.
+      // Calling onInputChanged() to check the suggest widget suggestions for exact matches
+      // and if find one - the code subsequently fires "ms:suggest:selected" event
+      if (!this.suggestionSelected) {
+        this.onInputChanged();
+      }
+
       if (this.options.fadeOnClear) {
         var fade = new Effect.Fade(ele, {duration: "0.25", afterFinish : function() {
           if($(pointer.container)) {
@@ -1530,9 +1540,10 @@
         }});
       }
       else {
-        $(this.container).remove();
+        if (ele &amp;&amp; ele.parentNode) { ele.remove(); }
       }
       document.fire("ms:suggest:clearSuggestions", { 'suggest' : this});
+      this.suggestionSelected = false;
     }
   }
 
