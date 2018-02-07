@@ -547,7 +547,7 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
       // TODO: CONFIGURE IN THE ADMINISTRATION
       autosave : {
         enabled: true,
-        frequency : 10 /*seconds */,
+        frequency : 60 /*seconds */,
         message: 'Automatic save'
       }
     },
