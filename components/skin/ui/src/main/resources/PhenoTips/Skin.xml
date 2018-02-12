@@ -745,7 +745,7 @@ var hideElement = function(id) {
 };
 
 var cleanupUI = function(tab) {
-  ['document-authors', 'patient-record-actions', $$('.bottombuttons')[0]].each(hideElement);
+  ['document-authors', 'patient-record-actions'].each(hideElement);
 };
 
 var enableCurrentTab = function(tab, cleanUI) {
