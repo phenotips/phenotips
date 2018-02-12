@@ -27,6 +27,9 @@ import org.phenotips.rest.Autolinker;
 import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -47,6 +50,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -63,6 +67,12 @@ import org.slf4j.Logger;
 public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWikiResource implements
     PatientByLabeledExternalIdentifierResource
 {
+    private static final String KEY_LABELED_EIDS = "labeled_eids";
+
+    private static final String KEY_LABEL = "label";
+
+    private static final String KEY_VALUE = "value";
+
     @Inject
     private Logger logger;
 
@@ -84,17 +94,22 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
     @Inject
     private Provider<Autolinker> autolinker;
 
+    /** Fills in missing reference fields with those from the current context document to create a full reference. */
+    @Inject
+    @Named("current")
+    private EntityReferenceResolver<EntityReference> currentResolver;
+
     @Override
     public Response getPatient(String label, String id)
     {
         this.logger.debug("Retrieving patient record with label [{}] and corresponding external ID [{}] via REST",
             label, id);
         Patient patient;
-        List<String> patients = getPatientDocumentReferencesByLabelAndEid(label, id);
+        List<String> patients = getPatientInternalIdentifiersByLabelAndEid(label, id);
         if (patients.size() == 1) {
             patient = this.repository.get(patients.get(0));
         } else {
-            return returnIfEmptyOrMultipleExistsResponse(patients, label, id);
+            return returnIfEmptyOrMultipleExistResponse(patients, label, id);
         }
 
         User currentUser = this.users.getCurrentUser();
@@ -119,14 +134,15 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
     }
 
     @Override
-    public Response updatePatient(final String json, final String label, final String id, final String policy)
+    public Response updatePatient(final String json, final String label, final String id,
+        final String policy, final String create)
     {
         final PatientWritePolicy policyType = PatientWritePolicy.fromString(policy);
-        return updatePatient(json, label, id, policyType);
+        return updatePatient(json, label, id, policyType, create);
     }
 
     private Response updatePatient(final String json, final String label, final String id,
-        final PatientWritePolicy policy)
+        final PatientWritePolicy policy, final String create)
     {
         this.logger.debug("Updating patient record with label [{}] and corresponding external ID [{}] via REST: {}",
             label, id, json);
@@ -139,19 +155,6 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        Patient patient;
-        List<String> patients = getPatientDocumentReferencesByLabelAndEid(label, id);
-        if (patients.size() == 1) {
-            patient = this.repository.get(patients.get(0));
-        } else {
-            return returnIfEmptyOrMultipleExistsResponse(patients, label, id);
-        }
-
-        User currentUser = this.users.getCurrentUser();
-        if (!this.access.hasAccess(currentUser, Right.EDIT, patient.getDocumentReference())) {
-            this.logger.debug("Edit access denied to user [{}] on patient record [{}]", currentUser, patient.getId());
-            throw new WebApplicationException(Response.Status.FORBIDDEN);
-        }
         JSONObject jsonInput;
         try {
             jsonInput = new JSONObject(json);
@@ -160,24 +163,30 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
+        boolean shouldCreate = Boolean.parseBoolean(create);
+        Patient patient;
+        List<String> patients = getPatientInternalIdentifiersByLabelAndEid(label, id);
+        if (patients.size() == 1) {
+            patient = this.repository.get(patients.get(0));
+        } else {
+            return returnIfEmptyOrMultipleExistResponse(patients, label, id, jsonInput, shouldCreate);
+        }
+
+        User currentUser = this.users.getCurrentUser();
+        if (!this.access.hasAccess(currentUser, Right.EDIT, patient.getDocumentReference())) {
+            this.logger.debug("Edit access denied to user [{}] on patient record [{}]", currentUser, patient.getId());
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
         if (hasInternalIdConflict(jsonInput, patient)) {
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
-
-        try {
-            patient.updateFromJSON(jsonInput, policy);
-        } catch (Exception ex) {
-            this.logger.warn("Failed to update patient [{}] from JSON: {}. Source JSON was: {}", patient.getId(),
-                ex.getMessage(), json, ex);
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
-        }
-        return Response.noContent().build();
+        return returnUpdatePatientResponse(patient, label, id, jsonInput, false, policy);
     }
 
     @Override
-    public Response patchPatient(String json, String label, String id)
+    public Response patchPatient(String json, String label, String id, String create)
     {
-        return updatePatient(json, label, id, PatientWritePolicy.MERGE);
+        return updatePatient(json, label, id, PatientWritePolicy.MERGE, create);
     }
 
     @Override
@@ -186,11 +195,11 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
         this.logger.debug("Deleting patient record with label [{}] and corresponding external ID [{}] via REST",
             label, id);
         Patient patient;
-        List<String> patients = getPatientDocumentReferencesByLabelAndEid(label, id);
+        List<String> patients = getPatientInternalIdentifiersByLabelAndEid(label, id);
         if (patients.size() == 1) {
             patient = this.repository.get(patients.get(0));
         } else {
-            return returnIfEmptyOrMultipleExistsResponse(patients, label, id);
+            return returnIfEmptyOrMultipleExistResponse(patients, label, id);
         }
 
         User currentUser = this.users.getCurrentUser();
@@ -209,13 +218,36 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
         return Response.noContent().build();
     }
 
-    private Response returnIfEmptyOrMultipleExistsResponse(List<String> patients, String label, String id)
+    private Response returnIfEmptyOrMultipleExistResponse(List<String> patients, String label, String id)
+    {
+        return returnIfEmptyOrMultipleExistResponse(patients, label, id, null, false);
+    }
+
+    /**
+     * Checks for whether none or multiple patients exist and returns the appropriate response.
+     * If {@code shouldCreate} is false and no existing patients exist for the provided {@code label} and {@code id}
+     * (patients list is empty), then returns an error. If {@code shouldCreate} is true and no existing patients
+     * exist for the provided {@code label} and {@code id}, then creates a patient and returns a successful response.
+     * If there are multiple records that exist, then returns an array of links to the patient records.
+     *
+     * @param patients list of patient internal ID's for records that have the matching {@code label} and {@code id}
+     * @param label the name of the label
+     * @param id the id value for the label
+     * @param jsonInput the incoming json from the request, used to update the created patient record
+     * @param shouldCreate config for whether a patient record should be created
+     * @return a {@link Response} with no content if successful, an error code otherwise
+     */
+    private Response returnIfEmptyOrMultipleExistResponse(List<String> patients, String label, String id,
+        JSONObject jsonInput, boolean shouldCreate)
     {
         if (patients.isEmpty()) {
-            this.logger.debug("No patient record with label [{}] and corresponding external ID [{}] exists yet",
-                label, id);
-            return Response.status(Response.Status.NOT_FOUND).build();
-
+            if (shouldCreate) {
+                return returnCreatePatientResponse(label, id, jsonInput);
+            } else {
+                this.logger.debug("No patient record with label [{}] and corresponding external ID [{}] exists yet",
+                    label, id);
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
         } else {
             this.logger.debug("Multiple patient records ({}) with label [{}] and corresponding external ID [{}]: {}",
                 patients.size(), label, id, patients);
@@ -224,14 +256,77 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
     }
 
     /**
-     * Gets a list of patient document references.
+     * Tries to create a patient with provided {@code label} and {@code id} and {@code json data}. Returns a
+     * {@link Response} with no content if successful, an error code otherwise.
      *
-     * @param label the label for the eid
-     * @param id the value of the eid
-     * @return null if the label is invalid, an empty list if no patients have the label identifier and its
-     *         corresponding id value, else a list of patient document references.
+     * @param label the name of the label
+     * @param id the id value for the label; will be overwritten if a label/id pair is specified in {@code jsonInput}
+     * @param jsonInput the incoming json from the request, used to update the created patient record
+     * @return a {@link Response} with no content if successful, an error code otherwise
      */
-    private List<String> getPatientDocumentReferencesByLabelAndEid(String label, String id)
+    private Response returnCreatePatientResponse(final String label, final String id, final JSONObject jsonInput)
+    {
+        this.logger.debug("Creating patient record with label [{}] and corresponding external ID [{}]", label, id);
+        try {
+            final User currentUser = this.users.getCurrentUser();
+            if (!this.access.hasAccess(currentUser, Right.EDIT,
+                this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
+                this.logger.error("Edit access denied to user [{}].", currentUser);
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            final Patient patient = this.repository.create();
+            return returnUpdatePatientResponse(patient, label, id, jsonInput, true, PatientWritePolicy.UPDATE);
+        } catch (final Exception ex) {
+            this.logger.error("Failed to create patient with label [{}] and corresponding external ID: [{}] from "
+                              + "JSON: {}.", label, id, jsonInput, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Updates the {@code patient} with provided {@code jsonInput JSON data}. If a patient was created
+     * {@code wasCreated} and labeled identifiers {@code KEY_LABELED_EIDS} is not specified in the {@code jsonInput},
+     * then the {@code label} and {@code id} provided in the request path parameters are used to set the labeled
+     * identifiers in the patient.
+     *
+     * @param patient the {@link Patient} to update
+     * @param label the name of the label
+     * @param id the id value for the label
+     * @param jsonInput the patient data used to update, as {@link JSONObject}
+     * @param wasCreated whether a patient was created for the update
+     * @param policy the policy according to which patient data should be written
+     * @return a {@link Response} with no content if successful, an error code otherwise
+     */
+    private Response returnUpdatePatientResponse(final Patient patient, final String label, final String id,
+        final JSONObject jsonInput, boolean wasCreated, PatientWritePolicy policy)
+    {
+        if (hasInternalIdConflict(jsonInput, patient)) {
+            return Response.status(Response.Status.CONFLICT).build();
+        }
+        if (wasCreated && !jsonInput.has(KEY_LABELED_EIDS)) {
+            JSONArray labeledEids = new JSONArray();
+            labeledEids.put(new JSONObject().accumulate(KEY_LABEL, label).accumulate(KEY_VALUE, id));
+            jsonInput.put(KEY_LABELED_EIDS, labeledEids);
+        }
+        try {
+            patient.updateFromJSON(jsonInput, policy);
+        } catch (Exception ex) {
+            this.logger.warn("Failed to update patient [{}] from JSON: {}. Source JSON was: {}", patient.getId(),
+                ex.getMessage(), jsonInput, ex);
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+        return Response.noContent().build();
+    }
+
+    /**
+     * Gets a list of patient internal IDs.
+     *
+     * @param label the name of the label
+     * @param id the id value for the label
+     * @return null if the label is invalid, an empty list if no patients have the label identifier and its
+     *         corresponding id value, else a list of patient internal IDs
+     */
+    private List<String> getPatientInternalIdentifiersByLabelAndEid(String label, String id)
     {
         try {
             // Check global configs first before querying all labeled identifier objects on all patients, much cheaper
@@ -251,11 +346,11 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
      * For a given label and its corresponding id value (fields on {@code LabeledIdentifierClass} objects), query
      * patient documents.
      *
-     * @param label the label for the eid
-     * @param id the value of the eid
+     * @param label the name of the label
+     * @param id the id value for the label
      * @return an empty list if no patients have the label identifier and its corresponding id value, else a list of
-     *         patient document references.
-     * @throws Exception if there is any error during querying.
+     *         patient internal identifiers
+     * @throws Exception if there is any error during querying
      */
     private List<String> queryPatientsByLabelAndEid(String label, String id) throws Exception
     {
@@ -264,8 +359,8 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
             q = this.qm.createQuery(
                 "select doc.name from Document doc, doc.object(PhenoTips.LabeledIdentifierClass) obj "
                 + "where obj.label = :label and obj.value = :value", Query.XWQL);
-            q.bindValue("label", label);
-            q.bindValue("value", id);
+            q.bindValue(KEY_LABEL, label);
+            q.bindValue(KEY_VALUE, id);
             return q.execute();
         } catch (QueryException ex) {
             this.logger.warn("Failed to query patient documents with label [{}] and corresponding external ID [{}]: {}",
@@ -279,9 +374,9 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
      * available globally for all patients. If it is, then it will be the {@code label} value of a
      * {@code LabeledIdentifierSettings} object.
      *
-     * @param label the label to check
-     * @return true if the label exists, else false.
-     * @throws Exception if there is any error during querying.
+     * @param label the name of the label
+     * @return true if the label exists, else false
+     * @throws Exception if there is any error during querying
      */
     private boolean isLabelConfiguredByAdmin(String label) throws Exception
     {
@@ -290,7 +385,7 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
             q = this.qm.createQuery(
                 "select obj.label from Document doc, doc.object(PhenoTips.LabeledIdentifierSettings) obj "
                 + "where obj.label = :label", Query.XWQL);
-            q.bindValue("label", label);
+            q.bindValue(KEY_LABEL, label);
             List<String> results = q.execute();
             return !results.isEmpty();
         } catch (QueryException ex) {

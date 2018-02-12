@@ -62,41 +62,47 @@ public interface PatientByLabeledExternalIdentifierResource
     /**
      * Update a patient record, identified by an arbitrary label and its corresponding identifier value, from its JSON
      * representation. If the user sending the request doesn't have the right to edit the target patient record, no
-     * change is performed and an error is returned. If the indicated patient record doesn't exist, and a valid JSON is
-     * provided, no change is performed and an error is returned. If multiple records exist with the same given
-     * identifier for the given label, no change is performed, and a list of links to each such record is returned. If
-     * a field is set in the patient record, but missing in the JSON, then that field is not changed.
+     * change is performed and an error is returned. If the indicated patient record doesn't exist, however a valid
+     * JSON is provided with the query parameter "create" set to true, then a new patient record is created with the
+     * provided data; otherwise no change is performed and an error is returned. If multiple records exist with the
+     * same givenidentifier for the given label, no change is performed, and a list of links to each such record is
+     * returned. If a field is set in the patient record, but missing in the JSON, then that field is not changed.
      *
      * @param json the JSON representation of the new patient to add
      * @param label an arbitrary label, either exists in all patients, or exists in at least one patient
      * @param id the patient's given external identifier for the given label
      * @param policy the policy according to which patient data should be written
+     * @param create whether a patient record should be created given none exist for the label and id provided
      * @return a status message
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @RequiredAccess("edit")
     Response updatePatient(String json, @PathParam("label") String label, @PathParam("id") String id,
-        @QueryParam("policy") @DefaultValue("update") String policy);
+        @QueryParam("policy") @DefaultValue("update") String policy,
+        @QueryParam("create") @DefaultValue("false") String create);
 
     /**
      * Update a patient record, identified by an arbitrary label and its corresponding identifier value, from its JSON
      * representation. Existing patient data is merged with the provided JSON representation, if possible. If the user
      * sending the request doesn't have the right to edit the target patient record, no change is performed and an
-     * error is returned. If the indicated patient record doesn't exist, no change is performed and an error is
-     * returned. If multiple records exist with the same given identifier for the given label, no change is performed,
-     * and a list of links to each such record is returned. If a field is set in the patient record, but missing in
-     * the JSON, then that field is not changed.
+     * error is returned. If the indicated patient record doesn't exist, however a valid JSON is provided with the
+     * query parameter "create" set to true, then a new patient record is created with the provided data; otherwise no
+     * change is performed and an error is returned. If multiple records exist with the same given identifier for the
+     * given label, no change is performed, and a list of links to each such record is returned. If a field is set in
+     * the patient record, but missing in the JSON, then that field is not changed.
      *
      * @param json the JSON representation of the new patient to add
      * @param label an arbitrary label, either exists in all patients, or exists in at least one patient
      * @param id the patient's given external identifier for the given label
+     * @param create whether a patient record should be created given none exist for the label and id provided
      * @return a status message
      */
     @PATCH
     @Consumes(MediaType.APPLICATION_JSON)
     @RequiredAccess("edit")
-    Response patchPatient(String json, @PathParam("label") String label, @PathParam("id") String id);
+    Response patchPatient(String json, @PathParam("label") String label, @PathParam("id") String id,
+        @QueryParam("create") @DefaultValue("false") String create);
 
     /**
      * Delete a patient record, identified by an arbitrary label and its corresponding identifier value. If the
