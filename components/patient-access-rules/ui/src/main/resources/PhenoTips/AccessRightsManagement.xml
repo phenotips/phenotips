@@ -541,7 +541,7 @@
       } else {
         this._ownerInfo.update(this._OWNER_INFO_TEMPLATE.replace("{0}", iconEl.outerHTML + ' ' + owner.name));
       }
-      if (this._canTransferOwnership) {
+      if (this._newOwnerSelector) {
         this._ownerInfo.insert(" $escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipOptions'))");
         this._checkKeepOwnershipOption();
       }
@@ -550,21 +550,16 @@
     _initOwnershipManager : function() {
       this._ownerInfo = new Element('div', {id : 'owner', 'class' : 'intro xHint'});
       this._ownershipManager.update(this._ownerInfo);
+      this._ownerSuggestPicker = XWiki.widgets.UserPicker.instances["new-owner-input"];
 
       // HACK: 'new-owner-input' suggest input had to be put into the document from the start
       //       to make suggest picker attach to it correctly; it now has to be moved into
       //       the `owner` section of this "access rights" dialog/popup
       this._defaultOwnerOption   = undefined;
-      this._removeSelectedUser   = undefined;
       this._newOwnerSelector = $('new-owner-div');
 
       if (this._newOwnerSelector) {
         var transfer = new Element('table', {id : 'transfer'});
-        this._removeSelectedUser = function() {  // removes previously selected user displayed by the suggest user picker
-            transfer.select('.delete-tool').each(function (item) {
-               item.click();
-            });
-        }
         var _this = this;
         var _getTransferOption = function (type, text, controlledElement) {
            var optionWrapper = new Element('tr');
@@ -574,7 +569,8 @@
              transfer.select('.controlled-element input, .controlled-element select').each(function (item) {
                 item.disable();
              });
-             _this._removeSelectedUser();
+             // removes previously selected user displayed by the suggest user picker
+             _this._ownerSuggestPicker &amp;&amp; _this._ownerSuggestPicker.clear();
              if (input.checked &amp;&amp; controlledElement) {
                input.up('tr').select('.controlled-element input, .controlled-element select').each(function (item) {
                   item.enable();
@@ -636,7 +632,18 @@
       newCollaborator.select('input').invoke('observe', "xwiki:suggest:selected", function(event) {
          if (event.memo) {
            var id = event.memo.value;
-           var existingCollaborator = _this._collaboratorsList.down('tr input[value="' + id.replace('"', '\\"') + '"]');
+           var existingCollaborator = '';
+
+           // to identify whether the collaborator has been already added we compare resolved names
+           // to be independent on the entity name format passed by suggest widget or REST service
+           // (could be "xwiki:XWiki:Admin", or "XWiki:Admin", or "Admin")
+           var resolvedId = XWiki.Model.resolve(id, XWiki.EntityType.DOCUMENT).name;
+           _this._collaboratorsList.select('tr input[value*="' + id + '"]').each( function(item) {
+               if (XWiki.Model.resolve(item.value, XWiki.EntityType.DOCUMENT).name === resolvedId) {
+                 existingCollaborator = item;
+               }
+           });
+
            if (existingCollaborator) {
              existingCollaborator.up('tr').addClassName('highlight');
              // remove highlight after a while
