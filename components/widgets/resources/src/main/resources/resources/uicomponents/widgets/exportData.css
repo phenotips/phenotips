@@ -125,3 +125,9 @@
 .filter-match-count {
   margin-left: 0.5em
 }
+input.suggestUsersAndGroups {
+  background-image: url(/resources/icons/datamodel/users.png);
+  background-position: .3em center;
+  background-repeat: no-repeat;
+  padding-left: 2em;
+}
