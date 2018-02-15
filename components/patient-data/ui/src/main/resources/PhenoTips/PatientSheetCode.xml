@@ -2433,7 +2433,7 @@ document.observe('xwiki:dom:loaded', function()
       for (var k in this._builder.cache.displayed) {
         var obj = this._builder.cache.all[k];
         if (obj) {
-          var elt = new Element('span', {'class' : 'search-term ' + obj.type}).update(obj.text);
+          var elt = new Element('span', {'class' : 'search-term ' + obj.type}).update(obj.text.escapeHTML());
           elt.__key = obj.key;
           elt.title = obj.disabled &amp;&amp; "$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToEnable'))" || "$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToDisable'))";
           if (obj.disabled) {

@@ -79,7 +79,7 @@
 #set ($existingLabels = $services.query.xwql("select distinct labeled_eid.${labelParam} from Document doc, doc.object(PhenoTips.LabeledIdentifierClass) as labeled_eid").execute())
 #foreach ($label in $existingLabels)
 {{html clean="false"}}
-&lt;option&gt;$label&lt;/option&gt;
+&lt;option&gt;$!{escapetool.xml($label)}&lt;/option&gt;
 {{/html}}##
 #end
 #end

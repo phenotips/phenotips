@@ -250,7 +250,7 @@
       &lt;input class="xwiki-free-multiselect-value" type="text" size="30" name="${prefix}${name}" id="${prefix}${name}_${counter}" value="$!escapetool.xml($v)"/&gt;
     {{/html}}
   #else
-    $!{services.rendering.escape($v, $doc.syntax)}
+    $!{escapetool.xml($services.rendering.escape($v, $doc.syntax))}
   #end
 #end
 (% class="xwiki-free-multiselect"%)
@@ -442,8 +442,8 @@
         {{html clean="false"}}
           &lt;div&gt;
             &lt;p&gt;
-              &lt;span class="label"&gt;${o.getValue($labelParam)}:&lt;/span&gt;
-              &lt;span class="displayed-value"&gt;$!eidValue&lt;/span&gt;
+              &lt;span class="label"&gt;$!{escapetool.xml($o.getValue($labelParam))}:&lt;/span&gt;
+              &lt;span class="displayed-value"&gt;$!{escapetool.xml($eidValue)}&lt;/span&gt;
             &lt;/p&gt;
           &lt;/div&gt;
         {{/html}}##
@@ -478,10 +478,10 @@
     #set ($cssClassName = "${dataClassName}_$!{o.number}_")
     |(% class="labeled-eid label eid-$!{o.number}" %)##
     {{html clean=false wiki=false}}
-    &lt;label class="section eid-label ${cssClassName}${labelParam}"&gt;$eidLabel&lt;/label&gt;&lt;label class="section"&gt;:&lt;/label&gt;{{/html}}##
+    &lt;label class="section eid-label ${cssClassName}${labelParam}"&gt;$!{escapetool.xml($eidLabel)}&lt;/label&gt;&lt;label class="section"&gt;:&lt;/label&gt;{{/html}}##
     |(% class="labeled-eid value checked eid-$!{o.number}" %)##
     {{html clean=false wiki=false}}
-    &lt;input name="${cssClassName}${valueParam}" class="eid-value $uniqueValue" value="$!{o.getValue($valueParam)}" type="text" placeholder="$!{formatHint} " /&gt;
+    &lt;input name="${cssClassName}${valueParam}" class="eid-value $uniqueValue" value="$!{escapetool.xml($o.getValue($valueParam))}" type="text" placeholder="$!{escapetool.xml($formatHint)} " /&gt;
     &lt;input name="${cssClassName}format" class="eid-format" value="$!format" type="hidden" /&gt;
     &lt;input name="${cssClassName}index" class="eid-index" value="$!{o.number}" type="hidden" /&gt;{{/html}}##
     #if ($displayMode == 'edit')|(% class="actions" %)#__externalIdentifier_deleteTool($o "extradata-${dataClassName}")#end
