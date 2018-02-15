@@ -1,0 +1,2 @@
+org.phenotips.locks.internal.LockingListener
+org.phenotips.locks.internal.TimeoutDocumentLockManager
