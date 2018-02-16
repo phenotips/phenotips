@@ -135,14 +135,14 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
 
     @Override
     public Response updatePatient(final String json, final String label, final String id,
-        final String policy, final String create)
+        final String policy, final boolean create)
     {
         final PatientWritePolicy policyType = PatientWritePolicy.fromString(policy);
         return updatePatient(json, label, id, policyType, create);
     }
 
     private Response updatePatient(final String json, final String label, final String id,
-        final PatientWritePolicy policy, final String create)
+        final PatientWritePolicy policy, final boolean create)
     {
         this.logger.debug("Updating patient record with label [{}] and corresponding external ID [{}] via REST: {}",
             label, id, json);
@@ -163,13 +163,12 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        boolean shouldCreate = Boolean.parseBoolean(create);
         Patient patient;
         List<String> patients = getPatientInternalIdentifiersByLabelAndEid(label, id);
         if (patients.size() == 1) {
             patient = this.repository.get(patients.get(0));
         } else {
-            return returnIfEmptyOrMultipleExistResponse(patients, label, id, jsonInput, shouldCreate);
+            return returnIfEmptyOrMultipleExistResponse(patients, label, id, jsonInput, create);
         }
 
         User currentUser = this.users.getCurrentUser();
@@ -184,7 +183,7 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
     }
 
     @Override
-    public Response patchPatient(String json, String label, String id, String create)
+    public Response patchPatient(String json, String label, String id, boolean create)
     {
         return updatePatient(json, label, id, PatientWritePolicy.MERGE, create);
     }
