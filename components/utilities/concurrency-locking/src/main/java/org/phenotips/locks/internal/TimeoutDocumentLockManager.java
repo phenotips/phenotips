@@ -27,23 +27,31 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.StampedLock;
 
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.slf4j.Logger;
 
 /**
  * Implementation for the {@link DocumentLockManager} role which will accept a lock request even if the lock couldn't be
  * obtained when a timeout interval (10 seconds) has ellapsed.
  *
  * @version $Id$
+ * @since 1.3.7
  * @since 1.4
  */
 @Component
 @Singleton
 public class TimeoutDocumentLockManager implements DocumentLockManager
 {
+    @Inject
+    private Logger logger;
+
     private ConcurrentHashMap<DocumentReference, Lock> locks = new ConcurrentHashMap<>();
 
     @Override
-    public void lock(DocumentReference document)
+    public void lock(@Nonnull final DocumentReference document)
     {
         Lock lock;
         synchronized (this.locks) {
@@ -55,14 +63,18 @@ public class TimeoutDocumentLockManager implements DocumentLockManager
             }
         }
         try {
-            lock.tryLock(10, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
+            boolean cleanLock = lock.tryLock(10, TimeUnit.SECONDS);
+            if (!cleanLock) {
+                this.logger.debug("Timed out while waiting for lock on [{}], proceeding anyway", document);
+            }
+        } catch (InterruptedException ex) {
             // We don't expect any interruptions
+            this.logger.error("Unexpected interruption why waiting for lock: {}", ex.getMessage(), ex);
         }
     }
 
     @Override
-    public void unlock(DocumentReference document)
+    public void unlock(@Nonnull final DocumentReference document)
     {
         Lock lock = this.locks.get(document);
         if (lock == null) {
@@ -70,8 +82,9 @@ public class TimeoutDocumentLockManager implements DocumentLockManager
         }
         try {
             lock.unlock();
-        } catch (IllegalMonitorStateException e) {
-            // We don't expect any interruptions
+        } catch (IllegalMonitorStateException ex) {
+            // Unlocking may fail if a lock timeout resulted in an unclean lock, and then two requests try to unlock
+            this.logger.debug("Lock was unexpectedly unlocked already: {}", ex.getMessage(), ex);
         }
     }
 }

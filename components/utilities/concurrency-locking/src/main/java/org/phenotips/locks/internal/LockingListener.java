@@ -37,10 +37,22 @@ import javax.inject.Singleton;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * The straight-forward implementation of the {@link DocumentLockManager} role.
+ * An event listener that only allows one action request to proceed at a time for the same document. When an action
+ * starts executing, a lock is aquired for the affected document, and when the action terminates, the lock is released.
+ * If a lock is already held by an action execution, the subsequent actions will block while waiting for the lock to be
+ * released. The purpose of this mechanism is to prevent concurrent document updates, which may cause inconsistent data,
+ * hibernate stale state exceptions, unique key conflicts, or other storage errors. This isn't the best way to prevent
+ * such errors, but properly fixing the concurrency problems of XWiki requires much deeper and broader fixes throughout
+ * the old core and any custom code updating documents.
+ * <p>
+ * Implementation note: the {@code get} and {@code view} methods should theoretically not be locked, since they don't
+ * normally modify data, but at the moment there are still legacy scripts that are accessed in view mode but do modify
+ * their or other documents' data, such as {@code OpenPatientRecord}, so these actions must also be locked.
+ * </p>
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3.7
+ * @since 1.4
  */
 @Component
 @Named("document-locking-listener")
@@ -62,13 +74,16 @@ public class LockingListener extends AbstractEventListener
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
+        if (event == null || source == null || !(event instanceof ActionExecutionEvent)) {
+            return;
+        }
         String name = ((ActionExecutionEvent) event).getActionName();
         if (!SUPPORTED_EVENTS.contains(name)) {
             return;
         }
         if (event instanceof ActionExecutingEvent) {
             this.lockManager.lock(((XWikiDocument) source).getDocumentReference());
-        } else {
+        } else if (event instanceof ActionExecutedEvent) {
             this.lockManager.unlock(((XWikiDocument) source).getDocumentReference());
         }
     }

@@ -21,12 +21,15 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.stability.Unstable;
 
+import javax.annotation.Nonnull;
+
 /**
  * Allows acquiring and releasing locks on specific documents. Acquiring locks is a blocking operation, the method will
  * hang until the document is released.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3.7
+ * @since 1.4
  */
 @Unstable("New API introduced in 1.4")
 @Role
@@ -37,12 +40,12 @@ public interface DocumentLockManager
      *
      * @param document the document to lock
      */
-    void lock(DocumentReference document);
+    void lock(@Nonnull DocumentReference document);
 
     /**
      * Unlock a document.
      *
      * @param document the document to unlock
      */
-    void unlock(DocumentReference document);
+    void unlock(@Nonnull DocumentReference document);
 }
