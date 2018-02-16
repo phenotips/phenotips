@@ -65,7 +65,7 @@ public interface PatientByLabeledExternalIdentifierResource
      * change is performed and an error is returned. If the indicated patient record doesn't exist, however a valid
      * JSON is provided with the query parameter "create" set to true, then a new patient record is created with the
      * provided data; otherwise no change is performed and an error is returned. If multiple records exist with the
-     * same givenidentifier for the given label, no change is performed, and a list of links to each such record is
+     * same given identifier for the given label, no change is performed, and a list of links to each such record is
      * returned. If a field is set in the patient record, but missing in the JSON, then that field is not changed.
      *
      * @param json the JSON representation of the new patient to add
@@ -80,7 +80,7 @@ public interface PatientByLabeledExternalIdentifierResource
     @RequiredAccess("edit")
     Response updatePatient(String json, @PathParam("label") String label, @PathParam("id") String id,
         @QueryParam("policy") @DefaultValue("update") String policy,
-        @QueryParam("create") @DefaultValue("false") String create);
+        @QueryParam("create") @DefaultValue("false") boolean create);
 
     /**
      * Update a patient record, identified by an arbitrary label and its corresponding identifier value, from its JSON
@@ -102,7 +102,7 @@ public interface PatientByLabeledExternalIdentifierResource
     @Consumes(MediaType.APPLICATION_JSON)
     @RequiredAccess("edit")
     Response patchPatient(String json, @PathParam("label") String label, @PathParam("id") String id,
-        @QueryParam("create") @DefaultValue("false") String create);
+        @QueryParam("create") @DefaultValue("false") boolean create);
 
     /**
      * Delete a patient record, identified by an arbitrary label and its corresponding identifier value. If the
