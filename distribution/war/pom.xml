@@ -867,6 +867,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-concurrency-locking</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-proxy-authentication</artifactId>
       <version>${project.version}</version>
     </dependency>

@@ -31,6 +31,7 @@
 
   <modules>
     <module>component-registry</module>
+    <module>concurrency-locking</module>
     <module>jodatime-service</module>
     <module>ncbieutils-services</module>
     <module>proxy-authentication</module>
