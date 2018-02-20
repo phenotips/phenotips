@@ -48,22 +48,14 @@ public class TimeoutDocumentLockManager implements DocumentLockManager
     @Inject
     private Logger logger;
 
-    private ConcurrentHashMap<DocumentReference, Lock> locks = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<DocumentReference, Lock> locks = new ConcurrentHashMap<>();
 
     @Override
     public void lock(@Nonnull final DocumentReference document)
     {
-        Lock lock;
-        synchronized (this.locks) {
-            if (!this.locks.containsKey(document)) {
-                lock = new StampedLock().asWriteLock();
-                this.locks.put(document, lock);
-            } else {
-                lock = this.locks.get(document);
-            }
-        }
         try {
-            boolean cleanLock = lock.tryLock(10, TimeUnit.SECONDS);
+            final Lock lock = this.locks.computeIfAbsent(document, k -> new StampedLock().asWriteLock());
+            final boolean cleanLock = lock.tryLock(10, TimeUnit.SECONDS);
             if (!cleanLock) {
                 this.logger.debug("Timed out while waiting for lock on [{}], proceeding anyway", document);
             }

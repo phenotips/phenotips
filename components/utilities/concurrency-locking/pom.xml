@@ -29,11 +29,6 @@
   <name>PhenoTips - Utilities - Concurrency locking</name>
   <description>Mechanism for preventing errors caused by concurrent operations.</description>
 
-  <properties>
-    <!-- Somehow a synchronized{} block can't be fully tested -->
-    <coverage.instructionRatio>0.97</coverage.instructionRatio>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
