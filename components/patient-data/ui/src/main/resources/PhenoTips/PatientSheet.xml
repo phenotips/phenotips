@@ -71,7 +71,6 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
 {{/velocity}}
 
 {{velocity}}
-{{html clean="false" wiki="false"}}&lt;input type="hidden" name="entity-type" id="entity-type" value="patients"/&gt;{{/html}}
 #if ("$!{request.xaction}" == 'lastentry')
   #set ($entryClassName = $request.dataClassName)
   #set ($options = {})
@@ -87,6 +86,11 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
 (% id="table-of-contents" class="hidden" %)(((
 {{toc start="2" depth="2" /}}
 )))
+#end
+#if ($xcontext.action == 'view' || $xcontext.action == 'edit')
+  {{html clean="false" wiki="false"}}
+    &lt;input type="hidden" name="entity-type" id="entity-type" value="patients"/&gt;
+  {{/html}}
 #end
 #if ($xcontext.action == 'edit')
   ## Disable the Preview button
