@@ -29,14 +29,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
-import net.jcip.annotations.NotThreadSafe;
-
 /**
  * Tests for the {@link TimeoutDocumentLockManager} component.
  *
  * @version $Id$
  */
-@NotThreadSafe
 public class TimeoutDocumentLockManagerTest
 {
     @Rule

@@ -55,7 +55,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
  * @since 1.4
  */
 @Component
-@Named("document-locking-listener")
+@Named("concurrency-locking")
 @Singleton
 public class LockingListener extends AbstractEventListener
 {

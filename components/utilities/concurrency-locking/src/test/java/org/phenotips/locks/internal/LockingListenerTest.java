@@ -39,14 +39,12 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.doc.XWikiDocument;
-import net.jcip.annotations.NotThreadSafe;
 
 /**
  * Tests for the {@link LockingListener} component.
  *
  * @version $Id$
  */
-@NotThreadSafe
 public class LockingListenerTest
 {
     @Rule
