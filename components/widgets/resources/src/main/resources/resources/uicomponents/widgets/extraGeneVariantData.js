@@ -167,7 +167,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
           case /_\d+_/.test(placeholder):
             return '_' + geneIndex + '_';
           case /=\d+&/.test(placeholder):
-            return '_' + geneIndex + '_';
+            return '=' + geneIndex + '&';
           default:
             return "";
         }
@@ -322,6 +322,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
 
       data.VRCOUNT_PLACEHOLDER = geneCount + '.' + varCount;
 
+      var _this = this;
       var evaluateTemplate = function evaluateTemplate(placeholder) {
         switch(true) {
           case /_\d+_/.test(placeholder):
@@ -329,7 +330,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
           case /=\d+&/.test(placeholder):
             return '=' + varIndex + '&';
           case /\$\{object.xWikiClass.name\}/.test(placeholder):
-            return this.geneVariantClassName;
+            return _this.geneVariantClassName;
           case /\$\{object.number\}/.test(placeholder):
             return varIndex;
           default:
