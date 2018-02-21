@@ -436,7 +436,7 @@
     // If no match found in suggest widget, perform a server-side search for the exact match.
     // This will most likely never happen.
     if (!matchSubmitted) {
-      var event = Event.fire(this.fld, "ms:suggest:not-selected");
+      Event.fire(this.fld, "ms:suggest:not-selected");
       // Our input didn't change. No need to search again.
       if (query == this.lastSubmitted &amp;&amp; query.length &gt; 1) {
         return;
