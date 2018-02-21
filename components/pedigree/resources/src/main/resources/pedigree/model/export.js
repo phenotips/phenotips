@@ -326,19 +326,17 @@ define([
       if (cancersSelected) {
           if (nodeProperties.hasOwnProperty("cancers")) {
               var nodeCancers = nodeProperties["cancers"];
-
               var affectedCancers = [];
               var unaffectedCancers = [];
-              for (var cancerID in nodeCancers) {
-                  if (nodeCancers.hasOwnProperty(cancerID)) {
-                      var cancer = nodeCancers[cancerID];
-                      if (cancer.affected) {
-                          affectedCancers.push(cancerID);
+              nodeCancers.each( function(item) {
+                  if (item.hasOwnProperty("id")) {
+                      if (item.affected) {
+                          affectedCancers.push(item.id);
                       } else {
-                          unaffectedCancers.push(cancerID);
+                          unaffectedCancers.push(item.id);
                       }
                   }
-              }
+              });
 
               // if at least one of the present cancers is in the selected list, mark as affected
               if (listsIntersect(selectedMap["ped-cancers-options"], affectedCancers)) {
