@@ -428,6 +428,16 @@
         <artifactId>annotations</artifactId>
         <version>3.0.1u2</version>
       </dependency>
+      <dependency>
+        <groupId>de.charite.compbio</groupId>
+        <artifactId>ontologizer-core</artifactId>
+        <version>2.1.2</version>
+      </dependency>
+      <dependency>
+        <groupId>de.charite.compbio</groupId>
+        <artifactId>ontologizer-benchmark</artifactId>
+        <version>2.1.2</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
