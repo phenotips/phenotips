@@ -52,6 +52,14 @@ public interface PrimaryEntity
     EntityReference getType();
 
     /**
+     * A short identifier for the type of entity. This identifier is the same as the name of the entity manager
+     * responsible for this entity.
+     *
+     * @return a short string, such as {@code patient} or {@code family}
+     */
+    String getTypeId();
+
+    /**
      * Returns a reference to the document where the entity is stored.
      *
      * @return a valid document reference

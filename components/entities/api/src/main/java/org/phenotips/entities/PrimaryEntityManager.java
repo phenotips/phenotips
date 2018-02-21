@@ -74,8 +74,8 @@ public interface PrimaryEntityManager<E extends PrimaryEntity>
     /**
      * Retrieves an {@link PrimaryEntity entity} from the specified document.
      *
-     * @param reference reference of the {@link PrimaryEntity#getDocumentReference() document
-     *        where the entity is stored}
+     * @param reference reference of the {@link PrimaryEntity#getDocumentReference() document where the entity is
+     *            stored}
      * @return the requested entity
      * @throws IllegalArgumentException if the document doesn't contain a proper entity
      */
@@ -129,4 +129,12 @@ public interface PrimaryEntityManager<E extends PrimaryEntity>
      * @return the {@link PrimaryEntityManager} type as string
      */
     String getType();
+
+    /**
+     * Gets a reference to the XClass defining the type of entities being managed.
+     *
+     * @return a valid reference; the exact type is not fixed, but in the current implementation a
+     *         {@link DocumentReference} is expected
+     */
+    EntityReference getTypeReference();
 }

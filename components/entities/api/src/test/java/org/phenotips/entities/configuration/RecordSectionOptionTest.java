@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -16,22 +14,30 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
--->
+ */
+package org.phenotips.entities.configuration;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
-    <version>1.4-SNAPSHOT</version>
-  </parent>
-  <artifactId>phenotips-entities</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Generic Entities APIs</name>
+import org.xwiki.component.manager.ComponentLookupException;
 
-  <modules>
-    <module>api</module>
-    <module>configuration</module>
-    <module>ui</module>
-  </modules>
-</project>
+import org.junit.Assert;
+import org.junit.Test;
+
+/**
+ * Tests for the {@link ConsentStatus}.
+ *
+ * @version $Id$
+ */
+public class RecordSectionOptionTest
+{
+    @Test
+    public void valueOfWorks() throws ComponentLookupException
+    {
+        Assert.assertSame(RecordSectionOption.EXPANDED_BY_DEFAULT, RecordSectionOption.valueOf("EXPANDED_BY_DEFAULT"));
+    }
+
+    @Test
+    public void toStringLowercases() throws ComponentLookupException
+    {
+        Assert.assertEquals("expanded_by_default", RecordSectionOption.EXPANDED_BY_DEFAULT.toString());
+    }
+}
