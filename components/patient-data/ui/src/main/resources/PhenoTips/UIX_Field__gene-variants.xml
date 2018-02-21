@@ -180,13 +180,21 @@
   });
 
   $$('input.gene-name').invoke('observe', "ms:suggest:selected", function (event) {
-    fetchGeneDetails([event.findElement()], event.memo &amp;&amp; [event.memo.value] || [], true);
-    // Update the id element.
-    event.element().next("input.gene-id").value = event.memo.id || event.memo.value;
+    if (event.memo) {
+      updateInfo(event.element(), event.memo.id, event.memo.value, !event.memo.custom);
+    }
   });
 
-  $$('input.gene-name').invoke('observe', 'change', function (event) {
+  $$('input.gene-name').invoke('observe', "ms:suggest:not-selected", function (event) {
     updateInfo(event.element(), null, null, false);
+  });
+
+  // validate gene symbol after best matched was found by suggest widget in case no suggestons was selected
+  document.observe("ms:suggest:clearSuggestions", function(event) {
+    if (event.memo &amp;&amp; event.memo.suggest &amp;&amp; event.memo.suggest.fld) {
+      var inputGene = event.memo.suggest.fld;
+      inputGene.__validation &amp;&amp; inputGene.__validation.validate();
+    }
   });
 
   document.observe("xwiki:dom:updated", function(event) {
@@ -198,7 +206,7 @@
           inputGene.invoke('observe', "ms:suggest:selected", function (event) {
             updateInfo(event.element(), event.memo.id, event.memo.value, true);
           });
-          inputGene.invoke('observe', 'change', function (event) {
+          inputGene.invoke('observe', "ms:suggest:not-selected", function (event) {
             updateInfo(event.element(), null, null, false);
           });
         }

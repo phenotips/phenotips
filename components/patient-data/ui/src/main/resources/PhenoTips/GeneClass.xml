@@ -77,7 +77,7 @@
   #end
   #set ($placeholder = $services.localization.render('Phenotips.GeneClass.geneNamePlaceholder'))
   #if ($xcontext.action == 'edit')
-    {{html wiki="false" clean="false"}}&lt;input type='text' name='${prefix}symbol' class='suggested suggest-gene gene-name $!termStatus' placeholder='$placeholder' size='16' value='$!{gene.symbol}'/&gt;&lt;input type='hidden' name='${prefix}${name}' class='gene-id' value='$!{gene.id}'/&gt;{{/html}}
+    {{html wiki="false" clean="false"}}&lt;input type='text' name='${prefix}symbol' class='suggested accept-value suggest-gene gene-name $!termStatus' placeholder='$placeholder' size='16' value='$!{gene.symbol}'/&gt;&lt;input type='hidden' name='${prefix}${name}' class='gene-id' value='$!{gene.id}'/&gt;{{/html}}
   #else
     ${gene.symbol}#if("$!{gene.symbol}" != ''){{html wiki="false" clean="false"}}&lt;input type='hidden' name='gene_name' class='gene-name $!termStatus' value="$!{gene.symbol}"/&gt;{{/html}}#end
   #end
