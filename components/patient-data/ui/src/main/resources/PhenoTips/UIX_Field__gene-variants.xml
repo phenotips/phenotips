@@ -180,7 +180,9 @@
   });
 
   $$('input.gene-name').invoke('observe', "ms:suggest:selected", function (event) {
-    updateInfo(event.element(), event.memo.id, event.memo.value, true);
+    if (event.memo) {
+      updateInfo(event.element(), event.memo.id, event.memo.value, !event.memo.custom);
+    }
   });
 
   $$('input.gene-name').invoke('observe', "ms:suggest:not-selected", function (event) {
