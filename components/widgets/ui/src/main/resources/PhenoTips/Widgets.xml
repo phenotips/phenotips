@@ -1195,12 +1195,13 @@
     // creating an XlistItem for each suggestion
     //
     // at the same time check if any of the suggestions
-    // is the exact case-sentitive match of the input
+    // is the exact case-insensitive match of the input
     //
     var exactMatch = false;
     for (var i = 0,len = arr.length; i &lt; len; i++)
     {
-       if (arr[i].value.toLowerCase() == this.fld.value.strip().toLowerCase()) {
+       if (arr[i].value.toLowerCase() == this.fld.value.strip().toLowerCase()
+           || arr[i].id.toLowerCase() == this.fld.value.strip().toLowerCase()) {
            exactMatch = arr[i];
        }
        if (!this.options.filterFunc || this.options.filterFunc(arr[i])) {
