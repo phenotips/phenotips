@@ -94,10 +94,10 @@ require(['jquery'], function ($)
 
         document.observe('xwiki:dom:updated', function (event) {
             ((event && event.memo.elements) || [$('body')]).each(function(element) {
-                element.select(".mandatory input:not([type='hidden'])").each(function(field) {
+                element.select(".mandatory :input:not([type='hidden'])").each(function(field) {
                     addNewElement(field);
                 });
-                element.select(".checked input:not([type='hidden'])").each(function(field) {
+                element.select(".checked :input:not([type='hidden'])").each(function(field) {
                     addNewElement(field);
                 });
             });
