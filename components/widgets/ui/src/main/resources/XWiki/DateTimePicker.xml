@@ -2892,6 +2892,7 @@ input.xwiki-date {
   background-image: url("$xwiki.getSkinFile('icons/silk/date.png')");
   background-position: .3em center;
   background-repeat: no-repeat;
+  padding-left: 2em;
   min-height: 16px;
   cursor: pointer;
 }

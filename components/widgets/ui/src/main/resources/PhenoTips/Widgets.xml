@@ -8660,18 +8660,24 @@ input.xwiki-free-multiselect-value {
       <cache>long</cache>
     </property>
     <property>
-      <code>input.suggestWorkgroups {
-  background-image: url('/resources/icons/datamodel/groups.png');
-  background-position: 0.3em center;
+      <code>input.suggestWorkgroups, input.suggestUsersAndGroups {
+  background-position: .3em center;
   background-repeat: no-repeat;
   padding-left: 2em;
-}</code>
+}
+input.suggestWorkgroups {
+  background-image: $xwiki.getSkinFile('icons/datamodel/groups.png');
+}
+input.suggestUsersAndGroups {
+  background-image: $xwiki.getSkinFile('icons/datamodel/users.png');
+}
+</code>
     </property>
     <property>
       <contentType>CSS</contentType>
     </property>
     <property>
-      <name>Suggest workgroups</name>
+      <name>Suggest users, groups and workgroups</name>
     </property>
     <property>
       <parse>0</parse>
