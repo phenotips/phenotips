@@ -1194,8 +1194,16 @@
     // loop throught arr of suggestions
     // creating an XlistItem for each suggestion
     //
+    // at the same time check if any of the suggestions
+    // is the exact case-insensitive match of the input
+    //
+    var exactMatch = false;
     for (var i = 0,len = arr.length; i &lt; len; i++)
     {
+       if (arr[i].value.toLowerCase() == this.fld.value.strip().toLowerCase()
+           || arr[i].id.toLowerCase() == this.fld.value.strip().toLowerCase()) {
+           exactMatch = arr[i];
+       }
        if (!this.options.filterFunc || this.options.filterFunc(arr[i])) {
            list.addItem(this.generateListItem(arr[i]));
        }
@@ -1207,7 +1215,7 @@
                           'classes' : 'noSuggestion',
                           noHighlight :true }) );
     }
-    if (this.fld.hasClassName('accept-value')) {
+    if (this.fld.hasClassName('accept-value') &amp;&amp; !exactMatch) {
        var customItemId = this.fld.value.replace(/[^a-z0-9_]+/gi, "_");
        var customItemCategoryInfo = this.fld.next('input[name="_category"]');
        var customItemCategories = customItemCategoryInfo &amp;&amp; customItemCategoryInfo.value.split(",") || [];
