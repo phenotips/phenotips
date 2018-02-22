@@ -81,7 +81,7 @@
 #macro (__filters_LabeledEidOptions $existingLabels)
 #foreach ($label in $existingLabels)
 {{html clean="false"}}
-&lt;option&gt;$label&lt;/option&gt;
+&lt;option&gt;$!{escapetool.xml($label)}&lt;/option&gt;
 {{/html}}##
 #end
 #end
