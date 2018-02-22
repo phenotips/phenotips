@@ -101,7 +101,7 @@ public class DefaultFamilyResourceImpl extends XWikiResource implements FamilyRe
             this.logger.warn(NO_SUCH_FAMILY_ERROR_MESSAGE, id);
             return Response.status(Status.NOT_FOUND).build();
         }
-        if (this.familyTools.currentUserCanDeleteFamily(id, deleteMembers)) {
+        if (!this.familyTools.currentUserCanDeleteFamily(id, deleteMembers)) {
             this.logger.error("Delete access denied to user [{}] for family record [{}] with deleteMemebers=[{}]",
                 this.users.getCurrentUser(), id, deleteMembers);
             return Response.status(Status.FORBIDDEN).build();
