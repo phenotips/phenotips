@@ -46,8 +46,8 @@
     #if ($entryName == '')
       #set($entryName = $val)
     #end
-    &lt;label class="term-entry" for="${prefix}${name}_${val}"&gt;
-      &lt;input title="$entryName" type="checkbox" checked="checked" name="${prefix}${name}" id="${prefix}${name}_${val}" value="${val}"/&gt;$entryName
+    &lt;label class="term-entry" for="${prefix}${name}_${escapetool.xml($val)}"&gt;
+      &lt;input title="${escapetool.xml($entryName)}" type="checkbox" checked="checked" name="${prefix}${name}" id="${prefix}${name}_${escapetool.xml($val)}" value="${escapetool.xml($val)}"/&gt;${escapetool.xml($entryName)}
     &lt;/label&gt;
   #end
   &lt;/div&gt;

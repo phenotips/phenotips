@@ -500,7 +500,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
         var geneIndex = className.substring(className.lastIndexOf('-') + 1);
         //generate label
         var geneLabel = new Element('p', {class :' gene col-label gene-' + geneIndex + ' gene-input-label'});
-        geneLabel.update(item.value);
+        geneLabel.update(item.value.escapeHTML());
         item.insert({before: geneLabel});
         if ($$('.variant-hide-heading-' + geneIndex).length > 0) {
           item.toggleClassName('v-collapsed', true);
