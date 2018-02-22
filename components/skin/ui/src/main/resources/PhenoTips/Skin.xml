@@ -1162,6 +1162,7 @@ h1:target, h2:target, h3:target {
   color: $theme.linkColor;
   cursor: pointer;
   float: right;
+  font-size: 1.21em;
   margin-left: 1em;
   text-decoration: none;
 }
