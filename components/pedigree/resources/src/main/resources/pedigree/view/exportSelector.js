@@ -272,12 +272,12 @@ define([
 
                 var traitsContainner = new Element('table');
 
-                hasDisorders && this._addPedOption("disorders", disorders, traitsContainner);
-                hasPhenotypes && this._addPedOption("phenotypes", hpos, traitsContainner);
-                hasCancers && this._addPedOption("cancers", cancers, traitsContainner);
+                hasDisorders && this._addPedOption("disorders", disorders, traitsContainner, "final diagnosis");
                 hasCandidateGenes && this._addPedOption("candidateGenes", candidateGenes, traitsContainner, "candidate genes");
                 hasCausalGenes && this._addPedOption("causalGenes", causalGenes, traitsContainner, "confirmed causal genes");
-                hasCarrierGenes && this._addPedOption("carrierGenes", carrierGenes, traitsContainner, "confirmed carrier genes");
+                hasCarrierGenes && this._addPedOption("carrierGenes", carrierGenes, traitsContainner, "carrier genes");
+                hasPhenotypes && this._addPedOption("phenotypes", hpos, traitsContainner);
+                hasCancers && this._addPedOption("cancers", cancers, traitsContainner);
 
                 pedContainer.insert(traitsContainner.wrap('div', {'id': 'scrollable-container'}).wrap('td').wrap('tr', {'class': 'ped-special-options'}));
 
