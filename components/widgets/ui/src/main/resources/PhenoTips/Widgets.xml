@@ -5918,6 +5918,7 @@ document.observe("xwiki:dom:updated", init);
           // Hack :(
           fuzzyPicker.__fuzzyInput = fuzzyInput;
           fuzzyPicker.__recordBoth = true;
+          options.trackLastEnteredDate &amp;&amp; this._enableLastDateEnteredTracking(fuzzyPicker, spanElem, fuzzyInput, new Element('span', {'class' : this._dataName + '-paste-last-date-button', 'title' : "$!escapetool.javascript($services.localization.render('phenotips.widgets.detailsDialog.datePicker.pasteButton.tooltip'))"}).update('&lt;i class="fa fa-paste"&gt;&lt;/i&gt;'));
           spanElem._getValue = this._getDatePickerValueFx(fuzzyInput);
           spanElem._setValue = this._setDatePickerValueFx(fuzzyPicker, spanElem, options.storedToDisplayedMapper, collapsible);
           spanElem._addValue = this._addDatePickerValueFx(spanElem, options.qualifierName, options.approxQualifierName, options.displayedToStoredMapper);
@@ -6068,39 +6069,62 @@ document.observe("xwiki:dom:updated", init);
 
       },
 
-    _setPhenoTipsSelectFormData : function(spanElem, toStored, qualifierClass, qualifierName) {
-        var inputStrElem = new Element('input', {'class': 'string-select-val', 'type': 'hidden'});
-        var inputNumElem;
-        if (spanElem._getNumericValue) {
-            inputNumElem = new Element('input', {'class': 'to-numeric-select-val', 'type': 'hidden'});
-            spanElem.insert(inputNumElem);
-        }
-        spanElem.insert(inputStrElem);
-        var selectElem = spanElem.down('select');
-        var formattedVal = function () { return toStored ? toStored(spanElem._getValue()) : spanElem._getValue(); };
-        var value = formattedVal();
-        this._setInput(inputStrElem, value, qualifierClass + qualifierName);
-        inputNumElem &amp;&amp; this._setInput(inputNumElem, spanElem._getNumericValue(value), qualifierClass + "numeric" + qualifierName.charAt(0).capitalize() + qualifierName.substr(1));
-        var _this = this;
-        selectElem.observe('change', function(event) {
-            var value = formattedVal();
-            _this._setInput(inputStrElem, value, null);
-            inputNumElem &amp;&amp; _this._setInput(inputNumElem, spanElem._getNumericValue(value), null);
-        });
+      _enableLastDateEnteredTracking : function(fuzzyPicker, spanElem, fuzzyInput, pasteIcon) {
+          if (fuzzyPicker &amp;&amp; spanElem &amp;&amp; fuzzyInput &amp;&amp; pasteIcon) {
+              spanElem.insert(pasteIcon);
+              var _this = this;
+              var selectCallback = function() {
+                  fuzzyPicker.updateDate();
+                  var newDateVal = fuzzyInput.value;
+                  document.lastPickedDate = newDateVal;
+                  Event.fire(document, _this._dataName + ":dialog:dateselected", {"date" : newDateVal, "dialog" : _this.getDialog(), "selector" : pasteIcon.className});
+              };
+              fuzzyPicker.yearSelector.onSelect(selectCallback);
+              fuzzyPicker.monthSelector.onSelect(selectCallback);
+              fuzzyPicker.daySelector.onSelect(selectCallback);
+
+              pasteIcon.observe('click', function(event) {
+                  var dateJSON = document.lastPickedDate &amp;&amp; JSON.parse(document.lastPickedDate);
+                  if (dateJSON) {
+                      spanElem._setValue(dateJSON);
+                  }
+              });
+          }
+      },
+
+      _setPhenoTipsSelectFormData : function(spanElem, toStored, qualifierClass, qualifierName) {
+          var inputStrElem = new Element('input', {'class': 'string-select-val', 'type': 'hidden'});
+          var inputNumElem;
+          if (spanElem._getNumericValue) {
+              inputNumElem = new Element('input', {'class': 'to-numeric-select-val', 'type': 'hidden'});
+              spanElem.insert(inputNumElem);
+          }
+          spanElem.insert(inputStrElem);
+          var selectElem = spanElem.down('select');
+          var formattedVal = function () { return toStored ? toStored(spanElem._getValue()) : spanElem._getValue(); };
+          var value = formattedVal();
+          this._setInput(inputStrElem, value, qualifierClass + qualifierName);
+          inputNumElem &amp;&amp; this._setInput(inputNumElem, spanElem._getNumericValue(value), qualifierClass + "numeric" + qualifierName.charAt(0).capitalize() + qualifierName.substr(1));
+          var _this = this;
+          selectElem.observe('change', function(event) {
+              var value = formattedVal();
+              _this._setInput(inputStrElem, value, null);
+              inputNumElem &amp;&amp; _this._setInput(inputNumElem, spanElem._getNumericValue(value), null);
+          });
       },
 
       _setPhenoTipsRadioFormData : function(spanElem, toStored, qualifierClass, qualifierName) {
-        var inputStrElem = new Element('input', {'class': 'string-radio-val', 'type': 'hidden'});
-        spanElem.insert(inputStrElem);
-        var ulElem = spanElem.down('ul');
-        var formattedVal = function () { return toStored ? toStored(spanElem._getValue()) : spanElem._getValue(); };
-        var value = formattedVal();
-        this._setInput(inputStrElem, value, qualifierClass + qualifierName);
-        var _this = this;
-        ulElem.observe('change', function(event) {
-            var value = formattedVal();
-            _this._setInput(inputStrElem, value, null);
-        });
+          var inputStrElem = new Element('input', {'class': 'string-radio-val', 'type': 'hidden'});
+          spanElem.insert(inputStrElem);
+          var ulElem = spanElem.down('ul');
+          var formattedVal = function () { return toStored ? toStored(spanElem._getValue()) : spanElem._getValue(); };
+          var value = formattedVal();
+          this._setInput(inputStrElem, value, qualifierClass + qualifierName);
+          var _this = this;
+          ulElem.observe('change', function(event) {
+              var value = formattedVal();
+              _this._setInput(inputStrElem, value, null);
+          });
       },
 
       _setInput : function(input, value, name) {
