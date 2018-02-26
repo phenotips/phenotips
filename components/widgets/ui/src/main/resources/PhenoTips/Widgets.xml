@@ -5893,6 +5893,39 @@ document.observe("xwiki:dom:updated", init);
       },
 
       /**
+       * Adds a date picker.
+       *
+       * @param collapsible true iff the qualifier element is collapsible
+       * @param options {Object} an options object containing:
+       *                         - "defListItemClass" the css class for the definition list item
+       *                         - "qualifierLabel" the label for the qualifier definition list element
+       *                         - "qualifierName" the name of the qualifier definition list element
+       *                         - "displayedToStoredMapper" custom function mapping displayed value to how it should be stored
+       *                         - "storedToDisplayedMapper" custom function mapping stored value to how it should be displayed
+       */
+      withDatePicker : function(collapsible, options) {
+          var spanElem = new Element('span', {'class' : 'fuzzy-date-picker'});
+          var dpJsonName = (this._qualifierDataClass &amp;&amp; options.qualifierName)
+              ? this._qualifierDataClass + this._globalCount + "_" + options.qualifierName
+              : this._dataName + '_' + this._elementID + '_' + (options.qualifierName || "");
+          var dpName = (this._qualifierDataClass &amp;&amp; options.approxQualifierName)
+              ? this._qualifierDataClass + this._globalCount + "_" + options.approxQualifierName
+              : this._dataName + '_' + this._elementID + '_' + (options.approxQualifierName || "");
+          var dateInput = new Element('input', {'class' : 'fuzzy-date hidden', 'name' : dpName});
+          var fuzzyInput = new Element('input', {'id' : dpName + '_entered', 'name' : dpJsonName, 'class' : 'fuzzy-date-json hidden'})
+          spanElem.insert(dateInput).insert(fuzzyInput);
+          var fuzzyPicker = new PhenoTips.widgets.FuzzyDatePicker(dateInput, "YMD");
+          // Hack :(
+          fuzzyPicker.__fuzzyInput = fuzzyInput;
+          fuzzyPicker.__recordBoth = true;
+          spanElem._getValue = this._getDatePickerValueFx(fuzzyInput);
+          spanElem._setValue = this._setDatePickerValueFx(fuzzyPicker, spanElem, options.storedToDisplayedMapper, collapsible);
+          spanElem._addValue = this._addDatePickerValueFx(spanElem, options.qualifierName, options.approxQualifierName, options.displayedToStoredMapper);
+          options.inline = 'inline';
+          return this.withQualifierElement(spanElem, collapsible, options);
+      },
+
+      /**
        * Adds a custom qualifier definition list element.
        *
        * @param element {Element} the custom data collection element to add (e.g. a textbox)
@@ -5928,7 +5961,7 @@ document.observe("xwiki:dom:updated", init);
               selectedValue = '&lt;span class="selected-value"&gt;' + selectedTitle + '&lt;/span&gt;';
               ddElem.hide();
           }
-          dtElem.insert('&lt;label&gt;' + qualifierLabel + '&lt;/label&gt;');
+          (!qualifierLabel &amp;&amp; dtElem.addClassName('hidden')) || dtElem.insert('&lt;label&gt;' + qualifierLabel + '&lt;/label&gt;');
           selectedValue &amp;&amp; dtElem.insert(selectedValue);
           ddElem.insert(element);
           this._attachSummaryFx(element, dtElem, ddElem);
@@ -6252,6 +6285,54 @@ document.observe("xwiki:dom:updated", init);
               var fieldName = qualifierName || null;
               if (fieldName) {
                   values[fieldName] = valueMapperFx ? valueMapperFx(element._getValue()) : element._getValue();
+              }
+          };
+      },
+
+      /**
+       * A function for retrieving an input value.
+       *
+       * @param inputElem the input element
+       * @return {Function} a function for retrieving the value from the input element
+       * @private
+       */
+      _getDatePickerValueFx: function(inputElem) {
+          return function() {
+              var data = JSON.parse(inputElem.value || '{}');
+              var year = data.range ? (data.year ? data.year + "s" : "") : data.year;
+              var month = data.month;
+              var day = data.day;
+              var dateStr = "";
+              if (!year) { return dateStr; }
+              dateStr = dateStr + year;
+              if (!month) { return dateStr; }
+              dateStr = dateStr + "-" + month.toString().padStart(2, '0');
+              return day ? dateStr + "-" + day.toString().padStart(2, '0') : dateStr;
+          };
+      },
+
+      _setDatePickerValueFx: function(fuzzyPicker, spanElem, valueMapperFx, collapsible) {
+          var _this = this;
+          return function (value) {
+              if (value) {
+                  var year = (value.range ? (value.year ? value.year + "s" : "") : value.year);
+                  year &amp;&amp; (spanElem.down('select.year').value = year);
+                  value.month &amp;&amp; (spanElem.down('select.month').value = value.month);
+                  value.day &amp;&amp; (spanElem.down('select.day').value = value.day);
+                  fuzzyPicker.onProgrammaticUpdate();
+              }
+          };
+      },
+
+      _addDatePickerValueFx: function (element, qualifierName, approxQualifierName, valueMapperFx) {
+          return function (values) {
+              if (qualifierName) {
+                  var dateElem = element.down('input.hidden.fuzzy-date-json');
+                  var date = dateElem &amp;&amp; dateElem.value || "";
+                  var dateJsonElem = element.down('input.hidden.fuzzy-date-json');
+                  var dateJson = dateJsonElem &amp;&amp; dateJsonElem.value || "";
+                  approxQualifierName &amp;&amp; (values[approxQualifierName] = valueMapperFx ? valueMapperFx(date) : date);
+                  qualifierName &amp;&amp; (values[qualifierName] = JSON.parse(dateJson));
               }
           };
       },
@@ -6667,6 +6748,14 @@ document.observe("xwiki:dom:updated", init);
               currentDialog.withRadioList(collapsible, options);
           };
           this._dialogOptions.push(addRadioList);
+          return this;
+      },
+
+      dialogsAddDatePicker : function (collapsible, options) {
+          var addDatePicker = function (currentDialog) {
+              currentDialog.withDatePicker(collapsible, options);
+          };
+          this._dialogOptions.push(addDatePicker);
           return this;
       },
 
