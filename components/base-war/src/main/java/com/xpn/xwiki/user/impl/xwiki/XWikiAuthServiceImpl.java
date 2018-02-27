@@ -2,22 +2,28 @@
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This software is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package com.xpn.xwiki.user.impl.xwiki;
+
+import org.xwiki.bridge.event.ActionExecutingEvent;
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceSerializer;
+import org.xwiki.observation.ObservationManager;
 
 import java.io.IOException;
 import java.net.URL;
@@ -37,11 +43,6 @@ import org.securityfilter.filter.URLPatternMatcher;
 import org.securityfilter.realm.SimplePrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.model.reference.EntityReference;
-import org.xwiki.model.reference.EntityReferenceSerializer;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -79,6 +80,11 @@ public class XWikiAuthServiceImpl extends AbstractXWikiAuthService
      */
     private EntityReferenceSerializer<String> compactWikiEntityReferenceSerializer = Utils.getComponent(
         EntityReferenceSerializer.TYPE_STRING, "compactwiki");
+
+    /**
+     * Observation manager, used to notify legacy events.
+     */
+    private ObservationManager observationManager = Utils.getComponent(ObservationManager.class);
 
     /**
      * Each wiki has its own authenticator.
@@ -240,16 +246,17 @@ public class XWikiAuthServiceImpl extends AbstractXWikiAuthService
                 return null;
             }
 
+            final String userName = getContextUserName(wrappedRequest.getUserPrincipal(), context);
             // Process logout (this only works with Forms)
             if (auth.processLogout(wrappedRequest, response, new URLPatternMatcher())) {
                 if (LOGGER.isInfoEnabled()) {
-                    LOGGER.info("User " + context.getUser() + " has been logged-out");
+                    LOGGER.info("User " + userName + " has been logged-out");
                 }
                 wrappedRequest.setUserPrincipal(null);
+                this.observationManager.notify(new ActionExecutingEvent(context.getAction()), userName, context);
                 return null;
             }
 
-            final String userName = getContextUserName(wrappedRequest.getUserPrincipal(), context);
             if (LOGGER.isInfoEnabled()) {
                 if (userName != null) {
                     LOGGER.info("User " + userName + " is authentified");

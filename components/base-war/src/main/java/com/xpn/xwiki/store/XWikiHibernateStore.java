@@ -2,22 +2,37 @@
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This software is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package com.xpn.xwiki.store;
+
+import org.xwiki.bridge.event.ActionExecutingEvent;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.InitializationException;
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceSerializer;
+import org.xwiki.model.reference.SpaceReference;
+import org.xwiki.model.reference.WikiReference;
+import org.xwiki.observation.EventListener;
+import org.xwiki.observation.ObservationManager;
+import org.xwiki.observation.event.Event;
+import org.xwiki.query.QueryException;
+import org.xwiki.query.QueryManager;
+import org.xwiki.store.UnexpectedException;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -59,22 +74,6 @@ import org.hibernate.mapping.PersistentClass;
 import org.hibernate.mapping.Property;
 import org.slf4j.Logger;
 import org.suigeneris.jrcs.rcs.Version;
-import org.xwiki.bridge.event.ActionExecutingEvent;
-import org.xwiki.component.annotation.Component;
-import org.xwiki.component.phase.InitializationException;
-import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.model.reference.EntityReference;
-import org.xwiki.model.reference.EntityReferenceSerializer;
-import org.xwiki.model.reference.SpaceReference;
-import org.xwiki.model.reference.WikiReference;
-import org.xwiki.observation.EventListener;
-import org.xwiki.observation.ObservationManager;
-import org.xwiki.observation.event.Event;
-import org.xwiki.query.QueryException;
-import org.xwiki.query.QueryManager;
-import org.xwiki.store.UnexpectedException;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -1694,9 +1693,13 @@ public class XWikiHibernateStore extends XWikiHibernateBaseStore implements XWik
             {
                 if ("logout".equals(((ActionExecutingEvent) event).getActionName())) {
                     final XWikiContext ctx = (XWikiContext) data;
+                    String userName = null;
                     if (ctx.getUserReference() != null) {
-                        releaseAllLocksForCurrentUser(ctx);
+                        userName = ctx.getUser();
+                    } else if (source instanceof String) {
+                        userName = (String) source;
                     }
+                    releaseAllLocksForCurrentUser(ctx, userName);
                 }
             }
         });
@@ -1706,8 +1709,9 @@ public class XWikiHibernateStore extends XWikiHibernateBaseStore implements XWik
      * Release all of the locks held by the currently logged in user.
      *
      * @param ctx the XWikiContext, used to start the connection and get the user name.
+     * @param userName the optional user name explicitly passed.
      */
-    private void releaseAllLocksForCurrentUser(final XWikiContext ctx)
+    private void releaseAllLocksForCurrentUser(final XWikiContext ctx, String userName)
     {
         try {
             this.beginTransaction(ctx);
@@ -1715,9 +1719,9 @@ public class XWikiHibernateStore extends XWikiHibernateBaseStore implements XWik
             final Query query =
                 session.createQuery("delete from XWikiLock as lock where lock.userName=:userName");
             // Using deprecated getUser() because this is how locks are created.
-            // It would be a maintainibility disaster to use different code paths
+            // It would be a maintainability disaster to use different code paths
             // for calculating names when creating and removing.
-            query.setString("userName", ctx.getUser());
+            query.setString("userName", userName);
             query.executeUpdate();
             this.endTransaction(ctx, true);
         } catch (Exception e) {
@@ -1738,7 +1742,7 @@ public class XWikiHibernateStore extends XWikiHibernateBaseStore implements XWik
             final String cdb = ctx.getWikiId();
             try {
                 ctx.setWikiId(ctx.getMainXWiki());
-                this.releaseAllLocksForCurrentUser(ctx);
+                this.releaseAllLocksForCurrentUser(ctx, userName);
             } finally {
                 ctx.setWikiId(cdb);
             }
