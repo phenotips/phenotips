@@ -4226,6 +4226,64 @@ document.observe("xwiki:dom:updated", init);
            helpButton.helpBox.content.update(helpButton._information || '');
          }
        },
+      'cancer-info' : {
+        // TODO: A different vocabulary will be used in future versions.
+        'hint'     : "$escapetool.javascript($services.localization.render('phenotips.widgets.helpButtons.cancer.hint'))",
+        'vocabulary' : 'hpo',
+        'database' : {
+          'name' : "$services.vocabularies.hpo.name",
+          'link' : "$services.vocabularies.hpo.website",
+          'citation' : "$services.vocabularies.hpo.citation",
+          'version': "$services.vocabularies.hpo.version"
+        },
+        'callback' : function (helpButton, json) {
+          var c = helpButton.helpBox.content;
+          var elt = function(type, cssClass, content) {
+            return new Element(type, cssClass &amp;&amp; {'class' : cssClass} || {}).update(content || '');
+          };
+
+          c.update(
+                    elt('span', 'info').insert(elt('span', 'key').update(json.id))
+                                       .insert(' ')
+                                       .insert(elt('span', 'value').update(json.name_translated))
+                  );
+          json.def_translated &amp;&amp; c.insert(elt('p').update(json.def_translated.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;')));
+
+          var labels = {'synonym' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.synonym')", 'parents' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.typeOf')"};
+          var advancedInfo = elt('dl');
+          for (var l in labels) {
+            if (json[l]) {
+              advancedInfo.insert(elt('dt', '', labels[l]));
+              json[l].each(function (item) {
+                advancedInfo.insert(elt('dd', '', item.name_translated || item));
+              })
+            }
+          }
+          if (advancedInfo.firstDescendant()) {
+            c.insert(advancedInfo);
+          }
+
+          var suggestedInput = helpButton.icon.getAttribute('data-source') &amp;&amp; $(helpButton.icon.getAttribute('data-source')) || $('quick-cancers-search') || $$('input.suggest-cancer')[0];
+          if (PhenoTips.widgets.OntologyBrowser &amp;&amp; suggestedInput) {
+            var browseButton = new Element('a', {'class' : 'button', href : '#'}).update("$services.localization.render('phenotips.widgets.helpButtons.phenotype.browseRelated')");
+            browseButton._id = json.id;
+            browseButton.observe('click', function(event){
+              event.stop();
+              var suggest = suggestedInput._suggest;
+              var params = {};
+              if (typeof isPhenotypeSelected !== 'undefined') {
+                params = {
+                  isTermSelected : isPhenotypeSelected,
+                  unselectTerm : unselectPhenotype
+                };
+              }
+              browseButton._obrowser = new PhenoTips.widgets.OntologyBrowser(suggest, null, params);
+              browseButton._obrowser.show(browseButton._id);
+            });
+            c.insert(elt('div', 'term-tools').insert(browseButton.wrap('span', {'class' : 'buttonwrapper'})));
+          }
+        }
+      },
       'phenotype-info' : {
         'hint'     : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.hint')",
         'vocabulary' : 'hpo',
