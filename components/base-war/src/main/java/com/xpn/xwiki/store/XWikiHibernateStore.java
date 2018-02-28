@@ -1699,19 +1699,23 @@ public class XWikiHibernateStore extends XWikiHibernateBaseStore implements XWik
                     } else if (source instanceof String) {
                         userName = (String) source;
                     }
-                    releaseAllLocksForCurrentUser(ctx, userName);
+                    if (StringUtils.isBlank(userName)) {
+                        return;
+                    }
+                    // Release all of the locks held by the currently logged in user
+                    releaseAllLocksForUser(ctx, userName);
                 }
             }
         });
     }
 
     /**
-     * Release all of the locks held by the currently logged in user.
+     * Release all of the locks held by the user.
      *
-     * @param ctx the XWikiContext, used to start the connection and get the user name.
-     * @param userName the optional user name explicitly passed.
+     * @param ctx the XWikiContext, used to start the connection.
+     * @param userName the user name to release all locks for.
      */
-    private void releaseAllLocksForCurrentUser(final XWikiContext ctx, String userName)
+    private void releaseAllLocksForUser(final XWikiContext ctx, String userName)
     {
         try {
             this.beginTransaction(ctx);
