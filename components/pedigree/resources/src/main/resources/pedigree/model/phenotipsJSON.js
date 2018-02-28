@@ -71,6 +71,8 @@ define([
         setValueOrDefault("features", "features", []);
         setValueOrDefault("nonstandard_features", "nonstandard_features", []);
 
+        setValueOrDefault("cancers", "cancers", []);
+
         var outputDisorders = [];
         var disorders = internalProperties.hasOwnProperty("disorders")
                         ? internalProperties["disorders"]
@@ -137,6 +139,7 @@ define([
         // - features + nonstandard_features
         // - disorders
         // - genes
+        // - cancers
         // - maternal_ethnicity + paternal_ethnicity (merged with own ethnicities entered in pedigree editor)
         // - family_history
 
@@ -243,6 +246,12 @@ define([
             result.genes = patientJSON.genes;
         } else {
             delete result.genes;
+        }
+
+        if (patientJSON.hasOwnProperty("cancers") && patientJSON.cancers.length > 0) {
+            result.cancers = patientJSON.cancers;
+        } else {
+            delete result.cancers;
         }
 
         if (patientJSON.hasOwnProperty("family_history")) {

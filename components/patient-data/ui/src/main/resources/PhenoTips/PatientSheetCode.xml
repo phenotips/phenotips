@@ -589,6 +589,17 @@ document.observe('xwiki:dom:loaded', function()
             tooltip: 'ordo-disease-info',
             markFreeText: true,
             freeTextTooltipHint: "$!escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.nonStandardDisorder'))"
+        },
+        "cancer" : {
+            script: XWiki.contextPath + "/rest/vocabularies/hpo/suggest?start=0&amp;rows=100&amp;customFilter=term_category:HP%5C%3A0002664&amp;",
+            noresults: "$escapetool.javascript($services.localization.render('phenotips.DBWebHomeSheet.noResults'))",
+            resultsParameter : "rows",
+            resultValue : "name",
+            resultAltName: "synonym",
+            resultCategory : "term_category",
+            resultInfo : {},
+            tooltip: 'cancer-info',
+            resultParent : "is_a"
         }
     };
     var pickerSpecialClassOptions = {
@@ -604,6 +615,15 @@ document.observe('xwiki:dom:loaded', function()
                   'predefinedEntries' : $(document.documentElement).down('.phenotype'),
                   'silent' : true,
                   'onItemAdded' : restoreCategory,
+                  'acceptFreeText' : true
+                },
+      'quickCancerSearch' : {
+                  'showKey' : false,
+                  'showDeleteTool' : false,
+                  'enableSort' : false,
+                  'showClearTool' : false,
+                  'inputType': 'checkbox',
+                  'silent' : true,
                   'acceptFreeText' : true
                 },
       'generateShortList' : {

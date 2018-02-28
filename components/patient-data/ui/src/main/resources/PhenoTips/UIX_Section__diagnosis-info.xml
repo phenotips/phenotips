@@ -120,7 +120,7 @@
       <parameters>title=$services.localization.render('phenotips.UIXSection.diagnosisInfo')
 enabled=true
 required=
-order=10</parameters>
+order=11</parameters>
     </property>
     <property>
       <scope>wiki</scope>

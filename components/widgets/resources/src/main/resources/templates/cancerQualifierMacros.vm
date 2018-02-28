@@ -1,0 +1,21 @@
+## =====================================================================
+##
+## Delete cancer script service with bulk qualifiers delete
+##
+##
+#if ($xcontext.action == 'get' && $request.action == 'deletecancer' && "$!{request.term}" != '' && "$!{request.objnumber}" != '' && $services.csrf.isTokenValid("$!{request.form_token}"))
+  #set ($cancerObject = $doc.getObject($!{request.termclassname}, $!{request.objnumber}))
+  #set ($qualifierObjects = $doc.getObjects($!{request.qualifierclassname}, 'cancer', $request.term))
+  ## delete cancer
+  #if($!{cancerObject})
+    $doc.removeObject($cancerObject)
+  #end
+  ## delete variants
+  #if ($!{qualifierObjects})
+    #foreach ($q in $qualifierObjects)
+      $doc.removeObject($q)
+    #end
+  #end
+  ## save document
+  $doc.save('Deleted cancer and associated qualifiers')
+#end

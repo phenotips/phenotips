@@ -1,0 +1,1110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>UIX_Field__cancers</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1508874874000</creationDate>
+  <parent>PhenoTips.PatientSheet</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1509038078000</date>
+  <contentUpdateDate>1509037895000</contentUpdateDate>
+  <version>1.1</version>
+  <title>$services.localization.render('phenotips.UIXField.cancers')</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <object>
+    <name>PhenoTips.UIX_Field__cancers</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>fd887729-5474-4bce-a230-dbcc36be2c36</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe('xwiki:dom:loaded', function() {
+    var termsTable = $('cancers_data_table');
+
+    if (!termsTable) { return; }
+    var options = {};
+    options.searchSelector = $('cancers-quick-search-box');
+    options.presetElems = $$('.browse-default-cancers .default-cancer input[type=checkbox]');
+
+    options.moduleType = 'cancer';
+
+    options.termDataMarker = "PhenoTips.CancerClass_";
+    options.qualifierDataMarker = "PhenoTips.CancerQualifierClass_";
+    options.tooltip = "cancer-info";
+    options.notmapped = "notmapped";
+
+    var deleteTermElem = termsTable.next('input.action.delete-cancer');
+    var deleteQualifierElem = termsTable.next('input.action.delete-cancer-qualifier');
+
+    var storedDataElem = termsTable.next('input[id=stored-cancer-data]');
+
+    options.deleteTermAction = deleteTermElem &amp;&amp; deleteTermElem.value;
+    options.deleteQualifierAction = deleteQualifierElem &amp;&amp; deleteQualifierElem.value;
+
+    var storedDataStr = storedDataElem &amp;&amp; storedDataElem.value;
+
+    options.storedData = storedDataStr &amp;&amp; storedDataStr !== '[]' ? JSON.parse(storedDataStr) : null;
+
+    deleteTermElem &amp;&amp; deleteTermElem.remove();
+    deleteQualifierElem &amp;&amp; deleteQualifierElem.remove();
+
+    storedDataElem &amp;&amp; storedDataElem.remove();
+
+    new PhenoTips.widgets.TermsSelection(termsTable, options);
+});</code>
+    </property>
+    <property>
+      <name>Initialize cancers section</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.UIX_Field__cancers</name>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>ea7fd974-fe46-42b1-b659-83abbcf930ff</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function (PhenoTips) {
+    var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+    widgets.TermsSelection = Class.create({
+        initialize : function(container, options) {
+            if (!container) { return; }
+            this._termsTable = container;
+
+            if (!$('inline')) {
+                // If in view mode, fix age of diagnosis value format imported from CancerQualifierClass.
+                var _this = this;
+                this._termsTable.select('dd.ageAtDiagnosis.preview').each(function(item) {
+                    item.update(_this._toDisplayedAgeFx(item.innerHTML));
+                });
+                return;
+            }
+
+            // Edit mode.
+            this._searchSelector = options.searchSelector;
+            this._presetElems = options.presetElems;
+            this._presets = this._presetElems ? this._presetElems.reduce(function(map, item) {
+                map[item.name] = item.title;
+                return map;
+            }, {}) : {};
+            this._deleteTermAction = options.deleteTermAction || "";
+            this._deleteQualifierAction = options.deleteQualifierAction || "";
+            this._storedData = options.storedData;
+            this._moduleType = options.moduleType;
+            this._termDataMarker = options.termDataMarker;
+            this._qualifierDataMarker = options.qualifierDataMarker;
+            this._tooltip = options.tooltip || "";
+            this._notmapped = options.notmapped || "";
+
+            this._qualifierCount = 0;
+            this._termCount = 0;
+
+            this._buildSelection();
+        },
+
+        _buildSelection : function() {
+            this._retrieveStoredData();
+            this._defineQuickSearchBoxBehaviour();
+            this._attachListeners();
+        },
+
+        _defineQuickSearchBoxBehaviour : function() {
+            var offsetTop = 0;
+            if (this._searchSelector) {
+                var content = this._searchSelector.up('div');
+                if (content) {
+                    this._searchSelector.__x_qsInput = this._searchSelector.down('input[type=text]') || {};
+                    var qsSticky = new StickyBox(this._searchSelector, content, {offsetTop : offsetTop, isSticky : function(element) {return !element.__x_qsInput._activeSuggest} });
+                    var _this = this;
+                    Event.observe(document, 'ms:suggest:containerCreated', function(event) {
+                        if (event.memo.suggest.fld == _this._searchSelector.__x_qsInput) {
+                            _this._searchSelector.__x_qsInput._activeSuggest = true;
+                            var qsSuggest = event.memo.container;
+                            if (_this._searchSelector.getStyle('position') == 'fixed') {
+                                qsSuggest.style.position = 'fixed';
+                            }
+                            qsSuggest.style.top = (_this._searchSelector.__x_qsInput.cumulativeOffset().top + _this._searchSelector.__x_qsInput.getHeight()) + 'px';
+                            qsSuggest.style.left = _this._searchSelector.__x_qsInput.cumulativeOffset().left;
+                        }
+                    });
+                    Event.observe(document, 'ms:suggest:clearSuggestions', function(event) {
+                        if (event.memo.suggest.fld == _this._searchSelector.__x_qsInput) {
+                            _this._searchSelector.__x_qsInput._activeSuggest = false;
+                        }
+                    });
+                }
+            }
+        },
+
+        _retrieveStoredData : function() {
+            if (this._storedData) {
+                var _this = this;
+                this._storedData.each(function(data) {
+                    data.id &amp;&amp; _this._displayStoredTerm.bind(_this, data)();
+                });
+            }
+        },
+
+        _displayStoredTerm : function(data) {
+            var termId = data.id;
+            var termName = data.label;
+            var nonstandard = !termName;
+            if (this._presets[termId]) {
+                // Always use the name provided with the preset term.
+                termName = this._presets[termId];
+                var checkbox = $(this._moduleType + '_' + termId);
+                checkbox &amp;&amp; (checkbox.checked = true);
+            }
+
+            this._buildNewTermElement(termId, termName || termId, nonstandard ? this._notmapped : this._tooltip, data);
+        },
+
+        _buildNewTermElement : function(termId, termName, tooltip, values) {
+            var count = values &amp;&amp; (values.count || values.count == 0) ? values.count : this._termCount;
+            var termDeleteStr = this._deleteTermAction.replace(/([&amp;?]objnumber=)(xXx__COUNT_TEMPLATE__xXx)([&amp;$])/, "$1" + count + "$3").replace(/([&amp;?]term=)(xXx__TERM_TEMPLATE__xXx)([&amp;$])/, "$1" + termId + "$3");
+            var options = {'allowMultiDialogs': true, 'disableTermDelete': false, 'termDeleteAction' : termDeleteStr};
+            var tableCol = new Element('td');
+            var tableRow = new Element('tr', {'class': this._moduleType + '_field category-data'});
+            var qualifiersWidget = this._buildDetailsDialog(termId, termName, count, tooltip, options, values);
+            this._termCount = count &gt;= this._termCount ? count + 1 : this._termCount;
+            var qualifiers = qualifiersWidget.get();
+            // Set values silently, or initialize as affected, non-silently. If values are provided, then we're displaying
+            // stored cancers. If no values are provided, then we're adding a new cancer with a qualifier dialog.
+            if (values) {
+                qualifiersWidget.setValues(values);
+            } else {
+                qualifiersWidget.initAffected(false);
+            }
+            qualifiers._widget = qualifiersWidget;
+            this._notmapped === tooltip &amp;&amp; this._setUnmappedIconTitle(qualifiers);
+            tableRow.insert(tableCol.insert(qualifiers));
+            this._observeQualifierEvents(qualifiers);
+            this._termsTable.insert(tableRow);
+        },
+
+        _setUnmappedIconTitle : function(qualifiers) {
+            var exclamationTriangle = qualifiers.down('span.fa-exclamation-triangle');
+            exclamationTriangle &amp;&amp; (exclamationTriangle.title = "$!escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.nonStandardCancer'))");
+        },
+
+        _observeQualifierEvents : function(qualifiers) {
+            var parent = qualifiers.up('tr.' + this._moduleType + '_field');
+            var _this = this;
+            qualifiers.observe(this._moduleType + ':term:deleted', function(event) {
+                var deletedTerm = event.memo &amp;&amp; event.memo.id;
+                if (_this._presets[deletedTerm]) {
+                    var checkbox = $(_this._moduleType + '_' + deletedTerm);
+                    checkbox &amp;&amp; checkbox.checked &amp;&amp; (checkbox.checked = false);
+                }
+                parent &amp;&amp; parent.remove();
+            });
+        },
+
+        _buildDetailsDialog : function(termId, termName, count, tooltip, options, values) {
+            return new PhenoTips.widgets.DetailsDialogGroup(this._moduleType, options)
+                .withGlobalQualifierCount(this._getQualifierCount.bind(this), this._updateQualifierCount.bind(this))
+                .withTermDataMarker(this._termDataMarker + count + "_")
+                .withQualifierDataMarker(this._qualifierDataMarker)
+                .withLabel(termName, termId, tooltip, true)
+                .dialogsAddDeleteAction(this._deleteQualifierAction)
+                .dialogsAddNumericSelect({
+                    'from': 1,
+                    'to': 100,
+                    'majorStepSize' : 10,
+                    'step': 1,
+                    'defListItemClass': 'age_of_onset',
+                    'inputSourceClass': 'cancer_age_select field-no-user-select',
+                    'qualifierLabel': 'Age:',
+                    'qualifierName': 'ageAtDiagnosis',
+                    'displayedToStoredMapper': this._toStoredAgeFx,
+                    'storedToDisplayedMapper': this._toDisplayedAgeFx,
+                    'numericApproximation' : this._getNumericAgeApproximation})
+                .dialogsAddItemSelect({
+                    'data': ['Unknown', 'Bilateral', 'Unilateral', 'Right', 'Left'],
+                    'defListItemClass': 'laterality',
+                    'inputSourceClass': 'cancer_laterality_select',
+                    'qualifierLabel': 'Laterality:',
+                    'qualifierName': 'laterality',
+                    'displayedToStoredMapper': this._toStoredLateralityFx,
+                    'storedToDisplayedMapper': this._toDisplayedLateralityFx})
+                .dialogsAddItemSelect({
+                    'data': ['Primary', 'Mets'],
+                    'defListItemClass': 'type',
+                    'inputSourceClass': 'cancer_type_select',
+                    'qualifierLabel': 'Type:',
+                    'qualifierName': 'primary',
+                    'displayedToStoredMapper': this._toStoredTypeFx,
+                    'storedToDisplayedMapper': this._toDisplayedTypeFx})
+                .dialogsAddTextBox(false, {
+                    'defListItemClass': 'comments',
+                    'inputSourceClass': 'cancer_notes',
+                    'qualifierLabel': 'Notes:',
+                    'qualifierName': 'notes'});
+        },
+
+        _toStoredAgeFx : function(value) {
+            if (isNaN(parseInt(value))) {
+                if (!value) {
+                    return "";
+                }
+                if (value.indexOf('&gt;') &gt; -1) {
+                    return value.replace('&gt;', 'after_');
+                }
+                if (value.indexOf('&lt;') &gt; -1) {
+                    return value.replace('&lt;', 'before_');
+                }
+            } else {
+                var rangeIdx = value.indexOf('-');
+                if (rangeIdx &gt; -1) {
+                    return "before_" + value.substring(rangeIdx + 1);
+                }
+                return value;
+            }
+        },
+
+        _toDisplayedAgeFx : function(value) {
+            if (value &amp;&amp; isNaN(parseInt(value))) {
+                if (value.indexOf('after_') &gt; -1) {
+                    return value.replace('after_', '&gt;');
+                }
+                if (value.indexOf('before_1') &gt; -1 &amp;&amp; value.indexOf('before_10') === -1) {
+                    return value.replace('before_', '&lt;');
+                }
+                var to = parseInt(value.substring(7));
+                var from = to - 9;
+                return from + "-" + to;
+            } else {
+                return value;
+            }
+        },
+
+        _toStoredLateralityFx : function(value) {
+            var storedLateralityMap = {"Bilateral" : "bi", "Unilateral" : "u", "Right" : "r", "Left" : "l"};
+            return storedLateralityMap[value] || "";
+        },
+
+        _toDisplayedLateralityFx : function(value) {
+            var displayedLateralityMap = {"bi" : "Bilateral", "u" : "Unilateral", "r" : "Right", "l" : "Left"};
+            return displayedLateralityMap[value] || "Unknown";
+        },
+
+        _toStoredTypeFx : function(value) {
+            return value === "Primary";
+        },
+
+        _toDisplayedTypeFx : function(value) {
+            return value ? "Primary" : "Mets";
+        },
+
+        _getNumericAgeApproximation : function(ageStr) {
+            if (!ageStr) {
+                return "";
+            }
+            if (isNaN(parseInt(ageStr))) {
+                if (ageStr.indexOf('after_') &gt; -1) {
+                    return parseInt(ageStr.replace('after_', '')) + 1;
+                }
+                if (ageStr == "before_1") {
+                    return 0;
+                }
+                return parseInt(ageStr.replace('before_', '')) - 9;
+            }
+            return parseInt(ageStr);
+        },
+
+        _attachListeners : function() {
+            this._attachPresetSelectedListener();
+            this._attachQuickSearchTermAddedListener();
+        },
+
+        _attachPresetSelectedListener : function() {
+            this._presetElems &amp;&amp; this._presetElems.invoke('observe', 'click', function(event) {
+                event.stopPropagation();
+            });
+
+            var _this = this;
+            this._presetElems &amp;&amp; this._presetElems.invoke('observe', 'change', function(event) {
+                var checkBox = event.findElement('input');
+                event.stop();
+                if (checkBox) {
+                    var termId = checkBox.name;
+                    if (checkBox.checked) {
+                        var nonstandard = checkBox.up('label.notmapped');
+                        var termName = _this._presets[termId];
+                        termId &amp;&amp; _this._buildNewTermElement(termId, termName || termId, nonstandard ? _this._notmapped : _this._tooltip, undefined);
+                    } else {
+                        var deleteAction = termId &amp;&amp; $('delete_term_' + termId) || null;
+                        deleteAction &amp;&amp; deleteAction.click();
+                        // If the input is still there, then delete failed, or user did not confirm. The checkbox should remain checked.
+                        _this._termsTable.down('input.term-id[value="' + termId + '"]') &amp;&amp; (checkBox.checked = true);
+                    }
+                }
+            });
+        },
+
+        _attachQuickSearchTermAddedListener : function() {
+            // Watch the suggest for added terms.
+            var _this = this;
+            this._searchSelector.observe('ms:suggest:selected', function(event) {
+                event.stop();
+                var termId = event.memo &amp;&amp; event.memo.id;
+                var termName = event.memo &amp;&amp; event.memo.value;
+                var nonstandard = event.memo &amp;&amp; event.memo.info;
+
+                // The term ID is provided, and the element is not already added.
+                termId &amp;&amp; !_this._termsTable.down('table[id="' + _this._moduleType + '_' + termId + '"]') &amp;&amp; _this._buildSearchTermElement.bind(_this, termId, termName, nonstandard)();
+                // Clear suggestions and reset the search box value to nothing.
+                event.target._suggest.clearSuggestions();
+                event.target.value = '';
+            });
+        },
+
+        _buildSearchTermElement : function(termId, termName, nonstandard) {
+            // If the term being added through the search is one of the presets, check the preset checkbox.
+            if (this._presets[termId]) {
+                var checkbox = $(this._moduleType + '_' + termId);
+                // Imitate checkbox click.
+                checkbox &amp;&amp; checkbox.click();
+            } else {
+                // New term row.
+                this._buildNewTermElement(termId, termName || termId, nonstandard ? this._notmapped : this._tooltip, undefined);
+            }
+        },
+
+        _getQualifierCount : function() {
+            return this._qualifierCount;
+        },
+
+        _updateQualifierCount : function(count) {
+            this._qualifierCount = count;
+        },
+
+        _getTermCount : function() {
+            return this._termCount;
+        },
+
+        _updateTermCount : function(count) {
+            this._termCount = count;
+        }
+    });
+
+    return PhenoTips;
+}(PhenoTips || {}));</code>
+    </property>
+    <property>
+      <name>Cancer Terms selection widget</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.UIX_Field__cancers</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>59ca90ba-0e74-453c-9a52-b417a0ec084d</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template("colorThemeInit.vm")
+
+/** ----------------------------------------------------------- */
+/** Quick search box &amp; suggest */
+.emphasized-box {
+  background: $theme.backgroundSecondaryColor;
+  border: 1px solid $theme.backgroundSecondaryColor;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), 0 10px 10px #F9F9F9, inset 0 0 50px rgba(0, 0, 0, 0.15);
+}
+.quick-search-box.sticky {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), 0 -1.8em 0px #f9f9f9, 0 10px 10px #F9F9F9, inset 0 0 50px rgba(0, 0, 0, 0.15);
+}
+.quick-search-box {
+  float: left;
+  width: 100%;
+  border: 0 none;
+  z-index: 1000;
+  background-color: $theme.menuBackgroundColor;
+  #css3_backgroundLinearGradient({
+    'to': 'bottom',
+    'colors': [
+      {'color': $theme.menuGradientColor, 'position': '0%'},
+      {'color': $theme.menuBackgroundColor, 'position': '50%'}
+    ]
+  })
+}
+.quick-search-box fieldset {
+  border: 1px solid $theme.backgroundSecondaryColor;
+  padding: .5em .8em;
+}
+.quick-search-box table {
+  margin: 0;
+  width: 100%;
+}
+.quick-search-box table td {
+  border: 0 none;
+  padding: 0;
+}
+.quick-search-box table label {
+  color: $theme.menuLinkColor;
+  font-weight: bold;
+  text-shadow: 0 1px 1px $theme.menuBackgroundColor;
+}
+.quick-search-box table td.icon {
+  width: 3.2em;
+  vertical-align: middle;
+}
+.quick-search-box input:focus {
+  color: $theme.textColor;
+  font-style: normal;
+}
+
+/** Selection Summary */
+.current-cancers-selection {
+  padding: 0 !important;
+  background-color: #FFFFFF;
+  border: 1px solid #FFFFFF;
+  border-radius: 4px;
+  box-shadow: 0 1px 8px #DDDDDD inset;
+  float: right;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+.sub-panel &gt; h3 {
+  font-size: 0.8em !important;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin: 0 !important;
+  padding: 5px 20px 5px 15px !important;
+  text-align: left;
+  text-transform: uppercase;
+  background-color: $theme.panelHeaderBackgroundColor;
+  #css3_backgroundLinearGradient({
+     'to': 'bottom',
+     'colors': [
+      {'color': $theme.panelHeaderGradientColor, 'position': '0%'},
+      {'color': $theme.panelHeaderBackgroundColor, 'position': '100%'}
+    ]
+  })
+  border-radius: 4px 4px 0 0;
+  border: 1px solid $theme.borderColor;
+  color: $theme.panelHeaderTextColor;
+  text-shadow: 0 1px 0 $theme.panelHeaderGradientColor;
+}
+
+/** ----------------------------------------------------------- */
+/** Details dialog. */
+#current-cancers-selection {
+  padding-left: 28px;
+}
+#cancers_data_table {
+  width: 100%;
+}
+#cancers_data_table table.summary-group {
+  width: 90%;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+#cancers_data_table tr td {
+  border: none;
+}
+.cancer_field td {
+  padding-top: .2em;
+}
+#cancers_data_table table.summary-group td.add-button-holder span.patient-details-add {
+  float: left;
+  margin-left: 2em;
+  margin-top: .2em;
+  font-size: 87.5%;
+}
+#cancers_data_table table.summary-group span.action-done {
+  float: right;
+}
+#cancers_data_table table.summary-group div.summary-item {
+  background-color: $theme.panelCollapsedBackgroundColor;
+  background-position: left center;
+  background-repeat: no-repeat;
+  border-radius: 0 .5em .5em .5em;
+  border: 1px solid #FFF;
+  color: $theme.textColor;
+  font-size: 87.5%;
+  margin-left: 20px;
+  padding: .5em 20px;
+  position: relative;
+}
+#cancers_data_table table.summary-group div.summary-item.blurred {
+  cursor: pointer;
+}
+#cancers_data_table div.summary-item div.clearfloats {
+  margin: 0;
+}
+#cancers_data_table table.summary-group div.summary-item span.cancer-dialog-delete,
+#cancers_data_table table.summary-group tr.term-holder span.patient-term-delete {
+  color: $theme.notificationErrorColor;
+}
+#cancers_data_table table.summary-group tr.term-holder span.term-data span.xHelpButton,
+#cancers_data_table table.summary-group tr.term-holder span.term-data span.fa-exclamation-triangle {
+  margin-left: .5em;
+}
+#cancers_data_table table.summary-group div.summary-item.view-cancer dl,
+#cancers_data_table table.summary-group div.summary-item.blurred dl {
+  display: inline-block;
+  margin: .2em;
+  vertical-align: middle;
+  float: left;
+}
+#cancers_data_table table.summary-group div.summary-item.view-cancer dt,
+#cancers_data_table table.summary-group div.summary-item.blurred dt {
+  margin: 0 0 0 .5em;
+  border-bottom-left-radius: .3em;
+  border-top-left-radius: .3em;
+}
+#cancers_data_table table.summary-group div.summary-item.view-cancer dl:first-child,
+#cancers_data_table table.summary-group div.summary-item.blurred dl:first-child {
+  margin-left: 0;
+}
+#cancers_data_table table.summary-group div.summary-item.view-cancer dd,
+#cancers_data_table table.summary-group div.summary-item.blurred dd {
+  margin: 0;
+  border-bottom-right-radius: .3em;
+  border-top-right-radius: .3em;
+}
+#cancers_data_table table.summary-group div.summary-item.view-cancer dt.hidden + dd + dd.preview,
+#cancers_data_table table.summary-group div.summary-item.blurred dt.hidden + dd + dd.preview {
+  margin: 0;
+  border-bottom-left-radius: .3em;
+  border-top-left-radius: .3em;
+}
+#cancers_data_table table.summary-group div.summary-item.view-cancer dt,
+#cancers_data_table table.summary-group div.summary-item.view-cancer dd,
+#cancers_data_table table.summary-group div.summary-item.blurred dt,
+#cancers_data_table table.summary-group div.summary-item.blurred dd {
+  display: inline-block;
+  background-color: $theme.pageContentBackgroundColor;
+  float: left;
+  padding: .3em;
+  clear: none;
+}
+#cancers_data_table table.summary-group div.summary-item dt,
+#cancers_data_table table.summary-group div.summary-item dd {
+  margin-top: .5em;
+  margin-bottom: .5em;
+}
+#cancers_data_table table.summary-group div.summary-item dt {
+  float: left;
+  clear: left;
+}
+
+#cancers_data_table table.summary-group div.summary-item.focused dt.inline {
+  margin-top: .5em;
+  min-width: 20%;
+}
+
+#cancers_data_table table.summary-group div.summary-item.focused dt:not(.inline) {
+  width: 100%;
+}
+#cancers_data_table table.summary-group div.summary-item ul {
+  list-style-type: none;
+  padding-left: 1em;
+  margin-left: 0;
+}
+.cancer-header td {
+  padding-top: 0.65em;
+}
+.cancer-header {
+  color: #888;
+}
+.cancer_field .clickable:hover {
+  cursor: pointer;
+}
+.cancer_field label.clickable.disabled {
+  color: #CCC;
+  cursor: default;
+}
+#cancers_data_table table.summary-group td.add-button-holder span.patient-details-add {
+  cursor: pointer;
+}
+
+/** ----------------------------------------------------------- */
+/** Default cancers */
+.default-cancer span {
+  display: inline;
+}
+.default-cancer label {
+  display: inherit;
+  clear: both;
+}
+
+/** ----------------------------------------------------------- */
+/** Default cancers edit mode */
+tr.term-holder span.term-label {
+  width: 100%;
+  float: left;
+}
+span.term-label label {
+  float: left;
+  text-align: left;
+  width: 100% !important;
+}
+span.term-label label div {
+  font-weight: normal;
+}
+div.term-summary dt {
+  margin-top: .5em;
+  text-align: left;
+}
+div.term-summary dd {
+  float: left;
+  text-align: left;
+  margin-top: .5em;
+  margin-left: .5em;
+}
+table.summary-group div.summary-item.view-cancer {
+  background-color: #F3F3F3;
+  color: $theme.textColor;
+}</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.UIX_Field__cancers</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>59ca90ba-0e74-453c-9a52-b417a0ec084d</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+{{velocity}}
+$xwiki.ssx.use('PhenoTips.UIX_Field__cancers', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.jsx.use('PhenoTips.UIX_Field__cancers')##
+$xwiki.ssx.use('PhenoTips.Widgets')##
+$xwiki.jsx.use('PhenoTips.Widgets')##
+#template('cancerQualifierMacros.vm')##
+#macro (__qsBox $cssClass)
+  #if ($xcontext.action == 'edit')
+    (% id="cancers-quick-search-box" class="group-other quick-search-box emphasized-box $!{cssClass}" %)(((
+    {{html clean="false" wiki="false"}}
+    &lt;fieldset&gt;
+      &lt;table&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="icon"&gt;&lt;label for="quick-cancers-search"&gt;&lt;span class="fa fa-search fa-3x"&gt; &lt;/span&gt;&lt;/label&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;label for="quick-cancers-search"&gt;$services.localization.render('phenotips.UIXField.cancers.quickSearch')&lt;/label&gt;
+      &lt;input type='text' class='suggested suggest-cancer accept-value quickCancerSearch withTip' placeholder="$services.localization.render('phenotips.UIXField.cancers.quickSearch.placeholder')" size='16' id='quick-cancers-search'/&gt;&lt;/td&gt;
+      &lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+    &lt;/fieldset&gt;
+    {{/html}}
+   )))
+  #end
+#end
+##
+##
+#set ($cancerClassName = 'PhenoTips.CancerClass')
+#set ($qualifierClassName = 'PhenoTips.CancerQualifierClass')
+#set ($cancerClass = $xwiki.getDocument($cancerClassName).xWikiClass)
+#set ($qualifierClass = $xwiki.getDocument($qualifierClassName).xWikiClass)
+#set ($cancerObjects = $doc.getObjects($cancerClass.name))
+#if ($xcontext.action == 'edit' || ($cancerObjects &amp;&amp; !$cancerObjects.isEmpty()))
+  #set ($cancerData = [])##
+  #__cancerSummary_getJsonData($cancerObjects $qualifierClass $cancerData)##
+  (% class="controlled-group" %)(((
+  (% class="controlled" %)(((
+  (% class="selector-panels"%)(((
+    #if ($xcontext.action == 'edit')
+      (% class="half-width selector-panel browser browse-default-cancers"%)(((
+        #__qsBox("controlled")
+        (% class="non-moving" %)(((
+          (% class="browser-title"%)
+          === **$services.localization.render('phenotips.UIXField.cancers.defaultCancers')** ===
+          (% class="cancer" %)(((
+            #set ($presets = {})
+            #__cancerSummary_displayPresets($presets)
+          )))
+        )))## non-moving
+      )))## browse-default-cancers
+      (% class="half-width selector-panel current-cancers-selection"%)(((
+        (% class='sub-panel' %)(((
+          === **$services.localization.render('phenotips.UIXField.cancers.currentSelection')** ===
+          (% id="current-cancers-selection"%)(((
+            {{html clean="false"}}
+                &lt;table id="cancers_data_table"&gt;&lt;/table&gt;
+                &lt;input type="hidden" class="action delete-cancer" value="$doc.getURL('get', "termclassname=$cancerClassName&amp;qualifierclassname=$qualifierClassName&amp;action=deletecancer&amp;term=xXx__TERM_TEMPLATE__xXx&amp;objnumber=xXx__COUNT_TEMPLATE__xXx&amp;form_token=$!{services.csrf.getToken()}")"/&gt;
+                &lt;input type="hidden" class="action delete-cancer-qualifier" value="$doc.getURL('objectremove', "classname=$qualifierClassName&amp;classid=xXx__COUNT_TEMPLATE__xXx&amp;form_token=$!{services.csrf.getToken()}")"/&gt;
+                &lt;input type="hidden" id="stored-cancer-data" value="$!{escapetool.xml($jsontool.serialize($cancerData))}"/&gt;
+            {{/html}}
+          )))
+        )))
+      )))
+      (% class="clear" %)((()))
+    #else
+      (% class="half-width selector-panel current-cancers" %)(((
+        {{html clean="false"}}&lt;table id="cancers_data_table"&gt;{{/html}}##
+        #__cancerSummary_displayData($cancerObjects $qualifierClass)##
+        {{html clean="false"}}&lt;/table&gt;{{/html}}##
+      )))##
+    #end
+  )))## selector-panels
+  )))## controlled
+  )))## controlled-group
+#end## section has content
+{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.patientSheet.section.cancers</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.patientSheet.field.cancers</name>
+    </property>
+    <property>
+      <parameters>title=$services.localization.render('phenotips.UIXField.cancers')
+enabled=true
+required=
+order=1
+fields=unaffected,cancer
+pt_class=PhenoTips.CancerClass
+pt_class_usage=multiple
+</parameters>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+</xwikidoc>

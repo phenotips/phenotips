@@ -120,7 +120,7 @@
       <parameters>title=$services.localization.render('phenotips.UIXSection.genotype')
 enabled=true
 required=
-order=8</parameters>
+order=9</parameters>
     </property>
     <property>
       <scope>wiki</scope>
