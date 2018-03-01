@@ -8982,10 +8982,10 @@ input.xwiki-free-multiselect-value {
   padding-left: 2em;
 }
 input.suggestWorkgroups {
-  background-image: $xwiki.getSkinFile('icons/datamodel/groups.png');
+  background-image: url("$xwiki.getSkinFile('icons/datamodel/groups.png')");
 }
 input.suggestUsersAndGroups {
-  background-image: $xwiki.getSkinFile('icons/datamodel/users.png');
+  background-image: url("$xwiki.getSkinFile('icons/datamodel/users.png')");
 }
 </code>
     </property>
@@ -8996,7 +8996,7 @@ input.suggestUsersAndGroups {
       <name>Suggest users, groups and workgroups</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
