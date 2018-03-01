@@ -1746,7 +1746,7 @@ public class XWikiHibernateStore extends XWikiHibernateBaseStore implements XWik
             final String cdb = ctx.getWikiId();
             try {
                 ctx.setWikiId(ctx.getMainXWiki());
-                this.releaseAllLocksForCurrentUser(ctx, userName);
+                this.releaseAllLocksForUser(ctx, userName);
             } finally {
                 ctx.setWikiId(cdb);
             }
