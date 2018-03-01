@@ -38,6 +38,7 @@ org.phenotips.data.internal.controller.FeaturesController
 org.phenotips.data.internal.controller.DisordersController
 org.phenotips.data.internal.controller.ClinicalDiagnosisController
 org.phenotips.data.internal.controller.LabeledExternalIdentifiersController
+org.phenotips.data.internal.controller.CancersController
 org.phenotips.data.internal.controller.oldversions.DatesControllerV1
 org.phenotips.data.internal.DeprecatedPhenotypeUpdaterEventListener
 org.phenotips.data.internal.NonStandardFeatureCategoryUpdater
