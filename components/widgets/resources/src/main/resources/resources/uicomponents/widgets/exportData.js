@@ -386,10 +386,9 @@ document.observe('xwiki:dom:loading', function() {
   }
 
   document.observe('xwiki:multisuggestpicker:selectionchanged', function() {
-    if (XWiki.currentDocument.space == 'data') {
-      document.fire('xwiki:livetable:patients:filtersChanged');
-    } else {
-      document.fire('xwiki:livetable:families:filtersChanged');
+    var tableName = $$('.xwiki-livetable')[0] ? $$('.xwiki-livetable')[0].id.replace(/-.*/, '') : '';
+    if (tableName != '') {
+      document.fire('xwiki:livetable:' + tableName + ':filtersChanged');
     }
   });
   ['xwiki:dom:loaded', 'xwiki:dom:updated'].each(function(eventName) {

@@ -207,7 +207,7 @@ public class R71509PhenoTips3476DataMigrationTest
     @Test
     public void shouldExecute() throws Exception
     {
-        Assert.assertTrue(this.mocker.getComponentUnderTest().shouldExecute(new XWikiDBVersion(54689)));
-        Assert.assertTrue(this.mocker.getComponentUnderTest().shouldExecute(new XWikiDBVersion(54693)));
+        Assert.assertTrue(this.mocker.getComponentUnderTest().shouldExecute(new XWikiDBVersion(71500)));
+        Assert.assertTrue(this.mocker.getComponentUnderTest().shouldExecute(new XWikiDBVersion(71510)));
     }
 }
