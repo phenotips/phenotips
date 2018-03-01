@@ -54,7 +54,7 @@ final class PatientDataAdapter
     /** The set of terms that are absent. */
     private final Set<VocabularyTerm> absentTerms;
 
-    /** The set of gene terms that have been marked as negative. */
+    /** The set of gene terms that have been marked as tested negative or rejected candidate. */
     private final Set<VocabularyTerm> rejectedGenes;
 
     private PatientDataAdapter(@Nonnull final AdapterBuilder builder)
@@ -116,8 +116,11 @@ final class PatientDataAdapter
         /** The internal {@link Patient} label for genes. */
         private static final String GENES = "genes";
 
-        /** The internal {@link PatientData} label for rejected genes. */
+        /** The internal {@link PatientData} label for tested negative genes. */
         private static final String REJECTED = "rejected";
+
+        /** The internal {@link PatientData} label for rejected candidate genes. */
+        private static final String REJECTED_CANDIDATE = "rejected_candidate";
 
         /** The hgnc vocabulary identifier. */
         private static final String HGNC = "hgnc";
@@ -198,7 +201,7 @@ final class PatientDataAdapter
             final Set<VocabularyTerm> rejected = new HashSet<>();
             final Vocabulary hgnc = this.vocabularyManager.getVocabulary(HGNC);
             for (final Gene gene : genes) {
-                if (REJECTED.equals(gene.getStatus())) {
+                if (REJECTED.equals(gene.getStatus()) || REJECTED_CANDIDATE.equals(gene.getStatus())) {
                     final String geneID = gene.getId();
                     final VocabularyTerm geneObj = hgnc.getTerm(geneID);
                     CollectionUtils.addIgnoreNull(rejected, geneObj);
@@ -211,7 +214,7 @@ final class PatientDataAdapter
          * Extracts present and absent terms from provided {@code features} and {@code qualifiers}.
          *
          * @param features a set of patient features
-         * @param qualifiers global patient qualifers
+         * @param qualifiers global patient qualifiers
          * @return a map of present and absent {@link VocabularyTerm terms}
          */
         private Map<String, Set<VocabularyTerm>> extractTerms(

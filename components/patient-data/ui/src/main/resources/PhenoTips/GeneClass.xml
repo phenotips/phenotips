@@ -117,7 +117,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>candidate=Candidate|rejected=Negative|solved=Confirmed causal|carrier=Carrier</values>
+      <values>candidate=Candidate|rejected_candidate=Rejected candidate|solved=Confirmed causal|carrier=Carrier|rejected=Negative</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </status>
     <strategy>

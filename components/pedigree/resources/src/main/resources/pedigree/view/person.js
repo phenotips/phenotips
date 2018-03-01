@@ -963,13 +963,23 @@ define([
         },
 
         /**
-         * Sets the list of rejected genes of this person to the given list
+         * Sets the list of tested negative genes of this person to the given list
          *
          * @method setRejectedGenes
          * @param {Array} genes List of gene names (as strings)
          */
         setRejectedGenes: function(genes) {
             this._setGenes(genes, "rejected");
+        },
+
+        /**
+         * Sets the list of rejected candidate genes of this person to the given list
+         *
+         * @method setRejectedCandidate
+         * @param {Array} genes List of gene names (as strings)
+         */
+        setRejectedCandidateGenes: function(genes) {
+            this._setGenes(genes, "rejected_candidate");
         },
 
         /**
@@ -993,6 +1003,10 @@ define([
 
         getRejectedGenes: function() {
             return this._getGeneArray("rejected");
+        },
+
+        getRejectedCandidateGenes: function() {
+            return this._getGeneArray("rejected_candidate");
         },
 
         getCarrierGenes: function() {
@@ -1225,6 +1239,7 @@ define([
             var inactiveLostContact = this.isProband() || !editor.getGraph().isRelatedToProband(this.getID());
 
             var rejectedGeneList = this.getRejectedGenes();
+            var rejectedCandidateGeneList = this.getRejectedCandidateGenes();
             var carrierGeneList  = this.getCarrierGenes();
 
             var disabledDeathDetails = (this.getLifeStatus() != 'stillborn' && this.getLifeStatus() != 'miscarriage' && this.getLifeStatus() != 'deceased');
@@ -1236,7 +1251,7 @@ define([
                 identifier:      {value : this.getID()},
                 first_name:      {value : this.getFirstName(), disabled: false},
                 last_name:       {value : this.getLastName(), disabled: false},
-                last_name_birth: {value: this.getLastNameAtBirth()}, //, inactive: (this.getGender() != 'F')},
+                last_name_birth: {value : this.getLastNameAtBirth()}, //, inactive: (this.getGender() != 'F')},
                 external_id:     {value : this.getExternalID(), disabled: false},
                 gender:          {value : this.getGender()},
                 date_of_birth:   {value : this.getBirthDate(), inactive: this.isFetus(), disabled: false},
@@ -1247,6 +1262,7 @@ define([
                 causal_genes:    {value : this.getCausalGenes(), disabled: false},
                 carrier_genes:   {value : this.getCarrierGenes(), disabled: false},
                 rejected_genes:  {value : rejectedGeneList, disabled: true, inactive: (rejectedGeneList.length == 0)},
+                rejected_candidate_genes:  {value : rejectedCandidateGeneList, disabled: true, inactive: (rejectedCandidateGeneList.length == 0)},
                 adopted:         {value : this.getAdopted(), inactive: cantChangeAdopted},
                 state:           {value : this.getLifeStatus(), inactive: inactiveStates, disabled: disabledStates},
                 aliveandwell:    {value : this.getAliveAndWell(), inactive: this.isFetus()},
