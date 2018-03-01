@@ -997,6 +997,7 @@ document.observe('xwiki:dom:loaded', function() {
 }
 #create-patient-record:hover, label[for="create-patient-record"]:hover {
   text-decoration: underline;
+  cursor: pointer;
 }
 
 #phenotips-globalTools .search .icon-search, #phenotips-globalTools .search .fa-search {
