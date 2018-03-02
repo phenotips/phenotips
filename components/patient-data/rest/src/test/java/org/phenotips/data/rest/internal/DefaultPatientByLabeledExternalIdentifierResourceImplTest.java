@@ -97,10 +97,6 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImplTest
 
     private static final String KEY_LABELED_EIDS = "labeled_eids";
 
-    private static final String KEY_LABEL = "label";
-
-    private static final String KEY_VALUE = "value";
-
     private static final String UPDATE = "update";
 
     @Rule
@@ -197,17 +193,20 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImplTest
                 .withHref(this.uri.toString()).withRel("self")));
     }
 
-    @Test
+    @Test(expected = WebApplicationException.class)
     public void getPatientWithNoAccessReturnsForbiddenCode() throws ComponentLookupException, QueryException
     {
         when(this.patientsQuery.execute()).thenReturn(Collections.singletonList(PATIENT_ID));
         when(this.access.hasAccess(this.currentUser, Right.VIEW, this.patientReference)).thenReturn(false);
 
-        Response response = this.component.getPatient(ID_LABEL, ID_VALUE);
-        verify(this.logger).debug("View access denied to user [{}] on patient record [{}]", this.currentUser,
-            PATIENT_ID);
-
-        assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        try {
+            this.component.getPatient(ID_LABEL, ID_VALUE);
+        } catch (final WebApplicationException ex) {
+            verify(this.logger).debug("View access denied to user [{}] on patient record [{}]", this.currentUser,
+                PATIENT_ID);
+            Assert.assertEquals(Response.Status.FORBIDDEN.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
     }
 
     @Test
@@ -232,15 +231,18 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImplTest
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
-    @Test
+    @Test(expected = WebApplicationException.class)
     public void getPatientNotFoundChecksForMultipleRecords() throws ComponentLookupException, QueryException
     {
-        when(this.patientsQuery.execute()).thenReturn(new ArrayList<>());
-
-        Response response = this.component.getPatient(ID_LABEL, ID_VALUE);
-        verify(this.logger).debug("No patient record with label [{}] and corresponding external ID [{}] exists yet",
-            ID_LABEL, ID_VALUE);
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        try {
+            when(this.patientsQuery.execute()).thenReturn(new ArrayList<>());
+            this.component.getPatient(ID_LABEL, ID_VALUE);
+        } catch (final WebApplicationException ex) {
+            verify(this.logger).debug("No patient record with label [{}] and corresponding external ID [{}] exists yet",
+                ID_LABEL, ID_VALUE);
+            Assert.assertEquals(Response.Status.NOT_FOUND.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
     }
 
     @Test
@@ -256,35 +258,38 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImplTest
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
-    @Test
+    @Test(expected = WebApplicationException.class)
     public void updatePatientNotFoundNewPatientNotCreatedIfInvalidJson() throws QueryException
     {
         when(this.patientsQuery.execute()).thenReturn(new ArrayList<>());
-
-        Response response = this.component.updatePatient("[]", ID_LABEL, ID_VALUE, UPDATE, true);
-        verify(this.logger).debug("No patient record with label [{}] and corresponding external ID [{}] exists yet",
-            ID_LABEL, ID_VALUE);
-        verify(this.logger).debug("Creating patient record with label [{}] and corresponding external ID [{}]",
-            ID_LABEL, ID_VALUE);
-        verify(this.repository, never()).create();
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        try {
+            this.component.updatePatient("[]", ID_LABEL, ID_VALUE, UPDATE, true);
+        } catch (final WebApplicationException ex) {
+            verify(this.repository, never()).create();
+            Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
     }
 
-    @Test
+    @Test(expected = WebApplicationException.class)
     public void updatePatientNotFoundNewPatientNotCreatedIfUserDoesNotHaveEditRights() throws QueryException
     {
         when(this.patientsQuery.execute()).thenReturn(new ArrayList<>());
         when(this.access.hasAccess(eq(this.currentUser), eq(Right.EDIT), any(EntityReference.class)))
             .thenReturn(false);
 
-        Response response = this.component.updatePatient(EMPTY_JSON, ID_LABEL, ID_VALUE, UPDATE, true);
-        verify(this.logger).debug("No patient record with label [{}] and corresponding external ID [{}] exists yet",
-            ID_LABEL, ID_VALUE);
-        verify(this.logger).debug("Creating patient record with label [{}] and corresponding external ID [{}]",
-            ID_LABEL, ID_VALUE);
-        verify(this.logger).error("Edit access denied to user [{}].", this.currentUser);
-        verify(this.repository, never()).create();
-        assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        try {
+            this.component.updatePatient(EMPTY_JSON, ID_LABEL, ID_VALUE, UPDATE, true);
+        } catch (final WebApplicationException ex) {
+            verify(this.logger).debug("No patient record with label [{}] and corresponding external ID [{}] exists yet",
+                ID_LABEL, ID_VALUE);
+            verify(this.logger).debug("Creating patient record with label [{}] and corresponding external ID [{}]",
+                ID_LABEL, ID_VALUE);
+            verify(this.logger).error("Edit access denied to user [{}].", this.currentUser);
+            verify(this.repository, never()).create();
+            Assert.assertEquals(Response.Status.FORBIDDEN.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
     }
 
     @Test
@@ -293,7 +298,7 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImplTest
         when(this.patientsQuery.execute()).thenReturn(new ArrayList<>());
 
         Response response = this.component.updatePatient(
-            "{\"labeled_eids\":[{\"label\":\"a_label\", \"value\":\"abc\"}]}", ID_LABEL, ID_VALUE, UPDATE, true);
+            "{\"labeled_eids\":[{\"label\":\"a_label\",\"value\":\"abc\"}]}", ID_LABEL, ID_VALUE, UPDATE, true);
         verify(this.logger).debug("No patient record with label [{}] and corresponding external ID [{}] exists yet",
             ID_LABEL, ID_VALUE);
         verify(this.logger).debug("Creating patient record with label [{}] and corresponding external ID [{}]",
@@ -301,8 +306,8 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImplTest
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
 
         ArgumentCaptor<JSONObject> json = ArgumentCaptor.forClass(JSONObject.class);
-        verify(this.patient).updateFromJSON(json.capture());
-        assertEquals("abc", json.getValue().optString(KEY_LABELED_EIDS));
+        verify(this.patient).updateFromJSON(json.capture(), Matchers.eq(PatientWritePolicy.UPDATE));
+        assertEquals("[{\"label\":\"a_label\",\"value\":\"abc\"}]", json.getValue().optString(KEY_LABELED_EIDS));
         assertEquals(1, json.getValue().length());
     }
 
@@ -353,40 +358,88 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImplTest
     @Test
     public void updatePatientReturnsNoContentResponse() throws ComponentLookupException
     {
-        String json = "{\"id\":\"id\"}";
+        String json = "{\"id\":\"P0000001\"}";
         Response response = this.component.updatePatient(json, ID_LABEL, ID_VALUE, UPDATE, true);
-        verify(this.logger).debug("Updating patient record with label [{}] and corresponding external ID [{}] via "
-            + "REST with JSON: {}", ID_LABEL, ID_VALUE, json);
+        verify(this.logger).debug("Updating patient record with label [{}] and corresponding external ID [{}] via REST"
+                                  + " with JSON: {}", ID_LABEL, ID_VALUE, json);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
+    @Test(expected = WebApplicationException.class)
+    public void updateNonExistingPatientWithCreatePatientConfigurationFalseThrowsWebApplicationException()
+        throws QueryException
+    {
+        try {
+            this.component.updatePatient(EMPTY_JSON, ID_LABEL, ID_VALUE, UPDATE, false);
+        } catch (final WebApplicationException ex) {
+            Assert.assertEquals(Response.Status.NOT_FOUND.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
+    }
+
     @Test
+    public void updateExistingPatientWithCreatePatientConfigurationFalse() throws QueryException
+    {
+        List<String> results = new ArrayList<>();
+        results.add("P1");
+        when(this.patientsQuery.<String>execute()).thenReturn(results);
+        when(this.repository.get(results.get(0))).thenReturn(this.patient);
+
+        final Response response = this.component.updatePatient(
+            "{\"labeled_eids\":[{\"label\":\"a_label\",\"value\":\"abc\"}]}", ID_LABEL, ID_VALUE, UPDATE, false);
+        verify(this.patient, times(1)).updateFromJSON(any(JSONObject.class), eq(PatientWritePolicy.UPDATE));
+        Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+
+        ArgumentCaptor<JSONObject> json = ArgumentCaptor.forClass(JSONObject.class);
+        verify(this.patient).updateFromJSON(json.capture(), Matchers.eq(PatientWritePolicy.UPDATE));
+        assertEquals("[{\"label\":\"a_label\",\"value\":\"abc\"}]", json.getValue().optString(KEY_LABELED_EIDS));
+        assertEquals(1, json.getValue().length());
+    }
+
+    @Test(expected = WebApplicationException.class)
     public void deletePatientReturnsNotFoundStatus() throws QueryException
     {
         when(this.patientsQuery.execute()).thenReturn(new ArrayList<>());
 
-        Response response = this.component.deletePatient(ID_LABEL, ID_VALUE);
-
-        verify(this.logger).debug("No patient record with label [{}] and corresponding external ID [{}] exists yet",
-            ID_LABEL, ID_VALUE);
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        try {
+            this.component.deletePatient(ID_LABEL, ID_VALUE);
+        } catch (final WebApplicationException ex) {
+            verify(this.logger).debug("No patient record with label [{}] and corresponding external ID [{}] exists yet",
+                ID_LABEL, ID_VALUE);
+            Assert.assertEquals(Response.Status.NOT_FOUND.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
     }
 
-    @Test
-    public void deletePatientNoAccessReturnsForbiddenCode()
+    @Test(expected = WebApplicationException.class)
+    public void deletePatientNoAccessReturnsForbiddenCode() throws QueryException
     {
+        List<String> results = new ArrayList<>();
+        results.add("P1");
+        when(this.patientsQuery.<String>execute()).thenReturn(results);
+        when(this.repository.get(results.get(0))).thenReturn(this.patient);
         when(this.access.hasAccess(this.currentUser, Right.DELETE, this.patientReference)).thenReturn(false);
 
-        Response response = this.component.deletePatient(ID_LABEL, ID_VALUE);
-
-        verify(this.logger).debug("Delete access denied to user [{}] on patient record [{}]", this.currentUser,
-            this.patient.getId());
-        assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        try {
+            this.component.deletePatient(ID_LABEL, ID_VALUE);
+        } catch (final WebApplicationException ex) {
+            verify(this.logger).debug("Deleting patient record with label [{}] and corresponding external ID "
+                                      + "[{}] via REST", ID_LABEL, ID_VALUE);
+            verify(this.logger).debug("Delete access denied to user [{}] on patient record [{}]", this.currentUser,
+                this.patient.getId());
+            Assert.assertEquals(Response.Status.FORBIDDEN.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
     }
 
     @Test
-    public void deletePatientCatchesException() throws WebApplicationException
+    public void deletePatientCatchesException() throws WebApplicationException, QueryException
     {
+        List<String> results = new ArrayList<>();
+        results.add("P1");
+        when(this.patientsQuery.<String>execute()).thenReturn(results);
+        when(this.repository.get(results.get(0))).thenReturn(this.patient);
+
         doThrow(Exception.class).when(this.repository).delete(this.patient);
         when(this.access.hasAccess(null, Right.DELETE, null)).thenReturn(true);
 
@@ -400,8 +453,8 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImplTest
         assertNotNull("deletePatient did not throw a WebApplicationException as expected "
             + "when catching an Exception", ex);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), ex.getResponse().getStatus());
-        verify(this.logger).warn(eq("Failed to delete patient record with label [{}] and corresponding "
-            + "external id [{}]: {}"), eq(ID_LABEL), eq(ID_VALUE), anyString());
+        verify(this.logger).warn(eq("Failed to delete patient record with label [{}] and corresponding external"
+                                    + " id [{}]: {}"), eq(ID_LABEL), eq(ID_VALUE), anyString(), any(Exception.class));
     }
 
     @Test
@@ -437,22 +490,32 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImplTest
         assertEquals(300, responseDelete.getStatus());
     }
 
-    @Test
+    @Test(expected = WebApplicationException.class)
     public void checkForMultipleRecordsLogsWhenThrowsQueryException() throws QueryException
     {
         doThrow(QueryException.class).when(this.qm)
             .createQuery("select doc.name from Document doc, doc.object(PhenoTips.LabeledIdentifierClass) obj "
-                + "where obj.label = :label and obj.value = :value", Query.XWQL);
+                         + "where obj.label = :label and obj.value = :value", Query.XWQL);
 
-        Response responseGet = this.component.getPatient(ID_LABEL, ID_VALUE);
-        Response responseUpdate = this.component.updatePatient(EMPTY_JSON, ID_LABEL, ID_VALUE, UPDATE, true);
-        Response responseDelete = this.component.deletePatient(ID_LABEL, ID_VALUE);
-
-        verify(this.logger, times(3)).warn("Failed to retrieve patient with label [{}] "
-            + "and corresponding external id [{}]: {}", ID_LABEL, ID_VALUE, null);
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), responseGet.getStatus());
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), responseUpdate.getStatus());
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), responseDelete.getStatus());
+        try {
+            this.component.getPatient(ID_LABEL, ID_VALUE);
+        } catch (final WebApplicationException ex) {
+            Assert.assertEquals(Response.Status.NOT_FOUND.getStatusCode(), ex.getResponse().getStatus());
+        }
+        try {
+            this.component.updatePatient(EMPTY_JSON, ID_LABEL, ID_VALUE, UPDATE, true);
+        } catch (final WebApplicationException ex) {
+            Assert.assertEquals(Response.Status.NOT_FOUND.getStatusCode(), ex.getResponse().getStatus());
+        }
+        try {
+            this.component.deletePatient(ID_LABEL, ID_VALUE);
+        } catch (final WebApplicationException ex) {
+            verify(this.logger, times(3))
+                .warn(eq("Failed to query patient with label [{}] and corresponding external ID [{}]: {}"),
+                    eq(ID_LABEL), eq(ID_VALUE), anyString(), any(Exception.class));
+            Assert.assertEquals(Response.Status.NOT_FOUND.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
     }
 
     // ----------------------------Patch Patient Tests-----------------------------
@@ -550,7 +613,7 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImplTest
     {
         try {
             doThrow(new RuntimeException()).when(this.patient).updateFromJSON(any(JSONObject.class),
-                eq(PatientWritePolicy.MERGE));
+                eq(PatientWritePolicy.UPDATE));
             this.component.patchPatient(EMPTY_JSON, ID_LABEL, ID_VALUE, true);
         } catch (final WebApplicationException ex) {
             Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), ex.getResponse().getStatus());
@@ -559,10 +622,53 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImplTest
     }
 
     @Test
-    public void patchPatientUpdatesPatientSuccessfully()
+    public void patchNewPatientCreatedUpdatesPatientSuccessfully()
     {
+        final Response response = this.component.patchPatient(EMPTY_JSON, ID_LABEL, ID_VALUE, true);
+        verify(this.patient, times(1)).updateFromJSON(any(JSONObject.class), eq(PatientWritePolicy.UPDATE));
+        Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void patchPatientExistUpdatesPatientSuccessfully() throws QueryException
+    {
+        List<String> results = new ArrayList<>();
+        results.add("P1");
+        when(this.patientsQuery.<String>execute()).thenReturn(results);
+        when(this.repository.get(results.get(0))).thenReturn(this.patient);
+
         final Response response = this.component.patchPatient(EMPTY_JSON, ID_LABEL, ID_VALUE, true);
         verify(this.patient, times(1)).updateFromJSON(any(JSONObject.class), eq(PatientWritePolicy.MERGE));
         Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+    }
+
+    @Test(expected = WebApplicationException.class)
+    public void patchNonExistingPatientWithCreatePatientConfigurationFalseThrowsWebApplicationException()
+    {
+        try {
+            this.component.patchPatient(EMPTY_JSON, ID_LABEL, ID_VALUE, false);
+        } catch (final WebApplicationException ex) {
+            Assert.assertEquals(Response.Status.NOT_FOUND.getStatusCode(), ex.getResponse().getStatus());
+            throw ex;
+        }
+    }
+
+    @Test
+    public void patchExistingPatientWithCreatePatientConfigurationFalse() throws QueryException
+    {
+        List<String> results = new ArrayList<>();
+        results.add("P1");
+        when(this.patientsQuery.<String>execute()).thenReturn(results);
+        when(this.repository.get(results.get(0))).thenReturn(this.patient);
+
+        final Response response = this.component.patchPatient(
+            "{\"labeled_eids\":[{\"label\":\"a_label\",\"value\":\"abc\"}]}", ID_LABEL, ID_VALUE, false);
+        verify(this.patient, times(1)).updateFromJSON(any(JSONObject.class), eq(PatientWritePolicy.MERGE));
+        Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+
+        ArgumentCaptor<JSONObject> json = ArgumentCaptor.forClass(JSONObject.class);
+        verify(this.patient).updateFromJSON(json.capture(), Matchers.eq(PatientWritePolicy.MERGE));
+        assertEquals("[{\"label\":\"a_label\",\"value\":\"abc\"}]", json.getValue().optString(KEY_LABELED_EIDS));
+        assertEquals(1, json.getValue().length());
     }
 }
