@@ -386,7 +386,7 @@ document.observe('xwiki:dom:loading', function() {
   }
 
   document.observe('xwiki:multisuggestpicker:selectionchanged', function() {
-    var tableName = $$('.xwiki-livetable')[0] ? $$('.xwiki-livetable')[0].id.replace(/-.*/, '') : '';
+    var tableName = $$('.xwiki-livetable')[0] ? $$('.xwiki-livetable')[0].id : '';
     if (tableName != '') {
       document.fire('xwiki:livetable:' + tableName + ':filtersChanged');
     }

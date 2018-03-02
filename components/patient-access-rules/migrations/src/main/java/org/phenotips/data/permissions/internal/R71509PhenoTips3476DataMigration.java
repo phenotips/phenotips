@@ -50,7 +50,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * better implemented if all families have a default visibility object private which until now they do not.
  *
  * @version $Id$
- * @since 1.4R
+ * @since 1.4
  */
 @Named("R71509-PT-3476")
 @Singleton
