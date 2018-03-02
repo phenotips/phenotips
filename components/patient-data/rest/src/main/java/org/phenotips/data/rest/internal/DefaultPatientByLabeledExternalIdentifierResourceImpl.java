@@ -40,6 +40,7 @@ import org.xwiki.users.UserManager;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.MissingResourceException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -116,7 +117,7 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
         Right grantedRight;
         if (!this.access.hasAccess(currentUser, Right.VIEW, patient.getDocumentReference())) {
             this.logger.debug("View access denied to user [{}] on patient record [{}]", currentUser, patient.getId());
-            return Response.status(Response.Status.FORBIDDEN).build();
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         } else {
             grantedRight = Right.VIEW;
         }
@@ -144,8 +145,8 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
     private Response updatePatient(final String json, final String label, final String id,
         final PatientWritePolicy policy, final boolean create)
     {
-        this.logger.debug("Updating patient record with label [{}] and corresponding external ID [{}] via REST: {}",
-            label, id, json);
+        this.logger.debug("Updating patient record with label [{}] and corresponding external ID [{}] via REST"
+                          + " with JSON: {}", label, id, json);
         if (policy == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
@@ -204,7 +205,7 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
         User currentUser = this.users.getCurrentUser();
         if (!this.access.hasAccess(currentUser, Right.DELETE, patient.getDocumentReference())) {
             this.logger.debug("Delete access denied to user [{}] on patient record [{}]", currentUser, patient.getId());
-            return Response.status(Response.Status.FORBIDDEN).build();
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
         try {
             this.repository.delete(patient);
@@ -240,12 +241,12 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
         JSONObject jsonInput, boolean shouldCreate)
     {
         if (patients.isEmpty()) {
+            this.logger.debug("No patient record with label [{}] and corresponding external ID [{}] exists yet",
+                label, id);
             if (shouldCreate) {
                 return returnCreatePatientResponse(label, id, jsonInput);
             } else {
-                this.logger.debug("No patient record with label [{}] and corresponding external ID [{}] exists yet",
-                    label, id);
-                return Response.status(Response.Status.NOT_FOUND).build();
+                throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
         } else {
             this.logger.debug("Multiple patient records ({}) with label [{}] and corresponding external ID [{}]: {}",
@@ -271,14 +272,14 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
             if (!this.access.hasAccess(currentUser, Right.EDIT,
                 this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
                 this.logger.error("Edit access denied to user [{}].", currentUser);
-                return Response.status(Response.Status.FORBIDDEN).build();
+                throw new WebApplicationException(Response.Status.FORBIDDEN);
             }
             final Patient patient = this.repository.create();
             return returnUpdatePatientResponse(patient, label, id, jsonInput, true, PatientWritePolicy.UPDATE);
-        } catch (final Exception ex) {
+        } catch (final WebApplicationException ex) {
             this.logger.error("Failed to create patient with label [{}] and corresponding external ID: [{}] from "
                               + "JSON: {}.", label, id, jsonInput, ex);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            throw new WebApplicationException(ex.getResponse().getStatus());
         }
     }
 
@@ -300,7 +301,7 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
         final JSONObject jsonInput, boolean wasCreated, PatientWritePolicy policy)
     {
         if (hasInternalIdConflict(jsonInput, patient)) {
-            return Response.status(Response.Status.CONFLICT).build();
+            throw new WebApplicationException(Response.Status.CONFLICT);
         }
         if (wasCreated && !jsonInput.has(KEY_LABELED_EIDS)) {
             JSONArray labeledEids = new JSONArray();
@@ -334,10 +335,14 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
             } else {
                 return Collections.emptyList();
             }
-        } catch (Exception ex) {
-            this.logger.error("Failed to retrieve patient with label [{}] and corresponding external ID [{}]: {}",
+        } catch (QueryException ex) {
+            this.logger.warn("Failed to query patient with label [{}] and corresponding external ID [{}]: {}",
                 label, id, ex.getMessage(), ex);
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        } catch (MissingResourceException ex) {
+            this.logger.warn("Failed to retrieve patient with label [{}] and corresponding external ID [{}]: {}",
+                label, id, ex.getMessage(), ex);
+            throw new WebApplicationException(Response.Status.CONFLICT);
         }
     }
 
@@ -349,9 +354,9 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
      * @param id the id value for the label
      * @return an empty list if no patients have the label identifier and its corresponding id value, else a list of
      *         patient internal identifiers
-     * @throws Exception if there is any error during querying
+     * @throws QueryException if there is any error during querying
      */
-    private List<String> queryPatientsByLabelAndEid(String label, String id) throws Exception
+    private List<String> queryPatientsByLabelAndEid(String label, String id) throws QueryException
     {
         Query q = null;
         try {
@@ -375,9 +380,9 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
      *
      * @param label the name of the label
      * @return true if the label exists, else false
-     * @throws Exception if there is any error during querying
+     * @throws QueryException if there is any error during querying
      */
-    private boolean isLabelConfiguredByAdmin(String label) throws Exception
+    private boolean isLabelConfiguredByAdmin(String label) throws QueryException
     {
         Query q = null;
         try {
@@ -398,10 +403,10 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
      * {@code LabeledIdentifierGlobalSettings.allowOtherEids} to be set arbitrarily by the user for each patient.
      *
      * @return true if arbitrary eids are allowed, else false.
-     * @throws Exception if an instance of the {@code LabeledIdentifierGlobalSettings} object cannot be found,
+     * @throws QueryException if an instance of the {@code LabeledIdentifierGlobalSettings} object cannot be found,
      *         or if there is any other error during querying.
      */
-    private boolean allowOtherEids() throws Exception
+    private boolean allowOtherEids() throws QueryException
     {
         Query q = null;
         try {
@@ -410,7 +415,8 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
             List<Integer> results = q.execute();
             if (results == null || results.isEmpty()) {
                 this.logger.debug("There should be one LabeledIdentifierGlobalSettings object. None were found.");
-                throw new Exception("LabeledIdentifierGlobalSettings object not found.");
+                throw new MissingResourceException("Configuration object missing.",
+                    "PhenoTips.LabeledIdentifierGlobalSettings", "allowOtherEids");
             }
             return results.get(0) != 0;
         } catch (QueryException ex) {
