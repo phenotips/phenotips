@@ -386,7 +386,10 @@ document.observe('xwiki:dom:loading', function() {
   }
 
   document.observe('xwiki:multisuggestpicker:selectionchanged', function() {
-    document.fire('xwiki:livetable:patients:filtersChanged');
+    var tableName = $$('.xwiki-livetable')[0] ? $$('.xwiki-livetable')[0].id : '';
+    if (tableName != '') {
+      document.fire('xwiki:livetable:' + tableName + ':filtersChanged');
+    }
   });
   ['xwiki:dom:loaded', 'xwiki:dom:updated'].each(function(eventName) {
     document.observe(eventName, function(event) {

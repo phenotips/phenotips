@@ -18,9 +18,10 @@
 package org.phenotips.data.permissions.internal;
 
 import org.phenotips.data.permissions.Visibility;
+import org.phenotips.studies.family.Family;
 
-import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.model.reference.EntityReferenceSerializer;
 
 import java.util.List;
 
@@ -43,23 +44,28 @@ import com.xpn.xwiki.store.XWikiHibernateStore;
 import com.xpn.xwiki.store.migration.DataMigrationException;
 import com.xpn.xwiki.store.migration.XWikiDBVersion;
 import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
-import com.xpn.xwiki.store.migration.hibernate.HibernateDataMigration;
 
 /**
- * Migration for PhenoTips issue #1378: Allow filtering by maximum privacy level in export (as or more public). This is
- * better implemented if all patients have a visibility object which until now they do not.
+ * Migration for PhenoTips issue #PT-3476: Add owner, collaborators and visibility to family directory filters. This is
+ * better implemented if all families have a default visibility object private which until now they do not.
  *
  * @version $Id$
- * @since 1.1RC1
+ * @since 1.4
  */
-@Component(roles = { HibernateDataMigration.class })
-@Named("R54692PhenoTips#1378")
+@Named("R71509-PT-3476")
 @Singleton
-public class R54692PhenoTips1378DataMigration extends AbstractHibernateDataMigration
+public class R71509PhenoTips3476DataMigration extends AbstractHibernateDataMigration
 {
     /** Logging helper object. */
     @Inject
     private Logger logger;
+
+    /**
+     * Serializes the rights name.
+     */
+    @Inject
+    @Named("compactwiki")
+    private EntityReferenceSerializer<String> serializer;
 
     /** Resolves unprefixed document names to the current wiki. */
     @Inject
@@ -69,14 +75,14 @@ public class R54692PhenoTips1378DataMigration extends AbstractHibernateDataMigra
     @Override
     public String getDescription()
     {
-        return "Adding a default 'private' visibility object to all patients which did not have a "
-            + "visibility object #1378";
+        return "Adding a default 'private' visibility object to all families which did not have a "
+            + "visibility object #PT-3476";
     }
 
     @Override
     public XWikiDBVersion getVersion()
     {
-        return new XWikiDBVersion(54692);
+        return new XWikiDBVersion(71509);
     }
 
     @Override
@@ -86,7 +92,7 @@ public class R54692PhenoTips1378DataMigration extends AbstractHibernateDataMigra
     }
 
     /**
-     * Searches for all patient documents that don't contain a {@code PhenoTips.VisibilityClass} object and adds a new
+     * Searches for all family documents that don't contain a {@code PhenoTips.VisibilityClass} object and adds a new
      * {@code PhenoTips.VisibilityClass} object with "private" set as the visibility.
      */
     private final class AddVisObjectCallback implements XWikiHibernateBaseStore.HibernateCallback<Object>
@@ -95,29 +101,31 @@ public class R54692PhenoTips1378DataMigration extends AbstractHibernateDataMigra
         public Object doInHibernate(Session session) throws HibernateException, XWikiException
         {
 
-            XWikiContext context = R54692PhenoTips1378DataMigration.this.getXWikiContext();
+            XWikiContext context = R71509PhenoTips3476DataMigration.this.getXWikiContext();
             XWiki xwiki = context.getWiki();
-            Query q = session.createQuery("select doc.fullName from XWikiDocument as doc, BaseObject "
-                + "as patobj where doc.fullName=patobj.name "
-                + "and patobj.className='PhenoTips.PatientClass' and not exists"
-                + "(from BaseObject visobj where visobj.className='PhenoTips.VisibilityClass' and"
-                + " doc.fullName=visobj.name)");
+            Query q =
+                session.createQuery("select doc.fullName from XWikiDocument as doc, BaseObject "
+                    + "as f where doc.fullName=f.name and f.className='"
+                    + R71509PhenoTips3476DataMigration.this.serializer.serialize(Family.CLASS_REFERENCE)
+                    + "' and not exists (from BaseObject visobj where visobj.className='"
+                    + R71509PhenoTips3476DataMigration.this.serializer.serialize(Visibility.CLASS_REFERENCE)
+                    + "' and  doc.fullName=visobj.name)");
             @SuppressWarnings("unchecked")
             List<String> documents = q.list();
-            R54692PhenoTips1378DataMigration.this.logger.debug("Found {} patient documents with no visibility object",
+            R71509PhenoTips3476DataMigration.this.logger.debug("Found {} family documents with no visibility object",
                 documents.size());
             for (String docName : documents) {
                 try {
-                    R54692PhenoTips1378DataMigration.this.logger.debug("Checking [{}]", docName);
+                    R71509PhenoTips3476DataMigration.this.logger.debug("Checking [{}]", docName);
                     XWikiDocument doc =
-                        xwiki.getDocument(R54692PhenoTips1378DataMigration.this.resolver.resolve(docName), context);
+                        xwiki.getDocument(R71509PhenoTips3476DataMigration.this.resolver.resolve(docName), context);
                     if (doc == null) {
                         continue;
                     }
                     BaseObject visobj = doc.newXObject(Visibility.CLASS_REFERENCE, context);
                     visobj.set("visibility", "private", context);
 
-                    doc.setComment(R54692PhenoTips1378DataMigration.this.getDescription());
+                    doc.setComment(R71509PhenoTips3476DataMigration.this.getDescription());
                     doc.setMinorEdit(true);
 
                     // There's a bug in XWiki which prevents saving an object in the same session that it was loaded,
@@ -125,7 +133,7 @@ public class R54692PhenoTips1378DataMigration extends AbstractHibernateDataMigra
                     session.clear();
                     ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
                     session.flush();
-                    R54692PhenoTips1378DataMigration.this.logger.debug("Updated [{}]", docName);
+                    R71509PhenoTips3476DataMigration.this.logger.debug("Updated [{}]", docName);
                 } catch (DataMigrationException e) {
                     // We're in the middle of a migration, we're not expecting another migration
                 }

@@ -56,7 +56,7 @@ import com.xpn.xwiki.store.migration.XWikiDBVersion;
 import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 
 /**
- * Migrate internal represenation of pedigrees stored in the auto-generated SimpleJSON format.
+ * Migrate internal representation of pedigrees stored in the auto-generated SimpleJSON format.
  *
  * @version $Id$
  * @since 1.4M3
@@ -212,7 +212,9 @@ public class R71508PhenoTips3424DataMigration extends AbstractHibernateDataMigra
     private static class Relationship
     {
         private Set<Integer> parents = new HashSet<>();
+
         private Set<Integer> children = new HashSet<>();
+
         private final String id;
 
         Relationship(Integer parentID1, Integer parentID2)
