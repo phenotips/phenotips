@@ -20,6 +20,7 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.studies.family.Family;
 
+import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 
@@ -44,6 +45,7 @@ import com.xpn.xwiki.store.XWikiHibernateStore;
 import com.xpn.xwiki.store.migration.DataMigrationException;
 import com.xpn.xwiki.store.migration.XWikiDBVersion;
 import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
+import com.xpn.xwiki.store.migration.hibernate.HibernateDataMigration;
 
 /**
  * Migration for PhenoTips issue #PT-3476: Add owner, collaborators and visibility to family directory filters. This is
@@ -52,6 +54,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * @version $Id$
  * @since 1.4
  */
+@Component(roles = { HibernateDataMigration.class })
 @Named("R71509-PT-3476")
 @Singleton
 public class R71509PhenoTips3476DataMigration extends AbstractHibernateDataMigration
