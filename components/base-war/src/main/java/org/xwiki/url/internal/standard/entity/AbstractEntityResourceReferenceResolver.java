@@ -2,32 +2,21 @@
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This software is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.xwiki.url.internal.standard.entity;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
@@ -40,7 +29,16 @@ import org.xwiki.resource.entity.EntityResourceReference;
 import org.xwiki.resource.internal.entity.EntityResourceActionLister;
 import org.xwiki.url.ExtendedURL;
 import org.xwiki.url.internal.AbstractResourceReferenceResolver;
-import org.xwiki.url.internal.standard.StandardURLConfiguration;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Common code for Entity Resource Reference Resolvers.
@@ -70,8 +68,6 @@ public abstract class AbstractEntityResourceReferenceResolver extends AbstractRe
      */
     private static final List<String> FILE_ACTION_LIST =
         Arrays.asList(DOWNLOAD_ACTION, DELATTACHMENT_ACTION, VIEWATTACHREV_ACTION, DOWNLOADREV_ACTION, SKIN_ACTION);
-
-    private StandardURLConfiguration configuration;
 
     private EntityResourceActionLister entityResourceActionLister;
 
@@ -123,14 +119,14 @@ public abstract class AbstractEntityResourceReferenceResolver extends AbstractRe
                 // (something.WebHome) and access it from /view/something. If we didn't handle this special case
                 // the user would get Main.something and thus wouldn't be able to access something.WebHome. He'd
                 // need to use /view/something/ which is not natural in the Nested Document mode.
-                if (pathSegments.size() - startPosition == 1) {
-                    spaceNames = Arrays.asList(pathSegments.get(startPosition));
-                } else {
-                    // Last segment is the page name
-                    pageName = pathSegments.get(pathSegments.size() - 1);
-                    // All segments in between are the space names
-                    spaceNames = extractSpaceNames(pathSegments, startPosition, pathSegments.size() - 2);
-                }
+                // if (pathSegments.size() - startPosition == 1) {
+                // spaceNames = Arrays.asList(pathSegments.get(startPosition));
+                // } else {
+                // Last segment is the page name
+                pageName = pathSegments.get(pathSegments.size() - 1);
+                // All segments in between are the space names
+                spaceNames = extractSpaceNames(pathSegments, startPosition, pathSegments.size() - 2);
+                // }
             }
         }
 
