@@ -83,13 +83,13 @@ var XWiki = (function (XWiki) {
         if (event.memo.originalEvent) {
           Event.stop(event.memo.originalEvent);
         }
-        if (!event.memo.url) {
+        if (!event.memo.url && !event.memo.id) {
           // Submit form
           this.searchInput.up('form').submit();
         }
         else {
           // Go to page
-          window.location = event.memo.url;
+          window.location = event.memo.url || event.memo.id;
         }
       }
     },
