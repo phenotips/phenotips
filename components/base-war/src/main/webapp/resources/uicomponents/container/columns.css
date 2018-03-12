@@ -36,12 +36,6 @@
   min-height: 10px;
 }
 
-.container-columns .first-column {
-  padding-left: 0;
-}
-.container-columns .last-column {
-  padding-right: 0;
-}
 
 
 /* Generate column-specific css classes */
@@ -55,3 +49,10 @@
     padding-left: $columnPadding%;
   }
 #end
+
+.container-columns .first-column {
+  padding-left: 0;
+}
+.container-columns .last-column {
+  padding-right: 0;
+}
