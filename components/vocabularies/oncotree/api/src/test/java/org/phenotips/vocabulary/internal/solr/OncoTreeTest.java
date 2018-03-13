@@ -180,13 +180,13 @@ public class OncoTreeTest
     {
         MockitoAnnotations.initMocks(this);
 
+        this.component = this.mocker.getComponentUnderTest();
+        this.oncoTree = spy((OncoTree) this.component);
+
         SolrVocabularyResourceManager externalServicesAccess =
             this.mocker.getInstance(SolrVocabularyResourceManager.class);
 
-        when(externalServicesAccess.getSolrConnection(ONCO_LOWER)).thenReturn(this.server);
-
-        this.component = this.mocker.getComponentUnderTest();
-        this.oncoTree = spy((OncoTree) this.component);
+        when(externalServicesAccess.getSolrConnection(this.component)).thenReturn(this.server);
 
         this.logger = this.mocker.getMockedLogger();
         this.url = new URL(this.component.getDefaultSourceLocation());
@@ -364,12 +364,6 @@ public class OncoTreeTest
                     Assert.fail();
             }
         }
-    }
-
-    @Test
-    public void getCoreName()
-    {
-        Assert.assertEquals(ONCO_LOWER, ((OncoTree) this.component).getCoreName());
     }
 
     @Test

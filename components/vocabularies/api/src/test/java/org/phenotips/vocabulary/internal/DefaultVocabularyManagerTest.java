@@ -50,8 +50,6 @@ import static org.mockito.Mockito.when;
  */
 public class DefaultVocabularyManagerTest
 {
-    private static final String VOCABULARIES_LABEL = "vocabularies";
-
     private static final String CHEMICAL_CATEGORY = "chemical";
 
     private static final String ETHNICITY_CATEGORY = "ethnicity";

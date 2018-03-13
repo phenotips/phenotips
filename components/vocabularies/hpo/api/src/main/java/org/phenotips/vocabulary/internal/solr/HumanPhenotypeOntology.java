@@ -72,12 +72,6 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
     private static final String DEFAULT_QUALIFIER_FILTER = "term_category:HP\\:0012823";
 
     @Override
-    protected String getCoreName()
-    {
-        return getIdentifier();
-    }
-
-    @Override
     public String getDefaultSourceLocation()
     {
         return "https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.obo";

@@ -160,12 +160,6 @@ public class MendelianInheritanceInMan extends AbstractCSVSolrVocabulary
     }
 
     @Override
-    protected String getCoreName()
-    {
-        return getIdentifier();
-    }
-
-    @Override
     public List<VocabularyTerm> search(String input, String category, int maxResults, String sort, String customFilter)
     {
         if (!getSupportedCategories().contains(category)) {

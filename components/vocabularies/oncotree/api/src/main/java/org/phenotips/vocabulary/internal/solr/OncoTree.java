@@ -371,12 +371,6 @@ public class OncoTree extends AbstractCSVSolrVocabulary
     }
 
     @Override
-    protected String getCoreName()
-    {
-        return getIdentifier();
-    }
-
-    @Override
     public String getIdentifier()
     {
         return "onco";

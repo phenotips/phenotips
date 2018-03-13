@@ -116,7 +116,7 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
     protected int clear()
     {
         try {
-            this.externalServicesAccess.getSolrConnection(getCoreName()).deleteByQuery("*:*");
+            this.externalServicesAccess.getSolrConnection(this).deleteByQuery("*:*");
             return 0;
         } catch (SolrServerException ex) {
             this.logger.error("SolrServerException while clearing the Solr index", ex);
@@ -139,7 +139,7 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
         }
 
         try {
-            response = this.externalServicesAccess.getSolrConnection(getCoreName()).query(query);
+            response = this.externalServicesAccess.getSolrConnection(this).query(query);
             termList = response.getResults();
 
             if (termList != null && !termList.isEmpty()) {
@@ -165,7 +165,7 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
         query.setQuery("version:*");
         query.set(CommonParams.ROWS, "1");
         try {
-            response = this.externalServicesAccess.getSolrConnection(getCoreName()).query(query);
+            response = this.externalServicesAccess.getSolrConnection(this).query(query);
             termList = response.getResults();
 
             if (!termList.isEmpty()) {

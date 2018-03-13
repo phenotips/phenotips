@@ -91,12 +91,6 @@ public class EthnicityOntology extends AbstractSolrVocabulary
     }
 
     @Override
-    protected String getCoreName()
-    {
-        return getIdentifier();
-    }
-
-    @Override
     public String getIdentifier()
     {
         return "ethnicity";

@@ -120,12 +120,6 @@ public class OrphanetRareDiseaseOntology extends AbstractOWLSolrVocabulary
     }
 
     @Override
-    protected String getCoreName()
-    {
-        return getIdentifier();
-    }
-
-    @Override
     public Set<String> getAliases()
     {
         final Set<String> aliases = new HashSet<>();

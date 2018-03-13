@@ -151,7 +151,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     protected int clear()
     {
         try {
-            this.externalServicesAccess.getSolrConnection(getCoreName()).deleteByQuery("*:*");
+            this.externalServicesAccess.getSolrConnection(this).deleteByQuery("*:*");
             return 0;
         } catch (SolrServerException ex) {
             this.logger.error("SolrServerException while clearing the Solr index", ex);
@@ -172,7 +172,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
         query.setQuery("version:*");
         query.set("rows", "1");
         try {
-            response = this.externalServicesAccess.getSolrConnection(getCoreName()).query(query);
+            response = this.externalServicesAccess.getSolrConnection(this).query(query);
             termList = response.getResults();
 
             if (!termList.isEmpty()) {

@@ -55,8 +55,6 @@ public class GeneNomenclatureTest
 {
     private static final String IDENTIFIER = "hgnc";
 
-    private static final String CORE_NAME = IDENTIFIER;
-
     private static final String NAME = "HUGO Gene Nomenclature Committee's GeneNames (HGNC)";
 
     private static final String WEBSITE = "http://www.genenames.org/";
@@ -117,7 +115,7 @@ public class GeneNomenclatureTest
 
         final SolrVocabularyResourceManager externalServicesAccess =
             this.mocker.getInstance(SolrVocabularyResourceManager.class);
-        when(externalServicesAccess.getSolrConnection(CORE_NAME)).thenReturn(this.solrClient);
+        when(externalServicesAccess.getSolrConnection(this.component)).thenReturn(this.solrClient);
 
         when(this.solrClient.query(any(SolrQuery.class))).thenReturn(this.response);
         when(this.response.getResults()).thenReturn(this.termList);
@@ -140,13 +138,6 @@ public class GeneNomenclatureTest
     {
         final int numDocs = this.component.getSolrDocsPerBatch();
         Assert.assertEquals(NUM_DOCS, numDocs);
-    }
-
-    @Test
-    public void getCoreNameReturnsCorrectName()
-    {
-        final String coreName = this.component.getCoreName();
-        Assert.assertEquals(CORE_NAME, coreName);
     }
 
     @Test
