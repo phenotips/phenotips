@@ -68,7 +68,7 @@ public class HumanPhenotypeOntologyTest
 
     private SolrClient server;
 
-    private Vocabulary ontologyService;
+    private Vocabulary vocabulary;
 
     @SuppressWarnings("unchecked")
     @Before
@@ -76,15 +76,15 @@ public class HumanPhenotypeOntologyTest
         throws ComponentLookupException, IOException, SolrServerException, CacheException
     {
         this.cache = mock(Cache.class);
+        this.vocabulary = this.mocker.getComponentUnderTest();
         SolrVocabularyResourceManager externalServicesAccess =
             this.mocker.getInstance(SolrVocabularyResourceManager.class);
         when(externalServicesAccess.getTermCache("hpo")).thenReturn(this.cache);
         this.server = mock(SolrClient.class);
         when(externalServicesAccess.getReplacementSolrConnection("hpo")).thenReturn(this.server);
         when(externalServicesAccess.getSolrConnection("hpo")).thenReturn(this.server);
-        this.ontologyService = this.mocker.getComponentUnderTest();
         this.ontologyServiceResult =
-            this.ontologyService.reindex(this.getClass().getResource("/hpo-test.obo").toString());
+            this.vocabulary.reindex(this.getClass().getResource("/hpo-test.obo").toString());
     }
 
     @Test
@@ -109,13 +109,13 @@ public class HumanPhenotypeOntologyTest
         SolrDocument versionDoc = mock(SolrDocument.class);
         when(results.get(0)).thenReturn(versionDoc);
         when(versionDoc.getFieldValue("version")).thenReturn("2014:01:01");
-        Assert.assertEquals("2014:01:01", this.ontologyService.getVersion());
+        Assert.assertEquals("2014:01:01", this.vocabulary.getVersion());
     }
 
     @Test
     public void testHumanPhenotypeOntologyDefaultLocation()
     {
-        String location = this.ontologyService.getDefaultSourceLocation();
+        String location = this.vocabulary.getDefaultSourceLocation();
         Assert.assertNotNull(location);
         Assert.assertTrue(location.endsWith("hp.obo"));
         Assert.assertTrue(location.startsWith("http"));

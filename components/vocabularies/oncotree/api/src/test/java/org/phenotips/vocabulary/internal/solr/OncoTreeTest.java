@@ -422,7 +422,7 @@ public class OncoTreeTest
         Assert.assertTrue(categories.contains(DISEASE));
     }
 
-    @Test (expected = UnsupportedOperationException.class)
+    @Test(expected = UnsupportedOperationException.class)
     public void getSupportedCategoriesReturnsImmutableCollection()
     {
         final Collection<String> categories = this.component.getSupportedCategories();

@@ -195,7 +195,7 @@ public class OncoTree extends AbstractCSVSolrVocabulary
             doc.addField(fieldName, fieldValue);
         } else {
             this.logger.error("The field name {} and field value {} being processed are not associated with any "
-                    + "cancer.", fieldName, fieldValue);
+                + "cancer.", fieldName, fieldValue);
         }
     }
 
@@ -228,6 +228,7 @@ public class OncoTree extends AbstractCSVSolrVocabulary
 
     /**
      * Update the {@code doc} with the {@code tissue} associated with it.
+     *
      * @param doc the {@link SolrInputDocument} containing cancer data
      * @param tissue the tissue affected by the cancer
      */
@@ -302,7 +303,7 @@ public class OncoTree extends AbstractCSVSolrVocabulary
      *
      * @param doc the {@link SolrInputDocument} into which data is written
      * @param parent the {@link SolrInputDocument} that contains data for cancer that is a parent to the cancer stored
-     *               in {@code doc}
+     *            in {@code doc}
      */
     private void updateParents(@Nonnull final SolrInputDocument doc, @Nullable final SolrInputDocument parent)
     {
@@ -527,6 +528,7 @@ public class OncoTree extends AbstractCSVSolrVocabulary
 
     /**
      * Creates the version {@link SolrInputDocument}.
+     *
      * @param url the {@link URL} where data is stored
      * @return a {@link SolrInputDocument} containing version data
      */
