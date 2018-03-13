@@ -1,3 +1,4 @@
+org.phenotips.vocabulary.internal.ContextVocabularyMapProvider
 org.phenotips.vocabulary.internal.DefaultVocabularyManager
 org.phenotips.vocabulary.script.OntologyScriptService
 org.phenotips.vocabulary.script.VocabularyScriptService
