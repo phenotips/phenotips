@@ -2704,25 +2704,31 @@ document.observe('xwiki:dom:loaded', function()
       });
 
       document.observe('gene:updated', function(event) {
-        var key = event.memo &amp;&amp; event.memo.key;
-        key &amp;&amp; (_this._builder.genes[key] = event.memo);
-        _this.updateDefaultSearchTerms();
+        if (_this._builder.genes) {
+          var key = event.memo &amp;&amp; event.memo.key;
+          key &amp;&amp; (_this._builder.genes[key] = event.memo);
+          _this.updateDefaultSearchTerms();
+        }
       });
 
       document.observe('gene:removed', function(event) {
-        var key = event.memo &amp;&amp; event.memo.key;
-        key &amp;&amp; (delete _this._builder.genes[key]);
-        _this.updateDefaultSearchTerms();
+        if (_this._builder.genes) {
+          var key = event.memo &amp;&amp; event.memo.key;
+          key &amp;&amp; (delete _this._builder.genes[key]);
+          _this.updateDefaultSearchTerms();
+        }
       });
 
       document.observe('gene:replaced', function(event) {
         if (!event.memo) {return;}
-        var delete_key = event.memo.delete_key;
-        var geneKey = event.memo.key;
-        var geneStatus = event.memo.status;
-        delete_key &amp;&amp; (delete _this._builder.genes[delete_key]);
-        geneKey &amp;&amp; geneStatus &amp;&amp; (_this._builder.genes[geneKey] = {'key' : geneKey, 'status' : geneStatus})
-        _this.updateDefaultSearchTerms();
+        if (_this._builder.genes) {
+          var delete_key = event.memo.delete_key;
+          var geneKey = event.memo.key;
+          var geneStatus = event.memo.status;
+          delete_key &amp;&amp; (delete _this._builder.genes[delete_key]);
+          geneKey &amp;&amp; geneStatus &amp;&amp; (_this._builder.genes[geneKey] = {'key' : geneKey, 'status' : geneStatus})
+          _this.updateDefaultSearchTerms();
+        }
       });
 
       if (this._builder.customSearchTermsInput) {
