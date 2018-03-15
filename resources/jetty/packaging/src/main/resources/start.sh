@@ -96,6 +96,9 @@ START_OPTS="$START_OPTS -DSTOP.KEY=phenotipsstop -DSTOP.PORT=$JETTY_STOP_PORT"
 # Force UTF8 as the global JVM encoding
 START_OPTS="$START_OPTS -Dfile.encoding=UTF8"
 
+# Make it work with Java 9
+START_OPTS="$START_OPTS -XX:+IgnoreUnrecognizedVMOptions --add-modules=java.xml.bind --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED"
+
 # Optional: enable remote debugging
 # START_OPTS="$START_OPTS -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
 
