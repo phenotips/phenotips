@@ -823,7 +823,7 @@ var PhenoTips = (function(PhenoTips) {
         if (!suggestWidget) {
            return null;
         }
-        searchURL = XWiki.contextPath + "/rest/vocabularies/hpo/suggest?input=" + id);
+        searchURL = XWiki.contextPath + "/rest/vocabularies/hpo/suggest?input=" + id;
         new Ajax.Request(searchURL, {
           method: 'get',
           onSuccess: function(transport) {
