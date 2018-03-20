@@ -282,7 +282,7 @@
         &lt;dd class="${prop.name}${displayMode}"&gt;$doc.display($prop.getName(), $targetObj)&lt;/dd&gt;##
       #end##
     &lt;/dl&gt;##
-    &lt;input type="hidden" name="delete-action" value="$doc.getURL('objectremove', "classname=${targetObj.xWikiClass.name}&amp;amp;classid=${targetObj.number}&amp;amp;form_token=$!{services.csrf.getToken()}")"/&gt;##
+    &lt;input type="hidden" name="delete-action" value="$doc.getURL('objectremove', "classname=${targetObj.xWikiClass.name}&amp;amp;classid=${targetObj.number}&amp;amp;form_token=$!{services.csrf.getToken()}&amp;amp;ajax=1")"/&gt;##
     {{/html}}
 #end
 
