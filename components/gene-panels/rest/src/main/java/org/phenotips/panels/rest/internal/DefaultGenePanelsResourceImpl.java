@@ -40,7 +40,6 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
 
 /**
  * Default implementation of the {@link GenePanelsResource}.
@@ -62,9 +61,6 @@ public class DefaultGenePanelsResourceImpl extends XWikiResource implements Gene
     private static final String RESULTS_LIMIT_LABEL = "limit";
 
     @Inject
-    private Logger logger;
-
-    @Inject
     private GenePanelLoader genePanelLoader;
 
     @Inject
@@ -81,7 +77,7 @@ public class DefaultGenePanelsResourceImpl extends XWikiResource implements Gene
 
         if (CollectionUtils.isEmpty(presentTerms) && CollectionUtils.isEmpty(absentTerms)
             && CollectionUtils.isEmpty(rejectedGenes)) {
-            this.logger.error("No content provided.");
+            this.slf4Jlogger.error("No content provided.");
             return Response.status(Response.Status.NO_CONTENT).build();
         }
 
@@ -96,14 +92,14 @@ public class DefaultGenePanelsResourceImpl extends XWikiResource implements Gene
             panels.put(REQ_NO, reqNo);
             return Response.ok(panels, MediaType.APPLICATION_JSON_TYPE).build();
         } catch (final ExecutionException e) {
-            this.logger.warn("No content associated with [present-term: {}, absent-term: {}, rejected-gene: {}].",
+            this.slf4Jlogger.warn("No content associated with [present-term: {}, absent-term: {}, rejected-gene: {}].",
                 presentTerms, absentTerms, rejectedGenes);
             return Response.status(Response.Status.NO_CONTENT).build();
         } catch (final IndexOutOfBoundsException e) {
-            this.logger.error("The requested [{}: {}] is out of bounds.", START_PAGE_LABEL, startPage);
+            this.slf4Jlogger.error("The requested [{}: {}] is out of bounds.", START_PAGE_LABEL, startPage);
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (final Exception e) {
-            this.logger.error("Unexpected exception while generating gene panel JSON: {}", e.getMessage());
+            this.slf4Jlogger.error("Unexpected exception while generating gene panel JSON: {}", e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }

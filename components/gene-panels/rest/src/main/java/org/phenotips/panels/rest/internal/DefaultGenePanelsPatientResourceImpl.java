@@ -33,7 +33,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
 
 /**
  * Default implementation of the {@link GenePanelsPatientResource}.
@@ -50,10 +49,6 @@ public class DefaultGenePanelsPatientResourceImpl extends XWikiResource implemen
     @Inject
     private GenePanelFactory genePanelFactory;
 
-    /** The logging object. */
-    @Inject
-    private Logger logger;
-
     /** The secure patient repository. */
     @Inject
     @Named("secure")
@@ -67,7 +62,7 @@ public class DefaultGenePanelsPatientResourceImpl extends XWikiResource implemen
     {
         // Check if patient ID is provided.
         if (StringUtils.isBlank(patientId)) {
-            this.logger.error("No patient ID was provided.");
+            this.slf4Jlogger.error("No patient ID was provided.");
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
@@ -77,7 +72,7 @@ public class DefaultGenePanelsPatientResourceImpl extends XWikiResource implemen
             final Patient patient = this.repository.get(patientId);
             // Check if the patient exists.
             if (patient == null) {
-                this.logger.error("Could not find patient with ID {}", patientId);
+                this.slf4Jlogger.error("Could not find patient with ID {}", patientId);
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
             final JSONObject genePanel = this.genePanelFactory.withMatchCount(withMatchCount)
@@ -85,7 +80,7 @@ public class DefaultGenePanelsPatientResourceImpl extends XWikiResource implemen
             return Response.ok(genePanel, MediaType.APPLICATION_JSON_TYPE).build();
         } catch (final SecurityException ex) {
             // The user has no access rights for the requested patient.
-            this.logger.error("View access denied on patient record [{}]: {}", patientId, ex.getMessage());
+            this.slf4Jlogger.error("View access denied on patient record [{}]: {}", patientId, ex.getMessage());
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
     }
