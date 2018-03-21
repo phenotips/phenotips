@@ -61,7 +61,7 @@ public class TimeoutDocumentLockManager implements DocumentLockManager
             }
         } catch (InterruptedException ex) {
             // We don't expect any interruptions
-            this.logger.error("Unexpected interruption why waiting for lock: {}", ex.getMessage(), ex);
+            this.logger.error("Unexpected interruption while waiting for lock: {}", ex.getMessage(), ex);
         }
     }
 
