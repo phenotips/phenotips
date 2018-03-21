@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.xwiki.url.internal.container;
+package org.xwiki.platform.svg.internal;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -52,7 +52,7 @@ import org.apache.commons.lang3.StringUtils;
  * @since 7.4M1
  */
 @Component
-@Named("contextpath+actionservletpath")
+@Named("contextpath+actionservletpath/pt")
 @Singleton
 public class ContextAndActionURLNormalizer implements URLNormalizer<ExtendedURL>, Initializable
 {

@@ -1,2 +1,4 @@
+org.xwiki.platform.svg.internal.ContextAndActionURLNormalizer
 org.xwiki.platform.svg.internal.DefaultSVGUtils
+org.xwiki.platform.svg.internal.ExtendedURLTemporaryResourceReferenceSerializer
 org.xwiki.platform.svg.script.SVGScriptService
