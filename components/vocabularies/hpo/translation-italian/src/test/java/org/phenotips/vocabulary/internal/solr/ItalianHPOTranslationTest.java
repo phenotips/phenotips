@@ -96,7 +96,7 @@ public class ItalianHPOTranslationTest
         MockitoAnnotations.initMocks(this);
 
         SolrVocabularyResourceManager solrManager = this.mocker.getInstance(SolrVocabularyResourceManager.class);
-        when(solrManager.getSolrConnection(any(String.class))).thenReturn(this.solrClient);
+        when(solrManager.getSolrConnection(any(Vocabulary.class))).thenReturn(this.solrClient);
         when(this.solrClient.request(Matchers.argThat(this.coreRequests), any())).thenReturn(new NamedList<>());
 
         this.localizationContext = this.mocker.getInstance(LocalizationContext.class);

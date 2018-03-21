@@ -37,55 +37,55 @@ public interface SolrVocabularyResourceManager
     /**
      * Get the cache instance created for handling vocabulary terms.
      *
-     * @param vocabularyId the identifier of the target vocabulary
+     * @param vocabulary the target vocabulary
      * @return a cache instance
      */
-    Cache<VocabularyTerm> getTermCache(String vocabularyId);
+    Cache<VocabularyTerm> getTermCache(Vocabulary vocabulary);
 
     /**
      * Get the Solr core used for a vocabulary.
      *
-     * @param vocabularyId the identifier of the target vocabulary
+     * @param vocabulary the target vocabulary
      * @return a Solr client for communication with the target core
      */
-    SolrClient getSolrConnection(String vocabularyId);
+    SolrClient getSolrConnection(Vocabulary vocabulary);
 
     /**
      * Copy the Solr configuration file in a separate temporary directory, then register this temporary core with the
-     * Solr server. This core can be accessed with {@link #getReplacementSolrConnection(String)} during reindexing, and
-     * then it can either be discarded with {@link #discardReplacementCore(String)}, or take the place of the
-     * {@link #getSolrConnection(String) official vocabulary index} with {@link #replaceCore(String)}.
+     * Solr server. This core can be accessed with {@link #getReplacementSolrConnection(Vocabulary)} during reindexing,
+     * and then it can either be discarded with {@link #discardReplacementCore(Vocabulary)}, or take the place of the
+     * {@link #getSolrConnection(Vocabulary) official vocabulary index} with {@link #replaceCore(Vocabulary)}.
      *
-     * @param vocabularyId the identifier of the target vocabulary
+     * @param vocabulary the target vocabulary
      * @throws InitializationException if the process fails
      * @since 1.4
      */
-    void createReplacementCore(String vocabularyId) throws InitializationException;
+    void createReplacementCore(Vocabulary vocabulary) throws InitializationException;
 
     /**
      * Copy new index data from the temporary core to the main index location.
      *
-     * @param vocabularyId the identifier of the target vocabulary
+     * @param vocabulary the target vocabulary
      * @throws InitializationException if the process fails
      * @since 1.4
      */
-    void replaceCore(String vocabularyId) throws InitializationException;
+    void replaceCore(Vocabulary vocabulary) throws InitializationException;
 
     /**
      * Get the temporary Solr core used for a vocabulary during reindexing.
      *
-     * @param vocabularyId the identifier of the target vocabulary
+     * @param vocabulary the identifier of the target vocabulary
      * @return a Solr client for communication with the target temporary core
      * @since 1.4
      */
-    SolrClient getReplacementSolrConnection(String vocabularyId);
+    SolrClient getReplacementSolrConnection(Vocabulary vocabulary);
 
     /**
-     * Delete the temporary core, if one was already created by {@link #createReplacementCore(String)}. If no temporary
-     * core was created, nothing happens.
+     * Delete the temporary core, if one was already created by {@link #createReplacementCore(Vocabulary)}. If no
+     * temporary core was created, nothing happens.
      *
-     * @param vocabularyId the identifier of the target vocabulary
+     * @param vocabulary the target vocabulary
      * @since 1.4
      */
-    void discardReplacementCore(String vocabularyId);
+    void discardReplacementCore(Vocabulary vocabulary);
 }

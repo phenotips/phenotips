@@ -136,7 +136,7 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
         // Validate URL before loading any extensions
         String[] schemes = { "http", "https", "ftp", "file" };
         UrlValidator urlValidator = new UrlValidator(schemes);
-        if (!urlValidator.isValid(url) || !exists(url)) {
+        if (url != null && !url.startsWith("jar:") && (!urlValidator.isValid(url) || !exists(url))) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 

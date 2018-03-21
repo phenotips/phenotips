@@ -19,6 +19,7 @@ package org.phenotips.vocabulary.internal.solr;
 
 import org.phenotips.vocabulary.SolrCoreContainerHandler;
 import org.phenotips.vocabulary.SolrVocabularyResourceManager;
+import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.cache.Cache;
@@ -89,10 +90,11 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
     @Inject
     private DistributionManager distribution;
 
-    private void initialize(String vocabularyName) throws InitializationException
+    private void initialize(Vocabulary vocabulary) throws InitializationException
     {
-        CoreContainer container = this.coreContainer.getContainer();
-        SolrCore solrCore = container.getCore(vocabularyName);
+        final CoreContainer container = this.coreContainer.getContainer();
+        final String coreIdentifier = vocabulary.getIdentifier();
+        SolrCore solrCore = container.getCore(coreIdentifier);
 
         String phenotipsCoreVersion =
             (solrCore != null) ? solrCore.getCoreDescriptor().getCoreProperty("phenotips.version", "") : "";
@@ -106,29 +108,30 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
                 // Get data Solr home path
                 File solrHome = new File(this.environment.getPermanentDirectory().getAbsolutePath(), "solr");
                 File dest = solrHome;
-                Files.createDirectories(dest.toPath().resolve(vocabularyName + "/conf"));
+                Files.createDirectories(dest.toPath().resolve(coreIdentifier + "/conf"));
 
                 for (String file : CONFIG_FILES) {
-                    InputStream in = this.getClass().getResourceAsStream("/" + vocabularyName + file);
+                    InputStream in = vocabulary.getClass().getResourceAsStream("/" + coreIdentifier + file);
                     if (in == null) {
                         continue;
                     }
-                    Files.copy(in, dest.toPath().resolve(vocabularyName + file), StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(in, dest.toPath().resolve(coreIdentifier + file),
+                        StandardCopyOption.REPLACE_EXISTING);
                 }
                 if (solrCore != null) {
-                    container.reload(vocabularyName);
+                    container.reload(coreIdentifier);
                 } else {
                     // container.create will fail if core.properties is already there, so we temporarily delete it
                     // FIXME We should first read the properties file as a map and pass it to container.create
-                    Files.delete(dest.toPath().resolve(vocabularyName + "/core.properties"));
-                    container.create(vocabularyName, Collections.<String, String>emptyMap());
+                    Files.delete(dest.toPath().resolve(coreIdentifier + "/core.properties"));
+                    container.create(coreIdentifier, Collections.<String, String>emptyMap());
                 }
             }
 
-            SolrClient core = new EmbeddedSolrServer(container, vocabularyName);
-            this.cores.put(vocabularyName, core);
+            SolrClient core = new EmbeddedSolrServer(container, coreIdentifier);
+            this.cores.put(coreIdentifier, core);
             Cache<VocabularyTerm> cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
-            this.caches.put(vocabularyName, cache);
+            this.caches.put(coreIdentifier, cache);
         } catch (final CacheException ex) {
             throw new InitializationException("Cannot create cache: " + ex.getMessage(), ex);
         } catch (IOException ex) {
@@ -141,37 +144,46 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
     }
 
     @Override
-    public Cache<VocabularyTerm> getTermCache(String vocabularyId)
+    public Cache<VocabularyTerm> getTermCache(Vocabulary vocabulary)
     {
-        if (!this.caches.containsKey(vocabularyId)) {
+        if (!this.caches.containsKey(vocabulary.getIdentifier())) {
             try {
-                initialize(vocabularyId);
+                initialize(vocabulary);
             } catch (InitializationException ex) {
                 return null;
             }
         }
-        return this.caches.get(vocabularyId);
+        return this.caches.get(vocabulary.getIdentifier());
     }
 
     @Override
-    public SolrClient getSolrConnection(String vocabularyId)
+    public SolrClient getSolrConnection(Vocabulary vocabulary)
     {
-        if (!this.cores.containsKey(vocabularyId)) {
+        if (!this.cores.containsKey(vocabulary.getIdentifier())) {
             try {
-                initialize(vocabularyId);
+                initialize(vocabulary);
             } catch (InitializationException ex) {
                 return null;
             }
         }
-        return this.cores.get(vocabularyId);
+        return this.cores.get(vocabulary.getIdentifier());
+    }
+
+    private SolrClient getSolrConnection(String coreId)
+    {
+        if (!this.cores.containsKey(coreId)) {
+            return null;
+        }
+        return this.cores.get(coreId);
     }
 
     @Override
-    public void createReplacementCore(String vocabularyId) throws InitializationException
+    public void createReplacementCore(Vocabulary vocabulary) throws InitializationException
     {
         try {
-            String absPath = this.environment.getPermanentDirectory().getAbsolutePath();
-            File tempDirectory = new File(absPath, SOLR + vocabularyId + TEMP);
+            final String replacementCoreId = vocabulary.getIdentifier() + TEMP;
+            final String absPath = this.environment.getPermanentDirectory().getAbsolutePath();
+            File tempDirectory = new File(absPath, SOLR + replacementCoreId);
 
             if (!tempDirectory.exists()) {
                 Files.createDirectories(tempDirectory.toPath());
@@ -179,57 +191,58 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
 
             CoreContainer container = this.coreContainer.getContainer();
 
-            File configOrigin = new File(absPath, SOLR + vocabularyId + "/conf");
-            File configTemp = new File(absPath, SOLR + vocabularyId + TEMP + "/conf");
+            File configOrigin = new File(absPath, SOLR + vocabulary.getIdentifier() + "/conf");
+            File configTemp = new File(absPath, SOLR + replacementCoreId + "/conf");
             FileUtils.copyDirectory(configOrigin, configTemp);
 
-            container.create(vocabularyId + TEMP, Collections.<String, String>emptyMap());
+            container.create(replacementCoreId, Collections.<String, String>emptyMap());
 
-            SolrClient core = new EmbeddedSolrServer(container, vocabularyId + TEMP);
-            this.cores.put(vocabularyId + TEMP, core);
+            SolrClient core = new EmbeddedSolrServer(container, replacementCoreId);
+            this.cores.put(replacementCoreId, core);
         } catch (IOException ex) {
             throw new InitializationException("Invalid Solr resource: " + ex.getMessage(), ex);
         }
     }
 
     @Override
-    public void replaceCore(String vocabularyId) throws InitializationException
+    public void replaceCore(Vocabulary vocabulary) throws InitializationException
     {
-        String absPath = this.environment.getPermanentDirectory().getAbsolutePath();
-        File indexOrigin = new File(absPath, SOLR + vocabularyId + "/data");
-        File indexTemp = new File(absPath, SOLR + vocabularyId + TEMP + "/data");
+        final String absPath = this.environment.getPermanentDirectory().getAbsolutePath();
+        final File indexOrigin = new File(absPath, SOLR + vocabulary.getIdentifier() + "/data");
+        final File indexTemp = new File(absPath, SOLR + vocabulary.getIdentifier() + TEMP + "/data");
         try {
             CoreContainer container = this.coreContainer.getContainer();
-            SolrCore solrCore = container.getCore(vocabularyId);
+            SolrCore solrCore = container.getCore(vocabulary.getIdentifier());
             if (solrCore != null) {
                 solrCore.close();
             }
-            container.unload(vocabularyId, true, false, false);
+            container.unload(vocabulary.getIdentifier(), true, false, false);
             FileUtils.copyDirectory(indexTemp, indexOrigin);
-            initialize(vocabularyId);
+            initialize(vocabulary);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
     @Override
-    public SolrClient getReplacementSolrConnection(String vocabularyId)
+    public SolrClient getReplacementSolrConnection(Vocabulary vocabulary)
     {
-        return this.getSolrConnection(vocabularyId + TEMP);
+        return this.getSolrConnection(vocabulary.getIdentifier() + TEMP);
     }
 
     @Override
-    public void discardReplacementCore(String vocabularyId)
+    public void discardReplacementCore(Vocabulary vocabulary)
     {
-        if (this.cores.containsKey(vocabularyId + TEMP)) {
+        final String replacementCoreId = vocabulary.getIdentifier() + TEMP;
+        if (this.cores.containsKey(replacementCoreId)) {
             CoreContainer container = this.coreContainer.getContainer();
-            SolrCore solrCore = container.getCore(vocabularyId + TEMP);
+            SolrCore solrCore = container.getCore(replacementCoreId);
             if (solrCore != null) {
                 solrCore.close();
             }
-            container.unload(vocabularyId + TEMP, true, true, true);
-            this.cores.remove(vocabularyId + TEMP);
-            this.caches.remove(vocabularyId + TEMP);
+            container.unload(replacementCoreId, true, true, true);
+            this.cores.remove(replacementCoreId);
+            this.caches.remove(replacementCoreId);
         }
     }
 }

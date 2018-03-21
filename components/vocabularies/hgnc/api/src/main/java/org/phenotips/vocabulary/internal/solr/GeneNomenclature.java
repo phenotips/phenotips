@@ -140,12 +140,6 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
     }
 
     @Override
-    protected String getCoreName()
-    {
-        return getIdentifier();
-    }
-
-    @Override
     public String getIdentifier()
     {
         return "hgnc";

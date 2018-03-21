@@ -19,6 +19,7 @@ package org.phenotips.vocabulary.translation;
 
 import org.phenotips.vocabulary.SolrVocabularyResourceManager;
 import org.phenotips.vocabulary.VocabularyExtension;
+import org.phenotips.vocabulary.VocabularyManager;
 
 import org.xwiki.component.phase.Initializable;
 
@@ -54,6 +55,9 @@ public abstract class AbstractXliffTranslatedSolrVocabularyExtension extends Abs
 {
     @Inject
     protected SolrVocabularyResourceManager coreConnection;
+
+    @Inject
+    private VocabularyManager vocabularyManager;
 
     @Override
     public void initialize()
@@ -148,7 +152,7 @@ public abstract class AbstractXliffTranslatedSolrVocabularyExtension extends Abs
      */
     protected SolrClient getClient()
     {
-        return this.coreConnection.getSolrConnection(getTargetVocabularyId());
+        return this.coreConnection.getSolrConnection(this.vocabularyManager.getVocabulary(getTargetVocabularyId()));
     }
 
     /**

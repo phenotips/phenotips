@@ -103,7 +103,7 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
     protected int clear()
     {
         try {
-            this.externalServicesAccess.getSolrConnection(getCoreName()).deleteByQuery("*:*");
+            this.externalServicesAccess.getSolrConnection(this).deleteByQuery("*:*");
             return 0;
         } catch (SolrServerException ex) {
             this.logger.error("SolrServerException while clearing the Solr index", ex);
@@ -190,7 +190,7 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
         query.setQuery("version:*");
         query.set(CommonParams.ROWS, "1");
         try {
-            final QueryResponse response = this.externalServicesAccess.getSolrConnection(getCoreName()).query(query);
+            final QueryResponse response = this.externalServicesAccess.getSolrConnection(this).query(query);
             final SolrDocumentList termList = response.getResults();
 
             if (!termList.isEmpty()) {
@@ -218,7 +218,7 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
         if (StringUtils.isNotBlank(version)) {
             doc.addField(ID_FIELD_NAME, HEADER_INFO_LABEL);
             doc.addField(VERSION_FIELD_NAME, version);
-            this.externalServicesAccess.getSolrConnection(getCoreName()).add(doc);
+            this.externalServicesAccess.getSolrConnection(this).add(doc);
             doc.clear();
         }
     }

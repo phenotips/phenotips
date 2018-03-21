@@ -62,7 +62,7 @@ public class ChEBIOntologyTest
 
     private SolrClient server;
 
-    private Vocabulary ontologyService;
+    private Vocabulary vocabulary;
 
     @SuppressWarnings("unchecked")
     @Before
@@ -70,15 +70,15 @@ public class ChEBIOntologyTest
         throws ComponentLookupException, IOException, SolrServerException, CacheException
     {
         this.cache = mock(Cache.class);
+        this.vocabulary = this.mocker.getComponentUnderTest();
         SolrVocabularyResourceManager externalServicesAccess =
             this.mocker.getInstance(SolrVocabularyResourceManager.class);
-        when(externalServicesAccess.getTermCache("chebi")).thenReturn(this.cache);
+        when(externalServicesAccess.getTermCache(this.vocabulary)).thenReturn(this.cache);
         this.server = mock(SolrClient.class);
-        when(externalServicesAccess.getReplacementSolrConnection("chebi")).thenReturn(this.server);
-        when(externalServicesAccess.getSolrConnection("chebi")).thenReturn(this.server);
-        this.ontologyService = this.mocker.getComponentUnderTest();
+        when(externalServicesAccess.getReplacementSolrConnection(this.vocabulary)).thenReturn(this.server);
+        when(externalServicesAccess.getSolrConnection(this.vocabulary)).thenReturn(this.server);
         this.ontologyServiceResult =
-            this.ontologyService.reindex(this.getClass().getResource("/chebi-test.obo").toString());
+            this.vocabulary.reindex(this.getClass().getResource("/chebi-test.obo").toString());
     }
 
     @Test
@@ -103,13 +103,13 @@ public class ChEBIOntologyTest
         SolrDocument versionDoc = mock(SolrDocument.class);
         when(results.get(0)).thenReturn(versionDoc);
         when(versionDoc.getFieldValue("version")).thenReturn("2014:01:01");
-        Assert.assertEquals("2014:01:01", this.ontologyService.getVersion());
+        Assert.assertEquals("2014:01:01", this.vocabulary.getVersion());
     }
 
     @Test
     public void testChEBIOntologyDefaultLocation()
     {
-        String location = this.ontologyService.getDefaultSourceLocation();
+        String location = this.vocabulary.getDefaultSourceLocation();
         Assert.assertNotNull(location);
         Assert.assertTrue(location.endsWith("chebi.obo"));
         Assert.assertTrue(location.startsWith("ftp"));

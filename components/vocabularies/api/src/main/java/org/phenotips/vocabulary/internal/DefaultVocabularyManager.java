@@ -22,8 +22,6 @@ import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,6 +36,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -53,34 +52,33 @@ import org.slf4j.Logger;
  */
 @Component
 @Singleton
-public class DefaultVocabularyManager implements VocabularyManager, Initializable
+public class DefaultVocabularyManager implements VocabularyManager
 {
     private static final String SCORE_LABEL = "score";
 
     /** The currently available vocabularies. */
     @Inject
-    private Map<String, Vocabulary> vocabularies;
+    private Provider<Map<String, Vocabulary>> vocabularies;
 
     /** Get the logging object. */
     @Inject
     private Logger logger;
 
-    /** The available vocabularies, including keys for each of their aliases. */
-    private Map<String, Vocabulary> aliasVocabularies;
-
-    /** The available vocabularies, stored under their respective categories. */
-    private Map<String, Set<Vocabulary>> vocabulariesByCategory;
-
-    @Override
-    public void initialize() throws InitializationException
+    /**
+     * Constructs a map of vocabularies, where each vocabulary is also listed under each of its aliases.
+     *
+     * @return a map where the key is a vocabulary name or alias, and the value is the {@link Vocabulary} with that name
+     *         or alias
+     */
+    private Map<String, Vocabulary> constructVocabulariesByAlias()
     {
-        this.aliasVocabularies = new HashMap<>();
-        for (Vocabulary vocabulary : this.vocabularies.values()) {
+        Map<String, Vocabulary> aliasVocabularies = new HashMap<>();
+        for (Vocabulary vocabulary : this.vocabularies.get().values()) {
             for (String alias : vocabulary.getAliases()) {
-                this.aliasVocabularies.put(alias, vocabulary);
+                aliasVocabularies.put(alias, vocabulary);
             }
         }
-        this.vocabulariesByCategory = constructVocabulariesByCategory();
+        return aliasVocabularies;
     }
 
     /**
@@ -92,7 +90,7 @@ public class DefaultVocabularyManager implements VocabularyManager, Initializabl
     private Map<String, Set<Vocabulary>> constructVocabulariesByCategory()
     {
         final Map<String, Set<Vocabulary>> categorizedVocabularies = new HashMap<>();
-        for (final Vocabulary vocabulary : this.vocabularies.values()) {
+        for (final Vocabulary vocabulary : this.vocabularies.get().values()) {
             final Collection<String> supportedCategories = vocabulary.getSupportedCategories();
             for (final String category : supportedCategories) {
                 final Set<Vocabulary> vocabularySet = generateVocabSetForCategory(category, categorizedVocabularies);
@@ -135,28 +133,29 @@ public class DefaultVocabularyManager implements VocabularyManager, Initializabl
     @Override
     public Vocabulary getVocabulary(String vocabularyId)
     {
-        return this.aliasVocabularies.get(vocabularyId);
+        return this.constructVocabulariesByAlias().get(vocabularyId);
     }
 
     @Override
     public Set<Vocabulary> getVocabularies(final String category)
     {
-        if (!this.vocabulariesByCategory.containsKey(category)) {
+        Set<Vocabulary> result = this.constructVocabulariesByCategory().get(category);
+        if (result == null) {
             return Collections.emptySet();
         }
-        return Collections.unmodifiableSet(this.vocabulariesByCategory.get(category));
+        return Collections.unmodifiableSet(result);
     }
 
     @Override
     public List<String> getAvailableVocabularies()
     {
-        return new ArrayList<>(this.vocabularies.keySet());
+        return new ArrayList<>(this.vocabularies.get().keySet());
     }
 
     @Override
     public List<String> getAvailableCategories()
     {
-        return new ArrayList<>(this.vocabulariesByCategory.keySet());
+        return new ArrayList<>(this.constructVocabulariesByCategory().keySet());
     }
 
     @Override
@@ -168,7 +167,7 @@ public class DefaultVocabularyManager implements VocabularyManager, Initializabl
             return Collections.emptyList();
         }
         // Try to get the vocabularies that belong to the provided category. If none returned, return empty list.
-        final Set<Vocabulary> categorizedVocabularies = this.vocabulariesByCategory.get(category);
+        final Set<Vocabulary> categorizedVocabularies = this.constructVocabulariesByCategory().get(category);
         if (CollectionUtils.isEmpty(categorizedVocabularies)) {
             this.logger.warn("No vocabularies associated with the specified category: {}", category);
             return Collections.emptyList();
@@ -180,13 +179,13 @@ public class DefaultVocabularyManager implements VocabularyManager, Initializabl
     @Override
     public boolean hasVocabulary(final String vocabulary)
     {
-        return this.vocabularies.containsKey(vocabulary);
+        return this.constructVocabulariesByAlias().containsKey(vocabulary);
     }
 
     @Override
     public boolean hasCategory(final String category)
     {
-        return this.vocabulariesByCategory.containsKey(category);
+        return this.constructVocabulariesByCategory().containsKey(category);
     }
 
     /**
@@ -259,7 +258,7 @@ public class DefaultVocabularyManager implements VocabularyManager, Initializabl
     {
         String vocabularyId = StringUtils.substringBefore(termId, ":");
         if (StringUtils.isNotBlank(vocabularyId)) {
-            return this.aliasVocabularies.get(vocabularyId);
+            return this.constructVocabulariesByAlias().get(vocabularyId);
         }
         return null;
     }

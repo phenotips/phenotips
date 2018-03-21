@@ -64,6 +64,11 @@ public class PhenotypeSuggestService implements ScriptService
     @Named("hpo")
     private Vocabulary hpo;
 
+    /** Provides access to the OMIM ontology. */
+    @Inject
+    @Named("omim")
+    private Vocabulary omim;
+
     @Inject
     private SolrVocabularyResourceManager solrManager;
 
@@ -86,7 +91,7 @@ public class PhenotypeSuggestService implements ScriptService
         QueryResponse response;
         List<SuggestedPhenotype> result = new LinkedList<>();
         try {
-            response = this.solrManager.getSolrConnection("omim").query(prepareParams(phenotypes, nphenotypes));
+            response = this.solrManager.getSolrConnection(this.omim).query(prepareParams(phenotypes, nphenotypes));
         } catch (SolrServerException | IOException ex) {
             this.logger.warn("Failed to query OMIM index: {}", ex.getMessage());
             return result;

@@ -180,13 +180,13 @@ public class OncoTreeTest
     {
         MockitoAnnotations.initMocks(this);
 
+        this.component = this.mocker.getComponentUnderTest();
+        this.oncoTree = spy((OncoTree) this.component);
+
         SolrVocabularyResourceManager externalServicesAccess =
             this.mocker.getInstance(SolrVocabularyResourceManager.class);
 
-        when(externalServicesAccess.getSolrConnection(ONCO_LOWER)).thenReturn(this.server);
-
-        this.component = this.mocker.getComponentUnderTest();
-        this.oncoTree = spy((OncoTree) this.component);
+        when(externalServicesAccess.getSolrConnection(this.component)).thenReturn(this.server);
 
         this.logger = this.mocker.getMockedLogger();
         this.url = new URL(this.component.getDefaultSourceLocation());
@@ -367,12 +367,6 @@ public class OncoTreeTest
     }
 
     @Test
-    public void getCoreName()
-    {
-        Assert.assertEquals(ONCO_LOWER, ((OncoTree) this.component).getCoreName());
-    }
-
-    @Test
     public void getIdentifier()
     {
         Assert.assertEquals(ONCO_LOWER, this.component.getIdentifier());
@@ -422,7 +416,7 @@ public class OncoTreeTest
         Assert.assertTrue(categories.contains(DISEASE));
     }
 
-    @Test (expected = UnsupportedOperationException.class)
+    @Test(expected = UnsupportedOperationException.class)
     public void getSupportedCategoriesReturnsImmutableCollection()
     {
         final Collection<String> categories = this.component.getSupportedCategories();
