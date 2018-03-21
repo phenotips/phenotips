@@ -10,7 +10,7 @@
 #set ($lock = $services.locks.getLock($doc.getDocumentReference()))
 #if($lock && (!$lock.canOverride() || "$!request.get('force')" == ''))
   #template("startpage.vm")
-  <div class="main">
+  <div class="main layoutsubsection">
    <div id="mainContentArea">
     ##
     $response.setStatus(423)
@@ -24,7 +24,7 @@
     #xwikimessageboxend()
     ##
    </div>## mainContentArea
-  </div>## main
+  </div>## main layoutsubsection
   #template("endpage.vm")
 #else
   ##
