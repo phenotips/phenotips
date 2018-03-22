@@ -529,18 +529,15 @@
 }
 
 #genePanelsExcludeGenesWrapper {
-  float: right;
-  font-size: .7em;
   text-transform: capitalize;
-  margin-right: -20px;
   color: $theme.textColor;
+  float: right;
 }
 
 #genePanelsExcludeGenesWrapper label {
   width: 100%;
   display: inline;
   padding-left: .3em;
-  font-weight: bold;
 }
 
 #panels-livetable tbody.xwiki-livetable-display-body tr:hover,
