@@ -20,6 +20,7 @@ package org.phenotips.panels.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.panels.GenePanel;
 import org.phenotips.panels.GenePanelFactory;
+import org.phenotips.panels.MatchCount;
 import org.phenotips.panels.TermsForGene;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
@@ -62,9 +63,17 @@ public class DefaultGenePanelFactoryImplTest
 
     private static final String SIZE_LABEL = "returnedrows";
 
+    private static final String ID_LABEL = "id";
+
+    private static final String NAME_LABEL = "label";
+
     private static final String TOTAL_SIZE_LABEL = "totalrows";
 
     private static final String GENE_ROWS_LABEL = "rows";
+
+    private static final String MATCH_COUNT_LABEL = "matchCount";
+
+    private static final String COUNT_LABEL = "count";
 
     private static final String HPO_TERM1 = "HP:001";
 
@@ -112,18 +121,48 @@ public class DefaultGenePanelFactoryImplTest
     }
 
     @Test
+    public void buildThrowsExceptionIfPatientIsNullWithMatchCounts()
+    {
+        final Patient patient = null;
+        this.expectedException.expect(Exception.class);
+        this.genePanelFactory.withMatchCount(true).build(patient);
+    }
+
+    @Test
     public void buildWorksIfPatientEmpty()
     {
         final Patient patient = mock(Patient.class);
         Assert.assertEquals(Collections.emptySet(), patient.getFeatures());
+
+        // Without match count.
         final GenePanel genePanel = this.genePanelFactory.build(patient);
         Assert.assertEquals(0, genePanel.size());
         Assert.assertTrue(genePanel.getPresentTerms().isEmpty());
         Assert.assertTrue(genePanel.getAbsentTerms().isEmpty());
         Assert.assertTrue(genePanel.getTermsForGeneList().isEmpty());
+        Assert.assertNull(genePanel.getMatchCounts());
 
         final JSONObject expectedJson = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
             .put(GENE_ROWS_LABEL, new JSONArray());
+        Assert.assertTrue(genePanel.toJSON().similar(expectedJson));
+    }
+
+    @Test
+    public void buildWorksIfPatientEmptyWithMatchCounts()
+    {
+        final Patient patient = mock(Patient.class);
+        Assert.assertEquals(Collections.emptySet(), patient.getFeatures());
+
+        // With match count.
+        final GenePanel genePanel = this.genePanelFactory.withMatchCount(true).build(patient);
+        Assert.assertEquals(0, genePanel.size());
+        Assert.assertTrue(genePanel.getPresentTerms().isEmpty());
+        Assert.assertTrue(genePanel.getAbsentTerms().isEmpty());
+        Assert.assertTrue(genePanel.getTermsForGeneList().isEmpty());
+        Assert.assertTrue(genePanel.getMatchCounts().isEmpty());
+
+        final JSONObject expectedJson = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
+            .put(GENE_ROWS_LABEL, new JSONArray()).put(MATCH_COUNT_LABEL, new JSONArray());
         Assert.assertTrue(genePanel.toJSON().similar(expectedJson));
     }
 
@@ -135,8 +174,20 @@ public class DefaultGenePanelFactoryImplTest
         final List<VocabularyTerm> presentTerms = null;
         final List<VocabularyTerm> absentTerms = Collections.emptyList();
 
+        // Without match count.
         this.expectedException.expect(Exception.class);
         this.genePanelFactory.build(presentTerms, absentTerms);
+    }
+
+    @Test
+    public void buildThrowsExceptionIfAnyVocabularyTermIsNullWithMatchCounts()
+    {
+        final List<VocabularyTerm> presentTerms = null;
+        final List<VocabularyTerm> absentTerms = Collections.emptyList();
+
+        // With match count.
+        this.expectedException.expect(Exception.class);
+        this.genePanelFactory.withMatchCount(true).build(presentTerms, absentTerms);
     }
 
     @Test
@@ -144,14 +195,37 @@ public class DefaultGenePanelFactoryImplTest
     {
         final Set<VocabularyTerm> presentTerms = Collections.emptySet();
         final Set<VocabularyTerm> absentTerms = Collections.emptySet();
+
+        // Without match count.
         final GenePanel genePanel = this.genePanelFactory.build(presentTerms, absentTerms);
         Assert.assertEquals(0, genePanel.size());
         Assert.assertTrue(genePanel.getPresentTerms().isEmpty());
         Assert.assertTrue(genePanel.getAbsentTerms().isEmpty());
         Assert.assertTrue(genePanel.getTermsForGeneList().isEmpty());
+        Assert.assertNull(genePanel.getMatchCounts());
 
         final JSONObject expectedJson = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
             .put(GENE_ROWS_LABEL, new JSONArray());
+        Assert.assertTrue(genePanel.toJSON().similar(expectedJson));
+    }
+
+    @Test
+    public void buildWorksIfVocabularyTermsAreEmptyWithMatchCounts()
+    {
+        final Set<VocabularyTerm> presentTerms = Collections.emptySet();
+        final Set<VocabularyTerm> absentTerms = Collections.emptySet();
+
+        // With match count.
+        final GenePanel genePanel = this.genePanelFactory.withMatchCount(true)
+            .build(presentTerms, absentTerms);
+        Assert.assertEquals(0, genePanel.size());
+        Assert.assertTrue(genePanel.getPresentTerms().isEmpty());
+        Assert.assertTrue(genePanel.getAbsentTerms().isEmpty());
+        Assert.assertTrue(genePanel.getTermsForGeneList().isEmpty());
+        Assert.assertTrue(genePanel.getMatchCounts().isEmpty());
+
+        final JSONObject expectedJson = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
+            .put(GENE_ROWS_LABEL, new JSONArray()).put(MATCH_COUNT_LABEL, new JSONArray());
         Assert.assertTrue(genePanel.toJSON().similar(expectedJson));
     }
 
@@ -171,10 +245,15 @@ public class DefaultGenePanelFactoryImplTest
         associatedGenes.add(GENE2);
 
         when(presentTerm.get(ASSOCIATED_GENES)).thenReturn(associatedGenes);
+        when(presentTerm.getId()).thenReturn(HPO_TERM1);
+        when(absentTerm.getId()).thenReturn(HPO_TERM2);
+        when(presentTerm.getTranslatedName()).thenReturn(HPO_TERM1);
+        when(absentTerm.getTranslatedName()).thenReturn(HPO_TERM2);
         when(presentTerm.getName()).thenReturn(HPO_TERM1);
         when(absentTerm.getName()).thenReturn(HPO_TERM2);
         when(this.hgnc.getTerm(anyString())).thenReturn(null);
 
+        // Without match count.
         final GenePanel genePanel = this.genePanelFactory.build(presentTerms, absentTerms);
 
         // The gene panel should only represent two genes.
@@ -200,5 +279,68 @@ public class DefaultGenePanelFactoryImplTest
         Assert.assertEquals(1, termsForGene.get(1).getCount());
         // Check the term associated with "gene2" is the one that is expected.
         Assert.assertEquals(presentTerms, termsForGene.get(1).getTerms());
+        // The panel was build without match counts, so this value should be null.
+        Assert.assertNull(genePanel.getMatchCounts());
+    }
+
+    @Test
+    public void buildWorksIfVocabularyTermsAreNotEmptyWithMatchCounts()
+    {
+        final VocabularyTerm presentTerm = mock(VocabularyTerm.class);
+        final VocabularyTerm absentTerm = mock(VocabularyTerm.class);
+
+        final Set<VocabularyTerm> presentTerms = new HashSet<>();
+        presentTerms.add(presentTerm);
+        final Set<VocabularyTerm> absentTerms = new HashSet<>();
+        absentTerms.add(absentTerm);
+
+        final List<String> associatedGenes = new ArrayList<>();
+        associatedGenes.add(GENE1);
+        associatedGenes.add(GENE2);
+
+        when(presentTerm.get(ASSOCIATED_GENES)).thenReturn(associatedGenes);
+        when(presentTerm.getId()).thenReturn(HPO_TERM1);
+        when(absentTerm.getId()).thenReturn(HPO_TERM2);
+        when(presentTerm.getTranslatedName()).thenReturn(HPO_TERM1);
+        when(absentTerm.getTranslatedName()).thenReturn(HPO_TERM2);
+        when(presentTerm.getName()).thenReturn(HPO_TERM1);
+        when(absentTerm.getName()).thenReturn(HPO_TERM2);
+        when(this.hgnc.getTerm(anyString())).thenReturn(null);
+
+        // With match count.
+        final GenePanel genePanel = this.genePanelFactory.withMatchCount(true).build(presentTerms, absentTerms);
+
+        // The gene panel should only represent two genes.
+        Assert.assertEquals(2, genePanel.size());
+        // There should only be one present term and one absent term.
+        Assert.assertEquals(presentTerms, genePanel.getPresentTerms());
+        Assert.assertEquals(absentTerms, genePanel.getAbsentTerms());
+
+        final List<TermsForGene> termsForGene = genePanel.getTermsForGeneList();
+        // There should only be two objects, one for each gene.
+        Assert.assertEquals(2, termsForGene.size());
+
+        Assert.assertEquals(GENE1, termsForGene.get(0).getGeneId());
+        Assert.assertEquals(GENE1, termsForGene.get(0).getGeneSymbol());
+        // The number of terms associated with "gene1" should be 1.
+        Assert.assertEquals(1, termsForGene.get(0).getCount());
+        // Check the term associated with "gene1" is the one that is expected.
+        Assert.assertEquals(presentTerms, termsForGene.get(0).getTerms());
+
+        Assert.assertEquals(GENE2, termsForGene.get(1).getGeneId());
+        Assert.assertEquals(GENE2, termsForGene.get(1).getGeneSymbol());
+        // The number of terms associated with "gene2" should be 1.
+        Assert.assertEquals(1, termsForGene.get(1).getCount());
+        // Check the term associated with "gene2" is the one that is expected.
+        Assert.assertEquals(presentTerms, termsForGene.get(1).getTerms());
+        // The panel was build with match counts, so there should be one term with the count of two (genes).
+        final List<MatchCount> matchCountsList = genePanel.getMatchCounts();
+        Assert.assertEquals(1, matchCountsList.size());
+        final MatchCount matchCountObj = matchCountsList.get(0);
+        Assert.assertEquals(HPO_TERM1, matchCountObj.getId());
+        Assert.assertEquals(HPO_TERM1, matchCountObj.getName());
+        Assert.assertEquals(2, matchCountObj.getCount());
+        Assert.assertTrue(new JSONObject().put(ID_LABEL, HPO_TERM1).put(NAME_LABEL, HPO_TERM1).put(COUNT_LABEL, 2)
+            .similar(matchCountObj.toJSON()));
     }
 }

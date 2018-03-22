@@ -37,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyCollectionOf;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -112,6 +113,7 @@ public class DefaultGenePanelLoaderTest
         when(vocabularyManager.resolveTerm(TERM_2)).thenReturn(this.term2);
         when(vocabularyManager.resolveTerm(TERM_3)).thenReturn(this.term3);
 
+        when(this.genePanelFactory.withMatchCount(anyBoolean())).thenReturn(this.genePanelFactory);
         when(this.genePanelFactory.build(anyCollectionOf(VocabularyTerm.class), anyCollectionOf(VocabularyTerm.class),
             anyCollectionOf(VocabularyTerm.class))).thenReturn(this.genePanel1);
 

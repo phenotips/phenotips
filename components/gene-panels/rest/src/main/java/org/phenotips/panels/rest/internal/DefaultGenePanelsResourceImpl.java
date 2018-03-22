@@ -77,6 +77,7 @@ public class DefaultGenePanelsResourceImpl extends XWikiResource implements Gene
         final Set<String> presentTerms = extractTerms("present-term", request);
         final Set<String> absentTerms = extractTerms("absent-term", request);
         final Set<String> rejectedGenes = extractTerms("rejected-gene", request);
+        final boolean withMatchCount = Boolean.parseBoolean((String) request.getProperty("with-match-count"));
 
         if (CollectionUtils.isEmpty(presentTerms) && CollectionUtils.isEmpty(absentTerms)
             && CollectionUtils.isEmpty(rejectedGenes)) {
@@ -89,7 +90,7 @@ public class DefaultGenePanelsResourceImpl extends XWikiResource implements Gene
         final int reqNo = NumberUtils.toInt((String) request.getProperty(REQ_NO), 0);
 
         try {
-            final PanelData loaderKey = new PanelData(presentTerms, absentTerms, rejectedGenes);
+            final PanelData loaderKey = new PanelData(presentTerms, absentTerms, rejectedGenes, withMatchCount);
             // Try to generate the JSON for the requested subset of data.
             final JSONObject panels = getPageData(this.genePanelLoader.get(loaderKey), startPage, numResults);
             panels.put(REQ_NO, reqNo);

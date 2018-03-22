@@ -18,6 +18,7 @@
 package org.phenotips.panels.internal;
 
 import org.phenotips.panels.GenePanel;
+import org.phenotips.panels.MatchCount;
 import org.phenotips.panels.TermsForGene;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
@@ -27,7 +28,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -66,6 +70,8 @@ public class DefaultGenePanelImpl implements GenePanel
     /** HGNC vocabulary label. */
     private static final String HGNC_LABEL = "hgnc";
 
+    private static final String MATCH_COUNT = "matchCount";
+
     /** The hgnc vocabulary. */
     private final Vocabulary hgnc;
 
@@ -76,7 +82,10 @@ public class DefaultGenePanelImpl implements GenePanel
     private final Set<VocabularyTerm> absentTerms;
 
     /** An ordered list of objects containing gene count data. */
-    private final List<TermsForGene> termsForGeneList;
+    private List<TermsForGene> termsForGeneList;
+
+    /** An ordered list of objects containing match count data. */
+    private List<MatchCount> matchCounts;
 
     /**
      * Simple constructor, passing in a collection of {@code presentTerms} and a collection of {@code absentTerms}, as
@@ -89,7 +98,22 @@ public class DefaultGenePanelImpl implements GenePanel
     DefaultGenePanelImpl(@Nonnull final Collection<VocabularyTerm> presentTerms,
         @Nonnull final Collection<VocabularyTerm> absentTerms, @Nonnull final VocabularyManager vocabularyManager)
     {
-        this(presentTerms, absentTerms, Collections.emptySet(), vocabularyManager);
+        this(presentTerms, absentTerms, Collections.emptySet(), false, vocabularyManager);
+    }
+
+    /**
+     * Simple constructor, passing in a collection of {@code presentTerms} and a collection of {@code absentTerms}, as
+     * {@link VocabularyTerm} objects, and a {@link VocabularyManager}.
+     *
+     * @param presentTerms a collection of {@link VocabularyTerm feature identifiers} that are present
+     * @param absentTerms a collection of {@link VocabularyTerm feature identifiers} that are absent
+     * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
+     */
+    DefaultGenePanelImpl(@Nonnull final Collection<VocabularyTerm> presentTerms,
+        @Nonnull final Collection<VocabularyTerm> absentTerms, final boolean generateMatchCount,
+        @Nonnull final VocabularyManager vocabularyManager)
+    {
+        this(presentTerms, absentTerms, Collections.emptySet(), generateMatchCount, vocabularyManager);
     }
 
     /**
@@ -108,11 +132,33 @@ public class DefaultGenePanelImpl implements GenePanel
         @Nonnull final Collection<VocabularyTerm> rejectedGenes,
         @Nonnull final VocabularyManager vocabularyManager)
     {
+        this(presentTerms, absentTerms, rejectedGenes, false, vocabularyManager);
+    }
+
+    /**
+     * Simple constructor, passing in a collection of {@code presentTerms} and a collection of {@code absentTerms}, as
+     * {@link VocabularyTerm} objects, a collection of {@code rejectedGenes rejected genes}, and a
+     * {@link VocabularyManager}.
+     *
+     * @param presentTerms a collection of {@link VocabularyTerm feature identifiers} that are present
+     * @param absentTerms a collection of {@link VocabularyTerm feature identifiers} that are absent
+     * @param rejectedGenes a collection of genes that were tested to be negative
+     * @param generateMatchCount iff true, generate a term to number of associated genes mapping
+     * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
+     */
+    DefaultGenePanelImpl(
+        @Nonnull final Collection<VocabularyTerm> presentTerms,
+        @Nonnull final Collection<VocabularyTerm> absentTerms,
+        @Nonnull final Collection<VocabularyTerm> rejectedGenes,
+        final boolean generateMatchCount,
+        @Nonnull final VocabularyManager vocabularyManager)
+    {
         this.hgnc = vocabularyManager.getVocabulary(HGNC_LABEL);
 
         this.presentTerms = Collections.unmodifiableSet(new HashSet<>(presentTerms));
         this.absentTerms = Collections.unmodifiableSet(new HashSet<>(absentTerms));
-        this.termsForGeneList = buildTermsForGeneList(rejectedGenes);
+
+        buildTermsForGeneList(rejectedGenes, generateMatchCount);
     }
 
     /**
@@ -121,20 +167,77 @@ public class DefaultGenePanelImpl implements GenePanel
      * {@code absentGenes absent genes} are excluded from the returned list.
      *
      * @param absentGenes genes that were tested negative
-     * @return a list of {@link TermsForGene} objects, sorted in descending order or relevance
+     * @param generateMatchCount iff true, generate a term to number of associated genes mapping
      */
-    private List<TermsForGene> buildTermsForGeneList(@Nonnull final Collection<VocabularyTerm> absentGenes)
+    private void buildTermsForGeneList(@Nonnull final Collection<VocabularyTerm> absentGenes,
+        boolean generateMatchCount)
     {
+        final Set<String> geneExclusions = getAllExcludedGenes(absentGenes);
         // A builder to add and update the count data for all the genes.
-        final TermsForGeneBuilder termsForGeneBuilder = new TermsForGeneBuilder(absentGenes);
-
+        final TermsForGeneBuilder termsForGeneBuilder = new TermsForGeneBuilder(geneExclusions);
         // Update the data for all HPO identifiers.
-        for (final VocabularyTerm term : getPresentTerms()) {
-            final List<String> storedGenes = getGeneDataFromTerm(term);
-            addTermForGenes(term, storedGenes, termsForGeneBuilder);
+        if (generateMatchCount) {
+            final MatchCountBuilder matchCountBuilder = new MatchCountBuilder();
+            getPresentTerms().forEach(
+                term -> addMatchCountsAndTermsForGene(term, geneExclusions, termsForGeneBuilder, matchCountBuilder));
+            this.matchCounts = matchCountBuilder.build();
+        } else {
+            getPresentTerms().forEach(term -> addTermForGenes(term, getGeneDataFromTerm(term), termsForGeneBuilder));
         }
+        this.termsForGeneList = termsForGeneBuilder.build();
+    }
 
-        return termsForGeneBuilder.build();
+    /**
+     * Adds the natch counts and terms for gene.
+     *
+     * @param term the {@link VocabularyTerm} of interest
+     * @param geneExclusions the identifiers for genes to be excluded
+     * @param termsForGeneBuilder the {@link TermsForGeneBuilder} object
+     */
+    private void addMatchCountsAndTermsForGene(
+        @Nonnull final VocabularyTerm term,
+        @Nonnull final Set<String> geneExclusions,
+        @Nonnull final TermsForGeneBuilder termsForGeneBuilder,
+        @Nonnull final MatchCountBuilder matchCountBuilder)
+    {
+        final List<String> storedGenes = getGeneDataFromTerm(term);
+        matchCountBuilder.add(term, CollectionUtils.subtract(storedGenes, geneExclusions));
+        addTermForGenes(term, storedGenes, termsForGeneBuilder);
+    }
+
+    /**
+     * Given a collection of {@code absentGenes} retrieves and returns all the names that they are known by, as strings.
+     *
+     * @param absentGenes a collection of gene {@link VocabularyTerm} objects
+     * @return a set of gene names and aliases, as strings
+     */
+    private Set<String> getAllExcludedGenes(@Nonnull final Collection<VocabularyTerm> absentGenes)
+    {
+        return absentGenes.stream()
+            // Remove any nulls.
+            .filter(Objects::nonNull)
+            // Flatten the streams of names for each gene.
+            .flatMap(this::getGeneNameStream)
+            // Remove any nulls.
+            .filter(Objects::nonNull)
+            // Get the set of all names and alternative names for the absent genes.
+            .collect(Collectors.toSet());
+    }
+
+    /**
+     * Returns a stream of gene names, as strings.
+     *
+     * @param gene a gene {@link VocabularyTerm}
+     * @return a stream of all known names for {@code gene}
+     */
+    private Stream<String> getGeneNameStream(@Nonnull final VocabularyTerm gene)
+    {
+        final String symbol = (String) gene.get(SYMBOL_LABEL);
+
+        // Contains alias_symbol, prev_symbol, entrez_id, ensembl_gene_id, refseq_accession, and ena.
+        final Collection<String> aliases = (Collection<String>) gene.get("alt_id");
+        // Get the stream of all names.
+        return Stream.concat(Stream.of(symbol), aliases != null ? aliases.stream() : Stream.empty());
     }
 
     /**
@@ -222,9 +325,16 @@ public class DefaultGenePanelImpl implements GenePanel
     }
 
     @Override
+    public List<MatchCount> getMatchCounts()
+    {
+        return this.matchCounts;
+    }
+
+    @Override
     public JSONObject toJSON()
     {
         final JSONObject jsonObject = buildPhenotypesForGeneJSON(0, this.size());
+        tryAddMatchCountsJson(jsonObject);
         return jsonObject.put(RETURNED_SIZE, this.size()).put(TOTAL_SIZE, this.size());
     }
 
@@ -232,7 +342,22 @@ public class DefaultGenePanelImpl implements GenePanel
     public JSONObject toJSON(final int fromIndex, final int toIndex)
     {
         final JSONObject jsonObject = buildPhenotypesForGeneJSON(fromIndex, toIndex);
+        tryAddMatchCountsJson(jsonObject);
         return jsonObject.put(RETURNED_SIZE, toIndex - fromIndex).put(TOTAL_SIZE, this.size());
+    }
+
+    /**
+     * If the builder was initialized, builds the match counts JSON.
+     *
+     * @param panelJson the {@link JSONObject} containing gene panel data
+     */
+    private void tryAddMatchCountsJson(@Nonnull final JSONObject panelJson)
+    {
+        if (this.matchCounts != null) {
+            final JSONArray matchCountsJson = new JSONArray();
+            this.matchCounts.forEach(matchCount -> matchCountsJson.put(matchCount.toJSON()));
+            panelJson.put(MATCH_COUNT, matchCountsJson);
+        }
     }
 
     /**

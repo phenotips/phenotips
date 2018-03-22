@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -91,12 +92,14 @@ public class DefaultGenePanelsPatientResourceImplTest
         this.logger = this.mocker.getMockedLogger();
         this.genePanelFactory = this.mocker.getInstance(GenePanelFactory.class);
         this.repository = this.mocker.getInstance(PatientRepository.class, "secure");
+
+        when(this.genePanelFactory.withMatchCount(anyBoolean())).thenReturn(this.genePanelFactory);
     }
 
     @Test
     public void getPatientGeneCountsPatientIdIsNull()
     {
-        final Response response = this.component.getPatientGeneCounts(null, false);
+        final Response response = this.component.getPatientGeneCounts(null, false, false);
         verify(this.logger).error("No patient ID was provided.");
         Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
@@ -104,7 +107,7 @@ public class DefaultGenePanelsPatientResourceImplTest
     @Test
     public void getPatientGeneCountsPatientIdIsEmpty()
     {
-        final Response response = this.component.getPatientGeneCounts(StringUtils.EMPTY, false);
+        final Response response = this.component.getPatientGeneCounts(StringUtils.EMPTY, false, false);
         verify(this.logger).error("No patient ID was provided.");
         Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
@@ -112,7 +115,7 @@ public class DefaultGenePanelsPatientResourceImplTest
     @Test
     public void getPatientGeneCountsPatientIdIsBlank()
     {
-        final Response response = this.component.getPatientGeneCounts(StringUtils.SPACE, false);
+        final Response response = this.component.getPatientGeneCounts(StringUtils.SPACE, false, false);
         verify(this.logger).error("No patient ID was provided.");
         Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
@@ -121,7 +124,7 @@ public class DefaultGenePanelsPatientResourceImplTest
     public void getPatientGeneCountsUserNotAuthorized()
     {
         when(this.repository.get(PATIENT_1)).thenThrow(new SecurityException());
-        final Response response = this.component.getPatientGeneCounts(PATIENT_1, false);
+        final Response response = this.component.getPatientGeneCounts(PATIENT_1, false, false);
         verify(this.logger).error("View access denied on patient record [{}]: {}", PATIENT_1, null);
         Assert.assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
     }
@@ -130,7 +133,7 @@ public class DefaultGenePanelsPatientResourceImplTest
     public void getPatientGeneCountsPatientDoesNotExist()
     {
         when(this.repository.get(PATIENT_1)).thenReturn(null);
-        final Response response = this.component.getPatientGeneCounts(PATIENT_1, false);
+        final Response response = this.component.getPatientGeneCounts(PATIENT_1, false, false);
         verify(this.logger).error("Could not find patient with ID {}", PATIENT_1);
         Assert.assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
@@ -141,7 +144,7 @@ public class DefaultGenePanelsPatientResourceImplTest
         when(this.repository.get(PATIENT_1)).thenReturn(this.patient1);
         when(this.genePanelFactory.build(this.patient1, false)).thenReturn(this.genePanel);
         when(this.genePanel.toJSON()).thenReturn(new JSONObject());
-        final Response response = this.component.getPatientGeneCounts(PATIENT_1, false);
+        final Response response = this.component.getPatientGeneCounts(PATIENT_1, false, false);
         Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         Assert.assertTrue(new JSONObject().similar(response.getEntity()));
     }
@@ -152,7 +155,7 @@ public class DefaultGenePanelsPatientResourceImplTest
         when(this.repository.get(PATIENT_1)).thenReturn(this.patient1);
         when(this.genePanelFactory.build(this.patient1, false)).thenReturn(this.genePanel);
         when(this.genePanel.toJSON()).thenReturn(new JSONObject().put(TEST, TEST));
-        final Response response = this.component.getPatientGeneCounts(PATIENT_1, false);
+        final Response response = this.component.getPatientGeneCounts(PATIENT_1, false, false);
         Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         Assert.assertTrue(new JSONObject().put(TEST, TEST).similar(response.getEntity()));
     }
