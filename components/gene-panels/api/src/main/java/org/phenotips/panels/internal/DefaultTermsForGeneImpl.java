@@ -21,7 +21,6 @@ import org.phenotips.panels.TermsForGene;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -144,15 +143,10 @@ public class DefaultTermsForGeneImpl implements TermsForGene
      */
     private Set<VocabularyTerm> newSortedSet()
     {
-        return new TreeSet<>(new Comparator<VocabularyTerm>()
-        {
-            @Override
-            public int compare(final VocabularyTerm o1, final VocabularyTerm o2)
-            {
-                final String name1 = o1.getName() != null ? o1.getName() : o1.getId();
-                final String name2 = o2.getName() != null ? o2.getName() : o2.getId();
-                return name1.compareTo(name2);
-            }
+        return new TreeSet<>((o1, o2) -> {
+            final String name1 = o1.getName() != null ? o1.getName() : o1.getId();
+            final String name2 = o2.getName() != null ? o2.getName() : o2.getId();
+            return name1.compareTo(name2);
         });
     }
 }

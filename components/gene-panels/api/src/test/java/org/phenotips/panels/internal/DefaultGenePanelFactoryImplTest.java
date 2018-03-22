@@ -104,7 +104,7 @@ public class DefaultGenePanelFactoryImplTest
     // -----------------------------------Test build(Patient patient)-----------------------------------//
 
     @Test
-    public void buildThrowsExceptionIfPatientIsNull() throws Exception
+    public void buildThrowsExceptionIfPatientIsNull()
     {
         final Patient patient = null;
         this.expectedException.expect(Exception.class);
@@ -130,7 +130,7 @@ public class DefaultGenePanelFactoryImplTest
     // ---Test build(Collection<VocabularyTerm> presentTerms, Collection<VocabularyTerm> absentTerms)---//
 
     @Test
-    public void buildThrowsExceptionIfAnyVocabularyTermIsNull() throws Exception
+    public void buildThrowsExceptionIfAnyVocabularyTermIsNull()
     {
         final List<VocabularyTerm> presentTerms = null;
         final List<VocabularyTerm> absentTerms = Collections.emptyList();

@@ -24,7 +24,6 @@ import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -68,7 +67,7 @@ public class DefaultGenePanelLoader implements GenePanelLoader, Initializable
     private LoadingCache<PanelData, GenePanel> loadingCache;
 
     @Override
-    public void initialize() throws InitializationException
+    public void initialize()
     {
         this.loadingCache = CacheBuilder.newBuilder()
             .maximumSize(100)
