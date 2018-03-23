@@ -49,6 +49,8 @@ import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -275,12 +277,28 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
                 throw new WebApplicationException(Response.Status.FORBIDDEN);
             }
             final Patient patient = this.repository.create();
-            return returnUpdatePatientResponse(patient, label, id, jsonInput, true, PatientWritePolicy.UPDATE);
+            returnUpdatePatientResponse(patient, label, id, jsonInput, true, PatientWritePolicy.UPDATE);
+            buildCreatedResponse(patient);
         } catch (final WebApplicationException ex) {
             this.logger.error("Failed to create patient with label [{}] and corresponding external ID: [{}] from "
                               + "JSON: {}.", label, id, jsonInput, ex);
             throw new WebApplicationException(ex.getResponse().getStatus());
         }
+    }
+
+    /**
+     * Creates a response upon successful creation of a {@link Patient}.
+     *
+     * @param patient the successfully created patient
+     * @return the response for a successfully created patient
+     */
+    private Response buildCreatedResponse(final Patient patient)
+    {
+        final ResponseBuilder response = Response.created(UriBuilder
+            .fromUri(this.uriInfo.getBaseUri())
+            .path(PatientResource.class)
+            .build(patient.getId()));
+        return response.build();
     }
 
     /**
