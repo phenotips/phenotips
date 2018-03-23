@@ -269,21 +269,15 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
     private Response returnCreatePatientResponse(final String label, final String id, final JSONObject jsonInput)
     {
         this.logger.debug("Creating patient record with label [{}] and corresponding external ID [{}]", label, id);
-        try {
-            final User currentUser = this.users.getCurrentUser();
-            if (!this.access.hasAccess(currentUser, Right.EDIT,
-                this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
-                this.logger.error("Edit access denied to user [{}].", currentUser);
-                throw new WebApplicationException(Response.Status.FORBIDDEN);
-            }
-            final Patient patient = this.repository.create();
-            returnUpdatePatientResponse(patient, label, id, jsonInput, true, PatientWritePolicy.UPDATE);
-            buildCreatedResponse(patient);
-        } catch (final WebApplicationException ex) {
-            this.logger.error("Failed to create patient with label [{}] and corresponding external ID: [{}] from "
-                              + "JSON: {}.", label, id, jsonInput, ex);
-            throw new WebApplicationException(ex.getResponse().getStatus());
+        final User currentUser = this.users.getCurrentUser();
+        if (!this.access.hasAccess(currentUser, Right.EDIT,
+            this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
+            this.logger.error("Edit access denied to user [{}].", currentUser);
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
+        final Patient patient = this.repository.create();
+        returnUpdatePatientResponse(patient, label, id, jsonInput, true, PatientWritePolicy.UPDATE);
+        return buildCreatedResponse(patient);
     }
 
     /**
