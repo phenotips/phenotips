@@ -29,7 +29,7 @@
   <name>PhenoTips - Patient Data - REST services</name>
 
   <properties>
-    <coverage.instructionRatio>0.88</coverage.instructionRatio>
+    <coverage.instructionRatio>0.91</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -169,6 +169,12 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <version>1.3</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
