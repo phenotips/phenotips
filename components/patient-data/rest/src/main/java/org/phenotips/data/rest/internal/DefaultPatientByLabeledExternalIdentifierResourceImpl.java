@@ -40,7 +40,6 @@ import org.xwiki.users.UserManager;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.MissingResourceException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -358,10 +357,6 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
             this.logger.warn("Failed to query patient with label [{}] and corresponding external ID [{}]: {}",
                 label, id, ex.getMessage(), ex);
             throw new WebApplicationException(Response.Status.NOT_FOUND);
-        } catch (MissingResourceException ex) {
-            this.logger.warn("Failed to retrieve patient with label [{}] and corresponding external ID [{}]: {}",
-                label, id, ex.getMessage(), ex);
-            throw new WebApplicationException(Response.Status.CONFLICT);
         }
     }
 
@@ -409,10 +404,9 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
      * {@code LabeledIdentifierSettings} object.
      *
      * @param label the name of the label
-     * @return true if the label exists, else false
-     * @throws QueryException if there is any error during querying
+     * @return {@code true} if the label is configured, {@code false} otherwise
      */
-    private boolean isLabelConfiguredByAdmin(String label) throws QueryException
+    private boolean isLabelConfiguredByAdmin(String label)
     {
         Query q = null;
         try {
@@ -424,7 +418,7 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
             return !results.isEmpty();
         } catch (QueryException ex) {
             this.logger.warn("Failed to query LabeledIdentifierSettings object: {}", ex.getMessage(), ex);
-            throw new QueryException(ex.getMessage(), q, ex);
+            return false;
         }
     }
 
@@ -432,11 +426,9 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
      * Checks whether the global configuration allows for other eids
      * {@code LabeledIdentifierGlobalSettings.allowOtherEids} to be set arbitrarily by the user for each patient.
      *
-     * @return true if arbitrary eids are allowed, else false.
-     * @throws QueryException if an instance of the {@code LabeledIdentifierGlobalSettings} object cannot be found,
-     *         or if there is any other error during querying.
+     * @return {@code false} if custom labels are explicitly denied, {@code true} otherwise
      */
-    private boolean allowOtherEids() throws QueryException
+    private boolean allowOtherEids()
     {
         Query q = null;
         try {
@@ -445,13 +437,12 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
             List<Integer> results = q.execute();
             if (results == null || results.isEmpty()) {
                 this.logger.debug("There should be one LabeledIdentifierGlobalSettings object. None were found.");
-                throw new MissingResourceException("Configuration object missing.",
-                    "PhenoTips.LabeledIdentifierGlobalSettings", "allowOtherEids");
+                return true;
             }
             return results.get(0) != 0;
         } catch (QueryException ex) {
             this.logger.warn("Failed to query LabeledIdentifierGlobalSettings object: {}", ex.getMessage(), ex);
-            throw new QueryException(ex.getMessage(), q, ex);
+            return true;
         }
     }
 
