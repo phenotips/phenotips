@@ -95,20 +95,17 @@ var XWiki = (function (XWiki) {
     },
 
     /**
-     * Creates the underlaying suggest widget.
+     * Creates the underlying suggest widget.
      */
     createSuggest: function() {
-      // Create dummy suggestion node to hold the "Go to search page..." option.
+      // Create dummy suggestion node.
       var valueNode = new Element('div')
             .insert(new Element('span', {'class':'suggestId'}))
             .insert(new Element('span', {'class':'suggestValue'}))
             .insert(new Element('span', {'class':'suggestInfo'}));
       this.noResultsMessage = new Element('div', {'class': 'hidden'})
         .update("$escapetool.javascript($services.localization.render('core.widgets.suggest.noResults'))".escapeHTML());
-      var gotoSearchPageMessage = new Element('div')
-        .update("$escapetool.javascript($services.localization.render('core.widgets.suggest.showResults'))"
-        .escapeHTML());
-      var content = new Element('div').insert(this.noResultsMessage).insert(gotoSearchPageMessage)
+      var content = new Element('div').insert(this.noResultsMessage)
         .insert(new Element('div', {'class': 'clearfloats'}));
       var allResultsNode = new XWiki.widgets.XList([
         new XWiki.widgets.XListItem( content, {
