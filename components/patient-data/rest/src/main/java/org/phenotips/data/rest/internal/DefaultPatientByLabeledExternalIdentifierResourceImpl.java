@@ -225,11 +225,11 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
     }
 
     /**
-     * Checks for whether none or multiple patients exist and returns the appropriate response.
-     * If {@code shouldCreate} is false and no existing patients exist for the provided {@code label} and {@code id}
-     * (patients list is empty), then returns an error. If {@code shouldCreate} is true and no existing patients
-     * exist for the provided {@code label} and {@code id}, then creates a patient and returns a successful response.
-     * If there are multiple records that exist, then returns an array of links to the patient records.
+     * Checks for whether none or multiple patients exist and returns the appropriate response. If {@code shouldCreate}
+     * is false and no existing patients exist for the provided {@code label} and {@code id} (patients list is empty),
+     * then returns an error. If {@code shouldCreate} is true and no existing patients exist for the provided
+     * {@code label} and {@code id}, then creates a patient and returns a successful response. If there are multiple
+     * records that exist, then returns an array of links to the patient records.
      *
      * @param patients list of patient internal ID's for records that have the matching {@code label} and {@code id}
      * @param label the name of the label
@@ -376,7 +376,8 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
         try {
             q = this.qm.createQuery(
                 "select doc.name from Document doc, doc.object(PhenoTips.LabeledIdentifierClass) obj "
-                + "where obj.label = :label and obj.value = :value", Query.XWQL);
+                    + "where obj.label = :label and obj.value = :value",
+                Query.XWQL);
             q.bindValue(KEY_LABEL, label);
             q.bindValue(KEY_VALUE, id);
             return q.execute();
@@ -401,7 +402,7 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
     /**
      * Checks if the label in question is configured at the administrative level, which means that the label is
      * available globally for all patients. If it is, then it will be the {@code label} value of a
-     * {@code LabeledIdentifierSettings} object.
+     * {@code PhenoTips.LabeledIdentifierSettings} object.
      *
      * @param label the name of the label
      * @return {@code true} if the label is configured, {@code false} otherwise
@@ -424,8 +425,9 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
     }
 
     /**
-     * Checks whether the global configuration allows for other eids
-     * {@code LabeledIdentifierGlobalSettings.allowOtherEids} to be set arbitrarily by the user for each patient.
+     * Checks whether the global configuration allows for other eids to be set arbitrarily by the user for each patient,
+     * by looking if there is a {@code PhenoTips.LabeledIdentifierGlobalSettings} object with {@code 0} set for its
+     * {@code allowOtherEids} property.
      *
      * @return {@code false} if custom labels are explicitly denied, {@code true} otherwise
      */
@@ -454,7 +456,6 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
      *
      * @param jsonInput the patient data being imported
      * @param patient the {@link Patient} object
-     *
      * @return true iff the internal ID is specified in {@code jsonInput} and conflicts with patient internal ID, false
      *         otherwise
      */
