@@ -275,6 +275,10 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
             this.logger.error("Edit access denied to user [{}].", currentUser);
             throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
+        if (!isLabelAllowed(label)) {
+            this.logger.warn("Unknown label [{}], refusing to create new patient", label);
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
         final Patient patient = this.repository.create();
         returnUpdatePatientResponse(patient, label, id, jsonInput, true, PatientWritePolicy.UPDATE);
         return buildCreatedResponse(patient);
@@ -342,7 +346,7 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
     {
         try {
             // Check global configs first before querying all labeled identifier objects on all patients, much cheaper
-            if (isLabelConfiguredByAdmin(label) || allowOtherEids()) {
+            if (isLabelAllowed(label)) {
                 return queryPatientsByLabelAndEid(label, id);
             } else {
                 return Collections.emptyList();
@@ -383,6 +387,17 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
                 label, id, ex.getMessage(), ex);
             throw new QueryException(ex.getMessage(), q, ex);
         }
+    }
+
+    /**
+     * Checks if the label in question is allowed, either as a pre-configured label, or if custom labels are allowed.
+     *
+     * @param label the name of the label
+     * @return {@code true} if the label is permitted, {@code false} otherwise
+     */
+    private boolean isLabelAllowed(String label)
+    {
+        return isLabelConfiguredByAdmin(label) || allowOtherEids();
     }
 
     /**
