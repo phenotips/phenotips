@@ -319,8 +319,11 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
         if (hasInternalIdConflict(jsonInput, patient)) {
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
-        if (wasCreated && !jsonInput.has(KEY_LABELED_EIDS)) {
-            JSONArray labeledEids = new JSONArray();
+        if (wasCreated) {
+            JSONArray labeledEids = jsonInput.optJSONArray(KEY_LABELED_EIDS);
+            if (labeledEids == null) {
+                labeledEids = new JSONArray();
+            }
             labeledEids.put(new JSONObject().accumulate(KEY_LABEL, label).accumulate(KEY_VALUE, id));
             jsonInput.put(KEY_LABELED_EIDS, labeledEids);
         }
