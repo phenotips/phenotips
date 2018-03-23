@@ -148,11 +148,11 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
         final PatientWritePolicy policy, final boolean create)
     {
         this.logger.debug("Updating patient record with label [{}] and corresponding external ID [{}] via REST"
-                          + " with JSON: {}", label, id, json);
+            + " with JSON: {}", label, id, json);
         if (policy == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
-        if (json == null) {
+        if (StringUtils.isBlank(json)) {
             // json == null does not create an exception when initializing a JSONObject
             // need to handle it separately to give explicit BAD_REQUEST to the user
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
