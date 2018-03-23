@@ -57,7 +57,7 @@ public enum PatientWritePolicy
     {
         try {
             return valueOf(StringUtils.upperCase(policy));
-        } catch (final IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException | NullPointerException ex) {
             return null;
         }
     }
