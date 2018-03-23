@@ -412,7 +412,8 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
         try {
             q = this.qm.createQuery(
                 "select obj.label from Document doc, doc.object(PhenoTips.LabeledIdentifierSettings) obj "
-                + "where obj.label = :label", Query.XWQL);
+                    + "where doc.fullName = 'XWiki.XWikiPreferences' and obj.label = :label",
+                Query.XWQL);
             q.bindValue(KEY_LABEL, label);
             List<String> results = q.execute();
             return !results.isEmpty();
@@ -433,7 +434,8 @@ public class DefaultPatientByLabeledExternalIdentifierResourceImpl extends XWiki
         Query q = null;
         try {
             q = this.qm.createQuery("select obj.allowOtherEids from Document doc, doc.object("
-                                          + "PhenoTips.LabeledIdentifierGlobalSettings) obj", Query.XWQL);
+                + "PhenoTips.LabeledIdentifierGlobalSettings) obj where doc.fullName = 'XWiki.XWikiPreferences'",
+                Query.XWQL);
             List<Integer> results = q.execute();
             if (results == null || results.isEmpty()) {
                 this.logger.debug("There should be one LabeledIdentifierGlobalSettings object. None were found.");
