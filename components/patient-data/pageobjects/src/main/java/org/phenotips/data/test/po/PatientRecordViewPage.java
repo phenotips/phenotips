@@ -632,7 +632,7 @@ public class PatientRecordViewPage extends ViewPage
 
     public boolean hasPhenotypeSelected(String label, boolean positive)
     {
-        return getUtil().hasElement(
+        return getDriver().hasElement(
             By.xpath("//*[contains(@class, 'phenotype-info')]//*[contains(text(),'" + (positive ? "" : "NO ") + label
                 + "')]"));
 

@@ -71,12 +71,12 @@ public class HomePage extends ViewPage
 
     public boolean hasActiveGroups()
     {
-        return getUtil().hasElement(this.activeGroupsGadget, By.cssSelector("tr"));
+        return getDriver().hasElement(this.activeGroupsGadget, By.cssSelector("tr"));
     }
 
     public boolean hasGroupManagement()
     {
-        return getUtil().hasElement(this.activeGroupsGadget, By.xpath(".//a[contains(text(), 'Manage groups')]"));
+        return getDriver().hasElement(this.activeGroupsGadget, By.xpath(".//a[contains(text(), 'Manage groups')]"));
     }
 
     @Override
