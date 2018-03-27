@@ -557,16 +557,16 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
         this.isFormDirty = this.isFormDirty.bind(this);
         this.form._formState = this;
         var _this = this;
-        var bottomButtons = $$("input[name^='action_']");
         var recordFormData = function() {
           _this.formData = _this.form.serialize();
         };
+        var bottomButtons = $$("input[name^='action_']");
         var updateSaveState = function(saving, recordData) {
           // Record the form's current save state.
           _this.form._saving = saving;
           // Buttons should be disabled when the form is saving, and enabled when not.
           bottomButtons.each(function(button) {
-            button.disabled = saving;
+            saving &amp;&amp; button.addClassName('disabled') || button.removeClassName('disabled');
           });
           recordData &amp;&amp; recordFormData();
         };
