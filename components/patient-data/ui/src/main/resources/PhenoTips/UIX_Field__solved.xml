@@ -41,6 +41,347 @@
   <object>
     <name>PhenoTips.UIX_Field__solved</name>
     <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>24d640c0-2469-4e64-97db-3e6d062d6bed</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe('xwiki:dom:loaded', function() {
+    var pubmedArticleServiceURL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&amp;retmode=json&amp;method=get&amp;id=";
+    var pubmedIdInput = $$('.solved__pubmed_id input')[0];
+
+    if (pubmedIdInput) {
+        pubmedIdInput.observe('blur', function () {
+            var pubmedId = pubmedIdInput.value;
+            if (pubmedId.length &lt; 1) {
+                return;
+            }
+            makeCorsRequest(pubmedId);
+        });
+        pubmedIdInput.observe('focus', function () {
+            pubmedIdInput.next()  &amp;&amp; pubmedIdInput.next().remove();
+        });
+    };
+
+    var createCORSRequest = function(method, url) {
+        var xhr = new XMLHttpRequest();
+        if ("withCredentials" in xhr) {
+           // XHR for Chrome/Firefox/Opera/Safari.
+          xhr.open(method, url, true);
+        } else if (typeof XDomainRequest != "undefined") {
+          // XDomainRequest for IE.
+          xhr = new XDomainRequest();
+          xhr.open(method, url);
+        } else {
+          // CORS not supported.
+          xhr = null;
+        }
+        return xhr;
+    };
+
+    // Make the actual CORS request
+    var makeCorsRequest = function (pubmedId) {
+        var url = pubmedArticleServiceURL + pubmedId;
+
+        var xhr = createCORSRequest('GET', url);
+        if (!xhr) {
+            // CORS not supported
+            return;
+        }
+        //xhr.setRequestHeader('Content-Type', 'application/json');
+
+        // Response handlers.
+        xhr.onload = function() {
+            var response = JSON.parse(xhr.responseText);
+            if (response &amp;&amp; response.result  &amp;&amp; response.result.uids &amp;&amp; response.result.uids.size() &gt; 0) {
+                var data = response.result[response.result.uids[0]];
+                var title = data.title || '';
+                var source = data.source ? data.source + '. ' : '';
+                var pubdate = data.pubdate ? data.pubdate + '; ' : '';
+                var authors = data.authors || [];
+                var pages = data.pages ? data.pages + '. ' : ' ';
+                var volume = data.volume || '';
+                var issue = data.issue ? '(' + data.issue + ')' : '';
+                var elocationid = data.elocationid ? data.elocationid + '. ' : '';
+                var epubdate = data.epubdate ? 'Epub ' + data.epubdate + '. ': '';
+                var meta = source + pubdate + volume + issue + ':' + pages + elocationid + epubdate;
+
+                var container = new Element("div", {"class" : "article-info"});
+                var summary = new Element("p", {"class" : "article-summary"}).update(meta);
+                var titleEl = new Element("div", {"class" : "article-title"}).update(new Element("a", {"href" : "https://www.ncbi.nlm.nih.gov/pubmed/?term=" + pubmedId, "target" : "_blank"}).insert(title));
+
+                var idsEl = new Element("div", {"class" : "article-ids"});
+                if (data.articleids &amp;&amp; data.articleids.length &gt; 0) {
+                    for (var i=0; i &lt; data.articleids.length; i++) {
+                        if (data.articleids[i].idtype == "pubmed") {
+                            idsEl.insert(new Element("span", {"class" : "p-id"}).update("PMID: " + data.articleids[i].value));
+                        }
+                        if (data.articleids[i].idtype == "doi") {
+                            idsEl.insert(new Element("span", {"class" : "p-id"}).update("DOI: " + data.articleids[i].value));
+                        }
+                    }
+                }
+                var authorsEl = new Element("div", {"class" : "article-authors"});
+                if (authors.length &gt; 0) {
+                    var authorsStr = authors[0].name;
+                    for (var i=1; i &lt; authors.length; i++) {
+                        authorsStr += ', ' + authors[i].name;
+                    }
+                    authorsStr += '.';
+                    authorsEl.insert(authorsStr);
+                }
+                container.insert(summary).insert(titleEl).insert(authorsEl).insert(idsEl);
+                pubmedIdInput.up().insert(container);
+            } else {
+                pubmedIdInput.up().insert(new Element("div", {"class" : "invalid"}).update("Invalid Pubmed ID"));
+            }
+        };
+
+        xhr.onerror = function() {
+          return;
+        };
+
+        xhr.send();
+    };
+});</code>
+    </property>
+    <property>
+      <name>Validate Pubmed ID</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.UIX_Field__solved</name>
+    <number>1</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>b88ad070-c238-49ed-9c1c-afccc62e8621</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>.article-info {
+  background: #FFFFFF;
+  border: 0 none;
+  border-radius: 0.1em 0.1em 0.1em;
+  color: #636B75;
+  display: inline-block;
+  margin: 0.7em 0 0 0.1em;
+  padding: 0.75em 1em;
+  max-width: 95%;
+  white-space: normal;
+  text-align: left;
+}
+.article-info .article-title {
+  color: #0089DC;
+  text-decoration: none;
+  margin: 5px 0 5px 0;
+  font-style: normal;
+  cursor: pointer;
+}
+.article-info .article-ids {
+  font-size: 0.85em;
+  margin-top: 10px;
+  opacity: 0.8;
+}
+.article-info .article-ids .p-id {
+  padding-right: 10px;
+}
+.article-info .article-authors {
+  font-size: 0.82em;
+  font-style: italic;
+}
+.article-info .article-summary, .article-authors {
+  font-size: 0.8em;
+  opacity: .7;
+}
+.invalid {
+  color: #CC3333;
+  line-height: 1.8em;
+  font-size: 0.8em;
+  position: absolute;
+}
+</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name>Pubmed ID validation UI</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.UIX_Field__solved</name>
+    <number>2</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>97415736-3ecf-4460-9d29-c30196a8833c</guid>
     <class>
@@ -111,6 +452,8 @@
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
+$xwiki.jsx.use('PhenoTips.UIX_Field__solved', true)##
+$xwiki.ssx.use('PhenoTips.UIX_Field__solved', true)##
 #__hasBooleanDataToDisplay('solved', $showSolved)
 ##
 ##
