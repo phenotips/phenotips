@@ -574,6 +574,7 @@
              if (input.checked &amp;&amp; controlledElement) {
                input.up('tr').select('.controlled-element input, .controlled-element select').each(function (item) {
                   item.enable();
+                  item.focus();
                });
              }
            });
