@@ -138,7 +138,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>sequencing=Sequencing|deletion=Deletion/duplication|familial_mutation=Familial mutation/disease|common_mutations=Common mutations</values>
+      <values>sequencing=Sequencing|deletion=Deletion/duplication|familial_mutation=Familial mutation|common_mutations=Common mutations</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </strategy>
   </class>
