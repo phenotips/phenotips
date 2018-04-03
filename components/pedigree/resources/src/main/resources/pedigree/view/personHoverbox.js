@@ -106,7 +106,7 @@ define([
                     }
                     // parent handle
                     this.generateHandle('parent', x, splitLocationY, x, y - PedigreeEditorParameters.attributes.personHandleLength,
-                                        "Click to create new nodes for the parents or drag to an existing person or partnership (valid choices will be highlighted in green). Dragging to a person will create a new relationship.", "F", topHandleHint);
+                                        "Click to draw parents or drag to an existing person or partnership (valid choices will be highlighted in green). Dragging to a person will create a new relationship.", "F", topHandleHint);
                 }
 
                 if (!node.isFetus()) {
@@ -117,7 +117,7 @@ define([
                         var path = [["M", x, y],["L", x, y+PedigreeEditorParameters.attributes.personHandleBreakX]];
                         editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(nodeShapes);
                         this.generateHandle('child', x, y+PedigreeEditorParameters.attributes.personHandleBreakX-2, x, y+PedigreeEditorParameters.attributes.personHandleLength,
-                                            "Click to create a new child node or drag to an existing parentless person (valid choices will be highlighted in green)", "U");
+                                            "Click to draw a child or drag to an existing person without parents (valid choices will be highlighted in green)", "U");
                     }
 
                     // partner handle
@@ -126,7 +126,7 @@ define([
                     var path = [["M", x, vertPosForPartnerHandles],["L", x - PedigreeEditorParameters.attributes.personHandleBreakX, vertPosForPartnerHandles]];
                     editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(nodeShapes);
                     this.generateHandle('partnerR', x - PedigreeEditorParameters.attributes.personHandleBreakX + 2, vertPosForPartnerHandles, x - PedigreeEditorParameters.attributes.personHandleLength, vertPosForPartnerHandles,
-                                        "Click to create a new partner node or drag to an existing node (valid choices will be highlighted in green)", partnerGender);
+                                        "Click to create a new partner or drag to an existing node (valid choices will be highlighted in green)", partnerGender);
                 }
             }
             else {
