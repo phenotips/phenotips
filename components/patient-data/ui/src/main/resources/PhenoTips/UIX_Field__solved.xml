@@ -452,8 +452,8 @@
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-$xwiki.jsx.use('PhenoTips.UIX_Field__solved', true)##
-$xwiki.ssx.use('PhenoTips.UIX_Field__solved', true)##
+$xwiki.jsx.use('PhenoTips.UIX_Field__solved')##
+$xwiki.ssx.use('PhenoTips.UIX_Field__solved')##
 #__hasBooleanDataToDisplay('solved', $showSolved)
 ##
 ##
