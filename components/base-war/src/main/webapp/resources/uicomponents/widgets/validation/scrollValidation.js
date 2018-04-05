@@ -77,6 +77,7 @@ require(['jquery'], function ($)
                 var dialog = new PhenoTips.widgets.ModalPopup("There are " + numberMissing + " missing fields",
                     false, {'title': 'Missing fields', 'verticalPosition': 'top', 'removeOnClose': true});
                 dialog.showDialog();
+                document.fire("phenotips:scrollValidation:invalid");
             }
         });
 

@@ -560,6 +560,14 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
         var recordFormData = function() {
           _this.formData = _this.form.serialize();
         };
+        var bottomButtons = $$("input[name^='action_']");
+        var updateSaveState = function(saving, recordData) {
+          // Record the form's current save state.
+          _this.form._saving = saving;
+          // Buttons should be disabled when the form is saving, and enabled when not.
+          bottomButtons.invoke('toggleClassName', 'disabled', saving);
+          recordData &amp;&amp; recordFormData();
+        };
         // Some form elements are still being modified while "xwiki:dom:loaded" is fired.
         // If the initial state of the form is recorded immediately, there will likely be
         // differences with the state of the form when navigating away even if the user
@@ -567,9 +575,14 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
         // Setting a timeout, even zero, delays the initialization until other
         // form elements have been modified already.
         setTimeout(recordFormData, 0);
+        document.observe('xwiki:actions:save', updateSaveState.bind(this, true, false));
         // Record the state of the form again once the form is saved.
-        document.observe('xwiki:document:saved', recordFormData);
-        $$("input[name^='action_']").invoke('observe', 'click', recordFormData);
+        document.observe('xwiki:document:saved', updateSaveState.bind(this, false, true));
+        // Make sure to unlock form saving if save failed.
+        document.observe("xwiki:document:saveFailed", updateSaveState.bind(this, false, false));
+        // FIXME: The validation script simply stops the form submission, so there is no other way to find out that validation failed; refactor the way validation works
+        document.observe("phenotips:scrollValidation:invalid", updateSaveState.bind(this, false, false));
+        bottomButtons.invoke('observe', 'click', recordFormData);
         // Upon navigating away, check if anything has changed in the form and warn the user
         // if it did.
         window.addEventListener('beforeunload', function(event) {
@@ -615,6 +628,8 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
           })).showDialog();
         }
       };
+      // If already saving data, don't initialize another save.
+      if (this.form._saving) { return; }
       document.fire("xwiki:actions:save", {"continue": true, "form" : this.form});
       document.observe("xwiki:document:saved", onSaved);
       document.observe("xwiki:document:saveFailed", onSaveFailed);
