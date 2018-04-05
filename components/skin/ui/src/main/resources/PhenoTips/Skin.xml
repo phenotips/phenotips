@@ -565,9 +565,7 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
           // Record the form's current save state.
           _this.form._saving = saving;
           // Buttons should be disabled when the form is saving, and enabled when not.
-          bottomButtons.each(function(button) {
-            saving &amp;&amp; button.addClassName('disabled') || button.removeClassName('disabled');
-          });
+          bottomButtons.invoke('toggleClassName', 'disabled', saving);
           recordData &amp;&amp; recordFormData();
         };
         // Some form elements are still being modified while "xwiki:dom:loaded" is fired.
@@ -582,6 +580,7 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
         document.observe('xwiki:document:saved', updateSaveState.bind(this, false, true));
         // Make sure to unlock form saving if save failed.
         document.observe("xwiki:document:saveFailed", updateSaveState.bind(this, false, false));
+        // FIXME: The validation script simply stops the form submission, so there is no other way to find out that validation failed; refactor the way validation works
         document.observe("phenotips:scrollValidation:invalid", updateSaveState.bind(this, false, false));
         bottomButtons.invoke('observe', 'click', recordFormData);
         // Upon navigating away, check if anything has changed in the form and warn the user
