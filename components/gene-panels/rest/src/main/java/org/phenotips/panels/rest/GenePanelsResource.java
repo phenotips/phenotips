@@ -52,6 +52,8 @@ public interface GenePanelsResource
      * <dd>a list of term IDs that are observed to be absent</dd>
      * <dt>rejected-gene</dt>
      * <dd>a list of gene IDs that were rejected and should be excluded from gene suggestion results</dd>
+     * <dt>with-match-count</dt>
+     * <dd>set to true iff the number of genes available for term should be counted</dd>
      * <dt>startPage</dt>
      * <dd>the start page from which to display the results, numbering starts from 1</dd>
      * <dt>limit</dt>

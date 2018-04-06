@@ -298,7 +298,7 @@
 
             var doRequest = function(){
 
-              var url =  self.getUrl + '?offset='+reqOffset+'&amp;limit='+reqLimit+'&amp;reqNo='+ (++self.sendReqNo);
+              var url =  self.getUrl + '?with-match-count=true&amp;offset='+reqOffset+'&amp;limit='+reqLimit+'&amp;reqNo='+ (++self.sendReqNo);
 
               // Let code know the table is about to load new entries.
               // 1. Named event (for code interested by that table only)
@@ -342,13 +342,17 @@
 
                   // Let code know new entries arrived
                   // 1. Named event (for code interested by that table only)
-                  document.fire("xwiki:livetable:" + this.domNodeName + ":receivedEntries", {
+                  document.fire("xwiki:livetable:" + self.domNodeName + ":receivedEntries", {
                     "data" : res
                   });
                   // 2. Generic event (for code potentially interested in any livetable)
                   document.fire("xwiki:livetable:receivedEntries", {
                     "data" : res,
                     "tableId" : self.domNodeName
+                  });
+                  // 3. Match count named event (for code interested by that table only)
+                  res.matchCount &amp;&amp; document.fire("phenotips:" + self.domNodeName + ":receivedMatchCount", {
+                    "data" : res.matchCount
                   });
 
                   self.updateFetchedRows(res);

@@ -51,6 +51,7 @@ public interface GenePanelsPatientResource
      *
      * @param patientId the internal ID of the patient of interest
      * @param excludeRejectedGenes iff true, rejected genes will be excluded from results
+     * @param withMatchCount set to true iff the number of genes available for term should be counted
      * @return a JSON representation of genes and their counts data if successful, an error code otherwise
      * @since 1.4 (modified)
      */
@@ -59,5 +60,6 @@ public interface GenePanelsPatientResource
     @RequiredAccess("view")
     Response getPatientGeneCounts(
         @PathParam("patient-id") String patientId,
-        @QueryParam("exclude-rejected-genes") @DefaultValue("false") boolean excludeRejectedGenes);
+        @QueryParam("exclude-rejected-genes") @DefaultValue("false") boolean excludeRejectedGenes,
+        @QueryParam("with-match-count") @DefaultValue("false") boolean withMatchCount);
 }

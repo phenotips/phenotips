@@ -84,7 +84,7 @@ public class DefaultGenePanelsResourceImplTest
 
     @Rule
     public MockitoComponentMockingRule<GenePanelsResource> mocker =
-        new MockitoComponentMockingRule(DefaultGenePanelsResourceImpl.class);
+        new MockitoComponentMockingRule<>(DefaultGenePanelsResourceImpl.class);
 
     @Mock
     private GenePanel genePanel;

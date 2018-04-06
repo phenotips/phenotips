@@ -24,7 +24,6 @@ import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -68,7 +67,7 @@ public class DefaultGenePanelLoader implements GenePanelLoader, Initializable
     private LoadingCache<PanelData, GenePanel> loadingCache;
 
     @Override
-    public void initialize() throws InitializationException
+    public void initialize()
     {
         this.loadingCache = CacheBuilder.newBuilder()
             .maximumSize(100)
@@ -98,8 +97,9 @@ public class DefaultGenePanelLoader implements GenePanelLoader, Initializable
             throw new Exception();
         }
         // Generate the gene panel data.
-        final GenePanel panel = this.genePanelFactory.build(buildTermsFromIDs(key.getPresentTerms()),
-            buildTermsFromIDs(key.getAbsentTerms()), buildTermsFromIDs(key.getRejectedGenes()));
+        final GenePanel panel = this.genePanelFactory.withMatchCount(key.isWithMatchCount())
+            .build(buildTermsFromIDs(key.getPresentTerms()),
+                buildTermsFromIDs(key.getAbsentTerms()), buildTermsFromIDs(key.getRejectedGenes()));
         // Don't want to store any empty values in the loading cache.
         if (panel.size() == 0) {
             throw new Exception();

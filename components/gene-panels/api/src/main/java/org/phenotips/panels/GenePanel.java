@@ -59,6 +59,16 @@ public interface GenePanel
     List<TermsForGene> getTermsForGeneList();
 
     /**
+     * Returns a list of {@link MatchCount} objects generated for {@link #getPresentTerms()}, in descending order
+     * or relevance.
+     *
+     * @return an ordered list of {@link MatchCount} objects, in descending order of relevance,
+     *     or {@code null} if the panel was built without match count data
+     * @since 1.4
+     */
+    List<MatchCount> getMatchCounts();
+
+    /**
      * Creates a {@link JSONObject} representation of {@link GenePanel#getTermsForGeneList() a list of genes}.
      *
      * @return a JSON representation of itself

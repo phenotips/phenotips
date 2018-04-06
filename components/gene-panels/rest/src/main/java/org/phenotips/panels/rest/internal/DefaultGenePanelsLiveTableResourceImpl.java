@@ -76,6 +76,7 @@ public class DefaultGenePanelsLiveTableResourceImpl extends XWikiResource implem
         final Set<String> present = extractTerms("present-term", request);
         final Set<String> absent = extractTerms("absent-term", request);
         final Set<String> rejected = extractTerms("rejected-gene", request);
+        final boolean withMatchCount = Boolean.parseBoolean((String) request.getProperty("with-match-count"));
 
         // present and absent will be sets with one null value if "empty", hence performing the check here.
         if (CollectionUtils.isEmpty(present) && CollectionUtils.isEmpty(absent)) {
@@ -88,7 +89,7 @@ public class DefaultGenePanelsLiveTableResourceImpl extends XWikiResource implem
         final int reqNo = NumberUtils.toInt((String) request.getProperty(REQ_NO), 0);
 
         try {
-            final JSONObject panelJSON = getPanelData(present, absent, rejected, offset, limit);
+            final JSONObject panelJSON = getPanelData(present, absent, rejected, withMatchCount, offset, limit);
             panelJSON.put(REQ_NO, reqNo);
             panelJSON.put(OFFSET_LABEL, offset);
             return Response.ok(panelJSON, MediaType.APPLICATION_JSON_TYPE).build();
@@ -111,6 +112,7 @@ public class DefaultGenePanelsLiveTableResourceImpl extends XWikiResource implem
      * @param present a set of term identifiers observed to be present
      * @param absent a set of term identifiers observed to be absent
      * @param rejected a set of gene identifiers that were marked as rejected
+     * @param withMatchCount set to true iff the number of genes available for term should be counted
      * @param offset the offset for the returned data
      * @param limit the limit on the number of results to return
      * @return a {@link JSONObject} that contains the requested gene panel data
@@ -121,10 +123,11 @@ public class DefaultGenePanelsLiveTableResourceImpl extends XWikiResource implem
         @Nonnull final Set<String> present,
         @Nonnull final Set<String> absent,
         @Nonnull final Set<String> rejected,
+        final boolean withMatchCount,
         final int offset,
         final int limit) throws ExecutionException, IndexOutOfBoundsException
     {
-        final PanelData loaderKey = new PanelData(present, absent, rejected);
+        final PanelData loaderKey = new PanelData(present, absent, rejected, withMatchCount);
         final GenePanel panel = this.genePanelLoader.get(loaderKey);
         final int panelSize = panel.size();
         if (offset < 1 || offset > panelSize) {

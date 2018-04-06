@@ -63,7 +63,7 @@ final class PatientDataAdapter
         this.absentTerms = builder.absentTerms;
         this.rejectedGenes = builder.rejectedGenes != null
             ? builder.rejectedGenes
-            : Collections.<VocabularyTerm>emptySet();
+            : Collections.emptySet();
     }
 
     /**

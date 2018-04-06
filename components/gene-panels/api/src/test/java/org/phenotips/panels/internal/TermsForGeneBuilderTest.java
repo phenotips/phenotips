@@ -116,7 +116,8 @@ public class TermsForGeneBuilderTest
         when(this.term3.getName()).thenReturn(TERM_3_NAME);
 
         this.builder =
-            new TermsForGeneBuilder(Arrays.asList(this.excludedGene1, this.excludedGene2, this.excludedGene3));
+            new TermsForGeneBuilder(Arrays.asList(EX_GENE_1_SYMBOL, EX_GENE_1_ID, EX_GENE_1_ALIAS_A, EX_GENE_1_ALIAS_B,
+                EX_GENE_2_SYMBOL, null, EX_GENE_3_SYMBOL, EX_GENE_3_ID, EX_GENE_1_ALIAS_A, EX_GENE_1_ALIAS_B));
     }
 
     @Test(expected = NullPointerException.class)

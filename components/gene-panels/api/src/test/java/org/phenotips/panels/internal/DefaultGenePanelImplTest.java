@@ -19,6 +19,7 @@ package org.phenotips.panels.internal;
 
 import org.phenotips.data.Feature;
 import org.phenotips.panels.GenePanel;
+import org.phenotips.panels.MatchCount;
 import org.phenotips.panels.TermsForGene;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
@@ -38,10 +39,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import static junit.framework.TestCase.assertTrue;
 
 /**
  * Unit tests for {@link DefaultGenePanelImpl}.
@@ -97,6 +98,8 @@ public class DefaultGenePanelImplTest
 
     private static final String NAME_TRANSLATED = "name_translated";
 
+    private static final String MATCH_COUNT_LABEL = "matchCount";
+
     @Mock
     private VocabularyManager vocabularyManager;
 
@@ -110,6 +113,8 @@ public class DefaultGenePanelImplTest
     private GenePanel presentTermsGenePanel;
 
     private GenePanel termsGenePanel;
+
+    private GenePanel termsGenePanelWithCounts;
 
     private VocabularyTerm presentTerm1;
 
@@ -132,6 +137,8 @@ public class DefaultGenePanelImplTest
 
         this.termsGenePanel = new DefaultGenePanelImpl(Collections.unmodifiableList(this.presentTerms),
             Collections.unmodifiableList(this.absentTerms), this.vocabularyManager);
+        this.termsGenePanelWithCounts = new DefaultGenePanelImpl(Collections.unmodifiableList(this.presentTerms),
+            Collections.unmodifiableList(this.absentTerms), true, this.vocabularyManager);
         this.presentTermsGenePanel = new DefaultGenePanelImpl(Collections.unmodifiableList(this.presentTerms),
             Collections.emptyList(), this.vocabularyManager);
     }
@@ -147,9 +154,26 @@ public class DefaultGenePanelImplTest
         assertTrue(panel.getPresentTerms().isEmpty());
         assertTrue(panel.getAbsentTerms().isEmpty());
         assertTrue(panel.getTermsForGeneList().isEmpty());
+        assertNull(panel.getMatchCounts());
 
         final JSONObject expected = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
             .put(GENE_ROWS_LABEL, new JSONArray());
+        assertTrue(expected.similar(panel.toJSON()));
+    }
+
+    @Test
+    public void panelIsEmptyIfTermsAreEmptyWithCounts()
+    {
+        final GenePanel panel = new DefaultGenePanelImpl(Collections.emptyList(), Collections.emptyList(), true,
+            this.vocabularyManager);
+        assertEquals(0, panel.size());
+        assertTrue(panel.getPresentTerms().isEmpty());
+        assertTrue(panel.getAbsentTerms().isEmpty());
+        assertTrue(panel.getTermsForGeneList().isEmpty());
+        assertTrue(panel.getMatchCounts().isEmpty());
+
+        final JSONObject expected = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
+            .put(GENE_ROWS_LABEL, new JSONArray()).put(MATCH_COUNT_LABEL, new JSONArray());
         assertTrue(expected.similar(panel.toJSON()));
     }
 
@@ -162,9 +186,26 @@ public class DefaultGenePanelImplTest
         assertTrue(panel.getPresentTerms().isEmpty());
         assertEquals(new HashSet<>(this.absentTerms), panel.getAbsentTerms());
         assertTrue(panel.getTermsForGeneList().isEmpty());
+        assertNull(panel.getMatchCounts());
 
         final JSONObject expected = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
             .put(GENE_ROWS_LABEL, new JSONArray());
+        assertTrue(expected.similar(panel.toJSON()));
+    }
+
+    @Test
+    public void panelIsEmptyIfOnlyAbsentTermsProvidedWithCounts()
+    {
+        final GenePanel panel = new DefaultGenePanelImpl(Collections.emptyList(),
+            Collections.unmodifiableList(this.absentTerms), true, this.vocabularyManager);
+        assertEquals(0, panel.size());
+        assertTrue(panel.getPresentTerms().isEmpty());
+        assertEquals(new HashSet<>(this.absentTerms), panel.getAbsentTerms());
+        assertTrue(panel.getTermsForGeneList().isEmpty());
+        assertTrue(panel.getMatchCounts().isEmpty());
+
+        final JSONObject expected = new JSONObject().put(SIZE_LABEL, 0).put(TOTAL_SIZE_LABEL, 0)
+            .put(GENE_ROWS_LABEL, new JSONArray()).put(MATCH_COUNT_LABEL, new JSONArray());
         assertTrue(expected.similar(panel.toJSON()));
     }
 
@@ -178,6 +219,50 @@ public class DefaultGenePanelImplTest
     public void getAbsentTermsIsEmptyIfNoAbsentTermsStoredForPanel()
     {
         assertEquals(Collections.emptySet(), this.presentTermsGenePanel.getAbsentTerms());
+    }
+
+    @Test
+    public void getMatchCountsIsFalse()
+    {
+        assertNull(this.termsGenePanel.getMatchCounts());
+    }
+
+    @Test
+    public void getMatchCountsIsTrue()
+    {
+        final List<MatchCount> matchCounts = this.termsGenePanelWithCounts.getMatchCounts();
+        final MatchCount firstMatchCount = matchCounts.get(0);
+        assertEquals(2, firstMatchCount.getCount());
+        assertEquals(HPO_TERM1, firstMatchCount.getId());
+        assertEquals(HPO_TERM1, firstMatchCount.getName());
+
+        final MatchCount secondMatchCount = matchCounts.get(1);
+        assertEquals(2, secondMatchCount.getCount());
+        assertEquals(HPO_TERM2, secondMatchCount.getId());
+        assertEquals(HPO_TERM2, secondMatchCount.getName());
+    }
+
+    @Test
+    public void getMatchCountsIsTrueDifferentGeneCounts()
+    {
+        final Object associatedGenes2 = new ArrayList<>();
+        ((List<String>) associatedGenes2).add(GENE2);
+        ((List<String>) associatedGenes2).add(GENE1);
+        ((List<String>) associatedGenes2).add(GENE3);
+        when(this.presentTerm2.get(ASSOCIATED_GENES)).thenReturn(associatedGenes2);
+
+        final DefaultGenePanelImpl panel = new DefaultGenePanelImpl(Collections.unmodifiableList(this.presentTerms),
+            Collections.unmodifiableList(this.absentTerms), true, this.vocabularyManager);
+        final List<MatchCount> matchCounts = panel.getMatchCounts();
+        final MatchCount firstMatchCount = matchCounts.get(0);
+        assertEquals(3, firstMatchCount.getCount());
+        assertEquals(HPO_TERM2, firstMatchCount.getId());
+        assertEquals(HPO_TERM2, firstMatchCount.getName());
+
+        final MatchCount secondMatchCount = matchCounts.get(1);
+        assertEquals(2, secondMatchCount.getCount());
+        assertEquals(HPO_TERM1, secondMatchCount.getId());
+        assertEquals(HPO_TERM1, secondMatchCount.getName());
     }
 
     @Test

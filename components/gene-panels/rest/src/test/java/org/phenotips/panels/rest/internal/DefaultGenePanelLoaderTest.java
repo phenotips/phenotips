@@ -37,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyCollectionOf;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -112,6 +113,7 @@ public class DefaultGenePanelLoaderTest
         when(vocabularyManager.resolveTerm(TERM_2)).thenReturn(this.term2);
         when(vocabularyManager.resolveTerm(TERM_3)).thenReturn(this.term3);
 
+        when(this.genePanelFactory.withMatchCount(anyBoolean())).thenReturn(this.genePanelFactory);
         when(this.genePanelFactory.build(anyCollectionOf(VocabularyTerm.class), anyCollectionOf(VocabularyTerm.class),
             anyCollectionOf(VocabularyTerm.class))).thenReturn(this.genePanel1);
 
@@ -146,8 +148,8 @@ public class DefaultGenePanelLoaderTest
     @Test(expected = ExecutionException.class)
     public void testGetWhenPanelIsEmpty() throws ExecutionException
     {
-        final PanelData data = new PanelData(this.presentSet1, Collections.<String>emptySet(),
-            Collections.<String>emptySet());
+        final PanelData data = new PanelData(this.presentSet1, Collections.emptySet(),
+            Collections.emptySet());
         this.genePanelLoader.get(data);
         assertEquals(0, this.genePanelLoader.size());
     }
@@ -156,12 +158,12 @@ public class DefaultGenePanelLoaderTest
     public void testGetWorksWhenNewDataIsCreatedThenRetrieved() throws ExecutionException
     {
         when(this.genePanel1.size()).thenReturn(5);
-        final PanelData data1 = new PanelData(this.presentSet3, Collections.<String>emptySet(), this.geneSet);
+        final PanelData data1 = new PanelData(this.presentSet3, Collections.emptySet(), this.geneSet);
         final GenePanel firstPanel = this.genePanelLoader.get(data1);
         assertEquals(1, this.genePanelLoader.size());
         assertEquals(this.genePanel1, firstPanel);
 
-        final PanelData data2 = new PanelData(this.presentSet3, Collections.<String>emptySet(), this.geneSet);
+        final PanelData data2 = new PanelData(this.presentSet3, Collections.emptySet(), this.geneSet);
         final GenePanel secondPanel = this.genePanelLoader.get(data2);
         // The panel should only be built once. The second time it should be retrieved from cache.
         verify(this.genePanelFactory, times(1)).build(anyCollectionOf(VocabularyTerm.class),
@@ -176,28 +178,28 @@ public class DefaultGenePanelLoaderTest
         when(this.genePanel1.size()).thenReturn(1);
         when(this.genePanel2.size()).thenReturn(3);
 
-        when(this.genePanelFactory.build(this.presentTerms1, Collections.<VocabularyTerm>emptySet(),
-            Collections.<VocabularyTerm>emptySet())).thenReturn(this.genePanel1);
-        when(this.genePanelFactory.build(this.presentTerms2, Collections.<VocabularyTerm>emptySet(),
-            Collections.<VocabularyTerm>emptySet())).thenReturn(this.genePanel2);
+        when(this.genePanelFactory.build(this.presentTerms1, Collections.emptySet(),
+            Collections.emptySet())).thenReturn(this.genePanel1);
+        when(this.genePanelFactory.build(this.presentTerms2, Collections.emptySet(),
+            Collections.emptySet())).thenReturn(this.genePanel2);
 
         // The first panel is generated and cached.
-        final PanelData data1 = new PanelData(this.presentSet1, Collections.<String>emptySet(),
-            Collections.<String>emptySet());
+        final PanelData data1 = new PanelData(this.presentSet1, Collections.emptySet(),
+            Collections.emptySet());
         final GenePanel firstPanel = this.genePanelLoader.get(data1);
         assertEquals(1, this.genePanelLoader.size());
         assertEquals(this.genePanel1, firstPanel);
 
         // The second panel is generated and cached.
-        final PanelData data2 = new PanelData(this.presentSet2, Collections.<String>emptySet(),
-            Collections.<String>emptySet());
+        final PanelData data2 = new PanelData(this.presentSet2, Collections.emptySet(),
+            Collections.emptySet());
         final GenePanel secondPanel = this.genePanelLoader.get(data2);
         assertEquals(2, this.genePanelLoader.size());
         assertEquals(this.genePanel2, secondPanel);
 
         // The correct panel is removed from cache.
-        final PanelData data3 = new PanelData(this.presentSet2, Collections.<String>emptySet(),
-            Collections.<String>emptySet());
+        final PanelData data3 = new PanelData(this.presentSet2, Collections.emptySet(),
+            Collections.emptySet());
         this.genePanelLoader.invalidate(data3);
         assertEquals(1, this.genePanelLoader.size());
         final GenePanel thirdPanel = this.genePanelLoader.get(data1);
@@ -211,21 +213,21 @@ public class DefaultGenePanelLoaderTest
         when(this.genePanel1.size()).thenReturn(1);
         when(this.genePanel2.size()).thenReturn(3);
 
-        when(this.genePanelFactory.build(this.presentTerms1, Collections.<VocabularyTerm>emptySet(),
-            Collections.<VocabularyTerm>emptySet())).thenReturn(this.genePanel1);
-        when(this.genePanelFactory.build(this.presentTerms2, Collections.<VocabularyTerm>emptySet(),
-            Collections.<VocabularyTerm>emptySet())).thenReturn(this.genePanel2);
+        when(this.genePanelFactory.build(this.presentTerms1, Collections.emptySet(),
+            Collections.emptySet())).thenReturn(this.genePanel1);
+        when(this.genePanelFactory.build(this.presentTerms2, Collections.emptySet(),
+            Collections.emptySet())).thenReturn(this.genePanel2);
 
         // The first panel is generated and cached.
-        final PanelData data1 = new PanelData(this.presentSet1, Collections.<String>emptySet(),
-            Collections.<String>emptySet());
+        final PanelData data1 = new PanelData(this.presentSet1, Collections.emptySet(),
+            Collections.emptySet());
         final GenePanel firstPanel = this.genePanelLoader.get(data1);
         assertEquals(1, this.genePanelLoader.size());
         assertEquals(this.genePanel1, firstPanel);
 
         // The second panel is generated and cached.
-        final PanelData data2 = new PanelData(this.presentSet2, Collections.<String>emptySet(),
-            Collections.<String>emptySet());
+        final PanelData data2 = new PanelData(this.presentSet2, Collections.emptySet(),
+            Collections.emptySet());
         final GenePanel secondPanel = this.genePanelLoader.get(data2);
         assertEquals(2, this.genePanelLoader.size());
         assertEquals(this.genePanel2, secondPanel);
@@ -240,8 +242,8 @@ public class DefaultGenePanelLoaderTest
     {
         assertEquals(0, this.genePanelLoader.size());
         this.genePanelLoader.invalidate(Collections.emptyList());
-        final PanelData data1 = new PanelData(this.presentSet1, Collections.<String>emptySet(),
-            Collections.<String>emptySet());
+        final PanelData data1 = new PanelData(this.presentSet1, Collections.emptySet(),
+            Collections.emptySet());
         assertEquals(0, this.genePanelLoader.size());
         this.genePanelLoader.invalidate(data1);
         assertEquals(0, this.genePanelLoader.size());

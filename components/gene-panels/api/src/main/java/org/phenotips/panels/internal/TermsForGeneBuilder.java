@@ -28,7 +28,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,52 +54,15 @@ class TermsForGeneBuilder
     private final Set<String> exclusions;
 
     /**
-     * Default constructor that creates a new builder.
-     */
-    TermsForGeneBuilder()
-    {
-        this(Collections.emptySet());
-    }
-
-    /**
      * Creates a new builder, with a collection of {@code excludedGenes genes} that should not be added.
      *
      * @since 1.4
      */
-    TermsForGeneBuilder(@Nullable final Collection<VocabularyTerm> excludedGenes)
+    TermsForGeneBuilder(@Nullable final Collection<String> excludedGenes)
     {
-        this.exclusions = new HashSet<>();
-        if (CollectionUtils.isNotEmpty(excludedGenes)) {
-            addAllExclusions(excludedGenes);
-        }
-    }
-
-    /**
-     * Adds all identifiers and aliases associated with each {@code excludedGenes} to a collection of exclusions.
-     *
-     * @param excludedGenes a collection of {@link VocabularyTerm genes} that should be excluded from the result
-     */
-    private void addAllExclusions(@Nonnull final Collection<VocabularyTerm> excludedGenes)
-    {
-        for (final VocabularyTerm gene : excludedGenes) {
-            final String symbol = (String) gene.get("symbol");
-            // Contains alias_symbol, prev_symbol, entrez_id, ensembl_gene_id, refseq_accession, and ena
-            final Collection<String> aliases = (Collection<String>) gene.get("alt_id");
-            CollectionUtils.addIgnoreNull(this.exclusions, symbol);
-            addAllIgnoreNullAndEmpty(aliases);
-        }
-    }
-
-    /**
-     * Adds all items from {@code ids} collection to {@link #exclusions} iff {@code ids} is not null nor empty.
-     *
-     * @param ids the collection from which items will be added
-     */
-    private void addAllIgnoreNullAndEmpty(@Nullable final Collection<String> ids)
-    {
-        if (CollectionUtils.isNotEmpty(ids)) {
-            this.exclusions.addAll(ids);
-        }
+        this.exclusions = CollectionUtils.isNotEmpty(excludedGenes)
+            ? excludedGenes.stream().filter(Objects::nonNull).collect(Collectors.toSet())
+            : new HashSet<>();
     }
 
     /**

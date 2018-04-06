@@ -47,6 +47,16 @@ public class DefaultGenePanelFactoryImpl implements GenePanelFactory
     @Inject
     private VocabularyManager vocabularyManager;
 
+    /** Is false by default. Iff set to true, will result in a panel that keeps count of number of genes for terms. */
+    private boolean generateMatchCount;
+
+    @Override
+    public GenePanelFactory withMatchCount(final boolean generate)
+    {
+        this.generateMatchCount = generate;
+        return this;
+    }
+
     @Override
     public GenePanel build(
         @Nonnull final Collection<VocabularyTerm> presentTerms,
@@ -54,7 +64,7 @@ public class DefaultGenePanelFactoryImpl implements GenePanelFactory
     {
         Validate.notNull(presentTerms);
         Validate.notNull(absentTerms);
-        return new DefaultGenePanelImpl(presentTerms, absentTerms, this.vocabularyManager);
+        return new DefaultGenePanelImpl(presentTerms, absentTerms, this.generateMatchCount, this.vocabularyManager);
     }
 
     @Override
@@ -66,7 +76,8 @@ public class DefaultGenePanelFactoryImpl implements GenePanelFactory
         Validate.notNull(presentTerms);
         Validate.notNull(absentTerms);
         Validate.notNull(rejectedGenes);
-        return new DefaultGenePanelImpl(presentTerms, absentTerms, rejectedGenes, this.vocabularyManager);
+        return new DefaultGenePanelImpl(presentTerms, absentTerms, rejectedGenes, this.generateMatchCount,
+            this.vocabularyManager);
     }
 
     @Override
@@ -83,6 +94,6 @@ public class DefaultGenePanelFactoryImpl implements GenePanelFactory
             ? new PatientDataAdapter.AdapterBuilder(patient, this.vocabularyManager).withRejectedGenes().build()
             : new PatientDataAdapter.AdapterBuilder(patient, this.vocabularyManager).build();
         return new DefaultGenePanelImpl(dataAdapter.getPresentTerms(), dataAdapter.getAbsentTerms(),
-            dataAdapter.getRejectedGenes(), this.vocabularyManager);
+            dataAdapter.getRejectedGenes(), this.generateMatchCount, this.vocabularyManager);
     }
 }

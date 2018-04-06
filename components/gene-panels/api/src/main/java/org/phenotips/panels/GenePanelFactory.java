@@ -38,6 +38,16 @@ import javax.annotation.Nonnull;
 public interface GenePanelFactory
 {
     /**
+     * Specifies whether the created panel should keep track of the number of genes for each present term. This is
+     * false by default.
+     *
+     * @param generate the created panel will keep track of the number of genes for each present term iff true
+     * @return the current {@link GenePanelFactory} object
+     * @since 1.4
+     */
+    GenePanelFactory withMatchCount(boolean generate);
+
+    /**
      * Creates an object of {@link GenePanel} class, given a collection of present and absent {@link VocabularyTerm}
      * objects.
      *

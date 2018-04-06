@@ -2359,6 +2359,8 @@ document.observe('xwiki:dom:loaded', function()
         }
       },
       'gene-panels-search-box' : {
+        'named' : 'panels-livetable',
+        'withMatchCounts' : true,
         'cache' : {'all' : {}, 'displayed' : {}},
         'searchTerms' : $('panelsSearchTerms'),
         'searchTermsInput' : $('panelsSearchTermsInput'),
@@ -2422,34 +2424,58 @@ document.observe('xwiki:dom:loaded', function()
     },
 
     updateDefaultSearchTerms : function() {
-      var container = this.createSearchTermsContainer();
+      var container = this.createSearchTermsContainer(this._builder.withMatchCounts);
       this._builder.searchTerms.update(container);
       this.updateSearchValue();
     },
 
-    createSearchTermsContainer : function() {
+    createSearchTermsContainer : function(withCounts) {
       var container = new Element('div', { 'class' : 'default-search-terms-container'});
+      var unorderedKeys = Object.keys(this._builder.cache.displayed);
+      var orderedKeys = withCounts ? unorderedKeys.sort(this.sortByMatchCount.bind(this)) : unorderedKeys;
       var _this = this;
-      for (var k in this._builder.cache.displayed) {
-        var obj = this._builder.cache.all[k];
+      orderedKeys.forEach(function(k) {
+        var obj = _this._builder.cache.all[k];
         if (obj) {
+          var eltContainer = new Element('span', {'class' : 'search-term-container ' + obj.type});
+          if (obj.type === "free_symptom") {
+            var eltNotStandard = new Element('span', {'class' : 'fa fa-exclamation-triangle', 'title' : "$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.termSuggest.nonStandardPhenotype'))"}).update(' ');
+            eltContainer.insert(eltNotStandard);
+          }
           var elt = new Element('span', {'class' : 'search-term ' + obj.type}).update(obj.text.escapeHTML());
+          eltContainer.insert(elt);
+          withCounts &amp;&amp; eltContainer.insert(new Element('span', {'class' : 'search-term-count ' + obj.type}).insert("(" + (obj.count || 0) + ")"));
           elt.__key = obj.key;
           elt.title = obj.disabled &amp;&amp; "$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToEnable'))" || "$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToDisable'))";
           if (obj.disabled) {
             elt.addClassName('disabled');
+            eltContainer.addClassName('disabled');
           }
-          container.insert(elt);
+          container.insert(eltContainer);
           elt.observe('click', function(event) {
             var target = event.element();
             target.toggleClassName('disabled');
+            eltContainer.toggleClassName('disabled');
             _this._builder.cache.all[target.__key].disabled = target.hasClassName('disabled');
             target.title = _this._builder.cache.all[target.__key].disabled &amp;&amp; "$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToEnable'))" || "$escapetool.javascript($services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToDisable'))";
             _this.updateSearchValue();
           });
         }
-      }
+      });
       return container;
+    },
+
+    sortByMatchCount : function(term1, term2) {
+      var obj1 = this._builder.cache.all[term1];
+      var obj2 = this._builder.cache.all[term2];
+      var count1 = obj1 ? obj1.count || 0 : -1;
+      var count2 = obj2 ? obj2.count || 0 : -1;
+      // If counts are the same, non-standard terms should be after.
+      if (count1 == count2) {
+        return obj1 &amp;&amp; obj1.type === "free_symptom";
+      }
+      // Display larger counts first.
+      return count1 &lt; count2;
     },
 
     requestCreated : function(service, request) {
@@ -2704,25 +2730,43 @@ document.observe('xwiki:dom:loaded', function()
       });
 
       document.observe('gene:updated', function(event) {
-        var key = event.memo &amp;&amp; event.memo.key;
-        key &amp;&amp; (_this._builder.genes[key] = event.memo);
-        _this.updateDefaultSearchTerms();
+        if (_this._builder.genes) {
+          var key = event.memo &amp;&amp; event.memo.key;
+          key &amp;&amp; (_this._builder.genes[key] = event.memo);
+          _this.updateDefaultSearchTerms();
+        }
       });
 
       document.observe('gene:removed', function(event) {
-        var key = event.memo &amp;&amp; event.memo.key;
-        key &amp;&amp; (delete _this._builder.genes[key]);
-        _this.updateDefaultSearchTerms();
+        if (_this._builder.genes) {
+          var key = event.memo &amp;&amp; event.memo.key;
+          key &amp;&amp; (delete _this._builder.genes[key]);
+          _this.updateDefaultSearchTerms();
+        }
       });
 
       document.observe('gene:replaced', function(event) {
         if (!event.memo) {return;}
-        var delete_key = event.memo.delete_key;
-        var geneKey = event.memo.key;
-        var geneStatus = event.memo.status;
-        delete_key &amp;&amp; (delete _this._builder.genes[delete_key]);
-        geneKey &amp;&amp; geneStatus &amp;&amp; (_this._builder.genes[geneKey] = {'key' : geneKey, 'status' : geneStatus})
-        _this.updateDefaultSearchTerms();
+        if (_this._builder.genes) {
+          var delete_key = event.memo.delete_key;
+          var geneKey = event.memo.key;
+          var geneStatus = event.memo.status;
+          delete_key &amp;&amp; (delete _this._builder.genes[delete_key]);
+          geneKey &amp;&amp; geneStatus &amp;&amp; (_this._builder.genes[geneKey] = {'key' : geneKey, 'status' : geneStatus})
+          _this.updateDefaultSearchTerms();
+        }
+      });
+
+      this._builder.named &amp;&amp; document.observe("phenotips:" + this._builder.named + ":receivedMatchCount", function(event) {
+        if (!event.memo || !event.memo.data) {return;}
+        var matchCount = event.memo.data;
+        matchCount.each(function(item) {
+          var identifier = item.id || item.label;
+          var obj = _this._builder.cache.all[identifier];
+          obj &amp;&amp; (obj.count = item.count);
+        });
+        var container = _this.createSearchTermsContainer(_this._builder.withMatchCounts);
+        _this._builder.searchTerms.update(container);
       });
 
       if (this._builder.customSearchTermsInput) {
@@ -4048,15 +4092,24 @@ h1, h2, h3, h4 {
   border: 1px dotted $theme.borderColor;
   background-color: $theme.highlightColor;
 }
-.search-term {
+.search-term-container {
   margin: 0 1.5em 0 0;
+}
+.search-term-container .search-term-count {
+  vertical-align: super;
+  font-size: 70%;
+  margin-left: .2em;
+}
+.search-term {
   cursor: pointer;
 }
-.search-term:hover, .search-term.disabled:hover {
+.search-term:hover, .search-term-container.disabled .search-term:hover {
   opacity: .7;
 }
-.search-term.disabled {
+.search-term-container.disabled {
   opacity: .5;
+}
+.search-term-container.disabled .search-term {
   text-decoration: line-through;
 }
 .search-term.not_symptom {
