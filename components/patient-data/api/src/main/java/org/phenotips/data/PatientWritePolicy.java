@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
  * The {@link #MERGE} policy retains the old data and adds the new data. Any conflicts are resolved in favor of new
  * data.
  * </p>
+ *
  * @version $Id$
  * @since 1.4
  */
@@ -57,7 +58,7 @@ public enum PatientWritePolicy
     {
         try {
             return valueOf(StringUtils.upperCase(policy));
-        } catch (final IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException | NullPointerException ex) {
             return null;
         }
     }
