@@ -138,7 +138,7 @@ public class DefaultMatchCountImpl implements MatchCount
     @Override
     public int compareTo(@Nonnull final MatchCount o)
     {
-        // This is greater than o if this has a larger count, or if this has a name that alphabetically precedes o name.
+        // This comes before o if this has a larger count, or if this has a name that alphabetically precedes o name.
         final int result = Integer.compare(o.getCount(), getCount());
         return result != 0 ? result : getName().compareTo(o.getName());
     }

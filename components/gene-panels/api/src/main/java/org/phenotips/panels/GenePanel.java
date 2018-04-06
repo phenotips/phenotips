@@ -64,6 +64,7 @@ public interface GenePanel
      *
      * @return an ordered list of {@link MatchCount} objects, in descending order of relevance,
      *     or {@code null} if the panel was built without match count data
+     * @since 1.4
      */
     List<MatchCount> getMatchCounts();
 

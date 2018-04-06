@@ -188,11 +188,12 @@ public class DefaultGenePanelImpl implements GenePanel
     }
 
     /**
-     * Adds the natch counts and terms for gene.
+     * Adds the match counts and terms for gene.
      *
      * @param term the {@link VocabularyTerm} of interest
      * @param geneExclusions the identifiers for genes to be excluded
      * @param termsForGeneBuilder the {@link TermsForGeneBuilder} object
+     * @param matchCountBuilder the {@link MatchCountBuilder} object
      */
     private void addMatchCountsAndTermsForGene(
         @Nonnull final VocabularyTerm term,
