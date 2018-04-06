@@ -128,6 +128,8 @@
     'presentParamLabel' : 'present-term',
     'absentParamLabel' : 'absent-term',
     'rejectedGenesLabel' : 'rejected-gene',
+    'excludeRejected' : true,
+    'GENE_PREFIX' : 'HGNC:',
 
     /**
      * Generates results for the first page based on new data provided.
@@ -152,11 +154,6 @@
      *        "not_symptom" the symptoms that were found to be absent.
      */
     updateLiveTable : function() {
-      if (this.excludeRejected) {
-        this.param[this.rejectedGenesLabel] = this.geneCache;
-      } else {
-        this.param[this.rejectedGenesLabel] &amp;&amp; (delete this.param[this.rejectedGenesLabel]);
-      }
       this.service.target.__hiddenParent &amp;&amp; this.service.target.__hiddenParent.removeClassName('hidden');
       if (this.table) {
         this.table.updatePostParam(this.param);
@@ -178,6 +175,9 @@
 
       this.populateGeneSymbolCol(geneSymbolCol, dataObj);
       this.populatePhenotypesCol(phenotypesCol, dataObj);
+
+      dataRow.toggleClassName('rejected', this.excludeRejected &amp;&amp;
+        (this.geneCache.indexOf(this.GENE_PREFIX + dataObj.gene_id) > -1 || this.geneCache.indexOf(this.GENE_PREFIX + dataObj.gene_symbol) > -1));
 
       return dataRow;
     },
@@ -257,7 +257,10 @@
       var _this = this;
       this.saveButton &amp;&amp; this.saveButton.observe('click', function(event) {
         event.stop();
-        Event.fire(document, 'panels:export:requested', {'param' : _this.param, 'service' : _this.service});
+        // If rejected genes are to be excluded, do not include them in downloaded tsv.
+        var param = Object.clone(_this.param);
+        _this.excludeRejected &amp;&amp; (param[_this.rejectedGenesLabel] = _this.geneCache);
+        Event.fire(document, 'panels:export:requested', {'param' : param, 'service' : _this.service});
       });
     },
 
@@ -404,7 +407,6 @@
       this.baseUrl = service.script + "/livetable";
       this.saveButton = saveButton;
       this.checkBox = $('excludeRejectedGenesCheckBox');
-      this.excludeRejected = true;
       this.checkBox &amp;&amp; (this.checkBox.checked = true);
       this.createResultsContainers();
     }
@@ -571,6 +573,14 @@
   width: 15em;
   font-size: .85em;
   font-weight: bold;
+}
+
+#panels-livetable-display .rejected {
+  text-decoration: line-through;
+}
+
+#panels-livetable-display .rejected > td {
+  color: $theme.textSecondaryColor;
 }
 
 .livetable-display-phenotypes-col .feature-names {
