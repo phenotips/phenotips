@@ -44,16 +44,19 @@ public class ShareProtocol
     // TODO: check what is the difference between 1.1 and 1.2
     public static final String VERSION_1_2 = "1.2";
 
-    public static final String CURRENT_PUSH_PROTOCOL_VERSION = VERSION_1_2;
+    /** new gene status */
+    public static final String VERSION_1_3 = "1.3";
+
+    public static final String CURRENT_PUSH_PROTOCOL_VERSION = VERSION_1_3;
 
     // list of protocol versions that the current server can read data from
     public static final List<String> COMPATIBLE_CLIENT_PROTOCOL_VERSIONS =
         Arrays.asList(VERSION_1, VERSION_1_1, VERSION_1_2);
 
-    // list of versions which can push even if requred consents have not been checked
+    // list of versions which can push even if required consents have not been checked
     public static final List<String> ALLOW_NO_CONSENTS_PROTOCOL_VERSIONS = Arrays.asList(VERSION_1);
 
-    // list of known incompatibilities, a.k.a. enabling field names which are seriallized differently
+    // list of known incompatibilities, a.k.a. enabling field names which are serialized differently
     // in old versions of push protocol/patient JSON, together with a "compatibility" field (or null
     // if data can not be serialized in an old way for some reason)
     public static final Incompatibility BIRTH_DATE_INCOMPAT = new Incompatibility("date_of_birth", "date_of_birth_v1");
@@ -62,14 +65,18 @@ public class ShareProtocol
 
     public static final Incompatibility EXAM_DATE_INCOMPAT = new Incompatibility("exam_date", "exam_date_v1");
 
+    public static final Incompatibility GENE_STATUS_INCOMPAT = new Incompatibility("genes", "genes_v1");
+
     // a list of known (fixable) incompatibilities in the supported past versions of push protocol
     public static final Map<String, List<Incompatibility>> INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS =
         new HashMap<String, List<Incompatibility>>();
     static {
         INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS.put(VERSION_1,
-            Arrays.asList(BIRTH_DATE_INCOMPAT, DEATH_DATE_INCOMPAT, EXAM_DATE_INCOMPAT));
+            Arrays.asList(BIRTH_DATE_INCOMPAT, DEATH_DATE_INCOMPAT, EXAM_DATE_INCOMPAT, GENE_STATUS_INCOMPAT));
         INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS.put(VERSION_1_1,
-            Arrays.asList(BIRTH_DATE_INCOMPAT, DEATH_DATE_INCOMPAT, EXAM_DATE_INCOMPAT));
+            Arrays.asList(BIRTH_DATE_INCOMPAT, DEATH_DATE_INCOMPAT, EXAM_DATE_INCOMPAT, GENE_STATUS_INCOMPAT));
+        INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS.put(VERSION_1_2,
+            Arrays.asList(GENE_STATUS_INCOMPAT));
     }
 
     // list of old push protocol versions which are explicitly not supported. The idea is that clients are
@@ -81,7 +88,7 @@ public class ShareProtocol
     // Those are listed explicitly because there is no way to tell if a version is old or new
     // unless it is explicitly listed
     public static final List<String> COMPATIBLE_OLD_SERVER_PROTOCOL_VERSIONS =
-        Arrays.asList(VERSION_1, VERSION_1_1);
+        Arrays.asList(VERSION_1, VERSION_1_1, VERSION_1_2);
 
     // =========================================================================
 
