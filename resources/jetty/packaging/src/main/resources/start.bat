@@ -59,7 +59,7 @@ set JAVA_PATH=%JAVAW_PATH:\javaw.exe=%\java.exe
 if "%JAVA_PATH%"=="" set JAVA_PATH=java
 
 REM Location where XWiki stores generated data and where database files are.
-set XWIKI_DATA_DIR=%AppData%\PhenoTips
+set XWIKI_DATA_DIR="%AppData%\PhenoTips"
 set START_OPTS=%START_OPTS% -Dxwiki.data.dir=%XWIKI_DATA_DIR%
 
 REM Ensure the data directory exists so that XWiki can use it for storing permanent data.
@@ -97,7 +97,7 @@ set START_OPTS=%START_OPTS% -Dorg.eclipse.jetty.server.Request.maxFormContentSiz
 set JETTY_CONFIGURATION_FILES=
 for /r %%i in (%JETTY_HOME%\etc\jetty-*.xml) do set JETTY_CONFIGURATION_FILES=!JETTY_CONFIGURATION_FILES! "%%i"
 
-"%JAVA_PATH%" %START_OPTS% %3 %4 %5 %6 %7 %8 %9 -jar %JETTY_HOME%/start.jar %JETTY_HOME%/etc/jetty.xml %JETTY_CONFIGURATION_FILES%
+"%JAVA_PATH%" %START_OPTS% %3 %4 %5 %6 %7 %8 %9 -jar "%JETTY_HOME%/start.jar" "%JETTY_HOME%/etc/jetty.xml" %JETTY_CONFIGURATION_FILES%
 
 REM Pause so that the command window used to run this script doesn't close automatically in case of problem
 REM (like when the JDK/JRE is not installed)
