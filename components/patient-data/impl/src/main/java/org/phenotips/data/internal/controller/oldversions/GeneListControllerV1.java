@@ -92,11 +92,9 @@ public class GeneListControllerV1 implements PatientDataController<Gene>
             return;
         }
 
-        PatientData<Gene> data = patient.getData(getName());
+        PatientData<Gene> data = patient.getData(GENES_STRING);
         if (data == null || data.size() == 0) {
-            if (selectedFieldNames == null || selectedFieldNames.contains(GENES_ENABLING_FIELD_NAME)) {
-                json.put(GENES_STRING, new JSONArray());
-            }
+            json.put(GENES_STRING, new JSONArray());
             return;
         }
 

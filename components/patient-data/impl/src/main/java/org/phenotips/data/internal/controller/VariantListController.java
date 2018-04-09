@@ -86,7 +86,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
     private static final String CONTROLLER_NAME = VARIANTS_STRING;
 
-    private static final String VARIANTS_ENABLING_FIELD_NAME = "genes";
+    private static final String VARIANTS_ENABLING_FIELD_NAME = "variants";
 
     private static final String INTERNAL_VARIANT_KEY = "cdna";
 
@@ -378,7 +378,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
                     || variantSymbols.contains(variantJson.getString(INTERNAL_VARIANT_KEY))
                     // storing variant without gene name is pointless as it can not be displayed
                     || StringUtils.isBlank(variantJson.optString(JSON_GENE_KEY))
-                        && StringUtils.isBlank(variantJson.optString(JSON_OLD_GENE_KEY))) {
+                    && StringUtils.isBlank(variantJson.optString(JSON_OLD_GENE_KEY))) {
                     continue;
                 }
 
@@ -551,7 +551,6 @@ public class VariantListController extends AbstractComplexController<Map<String,
             variants.forEach(variant -> saveVariant(docX, variant, context));
         }
     }
-
 
     /**
      * Saves a {@code variant} for the provided {@code patient}.

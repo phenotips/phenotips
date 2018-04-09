@@ -51,7 +51,7 @@ public class ShareProtocol
 
     // list of protocol versions that the current server can read data from
     public static final List<String> COMPATIBLE_CLIENT_PROTOCOL_VERSIONS =
-        Arrays.asList(VERSION_1, VERSION_1_1, VERSION_1_2);
+        Arrays.asList(VERSION_1, VERSION_1_1, VERSION_1_2, VERSION_1_3);
 
     // list of versions which can push even if required consents have not been checked
     public static final List<String> ALLOW_NO_CONSENTS_PROTOCOL_VERSIONS = Arrays.asList(VERSION_1);
