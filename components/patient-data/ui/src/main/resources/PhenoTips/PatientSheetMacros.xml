@@ -374,7 +374,7 @@
   #set ($patient = $services.patients.get($doc.name))
   #set($genes = $patient.getData('genes'))
   #foreach ($g in $genes)
-    #set ($discard = $genesSummary.add({"key" : $g.gene, "status" : $g.status}))
+    #set ($discard = $genesSummary.add({"key" : $g.id, "status" : $g.status}))
   #end
 #end
 
