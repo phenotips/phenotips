@@ -389,7 +389,7 @@ define([
             var x = this.getX() + this.getWidth() - 20 - this.getWidth()/40;
             var y = this.getY() + 5;
             this.createButton(x, y, editor.getView().__deleteButton_svgPath, editor.getView().__deleteButton_BBox,
-                              attributes, action, "delete", "remove node");
+                              attributes, action, "delete", "Remove this person");
         },
 
         /**
