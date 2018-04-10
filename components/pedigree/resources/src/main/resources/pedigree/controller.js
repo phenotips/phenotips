@@ -1113,11 +1113,9 @@ define([
                 }
 
                 var oldLinkID = editor.getNode(nodeID).getPhenotipsPatientId();
-                editor.getOkCancelDialogue().showWithCheckbox("<br/><b>Do you want to remove the connection between this<br/>patient </b>(" + editor.getGraph().getPatientDescription(nodeID, true) +
-                        ")<b> and this pedigree node?</b><br/><br/><br/>" +
-                        "<div style='margin-left: 30px; margin-right: 30px; text-align: center'>" +
-                        "Please note that if you do not assign this patient to another pedigree<br/>node this patient will be removed from this family</div><br/>",
-                        'Remove the connection?', 'Clear data from this pedigree node', true,
+                editor.getOkCancelDialogue().showWithCheckbox("<br/><b>Do you want to remove the connection between patient record " + editor.getGraph().getPatientDescription(nodeID, true) +
+                        "<b> and this individual?</b><br/><br/><br/>",
+                        'Remove the connection?', 'Clear data from this individual', true,
                         "Remove link", processLinkCallback,
                         "Cancel", onCancelAssignPatient,
                         "Delete patient record", deletePatientRecord);
@@ -1133,9 +1131,9 @@ define([
                     editor.getView().unmarkAll();
                     onCancelAssignPatient();
                 }
-                editor.getOkCancelDialogue().showWithCheckbox("<br/>Patient " + linkID + " is already in this pedigree. Do you want to transfer the record to the pedigree node currently selected?",
-                                                       "Re-assign patient " + linkID + " to this node?",
-                                                       'Clear data from the pedigree node currently linked to this patient', true,
+                editor.getOkCancelDialogue().showWithCheckbox("<br/>Patient record " + linkID + " is already in this pedigree. Do you want to transfer the record to the person currently selected?",
+                                                       "Re-assign patient record " + linkID + " to this person?",
+                                                       'Clear data from the person currently linked to this patient record', true,
                                                        "OK", processLinkCallback, "Cancel", onCancel );
                 return;
             }
