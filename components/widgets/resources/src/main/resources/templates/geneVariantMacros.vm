@@ -167,7 +167,9 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 ##
 #macro (__gene_row $geneObj $geneNumber $variantClass $options)##
 #set($geneObjNumber = $geneObj.number)
-#set($variantObjects = $doc.getObjects($variantClass.name, "gene", $geneObj.getProperty('gene').value))
+#if ($options.hasVariants)
+  #set($variantObjects = $doc.getObjects($variantClass.name, "gene", $geneObj.getProperty('gene').value))
+#end
 |(% class="row-count" %)$geneNumber##
 #foreach($prop in $geneObj.xWikiClass.properties)##
 |(% class="$prop.translatedPrettyName gene #if ($prop.name == 'gene')mandatory#if($options.mode != 'edit' && !$services.vocabularies.hgnc.getTerm($geneObj.getValue($prop.name))) custom-entry#end#end gene-$geneObjNumber"##
@@ -177,7 +179,7 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 |(% class="gene delete-gene-button-$geneObjNumber" %)#__gene__deleteWithVariants__tool($geneObj $variantClass.name)##
 #end
 
-#__variant_table($variantObjects $geneNumber $geneObjNumber $options $geneObj.getProperty('gene').value $variantClass.name)
+#if ($options.hasVariants)#__variant_table($variantObjects $geneNumber $geneObjNumber $options $geneObj.getProperty('gene').value $variantClass.name)#end
 #end
 ##
 ##
@@ -201,7 +203,7 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 #macro (__gene_table $geneClassName $variantClassName $options)##
 #set($geneClass = $xwiki.getDocument($geneClassName).xWikiClass)
 #set($variantClass = $xwiki.getDocument($variantClassName).xWikiClass)
-(% id="$!{options.tableIdPrefix}extradata-list-${geneClassName}_${variantClassName}" class="gene-table $!{options.tableClass} extradata-list withCounter" %)
+(% id="$!{options.tableIdPrefix}extradata-list-${geneClassName}_${variantClassName}" class="gene-table $!{options.tableClass} extradata-list withCounter #if($options.hasVariants)hasVariants#end" %)
 |= #foreach($prop in $geneClass.properties)##
 |=(% class="gene-t-header-$prop.getName() col-label"##
 #if ($foreach.index == 0 || $foreach.index == 3) colspan="2" #end %)$prop.translatedPrettyName#end
@@ -221,9 +223,10 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 #end
 #if ($options.mode == 'edit')
 #set($geneIndexPlaceholder = 'ZZGENE_INDEX_PLACEHOLDERZZ')
-#__gene_row_empty($geneClassName $variantClassName $options)
+#__gene_row_empty($geneClassName $variantClassName $options)#if ($options.hasVariants)
 (%class="variant-gene-$geneIndexPlaceholder variant-title-row"%)#__variant_head_empty($variantClassName $options)
 (%class="variant-gene-$geneIndexPlaceholder variant-hide-heading-$geneIndexPlaceholder"%)#__variant_row_empty($variantClassName $geneNumber $options)##
+#end
 #end
 
 

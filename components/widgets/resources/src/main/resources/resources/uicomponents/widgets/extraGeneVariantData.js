@@ -9,11 +9,12 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
         this._geneTable = geneTable;
         this.geneClassName = localOpts.geneClassName || 'PhenoTips.GeneClass';
         this.geneVariantClassName = localOpts.geneVariantClassName || 'PhenoTips.GeneVariantClass';
+        this._hasVariants = geneTable.hasClassName('hasVariants');
 
         //if edit mode
         if ($('inline')) {
           // getting rid of 'for' attributes in labels and 'id' in inputs
-          this._geneTable.select('label.xwiki-form-listclass').each (function (label) {
+          this._geneTable.select('label.xwiki-form-listclass').each(function (label) {
             label.removeAttribute("for");
             label.down('input').removeAttribute("id");
           });
@@ -21,26 +22,33 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
           this.warnSaving = false;
           this.areaEditDataListenerArray = [];
           this.getNewRowsTemplates();
-          this.createEditButtons('.variant-moreinfo-editbutton-row');
-          this.createEditDoneButtons('.variant-moreinfo-editdonebutton-row');
           this.restrictNumericInput();
-          this._geneTable.select('a.variant-edit').invoke('observe', 'click', this.editData.bindAsEventListener(this));
-          this._geneTable.select('a.variant-edit-done').invoke('observe', 'click', this.editDoneData.bindAsEventListener(this));
-          this._geneTable.select('.variant.moreinfo').invoke('observe', 'click', this.areaEditData.bindAsEventListener(this));
+
           this._geneTable.select('.gene a.delete-gene').invoke('observe', 'click', this.ajaxDeleteGeneData.bindAsEventListener(this));
           $$('a.button.add-gene.add-data-button').invoke('observe', 'click', this.ajaxAddGeneData.bindAsEventListener(this));
-          this._geneTable.select('.variant a.delete-variant').invoke('observe', 'click', this.ajaxDeleteVariantData.bindAsEventListener(this));
-          this._geneTable.select('a.button.add-variant.add-data-button').invoke('observe', 'click', this.ajaxAddVariantData.bindAsEventListener(this));
-          //invoking click event to hide rows with empty inputs in 'more info' section
-          this._geneTable.select('a.variant-edit-done').invoke('click');
+
+          if (this._hasVariants) {
+            this.createEditButtons('.variant-moreinfo-editbutton-row');
+            this.createEditDoneButtons('.variant-moreinfo-editdonebutton-row');
+            this._geneTable.select('a.variant-edit').invoke('observe', 'click', this.editData.bindAsEventListener(this));
+            this._geneTable.select('a.variant-edit-done').invoke('observe', 'click', this.editDoneData.bindAsEventListener(this));
+            this._geneTable.select('.variant.moreinfo').invoke('observe', 'click', this.areaEditData.bindAsEventListener(this));
+            this._geneTable.select('.variant a.delete-variant').invoke('observe', 'click', this.ajaxDeleteVariantData.bindAsEventListener(this));
+            this._geneTable.select('a.button.add-variant.add-data-button').invoke('observe', 'click', this.ajaxAddVariantData.bindAsEventListener(this));
+            //invoking click event to hide rows with empty inputs in 'more info' section
+            this._geneTable.select('a.variant-edit-done').invoke('click');
+          }
+
           this.lockGeneInput();
         }
 
         this._geneTable.select('tr tr').each( function(item) {
           item.toggleClassName('moreinfo-view', true);
         });
-        this.createShowMoreinfoButtons('td.variant-row-count.variant');
-        this.createHideShowButtons('.variant.variant-title');
+        if (this._hasVariants) {
+          this.createShowMoreinfoButtons('td.variant-row-count.variant');
+          this.createHideShowButtons('.variant.variant-title');
+        }
         this._geneTable.select('tr th')[0].width = '1em';
       }
     },
@@ -70,10 +78,12 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       var sizep = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ').size();
       var geneRowTemplateEl = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[0].previous();
       var buttonRowTemplateEl = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 5];
-      var varHeader_0_TemplateEl = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 4];
-      var varHeader_1_TemplateEl = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 3];
-      var varRowTemplateEl = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 2];
-      var varMoreInfoTemplateEl = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 1];
+      if (this._hasVariants) {
+        var varHeader_0_TemplateEl = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 4];
+        var varHeader_1_TemplateEl = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 3];
+        var varRowTemplateEl = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 2];
+        var varMoreInfoTemplateEl = this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 1];
+      }
       this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[0].previous().remove();
       this._geneTable.select('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ').each(function(item) {
         item.remove();
@@ -81,11 +91,13 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       //making templates
       var syntax = /(^|.|\r|\n)(ZZ(\w+)ZZ)/;
       this.geneRowTemplate = new Template(geneRowTemplateEl.innerHTML, syntax);
-      this.addVariantButtonTemplate = new Template(buttonRowTemplateEl.innerHTML, syntax);
-      this.variantHeaderTemplate_0  = new Template(varHeader_0_TemplateEl.innerHTML, syntax);
-      this.variantHeaderTemplate_1  = new Template(varHeader_1_TemplateEl.innerHTML, syntax);
-      this.variantRowTemplate  = new Template(varRowTemplateEl.innerHTML, syntax);
-      this.moreInfoSectionTemplate = new Template(varMoreInfoTemplateEl.innerHTML, syntax);
+      if (this._hasVariants) {
+        this.addVariantButtonTemplate = new Template(buttonRowTemplateEl.innerHTML, syntax);
+        this.variantHeaderTemplate_0  = new Template(varHeader_0_TemplateEl.innerHTML, syntax);
+        this.variantHeaderTemplate_1  = new Template(varHeader_1_TemplateEl.innerHTML, syntax);
+        this.variantRowTemplate  = new Template(varRowTemplateEl.innerHTML, syntax);
+        this.moreInfoSectionTemplate = new Template(varMoreInfoTemplateEl.innerHTML, syntax);
+      }
     },
 
     ajaxDeleteGeneData : function (event) {
@@ -157,10 +169,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       var geneIndex = this.options.geneIndex++;
 
       var newGeneRow = new Element('tr');
-      var newButtonRow = new Element('tr', {class :'variant-gene-' + geneIndex + ' variant-footer v-collapsed'});
-
       var data = {GENE_NUMBER_PLACEHOLDER: idx, GENE_INDEX_PLACEHOLDER: geneIndex};
-      var buttonRowInner = this.addVariantButtonTemplate.evaluate(data);
       var geneRowInner = this.geneRowTemplate.evaluate(data);
 
       geneRowInner = geneRowInner.replace(/_\d+_|=\d+&/g, function (placeholder) {
@@ -176,19 +185,23 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
 
       newGeneRow.insert(geneRowInner);
       this._geneTable.down('tbody').insert(newGeneRow);
-      newButtonRow.insert(buttonRowInner);
-      this._geneTable.down('tbody').insert(newButtonRow);
+
+      if (this._hasVariants) {
+          var newButtonRow = new Element('tr', {class :'variant-gene-' + geneIndex + ' variant-footer v-collapsed'});
+          var buttonRowInner = this.addVariantButtonTemplate.evaluate(data);
+          newButtonRow.insert(buttonRowInner);
+          this._geneTable.down('tbody').insert(newButtonRow);
+          var hintTool = newButtonRow.down('span.fa.fa-question-circle.xHelpButton');
+          var icon_helpController = new PhenoTips.widgets.HelpButton(hintTool);
+      }
 
       newGeneRow.down('a.delete-gene').observe('click', this.ajaxDeleteGeneData.bindAsEventListener(this));
-      this._geneTable.select('tr.variant-gene-' + geneIndex + ' a.add-variant')[0].observe('click', this.ajaxAddVariantData.bindAsEventListener(this));
+      this._hasVariants && this._geneTable.select('tr.variant-gene-' + geneIndex + ' a.add-variant')[0].observe('click', this.ajaxAddVariantData.bindAsEventListener(this));
 
       $(this.geneClassName + '_' + geneIndex + '_status').value = "candidate";
 
       var geneLabel = new Element('p', {class :' gene col-label gene-' + geneIndex + ' gene-input-label v-collapsed'});
       newGeneRow.down('.suggested.suggest-gene.gene-name').insert({before: geneLabel});
-
-      var hintTool = newButtonRow.down('span.fa.fa-question-circle.xHelpButton');
-      var icon_helpController = new PhenoTips.widgets.HelpButton(hintTool);
 
       Event.fire(document, 'xwiki:dom:updated', {elements :[newGeneRow]});
     },

@@ -193,7 +193,7 @@ document.observe('xwiki:dom:loading', function() {
     //============================================================================
     // Push dialog check boxes and expand tools
     var titles = content.select('.push-fields.section.columns > div h5');
-      if (titles) {
+    if (titles) {
         titles.each(function(item, index) {
           var sectionList = item.next('ul');
           var showIcon = '<span class="fa fa-plus-square-o fa-lg"></span>';
@@ -290,6 +290,17 @@ document.observe('xwiki:dom:loading', function() {
           });
        });
     }
+
+    //============================================================================
+    // Push dialog check boxes that have to check pre-requisite checkboxes with them when checked
+    // ex., if variants is checked, "genes"
+    var checkboxes = content.select('.checkbox_tree_container input[type=checkbox][class^="prerequisite-"]');
+    checkboxes.each(function(elt) {
+        elt.observe('click', function(event) {
+            var id = elt.className.replace("prerequisite-",'');
+            $(id).checked = elt.checked || $(id).checked;
+        });
+    });
 
     //============================================================================
     // Column selection "select all" tools
