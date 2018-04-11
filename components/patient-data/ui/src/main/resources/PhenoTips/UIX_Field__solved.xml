@@ -122,7 +122,7 @@
     var pubmedArticleServiceURL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&amp;retmode=json&amp;method=get&amp;id=";
     var pubmedIdInput = $$('.solved__pubmed_id input')[0];
 
-    if (pubmedIdInput) {
+    if (XWiki.contextaction == "edit" &amp;&amp; pubmedIdInput) {
         pubmedIdInput.observe('blur', function () {
             var pubmedId = pubmedIdInput.value;
             if (pubmedId.length &lt; 1) {
@@ -203,9 +203,17 @@
                     authorsEl.insert(authorsStr);
                 }
                 container.insert(summary).insert(titleEl).insert(authorsEl).insert(idsEl);
-                pubmedIdInput.up().insert(container);
+                if (XWiki.contextaction == "view") {
+                    pubmedIdValue.hide();
+                    pubmedIdValue.up().insert(container);
+                }
+                if (XWiki.contextaction == "edit") {
+                    pubmedIdInput.up().insert(container);
+                }
             } else {
-                pubmedIdInput.up().insert(new Element("div", {"class" : "invalid"}).update("Invalid Pubmed ID"));
+                if (XWiki.contextaction == "edit") {
+                    pubmedIdInput.up().insert(new Element("div", {"class" : "invalid"}).update("Invalid Pubmed ID"));
+                }
             }
         };
 
@@ -214,6 +222,11 @@
         };
 
         xhr.send();
+    };
+
+    var pubmedIdValue = $$('.solved__pubmed_id .displayed-value p')[0];
+    if (XWiki.contextaction == "view" &amp;&amp; pubmedIdValue &amp;&amp; pubmedIdValue.innerHTML.length &gt; 0) {
+        makeCorsRequest(pubmedIdValue.innerHTML);
     };
 });</code>
     </property>
