@@ -555,44 +555,48 @@
       // HACK: 'new-owner-input' suggest input had to be put into the document from the start
       //       to make suggest picker attach to it correctly; it now has to be moved into
       //       the `owner` section of this "access rights" dialog/popup
-      this._defaultOwnerOption   = undefined;
+      this._defaultOwnerOption = undefined;
       this._newOwnerSelector = $('new-owner-div');
+      this._newOwnerInput = $('new-owner-input');
 
-      if (this._newOwnerSelector) {
+      if (this._newOwnerSelector &amp;&amp; this._newOwnerInput) {
         var transfer = new Element('table', {id : 'transfer'});
+        this._newOwnerInput.disable();
         var _this = this;
+
         var _getTransferOption = function (type, text, controlledElement) {
            var optionWrapper = new Element('tr');
-           var input = new Element('input', {"type" : "radio", "name" : "transfer-to"});
-           var label = new Element('label').insert(input).insert(text);
-           input.observe('change', function() {
-             transfer.select('.controlled-element input, .controlled-element select').each(function (item) {
-                item.disable();
-             });
+           var transferToRadio = new Element('input', {"type" : "radio", "name" : "transfer-to"});
+           var label = new Element('label').insert(transferToRadio).insert(text);
+
+           transferToRadio.observe('change', function() {
+             _this._newOwnerInput.disable();
              // removes previously selected user displayed by the suggest user picker
              _this._ownerSuggestPicker &amp;&amp; _this._ownerSuggestPicker.clear();
-             if (input.checked &amp;&amp; controlledElement) {
-               input.up('tr').select('.controlled-element input, .controlled-element select').each(function (item) {
-                  item.enable();
-                  item.focus();
-               });
+             if (transferToRadio.checked &amp;&amp; controlledElement) {
+               _this._newOwnerInput.enable();
+               _this._newOwnerInput.focus();
              }
            });
+
            optionWrapper.insert(new Element('span', {'class' : 'fa fa-' + type}).wrap('td'))
                         .insert(label.wrap('td'))
                         .insert(controlledElement &amp;&amp; controlledElement.wrap('td', {'class' : 'controlled-element'}) || '');
            return optionWrapper;
         }
+
         this._defaultOwnerOption = _getTransferOption("check", "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipKeepOwnership'))", "");
         transfer.insert(this._defaultOwnerOption);
-        //this._checkKeepOwnershipOption();
-        if (this._newOwnerSelector) {
-          transfer.insert(_getTransferOption("group", "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipTransferUser'))", this._newOwnerSelector));
-        }
-        transfer.select('.controlled-element input, .controlled-element select').each(function (item) {
-          item.disable();
-        });
+
+        this._newOwnerOption = _getTransferOption("group", "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipTransferUser'))", this._newOwnerSelector);
+        transfer.insert(this._newOwnerOption);
+
         this._ownershipManager.insert(transfer);
+
+        // enable new owner input on click
+        this._newOwnerOption.observe('click', function() {
+          _this._newOwnerOption.down('input').click();
+        });
       }
     },
 
@@ -683,7 +687,7 @@
         var dataObj = {};
 
         // adding owner if owner was changed
-        if (_this._ownershipManager.down('[name="transfer-to"]') &amp;&amp; !_this._ownershipManager.down('[name="transfer-to"]').checked) {
+        if (_this._newOwnerOption.down('[name="transfer-to"]') &amp;&amp; _this._newOwnerOption.down('[name="transfer-to"]').checked) {
           var newOwner;
           if (_this._newOwnerSelector &amp;&amp; _this._newOwnerSelector.down('.accepted-suggestions input')) {
             newOwner = _this._newOwnerSelector.down('.accepted-suggestions input').value;
