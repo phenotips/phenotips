@@ -717,7 +717,7 @@ define([
                 return false;
             }
             if (!editor.getPatientAccessPermissions(node.getPhenotipsPatientId()).hasEdit) {
-                this._onFailedDrag(node, "You do not have the permission to modify this patient.", "Unauthorized operation");
+                this._onFailedDrag(node, "You do not have the permission to modify this patient record.", "Unauthorized operation");
                 return false;
             }
             return true;
