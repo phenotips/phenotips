@@ -75,7 +75,7 @@ define([], function(){
                 key: "m",
                 type: "person",
                 label: "Multiple",
-                tip  : "Create a node representing multiple siblings",
+                tip  : "Create a group of siblings",
                 symbol: "<span></span><strong>n</strong>",
                 cssclass: "diamond text-in-middle",
                 callback : "CreateChild",

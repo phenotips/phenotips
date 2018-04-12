@@ -713,11 +713,11 @@ define([
          */
         _onDropObject: function(node, objectID) {
             if (!this._dropOnGroupNodes && node.isPersonGroup()) {
-                this._onFailedDrag(node, "Can't drop onto this node: group nodes do not support " + this._droppableName, "Can't drag to this node");
+                this._onFailedDrag(node, this._droppableName + " cannot be assigned to groups of individuals.", "Unsupported operation");
                 return false;
             }
             if (!editor.getPatientAccessPermissions(node.getPhenotipsPatientId()).hasEdit) {
-                this._onFailedDrag(node, "You do not have edit right for this patient", "Can't drag to this patient");
+                this._onFailedDrag(node, "You do not have the permission to modify this patient record.", "Unauthorized operation");
                 return false;
             }
             return true;

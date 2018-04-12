@@ -423,7 +423,7 @@ define([
          if (parents.length > 0) {
              if ( pedigree.GG.properties[parents[0]]["gender"] == "U" &&
                   pedigree.GG.properties[parents[1]]["gender"] == "U" ) {
-                 editor.getOkCancelDialogue().showCustomized("Unable to export in BOADICEA format when both parents of any node are of unknown gender",
+                 editor.getOkCancelDialogue().showCustomized("Unable to export in BOADICEA format when both parents of any individual are of unknown gender",
                                                              "Can't export: missing gender data", "OK", null );
                  return "";
              }
@@ -451,7 +451,7 @@ define([
              if (!possibleGenders["F"] && !possibleGenders["M"]) {
                  // there is a person which can't be assigned both M and F because both conflict with other partner genders
                  editor.getOkCancelDialogue().showCustomized("Unable to export in BOADICEA format since some genders in pedigree can not be determined",
-                                                             "Can't export: not all nodes can be unambiguously assigned a Male or Female gender", "OK", null );
+                                                             "Can't export: some individuals have neither Male nor Female gender", "OK", null );
                  return "";
              }
              if (possibleGenders["F"] && !possibleGenders["M"]) {

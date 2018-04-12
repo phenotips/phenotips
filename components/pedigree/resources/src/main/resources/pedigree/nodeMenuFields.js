@@ -311,7 +311,7 @@ define([
             },
             {
                 'name' : 'setproband',
-                'label' : 'Set this person to be the proband node',
+                'label' : 'Make this person the proband',
                 'type' : 'button',
                 'tab' : 'Clinical',
                 'buttoncss' : 'unintrusive-button menu-fullWidthbutton',
