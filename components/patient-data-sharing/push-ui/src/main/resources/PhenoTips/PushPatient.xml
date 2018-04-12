@@ -1196,11 +1196,6 @@
         }
       }
 
-      // explicitly manually add variants if genes are enabled
-      if (enabledFields.indexOf("genes") > -1) {
-        enabledFields.push("variants");
-      }
-
       var pushParameters = _this._preparePushDialogParameters(enabledFields);
 
       if (_this._pushManyPatients) {
@@ -1273,6 +1268,11 @@
                         selectedFields.push(item.identify().replace("columns_",""));
                     }
                 });
+
+                // explicitly manually add variants if genes are enabled
+                if (selectedFields.indexOf("genes") > -1) {
+                  selectedFields.push("variants");
+                }
 
                 if (!pushMulti) {
                   dialog.closeDialog();

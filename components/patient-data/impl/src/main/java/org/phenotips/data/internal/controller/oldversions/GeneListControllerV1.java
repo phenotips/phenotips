@@ -105,7 +105,12 @@ public class GeneListControllerV1 implements PatientDataController<Gene>
             // change "rejected_candidate" status to "rejected"
             if (gene.getStatus().equals(INTERNAL_REJECTED_CANDIDATE_VALUE)) {
                 geneObj.put(INTERNAL_STATUS_KEY, INTERNAL_REJECTED_VALUE);
-                geneObj.put(JSON_COMMENTS_KEY, "rejected candidate");
+                String comment = geneObj.optString(JSON_COMMENTS_KEY, "");
+                if ("".equals(comment)) {
+                    geneObj.put(JSON_COMMENTS_KEY, "* Rejected candidate");
+                } else {
+                    geneObj.put(JSON_COMMENTS_KEY, "* Rejected candidate \n\n" + comment);
+                }
             }
             geneArray.put(geneObj);
         }
