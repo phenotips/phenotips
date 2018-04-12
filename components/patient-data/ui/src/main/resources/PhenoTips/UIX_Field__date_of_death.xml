@@ -112,7 +112,7 @@
 
 {{velocity}}
 (% id="date-of-death-block" %)(((
-  #__displayFormatted('2-col' 'date_of_death' '' 'date' '')
+  #__displayFormatted('2-col' 'date_of_death' '' 'date checked-date' '')
 )))
 {{/velocity}}</content>
     </property>
