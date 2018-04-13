@@ -9,7 +9,7 @@ require(['jquery'], function ($)
         var saveButtons = $("input[name='action_save']");
 
         //This will happen if the page is not in edit mode
-        if (mandatoryFields.length < 1) {
+        if ($("#inline").length < 1) {
             return;
         }
 
