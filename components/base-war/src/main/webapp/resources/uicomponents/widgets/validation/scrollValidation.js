@@ -5,7 +5,9 @@ require(['jquery'], function ($)
         var _mandatoryFields = $(".mandatory :input:not([type='hidden'])");
         var _checkedFields = $(".checked :input:not([type='hidden'])");
         var externalId = $("#PhenoTips\\.PatientClass_0_external_id");
-        var mandatoryFields = _mandatoryFields.add(_checkedFields).add(externalId);
+        var _checkedDates = $(".checked-date input.fuzzy-date");
+        var _mandatoryDates = $(".mandatory-date input.fuzzy-date");
+        var mandatoryFields = _mandatoryFields.add(_checkedFields).add(externalId).add(_checkedDates).add(_mandatoryDates);
         var saveButtons = $("input[name='action_save']");
 
         //This will happen if the page is not in edit mode
@@ -100,6 +102,13 @@ require(['jquery'], function ($)
                 });
                 element.select(".checked :input:not([type='hidden'])").each(function(field) {
                     addNewElement(field);
+                });
+                // Also validate any date elements.
+                element.select(".mandatory-date input.fuzzy-date").each(function(field) {
+                  addNewElement(field);
+                });
+                element.select(".checked-date input.fuzzy-date").each(function(field) {
+                  addNewElement(field);
                 });
             });
         });
