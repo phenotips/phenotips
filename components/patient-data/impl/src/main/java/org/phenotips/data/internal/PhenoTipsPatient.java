@@ -66,6 +66,9 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
 
     protected static final String JSON_KEY_REPORTER = "reporter";
 
+    /** This is the name sent from the All Patients' JSON export field selection UI. */
+    protected static final String PARAM_KEY_REFERRER = "referrer";
+
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(PhenoTipsPatient.class);
 
@@ -209,7 +212,8 @@ public class PhenoTipsPatient extends AbstractPrimaryEntity implements Patient
             result.put(JSON_KEY_ID, getDocument().getName());
         }
 
-        if (getReporter() != null && isFieldIncluded(selectedFields, JSON_KEY_REPORTER)) {
+        if (getReporter() != null && (isFieldIncluded(selectedFields, JSON_KEY_REPORTER)
+            || isFieldIncluded(selectedFields, PARAM_KEY_REFERRER))) {
             result.put(JSON_KEY_REPORTER, getReporter().getName());
         }
 
