@@ -33,6 +33,8 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
           this._geneTable.select('a.button.add-variant.add-data-button').invoke('observe', 'click', this.ajaxAddVariantData.bindAsEventListener(this));
           //invoking click event to hide rows with empty inputs in 'more info' section
           this._geneTable.select('a.variant-edit-done').invoke('click');
+          // check if the first solved gene added
+          this._geneTable.select('.Status select[id$="_status"]').invoke('observe', 'change', this.fireSolvedGeneAdded.bindAsEventListener(this));
           this.lockGeneInput();
         }
 
@@ -43,6 +45,22 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
         this.createHideShowButtons('.variant.variant-title');
         this._geneTable.select('tr th')[0].width = '1em';
       }
+    },
+
+    fireSolvedGeneAdded  : function (event) {
+      if (!event.element() || event.element().value != "solved") {
+        return;
+      }
+
+      var el = event.element();
+      var isFirst = true;
+      this._geneTable.select('.Status select[id$="_status"]').each(function (status) {
+        // check if there are other non-empty solved genes already entered
+        if (status != el && status.value == "solved" && status.up('tr').down('input.gene-name').value.length > 0) {
+          isFirst = false;
+        }
+      });
+      isFirst && document.fire("first:solved:gene:added");
     },
 
     areaEditData  : function (event) {
@@ -183,6 +201,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       this._geneTable.select('tr.variant-gene-' + geneIndex + ' a.add-variant')[0].observe('click', this.ajaxAddVariantData.bindAsEventListener(this));
 
       $(this.geneClassName + '_' + geneIndex + '_status').value = "candidate";
+      $(this.geneClassName + '_' + geneIndex + '_status').observe('change', this.fireSolvedGeneAdded.bindAsEventListener(this));
 
       var geneLabel = new Element('p', {class :' gene col-label gene-' + geneIndex + ' gene-input-label v-collapsed'});
       newGeneRow.down('.suggested.suggest-gene.gene-name').insert({before: geneLabel});
