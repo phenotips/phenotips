@@ -120,6 +120,7 @@
     <property>
       <code>document.observe('xwiki:dom:loaded', function() {
     var solvedInput = $$('.fieldset input[id$="_solved"][type="checkbox"]')[0];
+    var title = "$!escapetool.javascript($services.localization.render('patient.save.warning.missingFields.title'))";
 
     if (XWiki.contextaction == "edit" &amp;&amp; solvedInput) {
 
@@ -152,6 +153,7 @@
 
       document.observe("first:solved:gene:added", function() {
           var message = '';
+          if (isSolved() &amp;&amp; hasFinalDiagnosis()) { return; }
           if (!isSolved() &amp;&amp; !hasFinalDiagnosis()) {
             message = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.hasSolvedGeneNotSolvedNoDiagnosis'))";
           }
@@ -161,7 +163,7 @@
           if (isSolved() &amp;&amp; !hasFinalDiagnosis()) {
             message = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.hasSolvedGeneNoDiagnosis'))";
           }
-          var dialog = new PhenoTips.widgets.ModalPopup(message, false, {'title': '', 'verticalPosition': 'top', 'removeOnClose': true});
+          var dialog = new PhenoTips.widgets.ModalPopup(message, false, {'title': title, 'removeOnClose': true});
           dialog.showDialog();
       });
 
@@ -187,6 +189,7 @@
           }
 
           var message = '';
+          if (isSolved() &amp;&amp; hasSolvedGene()) { return; }
           if (!isSolved() &amp;&amp; !hasSolvedGene()) {
             message = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.hasDiagnosisNoSolvedGenesNotSolved'))";
           }
@@ -196,7 +199,7 @@
           if (isSolved() &amp;&amp; !hasSolvedGene()) {
             message = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.hasDiagnosisNoSolvedGenes'))";
           }
-          var dialog = new PhenoTips.widgets.ModalPopup(message, false, {'title': '', 'verticalPosition': 'top', 'removeOnClose': true});
+          var dialog = new PhenoTips.widgets.ModalPopup(message, false, {'title': title, 'removeOnClose': true});
           dialog.showDialog();
       });
 
@@ -208,6 +211,7 @@
 
       document.observe("solved:case:checked", function() {
           var message = '';
+          if (hasSolvedGene() &amp;&amp; hasFinalDiagnosis()) { return; }
           if (!hasSolvedGene() &amp;&amp; !hasFinalDiagnosis()) {
             message = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.isSolvedNoSolvedGenesNoDiagnosis'))";
           }
@@ -217,7 +221,7 @@
           if (hasSolvedGene() &amp;&amp; !hasFinalDiagnosis()) {
             message = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.isSolvedNoDiagnosis'))";
           }
-          var dialog = new PhenoTips.widgets.ModalPopup(message, false, {'title': '', 'verticalPosition': 'top', 'removeOnClose': true});
+          var dialog = new PhenoTips.widgets.ModalPopup(message, false, {'title': title, 'removeOnClose': true});
           dialog.showDialog();
       });
     };
