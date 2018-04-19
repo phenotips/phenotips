@@ -1169,7 +1169,8 @@ table.summary-group td.add-button-holder span.patient-details-add {
   margin-top: .2em;
   font-size: 87.5%;
 }
-table.summary-group span.action-done {
+table.summary-group span.action-done,
+table.summary-group span.action-edit {
   float: right;
 }
 table.summary-group div.summary-item {

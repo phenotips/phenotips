@@ -6174,6 +6174,7 @@ document.observe("xwiki:dom:updated", init);
        */
       _showSummary : function (dtElem, ddElem, val) {
           this._deleteAction &amp;&amp; this._deleteAction.hide();
+          this._editAction &amp;&amp; this._editAction.show();
           ddElem.hide();
           // If some value was entered for the qualifier, create the summary.
           if (val.length &gt; 0 &amp;&amp; val !== "Unknown") {
@@ -6200,6 +6201,7 @@ document.observe("xwiki:dom:updated", init);
        */
       _showEditable : function (dtElem, ddElem) {
           this._deleteAction &amp;&amp; this._deleteAction.show();
+          this._editAction &amp;&amp; this._editAction.hide();
           dtElem.show();
           // Show only if not collapsed.
           ddElem &amp;&amp; !ddElem.hasClassName('collapsed') &amp;&amp; ddElem.show();
@@ -6447,6 +6449,11 @@ document.observe("xwiki:dom:updated", init);
                   '&lt;dl&gt;&lt;/dl&gt;' +
                   '&lt;div class="clearfloats"&gt;&lt;/div&gt;' +
               '&lt;/div&gt;';
+
+          // Add the edit action icon.
+          this._editAction = new Element('span', {'id' : 'edit_' + this._elementID, 'class' : this._dataName + '-dialog-edit action-edit fa fa-pencil clickable'});
+          this._editAction.hide();
+          this._termDetails.insert({top : this._editAction});
 
           this._qualifierList = this._termDetails.down('dl');
           // Attach listeners for the collapse action.
