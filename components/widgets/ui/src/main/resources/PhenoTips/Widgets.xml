@@ -6066,6 +6066,11 @@ document.observe("xwiki:dom:updated", init);
               this._termDetails.removeClassName('focused');
               this._termDetails.addClassName('blurred');
               this._toggleSummarize();
+              if(this._termDetails.select("dd:not(.hidden)").filter(function(x) { return x.visible(); }).size() &lt;= 0) {
+                this._termDetails.insert({'top': new Element('span', {'class' : 'no-data'}).insert("$!escapetool.javascript($services.localization.render('phenotips.widgets.detailsDialog.noAdditionalInfo'))")});
+                var containerDiv = this._termDetails.down('div.term-details');
+                containerDiv &amp;&amp; containerDiv.hide();
+              }
           }
       },
 
@@ -6077,6 +6082,12 @@ document.observe("xwiki:dom:updated", init);
               this._termDetails.removeClassName('blurred');
               this._termDetails.addClassName('focused');
               this._toggleSummarize();
+              var noDataSpan = this._termDetails &amp;&amp; this._termDetails.down('span.no-data');
+              if (noDataSpan) {
+                noDataSpan.remove();
+                var containerDiv = this._termDetails.down('div.term-details');
+                containerDiv &amp;&amp; containerDiv.show();
+              }
           }
 
       },
@@ -7166,9 +7177,29 @@ document.observe("xwiki:dom:updated", init);
           var _this = this;
           this._addDetailsButton.observe('click', function (event) {
               event.stop();
-              _this.addDialog(false, _this._globalQualifierCount &amp;&amp; _this._globalQualifierCount())
+              _this._shouldAddDialog() &amp;&amp; _this.addDialog(false, _this._globalQualifierCount &amp;&amp; _this._globalQualifierCount())
           });
           this._addButtonHolder.show();
+      },
+
+      _shouldAddDialog: function() {
+        var noDataElem = this.get().down('span.no-data');
+        if (noDataElem) {
+          noDataElem.click();
+          return false;
+        } else {
+          // There is no "no-data" element. Either the dialog has data, or it has no data and is focused.
+          var shouldAdd = true;
+          // Look at all the dialogs for this group.
+          $H(this._dialogMap).each(function(pair) {
+            // If there is already an empty dialog present, then do not add another dialog.
+            if (pair.value.getDialog().select(":input:not([value='']):not([type='hidden']):not(.hidden)").filter(function(x) { return x.visible(); }).size() &lt;= 0) {
+              shouldAdd = false;
+              throw $break;
+            }
+          });
+          return shouldAdd;
+        }
       },
 
       /**
