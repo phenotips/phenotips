@@ -7177,9 +7177,29 @@ document.observe("xwiki:dom:updated", init);
           var _this = this;
           this._addDetailsButton.observe('click', function (event) {
               event.stop();
-              _this.addDialog(false, _this._globalQualifierCount &amp;&amp; _this._globalQualifierCount())
+              _this._shouldAddDialog.bind(_this)() &amp;&amp; _this.addDialog(false, _this._globalQualifierCount &amp;&amp; _this._globalQualifierCount())
           });
           this._addButtonHolder.show();
+      },
+
+      _shouldAddDialog: function() {
+        var noDataElem = this.get().down('span.no-data');
+        if (noDataElem) {
+          noDataElem.click();
+          return false;
+        } else {
+          // There is no "no-data" element. Either the dialog has data, or it has no data and is focused.
+          var shouldAdd = true;
+          // Look at all the dialogs for this group.
+          $H(this._dialogMap).each(function(pair) {
+            // If there is already an empty dialog present, then do not add another dialog.
+            if (!pair.value.getDialog().down(":input:not([value='']):not([type='hidden']):not(.hidden):not([style='display: none;'])")) {
+              shouldAdd = false;
+              throw $break;
+            }
+          });
+          return shouldAdd;
+        }
       },
 
       /**
