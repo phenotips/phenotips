@@ -6066,7 +6066,7 @@ document.observe("xwiki:dom:updated", init);
               this._termDetails.removeClassName('focused');
               this._termDetails.addClassName('blurred');
               this._toggleSummarize();
-              if(!this._termDetails.down("dl &gt; *:not([style='display: none;']):not(.hidden)")) {
+              if(this._termDetails.select("dd:not(.hidden)").filter(function(x) { return x.visible(); }).size() &lt;= 0) {
                 this._termDetails.insert({'top': new Element('span', {'class' : 'no-data'}).insert("$!escapetool.javascript($services.localization.render('phenotips.widgets.detailsDialog.noAdditionalInfo'))")});
                 var containerDiv = this._termDetails.down('div.term-details');
                 containerDiv &amp;&amp; containerDiv.hide();
@@ -7177,7 +7177,7 @@ document.observe("xwiki:dom:updated", init);
           var _this = this;
           this._addDetailsButton.observe('click', function (event) {
               event.stop();
-              _this._shouldAddDialog.bind(_this)() &amp;&amp; _this.addDialog(false, _this._globalQualifierCount &amp;&amp; _this._globalQualifierCount())
+              _this._shouldAddDialog() &amp;&amp; _this.addDialog(false, _this._globalQualifierCount &amp;&amp; _this._globalQualifierCount())
           });
           this._addButtonHolder.show();
       },
@@ -7193,7 +7193,7 @@ document.observe("xwiki:dom:updated", init);
           // Look at all the dialogs for this group.
           $H(this._dialogMap).each(function(pair) {
             // If there is already an empty dialog present, then do not add another dialog.
-            if (!pair.value.getDialog().down(":input:not([value='']):not([type='hidden']):not(.hidden):not([style='display: none;'])")) {
+            if (pair.value.getDialog().select(":input:not([value='']):not([type='hidden']):not(.hidden)").filter(function(x) { return x.visible(); }).size() &lt;= 0) {
               shouldAdd = false;
               throw $break;
             }
