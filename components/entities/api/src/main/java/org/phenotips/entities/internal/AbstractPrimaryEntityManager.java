@@ -322,7 +322,7 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
             throw new AbstractMethodError(
                 "Missing @Named annotation on PrimaryEntityManager class " + this.getClass().getCanonicalName());
         }
-        String name = this.getClass().getAnnotation(Named.class).value();
+        String name = StringUtils.substringBefore(this.getClass().getAnnotation(Named.class).value(), "/");
         DocumentReference result = this.stringResolver.resolve(name, Constants.CODE_SPACE_REFERENCE);
         if (!this.bridge.exists(result) && !name.endsWith("Class")) {
             result = this.stringResolver.resolve(name + "Class", Constants.CODE_SPACE_REFERENCE);
