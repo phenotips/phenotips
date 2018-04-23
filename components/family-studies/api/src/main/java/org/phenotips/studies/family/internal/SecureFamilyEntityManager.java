@@ -39,6 +39,12 @@ import javax.inject.Singleton;
 public class SecureFamilyEntityManager extends AbstractPrimaryEntityManager<Family>
 {
     @Override
+    public EntityReference getEntityType()
+    {
+        return Family.CLASS_REFERENCE;
+    }
+
+    @Override
     protected Class<? extends Family> getEntityClass()
     {
         return PhenotipsFamily.class;
