@@ -76,8 +76,11 @@ require(['jquery'], function ($)
                 }
             });
             if (numberMissing > 0) {
-                var dialog = new PhenoTips.widgets.ModalPopup("There are " + numberMissing + " missing fields",
-                    false, {'title': 'Missing fields', 'verticalPosition': 'top', 'removeOnClose': true});
+                var message = "$!escapetool.javascript($services.localization.render('patient.save.warning.missingFields.message'))";
+                message = message.replace('_NUMBER_', numberMissing);
+                var title = "$!escapetool.javascript($services.localization.render('patient.save.warning.missingFields.title'))";
+                var dialog = new PhenoTips.widgets.ModalPopup(message,
+                    false, {'title': title, 'verticalPosition': 'top', 'removeOnClose': true});
                 dialog.showDialog();
                 document.fire("phenotips:scrollValidation:invalid");
             }

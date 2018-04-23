@@ -143,7 +143,7 @@
       // checks if any OMIM final diagnosis or ORDO final diagnosis entered
       var hasFinalDiagnosis = function() {
         var hasDiagnosis = false;
-        $$('.omim_id .accepted-suggestion input[type="checkbox"]', '.clinical_diagnosis .accepted-suggestion input[type="checkbox"]').each(function (checkbox) {
+        $$('.omim_id .accepted-suggestion input[type="checkbox"]').each(function (checkbox) {
             if (checkbox.checked) {
               hasDiagnosis = true;
             }
@@ -172,14 +172,14 @@
             return;
           }
 
-          var diagnosisCheckbox = event.memo.elements[0].down('input[name$="_clinical_diagnosis"]') || event.memo.elements[0].down('input[name$="_omim_id"]');
+          var diagnosisCheckbox = event.memo.elements[0].down('input[name$="_omim_id"]');
           if (!diagnosisCheckbox || !diagnosisCheckbox.checked) {
             return;
           }
 
           // check if the entered diagnosis is the first
           var isFirstDiagnosis = true;
-          $$('.omim_id .accepted-suggestion input[type="checkbox"]', '.clinical_diagnosis .accepted-suggestion input[type="checkbox"]').each(function (checkbox) {
+          $$('.omim_id .accepted-suggestion input[type="checkbox"]').each(function (checkbox) {
             if (checkbox.checked &amp;&amp; checkbox != diagnosisCheckbox) {
               isFirstDiagnosis = false;
             }
