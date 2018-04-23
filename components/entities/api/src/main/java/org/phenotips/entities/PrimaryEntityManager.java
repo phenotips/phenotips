@@ -38,6 +38,14 @@ import java.util.Iterator;
 public interface PrimaryEntityManager<E extends PrimaryEntity>
 {
     /**
+     * Returns a local reference to the XClass used for storing this entity.
+     *
+     * @return a local reference, like {@code PhenoTips.PatientClass}
+     * @since 1.4
+     */
+    EntityReference getEntityType();
+
+    /**
      * Gets the space where entities of this type are stored in.
      *
      * @return a local space reference, without the wiki name

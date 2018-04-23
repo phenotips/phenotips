@@ -337,6 +337,13 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
         return result;
     }
 
+    @Override
+    public EntityReference getEntityType()
+    {
+        DocumentReference fullReference = getEntityXClassReference();
+        return fullReference.removeParent(fullReference.getRoot());
+    }
+
     /**
      * Gets the concrete class of the managed PrimaryEntity. The base implementation assumes that the class is passed
      * for the first generic parameter.

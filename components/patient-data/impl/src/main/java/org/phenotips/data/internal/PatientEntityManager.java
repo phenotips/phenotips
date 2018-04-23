@@ -41,6 +41,12 @@ import javax.inject.Singleton;
 public class PatientEntityManager extends AbstractPrimaryEntityManager<Patient>
 {
     @Override
+    public EntityReference getEntityType()
+    {
+        return Patient.CLASS_REFERENCE;
+    }
+
+    @Override
     public EntityReference getDataSpace()
     {
         return Patient.DEFAULT_DATA_SPACE;

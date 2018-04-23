@@ -41,6 +41,12 @@ import javax.inject.Singleton;
 public class FamilyEntityManager extends AbstractPrimaryEntityManager<Family>
 {
     @Override
+    public EntityReference getEntityType()
+    {
+        return Family.CLASS_REFERENCE;
+    }
+
+    @Override
     public EntityReference getDataSpace()
     {
         return Family.DATA_SPACE;
