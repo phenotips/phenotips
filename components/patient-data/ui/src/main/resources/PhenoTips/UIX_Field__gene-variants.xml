@@ -447,7 +447,7 @@ $xwiki.ssfx.use('uicomponents/widgets/extraGeneVariantData.css', true)##
 enabled=true
 required=
 order=1
-fields=genes
+fields=genes,variants
 pt_class=PhenoTips.GeneClass,PhenoTips.GeneVariantClass
 pt_class_usage=multiple
 </parameters>

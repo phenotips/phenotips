@@ -95,7 +95,7 @@
          #else
            #set ($extraclassname = '')
          #end
-         #set ($itemContent = "&lt;li class='checkbox_tree_container'&gt;&lt;label&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${eCMeta.name}"" value=""$eCMeta.name"" class="${extraclassname}"#if ($selectedFields.contains($eCMeta.name) || $selectedFields.empty) checked=""checked""#end/&gt;${eCMeta.label}&lt;/label&gt;&lt;/li&gt;")
+         #set ($itemContent = "&lt;li class='checkbox_tree_container'&gt;&lt;label&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${eCMeta.name}"" value=""$eCMeta.name"" class=""${extraclassname}""#if ($selectedFields.contains($eCMeta.name) || $selectedFields.empty) checked=""checked""#end/&gt;${eCMeta.label}&lt;/label&gt;&lt;/li&gt;")
          #set ($sectionContent = $sectionContent.concat($itemContent))
        #end
      #end
