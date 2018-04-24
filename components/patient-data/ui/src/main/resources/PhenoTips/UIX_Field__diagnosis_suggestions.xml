@@ -20,7 +20,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>UIX_Field__omim_suggestions</name>
+  <name>UIX_Field__diagnosis_suggestions</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -32,17 +32,17 @@
   <date>1401822209000</date>
   <contentUpdateDate>1401822209000</contentUpdateDate>
   <version>1.1</version>
-  <title>$services.localization.render('phenotips.UIXField.omim.diagnosisSuggestions')</title>
+  <title>$services.localization.render('phenotips.UIXField.boqa.diagnosisSuggestions')</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>PhenoTips.UIX_Field__omim_suggestions</name>
+    <name>UIX_Field__diagnosis_suggestions</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>04c45346-b203-4fd8-a60f-1b32e0cd72ff</guid>
+    <guid>04c45346-b203-4fd8-a60f-1b32e0cd73ff</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -118,21 +118,21 @@
 #set ($hasSymptoms = 0)
 #__phenotypeSummary_create( $phenotypesSummary $hasSymptoms )
 #if ($xcontext.action == 'edit' || $hasSymptoms)
-  (% class="instant-search omim-search-box" %)(((
-    === $services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.matchingDisorders') ===
+  (% class="instant-search diffDiagnosis-search-box" %)(((
+    === $services.localization.render('phenotips.UIXField.diagnosisSuggestions.boqaSearch.matchingDiffDiagnoses') ===
 
     (% class="ncbi-search-box-content"%)(((
       (% class="hint"%)$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.Hint')(%%)##
-      {{html wiki=false clean=false}}&lt;input type="hidden" id="defaultSearchTermsInput" value="" /&gt;&lt;input type="hidden" id="defaultSearchTermIDsInput" value="" /&gt;{{/html}}##
+      {{html wiki=false clean=false}}&lt;input type="hidden" id="defaultDiffSearchTermsInput" value="" /&gt;&lt;input type="hidden" id="defaultDiffSearchTermIDsInput" value="" /&gt;{{/html}}##
       {{html wiki=false clean=false}}&lt;input type="hidden" id="phenotypes-summary" value="$escapetool.xml($jsontool.serialize($phenotypesSummary))" /&gt;{{/html}}##
-      (% id="defaultSearchTerms" %)((()))
+      (% id="defaultDiffSearchTerms" %)((()))
       ##(% class="hint"%)$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.defaultTerms')(%%)
-      ## {{html wiki=false clean=false}}&lt;input type="text" id="customSearchTermsInput" value="" /&gt;{{/html}}
+      ## {{html wiki=false clean=false}}&lt;input type="text" id="customDiffSearchTermsInput" value="" /&gt;{{/html}}
       (% class="background-search omim-search hidden" %)(((
-        (% id="omim-search-results" class="background-suggestions" %)((()))
+        (% id="diffDiagnosis-search-results" class="background-suggestions" %)((()))
       )))
     )))
-  )))## omim-search-box
+  )))## diffDiagnosis-search-box
   (% class="clear" %)((()))
 #end
 {{/velocity}}</content>
@@ -141,13 +141,13 @@
       <extensionPointId>org.phenotips.patientSheet.section.diagnosis-info</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.field.omim_suggestions</name>
+      <name>org.phenotips.patientSheet.field.diagnosis_suggestions</name>
     </property>
     <property>
-      <parameters>title=$services.localization.render('phenotips.UIXField.omim.diagnosisSuggestions')
+      <parameters>title=$services.localization.render('phenotips.UIXField.boqa.diagnosisSuggestions')
 enabled=true
 required=
-order=4
+order=5
 fields=</parameters>
     </property>
     <property>
