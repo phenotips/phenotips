@@ -86,54 +86,67 @@
 #end
 #end
 
-#macro(__filters_display $cssClass $showHideButton)
+#macro(__filters_display $cssClass $showHideButton $exclusions)
+#if (!$!{exclusions})
+#set ($exclusions = [])
+#end
 #if ($showHideButton)
 {{html clean='false' wiki='true'}}&lt;span class='buttonwrapper'&gt;&lt;a class='button toggle-filters' href='#'&gt;{{icon name='filter' /}}&lt;span class='label'&gt;$services.localization.render('phenotips.allData.filterButton')&lt;/span&gt;&lt;input type="hidden" name="user-hash" value="$!{xcontext.userReference.hashCode()}"/&gt;{{icon name='angle-double-left' cssClass='collapse-marker' /}}{{icon name='angle-double-down' cssClass='expand-marker' /}}&lt;/a&gt;&lt;/span&gt;{{/html}}
 #end
 (% class="filters $!cssClass" %)
-#if ($activeFields.contains('external_id'))
+#if (!$exclusions.contains('external_id') &amp;&amp; $activeFields.contains('external_id'))
 * $services.localization.render('phenotips.databaseFilters.externalID') {{html clean=false}}&lt;input type="text" name="external_id" value=""/&gt;{{/html}}
 #end
-#if (!$doc.getObject('PhenoTips.StudyClass'))
+#if (!$exclusions.contains('studyReference') &amp;&amp; !$doc.getObject('PhenoTips.StudyClass'))
 #set ($studies = $services.query.xwql("from doc.object(PhenoTips.StudyClass) as s where doc.fullName &lt;&gt; 'PhenoTips.StudyTemplate'").execute())
 #if ($studies.size() &gt; 0)
 * $services.localization.render('phenotips.databaseFilters.study') {{html clean=false}}#foreach($sName in $studies)#set ($s = $xwiki.getDocument($sName))&lt;br/&gt;&lt;label&gt;&lt;input type="checkbox" name="studyReference" value="$escapetool.xml($services.model.serialize($s.documentReference, 'default'))"/&gt;#if ("$!{s.plainTitle}" != '')${s.plainTitle}#else${s.name}#end&lt;/label&gt;#end&lt;input type="hidden" name="studyReference/class" value="PhenoTips.StudyBindingClass"/&gt;&lt;input type="hidden" name="studyReference/match" value="fullReference"/&gt;&lt;input type='hidden' name='studyReference/join_mode' value='OR'/&gt;{{/html}}
 #end
 #end
-#if ($activeFields.contains('labeled_eids'))
+#if (!$exclusions.contains('labeled_eids') &amp;&amp; $activeFields.contains('labeled_eids'))
 #__filters_labeledIdentifiers()
 #end
-#if (!$xwiki.getDocument('PhenoTips.VisibilityClass').isNew())
+#if (!$exclusions.contains('visibility') &amp;&amp; !$xwiki.getDocument('PhenoTips.VisibilityClass').isNew())
   * $services.localization.render('phenotips.databaseFilters.visibility') {{html clean=false}}#foreach ($visibility in $services.permissions.listVisibilityOptions())&lt;br /&gt;&lt;label&gt;&lt;input type="checkbox" class="multipleSelection privacyExport" name="visibility" value="$visibility.name"#if ($visibility.name != 'hidden') checked="checked"#end /&gt; $visibility.label&lt;/label&gt;#end&lt;input type="hidden" name="visibility/class" value="PhenoTips.VisibilityClass"/&gt;{{/html}}
 #end
-* $services.localization.render('phenotips.databaseFilters.referrer') {{html clean=false}}&lt;input type="text" class="suggestUsers multipleSelection" name="doc.creator" value=""/&gt;{{/html}}
-#if (!$xwiki.getDocument('PhenoTips.OwnerClass').isNew())
+#if(!$exclusions.contains('doc.creator'))
+  * $services.localization.render('phenotips.databaseFilters.referrer') {{html clean=false}}&lt;input type="text" class="suggestUsers multipleSelection" name="doc.creator" value=""/&gt;{{/html}}
+#end
+#if (!$exclusions.contains('owner') &amp;&amp; !$xwiki.getDocument('PhenoTips.OwnerClass').isNew())
   * $services.localization.render('phenotips.databaseFilters.owner') {{html clean=false}}&lt;input type="hidden" name="owner/class" value="PhenoTips.OwnerClass"/&gt;&lt;input type="hidden" name="owner/match" value="fullReference"/&gt;&lt;input type="text" class="suggestUsersAndGroups multipleSelection" name="owner" value=""/&gt;{{/html}}
 #end
-#if (!$xwiki.getDocument('PhenoTips.CollaboratorClass').isNew())
+#if (!$exclusions.contains('collaborator') &amp;&amp; !$xwiki.getDocument('PhenoTips.CollaboratorClass').isNew())
   * $services.localization.render('phenotips.databaseFilters.collaborator') {{html clean=false}}&lt;input type="hidden" name="collaborator/class" value="PhenoTips.CollaboratorClass"/&gt;&lt;input type="hidden" name="collaborator/match" value="fullReference"/&gt;&lt;input type="text" class="suggestUsersAndGroups multipleSelection" name="collaborator" value=""/&gt;&lt;input type='hidden' name='collaborator/join_mode' value='OR'/&gt;{{/html}}
 #end
-* $services.localization.render('phenotips.databaseFilters.author') {{html clean=false}}&lt;input type="text" class="suggestUsers multipleSelection" name="doc.author" value=""/&gt;{{/html}}
-* $services.localization.render('phenotips.databaseFilters.creationDate') #__filters_dateRange("doc.creationDate")
-* $services.localization.render('phenotips.databaseFilters.modificationDate') #__filters_dateRange("doc.date")
-#if ($activeFields.contains('date_of_birth'))
+#if (!$exclusions.contains('doc.author'))
+  * $services.localization.render('phenotips.databaseFilters.author') {{html clean=false}}&lt;input type="text" class="suggestUsers multipleSelection" name="doc.author" value=""/&gt;{{/html}}
+#end
+#if (!$exclusions.contains('doc.creationDate'))
+  * $services.localization.render('phenotips.databaseFilters.creationDate') #__filters_dateRange("doc.creationDate")
+#end
+#if(!$exclusions.contains('doc.date'))
+  * $services.localization.render('phenotips.databaseFilters.modificationDate') #__filters_dateRange("doc.date")
+#end
+#if (!$exclusions.contains('date_of_birth') &amp;&amp; $activeFields.contains('date_of_birth'))
   * $services.localization.render('phenotips.databaseFilters.dateOfBirth') #__filters_dateRange("date_of_birth")
 #end
-#if ($activeFields.contains('clinical_diagnosis'))
+#if (!$exclusions.contains('clinical_diagnosis') &amp;&amp; $activeFields.contains('clinical_diagnosis'))
   * $services.localization.render('phenotips.databaseFilters.clinicalDiagnosis') {{html clean=false}}&lt;input type="text" class="suggest multi suggestOrdo generateCheckboxes" name="clinical_diagnosis" value=""/&gt;{{/html}}
   ** {{html clean='false'}}$services.localization.render('phenotips.databaseFilters.disease.presentingFilter', [ "&lt;label&gt;&lt;input type='radio' name='clinical_diagnosis/join_mode' value='AND'/&gt;", "&lt;/label&gt;", "&lt;label&gt;&lt;input type='radio' name='clinical_diagnosis/join_mode' value='OR' checked='checked'/&gt;", "&lt;/label&gt;"]){{/html}}
 #end
-#if ($activeFields.contains('omim_id'))
+#if (!$exclusions.contains('omim_id') &amp;&amp; $activeFields.contains('omim_id'))
   * $services.localization.render('phenotips.databaseFilters.disease') {{html clean=false}}&lt;input type="text" class="suggest multi suggestOmim generateCheckboxes" name="omim_id" value=""/&gt;{{/html}}
   ** {{html clean='false'}}$services.localization.render('phenotips.databaseFilters.disease.presentingFilter', [ "&lt;label&gt;&lt;input type='radio' name='omim_id/join_mode' value='AND'/&gt;", "&lt;/label&gt;", "&lt;label&gt;&lt;input type='radio' name='omim_id/join_mode' value='OR' checked='checked'/&gt;", "&lt;/label&gt;"]){{/html}}
 #end
-#if ($activeFields.contains('phenotype'))
+#if (!$exclusions.contains('phenotype') &amp;&amp; $activeFields.contains('phenotype'))
   * $services.localization.render('phenotips.databaseFilters.phenotype') {{html clean="false"}}&lt;input type="text" class="suggest multi suggestHpo generateCheckboxes" name="phenotype" value=""/&gt;{{/html}}
   ** {{html clean='false'}}$services.localization.render('phenotips.databaseFilters.phenotype.oneOrAllSelection', ["&lt;label&gt;&lt;input type='radio' name='phenotype/join_mode' value='AND'/&gt;", "&lt;/label&gt;", "&lt;label&gt;&lt;input type='radio' name='phenotype/join_mode' value='OR' checked='checked'/&gt;", "&lt;/label&gt;"]){{/html}}
   ** {{html clean='false'}}$services.localization.render('phenotips.databaseFilters.phenotype.subcategoryOption', ["&lt;label&gt;&lt;input type='radio' name='phenotype_subterms' value='yes' checked='checked'/&gt;", "&lt;/label&gt;", "&lt;label&gt;&lt;input type='radio' name='phenotype_subterms' value='no'/&gt;", "&lt;/label&gt;"]){{/html}}
 #end
-* $services.localization.render('phenotips.databaseFilters.genotype') {{html clean="false"}}&lt;input type="text" class="suggest multi suggestGenes generateCheckboxes" name="gene" value=""/&gt;&lt;input type="hidden" name="gene/class" value="PhenoTips.GeneClass"/&gt;&lt;input type="hidden" name="gene/match" value="ci"/&gt;&lt;input type="hidden" name="status/class" value="PhenoTips.GeneClass"/&gt;&lt;input type="hidden" name="status/join_mode" value="OR"/&gt;&lt;input type="hidden" name="status/dependsOn" value="gene"/&gt;{{/html}}
+#if(!$exclusions.contains('gene'))
+  * $services.localization.render('phenotips.databaseFilters.genotype') {{html clean="false"}}&lt;input type="text" class="suggest multi suggestGenes generateCheckboxes" name="gene" value=""/&gt;&lt;input type="hidden" name="gene/class" value="PhenoTips.GeneClass"/&gt;&lt;input type="hidden" name="gene/match" value="ci"/&gt;&lt;input type="hidden" name="status/class" value="PhenoTips.GeneClass"/&gt;&lt;input type="hidden" name="status/join_mode" value="OR"/&gt;&lt;input type="hidden" name="status/dependsOn" value="gene"/&gt;{{/html}}
   ** {{html clean='false'}}$services.localization.render('phenotips.databaseFilters.genotype.statusSelection', ["&lt;label&gt;&lt;input type='checkbox' checked='checked' name='status' value='candidate'/&gt;", "&lt;/label&gt;", "&lt;label&gt;&lt;input type='checkbox' checked='checked' name='status' value='solved'/&gt;", "&lt;/label&gt;"]){{/html}}
+#end
 #end
 {{/velocity}}</content>
 </xwikidoc>
