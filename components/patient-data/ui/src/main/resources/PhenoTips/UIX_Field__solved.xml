@@ -123,6 +123,7 @@
     var pubmedIdInput = $$('.solved__pubmed_id input')[0];
 
     if (XWiki.contextaction == "edit" &amp;&amp; pubmedIdInput) {
+        pubmedIdInput.placeholder = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.pubmedId'))";
         pubmedIdInput.observe('blur', function () {
             var pubmedId = pubmedIdInput.value;
             if (pubmedId.length &lt; 1) {
@@ -179,6 +180,20 @@
                 var meta = source + pubdate + volume + issue + ':' + pages + elocationid + epubdate;
 
                 var container = new Element("div", {"class" : "article-info"});
+                if (XWiki.contextaction == "view") {
+                    container.setStyle({"margin" : 0});
+                }
+
+                if (XWiki.contextaction == "edit") {
+                    var deleteEl = new Element("div", {"class" : "delete", "title": "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.pubmedInfo.deleteButton'))"}).update('×');
+                    deleteEl.observe('click', function () {
+                        pubmedIdInput.value = '';
+                        pubmedIdInput.show();
+                        container.remove();
+                    });
+                    container.insert(deleteEl);
+                }
+
                 var summary = new Element("p", {"class" : "article-summary"}).update(meta);
                 var titleEl = new Element("div", {"class" : "article-title"}).update(new Element("a", {"href" : "https://www.ncbi.nlm.nih.gov/pubmed/?term=" + pubmedId, "target" : "_blank"}).insert(title));
 
@@ -212,7 +227,7 @@
                 }
             } else {
                 if (XWiki.contextaction == "edit") {
-                    pubmedIdInput.up().insert(new Element("div", {"class" : "invalid"}).update("Invalid Pubmed ID"));
+                    pubmedIdInput.up().insert(new Element("div", {"class" : "invalid"}).update("$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.pubmedId.Invalid'))"));
                 }
             }
         };
@@ -376,6 +391,15 @@
   line-height: 1.8em;
   font-size: 0.8em;
   position: absolute;
+}
+.delete {
+  float : right;
+  margin-right: -0.5em;
+  margin-top: -0.6em;
+  cursor: pointer;
+}
+.delete:hover {
+  color : red;
 }
 </code>
     </property>
