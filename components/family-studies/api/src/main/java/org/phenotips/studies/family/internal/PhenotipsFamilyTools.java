@@ -160,7 +160,7 @@ public class PhenotipsFamilyTools implements FamilyTools
         }
 
         try {
-            this.pifManager.removeMember(family, patient);
+            this.pifManager.disconnect(family, patient);
         } catch (PTException ex) {
             return false;
         }

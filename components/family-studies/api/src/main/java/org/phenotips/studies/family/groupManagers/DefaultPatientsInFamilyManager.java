@@ -19,9 +19,10 @@ package org.phenotips.studies.family.groupManagers;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
-import org.phenotips.entities.internal.AbstractExternalPrimaryEntityGroupManager;
+import org.phenotips.entities.spi.AbstractOutgoingPrimaryEntityConnectionsManager;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
+import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.PatientsInFamilyManager;
 import org.phenotips.studies.family.Pedigree;
 import org.phenotips.studies.family.PedigreeProcessor;
@@ -71,7 +72,7 @@ import com.xpn.xwiki.objects.BaseObject;
 @Named("Family:Patient")
 @Singleton
 public class DefaultPatientsInFamilyManager
-    extends AbstractExternalPrimaryEntityGroupManager<Family, Patient>
+    extends AbstractOutgoingPrimaryEntityConnectionsManager<Family, Patient>
     implements PatientsInFamilyManager
 {
     /** Type instance for lookup. */
@@ -80,6 +81,9 @@ public class DefaultPatientsInFamilyManager
 
     @Inject
     private UserManager userManager;
+
+    @Inject
+    private FamilyRepository familyRepository;
 
     @Inject
     private PatientRepository patientRepository;
@@ -96,33 +100,33 @@ public class DefaultPatientsInFamilyManager
     /**
      * Public constructor.
      */
-    public DefaultPatientsInFamilyManager()
+    @Override
+    public void initialize()
     {
-        super(Family.CLASS_REFERENCE, Patient.CLASS_REFERENCE);
+        super.subjectsManager = this.familyRepository;
+        super.objectsManager = this.patientRepository;
     }
 
     @Override
-    public boolean addMember(Family family, Patient patient) throws PTException
+    public boolean connect(Family family, Patient patient) throws PTException
     {
-        Collection<Patient> asList = Arrays.asList(patient);
-        return this.addAllMembers(family, asList);
+        return this.connectAll(family, Arrays.asList(patient));
     }
 
     @Override
-    public boolean removeMember(Family family, Patient patient)
+    public boolean disconnect(Family family, Patient patient)
     {
-        Collection<Patient> asList = Arrays.asList(patient);
-        return this.removeAllMembers(family, asList);
+        return this.disconnectAll(family, Arrays.asList(patient));
     }
 
     @Override
-    public boolean addAllMembers(Family family, Collection<Patient> patients) throws PTException
+    public boolean connectAll(Family family, Collection<Patient> patients) throws PTException
     {
         return this.addAllMembers(family, patients, this.userManager.getCurrentUser());
     }
 
     @Override
-    public boolean removeAllMembers(Family family, Collection<Patient> patients)
+    public boolean disconnectAll(Family family, Collection<Patient> patients)
     {
         return this.removeAllMembers(family, patients, this.userManager.getCurrentUser());
     }
@@ -185,7 +189,7 @@ public class DefaultPatientsInFamilyManager
             return false;
         }
         try {
-            this.removeAllMembers(family, this.getMembers(family), updatingUser);
+            this.removeAllMembers(family, this.getAllConnections(family), updatingUser);
             // Remove the members without updating family document since we don't care about it as it will
             // be removed anyway
 
@@ -207,7 +211,7 @@ public class DefaultPatientsInFamilyManager
     {
         // note: whenever available, internal versions of helper methods are used which modify the
         // family document but do not save it to disk
-        Collection<Patient> oldMembers = this.getMembers(family);
+        Collection<Patient> oldMembers = this.getAllConnections(family);
 
         Collection<Patient> currentMembers = new ArrayList<>();
         for (String id : pedigree.extractIds()) {
@@ -228,7 +232,7 @@ public class DefaultPatientsInFamilyManager
 
         boolean firstPedigree = (family.getPedigree() == null);
 
-        XWikiContext context = this.getXContext();
+        XWikiContext context = this.xcontextProvider.get();
 
         this.setPedigreeObject(family, pedigree, context);
 
@@ -238,7 +242,7 @@ public class DefaultPatientsInFamilyManager
         patientsToRemove.removeAll(currentMembers);
 
         this.checkIfPatientsCanBeRemovedFromFamily(family, patientsToRemove, updatingUser);
-        this.removeAllMembers(family, patientsToRemove);
+        this.disconnectAll(family, patientsToRemove);
 
         if (firstPedigree && StringUtils.isEmpty(family.getExternalId())) {
             // default family identifier to proband last name - only on first pedigree creation
@@ -378,7 +382,7 @@ public class DefaultPatientsInFamilyManager
             throw new PTInvalidFamilyIdException(null);
         }
 
-        Collection<Patient> members = super.getMembers(family);
+        Collection<Patient> members = super.getAllConnections(family);
 
         for (Patient patient : patients) {
             if (patient == null) {
@@ -402,7 +406,7 @@ public class DefaultPatientsInFamilyManager
             }
         }
 
-        if (!super.addAllMembers(family, patients)) {
+        if (!super.connectAll(family, patients)) {
             // TODO what if some members could not be added? rollback?
             // It can be implemented either here or in entities, for handling a more general case.
             throw new PTInternalErrorException();
@@ -421,7 +425,7 @@ public class DefaultPatientsInFamilyManager
             throw new PTInvalidFamilyIdException(null);
         }
 
-        Collection<Patient> members = this.getMembers(family);
+        Collection<Patient> members = this.getAllConnections(family);
 
         for (Patient patient : patients) {
             if (patient == null) {
@@ -433,7 +437,7 @@ public class DefaultPatientsInFamilyManager
             // throw new PTInvalidPatientIdException(patientId);
             // }
             String patientId = patient.getId();
-            XWikiContext context = this.getXContext();
+            XWikiContext context = this.xcontextProvider.get();
             XWikiDocument patientDocument = getDocument(patient);
             if (patientDocument == null) {
                 throw new PTInvalidPatientIdException(patientId);
@@ -451,13 +455,13 @@ public class DefaultPatientsInFamilyManager
                 pedigree.removeLink(patientId);
                 if (!this.setPedigreeObject(family, pedigree, context)) {
                     this.logger.error("Could not remove patient [{}] from pedigree from the family [{}]", patientId,
-                            family.getId());
+                        family.getId());
                     throw new PTInternalErrorException();
                 }
             }
         }
 
-        if (!super.removeAllMembers(family, patients)) {
+        if (!super.disconnectAll(family, patients)) {
             throw new PTInternalErrorException();
         }
     }
@@ -486,7 +490,7 @@ public class DefaultPatientsInFamilyManager
             throw new PTNotEnoughPermissionsOnPatientException(Right.EDIT, patient.getId());
         }
         // check for logical problems: patient in another family
-        Collection<Family> families = this.getGroupsForMember(patient);
+        Collection<Family> families = this.getAllReverseConnections(patient);
         if (families.size() == 1) {
             Family familyForLinkedPatient = families.iterator().next();
             if (familyForLinkedPatient != null && !familyForLinkedPatient.getId().equals(family.getId())) {
@@ -544,7 +548,7 @@ public class DefaultPatientsInFamilyManager
     // TODO remove when there's patient.getXDocument()
     private XWikiDocument getDocument(EntityReference docRef) throws XWikiException
     {
-        XWikiContext context = this.getXContext();
+        XWikiContext context = this.xcontextProvider.get();
         XWiki wiki = context.getWiki();
         return wiki.getDocument(docRef, context);
     }

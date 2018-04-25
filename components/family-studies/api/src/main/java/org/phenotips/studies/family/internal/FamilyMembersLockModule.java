@@ -103,7 +103,7 @@ public class FamilyMembersLockModule implements LockModule
                 return null;
             }
 
-            Collection<Patient> members = this.pifManager.getMembers(family);
+            Collection<Patient> members = this.pifManager.getAllConnections(family);
             if (members.isEmpty()) {
                 return null;
             }

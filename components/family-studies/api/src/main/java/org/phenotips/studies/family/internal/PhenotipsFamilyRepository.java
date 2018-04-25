@@ -144,7 +144,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         }
 
         if (deleteAllMembers) {
-            for (Patient patient : this.pifManager.getMembers(family)) {
+            for (Patient patient : this.pifManager.getAllConnections(family)) {
                 if (!this.patientRepository.delete(patient)) {
                     this.logger.error("Failed to delete patient [{}] - deletion of family [{}] aborted",
                         patient.getId(), family.getId());
@@ -168,7 +168,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
     @Override
     public Family getFamilyForPatient(Patient patient)
     {
-        Collection<Family> families = this.pifManager.getGroupsForMember(patient);
+        Collection<Family> families = this.pifManager.getAllReverseConnections(patient);
         if (families.size() != 1) {
             return null;
         } else {
@@ -219,7 +219,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
             }
             if (deleteAllMembers) {
                 // check permissions on all patients
-                for (Patient patient : this.pifManager.getMembers(family)) {
+                for (Patient patient : this.pifManager.getAllConnections(family)) {
                     if (!this.authorizationService.hasAccess(
                         updatingUser, Right.DELETE, patient.getDocumentReference())) {
                         throw new PTNotEnoughPermissionsOnPatientException(Right.DELETE, patient.getId());

@@ -18,7 +18,7 @@
 package org.phenotips.studies.family;
 
 import org.phenotips.data.Patient;
-import org.phenotips.entities.PrimaryEntityGroupManager;
+import org.phenotips.entities.PrimaryEntityConnectionsManager;
 import org.phenotips.studies.family.exceptions.PTException;
 
 import org.xwiki.component.annotation.Role;
@@ -28,7 +28,7 @@ import org.xwiki.users.User;
  * @version $Id$
  */
 @Role
-public interface PatientsInFamilyManager extends PrimaryEntityGroupManager<Family, Patient>
+public interface PatientsInFamilyManager extends PrimaryEntityConnectionsManager<Family, Patient>
 {
     /**
      * Unlinks Similar to deleteFamily, but does not delete the family document

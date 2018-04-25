@@ -111,7 +111,7 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     @Override
     public List<Patient> getMembers()
     {
-        return new LinkedList<Patient>(PhenotipsFamily.pifManager.getMembers(this));
+        return new LinkedList<>(PhenotipsFamily.pifManager.getAllConnections(this));
     }
 
     @Override
@@ -124,7 +124,7 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     @Override
     public boolean isMember(Patient patient)
     {
-        return PhenotipsFamily.pifManager.isMember(this, patient);
+        return PhenotipsFamily.pifManager.isConnected(this, patient);
     }
 
     @Override
@@ -144,7 +144,7 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     {
         Map<String, Map<String, String>> allFamilyLinks = new HashMap<>();
 
-        for (Patient patient : PhenotipsFamily.pifManager.getMembers(this)) {
+        for (Patient patient : PhenotipsFamily.pifManager.getAllConnections(this)) {
             allFamilyLinks.put(patient.getId(), PhenotipsFamily.familyExport.getMedicalReports(patient));
         }
         return allFamilyLinks;
