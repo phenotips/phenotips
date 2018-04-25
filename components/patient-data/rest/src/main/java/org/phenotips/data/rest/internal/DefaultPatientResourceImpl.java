@@ -41,7 +41,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
 
 /**
  * Default implementation for {@link PatientResource} using XWiki's support for REST resources.
@@ -54,9 +53,6 @@ import org.slf4j.Logger;
 @Singleton
 public class DefaultPatientResourceImpl extends XWikiResource implements PatientResource
 {
-    @Inject
-    private Logger logger;
-
     @Inject
     private PatientRepository repository;
 
@@ -72,16 +68,16 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
     @Override
     public Response getPatient(String id)
     {
-        this.logger.debug("Retrieving patient record [{}] via REST", id);
+        this.slf4Jlogger.debug("Retrieving patient record [{}] via REST", id);
         Patient patient = this.repository.get(id);
         if (patient == null) {
-            this.logger.debug("No such patient record: [{}]", id);
+            this.slf4Jlogger.debug("No such patient record: [{}]", id);
             return Response.status(Status.NOT_FOUND).build();
         }
         User currentUser = this.users.getCurrentUser();
         Right grantedRight;
         if (!this.access.hasAccess(currentUser, Right.VIEW, patient.getDocumentReference())) {
-            this.logger.debug("View access denied to user [{}] on patient record [{}]", currentUser, id);
+            this.slf4Jlogger.debug("View access denied to user [{}] on patient record [{}]", currentUser, id);
             return Response.status(Status.FORBIDDEN).build();
         } else {
             grantedRight = Right.VIEW;
@@ -129,7 +125,7 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
      */
     private Response updatePatient(final String json, final String id, final PatientWritePolicy policy)
     {
-        this.logger.debug("Updating patient record [{}] via REST with JSON: {}", id, json);
+        this.slf4Jlogger.debug("Updating patient record [{}] via REST with JSON: {}", id, json);
         if (policy == null || json == null) {
             // json == null does not create an exception when initializing a JSONObject
             // need to handle it separately to give explicit BAD_REQUEST to the user
@@ -137,13 +133,13 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
         }
         Patient patient = this.repository.get(id);
         if (patient == null) {
-            this.logger.debug(
+            this.slf4Jlogger.debug(
                 "Patient record [{}] doesn't exist yet. It can be created by POST-ing the JSON to /rest/patients", id);
             throw new WebApplicationException(Status.NOT_FOUND);
         }
         User currentUser = this.users.getCurrentUser();
         if (!this.access.hasAccess(currentUser, Right.EDIT, patient.getDocumentReference())) {
-            this.logger.debug("Edit access denied to user [{}] on patient record [{}]", currentUser, id);
+            this.slf4Jlogger.debug("Edit access denied to user [{}] on patient record [{}]", currentUser, id);
             throw new WebApplicationException(Status.FORBIDDEN);
         }
         JSONObject jsonInput;
@@ -160,7 +156,7 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
         try {
             patient.updateFromJSON(jsonInput, policy);
         } catch (Exception ex) {
-            this.logger.warn("Failed to update patient [{}] from JSON: {}. Source JSON was: {}", patient.getId(),
+            this.slf4Jlogger.warn("Failed to update patient [{}] from JSON: {}. Source JSON was: {}", patient.getId(),
                 ex.getMessage(), json);
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
@@ -170,24 +166,24 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
     @Override
     public Response deletePatient(String id)
     {
-        this.logger.debug("Deleting patient record [{}] via REST", id);
+        this.slf4Jlogger.debug("Deleting patient record [{}] via REST", id);
         Patient patient = this.repository.get(id);
         if (patient == null) {
-            this.logger.debug("Patient record [{}] didn't exist", id);
+            this.slf4Jlogger.debug("Patient record [{}] didn't exist", id);
             return Response.status(Status.NOT_FOUND).build();
         }
         User currentUser = this.users.getCurrentUser();
         if (!this.access.hasAccess(currentUser, Right.DELETE, patient.getDocumentReference())) {
-            this.logger.debug("Delete access denied to user [{}] on patient record [{}]", currentUser, id);
+            this.slf4Jlogger.debug("Delete access denied to user [{}] on patient record [{}]", currentUser, id);
             return Response.status(Status.FORBIDDEN).build();
         }
         try {
             this.repository.delete(patient);
         } catch (Exception ex) {
-            this.logger.warn("Failed to delete patient record [{}]: {}", id, ex.getMessage());
+            this.slf4Jlogger.warn("Failed to delete patient record [{}]: {}", id, ex.getMessage());
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
-        this.logger.debug("Deleted patient record [{}]", id);
+        this.slf4Jlogger.debug("Deleted patient record [{}]", id);
         return Response.noContent().build();
     }
 }

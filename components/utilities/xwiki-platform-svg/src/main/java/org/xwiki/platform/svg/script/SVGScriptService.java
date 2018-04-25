@@ -51,7 +51,7 @@ public class SVGScriptService implements ScriptService
     private SVGUtils component;
 
     @Inject
-    @Named("standard/tmp")
+    @Named("standard/temp")
     private ResourceReferenceSerializer<TemporaryResourceReference, ExtendedURL> serializer;
 
     /**

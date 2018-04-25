@@ -546,16 +546,16 @@
       <artifactId>xwiki-platform-ldap-authenticator</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
-    <!-- jQuery -->
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>jquery</artifactId>
-      <version>1.11.1</version>
-    </dependency>
     <!-- Servlets for Resource API -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-resource-servlet</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <!-- Refactoring API implementation -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-refactoring-default</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <!-- Add support for HTTPS certificates signed by Let's Encrypt, such as the one used by nexus.phenotips.org -->
@@ -929,11 +929,21 @@
                - Exclude batik-js to prevent conflict with the patched version of Rhino used by yuicompressor used for
                  JSX. See http://jira.xwiki.org/jira/browse/XWIKI-6151 for more details.
                - Exclude JavaBeans Activation Framework (activation-*.jar) since it's included in Java SE 6.
+               - Exclude JAXB since it's included in Java SE 6
+               - Exclude STAX API since it's included in Java SE 6
+               - Exclude all XAR files from being placed in WEB-INF/lib. This is done by the WAR plugin which supports
+                 XAR files (not our format, some other format! See https://jira.codehaus.org/browse/MWAR-281). The
+                 reason we have XAR files in our dependencies is because we've added them in order to automatically
+                 bundle all JAR files which are dependencies of XAR modules!
           -->
           <packagingExcludes>
+            WEB-INF/lib/commons-logging-*.jar,
+            %regex[WEB-INF/lib/log4j-(?!over-slf4j).*.jar],
             WEB-INF/lib/activation-*.jar,
             WEB-INF/lib/batik-js-*.jar,
-            WEB-INF/lib/commons-logging-*.jar,
+            WEB-INF/lib/jaxb-impl-*.jar,
+            WEB-INF/lib/jaxb-api-*.jar,
+            WEB-INF/lib/stax-api-*.jar,
             resources/js/xwiki/wysiwyg/**
           </packagingExcludes>
           <overlays>
@@ -963,7 +973,6 @@
                     <exclude>org.jmock:*</exclude>
                     <exclude>junit:*</exclude>
                     <exclude>javax.servlet:servlet-api:*:*:compile</exclude>
-                    <exclude>javax.servlet:javax.servlet-api:*:*:compile</exclude>
                   </excludes>
                   <includes>
                     <!-- Allow only JUnit and JMock with scope test because -->

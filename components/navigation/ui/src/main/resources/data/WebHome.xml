@@ -41,8 +41,8 @@
 ##Create the dashboard area
 #set ($numColumns = 2)
 $xwiki.ssfx.use('uicomponents/dashboard/dashboard.css', true)##
-$xwiki.ssfx.use('uicomponents/container/columns.css', {'forceSkinAction' : true, 'columns' : $numColumns})##
-(% id="dashboard" class="panels container-columns"%)(((
+$xwiki.ssfx.use('uicomponents/container/columns.css', {'forceSkinAction' : true, 'maxColumns' : $numColumns})##
+(% id="dashboard" class="panels container-columns container-columns-2"%)(((
   #foreach ($column in [1..$numColumns])
   (% class="column #if($column == 1)first-column#elseif($column == $numColumns)last-column#end" %)(((
     #foreach ($e in $services.uix.getExtensions('org.phenotips.homepage.dashboard', {'sortByParameter' : 'priority'}))

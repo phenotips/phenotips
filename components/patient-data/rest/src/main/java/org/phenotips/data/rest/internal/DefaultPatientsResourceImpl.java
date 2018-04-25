@@ -53,7 +53,6 @@ import javax.ws.rs.core.UriBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
 
 /**
  * Default implementation for {@link PatientsResource} using XWiki's support for REST resources.
@@ -66,9 +65,6 @@ import org.slf4j.Logger;
 @Singleton
 public class DefaultPatientsResourceImpl extends XWikiResource implements PatientsResource
 {
-    @Inject
-    private Logger logger;
-
     @Inject
     private PatientRepository repository;
 
@@ -95,7 +91,7 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
     @Override
     public Response add(final String json)
     {
-        this.logger.debug("Importing new patient from JSON via REST: {}", json);
+        this.slf4Jlogger.debug("Importing new patient from JSON via REST: {}", json);
 
         final User currentUser = this.users.getCurrentUser();
         if (!this.access.hasAccess(currentUser, Right.EDIT,
@@ -112,7 +108,7 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
             }
             return response;
         } catch (Exception ex) {
-            this.logger.error("Could not process patient creation request: {}", ex.getMessage(), ex);
+            this.slf4Jlogger.error("Could not process patient creation request: {}", ex.getMessage(), ex);
             return Response.status(Status.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -140,7 +136,7 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
         for (int i = 0; i < jsonArrayLength; i++) {
             JSONObject jsonObject = patientsData.optJSONObject(i);
             if (jsonObject == null) {
-                this.logger.warn("One of the members of the patient JSONArray is null.");
+                this.slf4Jlogger.warn("One of the members of the patient JSONArray is null.");
                 continue;
             }
             Patient patient = this.repository.create();
@@ -227,7 +223,7 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
             result.withLinks(this.autolinker.get().forResource(getClass(), this.uriInfo)
                 .withGrantedRight(getGrantedRight()).build());
         } catch (Exception ex) {
-            this.logger.error("Failed to list patients: {}", ex.getMessage(), ex);
+            this.slf4Jlogger.error("Failed to list patients: {}", ex.getMessage(), ex);
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
 

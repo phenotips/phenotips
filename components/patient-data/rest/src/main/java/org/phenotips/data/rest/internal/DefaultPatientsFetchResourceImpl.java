@@ -46,7 +46,6 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -70,10 +69,6 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
 {
     /** Jackson object mapper to facilitate array serialization. */
     private final ObjectMapper objectMapper = getCustomObjectMapper();
-
-    /** Logging helper object. */
-    @Inject
-    private Logger logger;
 
     /** The query manager for patient retrieval. */
     @Inject
@@ -99,7 +94,7 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
         final List<Object> eids = request.getProperties("eid");
         final List<Object> ids = request.getProperties("id");
 
-        this.logger.debug("Retrieving patient records with external IDs [{}] and internal IDs [{}]", eids, ids);
+        this.slf4Jlogger.debug("Retrieving patient records with external IDs [{}] and internal IDs [{}]", eids, ids);
 
         // Build a set of patients from the provided external and/or internal ID data.
         final ImmutableSet.Builder<PrimaryEntity> patientsBuilder = ImmutableSet.builder();
@@ -111,10 +106,10 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
             final String json = this.objectMapper.writeValueAsString(patientsBuilder.build());
             return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
         } catch (final JsonProcessingException ex) {
-            this.logger.error("Failed to serialize patients [{}] to JSON: {}", eids, ex.getMessage());
+            this.slf4Jlogger.error("Failed to serialize patients [{}] to JSON: {}", eids, ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (final QueryException ex) {
-            this.logger.error("Failed to retrieve patients with external ids [{}]: {}", eids, ex.getMessage());
+            this.slf4Jlogger.error("Failed to retrieve patients with external ids [{}]: {}", eids, ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -185,7 +180,7 @@ public class DefaultPatientsFetchResourceImpl extends XWikiResource implements P
                 patientsBuilder.add(patient);
             }
         } catch (final SecurityException ex) {
-            this.logger.warn("Failed to retrieve patient with ID [{}]: {}", id, ex.getMessage());
+            this.slf4Jlogger.warn("Failed to retrieve patient with ID [{}]: {}", id, ex.getMessage());
         }
     }
 

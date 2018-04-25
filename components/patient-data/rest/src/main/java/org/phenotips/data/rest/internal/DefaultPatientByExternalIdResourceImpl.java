@@ -53,7 +53,6 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
 
 /**
  * Default implementation for {@link PatientByExternalIdResource} using XWiki's support for REST resources.
@@ -67,9 +66,6 @@ import org.slf4j.Logger;
 public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implements PatientByExternalIdResource
 {
     private static final String EID_LABEL = "external_id";
-
-    @Inject
-    private Logger logger;
 
     @Inject
     private PatientRepository repository;
@@ -97,7 +93,7 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
     @Override
     public Response getPatient(String eid)
     {
-        this.logger.debug("Retrieving patient record with external ID [{}] via REST", eid);
+        this.slf4Jlogger.debug("Retrieving patient record with external ID [{}] via REST", eid);
         Patient patient = this.repository.getByName(eid);
         if (patient == null) {
             return checkForMultipleRecords(patient, eid);
@@ -105,7 +101,8 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
         User currentUser = this.users.getCurrentUser();
         Right grantedRight;
         if (!this.access.hasAccess(currentUser, Right.VIEW, patient.getDocumentReference())) {
-            this.logger.debug("View access denied to user [{}] on patient record [{}]", currentUser, patient.getId());
+            this.slf4Jlogger.debug("View access denied to user [{}] on patient record [{}]", currentUser,
+                patient.getId());
             return Response.status(Status.FORBIDDEN).build();
         } else {
             grantedRight = Right.VIEW;
@@ -152,7 +149,7 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
      */
     private Response updatePatient(final String json, final String eid, final PatientWritePolicy policy)
     {
-        this.logger.debug("Updating patient record with external ID [{}] via REST with JSON: {}", eid, json);
+        this.slf4Jlogger.debug("Updating patient record with external ID [{}] via REST with JSON: {}", eid, json);
         if (policy == null) {
             throw new WebApplicationException(Status.BAD_REQUEST);
         }
@@ -167,14 +164,15 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
         }
         User currentUser = this.users.getCurrentUser();
         if (!this.access.hasAccess(currentUser, Right.EDIT, patient.getDocumentReference())) {
-            this.logger.debug("Edit access denied to user [{}] on patient record [{}]", currentUser, patient.getId());
+            this.slf4Jlogger.debug("Edit access denied to user [{}] on patient record [{}]", currentUser,
+                patient.getId());
             throw new WebApplicationException(Status.FORBIDDEN);
         }
         JSONObject jsonInput;
         try {
             jsonInput = new JSONObject(json);
         } catch (final JSONException ex) {
-            this.logger.error("Provided patient json: {} is invalid.", json);
+            this.slf4Jlogger.error("Provided patient json: {} is invalid.", json);
             throw new WebApplicationException(Status.BAD_REQUEST);
         }
         if (hasInternalIdConflict(jsonInput, patient)) {
@@ -183,7 +181,7 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
         try {
             patient.updateFromJSON(jsonInput, policy);
         } catch (Exception ex) {
-            this.logger.warn("Failed to update patient [{}] from JSON: {}. Source JSON was: {}", patient.getId(),
+            this.slf4Jlogger.warn("Failed to update patient [{}] from JSON: {}. Source JSON was: {}", patient.getId(),
                 ex.getMessage(), json);
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
@@ -193,23 +191,24 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
     @Override
     public Response deletePatient(String eid)
     {
-        this.logger.debug("Deleting patient record with external ID [{}] via REST", eid);
+        this.slf4Jlogger.debug("Deleting patient record with external ID [{}] via REST", eid);
         Patient patient = this.repository.getByName(eid);
         if (patient == null) {
             return checkForMultipleRecords(patient, eid);
         }
         User currentUser = this.users.getCurrentUser();
         if (!this.access.hasAccess(currentUser, Right.DELETE, patient.getDocumentReference())) {
-            this.logger.debug("Delete access denied to user [{}] on patient record [{}]", currentUser, patient.getId());
+            this.slf4Jlogger.debug("Delete access denied to user [{}] on patient record [{}]", currentUser,
+                patient.getId());
             return Response.status(Status.FORBIDDEN).build();
         }
         try {
             this.repository.delete(patient);
         } catch (Exception ex) {
-            this.logger.warn("Failed to delete patient record with external id [{}]: {}", eid, ex.getMessage());
+            this.slf4Jlogger.warn("Failed to delete patient record with external id [{}]: {}", eid, ex.getMessage());
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
-        this.logger.debug("Deleted patient record with external id [{}]", eid);
+        this.slf4Jlogger.debug("Deleted patient record with external id [{}]", eid);
         return Response.noContent().build();
     }
 
@@ -221,16 +220,16 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
             q.bindValue("eid", eid);
             List<String> results = q.execute();
             if (results.size() > 1) {
-                this.logger.debug("Multiple patient records ({}) with external ID [{}]: {}", results.size(), eid,
+                this.slf4Jlogger.debug("Multiple patient records ({}) with external ID [{}]: {}", results.size(), eid,
                     results);
                 Alternatives response = this.factory.createAlternatives(results, this.uriInfo);
                 return Response.status(300).entity(response).build();
             }
         } catch (QueryException ex) {
-            this.logger.warn("Failed to retrieve patient with external id [{}]: {}", eid, ex.getMessage());
+            this.slf4Jlogger.warn("Failed to retrieve patient with external id [{}]: {}", eid, ex.getMessage());
         }
         if (patient == null) {
-            this.logger.debug("No patient record with external ID [{}] exists yet", eid);
+            this.slf4Jlogger.debug("No patient record with external ID [{}] exists yet", eid);
             return Response.status(Status.NOT_FOUND).build();
         }
         return null;
@@ -254,8 +253,8 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
     }
 
     /**
-     * Tries to create a patient with provided {@code eid} and {@code json data}. Returns a {@link Response} with
-     * no content if successful, an error code otherwise.
+     * Tries to create a patient with provided {@code eid} and {@code json data}. Returns a {@link Response} with no
+     * content if successful, an error code otherwise.
      *
      * @param eid the external identifier for the patient; will be overwritten if an eid is specified in {@code json}
      * @param json patient data as json string
@@ -263,26 +262,26 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
      */
     private Response createPatient(final String eid, final String json)
     {
-        this.logger.debug("Creating patient record with external ID [{}]", eid);
+        this.slf4Jlogger.debug("Creating patient record with external ID [{}]", eid);
         try {
             if (StringUtils.isBlank(json)) {
-                this.logger.error("Provided patient json: {} is invalid.", json);
+                this.slf4Jlogger.error("Provided patient json: {} is invalid.", json);
                 return Response.status(Status.BAD_REQUEST).build();
             }
             final JSONObject patientJson = new JSONObject(json);
             final User currentUser = this.users.getCurrentUser();
             if (!this.access.hasAccess(currentUser, Right.EDIT,
                 this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
-                this.logger.error("Edit access denied to user [{}].", currentUser);
+                this.slf4Jlogger.error("Edit access denied to user [{}].", currentUser);
                 return Response.status(Status.FORBIDDEN).build();
             }
             final Patient patient = this.repository.create();
             return updatePatientWithJsonData(patient, eid, patientJson);
         } catch (final JSONException ex) {
-            this.logger.error("Provided patient json: {} is invalid.", json);
+            this.slf4Jlogger.error("Provided patient json: {} is invalid.", json);
             return Response.status(Status.BAD_REQUEST).build();
         } catch (final Exception ex) {
-            this.logger.error("Failed to create patient with external ID: [{}] from JSON: {}.", eid, json);
+            this.slf4Jlogger.error("Failed to create patient with external ID: [{}] from JSON: {}.", eid, json);
             return Response.status(Status.INTERNAL_SERVER_ERROR).build();
         }
     }

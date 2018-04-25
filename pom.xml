@@ -140,7 +140,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <phenotips.version>1.4-SNAPSHOT</phenotips.version>
     <project.version.previous>1.3</project.version.previous>
-    <xwiki.version>7.1.4</xwiki.version>
+    <xwiki.version>7.4.6</xwiki.version>
     <slf4j.version>1.7.22</slf4j.version>
     <poi.version>3.11</poi.version>
     <selenium.version>2.53.1</selenium.version>
@@ -149,7 +149,7 @@
     <restlet.version>2.0.15</restlet.version>
     <buildtools.version>1.8</buildtools.version>
     <textAnalysis.version>1.0-rc-1</textAnalysis.version>
-    <testframework.version>1.1</testframework.version>
+    <testframework.version>1.3</testframework.version>
     <solr.version>6.5.1</solr.version>
     <jaxb2-fluent-api.version>3.0</jaxb2-fluent-api.version>
     <maven-jaxb2-plugin.version>0.13.3</maven-jaxb2-plugin.version>
@@ -437,6 +437,17 @@
         <groupId>de.charite.compbio</groupId>
         <artifactId>ontologizer-benchmark</artifactId>
         <version>2.1.2</version>
+      </dependency>
+      <!-- Batik 1.8 is used, but css4j pulls in a few 1.7 modules; force 1.8 throughout -->
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>batik-util</artifactId>
+        <version>1.8</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>batik-css</artifactId>
+        <version>1.8</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

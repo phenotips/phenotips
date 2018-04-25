@@ -467,6 +467,19 @@ $doc.dropPermissions()##
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </advancedOnly>
+    <categoryIcon>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>categoryIcon</name>
+      <number>11</number>
+      <picker>0</picker>
+      <prettyName>categoryIcon</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </categoryIcon>
     <categoryPriority>
       <customDisplay/>
       <disabled>0</disabled>
@@ -522,6 +535,19 @@ $doc.dropPermissions()##
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </configureGlobally>
+    <displayBeforeCategory>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>displayBeforeCategory</name>
+      <number>10</number>
+      <picker>0</picker>
+      <prettyName>displayBeforeCategory</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </displayBeforeCategory>
     <displayInCategory>
       <customDisplay/>
       <disabled>0</disabled>
@@ -608,6 +634,19 @@ $doc.dropPermissions()##
       <values/>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </propertiesToShow>
+    <sectionOrder>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>sectionOrder</name>
+      <number>12</number>
+      <numberType>integer</numberType>
+      <prettyName>sectionOrder</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+    </sectionOrder>
     <sectionPriority>
       <customDisplay/>
       <disabled>0</disabled>

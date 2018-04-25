@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.xwiki.url.internal.standard.temporary;
+package org.xwiki.platform.svg.internal;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
@@ -52,13 +52,13 @@ import javax.inject.Singleton;
  * @since 6.1M2
  */
 @Component
-@Named("standard/tmp")
+@Named("standard/temp")
 @Singleton
 public class ExtendedURLTemporaryResourceReferenceSerializer
     implements ResourceReferenceSerializer<TemporaryResourceReference, ExtendedURL>
 {
     @Inject
-    @Named("contextpath+actionservletpath")
+    @Named("contextpath+actionservletpath/pt")
     private URLNormalizer<ExtendedURL> extendedURLNormalizer;
 
     @Override

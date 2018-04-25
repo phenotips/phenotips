@@ -17,7 +17,6 @@
  */
 package org.phenotips.data.test.po;
 
-import org.xwiki.test.ui.po.BaseElement;
 import org.xwiki.test.ui.po.InlinePage;
 
 import org.openqa.selenium.By;
@@ -785,18 +784,22 @@ public class PatientRecordEditPage extends InlinePage
 
     /**
      * Sets the mother's age at the estimated date of delivery.
+     *
      * @param years
      */
-    public void setMaternalAgeAtEDD(String years){
+    public void setMaternalAgeAtEDD(String years)
+    {
         this.maternalAgeAtEDD.clear();
         this.maternalAgeAtEDD.sendKeys(years);
     }
 
     /**
      * Sets the father's age at the estimated date of delivery.
+     *
      * @param years
      */
-    public void setPaternalAgeAtEDD(String years){
+    public void setPaternalAgeAtEDD(String years)
+    {
         this.paternalAgeAtEDD.clear();
         this.paternalAgeAtEDD.sendKeys(years);
     }
@@ -1141,13 +1144,10 @@ public class PatientRecordEditPage extends InlinePage
 
     public void selectPhenotype(String id, boolean positive)
     {
-        BaseElement
-            .getUtil()
-            .findElementWithoutWaiting(
-                getDriver(),
-                By.cssSelector("label[for='PhenoTips.PatientClass_0_" + (positive ? "" : "negative_") + "phenotype_"
-                    + id + "']")).click();
-        ;
+        getDriver().findElementWithoutWaiting(
+            By.cssSelector("label[for='PhenoTips.PatientClass_0_" + (positive ? "" : "negative_") + "phenotype_"
+                + id + "']"))
+            .click();
     }
 
     public void setHypotelorismYes()
@@ -1847,7 +1847,7 @@ public class PatientRecordEditPage extends InlinePage
                 "//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0002721']]"));
 
         try {
-            return !getUtil()
+            return !getDriver()
                 .hasElement(
                     By.xpath(
                         "//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0002721']]"));
@@ -1866,7 +1866,7 @@ public class PatientRecordEditPage extends InlinePage
                 "//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0005344']]"));
 
         try {
-            return !getUtil()
+            return !getDriver()
                 .hasElement(
                     By.xpath(
                         "//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0005344']]"));
@@ -1885,7 +1885,7 @@ public class PatientRecordEditPage extends InlinePage
                 "//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0010297']]"));
 
         try {
-            return !getUtil()
+            return !getDriver()
                 .hasElement(
                     By.xpath(
                         "//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0010297']]"));

@@ -33,7 +33,7 @@
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-transcoder</artifactId>
-      <version>1.7</version>
+      <version>1.8</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -46,7 +46,17 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-configuration-api</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-environment-api</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-environment-servlet</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
@@ -61,17 +71,7 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-url-api</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-resource-api</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-resource-default</artifactId>
+      <artifactId>xwiki-platform-resource-temporary</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
@@ -81,12 +81,46 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-url-scheme-standard</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-url-container</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-container-servlet</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-url-api</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-resource-api</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-resource-default</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
