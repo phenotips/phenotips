@@ -35,7 +35,6 @@ import org.phenotips.studies.family.exceptions.PTNotEnoughPermissionsOnPatientEx
 import org.phenotips.studies.family.exceptions.PTPatientAlreadyInAnotherFamilyException;
 import org.phenotips.studies.family.exceptions.PTPatientNotInFamilyException;
 import org.phenotips.studies.family.exceptions.PTPedigreeContainesSamePatientMultipleTimesException;
-import org.phenotips.studies.family.internal.PhenotipsFamilyPermissions;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.util.DefaultParameterizedType;
@@ -94,9 +93,6 @@ public class DefaultPatientsInFamilyManager
     @Inject
     private AuthorizationService authorizationService;
 
-    @Inject
-    private PhenotipsFamilyPermissions familyPermissions;
-
     /**
      * Public constructor.
      */
@@ -149,7 +145,6 @@ public class DefaultPatientsInFamilyManager
     {
         this.checkValidity(family, patients, updatingUser);
         this.addAllMembersInternal(family, patients);
-        this.updateFamilyPermissionsAndSave(family, "added " + this.allPatientsString(patients) + " to the family");
 
         return true;
     }
@@ -171,7 +166,6 @@ public class DefaultPatientsInFamilyManager
     {
         this.checkIfPatientsCanBeRemovedFromFamily(family, patients, updatingUser);
         this.removeAllMembersInternal(family, patients);
-        this.updateFamilyPermissionsAndSave(family, "removed " + this.allPatientsString(patients) + " from the family");
 
         return true;
     }
@@ -252,8 +246,6 @@ public class DefaultPatientsInFamilyManager
                 this.setFamilyExternalId(lastName, family, context);
             }
         }
-
-        updateFamilyPermissionsAndSave(family, "Updated family from saved pedigree");
     }
 
     private boolean setPedigreeObject(Family family, Pedigree pedigree, XWikiContext context) {
@@ -320,33 +312,6 @@ public class DefaultPatientsInFamilyManager
             for (Patient patient : newMembers) {
                 checkIfPatientCanBeAddedToFamily(family, patient, updatingUser);
             }
-        }
-    }
-
-    /*
-     * This method should be called after the members of the family changed.
-     */
-    private void updateFamilyPermissionsAndSave(Family family, String message)
-    {
-        XWikiContext context = this.getXContext();
-        this.updateFamilyPermissions(family, context, false);
-        if (!saveFamilyDocument(family, message, context)) {
-            throw new PTInternalErrorException();
-        }
-    }
-
-    @Override
-    public synchronized void updateFamilyPermissions(Family family)
-    {
-        XWikiContext context = this.getXContext();
-        this.updateFamilyPermissions(family, context, true);
-    }
-
-    private void updateFamilyPermissions(Family family, XWikiContext context, boolean saveXwikiDocument)
-    {
-        this.familyPermissions.updatePermissions(family, context);
-        if (saveXwikiDocument) {
-            this.saveFamilyDocument(family, "updated permissions", context);
         }
     }
 

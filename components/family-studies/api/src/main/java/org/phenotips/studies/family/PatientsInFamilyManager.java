@@ -70,16 +70,4 @@ public interface PatientsInFamilyManager extends PrimaryEntityConnectionsManager
      * @throws PTException when the family could not be correctly and fully updated using the given pedigree
      */
     void setPedigree(Family family, Pedigree pedigree, User updatingUser) throws PTException;
-
-    /**
-     * For every family member, read users and groups that have either view or edit edit access on the patient, then
-     * gives the same level of access on the family for those users and groups. After performing this method, if p is a
-     * member of the family, and x has level y access on p, x has level y access on the family. The user who is the
-     * owner of the family always has full access to the family. access on p, x has edit access of the family. The
-     * family document is saved to disk after permissions are updated.
-     *
-     * @param family the family
-     */
-    void updateFamilyPermissions(Family family);
-
 }
