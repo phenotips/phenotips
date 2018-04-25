@@ -21,7 +21,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.Owner;
 import org.phenotips.entities.PrimaryEntityManager;
-import org.phenotips.entities.internal.AbstractPrimaryEntityManager;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
@@ -35,6 +34,7 @@ import org.phenotips.studies.family.exceptions.PTPatientAlreadyInAnotherFamilyEx
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.query.Query;
@@ -44,18 +44,17 @@ import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
-import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
 
 /**
  * Provides utility methods for working with family documents and patients.
@@ -83,9 +82,6 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
 
     @Inject
     private AuthorizationService authorizationService;
-
-    @Inject
-    private PedigreeProcessor pedigreeConverter;
 
     /** Used for obtaining the current user. */
     @Inject
@@ -124,14 +120,6 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
             this.logger.warn("Failed to create family: {}", ex.getMessage(), ex);
             return null;
         }
-    }
-
-    @Inject
-    private UserManager userManager;
-
-    @Override
-    public boolean delete(Family family) {
-        return this.deleteFamily(family, this.userManager.getCurrentUser(), true);
     }
 
     @Override
@@ -277,43 +265,9 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
     }
 
     @Override
-    protected String getIdPrefix()
-    {
-        return PREFIX;
-    }
-
-    @Override
     public Family create()
     {
         return this.create(this.userManager.getCurrentUser().getProfileDocument());
-    }
-
-    @Override
-    public synchronized Family create(DocumentReference creator)
-    {
-        Family newFamily = null;
-
-        try {
-            XWikiContext context = this.xcontextProvider.get();
-            newFamily = super.create(creator);
-            int familyID = Integer.parseInt(newFamily.getDocumentReference().getName().replaceAll("\\D++", ""));
-
-            // TODO newFamily.getXDocument();
-            XWikiDocument familyXDocument = (XWikiDocument) this.bridge.getDocument(newFamily.getDocumentReference());
-
-            BaseObject ownerObject = familyXDocument.newXObject(Owner.CLASS_REFERENCE, context);
-
-            String ownerString = creator == null ? "" : this.entityReferenceSerializer.serialize(creator);
-            ownerObject.set("owner", ownerString, context);
-
-            BaseObject familyObject = familyXDocument.getXObject(Family.CLASS_REFERENCE);
-            familyObject.set("identifier", familyID, context);
-
-            context.getWiki().saveDocument(familyXDocument, context);
-        } catch (Exception e) {
-            this.logger.error("Could not create a new family document: {}", e.getMessage());
-        }
-        return newFamily;
     }
 
     /*
