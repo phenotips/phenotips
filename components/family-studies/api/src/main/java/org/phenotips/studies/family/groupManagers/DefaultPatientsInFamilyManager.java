@@ -128,16 +128,13 @@ public class DefaultPatientsInFamilyManager
     }
 
     /*
-     * Adds members to the family.
-     *
-     * Note: the synchronization could be limited to addAllMembersInternal and updateFamilyPermissionsAndSave, because
-     * checkValidity is read-only.
-     *
+     * Adds members to the family. Note: the synchronization could be limited to addAllMembersInternal and
+     * updateFamilyPermissionsAndSave, because checkValidity is read-only.
      * @param family family which should get a new member
      * @param patients to add to family
      * @param updatingUser right checks are done for this user
      * @throws PTException in case addition was not successful for any reason (not enough rights, patient already has a
-     *             family, etc.)
+     * family, etc.)
      * @return true if successful
      */
     private synchronized boolean addAllMembers(Family family, Collection<Patient> patients, User updatingUser)
@@ -150,15 +147,13 @@ public class DefaultPatientsInFamilyManager
     }
 
     /*
-     * Removes all given patients from the family.
-     *
-     * See note about synchronization in addAllMembers(Family, Collection, User).
-     *
+     * Removes all given patients from the family. See note about synchronization in addAllMembers(Family, Collection,
+     * User).
      * @param family family which should lose a new member
      * @param patients to remove from family
      * @param updatingUser right checks are done for this user
-     * @throws PTException if removal was not successful for any reason (not enough rights, patient not a member of
-     *             this family, etc.)
+     * @throws PTException if removal was not successful for any reason (not enough rights, patient not a member of this
+     * family, etc.)
      * @return true if successful
      */
     private synchronized boolean removeAllMembers(Family family, Collection<Patient> patients, User updatingUser)
@@ -248,7 +243,8 @@ public class DefaultPatientsInFamilyManager
         }
     }
 
-    private boolean setPedigreeObject(Family family, Pedigree pedigree, XWikiContext context) {
+    private boolean setPedigreeObject(Family family, Pedigree pedigree, XWikiContext context)
+    {
         if (pedigree == null) {
             this.logger.error("Can not set NULL pedigree for family [{}]", family.getId());
             return false;
@@ -265,7 +261,7 @@ public class DefaultPatientsInFamilyManager
             if (!StringUtils.isEmpty(probandId)) {
                 Patient patient = this.patientRepository.get(probandId);
                 familyClassObject.setStringValue("proband_id",
-                        (patient == null) ? "" : patient.getDocument().toString());
+                    (patient == null) ? "" : patient.getDocument().toString());
             } else {
                 familyClassObject.setStringValue("proband_id", "");
             }
@@ -328,18 +324,12 @@ public class DefaultPatientsInFamilyManager
     }
 
     /**
-     * This method may be called either as a standalone invocation, or
-     * internally as part of family pedigree update.
-     * ({@link #checkValidity(Family, List, User)} and family saving is always
-     * done outside of this method.
-     *
-     * Updating permissions is an expensive operation which takes all patients
-     * into account, so it shouldn't be done after adding each patient. It
-     * should be done by the calling code.
-     *
-     * Note: This method is not synchronized. At the time of writing (refactoring) this code, this method is called
-     * from the public and synchronized {@link #addAllMembers(Family, Collection, User)}
-     * {@link #setPedigree(Family, Pedigree, User)}.
+     * This method may be called either as a standalone invocation, or internally as part of family pedigree update.
+     * ({@link #checkValidity(Family, List, User)} and family saving is always done outside of this method. Updating
+     * permissions is an expensive operation which takes all patients into account, so it shouldn't be done after adding
+     * each patient. It should be done by the calling code. Note: This method is not synchronized. At the time of
+     * writing (refactoring) this code, this method is called from the public and synchronized
+     * {@link #addAllMembers(Family, Collection, User)} {@link #setPedigree(Family, Pedigree, User)}.
      */
     private void addAllMembersInternal(Family family, Collection<Patient> patients) throws PTException
     {
@@ -356,7 +346,7 @@ public class DefaultPatientsInFamilyManager
 
             // TODO
             // if (patient.getXDocument() == null) {
-            //     throw new PTInvalidPatientIdException(patient.getId());
+            // throw new PTInvalidPatientIdException(patient.getId());
             // }
             String patientId = patient.getId();
             XWikiDocument patientDocument = getDocument(patient);
@@ -380,9 +370,8 @@ public class DefaultPatientsInFamilyManager
 
     /*
      * Calls to {@link #checkIfPatientCanBeRemovedFromFamily} and {@link #updateFamilyPermissionsAndSave} before and
-     * after, respectively, are the responsibility of the caller.
-     *
-     * See note about synchronization in addAllMembersInternal().
+     * after, respectively, are the responsibility of the caller. See note about synchronization in
+     * addAllMembersInternal().
      */
     private void removeAllMembersInternal(Family family, Collection<Patient> patients) throws PTException
     {
@@ -410,7 +399,7 @@ public class DefaultPatientsInFamilyManager
 
             if (!members.contains(patient)) {
                 this.logger.error("Can't remove patient [{}] from family [{}]: patient not a member of the family",
-                        patientId, family.getId());
+                    patientId, family.getId());
                 throw new PTPatientNotInFamilyException(patientId);
             }
 
@@ -446,7 +435,8 @@ public class DefaultPatientsInFamilyManager
     }
 
     private void checkIfPatientCanBeAddedToFamily(Family family, Patient patient, User updatingUser)
-            throws PTException {
+        throws PTException
+    {
         // check rights
         if (!this.authorizationService.hasAccess(updatingUser, Right.EDIT, family.getDocumentReference())) {
             throw new PTNotEnoughPermissionsOnFamilyException(Right.EDIT, family.getId());
@@ -464,7 +454,8 @@ public class DefaultPatientsInFamilyManager
         }
     }
 
-    private void setFamilyExternalId(String externalId, Family family, XWikiContext context) {
+    private void setFamilyExternalId(String externalId, Family family, XWikiContext context)
+    {
         BaseObject familyObject = family.getXDocument().getXObject(Family.CLASS_REFERENCE);
         familyObject.set("external_id", externalId, context);
     }

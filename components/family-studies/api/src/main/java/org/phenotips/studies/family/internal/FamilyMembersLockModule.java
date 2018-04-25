@@ -32,8 +32,6 @@ import org.xwiki.users.UserManager;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.Date;
 import java.util.Set;
 
 import javax.inject.Inject;

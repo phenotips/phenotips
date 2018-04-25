@@ -31,13 +31,11 @@ import org.xwiki.users.User;
 public interface PatientsInFamilyManager extends PrimaryEntityConnectionsManager<Family, Patient>
 {
     /**
-     * Unlinks Similar to deleteFamily, but does not delete the family document
-     * (unlinkes all patients from the family). It is supposed to be used in the
-     * event handler for xwiki remove action, when the document will be removed
-     * by the framework itself.
+     * Unlinks Similar to deleteFamily, but does not delete the family document (unlinkes all patients from the family).
+     * It is supposed to be used in the event handler for xwiki remove action, when the document will be removed by the
+     * framework itself.
      *
-     * @param family
-     *            the family
+     * @param family the family
      * @return true if successful
      */
     boolean forceRemoveAllMembers(Family family);

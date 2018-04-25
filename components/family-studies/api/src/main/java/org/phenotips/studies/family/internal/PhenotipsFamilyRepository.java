@@ -62,7 +62,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
  * @version $Id$
  * @since 1.4
  */
-@Component(roles = {FamilyRepository.class, PrimaryEntityManager.class})
+@Component(roles = { FamilyRepository.class, PrimaryEntityManager.class })
 @Named("Family")
 @Singleton
 public class PhenotipsFamilyRepository extends FamilyEntityManager implements FamilyRepository
@@ -157,7 +157,6 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
 
         return super.delete(family);
     }
-
 
     @Override
     public Family getFamilyById(String id)
