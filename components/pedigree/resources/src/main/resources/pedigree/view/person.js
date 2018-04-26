@@ -1431,7 +1431,7 @@ define([
                                              "label": editor.getHPOLegend().getTerm(term).getName() } );
                      }
                  } else {
-                     if (!newNonStdFeatures.hasOwnProperty(term)) {
+                     if (!nonStdFeatureHash.hasOwnProperty(term)) {
                          newNonStdFeatures.push( { "observed": "yes",
                                                    "type": "phenotype",
                                                    "label": term } );
