@@ -248,6 +248,21 @@ public class FeaturesController extends AbstractComplexController<Feature>
         return false;
     }
 
+    private void addFeaturesFromJSON(List<Feature> features, final JSONArray jsonFeatures)
+    {
+        if (jsonFeatures == null) {
+            return;
+        }
+        for (int i = 0; i < jsonFeatures.length(); i++) {
+            JSONObject featureInJSON = jsonFeatures.optJSONObject(i);
+            if (featureInJSON == null) {
+                continue;
+            }
+            Feature phenotipsFeature = new PhenoTipsFeature(featureInJSON);
+            features.add(phenotipsFeature);
+        }
+    }
+
     @Override
     public PatientData<Feature> readJSON(JSONObject json)
     {
@@ -256,42 +271,17 @@ public class FeaturesController extends AbstractComplexController<Feature>
         }
 
         try {
-            JSONArray jsonFeatures =
-                joinArrays(json.optJSONArray(JSON_KEY_FEATURES), json.optJSONArray(JSON_KEY_NON_STANDARD_FEATURES));
-
             // keep this instance of PhenotipsPatient in sync with the document: reset features
             List<Feature> features = new ArrayList<>();
 
-            for (int i = 0; i < jsonFeatures.length(); i++) {
-                JSONObject featureInJSON = jsonFeatures.optJSONObject(i);
-                if (featureInJSON == null) {
-                    continue;
-                }
+            addFeaturesFromJSON(features, json.optJSONArray(JSON_KEY_FEATURES));
+            addFeaturesFromJSON(features, json.optJSONArray(JSON_KEY_NON_STANDARD_FEATURES));
 
-                Feature phenotipsFeature = new PhenoTipsFeature(featureInJSON);
-                features.add(phenotipsFeature);
-            }
             return new IndexedPatientData<>(getName(), features);
         } catch (Exception e) {
             this.logger.error("Failed to update patient features from JSON: [{}]", e.getMessage(), e);
             return null;
         }
-    }
-
-    private JSONArray joinArrays(JSONArray jsonOne, JSONArray jsonTwo)
-    {
-        JSONArray result = new JSONArray();
-        if (jsonOne == null && jsonTwo != null) {
-            result = jsonTwo;
-        } else if (jsonOne != null) {
-            result = jsonOne;
-            if (jsonTwo != null && jsonTwo.length() > 0) {
-                for (int i = 0; i < jsonTwo.length(); i++) {
-                    result.put(jsonTwo.get(i));
-                }
-            }
-        }
-        return result;
     }
 
     @Override
