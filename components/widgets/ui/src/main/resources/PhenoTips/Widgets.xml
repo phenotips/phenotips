@@ -4396,6 +4396,8 @@ document.observe("xwiki:dom:updated", init);
 
           var labels = {'synonym' : "$escapetool.javascript($services.localization.render('phenotips.widgets.helpButtons.ordoDisease.synonym'))",
             'parents' : "$escapetool.javascript($services.localization.render('phenotips.widgets.helpButtons.ordoDisease.parents'))",
+            'actual_symptom' : "$services.localization.render('phenotips.widgets.helpButtons.ordoDisease.symptoms')",
+            'actual_not_symptom' : "$services.localization.render('phenotips.widgets.helpButtons.ordoDisease.notSymptoms')",
             'age_of_onset' : "$escapetool.javascript($services.localization.render('phenotips.widgets.helpButtons.ordoDisease.age_of_onset'))",
             'inheritance' : "$escapetool.javascript($services.localization.render('phenotips.widgets.helpButtons.ordoDisease.inheritance'))",
             'birth_prevalence' : "$escapetool.javascript($services.localization.render('phenotips.widgets.helpButtons.ordoDisease.birth_prevalence'))",
