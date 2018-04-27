@@ -294,9 +294,9 @@ public class DataToCellConverter
 
     public void variantsSetup(Set<String> enabledFields) throws Exception
     {
-        String sectionName = "genes";
-        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
-        if (present == null || present.isEmpty()) {
+        String sectionName = "variants";
+        Set<String> present = this.enabledHeaderIdsBySection.get("genes");
+        if (present == null || present.isEmpty() || !enabledFields.remove(sectionName)) {
             return;
         }
         List<String> columns =

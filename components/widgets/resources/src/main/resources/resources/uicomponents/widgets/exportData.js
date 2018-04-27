@@ -292,13 +292,18 @@ document.observe('xwiki:dom:loading', function() {
     }
 
     //============================================================================
-    // Push dialog check boxes that have to check pre-requisite checkboxes with them when checked
-    // ex., if variants is checked, "genes"
+    // Control Push dialog checkboxes that have to check pre-requisite controller checkboxes with them when checked
     var checkboxes = content.select('.checkbox_tree_container input[type=checkbox][class^="prerequisite-"]');
     checkboxes.each(function(elt) {
+        var controller = $(elt.className.replace("prerequisite-", ''));
+        if (!controller) { return; }
+        // if genes checkbox is unchecked, variants should be unchecked
+        controller.observe('click', function(event) {
+            elt.checked = elt.checked && controller.checked;
+        });
+        // if variants checkbox is checked, genes controller checkbox should be checked
         elt.observe('click', function(event) {
-            var id = elt.className.replace("prerequisite-",'');
-            $(id).checked = elt.checked || $(id).checked;
+            controller.checked = elt.checked || controller.checked;
         });
     });
 
