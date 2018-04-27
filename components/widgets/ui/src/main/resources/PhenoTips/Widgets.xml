@@ -4329,9 +4329,8 @@ document.observe("xwiki:dom:updated", init);
           var labels = {'short_name' : '',
             'synonym': "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.synonym')",
             'included_name': "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.included')"};
-            // FIXME: These are disabled until the label can be retrieved as well
-            // 'actual_symptom' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.symptoms')",
-            // 'actual_not_symptom' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.notSymptoms')"};
+            'actual_symptom' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.symptoms')",
+            'actual_not_symptom' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.notSymptoms')"};
           var advancedInfo = elt('dl');
           for (var l in labels) {
             if (json[l] &amp;&amp; json[l].length &gt; 0) {
