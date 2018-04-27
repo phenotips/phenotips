@@ -128,11 +128,6 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.phenotips</groupId>
-      <artifactId>phenotips-authorization</artifactId>
-      <version>${project.version}</version>
-    </dependency>
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
