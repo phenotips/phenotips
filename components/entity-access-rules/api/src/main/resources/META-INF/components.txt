@@ -17,4 +17,4 @@ org.phenotips.data.permissions.internal.DefaultEntityVisibilityManager
 org.phenotips.data.permissions.internal.DefaultEntityAccessManager
 org.phenotips.data.permissions.internal.DefaultEntityPermissionsManager
 org.phenotips.data.permissions.internal.SecureEntityPermissionsManager
-
+org.phenotips.data.permissions.internal.AdminTemplateAccessAuthorizationModule
