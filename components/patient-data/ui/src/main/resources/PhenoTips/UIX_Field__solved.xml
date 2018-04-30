@@ -122,22 +122,42 @@
     // The National Center for Biotechnology Information (NCBI) article validation service provided by Entrez Programming Utilities
     // allows PMID (Pubmed ID) validation returning article meta info if ID is valid and error if not
     var pubmedArticleServiceURL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&amp;retmode=json&amp;method=get&amp;id=";
+    var placeholder = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.pubmedId'))";
 
-    // Pubmed ID container el in edit mode, if (XWiki.contextaction == "edit"):
-    var pubmedIdInput = $$('.solved__pubmed_id input')[0];
+    // Pubmed ID input elements in edit mode, if (XWiki.contextaction == "edit"):
+    var pubmedIdInputs = $$('.solved__pubmed_id input[type="text"]');
     // in view mode:
-    var pubmedIdDisplayedValue = $$('.solved__pubmed_id .displayed-value p')[0];
+    var pubmedIdDisplayedValues = $$('.solved__pubmed_id .displayed-value li');
 
-    if (pubmedIdInput) {
-        pubmedIdInput.placeholder = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.pubmedId'))";
-        pubmedIdInput.observe('blur', function () {
-            makeCorsRequest(pubmedIdInput);
+    if (pubmedIdInputs.length &gt; 0) {
+        pubmedIdInputs.each(function(el) {
+            el.placeholder = placeholder;
         });
-        pubmedIdInput.observe('focus', function () {
-            pubmedIdInput.next('.invalid') &amp;&amp; pubmedIdInput.next('.invalid').remove();
-            pubmedIdInput.next('.article-info') &amp;&amp; pubmedIdInput.next('.article-info').remove();
+        pubmedIdInputs.invoke('observe', 'blur', function (event) {
+            var el = event.element();
+            if (XWiki.contextaction == "edit" &amp;&amp; isDuplicate(el)) {
+                el.up().insert(new Element("div", {"class" : "invalid"}).update("$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.pubmedId.duplicate'))"));
+            } else {
+                makeCorsRequest(el);
+            }
+        });
+        pubmedIdInputs.invoke('observe', 'focus', function (event) {
+            var el = event.element();
+            el.next('.invalid') &amp;&amp; el.next('.invalid').remove();
+            el.next('.article-info') &amp;&amp; el.next('.article-info').remove();
         });
     };
+
+    var isDuplicate = function(inputEl) {
+        var pubmedIdEls = $$('.solved__pubmed_id input[type="text"]');
+        var hasDuplicate = false;
+        pubmedIdEls.each( function (el) {
+            if (el.value == inputEl.value &amp;&amp; el !== inputEl) {
+                hasDuplicate = true;
+            }
+        });
+        return hasDuplicate;
+    }
 
     var createCORSRequest = function(method, url) {
         var xhr = new XMLHttpRequest();
@@ -196,7 +216,7 @@
 
                 var container = new Element("div", {"class" : "article-info"});
                 if (XWiki.contextaction == "view") {
-                    container.setStyle({"margin" : 0});
+                    container.setStyle({"margin-top" : 0});
                 }
 
                 if (XWiki.contextaction == "edit") {
@@ -239,7 +259,7 @@
                 pubmedEl.up().insert(container);
             } else {
                 if (XWiki.contextaction == "edit") {
-                    pubmedEl.up().insert(new Element("div", {"class" : "invalid"}).update("$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.pubmedId.Invalid'))"));
+                    pubmedEl.up().insert(new Element("div", {"class" : "invalid"}).update("$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.pubmedId.invalid'))"));
                 }
             }
         };
@@ -251,11 +271,33 @@
         xhr.send();
     };
 
-    var el = pubmedIdInput || pubmedIdDisplayedValue;
-    if (el) {
-        var value = pubmedIdDisplayedValue ? pubmedIdDisplayedValue.innerHTML : el.value;
+    // display article summary for already entered Pubmed IDs in both view and edit modes
+    var elems = (XWiki.contextaction == "view") ? pubmedIdDisplayedValues : pubmedIdInputs;
+    elems.each(function (el) {
+        var value = (XWiki.contextaction == "view") ? el.innerHTML : el.value;
         makeCorsRequest(el, value);
-    }
+    });
+
+    // Attach event listeners to the Pubmed ID inputs that are just added in edit mode via FreeMultiselect Widget
+    var attachListeners = function(event) {
+        if (event &amp;&amp; event.memo.newInput &amp;&amp; event.memo.newInput.name.includes('solved__pubmed_id')) {
+            var pubmedIdInput = event.memo.newInput;
+            pubmedIdInput.placeholder = placeholder;
+            pubmedIdInput.observe('blur', function (event) {
+                if (XWiki.contextaction == "edit" &amp;&amp; isDuplicate(pubmedIdInput)) {
+                    pubmedIdInput.up().insert(new Element("div", {"class" : "invalid"}).update("$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.pubmedId.duplicate'))"));
+                } else {
+                    makeCorsRequest(pubmedIdInput);
+                }
+            });
+            pubmedIdInput.observe('focus', function (event) {
+                pubmedIdInput.next('.invalid') &amp;&amp; pubmedIdInput.next('.invalid').remove();
+                pubmedIdInput.next('.article-info') &amp;&amp; pubmedIdInput.next('.article-info').remove();
+            });
+        }
+    };
+
+    document.observe("new:xwiki-free-multiselect-input", attachListeners);
 });</code>
     </property>
     <property>
@@ -370,7 +412,7 @@
   border-radius: 0.1em 0.1em 0.1em;
   color: #636B75;
   display: inline-block;
-  margin: 0.7em 0 0 0.1em;
+  margin: 0 0 0.7em 0.1em;
   padding: 0.75em 1em;
   max-width: 95%;
   white-space: normal;
@@ -401,9 +443,9 @@
 }
 .invalid {
   color: #CC3333;
-  line-height: 1.8em;
   font-size: 0.8em;
   position: absolute;
+  margin-top: -1.2em;
 }
 .delete {
   float : right;
