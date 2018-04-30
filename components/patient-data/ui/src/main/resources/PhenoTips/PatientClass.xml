@@ -1219,17 +1219,32 @@
       <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </solved__notes>
     <solved__pubmed_id>
-      <customDisplay/>
+      <cache>0</cache>
+      <classname/>
+      <customDisplay>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+{{velocity filter="indent"}}{{html wiki=true clean=false}}
+#__displayPropertyAsSelect('')
+{{/html}}{{/velocity}}</customDisplay>
       <disabled>0</disabled>
+      <displayType>select</displayType>
+      <idField/>
+      <multiSelect>1</multiSelect>
       <name>solved__pubmed_id</name>
       <number>42</number>
       <picker>0</picker>
       <prettyName>Pubmed ID</prettyName>
-      <size>30</size>
+      <relationalStorage>1</relationalStorage>
+      <separator></separator>
+      <separators/>
+      <size>1</size>
+      <sort>none</sort>
+      <sql/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </solved__pubmed_id>
     <twinNumber>
       <cache>0</cache>
