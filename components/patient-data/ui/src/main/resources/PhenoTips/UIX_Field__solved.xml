@@ -41,6 +41,205 @@
   <object>
     <name>PhenoTips.UIX_Field__solved</name>
     <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>25d640c0-2469-4e64-97db-3e6d062d6bed</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe('xwiki:dom:loaded', function() {
+    var solvedInput = $$('.fieldset input[id$="_solved"][type="checkbox"]')[0];
+    var title = "$!escapetool.javascript($services.localization.render('patient.save.warning.missingFields.title'))";
+
+    if (XWiki.contextaction == "edit" &amp;&amp; solvedInput) {
+
+      // checks if case is marked as solved
+      var isSolved = function() {
+        return solvedInput.checked;
+      };
+
+      // checks if any genes entered are solved
+      var hasSolvedGene = function() {
+        var hasSolvedGenes = false;
+        $$('.Status select[id$="_status"]').each(function (status) {
+            if (status.value == "solved" &amp;&amp; status.up('tr').down('input.gene-name').value.length &gt; 0) {
+              hasSolvedGenes = true;
+            }
+        });
+        return hasSolvedGenes;
+      };
+
+      // checks if any OMIM final diagnosis or ORDO final diagnosis entered
+      var hasFinalDiagnosis = function() {
+        var hasDiagnosis = false;
+        $$('.omim_id .accepted-suggestion input[type="checkbox"]').each(function (checkbox) {
+            if (checkbox.checked) {
+              hasDiagnosis = true;
+            }
+        });
+        return hasDiagnosis;
+      };
+
+      document.observe("first:solved:gene:added", function() {
+          var message = '';
+          if (isSolved() &amp;&amp; hasFinalDiagnosis()) { return; }
+          if (!isSolved() &amp;&amp; !hasFinalDiagnosis()) {
+            message = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.hasSolvedGeneNotSolvedNoDiagnosis'))";
+          }
+          if (!isSolved() &amp;&amp; hasFinalDiagnosis()) {
+            message = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.hasSolvedGeneNotSolved'))";
+          }
+          if (isSolved() &amp;&amp; !hasFinalDiagnosis()) {
+            message = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.hasSolvedGeneNoDiagnosis'))";
+          }
+          var dialog = new PhenoTips.widgets.ModalPopup(message, false, {'title': title, 'removeOnClose': true});
+          dialog.showDialog();
+      });
+
+      document.observe('xwiki:dom:updated', function(event) {
+          if (!event.memo || !event.memo.elements || !event.memo.elements[0]) {
+            return;
+          }
+
+          var diagnosisCheckbox = event.memo.elements[0].down('input[name$="_omim_id"]');
+          if (!diagnosisCheckbox || !diagnosisCheckbox.checked) {
+            return;
+          }
+
+          // check if the entered diagnosis is the first
+          var isFirstDiagnosis = true;
+          $$('.omim_id .accepted-suggestion input[type="checkbox"]').each(function (checkbox) {
+            if (checkbox.checked &amp;&amp; checkbox != diagnosisCheckbox) {
+              isFirstDiagnosis = false;
+            }
+          });
+          if (!isFirstDiagnosis) {
+            return;
+          }
+
+          var message = '';
+          if (isSolved() &amp;&amp; hasSolvedGene()) { return; }
+          if (!isSolved() &amp;&amp; !hasSolvedGene()) {
+            message = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.hasDiagnosisNoSolvedGenesNotSolved'))";
+          }
+          if (!isSolved() &amp;&amp; hasSolvedGene()) {
+            message = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.hasDiagnosisNotSolved'))";
+          }
+          if (isSolved() &amp;&amp; !hasSolvedGene()) {
+            message = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.hasDiagnosisNoSolvedGenes'))";
+          }
+          var dialog = new PhenoTips.widgets.ModalPopup(message, false, {'title': title, 'removeOnClose': true});
+          dialog.showDialog();
+      });
+
+      solvedInput.observe("change", function () {
+          if (solvedInput.checked) {
+            document.fire("solved:case:checked");
+          }
+      });
+
+      document.observe("solved:case:checked", function() {
+          var message = '';
+          if (hasSolvedGene() &amp;&amp; hasFinalDiagnosis()) { return; }
+          if (!hasSolvedGene() &amp;&amp; !hasFinalDiagnosis()) {
+            message = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.isSolvedNoSolvedGenesNoDiagnosis'))";
+          }
+          if (!hasSolvedGene() &amp;&amp; hasFinalDiagnosis()) {
+            message = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.isSolvedNoSolvedGenes'))";
+          }
+          if (hasSolvedGene() &amp;&amp; !hasFinalDiagnosis()) {
+            message = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.isSolvedNoDiagnosis'))";
+          }
+          var dialog = new PhenoTips.widgets.ModalPopup(message, false, {'title': title, 'removeOnClose': true});
+          dialog.showDialog();
+      });
+    };
+});</code>
+    </property>
+    <property>
+      <name>Validate Pubmed ID</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.UIX_Field__solved</name>
+    <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>97415736-3ecf-4460-9d29-c30196a8833c</guid>
     <class>
@@ -111,6 +310,7 @@
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
+$xwiki.jsx.use('PhenoTips.UIX_Field__solved')##
 #__hasBooleanDataToDisplay('solved', $showSolved)
 ##
 ##
