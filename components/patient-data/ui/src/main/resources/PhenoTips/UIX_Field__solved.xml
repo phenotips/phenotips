@@ -526,7 +526,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__solved')##
 {{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.section.case-resolution</extensionPointId>
+      <extensionPointId>org.phenotips.patientSheet.section.diagnosis-info</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.patientSheet.field.solved</name>
@@ -535,7 +535,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__solved')##
       <parameters>title=$services.localization.render('phenotips.UIXField.solved')
 enabled=true
 required=
-order=1
+order=5
 fields=solved,solved__pubmed_id,solved__notes</parameters>
     </property>
     <property>
