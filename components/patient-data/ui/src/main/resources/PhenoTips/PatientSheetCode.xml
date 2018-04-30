@@ -2307,7 +2307,7 @@ document.observe('xwiki:dom:loaded', function()
 
   widgets.InstantSearch = Class.create({
     'searchServices' : {
-      'ncbi-search-box' : {
+      'omim-search-box' : {
         'cache' : {'all' : {}, 'displayed' : {}},
         'searchTerms' : $('defaultSearchTerms'),
         'searchTermsInput' : $('defaultSearchTermsInput'),
@@ -2315,15 +2315,13 @@ document.observe('xwiki:dom:loaded', function()
         'customSearchTermsInput' : $('customSearchTermsInput'),
         'containersInitialized' : function(searchBox) {
           var containersInit;
-          if (searchBox.searchTerms &amp;&amp; searchBox.searchTermsInput &amp;&amp; (searchBox.omim.target
-            || searchBox.diffDiagnosis.target)) {
+          if (searchBox.searchTerms &amp;&amp; searchBox.searchTermsInput &amp;&amp; (searchBox.omim.target)) {
             containersInit = true;
           }
           return containersInit;
         },
         'doSearch' : function(service) {
           service.doAjaxSearch('omim');
-          service.doAjaxSearch('diffDiagnosis');
         },
         'firePhenotypeChanged' : function(content) {
           document.fire('phenotips:phenotypeChanged', content);
@@ -2349,6 +2347,41 @@ document.observe('xwiki:dom:loaded', function()
           'target' : $('omim-search-results'),
           'suggestFor' : $('prefix') &amp;&amp; $($('prefix').value + 'omim_id'),
           'tooltip': 'omim-disease-info'
+        }
+      },
+      'diffDiagnosis-search-box' : {
+        'cache' : {'all' : {}, 'displayed' : {}},
+        'searchTerms' : $('defaultDiffSearchTerms'),
+        'searchTermsInput' : $('defaultDiffSearchTermsInput'),
+        'searchTermIDsInput' : $('defaultDiffSearchTermIDsInput'),
+        'customSearchTermsInput' : $('customDiffSearchTermsInput'),
+        'containersInitialized' : function(searchBox) {
+          var containersInit;
+          if (searchBox.searchTerms &amp;&amp; searchBox.searchTermsInput &amp;&amp; (searchBox.diffDiagnosis.target)) {
+            containersInit = true;
+          }
+          return containersInit;
+        },
+        'doSearch' : function(service) {
+          service.doAjaxSearch('diffDiagnosis');
+        },
+        'firePhenotypeChanged' : function(content) {
+          document.fire('phenotips:phenotypeChanged', content);
+        },
+        'buildQueryString' : function(data, parameters) {
+          var queryString = '';
+          data.source.each(function(source) {
+            queryString += ((source &amp;&amp; source.value.strip()) + ' ') || '';
+          });
+          return data.script + encodeURIComponent(queryString.strip()) + "&amp;reqNo=" + ++data.expectedReqNo;
+        },
+        'submitAjaxRequest' : function(searchBox, data, queryString, parameters) {
+          new Ajax.Updater(data.target, queryString, {
+            parameters: parameters,
+            onCreate : searchBox.requestCreated.bind(this, data),
+            onSuccess : searchBox.responseReceived.bind(this, data),
+            onComplete : searchBox.updateDone.bind(searchBox, data)
+          });
         },
         'diffDiagnosis' : {
           'script' : new XWiki.Document('DiffDiagnosisService', 'PhenoTips').getURL('get', 'format=html') + "&amp;q=",
