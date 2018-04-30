@@ -3661,6 +3661,7 @@ return PhenoTips;
       template.up('.xwiki-free-multiselect-line').insert({after: newWrapper});
       this.enhanceLine(newInput);
       newInput.focus();
+      Event.fire(document, 'new:xwiki-free-multiselect-input', {'newInput': newInput});
     },
 
     generateId : function(element) {
@@ -8745,6 +8746,7 @@ div.resultContainer div.sourceContent.loading {
 }
 input.xwiki-free-multiselect-value {
   max-width: 50% !important;
+  margin-bottom: 1em;
 }</code>
     </property>
     <property>
